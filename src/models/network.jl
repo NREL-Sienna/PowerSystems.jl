@@ -1,6 +1,20 @@
-export create_network
-export build_ptdf
-export build_ybus
+export branch
+export network
+
+struct branch
+    number::Int
+    status::Bool
+    ConnectionPoints::Tuple{bus,bus}    
+    branch_type::Nullable{String} #[Line, Transf, 3W-Transf]
+    BaseVoltage::Nullable{Float64} #[kV]
+    R::Nullable{Float64} #[pu]
+    X::Float64 #[pu]Co
+    B::Nullable{Float64} #[pu]
+    MaxCapacity_forward::Float64  #[MVA]
+    MaxCapacity_backward::Float64 #[MVA]
+end
+
+
 
 function build_ybus(sys::system_param, branches::Array{branch})
 # for now, this function only considers line elements. No transformers models yet. 
@@ -103,4 +117,13 @@ function create_network(sys::system_param, branches::Array{branch}, nodes::Array
                     max_flow)
 
     return net
+end
+
+
+struct network 
+    LineQuantity::Int
+    Ybus::SparseMatrixCSC{Complex{Float64},Int64}
+    PTDLF::Array{Float64} 
+    IncidenceMatrix::Array{Int}
+    MaxFlows::Array{Float64,2} 
 end

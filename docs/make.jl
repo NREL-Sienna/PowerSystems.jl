@@ -9,8 +9,7 @@ makedocs(
         # "User Guide" => "man/guide.md",
         "API" => Any[
             "PowerSchema" => "api/PowerSchema.md"
-        ],
-        "Contributing" => "man/contributing.md"
+        ]
     ]
 )
 
