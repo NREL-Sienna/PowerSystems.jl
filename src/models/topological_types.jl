@@ -2,7 +2,6 @@ export system_param
 export bus
 export branch
 export network
-#export load_zone
 
 """
 This file contains the types used in the componentes for power systems analysis 

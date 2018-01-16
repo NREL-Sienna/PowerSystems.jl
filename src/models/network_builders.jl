@@ -1,18 +1,6 @@
-module build_network
-
 export create_network
 export build_ptdf
 export build_ybus
-
-if is_apple()
-    push!(LOAD_PATH, "../base_tools/")
-end
-
-if is_windows()
-    push!(LOAD_PATH, "..\\base_tools\\")
-end
-
-using ps_types
 
 function build_ybus(sys::system_param, branches::Array{branch})
 # for now, this function only considers line elements. No transformers models yet. 
@@ -115,7 +103,4 @@ function create_network(sys::system_param, branches::Array{branch}, nodes::Array
                     max_flow)
 
     return net
-end
-
-
 end

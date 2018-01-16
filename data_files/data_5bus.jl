@@ -1,14 +1,3 @@
-if is_apple()
-    import Gurobi
-    push!(LOAD_PATH, "../base_tools/")
-end
-
-if is_windows()
-    import Clp
-    push!(LOAD_PATH, "..\\base_tools\\")
-end
-
-using ps_types
 using TimeSeries
 
 dates  = collect(DateTime(2015,1,1,12,00):Hour(1):DateTime(2015,1,1,17,00))
