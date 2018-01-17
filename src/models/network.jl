@@ -29,7 +29,7 @@ struct Transformer <: Branch
     rate::Float64  #[MVA]
 end
 
-function build_ybus(sys::SystemParam, branches::Array{Branch})
+function build_ybus(sys::SystemParam, branches::Array{T}) where {T<:Branch}
 
     Ybus = spzeros(Complex{Float64},sys.busquantity,sys.busquantity)
     max_flows = Array{Float64,2}(length(branches),2)
@@ -57,27 +57,18 @@ function build_ybus(sys::SystemParam, branches::Array{Branch})
 
 end 
 
-function build_ptdf(sys::SystemParam, branches::Array{Branch}, nodes::Array{Bus})
+function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
 
     n_b = length(branches)
     
-    slack_position = -9; 
-
-    for n in nodes
-        if n.bustype == "SF"
-            slack_position = n.number
-        end
-    end
-
-    if slack_position == -9 
-        error("Slack bus not identified")
-    end
-
     n_n = sys.busquantity;
 
     A = spzeros(Float64,n_n,n_b);
     B = zeros(n_n,n_n);
     X = zeros(n_b,n_b);
+
+   #build incidence matrix 
+   #incidence_matrix = A
 
     for b in branches
 
@@ -85,9 +76,9 @@ function build_ptdf(sys::SystemParam, branches::Array{Branch}, nodes::Array{Bus}
 
         A[b.connectionpoints[2].number, b.number] = -1;
 
-        X[b.number,b.number] = b.X;
+        X[b.number,b.number] = b.x;
 
-        Y11 = (1/b.X)*b.status;
+        Y11 = (1/b.x)*b.status;
         B[b.connectionpoints[1].number,
             b.connectionpoints[1].number] += Y11;
         Y12 = -1*Y11;
@@ -102,30 +93,43 @@ function build_ptdf(sys::SystemParam, branches::Array{Branch}, nodes::Array{Bus}
 
     end
 
-    incidence_matrix = A;
+    slack_position = -9; 
 
-    B = B[setdiff(1:end, slack_position), setdiff(1:end, slack_position)]
+    for n in nodes
+        if get(n.bustype) == "SF"
+            slack_position = n.number
+        end
+    end
 
-    A = A[setdiff(1:end, slack_position), :]
+    if slack_position != -9 
+        B = B[setdiff(1:end, slack_position), setdiff(1:end, slack_position)]
 
-    S = inv(X)*A'*inv(B);
+        A = A[setdiff(1:end, slack_position), :]
     
-    S = hcat(S[:,1:slack_position-1],zeros(n_b,),S[:,slack_position:end-1])
+        S = inv(X)*A'*inv(B);
+        
+        S = hcat(S[:,1:slack_position-1],zeros(n_b,),S[:,slack_position:end-1])
 
-    return S, incidence_matrix
+    elseif slack_position == -9 
+        
+        warn("Slack bus not identified, can't build PTLDF")
+        S = Nullable{Array{Float64}}()
+    end
+
+    return S, A
 
 end
 
 struct Network 
     linequantity::Int
     ybus::SparseMatrixCSC{Complex{Float64},Int64}
-    ptdlf::Array{Float64} 
+    ptdlf::Nullable{Array{Float64}}
     incidence::Array{Int}
     maxflows::Array{Float64,2} 
 
-    function Network(sys::SystemParam, branches::Array{Branch}, nodes::Array{Bus})
+    function Network(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
         ybus, maxflow = build_ybus(sys,branches);
-        ptdfl, A = build_ptdf(sys, branches, nodes)    
+        ptdlf, A = build_ptdf(sys, branches, nodes)    
         new(length(branches),
             ybus, 
             ptdlf,
