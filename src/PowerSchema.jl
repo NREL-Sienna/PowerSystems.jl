@@ -10,7 +10,6 @@ using Base.convert
 
 # PowerSchema models
 include("models/topological_types.jl")
-include("models/network_builders.jl")
 include("models/renewable_types.jl")
 include("models/conventional_types.jl")
 include("models/load_types.jl")

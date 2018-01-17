@@ -1,14 +1,18 @@
-export bus
+export Bus
 
-struct bus
-    Number::Int
-    Name::String
-    BusType::Nullable{String} # [PV, PQ, SF]
-    Angle::Nullable{Float64} # [degrees]
-    Voltage::Nullable{Float64} # [pu]
-    MaxVoltage::Nullable{Float64} # [pu]
-    MinVoltage::Nullable{Float64} # [pu]
-    BaseVoltage::Nullable{Float64} # [kV]
+struct Bus
+    number::Int
+    name::String
+    bustype::String # [PV, PQ, SF]
+    angle::Float64 # [degrees]
+    voltage::Float64 # [pu]
+    maxvoltage::Float64 # [pu]
+    minvoltage::Float64 # [pu]
+    basevoltage::Float64 # [kV]
 end
 
-bus(Number::Int, Name::String) = bus(Number, Name, Nullable{String}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(),Nullable{Float64})
+Bus(number::Int, name::String, bustype::String, angle::Float64) = Bus(number, name, bustype, angle, Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}())
+
+Bus(number::Int, name::String) = Bus(number, name, Nullable{String}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}())
+
+

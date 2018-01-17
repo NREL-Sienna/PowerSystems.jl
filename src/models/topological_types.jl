@@ -1,13 +1,5 @@
 export system_param
 
-"""
-This file contains the types used in the componentes for power systems analysis 
-toolbox developed in Julia.
-"""
-
-include("bus.jl")
-include("network.jl")
-
 struct system_param
     #BusQuantity::Int
     #GeneratorQuantity::Int
@@ -18,4 +10,5 @@ struct system_param
     TimeSteps::Int
 end
 
-
+include("bus.jl")
+include("network.jl")

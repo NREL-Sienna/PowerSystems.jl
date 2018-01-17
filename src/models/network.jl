@@ -1,20 +1,35 @@
-export branch
-export network
+export Branch
+export Line
+export Transformer
+export Network
 
-struct branch
-    number::Int
-    status::Bool
-    ConnectionPoints::Tuple{bus,bus}    
-    branch_type::Nullable{String} #[Line, Transf, 3W-Transf]
-    BaseVoltage::Nullable{Float64} #[kV]
-    R::Nullable{Float64} #[pu]
-    X::Float64 #[pu]Co
-    B::Nullable{Float64} #[pu]
-    MaxCapacity_forward::Float64  #[MVA]
-    MaxCapacity_backward::Float64 #[MVA]
+abstract type 
+    Branch
 end
 
+struct Line <: branch
+    number::Int
+    status::Bool
+    connectionpoints::Tuple{bus,bus}
+    basevoltage::Float64 #[kV]    
+    r::Float64 #[pu]
+    x::Float64 #[pu]Co
+    b::Float64 #[pu]
+    rate::Float64  #[MVA]
+end
 
+line(number::Int, status::Bool, connectionpoints::Tuple{bus,bus}) = 
+
+struct Transformer <: branch
+    number::Int
+    status::Bool
+    connectionpoints::Tuple{bus,bus}    
+    BaseVoltage::Float64 #[kV]
+    r::Float64 #[pu]
+    x::Float64 #[pu]Co
+    b::Float64 #[pu]
+    rate::Float64  #[MVA]
+end
 
 function build_ybus(sys::system_param, branches::Array{branch})
 # for now, this function only considers line elements. No transformers models yet. 
@@ -120,10 +135,10 @@ function create_network(sys::system_param, branches::Array{branch}, nodes::Array
 end
 
 
-struct network 
-    LineQuantity::Int
-    Ybus::SparseMatrixCSC{Complex{Float64},Int64}
-    PTDLF::Array{Float64} 
-    IncidenceMatrix::Array{Int}
+struct Network 
+    linequantity::Int
+    ybus::SparseMatrixCSC{Complex{Float64},Int64}
+    ptdlf::Array{Float64} 
+    incidence::Array{Int}
     MaxFlows::Array{Float64,2} 
 end
