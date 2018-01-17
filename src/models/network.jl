@@ -18,13 +18,30 @@ struct Line <: Branch
     rate::Float64  #[MVA]
 end
 
-struct Transformer <: Branch
+"""
+The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer
+"""
+
+struct Transformer2W <: Branch
     number::Int
     status::Bool
     connectionpoints::Tuple{Bus,Bus}    
     basevoltage::Float64 #[kV]
+    tap::Float64
+    
     r::Float64 #[pu]
     x::Float64 #[pu]Co
+    b::Float64 #[pu]
+    rate::Float64  #[MVA]
+end
+
+struct Transformer3W <: Branch
+    number::Int
+    status::Bool
+    connectionpoints::Tuple{Bus,Bus,Bus}    
+    basevoltage::Float64 #[kV]
+    r::Float64 #[pu]
+    x::Float64 #[pu]
     b::Float64 #[pu]
     rate::Float64  #[MVA]
 end
