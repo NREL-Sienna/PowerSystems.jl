@@ -1,5 +1,12 @@
 using PowerSchema
 using Base.Test
 
-# write your own tests here
-@test 1 == 2
+# Testing Topological components of the schema
+
+tic()
+println("Bus Tests")
+@time @test include("readbusdata.jl")
+println("Network Tests")
+@time @test include("readnetworkdata.jl")
+toc()
+

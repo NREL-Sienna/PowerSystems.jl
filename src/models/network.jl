@@ -112,7 +112,7 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 
     elseif slack_position == -9 
         
-        warn("Slack bus not identified, can't build PTLDF")
+        warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
         S = Nullable{Array{Float64}}()
     end
 
@@ -128,6 +128,13 @@ struct Network
     maxflows::Array{Float64,2} 
 
     function Network(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
+        
+        for n in nodes
+            if isnull(n.bustype) 
+                error("Bus/Nodes data does not contain information to build an AC network")
+            end
+        end
+        
         ybus, maxflow = build_ybus(sys,branches);
         ptdlf, A = build_ptdf(sys, branches, nodes)    
         new(length(branches),

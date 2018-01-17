@@ -1,5 +1,5 @@
-const LOCAL_PACKAGES = expanduser("~/Dropbox/Remote Code Rep/PowerSchema/src")
-push!(LOAD_PATH, LOCAL_PACKAGES)
+#const LOCAL_PACKAGES = expanduser("~/Dropbox/Remote Code Rep/PowerSchema/src")
+#push!(LOAD_PATH, LOCAL_PACKAGES)
 using PowerSchema
 
 FiveBus = SystemParam(5, 3, 5, 230, 100, 1);
