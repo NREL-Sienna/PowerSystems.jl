@@ -1,13 +1,12 @@
-export system_param
+export SystemParam
 
-struct system_param
-    #BusQuantity::Int
-    #GeneratorQuantity::Int
-    #LoadQuantity::Int
-    BaseVoltage::Float64 # [kV]
-    BasePower::Float64 # [MVA]
-    GlobalReserves::Float64 # [pu]
-    TimeSteps::Int
+struct SystemParam
+    busquantity::Int
+    generatorquantity::Int
+    loadquantity::Int
+    basevoltage::Float64 # [kV]
+    basepower::Float64 # [MVA]
+    timesteps::Int
 end
 
 include("bus.jl")
