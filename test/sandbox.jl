@@ -22,27 +22,27 @@ nodes_ac = [
             ]
 
 Branches = [
-                Line(1,  true, (nodes_ac[1],nodes_ac[2]),   0.01938, 0.05917,  0.0528, Inf),
-                Line(2,  true, (nodes_ac[1],nodes_ac[5]),   0.05403, 0.22304,  0.0492, Inf),
-                Line(3,  true, (nodes_ac[2],nodes_ac[3]),   0.04699, 0.19797,  0.0438, Inf),
-                Line(4,  true, (nodes_ac[2],nodes_ac[4]),   0.05811, 0.17632,  0.0340, Inf),
-                Line(5,  true, (nodes_ac[2],nodes_ac[5]),   0.05695, 0.17388,  0.0346, Inf),
-                Line(6,  true, (nodes_ac[3],nodes_ac[4]),   0.06701, 0.17103,  0.0128, Inf),
-                Line(7,  true, (nodes_ac[4],nodes_ac[5]),   0.01335, 0.04211,  0.0   , Inf),
-                Line(8,  true, (nodes_ac[6],nodes_ac[11]),  0.09498, 0.19890,  0.0   , Inf),   
-                Line(9,  true, (nodes_ac[6],nodes_ac[12]),  0.12291, 0.25581,  0.0   , Inf),    
-                Line(10, true, (nodes_ac[6],nodes_ac[13]),  0.06615, 0.13027,  0.0   , Inf),    
-                Line(11, true, (nodes_ac[9],nodes_ac[10]),  0.03181, 0.08450,  0.0   , Inf),    
-                Line(12, true, (nodes_ac[9],nodes_ac[14]),  0.12711, 0.27038,  0.0   , Inf),    
-                Line(13, true, (nodes_ac[10],nodes_ac[11]), 0.08205, 0.19207,  0.0   , Inf),    
-                Line(14, true, (nodes_ac[12],nodes_ac[13]), 0.22092, 0.19988,  0.0   , Inf),    
-                Line(15, true, (nodes_ac[13],nodes_ac[14]), 0.17093, 0.34802,  0.0   , Inf),
-                Transformer2W(1, true, (nodes_ac[4],nodes_ac[9]),  0.0    , 0.55618,  0.0     , 0.969, 0.0, Inf),
-                Transformer2W(2, true, (nodes_ac[5],nodes_ac[6]),  0.0    , 0.25202,  0.0     , 0.932, 0.0, Inf),
-                #3W Transformer models
-                Transformer2W(3, true, (nodes_ac[4],nodes_ac[7]),  0.0      , 0.20912,  0.0    , 0.978, 0.0, Inf),
-                Transformer2W(4, true, (nodes_ac[7],nodes_ac[8]),  0.0      , 0.17615,  0.0     , 1.0,   0.0, Inf),
-                Line(16, true, (nodes_ac[7],nodes_ac[9]),   0.0,     0.11001,  0.0   , Inf),
+                Line("Line1",  true, (nodes_ac[1],nodes_ac[2]),   0.01938, 0.05917,  0.0528, Inf),
+                Line("Line2",  true, (nodes_ac[1],nodes_ac[5]),   0.05403, 0.22304,  0.0492, Inf),
+                Line("Line3",  true, (nodes_ac[2],nodes_ac[3]),   0.04699, 0.19797,  0.0438, Inf),
+                Line("Line4",  true, (nodes_ac[2],nodes_ac[4]),   0.05811, 0.17632,  0.0340, Inf),
+                Line("Line5",  true, (nodes_ac[2],nodes_ac[5]),   0.05695, 0.17388,  0.0346, Inf),
+                Line("Line6",  true, (nodes_ac[3],nodes_ac[4]),   0.06701, 0.17103,  0.0128, Inf),
+                Line("Line7",  true, (nodes_ac[4],nodes_ac[5]),   0.01335, 0.04211,  0.0   , Inf),
+                Transformer2W("Trans3", true, (nodes_ac[4],nodes_ac[7]),  0.0    , 0.20912,  0.0    , 0.978, 0.0, Inf),
+                Transformer2W("Trans1", true, (nodes_ac[4],nodes_ac[9]),  0.0    , 0.55618,  0.0     , 0.969, 0.0, Inf),
+                Transformer2W("Trans2", true, (nodes_ac[5],nodes_ac[6]),  0.0    , 0.25202,  0.0     , 0.932, 0.0, Inf),
+                Line("Line8",  true, (nodes_ac[6],nodes_ac[11]),  0.09498, 0.19890,  0.0   , Inf),   
+                Line("Line9",  true, (nodes_ac[6],nodes_ac[12]),  0.12291, 0.25581,  0.0   , Inf),    
+                Line("Line10", true, (nodes_ac[6],nodes_ac[13]),  0.06615, 0.13027,  0.0   , Inf), 
+                Transformer2W("Trans4", true, (nodes_ac[7],nodes_ac[8]),  0.0      , 0.17615,  0.0     , 1.0,   0.0, Inf),
+                Line("Line16", true, (nodes_ac[7],nodes_ac[9]),   0.0,     0.11001,  0.0   , Inf),   
+                Line("Line11", true, (nodes_ac[9],nodes_ac[10]),  0.03181, 0.08450,  0.0   , Inf),    
+                Line("Line12", true, (nodes_ac[9],nodes_ac[14]),  0.12711, 0.27038,  0.0   , Inf),    
+                Line("Line13", true, (nodes_ac[10],nodes_ac[11]), 0.08205, 0.19207,  0.0   , Inf),    
+                Line("Line14", true, (nodes_ac[12],nodes_ac[13]), 0.22092, 0.19988,  0.0   , Inf),    
+                Line("Line15", true, (nodes_ac[13],nodes_ac[14]), 0.17093, 0.34802,  0.0   , Inf)
             ]   
 
 Net = Network(FourteenBus, Branches, nodes_ac) 
+get(Net.ptdlf)
