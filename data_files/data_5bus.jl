@@ -2,13 +2,13 @@ using TimeSeries
 
 dates  = collect(DateTime(2015,1,1,12,00):Hour(1):DateTime(2015,1,1,17,00))
 
-FiveBus = system_param(230, 100, 0.0, length(dates));
+FiveBus = SystemParam(5, 230, 100, length(dates));
 
-nodes = [bus(1,"nodeA", "PV", 1.0, 1.1, 0.0, 0, 230),
-         bus(2,"nodeB", "PQ", 1.0, 1.1, 0.0, 0, 230),
-         bus(3,"nodeC", "PV", 1.0, 1.1, 0.0, 0, 230),
-         bus(4,"nodeD", "PV", 1.0, 1.1, 0.0, 0, 230),
-         bus(5,"nodeE", "SF", 1.0, 1.1, 0.0, 0, 230),
+nodes    = [Bus(1,"nodeA", "PV", 0, 1.0, 1.05, 0.9, 230),
+            Bus(2,"nodeB", "PQ", 0, 1.0, 1.05, 0.9, 230),
+            Bus(3,"nodeC", "PV", 0, 1.0, 1.05, 0.9, 230),
+            Bus(4,"nodeD", "PV", 0, 1.0, 1.05, 0.9, 230),
+            Bus(5,"nodeE", "SF", 0, 1.0, 1.05, 0.9, 230),
         ];
 
 Loads = [load("Load1", nodes[2], 
@@ -62,10 +62,10 @@ PV = [solar_power("site1", nodes[1],
         ),
     ];
 
-Branches = [branch(1, 1, "line", (nodes[1],nodes[2]), 0.00281, 0.0281, 0.00712, 400, -400, 230),
-            branch(2, 1, "line", (nodes[1],nodes[4]), 0.00304, 0.0304, 0.00658, Inf, -Inf, 230),
-            branch(3, 1, "line", (nodes[1],nodes[5]), 0.00064, 0.0064, 0.03126, Inf, -Inf, 230),
-            branch(4, 1, "line", (nodes[2],nodes[3]), 0.00108, 0.0108, 0.01852, Inf, -Inf, 230),     
-            branch(5, 1, "line", (nodes[3],nodes[4]), 0.00297, 0.0297, 0.00674, Inf, -Inf, 230),
-            branch(6, 1, "line", (nodes[4],nodes[5]), 0.00297, 0.0297, 0.00674, 240, -240, 230)
+Branches = [Line(1, true, (nodes_ac[1],nodes_ac[2]), 0.00281, 0.0281, 0.00712, 400.0),
+    Line(2, true, (nodes_ac[1],nodes_ac[4]), 0.00304, 0.0304, 0.00658, Inf),
+    Line(3, true, (nodes_ac[1],nodes_ac[5]), 0.00064, 0.0064, 0.03126, Inf),
+    Line(4, true, (nodes_ac[2],nodes_ac[3]), 0.00108, 0.0108, 0.01852, Inf),     
+    Line(5, true, (nodes_ac[3],nodes_ac[4]), 0.00297, 0.0297, 0.00674, Inf),
+    Line(6, true, (nodes_ac[4],nodes_ac[5]), 0.00297, 0.0297, 0.00674, 240)
 ];     
