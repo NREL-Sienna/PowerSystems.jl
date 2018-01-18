@@ -123,9 +123,15 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 
     max_flows = Array{Float64}(length(branches))
 
+    for b in nodes
+        if b.number < -1
+            error("buses must be numbered consecutively in the bus/node matrix")
+        end
+    end
+
     A = spzeros(Float64,n_n,n_b);
-    B = zeros(n_n,n_n);
-    X = zeros(n_b,n_b);
+    B = spzeros(Float64,n_n,n_n);
+    X = spzeros(Float64,n_b,n_b);
 
    #build incidence matrix 
    #incidence_matrix = A
@@ -136,9 +142,18 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 
         A[b.connectionpoints[2].number, ix] = -1;
 
-        X[ix,ix] = b.x;
+        if typeof(b) == PowerSchema.Transformer2W 
 
-        Y11 = (1/b.x)*b.status;
+            Y11 = (1/(b.tap*b.x))*b.status;
+            X[ix,ix] = b.x*b.tap;
+
+        elseif typeof(b) == PowerSchema.Line
+
+            Y11 = (1/b.x)*b.status;
+            X[ix,ix] = b.x;
+
+        end
+
         B[b.connectionpoints[1].number,
             b.connectionpoints[1].number] += Y11;
         Y12 = -1*Y11;
@@ -164,8 +179,8 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 
     if slack_position != -9 
         B = B[setdiff(1:end, slack_position), setdiff(1:end, slack_position)]
-   
-        S = inv(X)*A[setdiff(1:end, slack_position), :]'*inv(B);
+
+        S = inv(full(X))*A[setdiff(1:end, slack_position), :]'*inv(full(B));
         
         S = hcat(S[:,1:slack_position-1],zeros(n_b,),S[:,slack_position:end-1])
 
@@ -173,6 +188,7 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
         
         warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
         S = Nullable{Array{Float64}}()
+
     end
 
     return S, A, max_flows
@@ -182,7 +198,7 @@ end
 struct Network 
     linequantity::Int
     ybus::SparseMatrixCSC{Complex{Float64},Int64}
-    ptdlf::Nullable{Array{Float64}}
+    ptdf::Nullable{Array{Float64}}
     incidence::Nullable{Array{Int}}
     maxflows::Array{Float64} 
 
