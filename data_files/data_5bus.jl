@@ -4,12 +4,22 @@ dates  = collect(DateTime(2015,1,1,12,00):Hour(1):DateTime(2015,1,1,17,00))
 
 FiveBus = SystemParam(5, 230, 100, length(dates));
 
-nodes    = [Bus(1,"nodeA", "PV", 0, 1.0, 1.05, 0.9, 230),
-            Bus(2,"nodeB", "PQ", 0, 1.0, 1.05, 0.9, 230),
-            Bus(3,"nodeC", "PV", 0, 1.0, 1.05, 0.9, 230),
-            Bus(4,"nodeD", "PV", 0, 1.0, 1.05, 0.9, 230),
-            Bus(5,"nodeE", "SF", 0, 1.0, 1.05, 0.9, 230),
+nodes    = [Bus(1,"nodeA", "PV", 0, 1.0, 1.05, 0.9, 500),
+            Bus(2,"nodeB", "PQ", 0, 1.0, 1.05, 0.9, 500),
+            Bus(3,"nodeC", "PV", 0, 1.0, 1.05, 0.9, 500),
+            Bus(4,"nodeD", "PV", 0, 1.0, 1.05, 0.9, 500),
+            Bus(5,"nodeE", "SF", 0, 1.0, 1.05, 0.9, 500),
         ];
+
+Branches = [Line("1", true, (nodes[1],nodes[2]), 0.00281, 0.0281, 0.00712, 400.0),
+    Line("2", true, (nodes[1],nodes[4]), 0.00304, 0.0304, 0.00658, Inf),
+    Line("3", true, (nodes[1],nodes[5]), 0.00064, 0.0064, 0.03126, Inf),
+    Line("4", true, (nodes[2],nodes[3]), 0.00108, 0.0108, 0.01852, Inf),     
+    Line("5", true, (nodes[3],nodes[4]), 0.00297, 0.0297, 0.00674, Inf),
+    Line("6", true, (nodes[4],nodes[5]), 0.00297, 0.0297, 0.00674, 240)
+];     
+
+Net = Network(FiveBus, Branches, nodes); 
 
 Loads = [load("Load1", nodes[2], 
              load_tech("P",300, 98.61, 230),
@@ -61,11 +71,3 @@ PV = [solar_power("site1", nodes[1],
         TimeArray(dates, rand(length(dates)))
         ),
     ];
-
-Branches = [Line(1, true, (nodes_ac[1],nodes_ac[2]), 0.00281, 0.0281, 0.00712, 400.0),
-    Line(2, true, (nodes_ac[1],nodes_ac[4]), 0.00304, 0.0304, 0.00658, Inf),
-    Line(3, true, (nodes_ac[1],nodes_ac[5]), 0.00064, 0.0064, 0.03126, Inf),
-    Line(4, true, (nodes_ac[2],nodes_ac[3]), 0.00108, 0.0108, 0.01852, Inf),     
-    Line(5, true, (nodes_ac[3],nodes_ac[4]), 0.00297, 0.0297, 0.00674, Inf),
-    Line(6, true, (nodes_ac[4],nodes_ac[5]), 0.00297, 0.0297, 0.00674, 240)
-];     
