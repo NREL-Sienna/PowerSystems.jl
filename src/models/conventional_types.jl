@@ -1,37 +1,35 @@
-export generator_tech  
-export generator_econ  
-export ng_generator
-export thermal_generation
+export Thermalgen
+export Techgen  
+export Econgen  
 
-abstract type 
-    thermal_generation
+struct Techgen 
+    realpower::Float64 # [MW]
+    reactivepower::Nullable{Float64} # [MVAr]
+    maxrealpower::Float64 # [MW]
+    minrealpower::Float64 # [MW]
+    maxreactivepower::Nullable{Float64} # [MVAr]
+    minreactivepower::Nullable{Float64} # [MVAr]
+    maxrampup::Nullable{Float64} # [MW/hr]
+    maxrampdn::Nullable{Float64} # [MW/hr]
+    minuptime::Nullable{Float64} #[hours]
+    mindntime::Nullable{Float64} #[hours]
 end
 
-struct generator_tech 
-    RealPower::Float64 # [MW]
-    ReactivePower::Nullable{Float64} # [MVAr]
-    MaxRealPower::Float64 # [MW]
-    MinRealPower::Float64 # [MW]
-    MaxReactivePower::Nullable{Float64} # [MVAr]
-    MinReactivePower::Nullable{Float64} # [MVAr]
-    MaxRampUP::Nullable{Float64}
-    MaxRampDN::Nullable{Float64}
-    MinUPTime::Nullable{Float64}
-    MinDNTime::Nullable{Float64}
+generator_tech(RealPower::Float64, ) = generator_tech(RealPower, Nullable{Float64}(),  )
+
+struct Econgen
+    capacity::Float64 # [MW]
+    variablecost::Union{Float64,Array{Tuple{Float64,Float64}},Function} # [$/MWh]
+    fixedcost::Float64         # [$/h] 
+    startupcost::Nullable{Float64} # [$]
+    shutdncost::Nullable{Float64} # [$]
+    anualcapacityfactor::Nullable{Float64} # [0-1] 
 end
 
-struct generator_econ
-    InstalledCapacity::Float64 # [MW]
-    VariableCost::Union{Array{Tuple{Float64,Float64}},Function} # [$/MWh]
-    FixedCost::Float64         # [$/h] 
-    AnualCapacityFactor::Nullable{Float64} #[0-1]
-    Fuel::String     #[Gas, wind, solar, hydro, ...]
-    CostFunction::Function 
-end
-
-struct ng_generator <: thermal_generation
+struct Thermalgen
     Name::String
+    Status::Bool
     bus::bus
-    TechnicalParameters::Nullable{generator_tech}
-    EconomicParameters::Nullable{generator_econ}
+    tech::Nullable{Techgen}
+    econ::Nullable{Econgen}
 end

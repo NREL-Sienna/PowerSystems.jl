@@ -16,7 +16,11 @@ struct Line <: Branch
     x::Float64 #[pu]Co
     b::Float64 #[pu]
     rate::Float64  #[MVA]
+    anglelimits::Nullable{Tuple{Float64,Float64}}
 end
+
+Line(name::String, status::Bool, connectionpoints::Tuple{Bus,Bus}, r::Float64, x::Float64, b::Float64, rate::Float64) = 
+Line(name, status, connectionpoints, r, x, b, rate, Nullable{Tuple{Float64,Float64}}())
 
 """
 The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. 
