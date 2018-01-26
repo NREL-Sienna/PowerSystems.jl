@@ -1,18 +1,22 @@
 export Bus
 
+# Update to named tuples when Julia 0.7 becomes available 
+
 struct Bus
     number::Int
     name::String
     bustype::Nullable{String} # [PV, PQ, SF]
-    angle::Nullable{Float64} # [degrees]
-    voltage::Nullable{Float64} # [pu]
-    maxvoltage::Nullable{Float64} # [pu]
-    minvoltage::Nullable{Float64} # [pu]
-    basevoltage::Nullable{Float64} # [kV]
+    angle::Nullable{Real} # [degrees]
+    voltage::Nullable{Real} # [pu]
+    voltagelims::Nullable{Tuple{Real,Real}} # [pu]
+    basevoltage::Nullable{Real} # [kV]
 end
 
-Bus(number::Int, name::String, bustype::String, angle::Float64) = Bus(number, name, bustype, angle, Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}())
-
-Bus(number::Int, name::String) = Bus(number, name, Nullable{String}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}())
-
-
+Bus(;   number = 0, 
+        name = "init", 
+        bustype = Nullable{String}(), 
+        angle = Nullable{Real}(), 
+        voltage = Nullable{Real}(), 
+        voltagelims=Nullable{Tuple{Real,Real}}(), 
+        basevoltage=Nullable{Real}()
+    ) = Bus(Real, name, bustype, angle, voltage, voltagelims, basevoltage)

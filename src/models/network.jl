@@ -15,12 +15,19 @@ struct Line <: Branch
     r::Float64 #[pu]
     x::Float64 #[pu]Co
     b::Float64 #[pu]
-    rate::Float64  #[MVA]
+    rate::Nullable{Float64}  #[MVA]
     anglelimits::Nullable{Tuple{Float64,Float64}}
 end
 
-Line(name::String, status::Bool, connectionpoints::Tuple{Bus,Bus}, r::Float64, x::Float64, b::Float64, rate::Float64) = 
-Line(name, status, connectionpoints, r, x, b, rate, Nullable{Tuple{Float64,Float64}}())
+Line(;  name = "init",
+        status = false,
+        connectionpoints = (Bus(), Bus()),
+        r = 0.0,
+        x = 0.0,
+        b = 0.0, 
+        rate = Nullable{Float64}(),
+        anglelimits = Nullable{Tuple{Float64,Float64}}()
+    ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
 
 """
 The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. 
@@ -36,26 +43,42 @@ struct Transformer2W <: Branch
     zb::Float64 #[pu]
     tap::Float64 # [0 - 2]
     α::Float64 # [radians]
-    rate::Float64  #[MVA]
+    rate::Nullable{Float64}  #[MVA]
 end
+
+Transformer2W(; name = "init",
+                status = false,
+                connectionpoints = (Bus(), Bus()),
+                r = 0.0,
+                x = 0.0,
+                zb = 0.0, 
+                tap = 1.0,
+                α = 0.0,
+                rate = Nullable{Float64}()
+            ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
 
 struct Transformer3W <: Branch
     name::String
     status::Bool
-    connectionpoints::Tuple{Bus,Bus,Bus}    
-    r::Tuple{Float64,Float64,Float64} #[pu]
-    x::Tuple{Float64,Float64,Float64} #[pu]
-    zb::Tuple{Float64,Float64,Float64} #[pu]
-    tap::Tuple{Float64,Float64,Float64}  # [0 - 2]
-    α::Tuple{Float64,Float64,Float64}  # [radians]
-    rate::Tuple{Float64,Float64,Float64}  #[MVA]
+    transformer::Transformer2W   
+    line::Line
 end
+
+Transformer3W(; name = "init",
+                status = false,
+                transformer = Transformer2W(),
+                line = Line()
+            ) = Transformer3W(name, status, transformer, line)
 
 function build_ybus(sys::SystemParam, branches::Array{T}) where {T<:Branch}
 
     Ybus = spzeros(Complex{Float64},sys.busquantity,sys.busquantity)
        
     for b in branches
+
+        if b.name == "init" 
+            error("The data in Branch is incomplete")
+        end
 
         if typeof(b) == PowerSchema.Line
 
@@ -99,18 +122,36 @@ function build_ybus(sys::SystemParam, branches::Array{T}) where {T<:Branch}
 
             warn("Data contains a 3W transformer")
 
-            Y11 = (1/(b.r + b.x*1im) + (1im*b.b)/2)*b.status;
-            Ybus[b.connectionpoints[1].number,
-                b.connectionpoints[1].number] += Y11;
-            Y12 = (-1./(b.r + b.x*1im))*b.status;
-            Ybus[b.connectionpoints[1].number, 
-                b.connectionpoints[2].number] += Y12;
+            Y11 = (1/(b.line.r + b.line.x*1im) + (1im*b.line.b)/2)*b.status;
+            Ybus[b.line.connectionpoints[1].number,
+                b.line.connectionpoints[1].number] += Y11;
+            Y12 = (-1./(b.line.r + b.line.x*1im))*b.status;
+            Ybus[b.line.connectionpoints[1].number, 
+                b.line.connectionpoints[2].number] += Y12;
             #Y21 = Y12
-            Ybus[b.connectionpoints[2].number, 
-                b.connectionpoints[1].number] += Y12;
+            Ybus[b.line.connectionpoints[2].number, 
+                b.line.onnectionpoints[1].number] += Y12;
             #Y22 = Y11;
-            Ybus[b.connectionpoints[2].number,
-                b.connectionpoints[2].number] += Y11;                     
+            Ybus[b.line.connectionpoints[2].number,
+                b.line.connectionpoints[2].number] += Y11; 
+                
+            y = 1/(b.transformer.r + b.transformer.x*1im)
+            y_a = y/(b.transformer.tap*exp(b.transformer.α*1im*(π/180)))
+            c = 1/b.transformer.tap
+
+            Y11 = (y_a + y*c*(c-1) + (b.transformer.zb))*b.status;
+            Ybus[b.transformer.connectionpoints[1].number,
+                b.transformer.connectionpoints[1].number] += Y11;
+            Y12 = (-y_a) * b.status;
+            Ybus[b.transformer.connectionpoints[1].number, 
+                b.transformer.connectionpoints[2].number] += Y12;
+            #Y21 = Y12
+            Ybus[b.transformer.connectionpoints[2].number, 
+                b.transformer.connectionpoints[1].number] += Y12;
+            Y22 = (y_a + y*(1-c)) * b.status;;
+            Ybus[b.transformer.connectionpoints[2].number,
+                b.transformer.connectionpoints[2].number] += Y22;            
+            
         end
 
     end
@@ -156,6 +197,10 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
             Y11 = (1/b.x)*b.status;
             X[ix,ix] = b.x;
 
+        elseif typeof(b) == PowerSchema.Transformer3W 
+
+            error("3W Transformer not implemented about PTDF")
+
         end
 
         B[b.connectionpoints[1].number,
@@ -170,7 +215,7 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
         B[b.connectionpoints[2].number,
             b.connectionpoints[2].number] += Y11;
 
-        max_flows[ix] = b.rate     
+        max_flows[ix] = get(b.rate)     
     end
 
     slack_position = -9; 

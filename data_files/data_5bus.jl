@@ -2,72 +2,43 @@ using TimeSeries
 
 dates  = collect(DateTime(2015,1,1,12,00):Hour(1):DateTime(2015,1,1,17,00))
 
-FiveBus = SystemParam(5, 230, 100, length(dates));
+FiveBus = SystemParam(5, 230, 100, 1);
 
-nodes    = [Bus(1,"nodeA", "PV", 0, 1.0, 1.05, 0.9, 500),
-            Bus(2,"nodeB", "PQ", 0, 1.0, 1.05, 0.9, 500),
-            Bus(3,"nodeC", "PV", 0, 1.0, 1.05, 0.9, 500),
-            Bus(4,"nodeD", "PV", 0, 1.0, 1.05, 0.9, 500),
-            Bus(5,"nodeE", "SF", 0, 1.0, 1.05, 0.9, 500),
+nodes    = [Bus(1,"nodeA", "PV", 0, 1.0, (1.05, 0.9), 500),
+            Bus(2,"nodeB", "PQ", 0, 1.0, (1.05, 0.9), 500),
+            Bus(3,"nodeC", "PV", 0, 1.0, (1.05, 0.9), 500),
+            Bus(4,"nodeD", "PV", 0, 1.0, (1.05, 0.9), 500),
+            Bus(5,"nodeE", "SF", 0, 1.0, (1.05, 0.9), 500),
         ];
 
-Branches = [Line("1", true, (nodes[1],nodes[2]), 0.00281, 0.0281, 0.00712, 400.0),
-    Line("2", true, (nodes[1],nodes[4]), 0.00304, 0.0304, 0.00658, Inf),
-    Line("3", true, (nodes[1],nodes[5]), 0.00064, 0.0064, 0.03126, Inf),
-    Line("4", true, (nodes[2],nodes[3]), 0.00108, 0.0108, 0.01852, Inf),     
-    Line("5", true, (nodes[3],nodes[4]), 0.00297, 0.0297, 0.00674, Inf),
-    Line("6", true, (nodes[4],nodes[5]), 0.00297, 0.0297, 0.00674, 240)
+Branches = [Line("1", true, (nodes[1],nodes[2]), 0.00281, 0.0281, 0.00712, 400.0, Nullable{Tuple{Float64,Float64}}()),
+            Line("2", true, (nodes[1],nodes[4]), 0.00304, 0.0304, 0.00658, Inf, Nullable{Tuple{Float64,Float64}}()),
+            Line("3", true, (nodes[1],nodes[5]), 0.00064, 0.0064, 0.03126, Inf, Nullable{Tuple{Float64,Float64}}()),
+            Line("4", true, (nodes[2],nodes[3]), 0.00108, 0.0108, 0.01852, Inf, Nullable{Tuple{Float64,Float64}}()),     
+            Line("5", true, (nodes[3],nodes[4]), 0.00297, 0.0297, 0.00674, Inf, Nullable{Tuple{Float64,Float64}}()),
+            Line("6", true, (nodes[4],nodes[5]), 0.00297, 0.0297, 0.00674, 240, Nullable{Tuple{Float64,Float64}}())
 ];     
 
 Net = Network(FiveBus, Branches, nodes); 
 
-Loads = [load("Load1", nodes[2], 
-             load_tech("P",300, 98.61, 230),
-             load_econ("interruptible", 1000, 999),
-             TimeArray(dates, 0.3+rand(length(dates)))
-            ),  
-        load("Load2", nodes[3], 
-             load_tech("P",400, 98.61, 230),
-             load_econ("interruptible", 1000, 999),
-             TimeArray(dates, 0.4+rand(length(dates)))
-            ),  
-        load("Load3", nodes[4], 
-             load_tech("P",600, 131.47, 230),
-             load_econ("interruptible", 1000, 999),
-             TimeArray(dates, 0.2+rand(length(dates)))
-            )                                                
-        ];
-
-Generators = [  ng_generator("Alta", nodes[1],
-                generator_tech(40, 0, 40, 10, 30, -30, Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}()),
-                generator_econ(40, 14, 0, 0.90, "Base", "Gas")
+Generators = [  ThermalGen("Alta", true, nodes[1],
+                TechGen(40, (0, 40), 10, (-30, 30), Nullable{Tuple{Float64,Float64}}(), Nullable{Tuple{Float64,Float64}}()),
+                EconGen(40, 14.0, 0.0, 0.0, 0.0, Nullable{Real}())
                 ), 
-                ng_generator("Park City", nodes[1],
-                generator_tech(170, 0, 170, 20, 127.5, -127.5, Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}()),
-                generator_econ(170, 15, 0, 0.90, "Base", "Coal")
+                ThermalGen("Park City", true, nodes[1],
+                TechGen(170, (0, 170), 20, (-127.5, 127.5), Nullable{Tuple{Float64,Float64}}(), Nullable{Tuple{Float64,Float64}}()),
+                EconGen(170, 15.0, 0.0, 0.0, 0.0, Nullable{Real}())
                 ), 
-                ng_generator("Solitude", nodes[3],
-                generator_tech(520, 0, 520, 100, 390, -390, Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}()),
-                generator_econ(520, 30, 0, 0.80, "Mid", "Gas")
+                ThermalGen("Solitude", true, nodes[3],
+                TechGen(520, (0, 520), 100, (-390, 390), Nullable{Tuple{Float64,Float64}}(), Nullable{Tuple{Float64,Float64}}()),
+                EconGen(520, 30.0, 0.0, 0.0, 0.0, Nullable{Real}())
                 ),                
-                ng_generator("Sundance", nodes[4],
-                generator_tech(200, 0, 200, 40, 150, -150, Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}()),
-                generator_econ(200, 40, 0, 0.60, "Peak", "Gas")
+                ThermalGen("Sundance", true, nodes[4],
+                TechGen(200, (0, 200), 40, (-150, 150), Nullable{Tuple{Float64,Float64}}(), Nullable{Tuple{Float64,Float64}}()),
+                (EconGen(200, 40.0, 0.0, 0.0, 0.0, Nullable{Real}()))
                 ),    
-                ng_generator("Brighton", nodes[5],
-                generator_tech(600, 0, 600, 150, 450, -450, Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}(), Nullable{Float64}()),
-                generator_econ(600, 10, 0, 0.60, "Base", "Coal")
+                ThermalGen("Brighton", true, nodes[5],
+                TechGen(600, (0, 600), 150, (-450, 450), Nullable{Tuple{Float64,Float64}}(), Nullable{Tuple{Float64,Float64}}()),
+                EconGen(600, 10.0, 0.0, 0.0, 0.0, Nullable{Real}())
                 )
             ];
-
-PV = [solar_power("site1", nodes[1], 
-        re_tech(100), 
-        re_econ(500), 
-        TimeArray(dates, rand(length(dates)))
-        ),
-        wind_power("site2", nodes[5], 
-        re_tech(100), 
-        re_econ(300),
-        TimeArray(dates, rand(length(dates)))
-        ),
-    ];

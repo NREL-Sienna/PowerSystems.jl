@@ -1,35 +1,52 @@
-export Thermalgen
-export Techgen  
-export Econgen  
+export ThermalGen
+export TechGen  
+export EconGen  
 
-struct Techgen 
-    realpower::Float64 # [MW]
-    reactivepower::Nullable{Float64} # [MVAr]
-    maxrealpower::Float64 # [MW]
-    minrealpower::Float64 # [MW]
-    maxreactivepower::Nullable{Float64} # [MVAr]
-    minreactivepower::Nullable{Float64} # [MVAr]
-    maxrampup::Nullable{Float64} # [MW/hr]
-    maxrampdn::Nullable{Float64} # [MW/hr]
-    minuptime::Nullable{Float64} #[hours]
-    mindntime::Nullable{Float64} #[hours]
+OrderedLimits(limits::Tuple) = limits[2] < limits[1] ? error("Limits not in ascending order") : limits
+
+struct TechGen 
+    realpower::Real # [MW]
+    realpowerlims::Tuple{Real,Real}
+    reactivepower::Nullable{Real} # [MVAr]
+    reactivepowerlims::Nullable{Tuple{Real,Real}}
+    ramplims::Nullable{Tuple{Real,Real}}
+    timelimits::Nullable{Tuple{Real,Real}}
+    TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlims, ramplims, timelimits) =
+    TechGen(realpower, OrderedLimits(realpowerlimits), reactivepower, OrderedLimits(reactivepowerlims), ramplims, timelimits)
 end
 
-generator_tech(RealPower::Float64, ) = generator_tech(RealPower, Nullable{Float64}(),  )
+#define different  constructors depending on the data available. 
+# Update to named tuples when Julia 0.7 becomes available 
 
-struct Econgen
-    capacity::Float64 # [MW]
-    variablecost::Union{Float64,Array{Tuple{Float64,Float64}},Function} # [$/MWh]
-    fixedcost::Float64         # [$/h] 
-    startupcost::Nullable{Float64} # [$]
-    shutdncost::Nullable{Float64} # [$]
-    anualcapacityfactor::Nullable{Float64} # [0-1] 
+TechGen(; realpower = 0.0, 
+          realpowerlimits = (0.0,0.0), 
+          reactivepower = Nullable{Real}(),  
+          reactivepowerlims = Nullable{Tuple{Real,Real}}(),
+          ramplims = Nullable{Tuple{Real,Real}}(),
+          timelimits = Nullable{Tuple{Real,Real}}()
+        ) = TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlims, ramplims, timelimits)
+
+struct EconGen{T}
+    capacity::Real                       # [MW]
+    variablecost::T                         # [$/MWh]
+    fixedcost::Real            # [$/h] 
+    startupcost::Real          # [$]
+    shutdncost::Real           # [$]
+    annualcapacityfactor::Nullable{Real}  # [0-1] 
 end
 
-struct Thermalgen
+EconGen(;   capacity = 0.0, 
+            variablecost = Nullable(),
+            fixedcost = 0.0,
+            startupcost = 0.0,
+            shutdncost = 0.0,
+            annualcapacityfactor = Nullable{Real}()
+        ) = EconGen(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor) 
+
+struct ThermalGen
     Name::String
     Status::Bool
-    bus::bus
-    tech::Nullable{Techgen}
-    econ::Nullable{Econgen}
+    bus::Bus
+    tech::Nullable{TechGen}
+    econ::Nullable{EconGen}
 end
