@@ -2,7 +2,7 @@ export ThermalGen
 export TechGen  
 export EconGen  
 
-OrderedLimits(limits::Tuple) = limits[2] < limits[1] ? error("Limits not in ascending order") : limits
+orderedlimits(limits::Tuple) = limits[2] < limits[1] ? error("Limits not in ascending order") : limits
 
 struct TechGen 
     realpower::Real # [MW]
@@ -11,8 +11,11 @@ struct TechGen
     reactivepowerlims::Nullable{Tuple{Real,Real}}
     ramplims::Nullable{Tuple{Real,Real}}
     timelimits::Nullable{Tuple{Real,Real}}
-    TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlims, ramplims, timelimits) =
-    TechGen(realpower, OrderedLimits(realpowerlimits), reactivepower, OrderedLimits(reactivepowerlims), ramplims, timelimits)
+    function TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlims, ramplims, timelimits) 
+
+        new(realpower, orderedlimits(realpowerlimits), reactivepower, orderedlimits(reactivepowerlims), ramplims, timelimits)
+
+    end
 end
 
 #define different  constructors depending on the data available. 

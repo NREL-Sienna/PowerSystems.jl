@@ -166,7 +166,7 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
     
     n_n = sys.busquantity;
 
-    max_flows = Array{Float64}(length(branches))
+    max_flows = spzeros(length(branches))
 
     for b in nodes
         if b.number < -1
@@ -215,7 +215,11 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
         B[b.connectionpoints[2].number,
             b.connectionpoints[2].number] += Y11;
 
-        max_flows[ix] = get(b.rate)     
+        if ~isnull(b.rate)
+
+            max_flows[ix] = get(b.rate)
+            
+        end
     end
 
     slack_position = -9; 

@@ -1,24 +1,29 @@
-export load_econ
-export load_tech
-export load
+export LoadEcon
+export LoadTech
+export ElectricLoad
+export StaticLoad
 
-struct load_tech
-    LoadType::String # [Z, I, P]
-    RealPower::Float64 # [MW]
-    ReactivePower::Float64 # [MVAr]
-    BaseVoltage::Float64 # [kV]
+abstract type 
+    ElectricLoad  
+end
+
+struct LoadTech
+    model::String # [Z, I, P]
+    realpower::Real # [MW]
+    reactivepower::Real # [MVAr]
+    basevoltage::Real # [kV]
 end 
 
-struct load_econ
-    LoadType::String
-    SheddingCost::Float64
-    MaxEnergyLoss::Float64
+struct LoadEcon
+    SheddingCost::Real
+    MaxEnergyLoss::Real
 end 
 
-struct load
+struct StaticLoad <: ElectricLoad
     Name::String 
-    bus::bus
-    TechnicalParameters::Union{load_tech,Tuple}
-    EconomicParameters::Union{load_econ,Tuple}
+    bus::Bus
+    TechnicalParameters::Nullable{LoadTech} 
     time_series::TimeSeries.TimeArray
 end
+
+struct ControllableLoad 
