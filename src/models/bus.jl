@@ -19,4 +19,5 @@ Bus(;   number = 0,
         voltage = Nullable{Real}(), 
         voltagelims=Nullable{Tuple{Real,Real}}(), 
         basevoltage=Nullable{Real}()
-    ) = Bus(Real, name, bustype, angle, voltage, voltagelims, basevoltage)
+    ) = Bus(number, name, bustype, angle, voltage, voltagelims, basevoltage)
+ß
