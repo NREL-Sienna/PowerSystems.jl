@@ -1,3 +1,6 @@
+using PowerSystems 
+using TimeSeries
+
 FourteenBus = SystemParam(14, 230, 100, 1);
 
 nodes_ac = [
@@ -63,3 +66,16 @@ Generators = [  ThermalGen("Bus1", true, nodes_ac[1],
                 EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, Nullable{Real}())
                 )
             ];
+
+Loads = [ StaticLoad("Bus2", nodes_ac[2], "P", 21.7, 12.7, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus3", nodes_ac[3], "P", 94.2, 19, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus4", nodes_ac[4], "P", 47.8, -3.9, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus5", nodes_ac[5], "P", 7.6, 1.6, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus6", nodes_ac[6], "P", 11.2, 7.5, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus9", nodes_ac[9], "P", 29.5, 16.6, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus10", nodes_ac[10], "P", 9, 5.8, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus11", nodes_ac[11], "P", 3.5, 1.8, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus12", nodes_ac[12], "P", 6.1, 1.6, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus13", nodes_ac[13], "P", 13.5, 5.8, TimeArray(DateTime(today()), [1.0])),
+          StaticLoad("Bus14", nodes_ac[14], "P", 14.9, 5, TimeArray(DateTime(today()), [1.0]))
+          ]

@@ -12,7 +12,7 @@ using Base.convert
 include("models/topological_types.jl")
 #include("models/renewable_types.jl")
 include("models/conventional_types.jl")
-#include("models/load_types.jl")
+include("models/electric_loads.jl")
 
 # Include Parsing files
 #include("parsers/matpower_parser.jl")

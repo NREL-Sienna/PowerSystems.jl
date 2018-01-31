@@ -1,14 +1,15 @@
+using PowerSystems
 using TimeSeries
 
-dates  = collect(DateTime(2015,1,1,12,00):Hour(1):DateTime(2015,1,1,17,00))
+dates  = DateTime(today())
 
 FiveBus = SystemParam(5, 230, 100, 1);
 
-nodes    = [Bus(1,"nodeA", "PV", 0, 1.0, (1.05, 0.9), 500),
-            Bus(2,"nodeB", "PQ", 0, 1.0, (1.05, 0.9), 500),
-            Bus(3,"nodeC", "PV", 0, 1.0, (1.05, 0.9), 500),
-            Bus(4,"nodeD", "PV", 0, 1.0, (1.05, 0.9), 500),
-            Bus(5,"nodeE", "SF", 0, 1.0, (1.05, 0.9), 500),
+nodes    = [Bus(1,"nodeA", "PV", 0, 1.0, (1.05, 0.9), 230),
+            Bus(2,"nodeB", "PQ", 0, 1.0, (1.05, 0.9), 230),
+            Bus(3,"nodeC", "PV", 0, 1.0, (1.05, 0.9), 230),
+            Bus(4,"nodeD", "PV", 0, 1.0, (1.05, 0.9), 230),
+            Bus(5,"nodeE", "SF", 0, 1.0, (1.05, 0.9), 230),
         ];
 
 Branches = [Line("1", true, (nodes[1],nodes[2]), 0.00281, 0.0281, 0.00712, 400.0, Nullable{Tuple{Float64,Float64}}()),
@@ -42,3 +43,9 @@ Generators = [  ThermalGen("Alta", true, nodes[1],
                 EconGen(600, 10.0, 0.0, 0.0, 0.0, Nullable{Real}())
                 )
             ];
+            
+Loads = [   StaticLoad("Bus2", nodes_ac[2], "P", 300, 98.61, TimeArray(DateTime(today()), [1.0])),
+            StaticLoad("Bus3", nodes_ac[3], "P", 300, 98.61, TimeArray(DateTime(today()), [1.0])),
+            StaticLoad("Bus4", nodes_ac[4], "P", 400, 131.47, TimeArray(DateTime(today()), [1.0])),
+        ]
+            
