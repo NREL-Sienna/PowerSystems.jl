@@ -44,8 +44,8 @@ Generators = [  ThermalGen("Alta", true, nodes[1],
                 )
             ];
             
-Loads = [   StaticLoad("Bus2", nodes_ac[2], "P", 300, 98.61, TimeArray(DateTime(today()), [1.0])),
-            StaticLoad("Bus3", nodes_ac[3], "P", 300, 98.61, TimeArray(DateTime(today()), [1.0])),
-            StaticLoad("Bus4", nodes_ac[4], "P", 400, 131.47, TimeArray(DateTime(today()), [1.0])),
+Loads = [   StaticLoad("Bus2", nodes[2], "P", 300, 98.61, TimeArray(DateTime(today()), [1.0])),
+            StaticLoad("Bus3", nodes[3], "P", 300, 98.61, TimeArray(DateTime(today()), [1.0])),
+            StaticLoad("Bus4", nodes[4], "P", 400, 131.47, TimeArray(DateTime(today()), [1.0])),
         ]
             

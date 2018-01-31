@@ -20,4 +20,3 @@ Bus(;   number = 0,
         voltagelims=Nullable{Tuple{Real,Real}}(), 
         basevoltage=Nullable{Real}()
     ) = Bus(number, name, bustype, angle, voltage, voltagelims, basevoltage)
-ß
