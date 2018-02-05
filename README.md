@@ -1,6 +1,6 @@
 # PowerSchema
 
-[![Build Status](https://travis-ci.org/jdlara-berkeley/PowerSchema.jl.svg?branch=master)](https://travis-ci.org/jdlara-berkeley/PowerSchema.jl)
+[![Build Status](https://travis-ci.com/NREL/PowerSchema.jl.svg?token=VoANAdoWPrzDqCcxtcJc&branch=master)](https://travis-ci.com/NREL/PowerSchema.jl)
 
 [![Coverage Status](https://coveralls.io/repos/jdlara-berkeley/PowerSchema.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jdlara-berkeley/PowerSchema.jl?branch=master)
 
