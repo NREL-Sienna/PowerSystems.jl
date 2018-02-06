@@ -7,6 +7,8 @@ using PowerModels
 using DataFrames
 using TimeSeries
 using Base.convert
+using CSV
+using JSON
 
 # PowerSystems models
 include("models/topological_types.jl")
@@ -20,6 +22,6 @@ include("parsers/matpower_parser.jl")
 include("parsers/dict_to_struct.jl")
 include("parsers/psse_parser.jl")
 include("parsers/plexoscsv_parser.jl")
-#include("parsers/read_forecast.jl")
+include("parsers/read_forecast.jl")
 
 end 
