@@ -5,18 +5,18 @@ export Bus
 struct Bus
     number::Int
     name::String
-    bustype::Nullable{String} # [PV, PQ, SF]
-    angle::Nullable{Real} # [degrees]
-    voltage::Nullable{Real} # [pu]
-    voltagelims::Nullable{Tuple{Real,Real}} # [pu]
-    basevoltage::Nullable{Real} # [kV]
+    bustype::Union{String,Missing} # [PV, PQ, SF]
+    angle::Union{Real,Missing} # [degrees]
+    voltage::Union{Real,Missing} # [pu]
+    voltagelims::Union{Tuple{Real,Real},Missing} # [pu]
+    basevoltage::Union{Real,Missing} # [kV]
 end
 
 Bus(;   number = 0, 
         name = "init", 
-        bustype = Nullable{String}(), 
-        angle = Nullable{Real}(), 
-        voltage = Nullable{Real}(), 
-        voltagelims=Nullable{Tuple{Real,Real}}(), 
-        basevoltage=Nullable{Real}()
+        bustype = missing, 
+        angle = missing, 
+        voltage = missing, 
+        voltagelims = missing, 
+        basevoltage = missing
     ) = Bus(number, name, bustype, angle, voltage, voltagelims, basevoltage)

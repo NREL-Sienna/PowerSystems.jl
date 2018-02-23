@@ -1,4 +1,5 @@
 export ThermalGen
+export ThermalGen_dyn
 export TechGen  
 export EconGen  
 
@@ -6,14 +7,14 @@ orderedlimits(limits::Tuple) = limits[2] < limits[1] ? error("Limits not in asce
 
 struct TechGen 
     realpower::Real # [MW]
-    realpowerlims::Tuple{Real,Real}
-    reactivepower::Nullable{Real} # [MVAr]
-    reactivepowerlims::Nullable{Tuple{Real,Real}}
-    ramplims::Nullable{Tuple{Real,Real}}
-    timelimits::Nullable{Tuple{Real,Real}}
-    function TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlims, ramplims, timelimits) 
+    realpowerlimits::Tuple{Real,Real}
+    reactivepower::Union{Real,Missing} # [MVAr]
+    reactivepowerlimits::Union{Tuple{Real,Real},Missing}
+    ramplimits::Union{Tuple{Real,Real},Missing}
+    timelimits::Union{Tuple{Real,Real},Missing}
+    function TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits) 
 
-        new(realpower, orderedlimits(realpowerlimits), reactivepower, orderedlimits(reactivepowerlims), ramplims, timelimits)
+        new(realpower, orderedlimits(realpowerlimits), reactivepower, orderedlimits(reactivepowerlimits), ramplimits, timelimits)
 
     end
 end
@@ -23,11 +24,11 @@ end
 
 TechGen(; realpower = 0.0, 
           realpowerlimits = (0.0,0.0), 
-          reactivepower = Nullable{Real}(),  
-          reactivepowerlims = Nullable{Tuple{Real,Real}}(),
-          ramplims = Nullable{Tuple{Real,Real}}(),
-          timelimits = Nullable{Tuple{Real,Real}}()
-        ) = TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlims, ramplims, timelimits)
+          reactivepower = missing,  
+          reactivepowerlimits = missing,
+          ramplimits = missing,
+          timelimits = missing
+        ) = TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
 struct EconGen{T}
     capacity::Real                       # [MW]
@@ -35,21 +36,44 @@ struct EconGen{T}
     fixedcost::Real            # [$/h] 
     startupcost::Real          # [$]
     shutdncost::Real           # [$]
-    annualcapacityfactor::Nullable{Real}  # [0-1] 
+    annualcapacityfactor::Union{Real,Missing}  # [0-1] 
 end
 
 EconGen(;   capacity = 0.0, 
-            variablecost = Nullable(),
+            variablecost = missing,
             fixedcost = 0.0,
             startupcost = 0.0,
             shutdncost = 0.0,
-            annualcapacityfactor = Nullable{Real}()
+            annualcapacityfactor = missing
         ) = EconGen(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor) 
 
 struct ThermalGen
-    Name::String
-    Status::Bool
+    name::String
+    status::Bool
     bus::Bus
-    tech::Nullable{TechGen}
-    econ::Nullable{EconGen}
+    tech::Union{TechGen,Missing}
+    econ::Union{EconGen,Missing}
 end
+
+ThermalGen(; name = "init",
+                status = false,
+                bus = Bus(),
+                tech = missing,
+                econ = missing) = ThermalGen(name, status, bus, tech, econ)
+
+
+struct ThermalGen_dyn
+    name::String
+    status::Bool
+    bus::Bus
+    tech::Union{TechGen,Missing}
+    econ::Union{EconGen,Missing}
+    dyn::Union{SynchronousMachine,Missing}
+end                
+
+ThermalGen_dyn(; name = "init",
+                status = false,
+                bus = Bus(),
+                tech = missing,
+                econ = missing,
+                dyn=missing) = ThermalGen_dyn(name, status, bus, tech, econ,dyn)

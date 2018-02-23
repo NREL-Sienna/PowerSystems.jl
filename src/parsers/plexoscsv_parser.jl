@@ -6,24 +6,24 @@ function csv_mappings()
         "bus" => Dict(
             "zone" => 1,
             "bus_i" => "index_created_at",
-            "bus_type" => 1,
+            "bus_type" => 1, 
             "qd" => "Load_Participation_Factor",
             "gs" => 0.0,
             "bs" => 0.0,
-            "vmax" => 1.05,
+            "vmax" => 1.06,
             "area" => "Region",
             "bus_name" => "Bus_Name",
-            "vmin" => 0.95,
+            "vmin" => 0.94,
             "index" => "index_created_at",
             "va" => 0.0,
             "vm" => 1.0,
             "base_kv" => 138.0,
             "pd" => "Load_Participation_Factor",
-            "time_series" => nothing # will be updated when csv_to_pm converts the "qd" attribute
+            "time_series" => nothing # will be updated when csv_to_pm_bus converts the "qd" attribute
         ),
         "gen" => Dict(
             "qc1max" => 0.0,
-            "model" => 1,
+            "model" => 2, # Plexos uses PWL cost models and PowerModels uses polynomial
             "startup" => "Start_Cost_",
             "qc2max" => 0.0,
             "qg" => 0.0,
@@ -33,7 +33,7 @@ function csv_mappings()
             "index" => "index_created_at",
             "qmax" => 9999.0,
             "pc1" => 0.0,
-            "pg" => nothing, # will be updated when csv_to_pm converts the "mbase" attribute
+            "pg" => nothing, # will be updated when csv_to_pm_gen converts the "mbase" attribute
             "shutdown" => 0.0,
             "pmax" => "Max_Capacity_MW_",
             "vg" => 1.0,
@@ -47,14 +47,14 @@ function csv_mappings()
             "qc1min" => 0.0,
             "qc2min" => 0.0,
             "pmin" => "Min_Stable_Level_MW_",
-            "ncost" => nothing, # will be updated when csv_to_pm converts the "cost" attribute
+            "ncost" => nothing, # will be updated when csv_to_pm_gen converts the "cost" attribute
             "fixed_cost" => "Heat_Rate_Base_MMBTU_hr_",
             "max_ramp_u" => "Max_Ramp_Up_MW_min_",
             "max_ramp_d" => "Max_Ramp_Down_MW_min_",
             "min_dn_time" => "Min_Down_Time_h_",
             "min_up_time" => "Min_Up_Time_h_",
-            "dispatchable" => nothing, # will be updated when csv_to_pm converts the "mbase" attribute
-            "time_series" => nothing # will be updated when csv_to_pm converts the "mbase" attribute
+            "dispatchable" => nothing, # will be updated when csv_to_pm_gen converts the "mbase" attribute
+            "time_series" => nothing # will be updated when csv_to_pm_gen converts the "mbase" attribute
     
         ),
         "branch" => Dict(
@@ -62,7 +62,7 @@ function csv_mappings()
             "rate_a" => "Max_Flow_MW_",
             "shift" => 0.0,
             "br_b" => 0.0,
-            "rate_b" => "Max_Flow_MW_",
+            "rate_b" => "Max_Flow_MW_", 
             "br_x" => "Reactance_p_u_",
             "rate_c" => 0.0,
             "f_bus" => "Bus_from",
@@ -209,7 +209,7 @@ function csv_to_pm(csv_dict::Dict{String, Any})
     pm_dict = Dict{String, Any}()
     pm_dict["gen"], gen_at_bus_dict = csv_to_pm_gen(csv_dict)
     pm_dict["bus"] = csv_to_pm_bus(csv_dict, gen_at_bus_dict)
-    pm_dict["branch"] = csv_to_pm_branch(csv_dict)
+    pm_dict["branch"] = csv_to_pm_branch(csv_dict, pm_dict["bus"])
 
     default_pm_vals = csv_mappings()
     for (pm_attr, default_val) in default_pm_vals
@@ -286,6 +286,8 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
                     if julia_attr == "mbase"
                         if typeof(val) == String
                             pm_dict_gen[csv_item_num_str]["dispatchable"] = false
+
+                            # Get the appropriate load time series
                             load_name = join(split(uppercase(strip(val)))) # try take out whitespaces everywhere
                             if haskey(csv_dict, load_name)
                                 loads = csv_dict[load_name]
@@ -298,7 +300,10 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
                             else
                                 warn("\nCould not find load data with name '$(load_name)' in the csv dictionary for generator $(csv_item_num_str)!")
                             end
+
                             series = loads["series"]
+
+                            # Fill the pg attribute
                             try
                                 pm_dict_gen[csv_item_num_str]["pg"] = (series[csv_dict["NetLoad"]["dt_at_max_load"]] / baseMVA).values[1]
                             catch e
@@ -306,20 +311,23 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
                                     warn("\nCould not find the date at max load from the NetLoad.csv ($(csv_dict["NetLoad"]["dt_at_max_load"])) in $load_name.csv.\nTherefore, could not fill in pg attribute for generator $csv_item_num_str.")
                                 end
                             end
+
+                            # Normalize the series
                             if norm(loads["series"].values, 1) != 1
                                 series = series ./ csv_attrs[attr_mappings["pmax"]]
                             end
-                            pm_dict_gen[csv_item_num_str]["time_series"] = Nullable(series)
+                            pm_dict_gen[csv_item_num_str]["time_series"] = missing
                         else
                             pm_dict_gen[csv_item_num_str]["dispatchable"] = true
-                            pm_dict_gen[csv_item_num_str]["time_series"] = Nullable{TimeArray}()
+                            pm_dict_gen[csv_item_num_str]["time_series"] = missing
                             pm_dict_gen[csv_item_num_str]["pg"] = 0.0
                         end
                     end
                 end
             # do something specific for cost attribute in generators.
             elseif julia_attr == "cost"
-                cost = []
+                cost = [100.0, 4000.0, 0.0]
+                #= These lines will needed later. 
                 for tuple_attrs in mapped_attr
                     heat_rate = csv_attrs[tuple_attrs[1]]
                     if isna(heat_rate)
@@ -327,15 +335,16 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
                     end
                     heat_rate = heat_rate / 1000
                     load_point = csv_attrs[tuple_attrs[2]]
-                    if isna(load_point) 
+                    if isna(load_point)
                         continue
                     end                        
                     push!(cost, (heat_rate, load_point))
                 end                    
+                =#
                 pm_dict_gen[csv_item_num_str][julia_attr] = cost
                 pm_dict_gen[csv_item_num_str]["ncost"] = length(cost)
             # case where mapped_attr is a default value.
-            elseif !isna(mapped_attr)
+            elseif !(mapped_attr === nothing)
                 pm_dict_gen[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
@@ -386,13 +395,13 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
             elseif julia_attr == "qd"
                 pm_dict_bus[csv_item_num_str][julia_attr] = (csv_dict["NetLoad"]["max_load"] *
                                                                         csv_attrs[mapped_attr] *
-                                                                        0.31/0.95) / 
+                                                                        0.31/0.95) /
                                                                         baseMVA
                 load_participation = csv_attrs[mapped_attr]
                 if load_participation > 0
-                    pm_dict_bus[csv_item_num_str]["time_series"] = Nullable(csv_dict["NetLoad"]["series"])
+                    pm_dict_bus[csv_item_num_str]["time_series"] = mising
                 else
-                    pm_dict_bus[csv_item_num_str]["time_series"] = Nullable{TimeArray}()
+                    pm_dict_bus[csv_item_num_str]["time_series"] = missing
                 end
                                                             
             # if mapped_attr is a string, its a string that refers to a csv attribute name.
@@ -414,7 +423,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
                     pm_dict_bus[csv_item_num_str][julia_attr] = val
                 end
             # case where mapped_attr is a default value.
-            elseif !isna(mapped_attr)
+            elseif !(mapped_attr === nothing)
                 pm_dict_bus[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
@@ -442,7 +451,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
     return pm_dict_bus
 end
 
-function csv_to_pm_branch(csv_dict::Dict{String, Any})
+function csv_to_pm_branch(csv_dict::Dict{String, Any}, pm_dict_bus::Dict{String,Any})
     """
     Convert CSV dictionary to a JuliaPower dictionary of BRANCHES ONLY. 
     For each type generators in the CSV dictionary, use the mappings to 
@@ -484,11 +493,12 @@ function csv_to_pm_branch(csv_dict::Dict{String, Any})
                     pm_dict_branch[csv_item_num_str][julia_attr] = val
                 end
             # case where mapped_attr is a default value.
-            elseif !isna(mapped_attr)
+            elseif !(mapped_attr === nothing)
                 pm_dict_branch[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
     end
+
     return pm_dict_branch
 end
 
@@ -529,6 +539,6 @@ function plexoscsv_parser(folder::String)
     csv_d = parse_csv(folder)
     pm_d = csv_to_pm(csv_d)
 
-    PowerModels.check_network_data(pm_d)
+    #PowerModels.check_network_data(pm_d)
     return pm_d
 end

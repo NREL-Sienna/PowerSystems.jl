@@ -26,11 +26,11 @@ struct InterruptibleLoad <: ElectricLoad
     maxrealpower::Real # [MW]
     maxreactivepower::Real # [MVAr]
     sheddingcost::Real # $/MWh
-    maxenergyloss::Nullable{Real}
+    maxenergyloss::Union{Real, Missing}
     scalingfactor::TimeSeries.TimeArray
 end
 
-InterruptableLoad(; name = "init", bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, sheddingcost = 999, maxenergyloss = Nullable{Real}(), scalingfactor=TimeArray(DateTime(today()), [1.0])) =
+InterruptableLoad(; name = "init", bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, sheddingcost = 999, maxenergyloss = missing, scalingfactor=TimeArray(DateTime(today()), [1.0])) =
 InterruptableLoad(name, bus, model, maxrealpower, maxreactivepower, sheddingcost, maxenergyloss, scalingfactor)
 
 
@@ -38,5 +38,5 @@ struct ControllableLoad <: ElectricLoad
     name::String 
     bus::Bus
     realpower::Function 
-    reactivepower::Nullable{Function}
+    reactivepower::Union{Function,Missing}
 end

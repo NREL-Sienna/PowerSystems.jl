@@ -9,6 +9,8 @@ struct Deterministic
     data::Dict{Any,TimeSeries.TimeArray}
 end
 
+
+
 struct Scenarios
     horizon::Int
     issuetimestep::Base.Dates.Period

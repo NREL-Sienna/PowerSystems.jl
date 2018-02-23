@@ -1,5 +1,7 @@
 julia 0.6
-TimeSeries 
 PowerModels
-DataFrames
-TimeSeries
+DataFrames 0.10.1
+TimeSeries 0.11.1
+ExcelReaders
+CSV
+Missings

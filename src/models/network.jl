@@ -15,8 +15,8 @@ struct Line <: Branch
     r::Float64 #[pu]
     x::Float64 #[pu]Co
     b::Float64 #[pu]
-    rate::Nullable{Float64}  #[MVA]
-    anglelimits::Nullable{Tuple{Float64,Float64}}
+    rate::Union{Real,Missing} #[MVA]
+    anglelimits::Union{Tuple{Real,Real},Missing}
 end
 
 Line(;  name = "init",
@@ -25,8 +25,8 @@ Line(;  name = "init",
         r = 0.0,
         x = 0.0,
         b = 0.0, 
-        rate = Nullable{Float64}(),
-        anglelimits = Nullable{Tuple{Float64,Float64}}()
+        rate = missing,
+        anglelimits = missing
     ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
 
 """
@@ -43,7 +43,7 @@ struct Transformer2W <: Branch
     zb::Float64 #[pu]
     tap::Float64 # [0 - 2]
     α::Float64 # [radians]
-    rate::Nullable{Float64}  #[MVA]
+    rate::Union{Real,Missing} #[MVA]
 end
 
 Transformer2W(; name = "init",
@@ -54,7 +54,7 @@ Transformer2W(; name = "init",
                 zb = 0.0, 
                 tap = 1.0,
                 α = 0.0,
-                rate = Nullable{Float64}()
+                rate = missing
             ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
 
 struct Transformer3W <: Branch
@@ -80,7 +80,7 @@ function build_ybus(sys::SystemParam, branches::Array{T}) where {T<:Branch}
             error("The data in Branch is incomplete")
         end
 
-        if typeof(b) == PowerSchema.Line
+        if typeof(b) == PowerSystems.Line
 
             Y11 = (1/(b.r + b.x*1im) + (1im*b.b)/2)*b.status;
             Ybus[b.connectionpoints[1].number,
@@ -97,7 +97,7 @@ function build_ybus(sys::SystemParam, branches::Array{T}) where {T<:Branch}
       
         end
 
-        if typeof(b) == PowerSchema.Transformer2W 
+        if typeof(b) == PowerSystems.Transformer2W 
 
             y = 1/(b.r + b.x*1im)
             y_a = y/(b.tap*exp(b.α*1im*(π/180)))
@@ -118,7 +118,7 @@ function build_ybus(sys::SystemParam, branches::Array{T}) where {T<:Branch}
 
         end
 
-        if typeof(b) == PowerSchema.Transformer3W 
+        if typeof(b) == PowerSystems.Transformer3W 
 
             warn("Data contains a 3W transformer")
 
@@ -166,8 +166,6 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
     
     n_n = sys.busquantity;
 
-    max_flows = spzeros(length(branches))
-
     for b in nodes
         if b.number < -1
             error("buses must be numbered consecutively in the bus/node matrix")
@@ -187,17 +185,17 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 
         A[b.connectionpoints[2].number, ix] = -1;
 
-        if typeof(b) == PowerSchema.Transformer2W 
+        if typeof(b) == PowerSystems.Transformer2W 
 
             Y11 = (1/(b.tap*b.x))*b.status;
             X[ix,ix] = b.x*b.tap;
 
-        elseif typeof(b) == PowerSchema.Line
+        elseif typeof(b) == PowerSystems.Line
 
             Y11 = (1/b.x)*b.status;
             X[ix,ix] = b.x;
 
-        elseif typeof(b) == PowerSchema.Transformer3W 
+        elseif typeof(b) == PowerSystems.Transformer3W 
 
             error("3W Transformer not implemented about PTDF")
 
@@ -214,18 +212,13 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
         #Y22 = Y11;
         B[b.connectionpoints[2].number,
             b.connectionpoints[2].number] += Y11;
-
-        if ~isnull(b.rate)
-
-            max_flows[ix] = get(b.rate)
-            
-        end
+  
     end
 
     slack_position = -9; 
 
     for n in nodes
-        if get(n.bustype) == "SF"
+        if n.bustype == "SF"
             slack_position = n.number
         end
     end
@@ -240,36 +233,34 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
     elseif slack_position == -9 
         
         warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
-        S = Nullable{Array{Float64}}()
+        S = missing
 
     end
 
-    return S, A, max_flows
+    return S, A
 
 end
 
 struct Network 
     linequantity::Int
     ybus::SparseMatrixCSC{Complex{Float64},Int64}
-    ptdf::Nullable{Array{Float64}}
-    incidence::Nullable{Array{Int}}
-    maxflows::Array{Float64} 
+    ptdf::Union{Array{Float64},Missing}
+    incidence::Array{Int}
 
     function Network(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
         
         for n in nodes
-            if isnull(n.bustype) 
+            if ismissing(n.bustype) 
                 error("Bus/Nodes data does not contain information to build an AC network")
             end
         end
         
         ybus = build_ybus(sys,branches);
-        ptdf, A, maxflow = build_ptdf(sys, branches, nodes)    
+        ptdf, A = build_ptdf(sys, branches, nodes)    
         new(length(branches),
             ybus, 
             ptdf,
-            A,
-            maxflow)
+            A)
     end
 
 end
