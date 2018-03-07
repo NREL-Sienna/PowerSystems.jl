@@ -1,20 +1,20 @@
-using Documenter, PowerSchema
+using Documenter, PowerSystems
 
 makedocs(
-    modules = [PowerSchema],
+    modules = [PowerSystems],
     format = :html,
-    sitename = "PowerSchema.jl",
+    sitename = "PowerSystems.jl",
     pages = Any[ # Compat: `Any` for 0.4 compat
         "Home" => "index.md",
         # "User Guide" => "man/guide.md",
         "API" => Any[
-            "PowerSchema" => "api/PowerSchema.md"
+            "PowerSystems" => "api/PowerSystems.md"
         ]
     ]
 )
 
 deploydocs(
-    repo = "github.com/NREL/PowerSchema.jl.git",
+    repo = "github.com/NREL/PowerSystems.jl.git",
     branch = "gh-pages",
     target = "build",
     julia  = "0.6",

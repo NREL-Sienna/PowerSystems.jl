@@ -1,10 +1,10 @@
-# PowerSchema
+# PowerSystems
 
-[![Build Status](https://travis-ci.com/NREL/PowerSchema.jl.svg?token=VoANAdoWPrzDqCcxtcJc&branch=master)](https://travis-ci.com/NREL/PowerSchema.jl)
+[![Build Status](https://travis-ci.com/NREL/PowerSystems.jl.svg?token=VoANAdoWPrzDqCcxtcJc&branch=master)](https://travis-ci.com/NREL/PowerSystems.jl)
 
-[![Coverage Status](https://coveralls.io/repos/jdlara-berkeley/PowerSchema.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jdlara-berkeley/PowerSchema.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/jdlara-berkeley/PowerSystems.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jdlara-berkeley/PowerSystems.jl?branch=master)
 
-[![codecov.io](http://codecov.io/github/jdlara-berkeley/PowerSchema.jl/coverage.svg?branch=master)](http://codecov.io/github/jdlara-berkeley/PowerSchema.jl?branch=master)
+[![codecov.io](http://codecov.io/github/jdlara-berkeley/PowerSystems.jl/coverage.svg?branch=master)](http://codecov.io/github/jdlara-berkeley/PowerSystems.jl?branch=master)
 
 The code in this repository is the base data management code for the global power system analysis tools repository.
 
@@ -16,14 +16,14 @@ usable but should not be considered stable**.
 You can install it by typing
 
 ```julia
-julia> Pkg.clone("https://github.com/NREL/PowerSchema.jl.git")
+julia> Pkg.clone("https://github.com/NREL/PowerSystems.jl.git")
 ```
 ## Usage
 
-Once installed, the `PowerSchema` package can by used by typing
+Once installed, the `PowerSystems` package can by used by typing
 
 ```julia
-using PowerSchema
+using PowerSystems
 ```
 ## To do list
 

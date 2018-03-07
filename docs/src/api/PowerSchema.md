@@ -1,34 +1,34 @@
-# PowerSchema
+# PowerSystems
 
 ```@meta
-CurrentModule = PowerSchema
+CurrentModule = PowerSystems
 DocTestSetup  = quote
-    using PowerSchema
+    using PowerSystems
 end
 ```
 
 API documentation
 
 ```@contents
-Pages = ["PowerSchema.md"]
+Pages = ["PowerSystems.md"]
 ```
 
 ## Index
 
 ```@index
-Pages = ["PowerSchema.md"]
+Pages = ["PowerSystems.md"]
 ```
 
 ## Exported
 
 ```@autodocs
-Modules = [PowerSchema]
+Modules = [PowerSystems]
 Private = false
 ```
 
 ## Internal
 
 ```@autodocs
-Modules = [PowerSchema]
+Modules = [PowerSystems]
 Public = false
 ```

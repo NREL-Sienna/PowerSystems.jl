@@ -8,5 +8,5 @@ usable but should not be considered stable**.
 You can install it by typing
 
 ```julia
-julia> Pkg.clone("https://github.com/NREL/PowerSchema.jl.git")
+julia> Pkg.clone("https://github.com/NREL/PowerSystems.jl.git")
 ```

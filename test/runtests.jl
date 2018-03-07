@@ -1,4 +1,4 @@
-using PowerSchema
+using PowerSystems
 using Base.Test
 
 # Testing Topological components of the schema
