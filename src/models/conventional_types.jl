@@ -76,4 +76,4 @@ ThermalGen_dyn(; name = "init",
                 bus = Bus(),
                 tech = missing,
                 econ = missing,
-                dyn=missing) = ThermalGen_dyn(name, status, bus, tech, econ,dyn)
+                dyn=missing) = ThermalGen_dyn(name, status, bus, tech, econ, dyn)

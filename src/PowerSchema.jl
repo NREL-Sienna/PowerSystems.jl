@@ -18,6 +18,9 @@ include("models/forecast_types.jl")
 
 #Dynamics 
 include("models/dynamics/synch_machine.jl")
+include("models/dynamics/dynamic_network.jl")
+include("models/dynamics/prime_movers.jl")
+include("models/dynamics/control_dynamics.jl")
 
 #Static types 
 include("models/conventional_types.jl")
@@ -29,7 +32,6 @@ include("parsers/dict_to_struct.jl")
 include("parsers/psse_parser.jl")
 include("parsers/plexoscsv_parser.jl")
 #include("parsers/read_forecast.jl")
-
 
 
 end 

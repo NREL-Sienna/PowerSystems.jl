@@ -1,6 +1,7 @@
 export plexoscsv_parser
 
 function csv_mappings()
+    missing = Missings.missing
     
     CSV_MAPPING = Dict(
         "bus" => Dict(
@@ -19,7 +20,7 @@ function csv_mappings()
             "vm" => 1.0,
             "base_kv" => 138.0,
             "pd" => "Load_Participation_Factor",
-            "time_series" => nothing # will be updated when csv_to_pm_bus converts the "qd" attribute
+            "time_series" => missing # will be updated when csv_to_pm_bus converts the "qd" attribute
         ),
         "gen" => Dict(
             "qc1max" => 0.0,
@@ -33,7 +34,7 @@ function csv_mappings()
             "index" => "index_created_at",
             "qmax" => 9999.0,
             "pc1" => 0.0,
-            "pg" => nothing, # will be updated when csv_to_pm_gen converts the "mbase" attribute
+            "pg" => missing, # will be updated when csv_to_pm_gen converts the "mbase" attribute
             "shutdown" => 0.0,
             "pmax" => "Max_Capacity_MW_",
             "vg" => 1.0,
@@ -47,14 +48,14 @@ function csv_mappings()
             "qc1min" => 0.0,
             "qc2min" => 0.0,
             "pmin" => "Min_Stable_Level_MW_",
-            "ncost" => nothing, # will be updated when csv_to_pm_gen converts the "cost" attribute
+            "ncost" => missing, # will be updated when csv_to_pm_gen converts the "cost" attribute
             "fixed_cost" => "Heat_Rate_Base_MMBTU_hr_",
             "max_ramp_u" => "Max_Ramp_Up_MW_min_",
             "max_ramp_d" => "Max_Ramp_Down_MW_min_",
             "min_dn_time" => "Min_Down_Time_h_",
             "min_up_time" => "Min_Up_Time_h_",
-            "dispatchable" => nothing, # will be updated when csv_to_pm_gen converts the "mbase" attribute
-            "time_series" => nothing # will be updated when csv_to_pm_gen converts the "mbase" attribute
+            "dispatchable" => missing, # will be updated when csv_to_pm_gen converts the "mbase" attribute
+            "time_series" => missing # will be updated when csv_to_pm_gen converts the "mbase" attribute
     
         ),
         "branch" => Dict(
@@ -236,6 +237,7 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
         gen_at_bus_dict: A dictionary
     """
     REGEX_ITEM_NUM = r"[a-zA-Z]*(\d*)"
+    missing = Missings.missing
 
     # keep track of sum of conventional generation at each bus
     gen_at_bus_dict = Dict{String, Any}()
@@ -344,7 +346,7 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
                 pm_dict_gen[csv_item_num_str][julia_attr] = cost
                 pm_dict_gen[csv_item_num_str]["ncost"] = length(cost)
             # case where mapped_attr is a default value.
-            elseif !(mapped_attr === nothing)
+            elseif !Missings.ismissing(mapped_attr)
                 pm_dict_gen[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
@@ -366,6 +368,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
         A dictionary in JuliaPower format.
     """
     REGEX_ITEM_NUM = r"[a-zA-Z]*(\d*)"
+    missing = Missings.missing
 
     mappings = csv_mappings()
     attr_mappings = mappings["bus"]
@@ -399,7 +402,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
                                                                         baseMVA
                 load_participation = csv_attrs[mapped_attr]
                 if load_participation > 0
-                    pm_dict_bus[csv_item_num_str]["time_series"] = mising
+                    pm_dict_bus[csv_item_num_str]["time_series"] = missing
                 else
                     pm_dict_bus[csv_item_num_str]["time_series"] = missing
                 end
@@ -423,7 +426,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
                     pm_dict_bus[csv_item_num_str][julia_attr] = val
                 end
             # case where mapped_attr is a default value.
-            elseif !(mapped_attr === nothing)
+            elseif !Missings.ismissing(mapped_attr)
                 pm_dict_bus[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
@@ -465,6 +468,7 @@ function csv_to_pm_branch(csv_dict::Dict{String, Any}, pm_dict_bus::Dict{String,
     """
 
     REGEX_ITEM_NUM = r"[a-zA-Z]*(\d*)"
+    missing = Missings.missing
 
     pm_dict_branch = Dict{String, Any}()
     attr_mappings = csv_mappings()["branch"]
@@ -493,7 +497,7 @@ function csv_to_pm_branch(csv_dict::Dict{String, Any}, pm_dict_bus::Dict{String,
                     pm_dict_branch[csv_item_num_str][julia_attr] = val
                 end
             # case where mapped_attr is a default value.
-            elseif !(mapped_attr === nothing)
+            elseif !Missings.ismissing(mapped_attr)
                 pm_dict_branch[csv_item_num_str][julia_attr] = mapped_attr
             end
         end

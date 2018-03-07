@@ -14,12 +14,13 @@ struct Classic <: SynchronousMachine
     D::Float64
     Model::Function
     function Classic(Ωb, ωs, H, D)
-        dynamics = output, du, u, input::Tuple, t -> begin
+        dynamics = (output, du, u, inputs::Tuple, t) -> begin
                                                     output[1] = Ωb *(u[4] - ωs)- du[3]
                                                     output[2] = (inputs[1]- u[1]*sin(u[3] - u[2])/Xd - D*(u[4] - ωs))/(2*H) - du[4]
                                                     end
+        new(Ωb, ωs, H, D, dynamics)
     end
-
+    
 end
 
 struct OneAxis <: SynchronousMachine
@@ -28,10 +29,11 @@ struct OneAxis <: SynchronousMachine
     H::Float64
     D::Float64
     Xd::Float64
+    NumberVariables :: Int32
+    NumberParams :: Int32
     Model::Function
     function OneAxis(Ωb, ωs, H, D, Xd) 
-        dynamics  =  (output, du, u, input::Tuple, t) -> begin 
-                            output = zeros(4)
+        dynamics  =  (output, du, u, inputs::Tuple, t) -> begin 
                             output[3] = Ωb *(u[4] - ωs)- du[3]
                             output[4] = (inputs[1]- u[1]*sin(u[3] - u[2])/Xd - D*(u[4] - ωs))/(2*H) - du[4]
                             
@@ -43,7 +45,7 @@ struct OneAxis <: SynchronousMachine
                             output[1] = Vd*id + Vq*iq
                             output[2] = Vq*id - Vd*iq
                 end
-           new(Ωb, ωs, H, D, dynamics)     
+           new(Ωb, ωs, H, D, Xd, 4, 2, dynamics)     
     end
 end
 

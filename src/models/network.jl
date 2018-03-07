@@ -242,7 +242,7 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 end
 
 struct Network 
-    linequantity::Int
+    branches::Array{Branch}
     ybus::SparseMatrixCSC{Complex{Float64},Int64}
     ptdf::Union{Array{Float64},Missing}
     incidence::Array{Int}
@@ -257,7 +257,7 @@ struct Network
         
         ybus = build_ybus(sys,branches);
         ptdf, A = build_ptdf(sys, branches, nodes)    
-        new(length(branches),
+        new(branches,
             ybus, 
             ptdf,
             A)
