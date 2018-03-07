@@ -1,6 +1,6 @@
 #isdefined(Base, :__precompile__) && __precompile__()
 
-module PowerSchema
+module PowerSystems
 
 using TimeSeries 
 using PowerModels
