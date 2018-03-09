@@ -2,6 +2,7 @@ export ElectricLoad
 export StaticLoad
 export ControllableLoad
 export InterruptibleLoad
+#export FixedShunt
 
 abstract type 
     ElectricLoad  
@@ -9,6 +10,7 @@ end
 
 struct StaticLoad <: ElectricLoad
     name::String 
+    status::Bool
     bus::Bus
     model::String # [Z, I, P]
     maxrealpower::Real # [MW]
@@ -16,11 +18,12 @@ struct StaticLoad <: ElectricLoad
     scalingfactor::TimeSeries.TimeArray
 end
 
-StaticLoad(; name = "init", bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, scalingfactor=TimeArray(DateTime(today()), [1.0])) =
-StaticLoad(name, bus, model, maxrealpower, maxreactivepower, scalingfactor)
+StaticLoad(; name = "init", status = true, bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, scalingfactor=TimeArray(DateTime(today()), [1.0])) =
+StaticLoad(name, status, bus, model, maxrealpower, maxreactivepower, scalingfactor)
 
 struct InterruptibleLoad <: ElectricLoad
     name::String 
+    status::Bool
     bus::Bus
     model::String # [Z, I, P]
     maxrealpower::Real # [MW]
@@ -30,12 +33,12 @@ struct InterruptibleLoad <: ElectricLoad
     scalingfactor::TimeSeries.TimeArray
 end
 
-InterruptableLoad(; name = "init", bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, sheddingcost = 999, maxenergyloss = missing, scalingfactor=TimeArray(DateTime(today()), [1.0])) =
-InterruptableLoad(name, bus, model, maxrealpower, maxreactivepower, sheddingcost, maxenergyloss, scalingfactor)
-
+InterruptableLoad(; name = "init", status = true, bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, sheddingcost = 999, maxenergyloss = missing, scalingfactor=TimeArray(DateTime(today()), [1.0])) =
+InterruptableLoad(name, status, bus, model, maxrealpower, maxreactivepower, sheddingcost, maxenergyloss, scalingfactor)
 
 struct ControllableLoad <: ElectricLoad
     name::String 
+    status::Bool
     bus::Bus
     realpower::Function 
     reactivepower::Union{Function,Missing}
