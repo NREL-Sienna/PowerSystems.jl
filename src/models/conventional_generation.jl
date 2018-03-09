@@ -3,8 +3,6 @@ export ThermalGen_dyn
 export TechGen  
 export EconGen  
 
-orderedlimits(limits::Tuple) = limits[2] < limits[1] ? error("Limits not in ascending order") : limits
-
 struct TechGen 
     realpower::Real # [MW]
     realpowerlimits::Tuple{Real,Real}
