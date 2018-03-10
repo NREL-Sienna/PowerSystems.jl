@@ -92,7 +92,7 @@ generators5 = [  ThermalGen("Alta", true, nodes5[1],
                     EconGen(200, 40.0, 0.0, 0.0, 0.0, missing)
                 ),    
                 ThermalGen("Brighton", true, nodes5[5],
-                    TechGen(600, @NT(min=0, max=600), 150, @NT(-min =450, max=450), missing, missing),
+                    TechGen(600, @NT(min=0, max=600), 150, @NT(min =-450, max=450), missing, missing),
                     EconGen(600, 10.0, 0.0, 0.0, 0.0, missing)
                 ),
                 ReFix("SolarBusC", true, nodes5[3], 
