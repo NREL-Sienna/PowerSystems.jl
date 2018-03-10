@@ -3,13 +3,13 @@ export ThermalGen_dyn
 export TechGen  
 export EconGen  
 
-struct TechGen 
+struct TechGen
     realpower::Real # [MW]
-    realpowerlimits::Tuple{Real,Real}
+    realpowerlimits::NamedTuple
     reactivepower::Union{Real,Missing} # [MVAr]
-    reactivepowerlimits::Union{Tuple{Real,Real},Missing}
-    ramplimits::Union{Tuple{Real,Real},Missing}
-    timelimits::Union{Tuple{Real,Real},Missing}
+    reactivepowerlimits::Union{NamedTuple,Missing}
+    ramplimits::Union{NamedTuple,Missing}
+    timelimits::Union{NamedTuple,Missing}
     function TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits) 
 
         new(realpower, orderedlimits(realpowerlimits), reactivepower, orderedlimits(reactivepowerlimits), ramplimits, timelimits)

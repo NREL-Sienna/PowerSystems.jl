@@ -16,7 +16,7 @@ struct Line <: Branch
     x::Float64 #[pu]Co
     b::Float64 #[pu]
     rate::Union{Real,Missing} #[MVA]
-    anglelimits::Union{Tuple{Real,Real},Missing}
+    anglelimits::Union{NamedTuple,Missing}
 end
 
 Line(;  name = "init",

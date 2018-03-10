@@ -1,17 +1,18 @@
 using PowerSystems
 using TimeSeries
 using Missings
+using NamedTuples
 
 DayAhead  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
 #Dispatch_11am =  collect(DateTime("1/1/2024  0:11:00", "d/m/y  H:M:S"):Minute(15):DateTime("1/1/2024  12::00", "d/m/y  H:M:S"))
 
 FiveBus = SystemParam(5, 230, 100, length(DayAhead));
 
-nodes5    = [Bus(1,"nodeA", "PV", 0, 1.0, (1.05, 0.9), 230),
-             Bus(2,"nodeB", "PQ", 0, 1.0, (1.05, 0.9), 230),
-             Bus(3,"nodeC", "PV", 0, 1.0, (1.05, 0.9), 230),
-             Bus(4,"nodeD", "PV", 0, 1.0, (1.05, 0.9), 230),
-             Bus(5,"nodeE", "SF", 0, 1.0, (1.05, 0.9), 230),
+nodes5    = [Bus(1,"nodeA", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
+             Bus(2,"nodeB", "PQ", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
+             Bus(3,"nodeC", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
+             Bus(4,"nodeD", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
+             Bus(5,"nodeE", "SF", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
         ];
 
 branches5 = [Line("1", true, (nodes5[1],nodes5[2]), 0.00281, 0.0281, 0.00712, 400.0, missing),
@@ -25,29 +26,29 @@ branches5 = [Line("1", true, (nodes5[1],nodes5[2]), 0.00281, 0.0281, 0.00712, 40
 Net5 = Network(FiveBus, branches5, nodes5); 
 
 solar_ts_DA = [0
-            0
-            0
-            0
-            0
-            0
-            0
-            0
-            0
-            0.351105684
-            0.632536266
-            0.99463925
-            1
-            0.944237283
-            0.396681234
-            0.366511428
-            0.155125829
-            0.040872694
-            0
-            0
-            0
-            0
-            0
-            0]
+               0
+               0
+               0
+               0
+               0
+               0
+               0
+               0
+               0.351105684
+               0.632536266
+               0.99463925
+               1
+               0.944237283
+               0.396681234
+               0.366511428
+               0.155125829
+               0.040872694
+               0
+               0
+               0
+               0
+               0
+               0]
 
 wind_ts_DA = [0.985205412
            0.991791369
@@ -75,24 +76,33 @@ wind_ts_DA = [0.985205412
            0.069569628]
 
 generators5 = [  ThermalGen("Alta", true, nodes5[1],
-                    TechGen(40, (0, 40), 10, (-30, 30), missing, missing),
+                    TechGen(40, @NT(min=0, max=40), 10, @NT(min = -30, max = 30), missing, missing),
                     EconGen(40, 14.0, 0.0, 0.0, 0.0, missing)
                 ), 
                 ThermalGen("Park City", true, nodes5[1],
-                    TechGen(170, (0, 170), 20, (-127.5, 127.5), missing, missing),
+                    TechGen(170, @NT(min=0, max=170), 20, @NT(min =-127.5, max=127.5), missing, missing),
                     EconGen(170, 15.0, 0.0, 0.0, 0.0, missing)
                 ), 
                 ThermalGen("Solitude", true, nodes5[3],
-                    TechGen(520, (0, 520), 100, (-390, 390), missing, missing),
+                    TechGen(520, @NT(min=0, max=520), 100, @NT(min =-390, max=390), missing, missing),
                     EconGen(520, 30.0, 0.0, 0.0, 0.0, missing)
                 ),                
                 ThermalGen("Sundance", true, nodes5[4],
-                    TechGen(200, (0, 200), 40, (-150, 150), missing, missing),
+                    TechGen(200, @NT(min=0, max=200), 40, @NT(min =-150, max=150), missing, missing),
                     EconGen(200, 40.0, 0.0, 0.0, 0.0, missing)
                 ),    
                 ThermalGen("Brighton", true, nodes5[5],
-                    TechGen(600, (0, 600), 150, (-450, 450), missing, missing),
+                    TechGen(600, @NT(min=0, max=600), 150, @NT(-min =450, max=450), missing, missing),
                     EconGen(600, 10.0, 0.0, 0.0, 0.0, missing)
+                ),
+                ReFix("SolarBusC", true, nodes5[3], 
+                    60.0,
+                    TimeSeries.TimeArray(DayAhead,solar_ts_DA)
+                ),
+                ReCurtailment("WindBusA", true, nodes5[5],
+                    120,
+                    EconRE(22.0, missing), 
+                    TimeSeries.TimeArray(DayAhead,wind_ts_DA)
                 )
             ];
 

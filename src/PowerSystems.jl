@@ -7,7 +7,9 @@ using PowerModels
 using DataFrames
 using Base.convert
 using CSV
+# This packages will be removed with Julia v0.7
 using Missings
+using NamedTuples
 
 include("utils.jl")
 

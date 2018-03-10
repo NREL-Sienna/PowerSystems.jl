@@ -22,7 +22,7 @@ struct Bus
     bustype::Union{String,Missing} # [PV, PQ, SF]
     angle::Union{Real,Missing} # [degrees]
     voltage::Union{Real,Missing} # [pu]
-    voltagelims::Union{Tuple{Real,Real},Missing} # [pu]
+    voltagelims::Union{NamedTuple,Missing} # [pu]
     basevoltage::Union{Real,Missing} # [kV]
 end
 
@@ -33,7 +33,8 @@ Bus(;   number = 0,
         voltage = missing, 
         voltagelims = missing, 
         basevoltage = missing
-    ) = Bus(number, name, bustype, angle, voltage, voltagelims, basevoltage)
+    ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelims), basevoltage)
+
 
 
 include("network.jl")

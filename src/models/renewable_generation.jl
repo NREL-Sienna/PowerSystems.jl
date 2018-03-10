@@ -1,6 +1,8 @@
 export RenewableGen
 export TechRE
 export EconRE
+export ReFix
+export ReCurtailment
 
 abstract type 
     RenewableGen 
@@ -8,7 +10,7 @@ end
 
 struct TechRE
     installedcapacity::Real # [MW]
-    reactivepowerlimits::Union{Tuple{Real,Real},Missing}
+    reactivepowerlimits::Union{NamedTuple,Missing}
     powerfactor::Union{Real,Missing}
 end
 
@@ -28,7 +30,7 @@ struct ReFix <: RenewableGen
     tech::TechRE
     scalingfactor::TimeSeries.TimeArray
     function ReFix(name, status, bus, installedcapacity::Real, scalingfactor)
-        tech = TechRE(installedcapacity, Missing, 1.0)      
+        tech = TechRE(installedcapacity, missing, 1.0)      
         new(name, status, bus, tech, scalingfactor)
     end
 end
@@ -46,9 +48,9 @@ struct ReCurtailment <: RenewableGen
     tech::TechRE
     econ::Union{EconRE,Missing}
     scalingfactor::TimeSeries.TimeArray 
-    function ReCurtailment(name, status, bus, installedcapacity::Real, scalingfactor)
-        tech = TechRE(installedcapacity, Missing, 1.0)      
-        new(name, status, bus, tech, scalingfactor)
+    function ReCurtailment(name, status, bus, installedcapacity::Real, econ, scalingfactor)
+        tech = TechRE(installedcapacity, missing, 1.0)      
+        new(name, status, bus, tech, econ, scalingfactor)
     end
 end
 
