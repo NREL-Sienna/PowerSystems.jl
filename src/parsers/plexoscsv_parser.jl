@@ -14,8 +14,7 @@ function csv_mappings()
     a different order than the other attributes.
     """
 
-    missing = Missings.missing
-    
+   
     CSV_MAPPING = Dict(
         "bus" => Dict(
             "zone" => 1,
@@ -188,7 +187,7 @@ function parse_netloads(folder::String)
 
     files = readdir(folder)
     load_data = Dict{String, Any}()
-    netload = Missings.missing
+    netload = missing
     for file_of_loads in files
         regex_matches = match(REGEX_REGION_TYPE, file_of_loads)
         region = regex_matches[1]
@@ -198,7 +197,7 @@ function parse_netloads(folder::String)
         curr_loads = readtable("$folder/$file_of_loads")
         load_data[file_of_loads] = curr_loads
 
-        if Missings.ismissing(netload)
+        if ismissing(netload)
             netload = curr_loads
         else
             netload = join(netload, curr_loads, on=:DATETIME)
@@ -401,7 +400,6 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
         }
     """
     REGEX_ITEM_NUM = r"[a-zA-Z]*(\d*)"
-    missing = Missings.missing
 
     # keep track of sum of conventional generation at each bus
     gen_at_bus_dict = Dict{String, Any}()
@@ -505,7 +503,7 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
                 pm_dict_gen[csv_item_num_str][julia_attr] = cost
                 pm_dict_gen[csv_item_num_str]["ncost"] = length(cost)
             # case where mapped_attr is a default value.
-            elseif !Missings.ismissing(mapped_attr)
+            elseif !ismissing(mapped_attr)
                 pm_dict_gen[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
@@ -534,7 +532,6 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
         }
     """
     REGEX_ITEM_NUM = r"[a-zA-Z]*(\d*)"
-    missing = Missings.missing
 
     mappings = csv_mappings()
     attr_mappings = mappings["bus"]
@@ -574,7 +571,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
                     pm_dict_bus[csv_item_num_str][julia_attr] = val
                 end
             # case where mapped_attr is a default value.
-            elseif !Missings.ismissing(mapped_attr)
+            elseif !ismissing(mapped_attr)
                 pm_dict_bus[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
@@ -646,7 +643,6 @@ function csv_to_pm_branch(csv_dict::Dict{String, Any}, pm_dict_bus::Dict{String,
     """
 
     REGEX_ITEM_NUM = r"[a-zA-Z]*(\d*)"
-    missing = Missings.missing
 
     pm_dict_branch = Dict{String, Any}()
     attr_mappings = csv_mappings()["branch"]
@@ -675,7 +671,7 @@ function csv_to_pm_branch(csv_dict::Dict{String, Any}, pm_dict_bus::Dict{String,
                     pm_dict_branch[csv_item_num_str][julia_attr] = val
                 end
             # case where mapped_attr is a default value.
-            elseif !Missings.ismissing(mapped_attr)
+            elseif !ismissing(mapped_attr)
                 pm_dict_branch[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
