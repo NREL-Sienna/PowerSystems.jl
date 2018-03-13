@@ -1,6 +1,6 @@
 using PowerSystems
 using TimeSeries
-using Missings
+
 using NamedTuples
 
 DayAhead  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
@@ -15,12 +15,12 @@ nodes5    = [Bus(1,"nodeA", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
              Bus(5,"nodeE", "SF", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
         ];
 
-branches5 = [Line("1", true, (nodes5[1],nodes5[2]), 0.00281, 0.0281, 0.00712, 400.0, missing),
-             Line("2", true, (nodes5[1],nodes5[4]), 0.00304, 0.0304, 0.00658, Inf, missing),
-             Line("3", true, (nodes5[1],nodes5[5]), 0.00064, 0.0064, 0.03126, Inf, missing),
-             Line("4", true, (nodes5[2],nodes5[3]), 0.00108, 0.0108, 0.01852, Inf, missing),     
-             Line("5", true, (nodes5[3],nodes5[4]), 0.00297, 0.0297, 0.00674, Inf, missing),
-             Line("6", true, (nodes5[4],nodes5[5]), 0.00297, 0.0297, 0.00674, 240, missing)
+branches5 = [Line("1", true, (nodes5[1],nodes5[2]), 0.00281, 0.0281, 0.00712, 400.0, nothing),
+             Line("2", true, (nodes5[1],nodes5[4]), 0.00304, 0.0304, 0.00658, Inf, nothing),
+             Line("3", true, (nodes5[1],nodes5[5]), 0.00064, 0.0064, 0.03126, Inf, nothing),
+             Line("4", true, (nodes5[2],nodes5[3]), 0.00108, 0.0108, 0.01852, Inf, nothing),     
+             Line("5", true, (nodes5[3],nodes5[4]), 0.00297, 0.0297, 0.00674, Inf, nothing),
+             Line("6", true, (nodes5[4],nodes5[5]), 0.00297, 0.0297, 0.00674, 240, nothing)
 ];     
 
 Net5 = Network(FiveBus, branches5, nodes5); 
@@ -76,24 +76,24 @@ wind_ts_DA = [0.985205412
            0.069569628]
 
 generators5 = [  ThermalGen("Alta", true, nodes5[1],
-                    TechGen(40, @NT(min=0, max=40), 10, @NT(min = -30, max = 30), missing, missing),
-                    EconGen(40, 14.0, 0.0, 0.0, 0.0, missing)
+                    TechGen(40, @NT(min=0, max=40), 10, @NT(min = -30, max = 30), nothing, nothing),
+                    EconGen(40, 14.0, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Park City", true, nodes5[1],
-                    TechGen(170, @NT(min=0, max=170), 20, @NT(min =-127.5, max=127.5), missing, missing),
-                    EconGen(170, 15.0, 0.0, 0.0, 0.0, missing)
+                    TechGen(170, @NT(min=0, max=170), 20, @NT(min =-127.5, max=127.5), nothing, nothing),
+                    EconGen(170, 15.0, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Solitude", true, nodes5[3],
-                    TechGen(520, @NT(min=0, max=520), 100, @NT(min =-390, max=390), missing, missing),
-                    EconGen(520, 30.0, 0.0, 0.0, 0.0, missing)
+                    TechGen(520, @NT(min=0, max=520), 100, @NT(min =-390, max=390), nothing, nothing),
+                    EconGen(520, 30.0, 0.0, 0.0, 0.0, nothing)
                 ),                
                 ThermalGen("Sundance", true, nodes5[4],
-                    TechGen(200, @NT(min=0, max=200), 40, @NT(min =-150, max=150), missing, missing),
-                    EconGen(200, 40.0, 0.0, 0.0, 0.0, missing)
+                    TechGen(200, @NT(min=0, max=200), 40, @NT(min =-150, max=150), nothing, nothing),
+                    EconGen(200, 40.0, 0.0, 0.0, 0.0, nothing)
                 ),    
                 ThermalGen("Brighton", true, nodes5[5],
-                    TechGen(600, @NT(min=0, max=600), 150, @NT(min =-450, max=450), missing, missing),
-                    EconGen(600, 10.0, 0.0, 0.0, 0.0, missing)
+                    TechGen(600, @NT(min=0, max=600), 150, @NT(min =-450, max=450), nothing, nothing),
+                    EconGen(600, 10.0, 0.0, 0.0, 0.0, nothing)
                 ),
                 ReFix("SolarBusC", true, nodes5[3], 
                     60.0,
@@ -101,7 +101,7 @@ generators5 = [  ThermalGen("Alta", true, nodes5[1],
                 ),
                 ReCurtailment("WindBusA", true, nodes5[5],
                     120,
-                    EconRE(22.0, missing), 
+                    EconRE(22.0, nothing), 
                     TimeSeries.TimeArray(DayAhead,wind_ts_DA)
                 )
             ];

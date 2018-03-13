@@ -10,18 +10,18 @@ end
 
 struct TechRE
     installedcapacity::Real # [MW]
-    reactivepowerlimits::Union{NamedTuple,Missing}
-    powerfactor::Union{Real,Missing}
+    reactivepowerlimits::Union{NamedTuple,Nothing}
+    powerfactor::Union{Real,Nothing}
 end
 
-TechRE(; installedcapacitys = 0, reactivepowerlimits = missing, powerfactor = missing) = TechRE(installedcapacitys, reactivepowerlimits, powerfactor)
+TechRE(; installedcapacitys = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRE(installedcapacitys, reactivepowerlimits, powerfactor)
 
 struct EconRE
     curtailcost::Real # [$/MWh]
-    interruptioncost::Union{Real,Missing} # [$]
+    interruptioncost::Union{Real,Nothing} # [$]
 end
 
-EconRE(; curtailcost = 0.0, interruptioncost = missing) = EconRE(curtailcost, interruptioncost)
+EconRE(; curtailcost = 0.0, interruptioncost = nothing) = EconRE(curtailcost, interruptioncost)
 
 struct ReFix <: RenewableGen
     name::String
@@ -30,7 +30,7 @@ struct ReFix <: RenewableGen
     tech::TechRE
     scalingfactor::TimeSeries.TimeArray
     function ReFix(name, status, bus, installedcapacity::Real, scalingfactor)
-        tech = TechRE(installedcapacity, missing, 1.0)      
+        tech = TechRE(installedcapacity, nothing, 1.0)      
         new(name, status, bus, tech, scalingfactor)
     end
 end
@@ -46,10 +46,10 @@ struct ReCurtailment <: RenewableGen
     status::Bool
     bus::Bus
     tech::TechRE
-    econ::Union{EconRE,Missing}
+    econ::Union{EconRE,Nothing}
     scalingfactor::TimeSeries.TimeArray 
     function ReCurtailment(name, status, bus, installedcapacity::Real, econ, scalingfactor)
-        tech = TechRE(installedcapacity, missing, 1.0)      
+        tech = TechRE(installedcapacity, nothing, 1.0)      
         new(name, status, bus, tech, econ, scalingfactor)
     end
 end
@@ -66,6 +66,6 @@ struct ReReactiveDispatch <: RenewableGen
     status::Bool
     bus::Bus
     tech::TechRE
-    econ::Union{EconRE,Missing}
+    econ::Union{EconRE,Nothing}
     scalingfactor::TimeSeries.TimeArray
 end

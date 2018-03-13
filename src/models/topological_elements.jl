@@ -19,20 +19,20 @@ SystemParam(; busquantity = 0,
 struct Bus
     number::Int
     name::String
-    bustype::Union{String,Missing} # [PV, PQ, SF]
-    angle::Union{Real,Missing} # [degrees]
-    voltage::Union{Real,Missing} # [pu]
-    voltagelims::Union{NamedTuple,Missing} # [pu]
-    basevoltage::Union{Real,Missing} # [kV]
+    bustype::Union{String,Nothing} # [PV, PQ, SF]
+    angle::Union{Real,Nothing} # [degrees]
+    voltage::Union{Real,Nothing} # [pu]
+    voltagelims::Union{NamedTuple,Nothing} # [pu]
+    basevoltage::Union{Real,Nothing} # [kV]
 end
 
 Bus(;   number = 0, 
         name = "init", 
-        bustype = missing, 
-        angle = missing, 
-        voltage = missing, 
-        voltagelims = missing, 
-        basevoltage = missing
+        bustype = nothing, 
+        angle = nothing, 
+        voltage = nothing, 
+        voltagelims = nothing, 
+        basevoltage = nothing
     ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelims), basevoltage)
 
 

@@ -10,10 +10,10 @@ end
 struct TechHydro 
     realpower::Real # [MW]
     realpowerlimits::NamedTuple
-    reactivepower::Union{Real,Missing} # [MVAr]
-    reactivepowerlimits::Union{NamedTuple,Missing}
-    ramplimits::Union{NamedTuple,Missing}
-    timelimits::Union{NamedTuple,Missing}
+    reactivepower::Union{Real,Nothing} # [MVAr]
+    reactivepowerlimits::Union{NamedTuple,Nothing}
+    ramplimits::Union{NamedTuple,Nothing}
+    timelimits::Union{NamedTuple,Nothing}
     function TechHydro(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits) 
 
         new(realpower, orderedlimits(realpowerlimits), reactivepower, orderedlimits(reactivepowerlimits), ramplimits, timelimits)
@@ -23,10 +23,10 @@ end
 
 TecHydro(; realpower = 0.0, 
           realpowerlimits = (0.0,0.0), 
-          reactivepower = missing,  
-          reactivepowerlimits = missing,
-          ramplimits = missing,
-          timelimits = missing
+          reactivepower = nothing,  
+          reactivepowerlimits = nothing,
+          ramplimits = nothing,
+          timelimits = nothing
         ) = TechHydro(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
 struct NoDispatchHydro <: HydroGen

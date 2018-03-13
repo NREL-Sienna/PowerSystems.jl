@@ -1,6 +1,6 @@
 using PowerSystems
 using TimeSeries
-using Missings
+
 
 dates  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
 
@@ -24,49 +24,49 @@ nodes14= [
             ]
 
 branches14 = [
-                Line("Line1",  true, (nodes14[1],nodes14[2]),   0.01938, 0.05917,  0.0528, Inf, missing),
-                Line("Line2",  true, (nodes14[1],nodes14[5]),   0.05403, 0.22304,  0.0492, Inf, missing),
-                Line("Line3",  true, (nodes14[2],nodes14[3]),   0.04699, 0.19797,  0.0438, Inf, missing),
-                Line("Line4",  true, (nodes14[2],nodes14[4]),   0.05811, 0.17632,  0.0340, Inf, missing),
-                Line("Line5",  true, (nodes14[2],nodes14[5]),   0.05695, 0.17388,  0.0346, Inf, missing),
-                Line("Line6",  true, (nodes14[3],nodes14[4]),   0.06701, 0.17103,  0.0128, Inf, missing),
-                Line("Line7",  true, (nodes14[4],nodes14[5]),   0.01335, 0.04211,  0.0   , Inf, missing),
+                Line("Line1",  true, (nodes14[1],nodes14[2]),   0.01938, 0.05917,  0.0528, Inf, nothing),
+                Line("Line2",  true, (nodes14[1],nodes14[5]),   0.05403, 0.22304,  0.0492, Inf, nothing),
+                Line("Line3",  true, (nodes14[2],nodes14[3]),   0.04699, 0.19797,  0.0438, Inf, nothing),
+                Line("Line4",  true, (nodes14[2],nodes14[4]),   0.05811, 0.17632,  0.0340, Inf, nothing),
+                Line("Line5",  true, (nodes14[2],nodes14[5]),   0.05695, 0.17388,  0.0346, Inf, nothing),
+                Line("Line6",  true, (nodes14[3],nodes14[4]),   0.06701, 0.17103,  0.0128, Inf, nothing),
+                Line("Line7",  true, (nodes14[4],nodes14[5]),   0.01335, 0.04211,  0.0   , Inf, nothing),
                 Transformer2W("Trans3", true, (nodes14[4],nodes14[7]),  0.0    , 0.20912,  0.0    , 0.978, 0.0, Inf),
                 Transformer2W("Trans1", true, (nodes14[4],nodes14[9]),  0.0    , 0.55618,  0.0     , 0.969, 0.0, Inf),
                 Transformer2W("Trans2", true, (nodes14[5],nodes14[6]),  0.0    , 0.25202,  0.0     , 0.932, 0.0, Inf),
-                Line("Line8",  true, (nodes14[6],nodes14[11]),  0.09498, 0.19890,  0.0   , Inf, missing),   
-                Line("Line9",  true, (nodes14[6],nodes14[12]),  0.12291, 0.25581,  0.0   , Inf, missing),    
-                Line("Line10", true, (nodes14[6],nodes14[13]),  0.06615, 0.13027,  0.0   , Inf, missing), 
+                Line("Line8",  true, (nodes14[6],nodes14[11]),  0.09498, 0.19890,  0.0   , Inf, nothing),   
+                Line("Line9",  true, (nodes14[6],nodes14[12]),  0.12291, 0.25581,  0.0   , Inf, nothing),    
+                Line("Line10", true, (nodes14[6],nodes14[13]),  0.06615, 0.13027,  0.0   , Inf, nothing), 
                 Transformer2W("Trans4", true, (nodes14[7],nodes14[8]),  0.0      , 0.17615,  0.0     , 1.0,   0.0, Inf),
-                Line("Line16", true, (nodes14[7],nodes14[9]),   0.0,     0.11001,  0.0   , Inf, missing),   
-                Line("Line11", true, (nodes14[9],nodes14[10]),  0.03181, 0.08450,  0.0   , Inf, missing),    
-                Line("Line12", true, (nodes14[9],nodes14[14]),  0.12711, 0.27038,  0.0   , Inf, missing),    
-                Line("Line13", true, (nodes14[10],nodes14[11]), 0.08205, 0.19207,  0.0   , Inf, missing),    
-                Line("Line14", true, (nodes14[12],nodes14[13]), 0.22092, 0.19988,  0.0   , Inf, missing),    
-                Line("Line15", true, (nodes14[13],nodes14[14]), 0.17093, 0.34802,  0.0   , Inf, missing)
+                Line("Line16", true, (nodes14[7],nodes14[9]),   0.0,     0.11001,  0.0   , Inf, nothing),   
+                Line("Line11", true, (nodes14[9],nodes14[10]),  0.03181, 0.08450,  0.0   , Inf, nothing),    
+                Line("Line12", true, (nodes14[9],nodes14[14]),  0.12711, 0.27038,  0.0   , Inf, nothing),    
+                Line("Line13", true, (nodes14[10],nodes14[11]), 0.08205, 0.19207,  0.0   , Inf, nothing),    
+                Line("Line14", true, (nodes14[12],nodes14[13]), 0.22092, 0.19988,  0.0   , Inf, nothing),    
+                Line("Line15", true, (nodes14[13],nodes14[14]), 0.17093, 0.34802,  0.0   , Inf, nothing)
             ]   
 
 Net14 = Network(FourteenBus, branches14, nodes14) 
 
 generators14 = [ThermalGen("Bus1", true, nodes14[1],
-                TechGen(200, (0, 200), -16.9, (-990, 990), missing, missing),
-                EconGen(40, x -> 0.04303*x^2 + 20*x, 0.0, 0.0, 0.0, missing)
+                TechGen(200, (0, 200), -16.9, (-990, 990), nothing, nothing),
+                EconGen(40, x -> 0.04303*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Bus2", true, nodes14[2],
-                TechGen(40, (0, 140), 42.4, (-40, 50), missing, missing),
-                EconGen(140, x -> 0.25*x^2 + 20*x, 0.0, 0.0, 0.0, missing)
+                TechGen(40, (0, 140), 42.4, (-40, 50), nothing, nothing),
+                EconGen(140, x -> 0.25*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Bus3", true, nodes14[3],
-                TechGen(50, (0, 100), 23.4, (0, 40), missing, missing),
-                EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, missing)
+                TechGen(50, (0, 100), 23.4, (0, 40), nothing, nothing),
+                EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
                 ),                
                 ThermalGen("Bus6", true, nodes14[6],
-                TechGen(0, (0, 100), 12.2, (-6, 24), missing, missing),
-                (EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, missing))
+                TechGen(0, (0, 100), 12.2, (-6, 24), nothing, nothing),
+                (EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing))
                 ),    
                 ThermalGen("Bus8", true, nodes14[8],
-                TechGen(0, (0, 100), 17.4, (-6, 24), missing, missing),
-                EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, missing)
+                TechGen(0, (0, 100), 17.4, (-6, 24), nothing, nothing),
+                EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
                 )
             ];
 

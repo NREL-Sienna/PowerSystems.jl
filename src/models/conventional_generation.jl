@@ -6,10 +6,10 @@ export EconGen
 struct TechGen
     realpower::Real # [MW]
     realpowerlimits::NamedTuple
-    reactivepower::Union{Real,Missing} # [MVAr]
-    reactivepowerlimits::Union{NamedTuple,Missing}
-    ramplimits::Union{NamedTuple,Missing}
-    timelimits::Union{NamedTuple,Missing}
+    reactivepower::Union{Real,Nothing} # [MVAr]
+    reactivepowerlimits::Union{NamedTuple,Nothing}
+    ramplimits::Union{NamedTuple,Nothing}
+    timelimits::Union{NamedTuple,Nothing}
     function TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits) 
 
         new(realpower, orderedlimits(realpowerlimits), reactivepower, orderedlimits(reactivepowerlimits), ramplimits, timelimits)
@@ -22,10 +22,10 @@ end
 
 TechGen(; realpower = 0.0, 
           realpowerlimits = (0.0,0.0), 
-          reactivepower = missing,  
-          reactivepowerlimits = missing,
-          ramplimits = missing,
-          timelimits = missing
+          reactivepower = nothing,  
+          reactivepowerlimits = nothing,
+          ramplimits = nothing,
+          timelimits = nothing
         ) = TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
 struct EconGen{T}
@@ -34,44 +34,44 @@ struct EconGen{T}
     fixedcost::Real            # [$/h] 
     startupcost::Real          # [$]
     shutdncost::Real           # [$]
-    annualcapacityfactor::Union{Real,Missing}  # [0-1] 
+    annualcapacityfactor::Union{Real,Nothing}  # [0-1] 
 end
 
 EconGen(;   capacity = 0.0, 
-            variablecost = missing,
+            variablecost = nothing,
             fixedcost = 0.0,
             startupcost = 0.0,
             shutdncost = 0.0,
-            annualcapacityfactor = missing
+            annualcapacityfactor = nothing
         ) = EconGen(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor) 
 
 struct ThermalGen
     name::String
     status::Bool
     bus::Bus
-    tech::Union{TechGen,Missing}
-    econ::Union{EconGen,Missing}
+    tech::Union{TechGen,Nothing}
+    econ::Union{EconGen,Nothing}
 end
 
 ThermalGen(; name = "init",
                 status = false,
                 bus = Bus(),
-                tech = missing,
-                econ = missing) = ThermalGen(name, status, bus, tech, econ)
+                tech = nothing,
+                econ = nothing) = ThermalGen(name, status, bus, tech, econ)
 
 
 struct ThermalGen_dyn
     name::String
     status::Bool
     bus::Bus
-    tech::Union{TechGen,Missing}
-    econ::Union{EconGen,Missing}
-    dyn::Union{SynchronousMachine,Missing}
+    tech::Union{TechGen,Nothing}
+    econ::Union{EconGen,Nothing}
+    dyn::Union{SynchronousMachine,Nothing}
 end                
 
 ThermalGen_dyn(; name = "init",
                 status = false,
                 bus = Bus(),
-                tech = missing,
-                econ = missing,
-                dyn=missing) = ThermalGen_dyn(name, status, bus, tech, econ, dyn)
+                tech = nothing,
+                econ = nothing,
+                dyn=nothing) = ThermalGen_dyn(name, status, bus, tech, econ, dyn)

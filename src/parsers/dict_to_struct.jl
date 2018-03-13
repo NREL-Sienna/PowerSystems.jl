@@ -38,10 +38,10 @@ function dict_to_struct(data)
             push!(Generators,
                 ThermalGen(k, d["gen_status"], nodes[d["gen_bus"]],
                     TechGen(d["pg"], (d["pmin"], d["pmax"]), d["qg"], (d["qmin"], d["qmax"]),
-                        missing, missing),
+                        nothing, nothing),
                     # Just the linear and constant coefficients from the dictionary; needs expansion
                     # for different cost models.
-                    missing # No econ data in psse file
+                    nothing # No econ data in psse file
                     ))
 
         end
@@ -102,10 +102,10 @@ function dict_to_struct(data)
             push!(Generators,
                 ThermalGen(k, d["gen_status"], nodes[d["gen_bus"]],
                     TechGen(d["pg"], (d["pmin"], d["pmax"]), d["qg"], (d["qmin"], d["qmax"]),
-                        missing, missing),
+                        nothing, nothing),
                     # Just the linear and constant coefficients from the dictionary; needs expansion
                     # for different cost models.
-                    EconGen(d["pmax"], missing, d["cost"][1], d["cost"][2], d["cost"][3], missing))
+                    EconGen(d["pmax"], nothing, d["cost"][1], d["cost"][2], d["cost"][3], nothing))
                     )
 
         end

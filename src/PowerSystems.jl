@@ -8,7 +8,7 @@ using DataFrames
 using Base.convert
 using CSV
 # This packages will be removed with Julia v0.7
-using Missings
+using Compat
 using NamedTuples
 
 include("utils.jl")

@@ -15,8 +15,8 @@ struct Line <: Branch
     r::Float64 #[pu]
     x::Float64 #[pu]Co
     b::Float64 #[pu]
-    rate::Union{Real,Missing} #[MVA]
-    anglelimits::Union{NamedTuple,Missing}
+    rate::Union{Real,Nothing} #[MVA]
+    anglelimits::Union{NamedTuple,Nothing}
 end
 
 Line(;  name = "init",
@@ -25,8 +25,8 @@ Line(;  name = "init",
         r = 0.0,
         x = 0.0,
         b = 0.0, 
-        rate = missing,
-        anglelimits = missing
+        rate = nothing,
+        anglelimits = nothing
     ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
 
 """
@@ -43,7 +43,7 @@ struct Transformer2W <: Branch
     zb::Float64 #[pu]
     tap::Float64 # [0 - 2]
     α::Float64 # [radians]
-    rate::Union{Real,Missing} #[MVA]
+    rate::Union{Real,Nothing} #[MVA]
 end
 
 Transformer2W(; name = "init",
@@ -54,7 +54,7 @@ Transformer2W(; name = "init",
                 zb = 0.0, 
                 tap = 1.0,
                 α = 0.0,
-                rate = missing
+                rate = nothing
             ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
 
 struct Transformer3W <: Branch
@@ -233,7 +233,7 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
     elseif slack_position == -9 
         
         warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
-        S = missing
+        S = nothing
 
     end
 
@@ -244,13 +244,13 @@ end
 struct Network 
     branches::Array{Branch}
     ybus::SparseMatrixCSC{Complex{Float64},Int64}
-    ptdf::Union{Array{Float64},Missing}
+    ptdf::Union{Array{Float64},Nothing}
     incidence::Array{Int}
 
     function Network(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
         
         for n in nodes
-            if ismissing(n.bustype) 
+            if isnothing(n.bustype) 
                 error("Bus/Nodes data does not contain information to build an AC network")
             end
         end

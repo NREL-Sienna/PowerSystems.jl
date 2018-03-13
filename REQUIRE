@@ -4,6 +4,6 @@ DataFrames 0.10.1
 TimeSeries 0.11.1
 ExcelReaders
 CSV
-Missings
 Plotly
 NamedTuples
+Compat
