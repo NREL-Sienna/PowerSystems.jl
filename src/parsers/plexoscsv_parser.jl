@@ -210,7 +210,6 @@ function parse_netloads(folder::String)
     #dropna(loads) # take out rows with NA's
     dict["max_load"] = maximum(netload[:2]) # get maximum load
     dict["ind_at_max_load"] = indmax(netload[:2])
-    println(dict["ind_at_max_load"])
     dict["dt_at_max_load"] = DateTime(netload[dict["ind_at_max_load"],1], "m/d/Y H:M") # get date where maximum load occurs
     netload[:dt] = DateTime(Array{String, 1}(netload[:1]), "m/d/Y H:M")
     sort!(netload, cols=[order(:dt)]) # sort data by dates 
