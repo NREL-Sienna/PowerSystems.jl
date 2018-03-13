@@ -320,12 +320,20 @@ function parse_csv(folder::String)
             end
         
         # else, parse files specifying devices and netload.csv
-        else
+        elseif match(REGEX_DEVICE_TYPE, file_name) != nothing
             device_type = match(REGEX_DEVICE_TYPE, file_name)[1]
             case[device_type] = parse_devices(file_path)
         end
         
     end
+
+    device_types = ["Buses", "Generators", "Lines"]
+    for device_name in device_types
+        if !haskey(case, device_name)
+            error("Did not find $(device_name).csv in order to get data for $(device_name)!")
+        end
+    end
+
     return case
 end
 
@@ -717,6 +725,6 @@ function plexoscsv_parser(folder::String)
     csv_d = parse_csv(folder)
     pm_d = csv_to_pm(csv_d)
 
-    #PowerModels.check_network_data(pm_d)
+    PowerModels.check_network_data(pm_d)
     return pm_d
 end
