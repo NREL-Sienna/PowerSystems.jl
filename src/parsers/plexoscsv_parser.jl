@@ -197,7 +197,7 @@ function parse_netloads(folder::String)
         curr_loads = readtable("$folder/$file_of_loads")
         load_data[file_of_loads] = curr_loads
 
-        if isnothing(netload)
+        if netload == nothing
             netload = curr_loads
         else
             netload = join(netload, curr_loads, on=:DATETIME)
@@ -210,6 +210,7 @@ function parse_netloads(folder::String)
     #dropna(loads) # take out rows with NA's
     dict["max_load"] = maximum(netload[:2]) # get maximum load
     dict["ind_at_max_load"] = indmax(netload[:2])
+    println(dict["ind_at_max_load"])
     dict["dt_at_max_load"] = DateTime(netload[dict["ind_at_max_load"],1], "m/d/Y H:M") # get date where maximum load occurs
     netload[:dt] = DateTime(Array{String, 1}(netload[:1]), "m/d/Y H:M")
     sort!(netload, cols=[order(:dt)]) # sort data by dates 
@@ -503,7 +504,7 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
                 pm_dict_gen[csv_item_num_str][julia_attr] = cost
                 pm_dict_gen[csv_item_num_str]["ncost"] = length(cost)
             # case where mapped_attr is a default value.
-            elseif !isnothing(mapped_attr)
+            elseif mapped_attr != nothing
                 pm_dict_gen[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
@@ -571,7 +572,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
                     pm_dict_bus[csv_item_num_str][julia_attr] = val
                 end
             # case where mapped_attr is a default value.
-            elseif !isnothing(mapped_attr)
+            elseif mapped_attr != nothing
                 pm_dict_bus[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
@@ -671,7 +672,7 @@ function csv_to_pm_branch(csv_dict::Dict{String, Any}, pm_dict_bus::Dict{String,
                     pm_dict_branch[csv_item_num_str][julia_attr] = val
                 end
             # case where mapped_attr is a default value.
-            elseif !isnothing(mapped_attr)
+            elseif mapped_attr != nothing
                 pm_dict_branch[csv_item_num_str][julia_attr] = mapped_attr
             end
         end
