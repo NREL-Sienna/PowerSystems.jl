@@ -250,7 +250,7 @@ struct Network
     function Network(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
         
         for n in nodes
-            if isnothing(n.bustype) 
+            if n.bustype == nothing 
                 error("Bus/Nodes data does not contain information to build an AC network")
             end
         end
