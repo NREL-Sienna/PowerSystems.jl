@@ -1,10 +1,10 @@
 # PowerSystems
 
-[![Build Status](https://travis-ci.org/NREL/PowerSystems.jl.svg?token=VoANAdoWPrzDqCcxtcJc&branch=master)](https://travis-ci.com/NREL/PowerSystems.jl)
+[![Build Status](https://travis-ci.org/NREL/PowerSystems.jl.svg?branch=master)](https://travis-ci.org/NREL/PowerSystems.jl)
 
-[![Coverage Status](https://coveralls.io/repos/jdlara-berkeley/PowerSystems.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jdlara-berkeley/PowerSystems.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/NREL/PowerSystems.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jdlara-berkeley/PowerSystems.jl?branch=master)
 
-[![codecov.io](http://codecov.io/github/jdlara-berkeley/PowerSystems.jl/coverage.svg?branch=master)](http://codecov.io/github/jdlara-berkeley/PowerSystems.jl?branch=master)
+[![codecov.io](http://codecov.io/github/NREL/PowerSystems.jl/coverage.svg?branch=master)](http://codecov.io/github/jdlara-berkeley/PowerSystems.jl?branch=master)
 
 The code in this repository is the base data management code for the global power system analysis tools repository.
 
