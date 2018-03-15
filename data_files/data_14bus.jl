@@ -1,5 +1,6 @@
 using PowerSystems
 using TimeSeries
+using NamedTuples
 
 
 dates  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
@@ -7,20 +8,20 @@ dates  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime(
 FourteenBus = SystemParam(14, 230, 100, length(dates));
 
 nodes14= [
-                Bus(1 , "Bus 1"  , "SF" ,      0 , 1.06  , (1.06,0.94), 69),
-                Bus(2 , "Bus 2"  , "PV" ,  -4.98 , 1.045 , (1.06,0.94), 69),
-                Bus(3 , "Bus 3"  , "PV" , -12.72 , 1.01  , (1.06,0.94), 69),
-                Bus(4 , "Bus 4"  , "PQ" ,  -10.33, 1.019 , (1.06,0.94), 69),
-                Bus(5 , "Bus 5"  , "PQ" , -8.78  , 1.02  , (1.06,0.94), 69),
-                Bus(6 , "Bus 6"  , "PV" , -14.22 , 1.07  , (1.06,0.94), 13.8),
-                Bus(7 , "Bus 7"  , "PQ" ,  -13.37, 1.062 , (1.06,0.94), 13.8),
-                Bus(8 , "Bus 8"  , "PV" , -13.36 , 1.09  , (1.06,0.94), 18),
-                Bus(9 , "Bus 9"  , "PQ" ,  -14.94, 1.056 , (1.06,0.94), 13.8),
-                Bus(10, "Bus 10" , "PQ" ,  -15.1 , 1.051 , (1.06,0.94), 13.8),
-                Bus(11, "Bus 11" , "PQ" ,  -14.79, 1.057 , (1.06,0.94), 13.8),
-                Bus(12, "Bus 12" , "PQ" ,  -15.07, 1.055 , (1.06,0.94), 13.8),
-                Bus(13, "Bus 13" , "PQ" , -15.16 , 1.05  , (1.06,0.94), 13.8),
-                Bus(14, "Bus 14" , "PQ" ,  -16.04, 1.036 , (1.06,0.94), 13.8)
+                Bus(1 , "Bus 1"  , "SF" ,      0 , 1.06  , @NT(min=0.94, max=1.06), 69),
+                Bus(2 , "Bus 2"  , "PV" ,  -4.98 , 1.045 , @NT(min=0.94, max=1.06), 69),
+                Bus(3 , "Bus 3"  , "PV" , -12.72 , 1.01  , @NT(min=0.94, max=1.06), 69),
+                Bus(4 , "Bus 4"  , "PQ" ,  -10.33, 1.019 , @NT(min=0.94, max=1.06), 69),
+                Bus(5 , "Bus 5"  , "PQ" , -8.78  , 1.02  , @NT(min=0.94, max=1.06), 69),
+                Bus(6 , "Bus 6"  , "PV" , -14.22 , 1.07  , @NT(min=0.94, max=1.06), 13.8),
+                Bus(7 , "Bus 7"  , "PQ" ,  -13.37, 1.062 , @NT(min=0.94, max=1.06), 13.8),
+                Bus(8 , "Bus 8"  , "PV" , -13.36 , 1.09  , @NT(min=0.94, max=1.06), 18),
+                Bus(9 , "Bus 9"  , "PQ" ,  -14.94, 1.056 , @NT(min=0.94, max=1.06), 13.8),
+                Bus(10, "Bus 10" , "PQ" ,  -15.1 , 1.051 , @NT(min=0.94, max=1.06), 13.8),
+                Bus(11, "Bus 11" , "PQ" ,  -14.79, 1.057 , @NT(min=0.94, max=1.06), 13.8),
+                Bus(12, "Bus 12" , "PQ" ,  -15.07, 1.055 , @NT(min=0.94, max=1.06), 13.8),
+                Bus(13, "Bus 13" , "PQ" , -15.16 , 1.05  , @NT(min=0.94, max=1.06), 13.8),
+                Bus(14, "Bus 14" , "PQ" ,  -16.04, 1.036 , @NT(min=0.94, max=1.06), 13.8)
             ]
 
 branches14 = [
@@ -49,23 +50,23 @@ branches14 = [
 Net14 = Network(FourteenBus, branches14, nodes14) 
 
 generators14 = [ThermalGen("Bus1", true, nodes14[1],
-                TechGen(200, (0, 200), -16.9, (-990, 990), nothing, nothing),
+                TechGen(200, @NT(min=0, max=200), -16.9, @NT(min=-990, max=990), nothing, nothing),
                 EconGen(40, x -> 0.04303*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Bus2", true, nodes14[2],
-                TechGen(40, (0, 140), 42.4, (-40, 50), nothing, nothing),
+                TechGen(40, @NT(min=0, max=140), 42.4, @NT(min=-40, max=50), nothing, nothing),
                 EconGen(140, x -> 0.25*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Bus3", true, nodes14[3],
-                TechGen(50, (0, 100), 23.4, (0, 40), nothing, nothing),
+                TechGen(50, @NT(min=0, max=100), 23.4, @NT(min=0, max=40), nothing, nothing),
                 EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
                 ),                
                 ThermalGen("Bus6", true, nodes14[6],
-                TechGen(0, (0, 100), 12.2, (-6, 24), nothing, nothing),
+                TechGen(0, @NT(min=0, max=100), 12.2, @NT(min=-6, max=24), nothing, nothing),
                 (EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing))
                 ),    
                 ThermalGen("Bus8", true, nodes14[8],
-                TechGen(0, (0, 100), 17.4, (-6, 24), nothing, nothing),
+                TechGen(0, @NT(min=0, max=100), 17.4, @NT(min=-6, max=4), nothing, nothing),
                 EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
                 )
             ];
