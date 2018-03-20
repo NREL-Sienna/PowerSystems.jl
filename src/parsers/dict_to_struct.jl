@@ -1,5 +1,9 @@
 export dict_to_struct
 
+# Global method definition needs to be at top level in .7
+# Convert bool to int
+Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(InexactError())
+
 function dict_to_struct(data)
 
     if data["version"] == "psse raw file"
@@ -45,8 +49,6 @@ function dict_to_struct(data)
                     ))
 
         end
-
-        Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(InexactError())
 
         Branches = Array{Branch}(0)
         for d in data["branch"]
@@ -109,8 +111,6 @@ function dict_to_struct(data)
                     )
 
         end
-
-        Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(InexactError())
 
         Branches = Array{Branch}(0)
         for d in data["branch"]
