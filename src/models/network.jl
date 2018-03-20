@@ -241,7 +241,7 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 
 end
 
-function build_maxflows(branches::Array{Branch})
+function build_maxflows(branches)
     """
     Given an array of branches, calculates the number of lines and 
     puts the max flow of each branch (found using the rate attribute)
@@ -272,7 +272,7 @@ struct Network
     function Network(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
         
         for n in nodes
-            if isnothing(n.bustype) 
+            if n.bustype == nothing
                 error("Bus/Nodes data does not contain information to build an AC network")
             end
         end
