@@ -18,16 +18,13 @@ include("models/topological_elements.jl")
 include("models/forecasts.jl")
 
 #Dynamics 
-include("models/dynamics/synch_machine.jl")
-include("models/dynamics/dynamic_network.jl")
-include("models/dynamics/prime_movers.jl")
-include("models/dynamics/control_dynamics.jl")
+include("models/dynamics.jl")
+
 
 #Static types 
-include("models/conventional_generation.jl")
-include("models/renewable_generation.jl")
-include("models/hydro_generation.jl")
+include("models/generation.jl")
 include("models/electric_loads.jl")
+include("models/shunt_elements.jl")
 
 # Include Parsing files
 include("parsers/matpower_parser.jl")

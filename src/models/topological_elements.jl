@@ -35,6 +35,4 @@ Bus(;   number = 0,
         basevoltage = nothing
     ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelims), basevoltage)
 
-
-
 include("network.jl")
