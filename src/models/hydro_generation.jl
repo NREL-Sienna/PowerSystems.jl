@@ -3,7 +3,7 @@ export NoDispatchHydro
 export DispatchHydro
 
 abstract type 
-    HydroGen
+    HydroGen <: Generator
 end
 
 

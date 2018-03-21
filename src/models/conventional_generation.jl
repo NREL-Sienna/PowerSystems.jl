@@ -45,7 +45,7 @@ EconGen(;   capacity = 0.0,
             annualcapacityfactor = nothing
         ) = EconGen(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor) 
 
-struct ThermalGen
+struct ThermalGen <: Generator
     name::String
     status::Bool
     bus::Bus
@@ -60,13 +60,13 @@ ThermalGen(; name = "init",
                 econ = nothing) = ThermalGen(name, status, bus, tech, econ)
 
 
-struct ThermalGen_dyn
+struct ThermalGen_dyn <: Generator
     name::String
     status::Bool
     bus::Bus
     tech::Union{TechGen,Nothing}
     econ::Union{EconGen,Nothing}
-    dyn::Union{SynchronousMachine,Nothing}
+    dyn::Union{DynamicsGenerator,Nothing}
 end                
 
 ThermalGen_dyn(; name = "init",

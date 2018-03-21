@@ -5,7 +5,7 @@ export ReFix
 export ReCurtailment
 
 abstract type 
-    RenewableGen 
+    RenewableGen <: Generator
 end
 
 struct TechRE
