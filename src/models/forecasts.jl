@@ -1,7 +1,13 @@
+export Forecast
 export Deterministic
 export Scenarios
+export Probabilistic
 
-struct Deterministic
+abstract type 
+    Forecast
+end
+
+struct Deterministic <: Forecast
     horizon::Int
     issuetimestep::Base.Dates.Period
     resolution::Base.Dates.Period
@@ -9,9 +15,16 @@ struct Deterministic
     data::Dict{Any,TimeSeries.TimeArray}
 end
 
+struct Scenarios <: Forecast
+    horizon::Int
+    issuetimestep::Base.Dates.Period
+    resolution::Base.Dates.Period
+    initialtime::DateTime
+    numberscenarios::Int
+    data::Dict{Any,Dict{Int,TimeSeries.TimeArray}}
+end
 
-
-struct Scenarios
+struct Probabilistic <: Forecast
     horizon::Int
     issuetimestep::Base.Dates.Period
     resolution::Base.Dates.Period
