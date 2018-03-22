@@ -25,7 +25,7 @@ end
 # Update to named tuples when Julia 0.7 becomes available 
 
 TechGen(; realpower = 0.0, 
-          realpowerlimits = (0.0,0.0), 
+          realpowerlimits = @NT(max = 0.0, min = 0.0), 
           reactivepower = nothing,  
           reactivepowerlimits = nothing,
           ramplimits = nothing,

@@ -7,5 +7,6 @@ using Base.Test
 tic()
 println("5Bus Test")
 @time @test include("readnetworkdata.jl")
+@time @test include("constructors.jl")
 toc()
 
