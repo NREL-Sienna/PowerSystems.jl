@@ -3,6 +3,10 @@ export ThermalGen_dyn
 export TechGen  
 export EconGen  
 
+abstract type 
+    Thermal <: Generator
+end
+
 struct TechGen
     realpower::Real # [MW]
     realpowerlimits::NamedTuple
@@ -45,7 +49,7 @@ EconGen(;   capacity = 0.0,
             annualcapacityfactor = nothing
         ) = EconGen(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor) 
 
-struct ThermalGen <: Generator
+struct ThermalGen <: Thermal
     name::String
     status::Bool
     bus::Bus
@@ -59,8 +63,23 @@ ThermalGen(; name = "init",
                 tech = nothing,
                 econ = nothing) = ThermalGen(name, status, bus, tech, econ)
 
+struct ThermalGenSeaon <: Thermal
+    name::String
+    status::Bool
+    bus::Bus
+    tech::Union{TechGen,Nothing}
+    econ::Union{EconGen,Nothing}
+    scalingfactor::TimeSeries.TimeArray
+end
 
-struct ThermalGen_dyn <: Generator
+ThermalGenSeason(; name = "init",
+                status = false,
+                bus = Bus(),
+                tech = nothing,
+                econ = nothing,
+                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
+
+struct ThermalGen_dyn <: Thermal
     name::String
     status::Bool
     bus::Bus
