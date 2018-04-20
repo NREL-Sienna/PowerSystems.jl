@@ -12,8 +12,6 @@ using Compat
 using NamedTuples
 using Plotly
 
-include("utils.jl")
-
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/forecasts.jl")
@@ -34,5 +32,6 @@ include("parsers/psse_parser.jl")
 include("parsers/plexoscsv_parser.jl")
 #include("parsers/read_forecast.jl")
 
+include("utils.jl")
 
 end 
