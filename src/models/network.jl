@@ -241,30 +241,9 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 
 end
 
-function build_maxflows(branches)
-    """
-    Given an array of branches, calculates the number of lines and 
-    puts the max flow of each branch (found using the rate attribute)
-    in an array. 
-
-    Returns the array of max flows and the line quantity. 
-    """
-
-    linequantity = length(branches)
-    maxflows = Array{Float64}(linequantity)
-
-    for (ix, b) in enumerate(branches)
-        maxflows[ix] = b.rate
-    end
-
-    return maxflows, linequantity
-
-end
-
 struct Network 
     branches::Array{Branch}
     linequantity::Int
-    maxflows::Array{Float64}
     ybus::SparseMatrixCSC{Complex{Float64},Int64}
     ptdf::Union{Array{Float64},Nothing}
     incidence::Array{Int}
@@ -279,10 +258,8 @@ struct Network
         
         ybus = build_ybus(sys,branches);
         ptdf, A = build_ptdf(sys, branches, nodes)    
-        maxflows, linequantity = build_maxflows(branches)
         new(branches,
-            linequantity,
-            maxflows,
+            length(branches),
             ybus, 
             ptdf,
             A)
