@@ -70,9 +70,9 @@ Transformer3W(; name = "init",
                 line = Line()
             ) = Transformer3W(name, status, transformer, line)
 
-function build_ybus(sys::SystemParam, branches::Array{T}) where {T<:Branch}
+function build_ybus(buscount,branches::Array{T}) where {T<:Branch}
 
-    Ybus = spzeros(Complex{Float64},sys.busquantity,sys.busquantity)
+    Ybus = spzeros(Complex{Float64},buscount,buscount)
        
     for b in branches
 
@@ -160,21 +160,19 @@ function build_ybus(sys::SystemParam, branches::Array{T}) where {T<:Branch}
 
 end 
 
-function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
+function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
 
-    n_b = length(branches)
+    linequantity = length(branches)
     
-    n_n = sys.busquantity;
-
     for b in nodes
         if b.number < -1
             error("buses must be numbered consecutively in the bus/node matrix")
         end
     end
 
-    A = spzeros(Float64,n_n,n_b);
-    B = spzeros(Float64,n_n,n_n);
-    X = spzeros(Float64,n_b,n_b);
+    A = spzeros(Float64,buscount,linequantity);
+    B = spzeros(Float64,buscount,linequantity);
+    X = spzeros(Float64,buscount,buscount);
 
    #build incidence matrix 
    #incidence_matrix = A
@@ -228,7 +226,7 @@ function build_ptdf(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) whe
 
         S = inv(full(X))*A[setdiff(1:end, slack_position), :]'*inv(full(B));
         
-        S = hcat(S[:,1:slack_position-1],zeros(n_b,),S[:,slack_position:end-1])
+        S = hcat(S[:,1:slack_position-1],zeros(buscount),S[:,slack_position:end-1])
 
     elseif slack_position == -9 
         
@@ -248,7 +246,7 @@ struct Network
     ptdf::Union{Array{Float64},Nothing}
     incidence::Array{Int}
 
-    function Network(sys::SystemParam, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
+    function Network(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
         
         for n in nodes
             if n.bustype == nothing
@@ -256,8 +254,8 @@ struct Network
             end
         end
         
-        ybus = build_ybus(sys,branches);
-        ptdf, A = build_ptdf(sys, branches, nodes)    
+        ybus = build_ybus(buscount,branches);
+        ptdf, A = build_ptdf(buscount, branches, nodes)    
         new(branches,
             length(branches),
             ybus, 

@@ -1,5 +1,5 @@
 export orderedlimits
-export PlotLoadStackplot
+export PlotTimeSeries
 
 orderedlimits(limits::Tuple) = limits[2] < limits[1] ? error("Limits not in ascending order") :limits
 
@@ -7,111 +7,90 @@ orderedlimits(limits::NamedTuple) = limits.max < limits.min ? error("Limits not 
 
 orderedlimits(limits::Nothing) = warn("Limits defined as nothing")
 
-function PlotLoadStackplot(gens::Array{Any,1})
-    """
-    Plots a stackplot of the scaling factors (i.e. loads) of an array of renewable generators.
-    Timestamps of the scaling factors must all be the same. Will error otherwise.
-    Most bottom line in the plot is the scaling factors of the generator with the biggest sum of scaling factors.
-    """
-    # Check if timestamps are the same.
-    ReGenTimeIndexCheck(gens)
+# TODO: make Bus warning for no type
 
-    # Sort generators by their sum of scaling factors 
-    gens = sort(gens, by=TotalLoadOfGen, rev=true)
+function PlotTimeSeries()
 
-    # Create array of traces of plot through PlotlyJS
-    traces = Array{PlotlyBase.GenericTrace{Dict{Symbol,Any}},1}()
+end
 
-    idx = 0
-    prev_vals = 0
+# Pretty-Printing
+function printBus(short, io, b)
+    print(io)
+    if short
+        print("Name: ", b.name)
+        print(", Type: ", b.bustype)
+    else
+        print("Bus Number ", b.number, ":")
+        print("\n   ", b) # Prints short version
+        print("\n   Angle: ", b.angle)
+        print("\n   Voltage: ", b.voltage)
+        print("\n   Voltage Lims: ", b.voltagelims)
+        print("\n   Base Voltage: ", b.basevoltage)
+    end
+end
+# Single-line format
+Base.show(io::IO, b::Bus) = printBus(true, io, b)
+# Multi-line format for plaintext (e.g. from repl); can specify for HTML and others too
+Base.show(io::IO, ::MIME"text/plain", b::Bus) = printBus(false, io, b)
 
-    # Create a trace for every generator
-    for g in gens
-        load = g.scalingfactor
+function printTechGen(short, io, t)
+    print(io)
+    if short
+        print("Tech Gen")
+    else
+        print(t, ":") # Prints short version
+        print("\n   Real Power: ", t.realpower)
+        print("\n   Real Power Lims: ", t.realpowerlimits)
+        print("\n   Reactive Power: ", t.reactivepower)
+        print("\n   Reactive Power Lims: ", t.reactivepowerlimits)
+        print("\n   Ramp Lims: ", t.ramplimits)
+        print("\n   Time Lims: ", t.timelimits)
+    end
+end
+Base.show(io::IO, t::TechGen) = printTechGen(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::TechGen) = printTechGen(false, io, t)
+           
+function printEconGen(short, io, e)
+    print(io)
+    if short
+        print("Econ Gen: ")
+        print("\n   Capacity: ", e.capacity)
+    else
+        print(e) # Prints short version
+        print("\n   Var Cost: ", e.variablecost)
+        print("\n   Fixed Cost: ", e.fixedcost)
+        print("\n   Startup Cost: ", e.startupcost)
+        print("\n   Shutdown Cost: ", e.shutdncost)
+        print("\n   Annual Capacity Factor: ", e.annualcapacityfactor)
+    end
+end
+Base.show(io::IO, e::EconGen) = printEconGen(true, io, e)
+Base.show(io::IO, ::MIME"text/plain", e::EconGen) = printEconGen(false, io, e)
 
-        # Determine fill behavior in the plot
-        if idx == 0
-            fillcode = "tozeroy"
+function printThermalGen(short, io, t)
+    print(io)
+    if short
+        print("Thermal Gen: ")
+        print("\n   Name: ", t.name)
+        print(", Status: ", t.status)
+    else
+        print(t) # Prints short version
+        print("\n   Bus:\n      ", t.bus)
+        if t.tech != nothing
+            print("\n   Tech:\n      ", t.tech)
         else
-            fillcode = "tonexty"
+            print("\n   No Tech")
         end
-
-        # This line effectively does a cumulative sum of the scaling factors to create a stackplot
-        vals = load.values + prev_vals
-
-        # Create the trace for the current generator
-        trace = scatter(;
-            x = load.timestamp,
-            y = vals,
-            fill = fillcode,
-            name = g.name)
-
-        push!(traces, trace)
-        prev_vals = vals
-        idx += 1
-    end
-
-    layout = Layout(;
-        xaxis_title = GetTimestep(gens[1].scalingfactor.timestamp),
-        yaxis_title = "MW"
-    )
-
-    # Plot the array of traces created above
-    plot(traces, layout)
-end
-
-##################################
-# Utility Functions for plotting #
-##################################
-
-function TotalLoadOfGen(gen)
-    """
-    Returns sum of scaling factors of the given renewable generator.
-    """
-    return sum(gen.scalingfactor.values)
-end
-
-function ReGenTimeIndexCheck(gens::Array{Any,1})
-    """
-    Checks if an array of renewable generators have the same timestamps 
-    in their scaling factors.
-    """
-    stamps = gens[1].scalingfactor.timestamp
-    for g in gens[2:end]
-        if stamps != g.scalingfactor.timestamp
-            error("The timestamps of $(g.name)'s scaling factor aren't the same as that of $(gens[1])'s scaling factor!")
+        if t.econ != nothing
+            print("\n   Econ:\n      ", t.econ)
+        else
+            print("\n   No Econ")
         end
     end
 end
+Base.show(io::IO, t::ThermalGen) = printThermalGen(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::ThermalGen) = printThermalGen(false, io, t)
 
-function GetTimestep(datetimes)
-    """
-    Given an array of datetimes, returns a string denoting the timestep.
-    Assumes that the datetimes have timestep of either:
-    1 second
-    1 minute
-    1 hour
-    1 day 
 
-    Assumes the array has length of at least 2 and ordered in 
-    increasing order and that the datetimes are equally spaced. 
-    """
-    ref = DateTime(2000, 1, 1, 0, 0, 0) 
-    sec = DateTime(2000, 1, 1, 0, 0, 1) - ref
-    min = DateTime(2000, 1, 1, 0, 1, 0) - ref
-    hr = DateTime(2000, 1, 1, 1, 0, 0) - ref
-    day = DateTime(2000, 1, 2, 0, 0, 0) - ref
-
-    diff = datetimes[2] - datetimes[1]
-
-    if diff == sec
-        return "Second"
-    elseif diff == min
-        return "Minute"
-    elseif diff == hr
-        return "Hour"
-    elseif diff == day
-        return "Day"
-    end
-end
-
+# Base.show(io::IO, b::Branch) = print(io, "Name: ", b.name, ", Type: ", b.bustype)
+# Base.show(io::IO, b::ElectricLoad) = print(io, "Bus ", b.name, " Type ", b.bustype)

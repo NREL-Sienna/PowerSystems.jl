@@ -5,8 +5,6 @@ using NamedTuples
 
 dates  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
 
-FourteenBus = SystemParam(14, 230, 100, length(dates));
-
 nodes14= [
                 Bus(1 , "Bus 1"  , "SF" ,      0 , 1.06  , @NT(min=0.94, max=1.06), 69),
                 Bus(2 , "Bus 2"  , "PV" ,  -4.98 , 1.045 , @NT(min=0.94, max=1.06), 69),
@@ -47,7 +45,7 @@ branches14 = [
                 Line("Line15", true, (nodes14[13],nodes14[14]), 0.17093, 0.34802,  0.0   , Inf, nothing)
             ]   
 
-Net14 = Network(FourteenBus, branches14, nodes14) 
+#Net14 = Network(branches14, nodes14) 
 
 generators14 = [ThermalGen("Bus1", true, nodes14[1],
                 TechGen(200, @NT(min=0, max=200), -16.9, @NT(min=-990, max=990), nothing, nothing),
@@ -159,3 +157,4 @@ loads14 = [ StaticLoad("Bus2", true, nodes14[2], "P", 21.7, 12.7, TimeArray(date
           StaticLoad("Bus13", true, nodes14[13], "P", 13.5, 5.8, TimeArray(dates, loadz2_ts)),
           StaticLoad("Bus14", true, nodes14[14], "P", 14.9, 5, TimeArray(dates, loadz2_ts))
           ]
+

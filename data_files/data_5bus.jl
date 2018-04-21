@@ -5,8 +5,6 @@ using NamedTuples
 DayAhead  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
 #Dispatch_11am =  collect(DateTime("1/1/2024  0:11:00", "d/m/y  H:M:S"):Minute(15):DateTime("1/1/2024  12::00", "d/m/y  H:M:S"))
 
-FiveBus = SystemParam(5, 230, 100, length(DayAhead));
-
 nodes5    = [Bus(1,"nodeA", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
              Bus(2,"nodeB", "PQ", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
              Bus(3,"nodeC", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
@@ -22,7 +20,7 @@ branches5 = [Line("1", true, (nodes5[1],nodes5[2]), 0.00281, 0.0281, 0.00712, 40
              Line("6", true, (nodes5[4],nodes5[5]), 0.00297, 0.0297, 0.00674, 240, nothing)
 ];     
 
-Net5 = Network(FiveBus, branches5, nodes5); 
+#Net5 = Network(branches5, nodes5); 
 
 solar_ts_DA = [0
                0
