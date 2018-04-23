@@ -1,6 +1,7 @@
 export HydroGen 
 export NoDispatchHydro
 export DispatchHydro
+export TecHydro
 
 abstract type 
     HydroGen <: Generator
@@ -10,7 +11,7 @@ end
 struct TechHydro 
     realpower::Real # [MW]
     realpowerlimits::NamedTuple
-    reactivepower::Union{Real,Nothing} # [MVAr]
+    reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{NamedTuple,Nothing}
     ramplimits::Union{NamedTuple,Nothing}
     timelimits::Union{NamedTuple,Nothing}
@@ -22,7 +23,7 @@ struct TechHydro
 end
 
 TecHydro(; realpower = 0.0, 
-          realpowerlimits = (0.0,0.0), 
+          realpowerlimits = @NT(max = 0.0, min = 0.0), 
           reactivepower = nothing,  
           reactivepowerlimits = nothing,
           ramplimits = nothing,
