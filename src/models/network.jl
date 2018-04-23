@@ -15,7 +15,7 @@ struct Line <: Branch
     r::Float64 #[pu]
     x::Float64 #[pu]Co
     b::Float64 #[pu]
-    rate::Union{Real,Nothing} #[MVA]
+    rate::Union{Float64,Nothing} #[MVA]
     anglelimits::Union{Tuple{Real,Real},Nothing}
 end
 
@@ -43,7 +43,7 @@ struct Transformer2W <: Branch
     zb::Float64 #[pu]
     tap::Float64 # [0 - 2]
     α::Float64 # [radians]
-    rate::Union{Real,Nothing} #[MVA]
+    rate::Union{Float64,Nothing} #[MVA]
 end
 
 Transformer2W(; name = "init",

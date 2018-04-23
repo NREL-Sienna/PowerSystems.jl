@@ -6,10 +6,10 @@ struct Bus
     number::Int
     name::String
     bustype::Union{String,Nothing} # [PV, PQ, SF]
-    angle::Union{Real,Nothing} # [degrees]
-    voltage::Union{Real,Nothing} # [pu]
+    angle::Union{Float64,Nothing} # [degrees]
+    voltage::Union{Float64,Nothing} # [pu]
     voltagelims::Union{NamedTuple,Nothing} # [pu]
-    basevoltage::Union{Real,Nothing} # [kV]
+    basevoltage::Union{Float64,Nothing} # [kV]
 end
 
 Bus(;   number = 0, 
