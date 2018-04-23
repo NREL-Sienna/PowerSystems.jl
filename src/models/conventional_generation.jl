@@ -1,5 +1,4 @@
 export ThermalGen
-export ThermalGen_dyn
 export TechGen  
 export EconGen  
 
@@ -10,7 +9,7 @@ end
 struct TechGen
     realpower::Real # [MW]
     realpowerlimits::NamedTuple
-    reactivepower::Union{Real,Nothing} # [MVAr]
+    reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{NamedTuple,Nothing}
     ramplimits::Union{NamedTuple,Nothing}
     timelimits::Union{NamedTuple,Nothing}
@@ -38,7 +37,7 @@ struct EconGen{T}
     fixedcost::Real            # [$/h] 
     startupcost::Real          # [$]
     shutdncost::Real           # [$]
-    annualcapacityfactor::Union{Real,Nothing}  # [0-1] 
+    annualcapacityfactor::Union{Float64,Nothing}  # [0-1] 
 end
 
 EconGen(;   capacity = 0.0, 
@@ -79,7 +78,8 @@ ThermalGenSeason(; name = "init",
                 econ = nothing,
                 scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
 
-struct ThermalGen_dyn <: Thermal
+#=
+                struct ThermalGen_dyn <: Thermal
     name::String
     status::Bool
     bus::Bus
@@ -94,3 +94,4 @@ ThermalGen_dyn(; name = "init",
                 tech = nothing,
                 econ = nothing,
                 dyn=nothing) = ThermalGen_dyn(name, status, bus, tech, econ, dyn)
+=#                
