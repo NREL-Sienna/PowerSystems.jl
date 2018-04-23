@@ -29,7 +29,7 @@ struct InterruptibleLoad <: ElectricLoad
     maxrealpower::Real # [MW]
     maxreactivepower::Real # [MVAr]
     sheddingcost::Real # $/MWh
-    maxenergyloss::Union{Real, Nothing}
+    maxenergyloss::Union{Float64, Nothing}
     scalingfactor::TimeSeries.TimeArray
 end
 

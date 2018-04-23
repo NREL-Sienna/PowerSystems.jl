@@ -11,14 +11,14 @@ end
 struct TechRE
     installedcapacity::Real # [MW]
     reactivepowerlimits::Union{NamedTuple,Nothing}
-    powerfactor::Union{Real,Nothing}
+    powerfactor::Union{Float64,Nothing}
 end
 
 TechRE(; installedcapacitys = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRE(installedcapacitys, reactivepowerlimits, powerfactor)
 
 struct EconRE
     curtailcost::Real # [$/MWh]
-    interruptioncost::Union{Real,Nothing} # [$]
+    interruptioncost::Union{Float64,Nothing} # [$]
 end
 
 EconRE(; curtailcost = 0.0, interruptioncost = nothing) = EconRE(curtailcost, interruptioncost)
