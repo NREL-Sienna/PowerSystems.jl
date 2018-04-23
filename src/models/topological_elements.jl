@@ -21,4 +21,7 @@ Bus(;   number = 0,
         basevoltage = nothing
     ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelims), basevoltage)
 
-include("network.jl")
+struct LoadZones
+    number::Int
+    name::String
+end
