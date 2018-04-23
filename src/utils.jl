@@ -13,7 +13,13 @@ function PlotTimeSeries()
 
 end
 
-# Pretty-Printing
+
+#=
+Pretty-Printing
+=#
+
+# Conventional Gen
+
 function printBus(short, io, b)
     print(io)
     if short
@@ -91,6 +97,85 @@ end
 Base.show(io::IO, t::ThermalGen) = printThermalGen(true, io, t)
 Base.show(io::IO, ::MIME"text/plain", t::ThermalGen) = printThermalGen(false, io, t)
 
+# Renewable Gen
+
+function printTechRE(short, io, t)
+    print(io)
+    if short
+        print("Tech RE: ")
+        print("\n   Capacity: ", t.installedcapacity)
+        print("\n   Power Limits: ", t.reactivepowerlimits)
+        print("\n   Power Factor: ", t.powerfactor)
+    else
+        print(t) # Prints short version
+    end
+end
+Base.show(io::IO, t::TechRE) = printTechRE(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::TechRE) = printTechRE(false, io, t)
+
+function printEconRE(short, io, t)
+    print(io)
+    if short
+        print("Econ RE: ")
+        print("\n   Curtail Cost: ", t.curtailcost)
+        print("\n   Interrupt Cost: ", t.interruptioncost)
+    else
+        print(t) # Prints short version
+    end
+end
+Base.show(io::IO, t::EconRE) = printEconRE(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::EconRE) = printEconRE(false, io, t)
+
+function printReFix(short, io, t)
+    print(io)
+    if short
+        print("ReFix: ")
+        print("\n   Name: ", t.name)
+        print(", Status: ", t.status)
+    else
+        print(t) # Prints short version
+        print("\n   Bus:\n      ", t.bus)
+        if t.tech != nothing
+            print("\n   Tech:\n      ", t.tech)
+        else
+            print("\n   No Tech")
+        end
+        print("\n   Scaling Factor: ", t.scalingfactor) # TODO: only print start, end, etc, not whole series
+    end
+end
+Base.show(io::IO, t::ReFix) = printReFix(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::ReFix) = printReFix(false, io, t)
+
+function printReCurtailment(short, io, t)
+    print(io)
+    if short
+        print("ReCurtailment: ")
+        print("\n   Name: ", t.name)
+        print(", Status: ", t.status)
+    else
+        print(t) # Prints short version
+        print("\n   Bus:\n      ", t.bus)
+        if t.tech != nothing
+            print("\n   Tech:\n      ", t.tech)
+        else
+            print("\n   No Tech")
+        end
+        if t.econ != nothing
+            print("\n   Econ:\n      ", t.econ)
+        else
+            print("\n   No Econ")
+        end
+        print("\n   Scaling Factor: ", t.scalingfactor) # TODO: only print start, end, etc, not whole series
+    end
+end
+Base.show(io::IO, t::ReCurtailment) = printReCurtailment(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::ReCurtailment) = printReCurtailment(false, io, t)
+
+# Helpers
+
+function printTimeSeries(ts)
+    
+end
 
 # Base.show(io::IO, b::Branch) = print(io, "Name: ", b.name, ", Type: ", b.bustype)
 # Base.show(io::IO, b::ElectricLoad) = print(io, "Bus ", b.name, " Type ", b.bustype)
