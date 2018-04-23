@@ -13,8 +13,8 @@ struct StaticLoad <: ElectricLoad
     status::Bool
     bus::Bus
     model::String # [Z, I, P]
-    maxrealpower::Real # [MW]
-    maxreactivepower::Real # [MVAr]
+    maxrealpower::Float64 # [MW]
+    maxreactivepower::Float64 # [MVAr]
     scalingfactor::TimeSeries.TimeArray
 end
 
@@ -26,9 +26,9 @@ struct InterruptibleLoad <: ElectricLoad
     status::Bool
     bus::Bus
     model::String # [Z, I, P]
-    maxrealpower::Real # [MW]
-    maxreactivepower::Real # [MVAr]
-    sheddingcost::Real # $/MWh
+    maxrealpower::Float64 # [MW]
+    maxreactivepower::Float64 # [MVAr]
+    sheddingcost::Float64 # $/MWh
     maxenergyloss::Union{Float64, Nothing}
     scalingfactor::TimeSeries.TimeArray
 end

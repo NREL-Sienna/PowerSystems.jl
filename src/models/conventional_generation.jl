@@ -7,7 +7,7 @@ abstract type
 end
 
 struct TechGen
-    realpower::Real # [MW]
+    realpower::Float64 # [MW]
     realpowerlimits::NamedTuple
     reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{NamedTuple,Nothing}
@@ -32,11 +32,11 @@ TechGen(; realpower = 0.0,
         ) = TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
 struct EconGen{T}
-    capacity::Real                       # [MW]
+    capacity::Float64                       # [MW]
     variablecost::T                         # [$/MWh]
-    fixedcost::Real            # [$/h] 
-    startupcost::Real          # [$]
-    shutdncost::Real           # [$]
+    fixedcost::Float64            # [$/h] 
+    startupcost::Float64          # [$]
+    shutdncost::Float64           # [$]
     annualcapacityfactor::Union{Float64,Nothing}  # [0-1] 
 end
 

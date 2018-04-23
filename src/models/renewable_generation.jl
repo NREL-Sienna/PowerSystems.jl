@@ -9,7 +9,7 @@ abstract type
 end
 
 struct TechRE
-    installedcapacity::Real # [MW]
+    installedcapacity::Float64 # [MW]
     reactivepowerlimits::Union{NamedTuple,Nothing}
     powerfactor::Union{Float64,Nothing}
 end
@@ -17,7 +17,7 @@ end
 TechRE(; installedcapacitys = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRE(installedcapacitys, reactivepowerlimits, powerfactor)
 
 struct EconRE
-    curtailcost::Real # [$/MWh]
+    curtailcost::Float64 # [$/MWh]
     interruptioncost::Union{Float64,Nothing} # [$]
 end
 
@@ -29,7 +29,7 @@ struct ReFix <: RenewableGen
     bus::Bus
     tech::TechRE
     scalingfactor::TimeSeries.TimeArray
-    function ReFix(name, status, bus, installedcapacity::Real, scalingfactor)
+    function ReFix(name, status, bus, installedcapacity::Float64, scalingfactor)
         tech = TechRE(installedcapacity, nothing, 1.0)      
         new(name, status, bus, tech, scalingfactor)
     end
@@ -48,7 +48,7 @@ struct ReCurtailment <: RenewableGen
     tech::TechRE
     econ::Union{EconRE,Nothing}
     scalingfactor::TimeSeries.TimeArray 
-    function ReCurtailment(name, status, bus, installedcapacity::Real, econ, scalingfactor)
+    function ReCurtailment(name, status, bus, installedcapacity::Float64, econ, scalingfactor)
         tech = TechRE(installedcapacity, nothing, 1.0)      
         new(name, status, bus, tech, econ, scalingfactor)
     end

@@ -9,7 +9,7 @@ end
 
 
 struct TechHydro 
-    realpower::Real # [MW]
+    realpower::Float64 # [MW]
     realpowerlimits::NamedTuple
     reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{NamedTuple,Nothing}
@@ -43,6 +43,6 @@ struct DispatchHydro <: HydroGen
     status::Bool
     bus::Bus
     tech::TechHydro
-    storagecapacity::Real
+    storagecapacity::Float64
     scalingfactor::TimeSeries.TimeArray
 end
