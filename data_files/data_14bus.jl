@@ -46,24 +46,24 @@ branches14 = [
             ]   
 
 generators14 = [ThermalGen("Bus1", true, nodes14[1],
-                TechGen(200, @NT(min=0, max=200), -16.9, @NT(min=-990, max=990), nothing, nothing),
-                EconGen(40, x -> 0.04303*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
+                TechGen(200.0, @NT(min=0, max=200), -16.9, @NT(min=-990, max=990), nothing, nothing),
+                EconGen(40.0, x -> 0.04303*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Bus2", true, nodes14[2],
-                TechGen(40, @NT(min=0, max=140), 42.4, @NT(min=-40, max=50), nothing, nothing),
-                EconGen(140, x -> 0.25*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
+                TechGen(40.0, @NT(min=0, max=140), 42.4, @NT(min=-40, max=50), nothing, nothing),
+                EconGen(140.0, x -> 0.25*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Bus3", true, nodes14[3],
-                TechGen(50, @NT(min=0, max=100), 23.4, @NT(min=0, max=40), nothing, nothing),
-                EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
+                TechGen(50.0, @NT(min=0, max=100), 23.4, @NT(min=0, max=40), nothing, nothing),
+                EconGen(100.0, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
                 ),                
                 ThermalGen("Bus6", true, nodes14[6],
-                TechGen(0, @NT(min=0, max=100), 12.2, @NT(min=-6, max=24), nothing, nothing),
-                (EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing))
+                TechGen(0.0, @NT(min=0, max=100), 12.2, @NT(min=-6, max=24), nothing, nothing),
+                (EconGen(100.0, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing))
                 ),    
                 ThermalGen("Bus8", true, nodes14[8],
-                TechGen(0, @NT(min=0, max=100), 17.4, @NT(min=-6, max=4), nothing, nothing),
-                EconGen(100, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
+                TechGen(0.0, @NT(min=0, max=100), 17.4, @NT(min=-6, max=4), nothing, nothing),
+                EconGen(100.0, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
                 )
             ];
 
@@ -153,7 +153,7 @@ loads14 = [StaticLoad("Bus2", true, nodes14[2], "P", 21.7, 12.7, TimeArray(dates
           StaticLoad("Bus11", true, nodes14[11], "P", 3.5, 1.8, TimeArray(dates, loadz2_ts)),
           StaticLoad("Bus12", true, nodes14[12], "P", 6.1, 1.6, TimeArray(dates, loadz2_ts)),
           StaticLoad("Bus13", true, nodes14[13], "P", 13.5, 5.8, TimeArray(dates, loadz2_ts)),
-          StaticLoad("Bus14", true, nodes14[14], "P", 14.9, 5, TimeArray(dates, loadz2_ts))
+          StaticLoad("Bus14", true, nodes14[14], "P", 14.9, 5.0, TimeArray(dates, loadz2_ts))
           ]
 
 sys5 = PowerSystem(nodes14, generators14, loads14, branches14, 69.0, 1000.0)  

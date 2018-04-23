@@ -71,31 +71,31 @@ wind_ts_DA = [0.985205412
            0.069569628]
 
 generators5 = [  ThermalGen("Alta", true, nodes5[1],
-                    TechGen(40, @NT(min=0, max=40), 10, @NT(min = -30, max = 30), nothing, nothing),
-                    EconGen(40, 14.0, 0.0, 0.0, 0.0, nothing)
+                    TechGen(40.0, @NT(min=0, max=40), 10.0, @NT(min = -30, max = 30), nothing, nothing),
+                    EconGen(40.0, 14.0, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Park City", true, nodes5[1],
-                    TechGen(170, @NT(min=0, max=170), 20, @NT(min =-127.5, max=127.5), nothing, nothing),
-                    EconGen(170, 15.0, 0.0, 0.0, 0.0, nothing)
+                    TechGen(170.0, @NT(min=0, max=170), 20.0, @NT(min =-127.5, max=127.5), nothing, nothing),
+                    EconGen(170.0, 15.0, 0.0, 0.0, 0.0, nothing)
                 ), 
                 ThermalGen("Solitude", true, nodes5[3],
-                    TechGen(520, @NT(min=0, max=520), 100, @NT(min =-390, max=390), nothing, nothing),
-                    EconGen(520, 30.0, 0.0, 0.0, 0.0, nothing)
+                    TechGen(520.0, @NT(min=0, max=520), 100.0, @NT(min =-390, max=390), nothing, nothing),
+                    EconGen(520.0, 30.0, 0.0, 0.0, 0.0, nothing)
                 ),                
                 ThermalGen("Sundance", true, nodes5[4],
-                    TechGen(200, @NT(min=0, max=200), 40, @NT(min =-150, max=150), nothing, nothing),
-                    EconGen(200, 40.0, 0.0, 0.0, 0.0, nothing)
+                    TechGen(200.0, @NT(min=0, max=200), 40.0, @NT(min =-150, max=150), nothing, nothing),
+                    EconGen(200.0, 40.0, 0.0, 0.0, 0.0, nothing)
                 ),    
                 ThermalGen("Brighton", true, nodes5[5],
-                    TechGen(600, @NT(min=0, max=600), 150, @NT(min =-450, max=450), nothing, nothing),
-                    EconGen(600, 10.0, 0.0, 0.0, 0.0, nothing)
+                    TechGen(600.0, @NT(min=0, max=600), 150.0, @NT(min =-450, max=450), nothing, nothing),
+                    EconGen(600.0, 10.0, 0.0, 0.0, 0.0, nothing)
                 ),
                 ReFix("SolarBusC", true, nodes5[3], 
                     60.0,
                     TimeSeries.TimeArray(DayAhead,solar_ts_DA)
                 ),
                 ReCurtailment("WindBusA", true, nodes5[5],
-                    120,
+                    120.0,
                     EconRE(22.0, nothing), 
                     TimeSeries.TimeArray(DayAhead,wind_ts_DA)
                 )
@@ -176,9 +176,9 @@ loadbus4_ts_DA = [ 0.871297342
                 0.771004923
                 0.717847996]            
 
-loads5_DA = [  StaticLoad("Bus2", true, nodes5[2], "P", 300, 98.61, TimeArray(DayAhead, loadbus2_ts_DA)),
-            StaticLoad("Bus3", true, nodes5[3], "P", 300, 98.61, TimeArray(DayAhead, loadbus3_ts_DA)),
-            StaticLoad("Bus4", true, nodes5[4], "P", 400, 131.47, TimeArray(DayAhead, loadbus4_ts_DA)),
+loads5_DA = [  StaticLoad("Bus2", true, nodes5[2], "P", 300.0, 98.61, TimeArray(DayAhead, loadbus2_ts_DA)),
+            StaticLoad("Bus3", true, nodes5[3], "P", 300.0, 98.61, TimeArray(DayAhead, loadbus3_ts_DA)),
+            StaticLoad("Bus4", true, nodes5[4], "P", 400.0, 131.47, TimeArray(DayAhead, loadbus4_ts_DA)),
         ]
 
 sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, 230.0, 1000.0)  
