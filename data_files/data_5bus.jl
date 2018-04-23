@@ -20,8 +20,6 @@ branches5 = [Line("1", true, (nodes5[1],nodes5[2]), 0.00281, 0.0281, 0.00712, 40
              Line("6", true, (nodes5[4],nodes5[5]), 0.00297, 0.0297, 0.00674, 240, nothing)
 ];     
 
-#Net5 = Network(branches5, nodes5); 
-
 solar_ts_DA = [0
                0
                0
@@ -182,3 +180,5 @@ loads5_DA = [  StaticLoad("Bus2", true, nodes5[2], "P", 300, 98.61, TimeArray(Da
             StaticLoad("Bus3", true, nodes5[3], "P", 300, 98.61, TimeArray(DayAhead, loadbus3_ts_DA)),
             StaticLoad("Bus4", true, nodes5[4], "P", 400, 131.47, TimeArray(DayAhead, loadbus4_ts_DA)),
         ]
+
+sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, 230.0, 1000.0)  

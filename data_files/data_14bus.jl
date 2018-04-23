@@ -30,13 +30,13 @@ branches14 = [
                 Line("Line5",  true, (nodes14[2],nodes14[5]),   0.05695, 0.17388,  0.0346, Inf, nothing),
                 Line("Line6",  true, (nodes14[3],nodes14[4]),   0.06701, 0.17103,  0.0128, Inf, nothing),
                 Line("Line7",  true, (nodes14[4],nodes14[5]),   0.01335, 0.04211,  0.0   , Inf, nothing),
-                Transformer2W("Trans3", true, (nodes14[4],nodes14[7]),  0.0    , 0.20912,  0.0    , 0.978, 0.0, Inf),
-                Transformer2W("Trans1", true, (nodes14[4],nodes14[9]),  0.0    , 0.55618,  0.0     , 0.969, 0.0, Inf),
-                Transformer2W("Trans2", true, (nodes14[5],nodes14[6]),  0.0    , 0.25202,  0.0     , 0.932, 0.0, Inf),
+                Transformer2W("Trans3", true, (nodes14[4],nodes14[7]),  0.0    , 0.20912,  0.0    , 0.978,  Inf),
+                Transformer2W("Trans1", true, (nodes14[4],nodes14[9]),  0.0    , 0.55618,  0.0     , 0.969,  Inf),
+                Transformer2W("Trans2", true, (nodes14[5],nodes14[6]),  0.0    , 0.25202,  0.0     , 0.932,  Inf),
                 Line("Line8",  true, (nodes14[6],nodes14[11]),  0.09498, 0.19890,  0.0   , Inf, nothing),   
                 Line("Line9",  true, (nodes14[6],nodes14[12]),  0.12291, 0.25581,  0.0   , Inf, nothing),    
                 Line("Line10", true, (nodes14[6],nodes14[13]),  0.06615, 0.13027,  0.0   , Inf, nothing), 
-                Transformer2W("Trans4", true, (nodes14[7],nodes14[8]),  0.0      , 0.17615,  0.0     , 1.0,   0.0, Inf),
+                Transformer2W("Trans4", true, (nodes14[7],nodes14[8]),  0.0      , 0.17615,  0.0     , 1.0,   Inf),
                 Line("Line16", true, (nodes14[7],nodes14[9]),   0.0,     0.11001,  0.0   , Inf, nothing),   
                 Line("Line11", true, (nodes14[9],nodes14[10]),  0.03181, 0.08450,  0.0   , Inf, nothing),    
                 Line("Line12", true, (nodes14[9],nodes14[14]),  0.12711, 0.27038,  0.0   , Inf, nothing),    
@@ -44,8 +44,6 @@ branches14 = [
                 Line("Line14", true, (nodes14[12],nodes14[13]), 0.22092, 0.19988,  0.0   , Inf, nothing),    
                 Line("Line15", true, (nodes14[13],nodes14[14]), 0.17093, 0.34802,  0.0   , Inf, nothing)
             ]   
-
-#Net14 = Network(branches14, nodes14) 
 
 generators14 = [ThermalGen("Bus1", true, nodes14[1],
                 TechGen(200, @NT(min=0, max=200), -16.9, @NT(min=-990, max=990), nothing, nothing),
@@ -145,7 +143,7 @@ loadz3_ts = [ 0.871297342
               0.771004923
               0.717847996]   
             
-loads14 = [ StaticLoad("Bus2", true, nodes14[2], "P", 21.7, 12.7, TimeArray(dates, loadz1_ts)),
+loads14 = [StaticLoad("Bus2", true, nodes14[2], "P", 21.7, 12.7, TimeArray(dates, loadz1_ts)),
           StaticLoad("Bus3", true, nodes14[3], "P", 94.2, 19, TimeArray(dates, loadz1_ts)),
           StaticLoad("Bus4", true, nodes14[4], "P", 47.8, -3.9, TimeArray(dates, loadz3_ts)),
           StaticLoad("Bus5", true, nodes14[5], "P", 7.6, 1.6, TimeArray(dates, loadz1_ts)),
@@ -158,3 +156,4 @@ loads14 = [ StaticLoad("Bus2", true, nodes14[2], "P", 21.7, 12.7, TimeArray(date
           StaticLoad("Bus14", true, nodes14[14], "P", 14.9, 5, TimeArray(dates, loadz2_ts))
           ]
 
+sys5 = PowerSystem(nodes14, generators14, loads14, branches14, 69.0, 1000.0)  
