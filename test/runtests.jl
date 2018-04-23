@@ -10,6 +10,6 @@ println("Read Data in *.jl files")
 println("Test all the constructors")
 @time @test include("constructors.jl")
 println("Read Matpower Test Cases")
-@time @test include("parsematpower.jl")
+#@time @test include("parsematpower.jl")
 toc()
 
