@@ -23,12 +23,12 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
 
         if typeof(b) == PowerSystems.Transformer2W 
 
-            Y11 = (1/(b.tap*b.x))*b.status;
+            Y11 = (1/(b.tap*b.x));
             X[ix,ix] = b.x*b.tap;
 
         elseif typeof(b) == PowerSystems.Line
 
-            Y11 = (1/b.x)*b.status;
+            Y11 = (1/b.x);
             X[ix,ix] = b.x;
 
         elseif typeof(b) == PowerSystems.Transformer3W 

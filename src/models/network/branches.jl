@@ -16,6 +16,7 @@ struct Line <: Branch
     x::Float64 #[pu]Co
     b::Float64 #[pu]
     rate::Union{Float64,Nothing} #[MVA]
+    #Pending a proper calculation of the rates
     anglelimits::Union{Tuple{Float64,Float64},Nothing}
 end
 

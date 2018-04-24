@@ -4,6 +4,9 @@ include("ptdf_calculations.jl")
 
 export Network
 
+# To Do
+# 1. Consider a dynamic rate problem, add time series in the rate calculations. 
+
 struct Network 
     branches::Array{Branch}
     linecount::Int
