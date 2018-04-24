@@ -69,6 +69,9 @@ function PVBusCheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
     end
 end
 
+## TO DO checks 
+# 1. Check for islanded Buses 
+
 ### Struct and different Power System constructors depending on the data provided ####
 
 struct PowerSystem

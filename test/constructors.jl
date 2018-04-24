@@ -13,4 +13,7 @@ tTecHydro = TecHydro()
 #Storage Constructots 
 tStorage = GenericBattery()
 
+#Load Constructos 
+tLoad = InterruptibleLoad()
+
 true
