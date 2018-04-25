@@ -9,26 +9,26 @@ end
 
 struct Deterministic <: Forecast
     horizon::Int
-    issuetimestep::Base.Dates.Period
     resolution::Base.Dates.Period
+    interval::Base.Dates.Period
     initialtime::DateTime
     data::Dict{Any,TimeSeries.TimeArray}
 end
 
 struct Scenarios <: Forecast
     horizon::Int
-    issuetimestep::Base.Dates.Period
     resolution::Base.Dates.Period
+    interval::Base.Dates.Period
     initialtime::DateTime
-    numberscenarios::Int
+    scenarioquantity::Int
     data::Dict{Any,Dict{Int,TimeSeries.TimeArray}}
 end
 
 struct Probabilistic <: Forecast
     horizon::Int
-    issuetimestep::Base.Dates.Period
     resolution::Base.Dates.Period
+    interval::Base.Dates.Period
     initialtime::DateTime
-    numberscenarios::Int
+    percentilequantity::Int
     data::Dict{Any,Dict{Int,TimeSeries.TimeArray}}
 end
