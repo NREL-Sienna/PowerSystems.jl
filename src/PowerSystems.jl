@@ -10,7 +10,6 @@ using CSV
 # This packages will be removed with Julia v0.7
 using Compat
 using NamedTuples
-using Plotly
 
 # PowerSystems models
 include("models/topological_elements.jl")
