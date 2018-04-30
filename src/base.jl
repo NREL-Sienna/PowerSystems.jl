@@ -1,4 +1,5 @@
 export PowerSystem
+export SystemParam
 
 ### Utility Functions needed for the construction of the Power System, mostly used for consistency checking ####
 
@@ -165,4 +166,11 @@ PowerSystem(; buses = [Bus()],
             basevoltage = 0.0,
             basepower = 1000.0,
             dynamics = false,
-        ) = PowerSystem(buses, generators, loads, network, storage, basevoltage, basepower, dynamics)        
+        ) = PowerSystem(buses, generators, loads, network, storage, basevoltage, basepower, dynamics)
+
+struct SystemParam
+    nBus::Int
+    baseKV::Float64
+    baseMVA::Float64
+    nTStep::Int
+end
