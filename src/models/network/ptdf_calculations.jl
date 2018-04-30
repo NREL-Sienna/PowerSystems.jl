@@ -1,7 +1,7 @@
 function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
 
     linecount = length(branches)
-    
+
     for b in nodes
         if b.number < -1
             error("buses must be numbered consecutively in the bus/node matrix")
@@ -12,7 +12,7 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
     B = spzeros(Float64,buscount,buscount);
     X = spzeros(Float64,linecount,linecount);
 
-   #build incidence matrix 
+   #build incidence matrix
    #incidence_matrix = A
 
     for (ix,b) in enumerate(branches)
@@ -21,7 +21,7 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
 
         A[b.connectionpoints[2].number, ix] = -1;
 
-        if typeof(b) == PowerSystems.Transformer2W 
+        if typeof(b) == PowerSystems.Transformer2W
 
             Y11 = (1/(b.tap*b.x));
             X[ix,ix] = b.x*b.tap;
@@ -31,7 +31,7 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
             Y11 = (1/b.x);
             X[ix,ix] = b.x;
 
-        elseif typeof(b) == PowerSystems.Transformer3W 
+        elseif typeof(b) == PowerSystems.Transformer3W
 
             error("3W Transformer not implemented about PTDF")
 
@@ -40,18 +40,18 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
         B[b.connectionpoints[1].number,
             b.connectionpoints[1].number] += Y11;
         Y12 = -1*Y11;
-        B[b.connectionpoints[1].number, 
+        B[b.connectionpoints[1].number,
             b.connectionpoints[2].number] += Y12;
         #Y21 = Y1
-        B[b.connectionpoints[2].number, 
+        B[b.connectionpoints[2].number,
             b.connectionpoints[1].number] += Y12;
         #Y22 = Y11;
         B[b.connectionpoints[2].number,
             b.connectionpoints[2].number] += Y11;
-  
+
     end
 
-    slack_position = -9; 
+    slack_position = -9;
 
     for n in nodes
         if n.bustype == "SF"
@@ -59,16 +59,16 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
         end
     end
 
-    #To-do Make speed-up improvements in the matrix operations. 
-    if slack_position != -9 
+    #To-do Make speed-up improvements in the matrix operations.
+    if slack_position != -9
         B = B[setdiff(1:end, slack_position), setdiff(1:end, slack_position)]
 
         S = inv(full(X))*A[setdiff(1:end, slack_position), :]'*inv(full(B));
-        
+
         S = hcat(S[:,1:slack_position-1],zeros(linecount,),S[:,slack_position:end-1])
 
-    elseif slack_position == -9 
-        
+    elseif slack_position == -9
+
         warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
         S = nothing
 

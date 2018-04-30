@@ -1,7 +1,7 @@
 export Generator
 
-abstract type 
-    Generator  
+abstract type
+    Generator
 end
 
 include("renewable_generation.jl")

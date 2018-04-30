@@ -137,7 +137,7 @@ function dict_to_struct(data)
 
     else
         warn("The dictionary has no data model descriptor; the parser is not guaranteed to work")
-        
+
         # Check for at least one bus in input file
         if (length(data["bus"]) < 1)
             error("There are no busses in the data")

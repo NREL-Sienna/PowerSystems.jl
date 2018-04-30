@@ -1,7 +1,7 @@
 export PrimeMover
 export HydrualicTurbine
 
-abstract type 
+abstract type
     PrimeMover
 end
 
@@ -41,5 +41,5 @@ struct HydrualicTurbine <: PrimeMover
         NumberParams = 1;
         new(Tw, Pᵣ, L, Uᵣ, aᵧ, Hᵣ, Aₜ, gfl, gₙₗ, H₀, Uₙₗ, Generator, NumberVariables, NumberParams, dynamics)
     end
-    
+
 end

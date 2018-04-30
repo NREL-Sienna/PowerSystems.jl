@@ -1,6 +1,6 @@
 export ShuntElement
 
-abstract type 
+abstract type
     ShuntElement
 end
 

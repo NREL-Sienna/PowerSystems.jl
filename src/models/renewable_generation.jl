@@ -4,7 +4,7 @@ export EconRE
 export ReFix
 export ReCurtailment
 
-abstract type 
+abstract type
     RenewableGen <: Generator
 end
 
@@ -30,15 +30,15 @@ struct ReFix <: RenewableGen
     tech::TechRE
     scalingfactor::TimeSeries.TimeArray
     function ReFix(name, status, bus, installedcapacity::Float64, scalingfactor)
-        tech = TechRE(installedcapacity, nothing, 1.0)      
+        tech = TechRE(installedcapacity, nothing, 1.0)
         new(name, status, bus, tech, scalingfactor)
     end
 end
 
-ReFix(; name="init", 
-        status = false, 
-        bus = Bus(), 
-        installedcapacity = 0.0, 
+ReFix(; name="init",
+        status = false,
+        bus = Bus(),
+        installedcapacity = 0.0,
         scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = ReFix(name, status, bus, installedcapacity, scalingfactor)
 
 struct ReCurtailment <: RenewableGen
@@ -47,16 +47,16 @@ struct ReCurtailment <: RenewableGen
     bus::Bus
     tech::TechRE
     econ::Union{EconRE,Nothing}
-    scalingfactor::TimeSeries.TimeArray 
+    scalingfactor::TimeSeries.TimeArray
     function ReCurtailment(name, status, bus, installedcapacity::Float64, econ, scalingfactor)
-        tech = TechRE(installedcapacity, nothing, 1.0)      
+        tech = TechRE(installedcapacity, nothing, 1.0)
         new(name, status, bus, tech, econ, scalingfactor)
     end
 end
 
-ReCurtailment(; name = "init", 
-                status = false, 
-                bus= Bus(), 
+ReCurtailment(; name = "init",
+                status = false,
+                bus= Bus(),
                 tech = TechRE(),
                 econ = EconRE(),
                 scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = ReCurtailment(name, status, bus, tech, econ, scalingfactor)

@@ -1,6 +1,6 @@
 export psse_parser
 
-# Function to read the raw files from psse 
+# Function to read the raw files from psse
 
 function psse_parser(rawfile_name::String)
     current_row = 0
@@ -27,7 +27,7 @@ function psse_parser(rawfile_name::String)
     rate_c = 0
     shift = 0
     tap = 0
-    
+
 
     name = split(split(rawfile_name, "/")[end],".")[1]
     case = Dict{String,Any}(
@@ -69,8 +69,8 @@ function psse_parser(rawfile_name::String)
                 "vmin" => .95,
             )
             buses[strip(bus_row[1])] = bus_data
-        
-        elseif section == "GENERATOR" 
+
+        elseif section == "GENERATOR"
             gen_row = split(ln, ",")
             index_gen = parse(Int, gen_row[1])
             gen_data = Dict{String,Any}(
@@ -103,7 +103,7 @@ function psse_parser(rawfile_name::String)
             load_row = split(strip(ln, [' ']), ",")
             buses[load_row[1]]["pd"] = parse(Float64, load_row[6])/case["baseMVA"]
             buses[load_row[1]]["qd"] = parse(Float64, load_row[7])/case["baseMVA"]
-        
+
         elseif section == "BRANCH"
             branch_row = split(ln, ",")
             branch_data = Dict{String,Any}(
@@ -143,7 +143,7 @@ function psse_parser(rawfile_name::String)
                 if status!= 0 && status != 1
                     error("status code must be 1 or 0")
                 end
-                
+
                 if admittance_code == 1
                     br_b = parse(Float64, transf_row[8]) # we are reading MAG1 as charging suspectence
                 else
@@ -156,7 +156,7 @@ function psse_parser(rawfile_name::String)
                 if impedence_code == 1
                     br_r = parse(Float64, transf_row[1])
                     br_x = parse(Float64, transf_row[2])
-                else  
+                else
                     error("impedence code must be 1")
                 end
                 transf_index = 3
@@ -174,7 +174,7 @@ function psse_parser(rawfile_name::String)
                     error("winding code must be 1")
                 end
                 transf_index = 4
-            else 
+            else
                 # Last line of a single 2-winding transformer's data
                 transf_data = Dict{String,Any}(
                     "index" => branch_index,
@@ -197,8 +197,8 @@ function psse_parser(rawfile_name::String)
                 branch_index = branch_index + 1
                 transf_index = 1
             end
-            
-            
+
+
         elseif section == "FIXED"
             shunt_row = split(strip(ln, [' ']), ",")
             buses[shunt_row[1]]["gs"] = (parse(Float64, shunt_row[3])*parse(Float64, shunt_row[4]))/case["baseMVA"]

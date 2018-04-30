@@ -1,6 +1,6 @@
 export DynamicController
 
-abstract type 
+abstract type
     DynamicController
 end
 
@@ -13,11 +13,11 @@ struct SimpleController <: DynamicController
 
     function SimpleController(ExampleConstant, PrimeMover)
     	dynamics = (output, dU, U, params::Tuple, t) -> begin
-    			control_value = params[1] + cos(dU[1]) 
+    			control_value = params[1] + cos(dU[1])
         	return
         end
         NumberVariables = 1;
         NumberParams = 1;
         new(ExampleConstant, PrimeMover, NumberVariables, NumberParams, dynamics)
-    end    
+    end
 end

@@ -5,9 +5,9 @@ include("ptdf_calculations.jl")
 export Network
 
 # To Do
-# 1. Consider a dynamic rate problem, add time series in the rate calculations. 
+# 1. Consider a dynamic rate problem, add time series in the rate calculations.
 
-struct Network 
+struct Network
     branches::Array{Branch}
     linecount::Int
     ybus::SparseMatrixCSC{Complex{Float64},Int64}
@@ -15,13 +15,13 @@ struct Network
     incidence::Array{Int}
 
     function Network(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
-        
+
         buscount = length(nodes)
         ybus = PowerSystems.build_ybus(buscount,branches);
-        ptdf, A = PowerSystems.build_ptdf(buscount, branches, nodes)    
+        ptdf, A = PowerSystems.build_ptdf(buscount, branches, nodes)
         new(branches,
             length(branches),
-            ybus, 
+            ybus,
             ptdf,
             A)
     end

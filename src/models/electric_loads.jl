@@ -4,12 +4,12 @@ export ControllableLoad
 export InterruptibleLoad
 #export FixedShunt
 
-abstract type 
-    ElectricLoad  
+abstract type
+    ElectricLoad
 end
 
 struct StaticLoad <: ElectricLoad
-    name::String 
+    name::String
     status::Bool
     bus::Bus
     model::String # [Z, I, P]
@@ -22,7 +22,7 @@ StaticLoad(; name = "init", status = true, bus = Bus(), model = "0", maxrealpowe
 StaticLoad(name, status, bus, model, maxrealpower, maxreactivepower, scalingfactor)
 
 struct InterruptibleLoad <: ElectricLoad
-    name::String 
+    name::String
     status::Bool
     bus::Bus
     model::String # [Z, I, P]
@@ -37,9 +37,9 @@ InterruptibleLoad(; name = "init", status = true, bus = Bus(), model = "0", maxr
 InterruptibleLoad(name, status, bus, model, maxrealpower, maxreactivepower, sheddingcost, maxenergyloss, scalingfactor)
 
 struct ControllableLoad <: ElectricLoad
-    name::String 
+    name::String
     status::Bool
     bus::Bus
-    realpower::Function 
+    realpower::Function
     reactivepower::Union{Function,Nothing}
 end

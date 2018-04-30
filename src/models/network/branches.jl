@@ -4,7 +4,7 @@ export Transformer2W
 export PhaseShiftingTransformer
 export Transformer3W
 
-abstract type 
+abstract type
     Branch
 end
 
@@ -25,20 +25,20 @@ Line(;  name = "init",
         connectionpoints = (Bus(), Bus()),
         r = 0.0,
         x = 0.0,
-        b = 0.0, 
+        b = 0.0,
         rate = nothing,
         anglelimits = nothing
     ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
 
 """
-The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. 
-The model allocates the iron losses and magnetezing suceptance to the primary side 
+The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer.
+The model allocates the iron losses and magnetezing suceptance to the primary side
 """
 
 struct PhaseShiftingTransformer <: Branch
     name::String
     status::Bool
-    connectionpoints::Tuple{Bus,Bus}    
+    connectionpoints::Tuple{Bus,Bus}
     r::Float64 #[pu]
     x::Float64 #[pu]
     zb::Float64 #[pu]
@@ -52,7 +52,7 @@ PhaseShiftingTransformer(; name = "init",
                 connectionpoints = (Bus(), Bus()),
                 r = 0.0,
                 x = 0.0,
-                zb = 0.0, 
+                zb = 0.0,
                 tap = 1.0,
                 α = 0.0,
                 rate = nothing
@@ -61,7 +61,7 @@ PhaseShiftingTransformer(; name = "init",
 struct Transformer2W <: Branch
     name::String
     status::Bool
-    connectionpoints::Tuple{Bus,Bus}    
+    connectionpoints::Tuple{Bus,Bus}
     r::Float64 #[pu]
     x::Float64 #[pu]
     zb::Float64 #[pu]
@@ -74,15 +74,15 @@ Transformer2W(; name = "init",
                 connectionpoints = (Bus(), Bus()),
                 r = 0.0,
                 x = 0.0,
-                zb = 0.0, 
+                zb = 0.0,
                 tap = 1.0,
                 rate = nothing
-            ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)            
+            ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
 
 struct Transformer3W <: Branch
     name::String
     status::Bool
-    transformer::Transformer2W   
+    transformer::Transformer2W
     line::Line
 end
 
@@ -93,4 +93,4 @@ Transformer3W(; name = "init",
             ) = Transformer3W(name, status, transformer, line)
 
 
-            
+

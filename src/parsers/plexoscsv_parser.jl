@@ -3,23 +3,23 @@ export plexoscsv_parser
 function csv_mappings()
     """
     This function returns a dictionary that, for each device,
-    maps JuliaPower attributes to the appropriate column names 
+    maps JuliaPower attributes to the appropriate column names
     found in the CSV files. Values in the dictionaries that aren't
     strings (except for "data_type" => "DA" and the default case
-    parameters found at the bottom of the dictionary) are used as default 
-    values for their respective key/JuliaPower attribute. 
-        
-    Keys that map to 'nothing' do not have default values because their value 
-    are determined by other JuliaPower attributes and will be calculated in 
+    parameters found at the bottom of the dictionary) are used as default
+    values for their respective key/JuliaPower attribute.
+
+    Keys that map to 'nothing' do not have default values because their value
+    are determined by other JuliaPower attributes and will be calculated in
     a different order than the other attributes.
     """
 
-   
+
     CSV_MAPPING = Dict(
         "bus" => Dict(
             "zone" => 1,
             "bus_i" => "index_created_at",
-            "bus_type" => 1, 
+            "bus_type" => 1,
             "qd" => "Load_Participation_Factor",
             "gs" => 0.0,
             "bs" => 0.0,
@@ -69,14 +69,14 @@ function csv_mappings()
             "min_up_time" => "Min_Up_Time_h_",
             "dispatchable" => nothing, # will be updated when csv_to_pm_gen converts the "mbase" attribute
             "time_series" => nothing # will be updated when csv_to_pm_gen converts the "mbase" attribute
-    
+
         ),
         "branch" => Dict(
             "br_r" => "Resistance_p_u_",
             "rate_a" => "Max_Flow_MW_",
             "shift" => 0.0,
             "br_b" => 0.0,
-            "rate_b" => "Max_Flow_MW_", 
+            "rate_b" => "Max_Flow_MW_",
             "br_x" => "Reactance_p_u_",
             "rate_c" => 0.0,
             "f_bus" => "Bus_from",
@@ -106,7 +106,7 @@ function parse_devices(file_string::String)
     """
     Parses a CSV file denoting a list of devices into JuliaPower format.
 
-    Iterates through all rows in the CSV and creates a dictionary for each row. 
+    Iterates through all rows in the CSV and creates a dictionary for each row.
     Each created dictionary represents a device and has the column names as keys
     and the value in the row as the value. These dictionaries are stored in an
     outer dictionary. A dictionary's key in this outer dictionary is the index
@@ -114,8 +114,8 @@ function parse_devices(file_string::String)
 
     Args:
         file_string: A string.
-    
-    Returns: 
+
+    Returns:
         A dictionary with the csv attributes of many power system devices.
     """
     devices = readtable(file_string)
@@ -151,15 +151,15 @@ function parse_netloads(folder::String)
     2nd column is a column of loads of the whole system.
 
     An overall netload time series is created by outer joining all the CSV tables
-    by datetime and summing up all the load data for a particular datetime. Then, 
+    by datetime and summing up all the load data for a particular datetime. Then,
     some information is calculated, which is specified below.
 
     Args:
         folder: A file path to the folder of netload data
-    
+
     Returns:
-        A dictionary holding the max load, datetime of the max load, and the time series 
-        for each region and for the sum of the data from each region. 
+        A dictionary holding the max load, datetime of the max load, and the time series
+        for each region and for the sum of the data from each region.
         The format is like this:
         {
             "RT" => {
@@ -212,7 +212,7 @@ function parse_netloads(folder::String)
     dict["ind_at_max_load"] = indmax(netload[:2])
     dict["dt_at_max_load"] = DateTime(netload[dict["ind_at_max_load"],1], "m/d/Y H:M") # get date where maximum load occurs
     netload[:dt] = DateTime(Array{String, 1}(netload[:1]), "m/d/Y H:M")
-    sort!(netload, cols=[order(:dt)]) # sort data by dates 
+    sort!(netload, cols=[order(:dt)]) # sort data by dates
     dict["series"] = TimeArray(netload[:dt], netload[:2] / dict["max_load"])
 
     # Get max load, datetime of max load, and time series for load of each region
@@ -224,11 +224,11 @@ function parse_netloads(folder::String)
         curr_loads = load_data[file_of_loads]
         curr_loads[:dt] = DateTime(Array{String, 1}(curr_loads[:1]), "m/d/Y H:M")
         sort!(curr_loads, cols=[order(:dt)])
-        dict[data_type][region]["series"] = TimeArray(curr_loads[:dt], curr_loads[:2] 
+        dict[data_type][region]["series"] = TimeArray(curr_loads[:dt], curr_loads[:2]
                                                         / curr_loads[curr_loads[:dt] .== dict["dt_at_max_load"], :][:2][1])
         dict[data_type][region]["max_load"] = maximum(dict[data_type][region]["series"].values)
     end
-    
+
     return dict
 end
 
@@ -239,7 +239,7 @@ function parse_renewable_loads(file_path::String)
 
     Args:
         file_path: A file path
-    
+
     Returns:
         A dictionary holding the max load, datetime of the max load, and the time series.
         The format is like this:
@@ -261,9 +261,9 @@ function parse_renewable_loads(file_path::String)
     dict["ind_at_max_load"] = indmax(loads[:2])
     dict["dt_at_max_load"] = DateTime(loads[dict["ind_at_max_load"],1], "m/d/Y H:M") # get date where maximum load occurs
     loads[:dt] = DateTime(Array{String, 1}(loads[:1]), "m/d/Y H:M")
-    sort!(loads, cols=[order(:dt)]) # sort data by dates 
+    sort!(loads, cols=[order(:dt)]) # sort data by dates
     dict["series"] = TimeArray(loads[:dt], loads[:2])
-    
+
     return dict
 end
 
@@ -274,7 +274,7 @@ function parse_csv(folder::String)
     Args:
         folder: A string denoting a folder of CSV files.
 
-    Returns: 
+    Returns:
         A dictionary whos keys are device types and whos values are dictionaries that
         each represent a device and its attributes.
         The format is like this:
@@ -300,7 +300,7 @@ function parse_csv(folder::String)
     case["folder path"] = folder
     # iterate through all files in folder
     for file_name in readdir(folder)
-        # extract the device name from the file and call parse_devices 
+        # extract the device name from the file and call parse_devices
         # on each csv file.
         file_path = "$folder/$file_name"
 
@@ -318,13 +318,13 @@ function parse_csv(folder::String)
                     case[load_file] = parse_renewable_loads("$file_path/$file_of_loads")
                 end
             end
-        
+
         # else, parse files specifying devices and netload.csv
         elseif match(REGEX_DEVICE_TYPE, file_name) != nothing
             device_type = match(REGEX_DEVICE_TYPE, file_name)[1]
             case[device_type] = parse_devices(file_path)
         end
-        
+
     end
 
     device_types = ["Buses", "Generators", "Lines"]
@@ -339,14 +339,14 @@ end
 
 function csv_to_pm(csv_dict::Dict{String, Any})
     """
-    Convert CSV dictionary to a JuliaPower dictionary. 
+    Convert CSV dictionary to a JuliaPower dictionary.
     For each type of item in JuliaPower format, call the appropriate function.
     At the end, fill in the default case parameters from csv_mappings() into pm_dict
 
     Args:
-        csv_dict: A dictionary from the output of the function parse_csv. 
+        csv_dict: A dictionary from the output of the function parse_csv.
 
-    Returns: 
+    Returns:
         A dictionary in JuliaPower format.
         The format is like this:
         {
@@ -376,28 +376,28 @@ function csv_to_pm(csv_dict::Dict{String, Any})
             pm_dict[pm_attr] = default_val
         end
     end
-    
+
     return pm_dict
 end
 
 function csv_to_pm_gen(csv_dict::Dict{String, Any})
     """
-    Convert CSV dictionary to a JuliaPower dictionary of GENERATORS ONLY. 
-    For each generators in the CSV dictionary, use the mappings to 
+    Convert CSV dictionary to a JuliaPower dictionary of GENERATORS ONLY.
+    For each generators in the CSV dictionary, use the mappings to
     create a JuliaPower dictionary. Also return a dictionary mapping
     bus numbers (as strings) to the amount of conventional generation at that bus.
 
     Args:
-        csv_dict: A dictionary from the output of the function parse_csv. 
+        csv_dict: A dictionary from the output of the function parse_csv.
 
-    Returns: 
+    Returns:
         pm_dict_gen: A dictionary in JuliaPower format.
         The format is like this:
         {
             "device number" => {
                 (JuliaPower attributes (see function "csv_mappings") mapped to their calculated value)
             }
-            ... 
+            ...
         }
 
         gen_at_bus_dict: A dictionary
@@ -422,7 +422,7 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
         pm_dict_gen[csv_item_num_str] = Dict{String, Any}()
 
         # iterate through each julia attribute => csv attribute item in the mapping
-        for (julia_attr, mapped_attr) in attr_mappings                                                            
+        for (julia_attr, mapped_attr) in attr_mappings
             # if mapped_attr is a string, its a string that refers to a csv attribute name.
             if typeof(mapped_attr) == String
                 # this julia attribute refers to bus names and we need to extract the number from the bus name
@@ -490,7 +490,7 @@ function csv_to_pm_gen(csv_dict::Dict{String, Any})
                                 else
                                     warn("\nNetLoad and $load_name have mismatched lengths.\nTherefore, could not fill in pg attribute for generator $csv_item_num_str.")
                                 end
-                                
+
                             end
 
                             # Normalize the series
@@ -522,16 +522,16 @@ end
 
 function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String, Any})
     """
-    Convert CSV dictionary to a JuliaPower dictionary of BUSES ONLY. 
-    For each type generators in the CSV dictionary, use the mappings to 
+    Convert CSV dictionary to a JuliaPower dictionary of BUSES ONLY.
+    For each type generators in the CSV dictionary, use the mappings to
     create a JuliaPower dictionary.
 
     Args:
-        csv_dict: A dictionary from the output of the function parse_csv. 
+        csv_dict: A dictionary from the output of the function parse_csv.
 
-    Returns: 
+    Returns:
         A dictionary in JuliaPower format.
-        The format is like this: 
+        The format is like this:
         {
             "device number" => {
                 (JuliaPower attributes (see function "csv_mappings") mapped to their calculated value)
@@ -559,7 +559,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
         pm_dict_bus[csv_item_num_str] = Dict{String, Any}()
 
         # iterate through each julia attribute => csv attribute item in the mapping
-        for (julia_attr, mapped_attr) in attr_mappings                                                       
+        for (julia_attr, mapped_attr) in attr_mappings
             # if mapped_attr is a string, its a string that refers to a csv attribute name.
             if typeof(mapped_attr) == String && julia_attr != "data_type"
                 # these julia arguments refer to bus names and we need to extract the number from the bus name
@@ -595,7 +595,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
                                             pm_dict_bus[bus_num_str]["pd"] /
                                             baseMVA
 
-        # do something specific for the qd attribute of buses. 
+        # do something specific for the qd attribute of buses.
         pm_dict_bus[bus_num_str]["qd"] = (csv_dict["NetLoad"][curr_bus["data_type"]][curr_bus["area"]]["max_load"] *
                                             pm_dict_bus[bus_num_str]["pd"] *
                                             0.31/0.95) /
@@ -604,7 +604,7 @@ function csv_to_pm_bus(csv_dict::Dict{String, Any}, gen_at_bus_dict::Dict{String
             pm_dict_bus[bus_num_str]["time_series"] = nothing
         else
             pm_dict_bus[bus_num_str]["time_series"] = nothing
-        end        
+        end
     end
 
 
@@ -632,16 +632,16 @@ end
 
 function csv_to_pm_branch(csv_dict::Dict{String, Any}, pm_dict_bus::Dict{String,Any})
     """
-    Convert CSV dictionary to a JuliaPower dictionary of BRANCHES ONLY. 
-    For each type generators in the CSV dictionary, use the mappings to 
+    Convert CSV dictionary to a JuliaPower dictionary of BRANCHES ONLY.
+    For each type generators in the CSV dictionary, use the mappings to
     create a JuliaPower dictionary.
 
     Args:
-        csv_dict: A dictionary from the output of the function parse_csv. 
+        csv_dict: A dictionary from the output of the function parse_csv.
 
-    Returns: 
+    Returns:
         A dictionary in JuliaPower format.
-        The format is like this: 
+        The format is like this:
         {
             "device number" => {
                 (JuliaPower attributes (see function "csv_mappings") mapped to their calculated value)
@@ -691,7 +691,7 @@ end
 
 function parse_string(s::String)
     """
-    Takes in a string and returns an Int64 or Float64 if possible. 
+    Takes in a string and returns an Int64 or Float64 if possible.
     If not, return the original string stripped of leading/ending whitespaces.
 
     Args:
@@ -711,7 +711,7 @@ function parse_string(s::String)
     return get(val)
 end
 
-function plexoscsv_parser(folder::String) 
+function plexoscsv_parser(folder::String)
     """
     Parses a folder of CSV files into a JuliaPower dictionary.
 

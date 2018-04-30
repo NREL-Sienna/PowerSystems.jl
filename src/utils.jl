@@ -174,7 +174,7 @@ Base.show(io::IO, ::MIME"text/plain", t::ReCurtailment) = printReCurtailment(fal
 # Helpers
 
 function printTimeSeries(ts)
-    
+
 end
 
 # Base.show(io::IO, b::Branch) = print(io, "Name: ", b.name, ", Type: ", b.bustype)

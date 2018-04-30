@@ -3,7 +3,7 @@ export SynchronousMachine
 export Classic
 export OneAxis
 
-abstract type 
+abstract type
     SynchronousMachine
 end
 
@@ -20,7 +20,7 @@ struct Classic <: SynchronousMachine
                                                     end
         new(Ωb, ωs, H, D, dynamics)
     end
-    
+
 end
 
 struct OneAxis <: SynchronousMachine
@@ -32,20 +32,20 @@ struct OneAxis <: SynchronousMachine
     NumberVariables :: Int32
     NumberParams :: Int32
     Model::Function
-    function OneAxis(Ωb, ωs, H, D, Xd) 
-        dynamics  =  (output, du, u, inputs::Tuple, t) -> begin 
+    function OneAxis(Ωb, ωs, H, D, Xd)
+        dynamics  =  (output, du, u, inputs::Tuple, t) -> begin
                             output[3] = Ωb *(u[4] - ωs)- du[3]
                             output[4] = (inputs[1]- u[1]*sin(u[3] - u[2])/Xd - D*(u[4] - ωs))/(2*H) - du[4]
-                            
+
                             Vd = u[3]*sin(u[3] - u[2])
                             Vq = u[3]*cos(u[3] - u[2])
                             iq = u[3]*sin(u[3] - u[2])/Xd
                             id = (inputs[2] - u[1]*cos(u[3] - u[2]))/Xd
-                            
+
                             output[1] = Vd*id + Vq*iq
                             output[2] = Vq*id - Vd*iq
                 end
-           new(Ωb, ωs, H, D, Xd, 4, 2, dynamics)     
+           new(Ωb, ωs, H, D, Xd, 4, 2, dynamics)
     end
 end
 

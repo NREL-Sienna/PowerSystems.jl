@@ -2,7 +2,7 @@
 
 module PowerSystems
 
-using TimeSeries 
+using TimeSeries
 using PowerModels
 using DataFrames
 using Base.convert
@@ -17,11 +17,11 @@ include("models/topological_elements.jl")
 include("models/forecasts.jl")
 include("models/network/network.jl")
 
-#Dynamics 
+#Dynamics
 #include("models/dynamics/dynamics.jl")
 
 
-#Static types 
+#Static types
 include("models/generation.jl")
 include("models/storage_devices.jl")
 include("models/electric_loads.jl")
@@ -39,4 +39,4 @@ include("utils.jl")
 #Definitions of PowerSystem
 include("base.jl")
 
-end 
+end

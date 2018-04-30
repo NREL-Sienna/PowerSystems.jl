@@ -3,7 +3,7 @@ export Deterministic
 export Scenarios
 export Probabilistic
 
-abstract type 
+abstract type
     Forecast
 end
 

@@ -1,7 +1,7 @@
 export Storage
 export GenericBattery
 
-abstract type 
+abstract type
     Storage
 end
 
@@ -25,8 +25,8 @@ GenericBattery(; name = "init",
                 realpower = 0.0,
                 inputrealpowerlimits = @NT(max = 0.0, min = 0.0),
                 outputrealpowerlimits = @NT(max = 0.0, min = 0.0),
-                efficiency = @NT(in = 0.0, out = 0.0), 
-                reactivepower = 0.0, 
+                efficiency = @NT(in = 0.0, out = 0.0),
+                reactivepower = 0.0,
                 reactivepowerlimits = @NT(max = 0.0, min = 0.0)
-                ) = GenericBattery(name, status, bus, capacity, realpower, inputrealpowerlimits, 
+                ) = GenericBattery(name, status, bus, capacity, realpower, inputrealpowerlimits,
                                     outputrealpowerlimits, efficiency, reactivepower, reactivepowerlimits)
