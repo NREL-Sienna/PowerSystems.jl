@@ -21,7 +21,7 @@ Pretty-Printing
 # Conventional Gen
 
 function printBus(short, io, b)
-    print(io)
+    # print(io)
     if short
         print("Name: ", b.name)
         print(", Type: ", b.bustype)
@@ -40,7 +40,7 @@ Base.show(io::IO, b::Bus) = printBus(true, io, b)
 Base.show(io::IO, ::MIME"text/plain", b::Bus) = printBus(false, io, b)
 
 function printTechGen(short, io, t)
-    print(io)
+    # print(io)
     if short
         print("Tech Gen")
     else
@@ -55,9 +55,9 @@ function printTechGen(short, io, t)
 end
 Base.show(io::IO, t::TechGen) = printTechGen(true, io, t)
 Base.show(io::IO, ::MIME"text/plain", t::TechGen) = printTechGen(false, io, t)
-           
+
 function printEconGen(short, io, e)
-    print(io)
+    # print(io)
     if short
         print("Econ Gen: ")
         print("\n   Capacity: ", e.capacity)
@@ -74,7 +74,7 @@ Base.show(io::IO, e::EconGen) = printEconGen(true, io, e)
 Base.show(io::IO, ::MIME"text/plain", e::EconGen) = printEconGen(false, io, e)
 
 function printThermalGen(short, io, t)
-    print(io)
+    # print(io)
     if short
         print("Thermal Gen: ")
         print("\n   Name: ", t.name)
@@ -100,7 +100,7 @@ Base.show(io::IO, ::MIME"text/plain", t::ThermalGen) = printThermalGen(false, io
 # Renewable Gen
 
 function printTechRE(short, io, t)
-    print(io)
+    # print(io)
     if short
         print("Tech RE: ")
         print("\n   Capacity: ", t.installedcapacity)
@@ -114,7 +114,7 @@ Base.show(io::IO, t::TechRE) = printTechRE(true, io, t)
 Base.show(io::IO, ::MIME"text/plain", t::TechRE) = printTechRE(false, io, t)
 
 function printEconRE(short, io, t)
-    print(io)
+    # print(io)
     if short
         print("Econ RE: ")
         print("\n   Curtail Cost: ", t.curtailcost)
@@ -127,7 +127,7 @@ Base.show(io::IO, t::EconRE) = printEconRE(true, io, t)
 Base.show(io::IO, ::MIME"text/plain", t::EconRE) = printEconRE(false, io, t)
 
 function printReFix(short, io, t)
-    print(io)
+    # print(io)
     if short
         print("ReFix: ")
         print("\n   Name: ", t.name)
@@ -147,7 +147,7 @@ Base.show(io::IO, t::ReFix) = printReFix(true, io, t)
 Base.show(io::IO, ::MIME"text/plain", t::ReFix) = printReFix(false, io, t)
 
 function printReCurtailment(short, io, t)
-    print(io)
+    # print(io)
     if short
         print("ReCurtailment: ")
         print("\n   Name: ", t.name)
