@@ -1,4 +1,4 @@
-FiveBus = SystemParam(5, 3, 5, 230, 100, 1);
+FiveBus = SystemParam(5, 230, 100, 1);
 
 #Buses for full ac analysis
 nodes_ac = [Bus(1,"nodeA", "PV", 1.0, 1.1, 0.0, 0, 230),
