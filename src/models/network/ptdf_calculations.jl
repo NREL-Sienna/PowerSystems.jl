@@ -17,9 +17,9 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
 
     for (ix,b) in enumerate(branches)
 
-        A[b.connectionpoints[1].number, ix] =  1;
+        A[b.connectionpoints.from.number, ix] =  1;
 
-        A[b.connectionpoints[2].number, ix] = -1;
+        A[b.connectionpoints.to.number, ix] = -1;
 
         if typeof(b) == PowerSystems.Transformer2W
 
@@ -37,17 +37,17 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
 
         end
 
-        B[b.connectionpoints[1].number,
-            b.connectionpoints[1].number] += Y11;
+        B[b.connectionpoints.from.number,
+            b.connectionpoints.from.number] += Y11;
         Y12 = -1*Y11;
-        B[b.connectionpoints[1].number,
-            b.connectionpoints[2].number] += Y12;
+        B[b.connectionpoints.from.number,
+            b.connectionpoints.to.number] += Y12;
         #Y21 = Y1
-        B[b.connectionpoints[2].number,
-            b.connectionpoints[1].number] += Y12;
+        B[b.connectionpoints.to.number,
+            b.connectionpoints.from.number] += Y12;
         #Y22 = Y11;
-        B[b.connectionpoints[2].number,
-            b.connectionpoints[2].number] += Y11;
+        B[b.connectionpoints.to.number,
+            b.connectionpoints.to.number] += Y11;
 
     end
 
