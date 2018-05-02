@@ -10,11 +10,11 @@ end
 
 struct TechHydro
     realpower::Float64 # [MW]
-    realpowerlimits::NamedTuple
+    realpowerlimits::@NT(min::Float64, max::Float64)
     reactivepower::Union{Float64,Nothing} # [MVAr]
-    reactivepowerlimits::Union{NamedTuple,Nothing}
-    ramplimits::Union{NamedTuple,Nothing}
-    timelimits::Union{NamedTuple,Nothing}
+    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing}
+    ramplimits::Union{@NT(min::Float64, max::Float64),Nothing}
+    timelimits::Union{@NT(min::Float64, max::Float64),Nothing}
     function TechHydro(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
         new(realpower, orderedlimits(realpowerlimits), reactivepower, orderedlimits(reactivepowerlimits), ramplimits, timelimits)
@@ -23,7 +23,7 @@ struct TechHydro
 end
 
 TecHydro(; realpower = 0.0,
-          realpowerlimits = @NT(max = 0.0, min = 0.0),
+          realpowerlimits = @NT(min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
           ramplimits = nothing,

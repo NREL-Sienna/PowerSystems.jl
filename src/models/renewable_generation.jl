@@ -10,7 +10,7 @@ end
 
 struct TechRE
     installedcapacity::Float64 # [MW]
-    reactivepowerlimits::Union{NamedTuple,Nothing}
+    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing}
     powerfactor::Union{Float64,Nothing}
 end
 

@@ -8,7 +8,7 @@ struct Bus
     bustype::Union{String,Nothing} # [PV, PQ, SF]
     angle::Union{Float64,Nothing} # [degrees]
     voltage::Union{Float64,Nothing} # [pu]
-    voltagelims::Union{NamedTuple,Nothing} # [pu]
+    voltagelims::Union{@NT(min::Float64, max::Float64),Nothing} # [pu]
     basevoltage::Union{Float64,Nothing} # [kV]
 end
 
