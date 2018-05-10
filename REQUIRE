@@ -2,8 +2,6 @@ julia 0.6
 PowerModels
 DataFrames 0.10.1
 TimeSeries 0.11.1
-ExcelReaders
 CSV
-Plotly
 NamedTuples
 Compat
