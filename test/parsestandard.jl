@@ -32,7 +32,7 @@ for f in files
         ParseStandardFiles(f)
         println("Successfully parsed $f")
     catch
-        ("Error while parsing $f")
+        warn("Error while parsing $f")
         catch_stacktrace()
     end
 end
