@@ -18,6 +18,7 @@ You can install it by typing
 ```julia
 julia> Pkg.clone("https://github.com/NREL/PowerSystems.jl.git")
 ```
+
 ## Usage
 
 Once installed, the `PowerSystems` package can by used by typing
@@ -25,9 +26,10 @@ Once installed, the `PowerSystems` package can by used by typing
 ```julia
 using PowerSystems
 ```
+
 ## To do list
 
-- Include inner constructors in the types 
-- Generate testing code 
-- Define more clearly the data structure for generators and loads 
+- Include inner constructors in the types
+- Generate testing code
+- Define more clearly the data structure for generators and loads
 - Define the structure for forecasting data
