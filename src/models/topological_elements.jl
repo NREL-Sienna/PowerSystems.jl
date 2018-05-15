@@ -19,7 +19,7 @@ Bus(;   number = 0,
         voltage = nothing,
         voltagelims = nothing,
         basevoltage = nothing
-    ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelims), basevoltage)
+    ) = Bus(number, name, bustype, angle, voltage, PowerSystems.orderedlimits(voltagelims), basevoltage)
 
 struct LoadZones
     number::Int

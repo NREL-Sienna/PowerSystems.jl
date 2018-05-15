@@ -15,7 +15,7 @@ struct TechGen
     timelimits::Union{@NT(min::Float64, max::Float64),Nothing}
     function TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
-        new(realpower, orderedlimits(realpowerlimits), reactivepower, orderedlimits(reactivepowerlimits), ramplimits, timelimits)
+        new(realpower, PowerSystems.orderedlimits(realpowerlimits), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits), ramplimits, timelimits)
 
     end
 end
