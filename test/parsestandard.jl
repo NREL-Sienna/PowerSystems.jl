@@ -1,6 +1,5 @@
-cd(string(homedir(),"/.julia/v0.6/PowerSystems/data/matpower"))
 
-files = readdir()
+files = readdir(joinpath(Pkg.dir(),"PowerSystems/data/matpower"))
 file_ext = r".*?\.(\w+)"
 
 if length(files) == 0
@@ -19,9 +18,7 @@ for f in files
     end
 end
 
-cd(string(homedir(),"/.julia/v0.6/PowerSystems/data/psse_raw"))
-
-files = readdir()
+files = readdir(joinpath(Pkg.dir(),"PowerSystems/data/psse_raw"))
 file_ext = r".*?\.(\w+)"
 
 if length(files) == 0
