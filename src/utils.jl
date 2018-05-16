@@ -27,7 +27,7 @@ function printBus(short, io, b)
         print("\n   ", b) # Prints short version
         print("\n   Angle: ", b.angle)
         print("\n   Voltage: ", b.voltage)
-        print("\n   Voltage Lims: ", b.voltagelims)
+        print("\n   Voltage Limits: ", b.voltagelims)
         print("\n   Base Voltage: ", b.basevoltage)
     end
 end
@@ -43,11 +43,11 @@ function printTechGen(short, io, t)
     else
         print(t, ":") # Prints short version
         print("\n   Real Power: ", t.realpower)
-        print("\n   Real Power Lims: ", t.realpowerlimits)
+        print("\n   Real Power Limits: ", t.realpowerlimits)
         print("\n   Reactive Power: ", t.reactivepower)
-        print("\n   Reactive Power Lims: ", t.reactivepowerlimits)
-        print("\n   Ramp Lims: ", t.ramplimits)
-        print("\n   Time Lims: ", t.timelimits)
+        print("\n   Reactive Power Limits: ", t.reactivepowerlimits)
+        print("\n   Ramp Limits: ", t.ramplimits)
+        print("\n   Time Limits: ", t.timelimits)
     end
 end
 Base.show(io::IO, t::TechGen) = printTechGen(true, io, t)
