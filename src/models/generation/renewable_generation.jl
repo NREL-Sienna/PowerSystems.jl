@@ -14,7 +14,7 @@ struct TechRE
     powerfactor::Union{Float64,Nothing}
 end
 
-TechRE(; installedcapacitys = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRE(installedcapacitys, reactivepowerlimits, powerfactor)
+TechRE(; InstalledCapacity = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRE(InstalledCapacity, reactivepowerlimits, powerfactor)
 
 struct EconRE
     curtailcost::Float64 # [$/MWh]
