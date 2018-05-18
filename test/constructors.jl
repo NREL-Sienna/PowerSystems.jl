@@ -8,7 +8,7 @@ tBus = Bus()
 tEcongen = EconGen()
 tTechGen = TechGen() 
 tThermalGen = ThermalGen()
-tTecHydro = TecHydro()
+tTechHydro = TechHydro()
 
 #Storage Constructots 
 tStorage = GenericBattery()

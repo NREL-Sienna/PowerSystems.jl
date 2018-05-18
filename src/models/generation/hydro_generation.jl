@@ -1,7 +1,7 @@
 export HydroGen
 export NoDispatchHydro
 export DispatchHydro
-export TecHydro
+export TechHydro
 
 abstract type
     HydroGen <: Generator
@@ -22,7 +22,7 @@ struct TechHydro
     end
 end
 
-TecHydro(; realpower = 0.0,
+TechHydro(; realpower = 0.0,
           realpowerlimits = @NT(min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
