@@ -1,6 +1,3 @@
-setlevel!(getlogger(InfrastructureModels), "error")
-setlevel!(getlogger(PowerModels), "error")
-
 files = readdir(joinpath(Pkg.dir(),"PowerSystems/data/matpower"))
 file_ext = r".*?\.(\w+)"
 
@@ -12,7 +9,7 @@ for f in files
     try
         ext = match(file_ext, f)
         print("Parsing $f ...\n")
-        ParseStandardFiles(f)
+        @test_nowarn ParseStandardFiles(f)
         println("Successfully parsed $f")
     catch
         warn("Error while parsing $f")
@@ -31,7 +28,7 @@ for f in files
     try
         ext = match(file_ext, f)
         print("Parsing $f ...\n")
-        ParseStandardFiles(f)
+        @test_nowarn ParseStandardFiles(f)
         println("Successfully parsed $f")
     catch
         warn("Error while parsing $f")
