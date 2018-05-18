@@ -1,3 +1,5 @@
+setlevel!(getlogger(InfrastructureModels), "error")
+setlevel!(getlogger(PowerModels), "error")
 
 files = readdir(joinpath(Pkg.dir(),"PowerSystems/data/matpower"))
 file_ext = r".*?\.(\w+)"
