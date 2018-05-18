@@ -14,7 +14,7 @@ using NamedTuples
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/forecasts.jl")
-include("models/network/network.jl")
+include("models/network.jl")
 
 #Static types
 include("models/generation.jl")

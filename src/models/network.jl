@@ -1,6 +1,13 @@
-include("branches.jl")
-include("ybus_calculations.jl")
-include("ptdf_calculations.jl")
+export Branch
+
+abstract type
+    Branch
+end
+
+include("branches/lines.jl")
+include("branches/transformers.jl")
+include("../utils/ybus_calculations.jl")
+include("../utils/ptdf_calculations.jl")
 
 export Network
 
