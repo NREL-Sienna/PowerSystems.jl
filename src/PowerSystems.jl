@@ -22,9 +22,8 @@ include("models/network/network.jl")
 
 #Static types
 include("models/generation.jl")
-include("models/storage_devices.jl")
-include("models/electric_loads.jl")
-include("models/shunt_elements.jl")
+include("models/storage.jl")
+include("models/loads.jl")
 
 # Include Parsing files
 include("parsers/matpower_parser.jl")
@@ -33,7 +32,8 @@ include("parsers/psse_parser.jl")
 include("parsers/plexoscsv_parser.jl")
 #include("parsers/read_forecast.jl")
 
-include("utils.jl")
+include("utils/checks.jl")
+include("utils/print.jl")
 
 #Definitions of PowerSystem
 include("base.jl")

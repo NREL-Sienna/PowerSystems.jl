@@ -183,7 +183,7 @@ function PowerSystem(buses::Array{Bus},
 end
 
 PowerSystem(; buses = [Bus()],
-            generators = [ThermalGen(), ReFix()],
+            generators = [ThermalGen(), RenewableFix()],
             loads = [StaticLoad()],
             network =  nothing,
             storage = nothing,

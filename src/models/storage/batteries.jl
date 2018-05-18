@@ -1,9 +1,4 @@
-export Storage
 export GenericBattery
-
-abstract type
-    Storage
-end
 
 struct GenericBattery <: Storage
     name::String

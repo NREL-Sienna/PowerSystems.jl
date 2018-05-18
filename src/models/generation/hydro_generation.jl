@@ -1,7 +1,7 @@
 export HydroGen
-export NoDispatchHydro
+export HydroFix
 export DispatchHydro
-export TecHydro
+export TechHydro
 
 abstract type
     HydroGen <: Generator
@@ -22,7 +22,7 @@ struct TechHydro
     end
 end
 
-TecHydro(; realpower = 0.0,
+TechHydro(; realpower = 0.0,
           realpowerlimits = @NT(min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
@@ -30,7 +30,7 @@ TecHydro(; realpower = 0.0,
           timelimits = nothing
         ) = TechHydro(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
-struct NoDispatchHydro <: HydroGen
+struct HydroFix <: HydroGen
     name::String
     status::Bool
     bus::Bus
@@ -38,7 +38,7 @@ struct NoDispatchHydro <: HydroGen
     scalingfactor::TimeSeries.TimeArray
 end
 
-struct DispatchHydro <: HydroGen
+struct HydroStorage <: HydroGen
     name::String
     status::Bool
     bus::Bus

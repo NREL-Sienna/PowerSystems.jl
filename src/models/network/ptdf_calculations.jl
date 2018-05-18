@@ -59,7 +59,7 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
         end
     end
 
-    #To-do Make speed-up improvements in the matrix operations.
+    # TODO: Make speed-up improvements in the matrix operations.
     if slack_position != -9
         B = B[setdiff(1:end, slack_position), setdiff(1:end, slack_position)]
 
