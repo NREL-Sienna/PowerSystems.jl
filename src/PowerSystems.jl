@@ -42,7 +42,7 @@ if VERSION >= v"0.7"
     #Static types
     include("modelsv7/generation.jl")
     include("modelsv7/storage_devices.jl")
-    include("modelsv/electric_loads.jl")
+    include("modelsv7/electric_loads.jl")
     include("modelsv7/shunt_elements.jl")
 
 end
