@@ -4,6 +4,6 @@ abstract type
     Generator
 end
 
-include("renewable_generation.jl")
-include("conventional_generation.jl")
-include("hydro_generation.jl")
+include("generation/renewable_generation.jl")
+include("generation/thermal_generation.jl")
+include("generation/hydro_generation.jl")

@@ -1,12 +1,7 @@
-export ElectricLoad
 export StaticLoad
 export ControllableLoad
 export InterruptibleLoad
 #export FixedShunt
-
-abstract type
-    ElectricLoad
-end
 
 struct StaticLoad <: ElectricLoad
     name::String
