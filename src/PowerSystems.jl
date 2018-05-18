@@ -3,7 +3,6 @@
 module PowerSystems
 
 using TimeSeries
-using PowerModels
 using DataFrames
 using Base.convert
 using CSV
@@ -12,6 +11,7 @@ using Compat
 
 if VERSION < v"0.7"
     using NamedTuples
+    using PowerModels
 
     # PowerSystems models
     include("modelsv6/topological_elements.jl")
@@ -30,7 +30,7 @@ if VERSION < v"0.7"
 end
 
 if VERSION >= v"0.7"
-
+    info("Parsing not supported in Julia V0.7")
     # PowerSystems models
     include("modelsv7/topological_elements.jl")
     include("modelsv7/forecasts.jl")
