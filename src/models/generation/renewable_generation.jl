@@ -1,71 +1,71 @@
 export RenewableGen
-export TechRE
-export EconRE
-export ReFix
-export ReCurtailment
+export TechRenewable
+export EconRenewable
+export RenewableFix
+export RenewableCurtailment
 
 abstract type
     RenewableGen <: Generator
 end
 
-struct TechRE
+struct TechRenewable
     installedcapacity::Float64 # [MW]
     reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing}
     powerfactor::Union{Float64,Nothing}
 end
 
-TechRE(; InstalledCapacity = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRE(InstalledCapacity, reactivepowerlimits, powerfactor)
+TechRenewable(; InstalledCapacity = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRenewable(InstalledCapacity, reactivepowerlimits, powerfactor)
 
-struct EconRE
+struct EconRenewable
     curtailcost::Float64 # [$/MWh]
     interruptioncost::Union{Float64,Nothing} # [$]
 end
 
-EconRE(; curtailcost = 0.0, interruptioncost = nothing) = EconRE(curtailcost, interruptioncost)
+EconRenewable(; curtailcost = 0.0, interruptioncost = nothing) = EconRenewable(curtailcost, interruptioncost)
 
-struct ReFix <: RenewableGen
+struct RenewableFix <: RenewableGen
     name::String
     status::Bool
     bus::Bus
-    tech::TechRE
+    tech::TechRenewable
     scalingfactor::TimeSeries.TimeArray
-    function ReFix(name, status, bus, installedcapacity::Float64, scalingfactor)
-        tech = TechRE(installedcapacity, nothing, 1.0)
+    function RenewableFix(name, status, bus, installedcapacity::Float64, scalingfactor)
+        tech = TechRenewable(installedcapacity, nothing, 1.0)
         new(name, status, bus, tech, scalingfactor)
     end
 end
 
-ReFix(; name="init",
+RenewableFix(; name="init",
         status = false,
         bus = Bus(),
         installedcapacity = 0.0,
-        scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = ReFix(name, status, bus, installedcapacity, scalingfactor)
+        scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = RenewableFix(name, status, bus, installedcapacity, scalingfactor)
 
-struct ReCurtailment <: RenewableGen
+struct RenewableCurtailment <: RenewableGen
     name::String
     status::Bool
     bus::Bus
-    tech::TechRE
-    econ::Union{EconRE,Nothing}
+    tech::TechRenewable
+    econ::Union{EconRenewable,Nothing}
     scalingfactor::TimeSeries.TimeArray
-    function ReCurtailment(name, status, bus, installedcapacity::Float64, econ, scalingfactor)
-        tech = TechRE(installedcapacity, nothing, 1.0)
+    function RenewableCurtailment(name, status, bus, installedcapacity::Float64, econ, scalingfactor)
+        tech = TechRenewable(installedcapacity, nothing, 1.0)
         new(name, status, bus, tech, econ, scalingfactor)
     end
 end
 
-ReCurtailment(; name = "init",
+RenewableCurtailment(; name = "init",
                 status = false,
                 bus= Bus(),
-                tech = TechRE(),
-                econ = EconRE(),
-                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = ReCurtailment(name, status, bus, tech, econ, scalingfactor)
+                tech = TechRenewable(),
+                econ = EconRenewable(),
+                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = RenewableCurtailment(name, status, bus, tech, econ, scalingfactor)
 
 struct ReReactiveDispatch <: RenewableGen
     name::String
     status::Bool
     bus::Bus
-    tech::TechRE
-    econ::Union{EconRE,Nothing}
+    tech::TechRenewable
+    econ::Union{EconRenewable,Nothing}
     scalingfactor::TimeSeries.TimeArray
 end

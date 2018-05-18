@@ -90,13 +90,13 @@ generators5 = [  ThermalGen("Alta", true, nodes5[1],
                     TechGen(600.0, @NT(min=0.0, max=600.0), 150.0, @NT(min =-450.0, max=450.0), nothing, nothing),
                     EconGen(600.0, 10.0, 0.0, 0.0, 0.0, nothing)
                 ),
-                ReFix("SolarBusC", true, nodes5[3], 
+                RenewableFix("SolarBusC", true, nodes5[3], 
                     60.0,
                     TimeSeries.TimeArray(DayAhead,solar_ts_DA)
                 ),
-                ReCurtailment("WindBusA", true, nodes5[5],
+                RenewableCurtailment("WindBusA", true, nodes5[5],
                     120.0,
-                    EconRE(22.0, nothing), 
+                    EconRenewable(22.0, nothing), 
                     TimeSeries.TimeArray(DayAhead,wind_ts_DA)
                 )
             ];

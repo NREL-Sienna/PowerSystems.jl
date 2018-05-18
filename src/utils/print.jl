@@ -77,7 +77,7 @@ Base.show(io::IO, ::MIME"text/plain", t::ThermalGen) = printThermalGen(false, io
 
 # Renewable Gen
 
-function printTechRE(short, io, t)
+function printTechRenewable(short, io, t)
     # print(io)
     if short
         print("Tech RE: ")
@@ -88,10 +88,10 @@ function printTechRE(short, io, t)
         print(t) # Prints short version
     end
 end
-Base.show(io::IO, t::TechRE) = printTechRE(true, io, t)
-Base.show(io::IO, ::MIME"text/plain", t::TechRE) = printTechRE(false, io, t)
+Base.show(io::IO, t::TechRenewable) = printTechRenewable(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::TechRenewable) = printTechRenewable(false, io, t)
 
-function printEconRE(short, io, t)
+function printEconRenewable(short, io, t)
     # print(io)
     if short
         print("Econ RE: ")
@@ -101,13 +101,13 @@ function printEconRE(short, io, t)
         print(t) # Prints short version
     end
 end
-Base.show(io::IO, t::EconRE) = printEconRE(true, io, t)
-Base.show(io::IO, ::MIME"text/plain", t::EconRE) = printEconRE(false, io, t)
+Base.show(io::IO, t::EconRenewable) = printEconRenewable(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::EconRenewable) = printEconRenewable(false, io, t)
 
-function printReFix(short, io, t)
+function printRenewableFix(short, io, t)
     # print(io)
     if short
-        print("ReFix: ")
+        print("RenewableFix: ")
         print("\n   Name: ", t.name)
         print(", Status: ", t.status)
     else
@@ -120,13 +120,13 @@ function printReFix(short, io, t)
         end
     end
 end
-Base.show(io::IO, t::ReFix) = printReFix(true, io, t)
-Base.show(io::IO, ::MIME"text/plain", t::ReFix) = printReFix(false, io, t)
+Base.show(io::IO, t::RenewableFix) = printRenewableFix(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::RenewableFix) = printRenewableFix(false, io, t)
 
-function printReCurtailment(short, io, t)
+function printRenewableCurtailment(short, io, t)
     # print(io)
     if short
-        print("ReCurtailment: ")
+        print("RenewableCurtailment: ")
         print("\n   Name: ", t.name)
         print(", Status: ", t.status)
     else
@@ -145,5 +145,5 @@ function printReCurtailment(short, io, t)
         print("\n   Scaling Factor: ", t.scalingfactor) # TODO: only print start, end, etc, not whole series
     end
 end
-Base.show(io::IO, t::ReCurtailment) = printReCurtailment(true, io, t)
-Base.show(io::IO, ::MIME"text/plain", t::ReCurtailment) = printReCurtailment(false, io, t)
+Base.show(io::IO, t::RenewableCurtailment) = printRenewableCurtailment(true, io, t)
+Base.show(io::IO, ::MIME"text/plain", t::RenewableCurtailment) = printRenewableCurtailment(false, io, t)
