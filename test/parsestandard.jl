@@ -1,3 +1,5 @@
+Pkg.add("Suppressor")
+
 files = readdir(joinpath(Pkg.dir(),"PowerSystems/data/matpower"))
 file_ext = r".*?\.(\w+)"
 
@@ -9,7 +11,7 @@ for f in files
     try
         ext = match(file_ext, f)
         print("Parsing $f ...\n")
-        @test_nowarn ParseStandardFiles(f)
+        @test_nowarn ParseStandardFiles(joinpath(Pkg.dir(),"PowerSystems/data/matpower",f))
         println("Successfully parsed $f")
     catch
         warn("Error while parsing $f")
@@ -28,7 +30,7 @@ for f in files
     try
         ext = match(file_ext, f)
         print("Parsing $f ...\n")
-        @test_nowarn ParseStandardFiles(f)
+        @test_nowarn ParseStandardFiles(joinpath(Pkg.dir(),"PowerSystems/data/psse_raw",f))
         println("Successfully parsed $f")
     catch
         warn("Error while parsing $f")
