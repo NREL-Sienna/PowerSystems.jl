@@ -10,7 +10,7 @@ using CSV
 # This packages will be removed with Julia v0.7
 using Compat
 
-if VERSION <= v"0.7"
+if VERSION < v"0.7"
     using NamedTuples
 
     # PowerSystems models
