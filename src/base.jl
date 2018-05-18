@@ -94,8 +94,8 @@ end
 
 
 
-## TO DO checks
-# 1. Check for islanded Buses
+# TODO: Check for islanded Buses
+# TODO: Check busses have same base voltage
 
 ### Struct and different Power System constructors depending on the data provided ####
 
