@@ -69,6 +69,31 @@ function PVBusCheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
     end
 end
 
+# Generator Classifier 
+function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
+    t = [] 
+    r = []
+    h = []
+    
+    for g in gen 
+       if typeof(g) <: PowerSystems.Thermal
+            push!(t,g)
+        elseif typeof(g) <: PowerSystems.RenewableGen
+            push!(r,g)
+        elseif typeof(g) <: PowerSystems.Hydrogen
+            push!(h,g)
+        else
+            error("Generator Type not supported by PowerSystems.jl") 
+        end
+    end
+    
+    generators = Dict("Thermal" => t, "Renewable" => r, "Hydro" => h)
+    
+    return generators
+end 
+
+
+
 ## TO DO checks
 # 1. Check for islanded Buses
 
@@ -76,10 +101,10 @@ end
 
 struct PowerSystem
     buses::Array{Bus}
-    generators::Array{Generator}
+    generators::Dict{String, Array{Generator}}
     loads::Array{ElectricLoad}
     network::Union{Nothing,Network}
-    storage::Union{Nothing,Array{Storage}}
+    storage::Union{Nothing,Array{Storage,1}}
     basevoltage::Real # [kV]
     basepower::Real # [MVA]
     timesteps::Int
@@ -95,7 +120,7 @@ struct PowerSystem
         TimeSeriesCheckRE(generators, time_length)
 
         new(buses,
-            generators,
+            GenClassifier(generators),
             loads,
             network,
             storage,

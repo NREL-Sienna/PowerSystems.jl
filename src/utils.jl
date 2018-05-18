@@ -1,8 +1,12 @@
 export PlotTimeSeries
 
-orderedlimits(limits::@NT(min::Float64, max::Float64)) = limits.max < limits.min ? error("Limits not in ascending order") : limits
+function orderedlimits(limits::@NT(min::Float64, max::Float64), limsname::String) 
+    limits.max < limits.min ? error("'$limsname' limits not in ascending order") : limits
+end
 
-orderedlimits(limits::Nothing) = warn("Limits defined as nothing")
+function orderedlimits(limits::Nothing,limsname::String) 
+    info("'$limsname' limits defined as nothing")
+end
 
 # TODO: make Bus warning for no type
 
@@ -137,7 +141,6 @@ function printReFix(short, io, t)
         else
             print("\n   No Tech")
         end
-        print("\n   Scaling Factor: ", t.scalingfactor) # TODO: only print start, end, etc, not whole series
     end
 end
 Base.show(io::IO, t::ReFix) = printReFix(true, io, t)

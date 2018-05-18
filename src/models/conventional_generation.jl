@@ -1,5 +1,6 @@
 export Thermal
 export ThermalGen
+export ThermalGenSeason
 export TechGen
 export EconGen
 
@@ -12,8 +13,7 @@ end
     TechGen(realpower::Float64, 
             realpowerlimits::@NT(min::Float64, max::Float64), 
             reactivepower::Union{Float64,Nothing}, 
-            reactivepowerlimits::Union{@NT(min::Float64, 
-            max::Float64),Nothing}, 
+            reactivepowerlimits::Union{@NT(min::Float64,max::Float64),Nothing}, 
             ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}, 
             timelimits::Union{@NT(min::Float64, max::Float64),Nothing})
 
@@ -50,7 +50,7 @@ struct TechGen
     timelimits::Union{@NT(min::Float64, max::Float64),Nothing}
     function TechGen(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
-        new(realpower, PowerSystems.orderedlimits(realpowerlimits), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits), ramplimits, timelimits)
+        new(realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
 
     end
 end
@@ -133,7 +133,7 @@ Data Structure for thermal generation technologies subjecto to seasonality const
     Examples
 
 """    
-struct ThermalGenSeaon <: Thermal
+struct ThermalGenSeason <: Thermal
     name::String
     status::Bool
     bus::Bus
