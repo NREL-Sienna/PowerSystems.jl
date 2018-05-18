@@ -16,10 +16,6 @@ include("models/topological_elements.jl")
 include("models/forecasts.jl")
 include("models/network/network.jl")
 
-#Dynamics
-#include("models/dynamics/dynamics.jl")
-
-
 #Static types
 include("models/generation.jl")
 include("models/storage.jl")
