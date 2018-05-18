@@ -4,7 +4,7 @@ abstract type
     ShuntElement
 end
 
-struct FixedAdmitance <: ShuntElement
+struct FixedAdmittance <: ShuntElement
     name::String
     status::Bool
     bus::Bus
