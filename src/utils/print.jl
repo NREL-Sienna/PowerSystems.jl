@@ -1,26 +1,3 @@
-export PlotTimeSeries
-
-function orderedlimits(limits::@NT(min::Float64, max::Float64), limsname::String) 
-    limits.max < limits.min ? error("'$limsname' limits not in ascending order") : limits
-end
-
-function orderedlimits(limits::Nothing,limsname::String) 
-    info("'$limsname' limits defined as nothing")
-end
-
-# TODO: make Bus warning for no type
-
-function PlotTimeSeries()
-
-end
-
-
-#=
-Pretty-Printing
-=#
-
-# Conventional Gen
-
 function printBus(short, io, b)
     # print(io)
     if short
@@ -31,7 +8,7 @@ function printBus(short, io, b)
         print("\n   ", b) # Prints short version
         print("\n   Angle: ", b.angle)
         print("\n   Voltage: ", b.voltage)
-        print("\n   Voltage Limits: ", b.voltagelims)
+        print("\n   Voltage Limits: ", b.voltagelimits)
         print("\n   Base Voltage: ", b.basevoltage)
     end
 end
@@ -170,12 +147,3 @@ function printReCurtailment(short, io, t)
 end
 Base.show(io::IO, t::ReCurtailment) = printReCurtailment(true, io, t)
 Base.show(io::IO, ::MIME"text/plain", t::ReCurtailment) = printReCurtailment(false, io, t)
-
-# Helpers
-
-function printTimeSeries(ts)
-
-end
-
-# Base.show(io::IO, b::Branch) = print(io, "Name: ", b.name, ", Type: ", b.bustype)
-# Base.show(io::IO, b::ElectricLoad) = print(io, "Bus ", b.name, " Type ", b.bustype)
