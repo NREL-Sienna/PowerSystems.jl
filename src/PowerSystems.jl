@@ -14,11 +14,7 @@ using NamedTuples
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/forecasts.jl")
-include("models/network/network.jl")
-
-#Dynamics
-#include("models/dynamics/dynamics.jl")
-
+include("models/network.jl")
 
 #Static types
 include("models/generation.jl")
@@ -26,11 +22,9 @@ include("models/storage.jl")
 include("models/loads.jl")
 
 # Include Parsing files
-include("parsers/matpower_parser.jl")
 include("parsers/dict_to_struct.jl")
-include("parsers/psse_parser.jl")
-include("parsers/plexoscsv_parser.jl")
-#include("parsers/read_forecast.jl")
+include("parsers/standardfiles_parser.jl")
+include("parsers/csv_parser.jl")
 
 include("utils/checks.jl")
 include("utils/print.jl")

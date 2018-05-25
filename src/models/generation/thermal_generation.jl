@@ -148,21 +148,3 @@ ThermalGenSeason(; name = "init",
                 tech = nothing,
                 econ = nothing,
                 scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
-
-#=
-                struct ThermalGen_dyn <: Thermal
-    name::String
-    status::Bool
-    bus::Bus
-    tech::Union{TechGen,Nothing}
-    econ::Union{EconGen,Nothing}
-    dyn::Union{DynamicsGenerator,Nothing}
-end
-
-ThermalGen_dyn(; name = "init",
-                status = false,
-                bus = Bus(),
-                tech = nothing,
-                econ = nothing,
-                dyn=nothing) = ThermalGen_dyn(name, status, bus, tech, econ, dyn)
-=#

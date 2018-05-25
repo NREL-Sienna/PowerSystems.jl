@@ -14,7 +14,7 @@ function dict_to_struct(data)
         end
 
         base_kv = data["bus"][collect(keys(data["bus"]))[1]]["base_kv"] # Load base kv from first bus
-        NBus = SystemParam(length(data["bus"]), base_kv, data["baseMVA"], 1); # TODO: Check busses have same base voltage
+        NBus = SystemParam(length(data["bus"]), base_kv, data["baseMVA"], 1); 
 
         nodes = Array{Bus}(0)
         Loads = Array{ElectricLoad}(0) # Using least constrained Load
