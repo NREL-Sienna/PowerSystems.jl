@@ -71,7 +71,9 @@ end
 
 # Generator Classifier 
 function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
-    t = [] 
+    
+    # TODO: Defined push for specific types, at this time the matrices are of type Any.  
+    t = []
     r = []
     h = []
     
