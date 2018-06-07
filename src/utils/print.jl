@@ -3,7 +3,7 @@ function printGenerator(io::IO, generator::PowerSystems.Generator)
     print(io, "$generator_type(name=\"$(generator.name)\")")
 end
 
-Base.show(io::IO, b::PowerSystems.Generator) = printGenerator(io, generator)
+Base.show(io::IO, generator::PowerSystems.Generator) = printGenerator(io, generator)
 
 function printPowerSystem(io::IO, system::PowerSystems.PowerSystem)
     number_of_buses = length(system.buses)
