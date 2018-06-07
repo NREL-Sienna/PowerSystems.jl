@@ -1,5 +1,5 @@
 abstract type
-    Generator
+    Generator <: PowerSystemType
 end
 
 include("generation/renewable_generation.jl")

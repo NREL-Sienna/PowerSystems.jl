@@ -1,6 +1,4 @@
-abstract type
-    ElectricLoad
-end
+abstract type ElectricLoad <: PowerSystemType end
 
 abstract type
     ShuntElement
