@@ -1,8 +1,3 @@
-export Forecast
-export Deterministic
-export Scenarios
-export Probabilistic
-
 abstract type
     Forecast
 end

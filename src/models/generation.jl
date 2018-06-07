@@ -1,5 +1,3 @@
-export Generator
-
 abstract type
     Generator
 end

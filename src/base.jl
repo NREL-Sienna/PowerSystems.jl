@@ -1,4 +1,3 @@
-export PowerSystem
 
 ### Utility Functions needed for the construction of the Power System, mostly used for consistency checking ####
 
@@ -69,15 +68,15 @@ function PVBusCheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
     end
 end
 
-# Generator Classifier 
+# Generator Classifier
 function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
-    
-    # TODO: Defined push for specific types, at this time the matrices are of type Any.  
+
+    # TODO: Defined push for specific types, at this time the matrices are of type Any.
     t = []
     r = []
     h = []
-    
-    for g in gen 
+
+    for g in gen
        if typeof(g) <: PowerSystems.Thermal
             push!(t,g)
         elseif typeof(g) <: PowerSystems.RenewableGen
@@ -85,14 +84,14 @@ function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
         elseif typeof(g) <: PowerSystems.Hydrogen
             push!(h,g)
         else
-            error("Generator Type not supported by PowerSystems.jl") 
+            error("Generator Type not supported by PowerSystems.jl")
         end
     end
-    
+
     generators = Dict("Thermal" => t, "Renewable" => r, "Hydro" => h)
-    
+
     return generators
-end 
+end
 
 
 

@@ -1,23 +1,17 @@
-export Thermal
-export ThermalGen
-export ThermalGenSeason
-export TechGen
-export EconGen
-
 "Abstract struct for thermal generation technologies"
 abstract type
     Thermal <: Generator
 end
 
 """
-    TechGen(realpower::Float64, 
-            realpowerlimits::@NT(min::Float64, max::Float64), 
-            reactivepower::Union{Float64,Nothing}, 
-            reactivepowerlimits::Union{@NT(min::Float64,max::Float64),Nothing}, 
-            ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}, 
+    TechGen(realpower::Float64,
+            realpowerlimits::@NT(min::Float64, max::Float64),
+            reactivepower::Union{Float64,Nothing},
+            reactivepowerlimits::Union{@NT(min::Float64,max::Float64),Nothing},
+            ramplimits::Union{@NT(up::Float64, down::Float64),Nothing},
             timelimits::Union{@NT(min::Float64, max::Float64),Nothing})
 
-Data Structure for the economical parameters of thermal generation technologies. 
+Data Structure for the economical parameters of thermal generation technologies.
     The data structure can be called calling all the fields directly or using named fields.
     Two examples are provided one with minimal data definition and a more comprenhensive one
 
@@ -35,7 +29,7 @@ Data Structure for the economical parameters of thermal generation technologies.
         Ramp Limits: nothing
         Time Limits: nothing
 
-    
+
 
 
 
@@ -70,13 +64,13 @@ TechGen(; realpower = 0.0,
 
 
 
-Data Structure for the economical parameters of thermal generation technologies. 
+Data Structure for the economical parameters of thermal generation technologies.
     The data structure can be called calling all the fields directly or using named fields.
     All the limits are defined by NamedTuples and some fields can take ```nothing```
 
     ## Examples
 
-   
+
 
 
 """
@@ -98,16 +92,16 @@ EconGen(;   capacity = 0.0,
         ) = EconGen(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor)
 
 """"
-Data Structure for thermal generation technologies. 
+Data Structure for thermal generation technologies.
     The data structure contains all the information for technical and economical modeling.
-    The data fields can be filled using named fields or directly. 
+    The data fields can be filled using named fields or directly.
 
     Examples
 
-    
 
 
-"""        
+
+"""
 struct ThermalGen <: Thermal
     name::String
     status::Bool
@@ -126,13 +120,13 @@ ThermalGen(; name = "init",
 
 
 """"
-Data Structure for thermal generation technologies subjecto to seasonality constraints. 
-    The data structure contains all the information for technical and economical modeling and an extra field for a time series. 
-    The data fields can be filled using named fields or directly. 
+Data Structure for thermal generation technologies subjecto to seasonality constraints.
+    The data structure contains all the information for technical and economical modeling and an extra field for a time series.
+    The data fields can be filled using named fields or directly.
 
     Examples
 
-"""    
+"""
 struct ThermalGenSeason <: Thermal
     name::String
     status::Bool

@@ -1,7 +1,3 @@
-export Transformer2W
-export PhaseShiftingTransformer
-export Transformer3W
-
 """
 The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer.
 The model allocates the iron losses and magnetezing suceptance to the primary side
@@ -63,6 +59,4 @@ Transformer3W(; name = "init",
                 transformer = Transformer2W(),
                 line = Line()
             ) = Transformer3W(name, status, transformer, line)
-
-
 

@@ -2,14 +2,72 @@
 
 module PowerSystems
 
+#################################################################################
+# Exports
+
+export PowerSystem
+
+export Line
+export Transformer2W
+export PhaseShiftingTransformer
+export Transformer3W
+
+export Forecast
+export Deterministic
+export Scenarios
+export Probabilistic
+
+export Generator
+
+export HydroGen
+export HydroFix
+export DispatchHydro
+export TechHydro
+
+export RenewableGen
+export TechRenewable
+export EconRenewable
+export RenewableFix
+export RenewableCurtailment
+
+export Thermal
+export ThermalGen
+export ThermalGenSeason
+export TechGen
+export EconGen
+
+export ElectricLoad
+export ShuntElement
+
+export StaticLoad
+export ControllableLoad
+export InterruptibleLoad
+# export FixedShunt
+# export FixedAdmittance
+
+export Branch
+export Network
+
+export Storage
+export GenericBattery
+
+export Bus
+
+#################################################################################
+# Imports
+
+import Base.convert
+
 using TimeSeries
 using PowerModels
 using DataFrames
-using Base.convert
 using CSV
 # This packages will be removed with Julia v0.7
 using Compat
 using NamedTuples
+
+#################################################################################
+# Includes
 
 # Include utilities
 include("utils/checks.jl")
@@ -35,4 +93,4 @@ include("base.jl")
 # Better printing
 include("utils/print.jl")
 
-end
+end # module end

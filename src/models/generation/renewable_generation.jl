@@ -1,9 +1,3 @@
-export RenewableGen
-export TechRenewable
-export EconRenewable
-export RenewableFix
-export RenewableCurtailment
-
 abstract type
     RenewableGen <: Generator
 end
