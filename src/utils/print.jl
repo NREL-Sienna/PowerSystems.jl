@@ -7,7 +7,7 @@ Base.show(io::IO, b::PowerSystems.Generator) = printGenerator(io, generator)
 
 function printPowerSystem(io::IO, system::PowerSystems.PowerSystem)
     number_of_buses = length(system.buses)
-    number_of_branches = length(system.branches)
+    number_of_branches = length(system.network.branches)
     number_of_generators = length(collect(Iterators.flatten(values(system.generators))))
     print(io, "$(typeof(system))(buses=$number_of_buses, generators=$number_of_generators, branches=$number_of_branches)")
 end
