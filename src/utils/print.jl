@@ -12,4 +12,4 @@ function printPowerSystem(io::IO, system::PowerSystems.PowerSystem)
     print(io, "$(typeof(system))(buses=$number_of_buses, generators=$number_of_generators, branches=$number_of_branches)")
 end
 
-Base.show(io::IO, system::PowerSystems.PowerSystem) = printGenerator(io, system)
+Base.show(io::IO, system::PowerSystems.PowerSystem) = printPowerSystem(io, system)
