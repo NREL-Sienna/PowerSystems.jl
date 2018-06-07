@@ -1,5 +1,3 @@
-export Line
-
 # TODO: proper calculation of the rates using the SIL formula
 
 struct Line <: Branch

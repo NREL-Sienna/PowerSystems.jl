@@ -1,5 +1,3 @@
-export GenericBattery
-
 struct GenericBattery <: Storage
     name::String
     status::Bool

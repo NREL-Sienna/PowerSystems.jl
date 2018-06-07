@@ -1,8 +1,3 @@
-export StaticLoad
-export ControllableLoad
-export InterruptibleLoad
-#export FixedShunt
-
 struct StaticLoad <: ElectricLoad
     name::String
     status::Bool

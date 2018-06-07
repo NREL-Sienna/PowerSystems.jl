@@ -1,6 +1,3 @@
-export ElectricLoad
-export ShuntElement
-
 abstract type
     ElectricLoad
 end

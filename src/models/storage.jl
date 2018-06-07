@@ -1,5 +1,3 @@
-export Storage
-
 abstract type
     Storage
 end

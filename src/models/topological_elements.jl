@@ -1,5 +1,3 @@
-export Bus
-
 #TODO: Update to named tuples when Julia 0.7 becomes available
 
 struct Bus
