@@ -15,7 +15,7 @@ nodes5    = [Bus(1,"nodeA", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
 branches5 = [Line("1", true, @NT(from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, 0.00712, 400.0, nothing),
              Line("2", true, @NT(from=nodes5[1],to=nodes5[4]), 0.00304, 0.0304, 0.00658, Inf, nothing),
              Line("3", true, @NT(from=nodes5[1],to=nodes5[5]), 0.00064, 0.0064, 0.03126, Inf, nothing),
-             Line("4", true, @NT(from=nodes5[2],to=nodes5[3]), 0.00108, 0.0108, 0.01852, Inf, nothing),     
+             Line("4", true, @NT(from=nodes5[2],to=nodes5[3]), 0.00108, 0.0108, 0.01852, Inf, nothing),
              Line("5", true, @NT(from=nodes5[3],to=nodes5[4]), 0.00297, 0.0297, 0.00674, Inf, nothing),
              Line("6", true, @NT(from=nodes5[4],to=nodes5[5]), 0.00297, 0.0297, 0.00674, 240, nothing)
 ];     to=
@@ -73,30 +73,30 @@ wind_ts_DA = [0.985205412
 generators5 = [  ThermalGen("Alta", true, nodes5[1],
                     TechGen(40.0, @NT(min=0.0, max=40.0), 10.0, @NT(min = -30.0, max = 30.0), nothing, nothing),
                     EconGen(40.0, 14.0, 0.0, 0.0, 0.0, nothing)
-                ), 
+                ),
                 ThermalGen("Park City", true, nodes5[1],
                     TechGen(170.0, @NT(min=0.0, max=170.0), 20.0, @NT(min =-127.5, max=127.5), nothing, nothing),
                     EconGen(170.0, 15.0, 0.0, 0.0, 0.0, nothing)
-                ), 
+                ),
                 ThermalGen("Solitude", true, nodes5[3],
                     TechGen(520.0, @NT(min=0.0, max=520.0), 100.0, @NT(min =-390.0, max=390.0), nothing, nothing),
                     EconGen(520.0, 30.0, 0.0, 0.0, 0.0, nothing)
-                ),                
+                ),
                 ThermalGen("Sundance", true, nodes5[4],
                     TechGen(200.0, @NT(min=0.0, max=200.0), 40.0, @NT(min =-150.0, max=150.0), nothing, nothing),
                     EconGen(200.0, 40.0, 0.0, 0.0, 0.0, nothing)
-                ),    
+                ),
                 ThermalGen("Brighton", true, nodes5[5],
                     TechGen(600.0, @NT(min=0.0, max=600.0), 150.0, @NT(min =-450.0, max=450.0), nothing, nothing),
                     EconGen(600.0, 10.0, 0.0, 0.0, 0.0, nothing)
                 ),
-                RenewableFix("SolarBusC", true, nodes5[3], 
+                RenewableFix("SolarBusC", true, nodes5[3],
                     60.0,
                     TimeSeries.TimeArray(DayAhead,solar_ts_DA)
                 ),
                 RenewableCurtailment("WindBusA", true, nodes5[5],
                     120.0,
-                    EconRenewable(22.0, nothing), 
+                    EconRenewable(22.0, nothing),
                     TimeSeries.TimeArray(DayAhead,wind_ts_DA)
                 )
             ];
@@ -124,7 +124,7 @@ loadbus2_ts_DA = [ 0.792729978
               0.991227765
               0.960842114
               0.921465115
-              0.837001437 ] 
+              0.837001437 ]
 
 loadbus3_ts_DA = [ 0.831093782
                 0.689863228
@@ -149,7 +149,7 @@ loadbus3_ts_DA = [ 0.831093782
                 0.990489904
                 0.952520972
                 0.906611479
-                0.824307054]     
+                0.824307054]
 
 loadbus4_ts_DA = [ 0.871297342
                 0.670489749
@@ -174,7 +174,7 @@ loadbus4_ts_DA = [ 0.871297342
                 0.901212601
                 0.81894251
                 0.771004923
-                0.717847996]            
+                0.717847996]
 
 loads5_DA = [ StaticLoad("Bus2", true, nodes5[2], "P", 300.0, 98.61, TimeArray(DayAhead, loadbus2_ts_DA)),
             StaticLoad("Bus3", true, nodes5[3], "P", 300.0, 98.61, TimeArray(DayAhead, loadbus3_ts_DA)),
@@ -182,4 +182,4 @@ loads5_DA = [ StaticLoad("Bus2", true, nodes5[2], "P", 300.0, 98.61, TimeArray(D
             InterruptibleLoad("IloadBus4", true, nodes5[4], "P",100.0, 0.0, 50.0, 2400.0, TimeArray(DayAhead, loadbus4_ts_DA))
         ]
 
-#sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, 230.0, 1000.0)  
+sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, 230.0, 1000.0)

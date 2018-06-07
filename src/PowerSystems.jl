@@ -11,6 +11,9 @@ using CSV
 using Compat
 using NamedTuples
 
+# Include utilities
+include("utils/checks.jl")
+
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/forecasts.jl")
@@ -26,10 +29,10 @@ include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/csv_parser.jl")
 
-include("utils/checks.jl")
-include("utils/print.jl")
-
 #Definitions of PowerSystem
 include("base.jl")
+
+# Better printing
+include("utils/print.jl")
 
 end
