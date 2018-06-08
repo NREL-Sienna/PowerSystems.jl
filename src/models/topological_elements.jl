@@ -1,6 +1,6 @@
 #TODO: Update to named tuples when Julia 0.7 becomes available
 
-struct Bus
+struct Bus <: PowerSystemType
     number::Int
     name::String
     bustype::Union{String,Nothing} # [PV, PQ, SF]
