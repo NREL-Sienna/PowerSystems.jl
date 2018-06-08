@@ -3,7 +3,7 @@ abstract type
 end
 
 
-struct TechHydro
+struct TechHydro # TODO: should this be a subtype of a technical parameters abstract type
     realpower::Float64 # [MW]
     realpowerlimits::@NT(min::Float64, max::Float64)
     reactivepower::Union{Float64,Nothing} # [MVAr]

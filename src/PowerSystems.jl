@@ -72,9 +72,12 @@ using NamedTuples
 # Include utilities
 include("utils/checks.jl")
 
+abstract type PowerSystemType end
+
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/forecasts.jl")
+include("models/branches.jl")
 include("models/network.jl")
 
 #Static types

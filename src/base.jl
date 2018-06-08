@@ -100,7 +100,7 @@ end
 
 ### Struct and different Power System constructors depending on the data provided ####
 
-struct PowerSystem
+struct PowerSystem <: PowerSystemType
     buses::Array{Bus}
     generators::Dict{String, Array{Generator}}
     loads::Array{ElectricLoad}

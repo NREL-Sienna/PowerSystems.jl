@@ -1,12 +1,3 @@
-abstract type
-    Branch
-end
-
-include("branches/lines.jl")
-include("branches/transformers.jl")
-include("../utils/ybus_calculations.jl")
-include("../utils/ptdf_calculations.jl")
-
 # TODO: Consider a dynamic rate problem, add time series in the rate calculations.
 
 struct Network
