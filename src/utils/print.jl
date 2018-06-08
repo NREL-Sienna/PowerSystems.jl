@@ -1,9 +1,9 @@
-function printGenerator(io::IO, generator::PowerSystems.Generator)
-    generator_type = typeof(generator)
-    print(io, "$generator_type(name=\"$(generator.name)\")")
+function printPST(io::IO, pst::PowerSystems.PowerSystemType)
+    pst_type = typeof(pst)
+    print(io, "$pst_type(name=\"$(pst.name)\")")
 end
 
-Base.show(io::IO, generator::PowerSystems.Generator) = printGenerator(io, generator)
+Base.show(io::IO, pst::PowerSystems.PowerSystemType) = printPST(io, pst)
 
 function printPowerSystem(io::IO, system::PowerSystems.PowerSystem)
     number_of_buses = length(system.buses)
