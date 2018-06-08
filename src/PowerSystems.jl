@@ -80,7 +80,7 @@ include("models/forecasts.jl")
 include("models/branches.jl")
 include("models/network.jl")
 
-#Static types
+# Static types
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
@@ -90,7 +90,7 @@ include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/csv_parser.jl")
 
-#Definitions of PowerSystem
+# Definitions of PowerSystem
 include("base.jl")
 
 # Better printing
