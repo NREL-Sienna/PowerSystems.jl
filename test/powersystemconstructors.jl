@@ -17,8 +17,8 @@ battery = GenericBattery(name = "Bat",
                 status = true,
                 realpower = 10.0,
                 capacity = @NT(min = 0.0, max = 0.0,), 
-                inputrealpowerlimits = @NT(min = 0.0, max = 10.0,),
-                outputrealpowerlimits = @NT(min = 0.0, max = 10.0,),
+                inputrealpowerlimit = 10.0,
+                outputrealpowerlimit = 10.0,
                 efficiency = @NT(in = 0.90, out = 0.80), 
                 );
 
