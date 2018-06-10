@@ -21,7 +21,7 @@ export Generator
 
 export HydroGen
 export HydroFix
-export DispatchHydro
+export HydroStorage
 export TechHydro
 
 export RenewableGen
@@ -30,11 +30,11 @@ export EconRenewable
 export RenewableFix
 export RenewableCurtailment
 
-export Thermal
 export ThermalGen
+export TechThermal
+export EconThermal
+export ThermalDispatch
 export ThermalGenSeason
-export TechGen
-export EconGen
 
 export ElectricLoad
 export ShuntElement
@@ -42,8 +42,7 @@ export ShuntElement
 export StaticLoad
 export ControllableLoad
 export InterruptibleLoad
-# export FixedShunt
-# export FixedAdmittance
+
 
 export Branch
 export Network

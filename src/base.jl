@@ -77,11 +77,11 @@ function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
     h = []
 
     for g in gen
-       if typeof(g) <: PowerSystems.Thermal
+       if typeof(g) <: PowerSystems.ThermalGen
             push!(t,g)
         elseif typeof(g) <: PowerSystems.RenewableGen
             push!(r,g)
-        elseif typeof(g) <: PowerSystems.Hydrogen
+        elseif typeof(g) <: PowerSystems.HydroGen
             push!(h,g)
         else
             error("Generator Type not supported by PowerSystems.jl")
@@ -184,7 +184,7 @@ function PowerSystem(buses::Array{Bus},
 end
 
 PowerSystem(; buses = [Bus()],
-            generators = [ThermalGen(), RenewableFix()],
+            generators = [ThermalDispatch(), RenewableFix()],
             loads = [StaticLoad()],
             network =  nothing,
             storage = nothing,
