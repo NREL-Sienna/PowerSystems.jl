@@ -5,9 +5,9 @@ tPowerSystem = PowerSystem()
 tBus = Bus()
 
 #Generation Constructors
-tEcongen = EconGen()
-tTechGen = TechGen() 
-tThermalGen = ThermalGen()
+tEconThermal = EconThermal()
+tTechThermal = TechThermal() 
+tThermalGen = ThermalDispatch()
 tTechHydro = TechHydro()
 
 #Storage Constructots 

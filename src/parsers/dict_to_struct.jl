@@ -40,8 +40,8 @@ function dict_to_struct(data)
         for (i, k) in zip([1:length(data["gen"]);], keys(data["gen"]))
             d = data["gen"][k]
             push!(Generators,
-                ThermalGen(k, d["gen_status"], nodes[d["gen_bus"]],
-                    TechGen(d["pg"], (d["pmin"], d["pmax"]), d["qg"], (d["qmin"], d["qmax"]),
+                ThermalDispatch(k, d["gen_status"], nodes[d["gen_bus"]],
+                    TechThermal(d["pg"], (d["pmin"], d["pmax"]), d["qg"], (d["qmin"], d["qmax"]),
                         nothing, nothing),
                     # Just the linear and constant coefficients from the dictionary; needs expansion
                     # for different cost models.
@@ -107,12 +107,12 @@ function dict_to_struct(data)
         for (i, k) in zip([1:length(data["gen"]);], keys(data["gen"]))
             d = data["gen"][k]
             push!(Generators,
-                ThermalGen(k, d["gen_status"], nodes[parse(Int64, bus_nums[string(d["gen_bus"])])], # TODO: fix this access index
-                    TechGen(d["pg"], @NT(min=d["pmin"], max=d["pmax"]), d["qg"], @NT(min=d["qmin"], max=d["qmax"]),
+                ThermalDispatch(k, d["gen_status"], nodes[parse(Int64, bus_nums[string(d["gen_bus"])])], # TODO: fix this access index
+                    TechThermal(d["pg"], @NT(min=d["pmin"], max=d["pmax"]), d["qg"], @NT(min=d["qmin"], max=d["qmax"]),
                         nothing, nothing),
                     # Just the linear and constant coefficients from the dictionary; needs expansion
                     # for different cost models.
-                    EconGen(d["pmax"], nothing, d["cost"][1], d["cost"][2], d["cost"][3], nothing))
+                    EconThermal(d["pmax"], nothing, d["cost"][1], d["cost"][2], d["cost"][3], nothing))
                     )
 
         end
@@ -170,12 +170,12 @@ function dict_to_struct(data)
         for (i, k) in zip([1:length(data["gen"]);], keys(data["gen"]))
             d = data["gen"][k]
             push!(Generators,
-                ThermalGen(k, d["gen_status"], nodes[d["gen_bus"]],
-                    TechGen(d["pg"], (d["pmin"], d["pmax"]), d["qg"], (d["qmin"], d["qmax"]),
+                ThermalDispatch(k, d["gen_status"], nodes[d["gen_bus"]],
+                    TechThermal(d["pg"], (d["pmin"], d["pmax"]), d["qg"], (d["qmin"], d["qmax"]),
                         nothing, nothing),
                     # Just the linear and constant coefficients from the dictionary; needs expansion
                     # for different cost models.
-                    EconGen(d["pmax"], nothing, d["cost"][1], d["cost"][2], d["cost"][3], nothing))
+                    EconThermal(d["pmax"], nothing, d["cost"][1], d["cost"][2], d["cost"][3], nothing))
                     )
 
         end
