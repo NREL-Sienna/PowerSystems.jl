@@ -16,6 +16,7 @@ include("../data/data_14bus.jl")
 battery = GenericBattery(name = "Bat",
                 status = true,
                 realpower = 10.0,
+                energy = 100.0,
                 capacity = @NT(min = 0.0, max = 0.0,), 
                 inputrealpowerlimit = 10.0,
                 outputrealpowerlimit = 10.0,
