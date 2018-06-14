@@ -72,23 +72,13 @@ end
 function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
 
     # TODO: Defined push for specific types, at this time the matrices are of type Any.
-    t = []
-    r = []
-    h = []
+    t = [d for d in gen if isa(d, PowerSystems.ThermalGen)]
+    r = [d for d in gen if isa(d, PowerSystems.RenewableGen)]
+    h = [d for d in gen if isa(d, PowerSystems.HydroGen)]
 
-    for g in gen
-       if typeof(g) <: PowerSystems.ThermalGen
-            push!(t,g)
-        elseif typeof(g) <: PowerSystems.RenewableGen
-            push!(r,g)
-        elseif typeof(g) <: PowerSystems.HydroGen
-            push!(h,g)
-        else
-            error("Generator Type not supported by PowerSystems.jl")
-        end
-    end
-
-    generators = Dict("Thermal" => t, "Renewable" => r, "Hydro" => h)
+    generators = Dict("Thermal" => t, 
+                      "Renewable" => r, 
+                      "Hydro" => h)
 
     return generators
 end
@@ -100,12 +90,12 @@ end
 
 ### Struct and different Power System constructors depending on the data provided ####
 
-struct PowerSystem <: PowerSystemType
+struct PowerSystem
     buses::Array{Bus}
-    generators::Dict{String, Array{Generator}}
-    loads::Array{ElectricLoad}
+    generators::Dict{String, Array{<:Generator}}
+    loads::Array{<:ElectricLoad}
     network::Union{Nothing,Network}
-    storage::Union{Nothing,Array{Storage,1}}
+    storage::Union{Nothing,Array{<:Storage,1}}
     basevoltage::Real # [kV]
     basepower::Real # [MVA]
     timesteps::Int

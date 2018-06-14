@@ -9,6 +9,10 @@ tEconThermal = EconThermal()
 tTechThermal = TechThermal() 
 tThermalGen = ThermalDispatch()
 tTechHydro = TechHydro()
+tEconHydro = EconHydro()
+tHydroFix = HydroFix()
+tHydroCurtailment = HydroCurtailment()
+tHydroStorage = HydroStorage()
 
 #Storage Constructots 
 tStorage = GenericBattery()

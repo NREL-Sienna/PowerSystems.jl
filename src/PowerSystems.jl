@@ -21,8 +21,10 @@ export Generator
 
 export HydroGen
 export HydroFix
+export HydroCurtailment
 export HydroStorage
 export TechHydro
+export EconHydro
 
 export RenewableGen
 export TechRenewable
