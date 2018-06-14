@@ -1,6 +1,6 @@
 struct GenericBattery <: Storage
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     energy::Float64
     capacity::@NT(min::Float64, max::Float64)

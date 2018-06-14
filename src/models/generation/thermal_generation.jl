@@ -104,7 +104,7 @@ Data Structure for thermal generation technologies.
 """
 struct ThermalDispatch <: ThermalGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::Union{TechThermal,Nothing}
     econ::Union{EconThermal,Nothing}
@@ -129,7 +129,7 @@ Data Structure for thermal generation technologies subjecto to seasonality const
 """
 struct ThermalGenSeason <: ThermalGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::Union{TechThermal,Nothing}
     econ::Union{EconThermal,Nothing}

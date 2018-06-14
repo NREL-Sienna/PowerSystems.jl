@@ -5,7 +5,7 @@ The model allocates the iron losses and magnetezing suceptance to the primary si
 
 struct PhaseShiftingTransformer <: Branch
     name::String
-    status::Bool
+    available::Bool
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
@@ -28,7 +28,7 @@ PhaseShiftingTransformer(; name = "init",
 
 struct Transformer2W <: Branch
     name::String
-    status::Bool
+    available::Bool
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
@@ -49,7 +49,7 @@ Transformer2W(; name = "init",
 
 struct Transformer3W <: Branch
     name::String
-    status::Bool
+    available::Bool
     transformer::Transformer2W
     line::Line
 end

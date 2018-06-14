@@ -1,6 +1,6 @@
 struct StaticLoad <: ElectricLoad
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     model::String # [Z, I, P]
     maxrealpower::Float64 # [MW]
@@ -13,7 +13,7 @@ StaticLoad(name, status, bus, model, maxrealpower, maxreactivepower, scalingfact
 
 struct InterruptibleLoad <: ElectricLoad
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     model::String # [Z, I, P]
     maxrealpower::Float64 # [MW]
@@ -28,7 +28,7 @@ InterruptibleLoad(name, status, bus, model, maxrealpower, maxreactivepower, shed
 
 struct ControllableLoad <: ElectricLoad
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     realpower::Function
     reactivepower::Union{Function,Nothing}
