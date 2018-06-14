@@ -41,7 +41,7 @@ struct TechThermal
     reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing}
     ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}
-    timelimits::Union{@NT(min::Float64, max::Float64),Nothing}
+    timelimits::Union{@NT(up::Float64, down::Float64),Nothing}
     function TechThermal(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
         new(realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
