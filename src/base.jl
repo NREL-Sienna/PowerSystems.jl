@@ -71,22 +71,10 @@ end
 # Generator Classifier
 function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
 
-    # TODO: Defined push for specific types, at this time the matrices are of type Any.
-    t = []
-    r = []
-    h = []
-
-    for g in gen
-       if typeof(g) <: PowerSystems.ThermalGen
-            push!(t,g)
-        elseif typeof(g) <: PowerSystems.RenewableGen
-            push!(r,g)
-        elseif typeof(g) <: PowerSystems.HydroGen
-            push!(h,g)
-        else
-            error("Generator Type not supported by PowerSystems.jl")
-        end
-    end
+    # TODO: Add check that all generators types declared are supported
+    t = [d for d in gen if isa(d, PowerSystems.ThermalGen)]
+    r = [d for d in gen if isa(d, PowerSystems.RenewableGen)]
+    h = [d for d in gen if isa(d, PowerSystems.HydroGen)]
 
     generators = Dict("Thermal" => t, "Renewable" => r, "Hydro" => h)
 
