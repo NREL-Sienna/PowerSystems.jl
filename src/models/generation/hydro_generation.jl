@@ -35,7 +35,7 @@ EconHydro(; curtailcost = 0.0, interruptioncost = nothing) = EconHydro(curtailco
 
 struct HydroFix <: HydroGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::TechHydro
     scalingfactor::TimeSeries.TimeArray
@@ -50,7 +50,7 @@ HydroFix(; name="init",
 
 struct HydroCurtailment <: HydroGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::TechHydro
     econ::Union{EconHydro,Nothing}
@@ -71,7 +71,7 @@ HydroCurtailment(; name = "init",
 
 struct HydroStorage <: HydroGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::TechHydro
     econ::Union{EconHydro,Nothing}

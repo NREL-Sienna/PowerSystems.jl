@@ -41,7 +41,7 @@ struct TechThermal
     reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing}
     ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}
-    timelimits::Union{@NT(min::Float64, max::Float64),Nothing}
+    timelimits::Union{@NT(up::Float64, down::Float64),Nothing}
     function TechThermal(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
         new(realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
@@ -104,7 +104,7 @@ Data Structure for thermal generation technologies.
 """
 struct ThermalDispatch <: ThermalGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::Union{TechThermal,Nothing}
     econ::Union{EconThermal,Nothing}
@@ -129,7 +129,7 @@ Data Structure for thermal generation technologies subjecto to seasonality const
 """
 struct ThermalGenSeason <: ThermalGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::Union{TechThermal,Nothing}
     econ::Union{EconThermal,Nothing}

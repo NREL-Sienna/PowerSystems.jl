@@ -32,7 +32,7 @@ end
 function BusCheckAC(buses::Array{Bus})
     for b in buses
         if b.bustype == nothing
-            error("Bus/Nodes data does not contain information to build an AC network")
+            warn("Bus/Nodes data does not contain information to build an AC network")
         end
     end
 end
@@ -104,6 +104,7 @@ struct PowerSystem
 
         if network != nothing
             SlackBusCheck(buses)
+            BusCheckAC(buses)
             PVBusCheck(buses, generators)
         end
 

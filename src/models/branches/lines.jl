@@ -2,7 +2,7 @@
 
 struct Line <: Branch
     name::String
-    status::Bool
+    available::Bool
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]Co

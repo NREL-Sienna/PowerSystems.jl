@@ -19,7 +19,7 @@ EconRenewable(; curtailcost = 0.0, interruptioncost = nothing) = EconRenewable(c
 
 struct RenewableFix <: RenewableGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::TechRenewable
     scalingfactor::TimeSeries.TimeArray
@@ -37,7 +37,7 @@ RenewableFix(; name="init",
 
 struct RenewableCurtailment <: RenewableGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::TechRenewable
     econ::Union{EconRenewable,Nothing}
@@ -57,7 +57,7 @@ RenewableCurtailment(; name = "init",
 
 struct ReReactiveDispatch <: RenewableGen
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     tech::TechRenewable
     econ::Union{EconRenewable,Nothing}

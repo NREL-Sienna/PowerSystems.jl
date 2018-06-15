@@ -1,6 +1,6 @@
 struct FixedAdmittance <: ShuntElement
     name::String
-    status::Bool
+    available::Bool
     bus::Bus
     Y::Complex
 end
