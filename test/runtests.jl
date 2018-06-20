@@ -14,8 +14,8 @@ println("Test PowerSystem constructor")
 @test include("powersystemconstructors.jl")
 println("Read Parsing code")
 @time @test include("parsestandard.jl")
-toc()
 
 include("../data/data_5bus.jl");
 
-@assert "$sys5" == "PowerSystems.PowerSystem(buses=5, generators=7, branches=6)"
+@assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
+toc()
