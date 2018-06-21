@@ -73,7 +73,7 @@ using NamedTuples
 # Include utilities
 include("utils/checks.jl")
 
-abstract type PowerSystemType end
+abstract type PowerSystemDevice end
 
 # PowerSystems models
 include("models/topological_elements.jl")

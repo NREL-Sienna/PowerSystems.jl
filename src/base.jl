@@ -71,19 +71,17 @@ end
 # Generator Classifier
 function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
 
-    # TODO: Defined push for specific types, at this time the matrices are of type Any.
     t = [d for d in gen if isa(d, PowerSystems.ThermalGen)]
     r = [d for d in gen if isa(d, PowerSystems.RenewableGen)]
     h = [d for d in gen if isa(d, PowerSystems.HydroGen)]
 
-    generators = Dict("Thermal" => t, 
-                      "Renewable" => r, 
-                      "Hydro" => h)
+    #Check for type stability
+    isempty(t) ? t = nothing: t
+    isempty(r) ? r = nothing: r
+    isempty(h) ? h = nothing: h
 
-    return generators
+    return @NT(thermal = t, renewable =r, hydro =h)
 end
-
-
 
 # TODO: Check for islanded Buses
 # TODO: Check busses have same base voltage
@@ -92,8 +90,9 @@ end
 
 struct PowerSystem
     buses::Array{Bus}
-    generators::Dict{String, Array{<:Generator}}
-    loads::Array{<:ElectricLoad}
+    # TODO: Properly define the Array{GenType} for each named field in the NamedTuples
+    generators::@NT(thermal, renewable, hydro)
+    loads::Array{<:ElectricLoad,1}
     network::Union{Nothing,Network}
     storage::Union{Nothing,Array{<:Storage,1}}
     basevoltage::Real # [kV]

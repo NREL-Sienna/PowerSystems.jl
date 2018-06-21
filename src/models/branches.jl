@@ -1,5 +1,5 @@
 abstract type
-    Branch <: PowerSystemType
+    Branch <: PowerSystemDevice
 end
 
 include("./branches/lines.jl")
