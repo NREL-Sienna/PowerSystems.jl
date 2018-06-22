@@ -6,8 +6,9 @@ struct Line <: Branch
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]Co
-    b::@NT(from::Float64, to::Float64) #[pu]
-    rate::Union{Float64,Nothing} #[MVA]
+    b::Float64 #[pu]
+    # TODO: add a rate consistency check
+    rate::Float64 #[MVA]
     anglelimits::Union{Tuple{Float64,Float64},Nothing}
 end
 
@@ -16,7 +17,8 @@ Line(;  name = "init",
         connectionpoints = @NT(from::Bus(), to::Bus()),
         r = 0.0,
         x = 0.0,
-        b =@NT(from::0.0, to::0.0),
-        rate = nothing,
+        b = 0.0,
+        # TODO: Properly add the rating value of the line with an external constructor
+        rate = 9999,
         anglelimits = nothing
-    ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
+    ) = Line(name, status, connectionpoints, r, x, b)
