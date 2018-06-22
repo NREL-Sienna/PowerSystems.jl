@@ -1,3 +1,9 @@
+function TapCheck(tap, alpha, x, zb)
+
+    assert(zb == )
+
+end
+
 """
 The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer.
 The model allocates the iron losses and magnetezing suceptance to the primary side
@@ -9,10 +15,18 @@ struct PhaseShiftingTransformer <: Branch
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
-    zb::@NT(from::Float64, to::Float64) #[pu]
+    zb::@NT(primary::Complex64, secondary::Complex64) #[pu]
     tap::Float64 # [0 - 2]
     α::Float64 # [radians]
     rate::Union{Float64,Nothing} #[MVA]
+
+    function PhaseShiftingTransformer(name, available, connectionpoints, r, x, zb, tap, α, rate)
+
+        TapCheck(tap, alpha, x, zb)
+
+        new(name, available, connectionpoints, r, x, zb, tap, α, rate)
+
+    end
 end
 
 PhaseShiftingTransformer(; name = "init",
@@ -32,7 +46,8 @@ struct Transformer2W <: Branch
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
-    zb::@NT(from::Float64, to::Float64) #[pu]
+    # TODO: Define if transformer requires having a full z = r + x in the shunt
+    xb::@NT(primary::Float64, secondary::Float64) #[pu]
     tap::Float64 # [0 - 2]
     rate::Union{Float64,Nothing} #[MVA]
 end
