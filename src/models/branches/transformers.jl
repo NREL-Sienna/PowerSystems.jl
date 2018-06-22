@@ -32,7 +32,7 @@ struct Transformer2W <: Branch
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
-    zb::@NT(from::0.0, to::0.0) #[pu]
+    zb::@NT(from::Float64, to::Float64) #[pu]
     tap::Float64 # [0 - 2]
     rate::Union{Float64,Nothing} #[MVA]
 end
