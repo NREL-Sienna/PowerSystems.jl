@@ -17,8 +17,7 @@ Line(;  name = "init",
         connectionpoints = @NT(from::Bus(), to::Bus()),
         r = 0.0,
         x = 0.0,
-        b = 0.0,
-        # TODO: Properly add the rating value of the line with an external constructor
+        b =@NT(from::0.0, to::0.0),
         rate = 0.0,
         anglelimits = @NT(max = 60.0, min = -60.0)
     ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
