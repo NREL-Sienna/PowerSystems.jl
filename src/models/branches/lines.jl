@@ -7,9 +7,9 @@ struct Line <: Branch
     r::Float64 #[pu]
     x::Float64 #[pu]Co
     b::Float64 #[pu]
-    # TODO: add a rate consistency check
+    # TODO: add a rate and angle consistency check
     rate::Float64 #[MVA]
-    anglelimits::Union{Tuple{Float64,Float64},Nothing}
+    anglelimits::@NT(max::Float64, min::Float64)
 end
 
 Line(;  name = "init",
@@ -19,6 +19,6 @@ Line(;  name = "init",
         x = 0.0,
         b = 0.0,
         # TODO: Properly add the rating value of the line with an external constructor
-        rate = 9999,
-        anglelimits = nothing
-    ) = Line(name, status, connectionpoints, r, x, b)
+        rate = 0.0,
+        anglelimits = @NT(max = 60.0, min = -60.0)
+    ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)

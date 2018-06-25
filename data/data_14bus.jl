@@ -23,44 +23,44 @@ nodes14= [
             ]
 
 branches14 = [
-                Line("Line1",  true, @NT(from=nodes14[1],to=nodes14[2]),   0.01938, 0.05917,  0.0528, Inf, nothing),
-                Line("Line2",  true, @NT(from=nodes14[1],to=nodes14[5]),   0.05403, 0.22304,  0.0492, Inf, nothing),
-                Line("Line3",  true, @NT(from=nodes14[2],to=nodes14[3]),   0.04699, 0.19797,  0.0438, Inf, nothing),
-                Line("Line4",  true, @NT(from=nodes14[2],to=nodes14[4]),   0.05811, 0.17632,  0.0340, Inf, nothing),
-                Line("Line5",  true, @NT(from=nodes14[2],to=nodes14[5]),   0.05695, 0.17388,  0.0346, Inf, nothing),
-                Line("Line6",  true, @NT(from=nodes14[3],to=nodes14[4]),   0.06701, 0.17103,  0.0128, Inf, nothing),
-                Line("Line7",  true, @NT(from=nodes14[4],to=nodes14[5]),   0.01335, 0.04211,  0.0   , Inf, nothing),
+                Line("Line1",  true, @NT(from=nodes14[1],to=nodes14[2]),   0.01938, 0.05917,  0.0528, 1804.6, @NT(max = 60.0, min = -60.0)),
+                Line("Line2",  true, @NT(from=nodes14[1],to=nodes14[5]),   0.05403, 0.22304,  0.0492, 489.6, @NT(max = 60.0, min = -60.0)),
+                Line("Line3",  true, @NT(from=nodes14[2],to=nodes14[3]),   0.04699, 0.19797,  0.0438, 552.2, @NT(max = 60.0, min = -60.0)),
+                Line("Line4",  true, @NT(from=nodes14[2],to=nodes14[4]),   0.05811, 0.17632,  0.0340, 605.2, @NT(max = 60.0, min = -60.0)),
+                Line("Line5",  true, @NT(from=nodes14[2],to=nodes14[5]),   0.05695, 0.17388,  0.0346, 614.0, @NT(max = 60.0, min = -60.0)),
+                Line("Line6",  true, @NT(from=nodes14[3],to=nodes14[4]),   0.06701, 0.17103,  0.0128, 611.6, @NT(max = 60.0, min = -60.0)),
+                Line("Line7",  true, @NT(from=nodes14[4],to=nodes14[5]),   0.01335, 0.04211,  0.0   , 2543.4, @NT(max = 60.0, min = -60.0)),
                 Transformer2W("Trans3", true, @NT(from=nodes14[4],to=nodes14[7]),  0.0    , 0.20912,  0.0    , 0.978,  Inf),
                 Transformer2W("Trans1", true, @NT(from=nodes14[4],to=nodes14[9]),  0.0    , 0.55618,  0.0     , 0.969,  Inf),
                 Transformer2W("Trans2", true, @NT(from=nodes14[5],to=nodes14[6]),  0.0    , 0.25202,  0.0     , 0.932,  Inf),
-                Line("Line8",  true, @NT(from=nodes14[6],to=nodes14[11]),  0.09498, 0.19890,  0.0   , Inf, nothing),   
-                Line("Line9",  true, @NT(from=nodes14[6],to=nodes14[12]),  0.12291, 0.25581,  0.0   , Inf, nothing),    
-                Line("Line10", true, @NT(from=nodes14[6],to=nodes14[13]),  0.06615, 0.13027,  0.0   , Inf, nothing), 
+                Line("Line8",  true, @NT(from=nodes14[6],to=nodes14[11]),  0.09498, 0.19890,  0.0   , 537.3, @NT(max = 60.0, min = -60.0)),
+                Line("Line9",  true, @NT(from=nodes14[6],to=nodes14[12]),  0.12291, 0.25581,  0.0   , 202.0, @NT(max = 60.0, min = -60.0)),
+                Line("Line10", true, @NT(from=nodes14[6],to=nodes14[13]),  0.06615, 0.13027,  0.0   , 445.8, @NT(max = 60.0, min = -60.0)),
                 Transformer2W("Trans4", true, @NT(from=nodes14[7],to=nodes14[8]),  0.0      , 0.17615,  0.0     , 1.0,   Inf),
-                Line("Line16", true, @NT(from=nodes14[7],to=nodes14[9]),   0.0,     0.11001,  0.0   , Inf, nothing),   
-                Line("Line11", true, @NT(from=nodes14[9],to=nodes14[10]),  0.03181, 0.08450,  0.0   , Inf, nothing),    
-                Line("Line12", true, @NT(from=nodes14[9],to=nodes14[14]),  0.12711, 0.27038,  0.0   , Inf, nothing),    
-                Line("Line13", true, @NT(from=nodes14[10],to=nodes14[11]), 0.08205, 0.19207,  0.0   , Inf, nothing),    
-                Line("Line14", true, @NT(from=nodes14[12],to=nodes14[13]), 0.22092, 0.19988,  0.0   , Inf, nothing),    
-                Line("Line15", true, @NT(from=nodes14[13],to=nodes14[14]), 0.17093, 0.34802,  0.0   , Inf, nothing)
-            ]   
+                Line("Line16", true, @NT(from=nodes14[7],to=nodes14[9]),   0.0,     0.11001,  0.0   , 1244.4, @NT(max = 60.0, min = -60.0)),
+                Line("Line11", true, @NT(from=nodes14[9],to=nodes14[10]),  0.03181, 0.08450,  0.0   , 509.7, @NT(max = 60.0, min = -60.0)),
+                Line("Line12", true, @NT(from=nodes14[9],to=nodes14[14]),  0.12711, 0.27038,  0.0   , 395.9, @NT(max = 60.0, min = -60.0)),
+                Line("Line13", true, @NT(from=nodes14[10],to=nodes14[11]), 0.08205, 0.19207,  0.0   , 769.0, @NT(max = 60.0, min = -60.0)),
+                Line("Line14", true, @NT(from=nodes14[12],to=nodes14[13]), 0.22092, 0.19988,  0.0   , 637.8, @NT(max = 60.0, min = -60.0)),
+                Line("Line15", true, @NT(from=nodes14[13],to=nodes14[14]), 0.17093, 0.34802,  0.0   , 1021.3, @NT(max = 60.0, min = -60.0))
+            ]
 
 generators14 = [ThermalDispatch("Bus1", true, nodes14[1],
                 TechThermal(200.0, @NT(min=0.0, max=200.0), -16.9, @NT(min=-990.0, max=990.0), nothing, nothing),
                 EconThermal(40.0, x -> 0.04303*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
-                ), 
+                ),
                 ThermalDispatch("Bus2", true, nodes14[2],
                 TechThermal(40.0, @NT(min=0.0, max=140.0), 42.4, @NT(min=-40.0, max=50.0), nothing, nothing),
                 EconThermal(140.0, x -> 0.25*x^2 + 20*x, 0.0, 0.0, 0.0, nothing)
-                ), 
+                ),
                 ThermalDispatch("Bus3", true, nodes14[3],
                 TechThermal(50.0, @NT(min=0.0, max=100.0), 23.4, @NT(min=0.0, max=40.0), nothing, nothing),
                 EconThermal(100.0, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
-                ),                
+                ),
                 ThermalDispatch("Bus6", true, nodes14[6],
                 TechThermal(0.0, @NT(min=0.0, max=100.0), 12.2, @NT(min=-6.0, max=24.0), nothing, nothing),
                 (EconThermal(100.0, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing))
-                ),    
+                ),
                 ThermalDispatch("Bus8", true, nodes14[8],
                 TechThermal(0.0, @NT(min=0.0, max=100.0), 17.4, @NT(min=-6.0, max=4.0), nothing, nothing),
                 EconThermal(100.0, x -> 0.01*x^2 + 40*x, 0.0, 0.0, 0.0, nothing)
@@ -91,7 +91,7 @@ loadz1_ts = [ 0.792729978
             0.991227765
             0.960842114
             0.921465115
-            0.837001437 ] 
+            0.837001437 ]
 
 loadz2_ts = [ 0.831093782
               0.689863228
@@ -116,7 +116,7 @@ loadz2_ts = [ 0.831093782
               0.990489904
               0.952520972
               0.906611479
-              0.824307054]     
+              0.824307054]
 
 loadz3_ts = [ 0.871297342
               0.670489749
@@ -141,8 +141,8 @@ loadz3_ts = [ 0.871297342
               0.901212601
               0.81894251
               0.771004923
-              0.717847996]   
-            
+              0.717847996]
+
 loads14 = [StaticLoad("Bus2", true, nodes14[2], "P", 21.7, 12.7, TimeArray(dates, loadz1_ts)),
           StaticLoad("Bus3", true, nodes14[3], "P", 94.2, 19, TimeArray(dates, loadz1_ts)),
           StaticLoad("Bus4", true, nodes14[4], "P", 47.8, -3.9, TimeArray(dates, loadz3_ts)),
@@ -156,4 +156,4 @@ loads14 = [StaticLoad("Bus2", true, nodes14[2], "P", 21.7, 12.7, TimeArray(dates
           StaticLoad("Bus14", true, nodes14[14], "P", 14.9, 5.0, TimeArray(dates, loadz2_ts))
           ]
 
-#sys14 = PowerSystem(nodes14, generators14, loads14, branches14, 69.0, 1000.0)  
+#sys14 = PowerSystem(nodes14, generators14, loads14, branches14, 69.0, 1000.0)
