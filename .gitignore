@@ -4,3 +4,5 @@
 *.jl.mem
 docs/build/*
 .DS_Store
+*.R
+*.PNG
