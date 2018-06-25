@@ -1,9 +1,3 @@
-function TapCheck(tap, alpha, x, zb)
-
-    assert(zb == )
-
-end
-
 """
 The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer.
 The model allocates the iron losses and magnetezing suceptance to the primary side
