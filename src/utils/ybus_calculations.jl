@@ -1,18 +1,64 @@
 
 function ybus!(Ybus, b::PowerSystems.Line)
 
-    Y11 = (1 / (b.r + b.x * 1im) + (1im * b.b) / 2);
+    Y_l = (1 / (b.r + b.x * 1im))
+
+    Y11 = Y_l + (1im * b.b.from);
     Ybus[b.connectionpoints.from.number,
         b.connectionpoints.from.number] += Y11;
-    Y12 = (-1 ./ (b.r + b.x * 1im));
+
+    Y12 = -Y_l;
     Ybus[b.connectionpoints.from.number,
         b.connectionpoints.to.number] += Y12;
     #Y21 = Y12
     Ybus[b.connectionpoints.to.number,
         b.connectionpoints.from.number] += Y12;
-    #Y22 = Y11;
+
+    if b.b.to == b.b.from
+        Ybus[b.connectionpoints.to.number,
+            b.connectionpoints.to.number] += Y11;
+    else
+        Y22 = Y_l + (1im * b.b.to);
+        Ybus[b.connectionpoints.to.number,
+            b.connectionpoints.to.number] += Y22;
+    end
+
+end
+
+function ybus!(Ybus, b::PowerSystems.Transformer2W)
+
+    Y_t = 1 / (b.r + b.x * 1im)
+
+    Y11 = Y_t + (1im * b.primaryshunt)
+    Ybus[b.connectionpoints.from.number,
+        b.connectionpoints.from.number] += Y11;
+    Ybus[b.connectionpoints.from.number,
+        b.connectionpoints.to.number] += -Y_t;
     Ybus[b.connectionpoints.to.number,
-        b.connectionpoints.to.number] += Y11;
+        b.connectionpoints.from.number] += -Y_t;
+    Ybus[b.connectionpoints.to.number,
+        b.connectionpoints.to.number] += Y_t;
+
+end
+
+function ybus!(Ybus, b::PowerSystems.TapTransformer)
+
+    Y_t = 1 / (b.r + b.x * 1im)
+    Y_a = Y_t / (b.tap)
+    c = 1 / b.tap
+
+    Y11 = (Y_a + Y_t * c * (c - 1) + (1im * b.primaryshunt));
+    Ybus[b.connectionpoints.from.number,
+        b.connectionpoints.from.number] += Y11;
+    Y12 = (-Y_a) ;
+    Ybus[b.connectionpoints.from.number,
+        b.connectionpoints.to.number] += Y12;
+    #Y21 = Y12
+    Ybus[b.connectionpoints.to.number,
+        b.connectionpoints.from.number] += Y12;
+    Y22 = (Y_a + Y_t * (1 - c)) ;;
+    Ybus[b.connectionpoints.to.number,
+        b.connectionpoints.to.number] += Y22;
 
 end
 
@@ -32,27 +78,6 @@ function ybus!(Ybus, b::PowerSystems.PhaseShiftingTransformer)
     Ybus[b.connectionpoints.to.number,
         b.connectionpoints.from.number] += Y12;
     Y22 = (y_a + y * (1 - c));
-    Ybus[b.connectionpoints.to.number,
-        b.connectionpoints.to.number] += Y22;
-
-end
-
-function ybus!(Ybus, b::PowerSystems.Transformer2W)
-
-    y = 1 / (b.r + b.x * 1im)
-    y_a = y / (b.tap)
-    c = 1 / b.tap
-
-    Y11 = (y_a + y * c * (c - 1) + (b.zb));
-    Ybus[b.connectionpoints.from.number,
-        b.connectionpoints.from.number] += Y11;
-    Y12 = (-y_a) ;
-    Ybus[b.connectionpoints.from.number,
-        b.connectionpoints.to.number] += Y12;
-    #Y21 = Y12
-    Ybus[b.connectionpoints.to.number,
-        b.connectionpoints.from.number] += Y12;
-    Y22 = (y_a + y * (1 - c)) ;;
     Ybus[b.connectionpoints.to.number,
         b.connectionpoints.to.number] += Y22;
 

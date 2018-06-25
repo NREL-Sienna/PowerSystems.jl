@@ -9,6 +9,7 @@ export PowerSystem
 
 export Line
 export Transformer2W
+export TapTransformer
 export PhaseShiftingTransformer
 export Transformer3W
 

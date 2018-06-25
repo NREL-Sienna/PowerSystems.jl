@@ -28,8 +28,7 @@ struct TapTransformer <: Branch
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
-    # TODO: Define if transformer requires having a full z = r + x in the shunt
-    xb::@NT(primary::Float64, secondary::Float64) #[pu]
+    primaryshunt::Float64
     tap::Float64 # [0 - 2]
     rate::Union{Float64,Nothing} #[MVA]
 end
@@ -39,7 +38,7 @@ TapTransformer(; name = "init",
                 connectionpoints = @NT(from::Bus(), to::Bus()),
                 r = 0.0,
                 x = 0.0,
-                zb = @NT(from::0.0, to::0.0),
+                primaryshunt = 0.0,
                 tap = 1.0,
                 rate = nothing
             ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
