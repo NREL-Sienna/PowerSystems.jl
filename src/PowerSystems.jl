@@ -63,6 +63,7 @@ using TimeSeries
 using PowerModels
 using DataFrames
 using CSV
+using JSON
 # This packages will be removed with Julia v0.7
 using Compat
 using NamedTuples
@@ -90,6 +91,9 @@ include("models/loads.jl")
 include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/csv_parser.jl")
+include("parsers/forecast_parser.jl")
+include("parsers/cdm_parser.jl")
+
 
 # Definitions of PowerSystem
 include("base.jl")

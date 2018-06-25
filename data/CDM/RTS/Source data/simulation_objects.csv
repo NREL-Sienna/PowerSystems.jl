@@ -1,0 +1,8 @@
+Simulation_Parameters,Description,DAY_AHEAD,REAL_TIME
+Periods_per_Step,the number of descrete periods represented in each simulation step,24,1
+Period_Resolution,period resolution in seconds,3600,300
+Date_From,simulation beginning period,1/1/20 0:00,1/1/20 0:00
+Date_To,simulation ending period (must acconunt for lookahed data availability),12/31/20 0:00,12/31/20 0:00
+Look_Ahead_Periods_per_Step,the number of look ahead periods included in each optimization step,24,2
+Look_Ahead_Resolution,look-ahead period resolution,3600,300
+Reserve_Products,list of reserve products scheduled,"(Flex_Up, Flex_Down, Spin_Up, Reg_Up, Reg_Down)","(Spin_Up, Reg_Up, Reg_Down)"
