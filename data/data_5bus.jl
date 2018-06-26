@@ -8,8 +8,8 @@ DayAhead  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTi
 nodes5    = [Bus(1,"nodeA", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
              Bus(2,"nodeB", "PQ", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
              Bus(3,"nodeC", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
-             Bus(4,"nodeD", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
-             Bus(5,"nodeE", "SF", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
+             Bus(4,"nodeD", "SF", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
+             Bus(5,"nodeE", "PV", 0, 1.0, @NT(min = 0.9, max=1.05), 230),
         ];
 
 branches5 = [Line("1", true, @NT(from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, @NT(from=0.00356, to=0.00356), 400.0, @NT(max = 60.0, min = -60.0)),
