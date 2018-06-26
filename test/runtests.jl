@@ -12,6 +12,8 @@ println("Test all the constructors")
 @time @test include("constructors.jl")
 println("Test PowerSystem constructor")
 @test include("powersystemconstructors.jl")
+println("Testing Network Matrices")
+@time @test include("network_matrices.jl")
 println("Read Parsing code")
 @time @test include("parsestandard.jl")
 
