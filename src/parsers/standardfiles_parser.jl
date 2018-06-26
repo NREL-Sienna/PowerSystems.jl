@@ -1,5 +1,3 @@
-export ParseStandardFiles
-
 function ParseStandardFiles(file::String)
 
     data = PowerModels.parse_file(file)
