@@ -22,6 +22,7 @@ export Scenarios
 export Probabilistic
 
 export Generator
+export Sources
 
 export HydroGen
 export HydroFix
@@ -69,10 +70,10 @@ using NamedTuples
 #################################################################################
 # Includes
 
-# Include utilities
-include("utils/checks.jl")
-
 abstract type PowerSystemDevice end
+
+# Include utilities
+include("utils/base_checks.jl")
 
 # PowerSystems models
 include("models/topological_elements.jl")
@@ -91,6 +92,7 @@ include("parsers/standardfiles_parser.jl")
 include("parsers/csv_parser.jl")
 
 # Definitions of PowerSystem
+include("utils/system_checks.jl")
 include("base.jl")
 
 # Better printing
