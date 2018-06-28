@@ -7,7 +7,7 @@ Base.show(io::IO, pst::PowerSystems.PowerSystemDevice) = printPST(io, pst)
 
 function printPowerSystem(io::IO, system::PowerSystems.PowerSystem)
     number_of_buses = length(system.buses)
-    number_of_branches = length(system.network.branches)
+    isa(system.branches,Nothing)? number_of_branches = 0: number_of_branches = length(system.branches)
     #number_of_generators = length(collect(Iterators.flatten(values(system.generators))))
     print(io, "$(typeof(system))(buses=$number_of_buses, branches=$number_of_branches)")
 end
