@@ -155,5 +155,3 @@ loads14 = [StaticLoad("Bus2", true, nodes14[2], "P", 21.7, 12.7, TimeArray(dates
           StaticLoad("Bus13", true, nodes14[13], "P", 13.5, 5.8, TimeArray(dates, loadz2_ts)),
           StaticLoad("Bus14", true, nodes14[14], "P", 14.9, 5.0, TimeArray(dates, loadz2_ts))
           ]
-
-#sys14 = PowerSystem(nodes14, generators14, loads14, branches14, 69.0, 1000.0)
