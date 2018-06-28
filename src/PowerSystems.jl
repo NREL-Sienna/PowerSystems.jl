@@ -89,6 +89,9 @@ include("models/loads.jl")
 include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/csv_parser.jl")
+include("parsers/cdm_parser.jl")
+include("parsers/forecast_parser.jl")
+include("parsers/pm2ps_parser.jl")
 
 # Definitions of PowerSystem
 include("utils/system_checks.jl")

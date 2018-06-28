@@ -1,206 +1,212 @@
-export dict_to_struct
-
 # Global method definition needs to be at top level in .7
 # Convert bool to int
 Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(InexactError())
+#############################################
 
-function dict_to_struct(data)
-
-    if data["version"] == "psse raw file"
-
-        # Check for at least one bus in input file
-        if (length(data["bus"]) < 1)
-            error("There are no busses in this psse file")
-        end
-
-        base_kv = data["bus"][collect(keys(data["bus"]))[1]]["base_kv"] # Load base kv from first bus
-        NBus = SystemParam(length(data["bus"]), base_kv, data["baseMVA"], 1); 
-
-        nodes = Array{Bus}(0)
-        Loads = Array{ElectricLoad}(0) # Using least constrained Load
-        bus_types = ["PV", "PQ", "SF"] # Index into this using int val in buses
-
-        for (i, i2) in zip([1:length(data["bus"]);], sort!([parse(Int, key) for key in keys(data["bus"])])) # Parse key as int for proper sorting
-
-            d = data["bus"][string(i2)]
-
-            push!(nodes, Bus(d["bus_i"], string("node", string(i)), bus_types[d["bus_type"]], 0, d["vm"], (d["vmin"], d["vmax"]), d["base_kv"])) # NOTE: angle 0, tuple(min, max)
-            # If there is a load for this bus, only information so far is the installed load.
-            if d["pd"] != 0.0
-                push!(Loads, StaticLoad(string("Load", string(i2)), nodes[i2], "P", d["pd"], d["qd"],
-                    # hardcoded until we get a better structure for economic data for loads
-                    # load_econ("interruptible", 1000, 999),
-                    TimeSeries.TimeArray(Dates.today(), [1.0])
-                    ))
-            end
-        end
-
-        Generators = Array{ThermalGen}(0) # Initialize it with 0 elements; pushing onto array initialized with >0 elements leaves nulls at beginning
-        # Note: Order is based on sorted order of string keys, which is different than that of ints. I.e., this loop is currently unordered for our purpose
-        for (i, k) in zip([1:length(data["gen"]);], keys(data["gen"]))
-            d = data["gen"][k]
-            push!(Generators,
-                ThermalDispatch(k, d["gen_status"], nodes[d["gen_bus"]],
-                    TechThermal(d["pg"], (d["pmin"], d["pmax"]), d["qg"], (d["qmin"], d["qmax"]),
-                        nothing, nothing),
-                    # Just the linear and constant coefficients from the dictionary; needs expansion
-                    # for different cost models.
-                    nothing # No econ data in psse file
-                    ))
-
-        end
-
-        Branches = Array{Branch}(0)
-        for d in data["branch"]
-            # Check if transformer2w, else line
-            if d[2]["transformer"]
-                push!(Branches, Transformer2W(d[1], convert(Bool, d[2]["br_status"]),
-                    (nodes[d[2]["f_bus"]], nodes[d[2]["t_bus"]]),
-                    d[2]["br_r"], d[2]["br_x"], d[2]["br_b"],
-                    d[2]["tap"], d[2]["angmax"], d[2]["rate_a"])
-                    )
-            else
-                push!(Branches, Line(d[1], convert(Bool, d[2]["br_status"]),
-                    (nodes[d[2]["f_bus"]], nodes[d[2]["t_bus"]]),
-                    d[2]["br_r"], d[2]["br_x"], d[2]["br_b"],
-                    d[2]["rate_a"], (d[2]["angmin"], d[2]["angmax"]))
-                    )
-            end
-        end
-
-    elseif data["version"] == "2" # matpower
-
-        # Check for at least one bus in input file
-        if (length(data["bus"]) < 1)
-            error("There are no busses in this matpower file")
-        end
-
-        base_kv = data["bus"][collect(keys(data["bus"]))[1]]["base_kv"] # Load base kv from first bus
-        NBus = SystemParam(length(data["bus"]), base_kv, data["baseMVA"], 1); # TODO: Check busses have same base voltage
-
-        nodes = Array{Bus}(0)
-        Loads = Array{ElectricLoad}(0) # Using least constrained Load
-        bus_types = ["PV", "PQ", "SF"] # Index into this using int val in buses
-        bus_nums = Dict{String, String}() # Map potentially nonsequential bus keys to sequential ones for storing in array
-        for (i, i2) in zip([1:length(data["bus"]);], sort!([parse(Int, key) for key in keys(data["bus"])])) # Parse key as int for proper sorting
-            # i is sequential index starting at 1
-            # i2 is bus key
-            bus_nums[string(i2)] = string(i)
-            d = data["bus"][string(i2)] # current bus
-            # data["bus"][string(i)] = data["bus"][string(i2)]
-            # delete!(data["bus"], string(i2)) # modify dict in place. ok?
-
-            push!(nodes, Bus(d["bus_i"], string("node", string(i)), bus_types[d["bus_type"]], 0, d["vm"], @NT(min=d["vmin"], max=d["vmax"]), d["base_kv"])) # NOTE: angle 0, tuple(min, max)
-            # If there is a load for this bus, only information so far is the installed load.
-            if d["pd"] != 0.0
-                # NOTE: access nodes using index i in case numbering of original data not sequential/consistent
-                push!(Loads, StaticLoad(string("Load", string(i)), true, nodes[i], "P", d["pd"], d["qd"],
-                    # hardcoded until we get a better structure for economic data for loads
-                    # load_econ("interruptible", 1000, 999),
-                    TimeSeries.TimeArray(Dates.today(), [1.0])
-                    ))
-            end
-        end
-
-        Generators = Array{ThermalGen}(0) # Initialize it with 0 elements; pushing onto array initialized with >0 elements leaves nulls at beginning
-        # Note: Order is based on sorted order of string keys, which is different than that of ints. I.e., this loop is currently unordered for our purpose
-        for (i, k) in zip([1:length(data["gen"]);], keys(data["gen"]))
-            d = data["gen"][k]
-            push!(Generators,
-                ThermalDispatch(k, d["gen_status"], nodes[parse(Int64, bus_nums[string(d["gen_bus"])])], # TODO: fix this access index
-                    TechThermal(d["pg"], @NT(min=d["pmin"], max=d["pmax"]), d["qg"], @NT(min=d["qmin"], max=d["qmax"]),
-                        nothing, nothing),
-                    # Just the linear and constant coefficients from the dictionary; needs expansion
-                    # for different cost models.
-                    EconThermal(d["pmax"], nothing, d["cost"][1], d["cost"][2], d["cost"][3], nothing))
-                    )
-
-        end
-
-        Branches = Array{Branch}(0)
-        for d in data["branch"]
-            # Check if transformer2w, else line
-            if d[2]["transformer"]
-                push!(Branches, Transformer2W(d[1], convert(Bool, d[2]["br_status"]),
-                    (nodes[parse(Int64, bus_nums[string(d[2]["f_bus"])])], nodes[parse(Int64, bus_nums[string(d[2]["t_bus"])])]),
-                    d[2]["br_r"], d[2]["br_x"], d[2]["br_b"],
-                    d[2]["tap"], d[2]["angmax"], d[2]["rate_a"])
-                    )
-            else
-                push!(Branches, Line(d[1], convert(Bool, d[2]["br_status"]),
-                    (nodes[parse(Int64, bus_nums[string(d[2]["f_bus"])])], nodes[parse(Int64, bus_nums[string(d[2]["t_bus"])])]),
-                    d[2]["br_r"], d[2]["br_x"], d[2]["br_b"],
-                    d[2]["rate_a"], (d[2]["angmin"], d[2]["angmax"]))
-                    )
-            end
-        end
-
+function ps_dict2ps_struct(data::Dict{String,Any})
+    """
+    Takes a PowerSystems dictionary and return an array of PowerSystems struct for Bus, Generator, Branch and load
+    """
+    if haskey(data, "bus")
+        Buses = PowerSystems.bus_dict_parse(data["bus"])
     else
-        warn("The dictionary has no data model descriptor; the parser is not guaranteed to work")
-
-        # Check for at least one bus in input file
-        if (length(data["bus"]) < 1)
-            error("There are no busses in the data")
-        end
-
-        base_kv = data["bus"][collect(keys(data["bus"]))[1]]["base_kv"] # Load base kv from first bus
-        NBus = SystemParam(length(data["bus"]), base_kv, data["baseMVA"], 1); # TODO: Check busses have same base voltage
-
-        nodes = Array{Bus}(0)
-        Loads = Array{ElectricLoad}(0) # Using least constrained Load
-        bus_types = ["PV", "PQ", "SF"] # Index into this using int val in buses
-
-        for (i, i2) in zip([1:length(data["bus"]);], sort!([parse(Int, key) for key in keys(data["bus"])])) # Parse key as int for proper sorting
-
-            d = data["bus"][string(i2)]
-
-            push!(nodes, Bus(d["bus_i"], string("node", string(i)), bus_types[d["bus_type"]], 0, d["vm"], @NT(min=d["vmin"], max=d["vmax"]), d["base_kv"])) # NOTE: angle 0, tuple(min, max)
-            # If there is a load for this bus, only information so far is the installed load.
-            if d["pd"] != 0.0
-                push!(Loads, StaticLoad(string("Load", string(i2)), nodes[i2], "P", d["pd"], d["qd"],
-                    # hardcoded until we get a better structure for economic data for loads
-                    # load_econ("interruptible", 1000, 999),
-                    TimeSeries.TimeArray(Dates.today(), [1.0])
-                    ))
-            end
-        end
-
-        Generators = Array{ThermalGen}(0) # Initialize it with 0 elements; pushing onto array initialized with >0 elements leaves nulls at beginning
-        # Note: Order is based on sorted order of string keys, which is different than that of ints. I.e., this loop is currently unordered for our purpose
-        for (i, k) in zip([1:length(data["gen"]);], keys(data["gen"]))
-            d = data["gen"][k]
-            push!(Generators,
-                ThermalDispatch(k, d["gen_status"], nodes[d["gen_bus"]],
-                    TechThermal(d["pg"], (d["pmin"], d["pmax"]), d["qg"], (d["qmin"], d["qmax"]),
-                        nothing, nothing),
-                    # Just the linear and constant coefficients from the dictionary; needs expansion
-                    # for different cost models.
-                    EconThermal(d["pmax"], nothing, d["cost"][1], d["cost"][2], d["cost"][3], nothing))
-                    )
-
-        end
-
-        Branches = Array{Branch}(0)
-        for d in data["branch"]
-            # Check if transformer2w, else line
-            if d[2]["transformer"]
-                push!(Branches, Transformer2W(d[1], convert(Bool, d[2]["br_status"]),
-                    (nodes[d[2]["f_bus"]], nodes[d[2]["t_bus"]]),
-                    d[2]["br_r"], d[2]["br_x"], d[2]["br_b"],
-                    d[2]["tap"], d[2]["angmax"], d[2]["rate_a"])
-                    )
-            else
-                push!(Branches, Line(d[1], convert(Bool, d[2]["br_status"]),
-                    (nodes[d[2]["f_bus"]], nodes[d[2]["t_bus"]]),
-                    d[2]["br_r"], d[2]["br_x"], d[2]["br_b"],
-                    d[2]["rate_a"], (d[2]["angmin"], d[2]["angmax"]))
-                    )
-            end
-        end
-
-
+        warn("Key Error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
+        Buses =[]
     end
+    if haskey(data, "gen")
+        Generators, Storage = PowerSystems.gen_dict_parser(data["gen"])
+    else
+        warn("Key Error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
+        Generators =[]
+        Storage = []
+    end
+    if haskey(data, "branch")
+        Branches = PowerSystems.branch_dict_parser(data["branch"])
+    else
+        warn("Key Error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
+        Branches =[]
+    end
+    if haskey(data, "load")
+        Loads = PowerSystems.load_dict_parser(data["load"])
+    else
+        warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
+        Loads =[]
+    end
+    return Buses, Generators, Storage, Branches, Loads 
+end
 
-return nodes, Generators, Loads, Branches
 
+## - Parse Dict to Struct
+function bus_dict_parse(dict::Dict{Int,Any})
+    Buses = Array{PowerSystems.Bus}(0)
+    for (bus_key,bus_dict) in dict
+        push!(Buses,PowerSystems.Bus(bus_dict["number"],
+                                    bus_dict["name"],
+                                    bus_dict["bustype"],
+                                    bus_dict["angle"],
+                                    bus_dict["voltage"],
+                                    bus_dict["voltagelimits"],
+                                    bus_dict["basevoltage"]
+                                    ))
+    end
+    return Buses
+end
+
+
+## - Parse Dict to Array
+function gen_dict_parser(dict::Dict{String,Any})
+    Generators =Array{PowerSystems.Generator}(0)
+    Storage_gen =Array{PowerSystems.Storage}(0)
+    for (gen_type_key,gen_type_dict) in dict
+        if gen_type_key =="Thermal"
+            for (thermal_key,thermal_dict) in gen_type_dict
+                push!(Generators,PowerSystems.ThermalDispatch(thermal_dict["name"],
+                                                            thermal_dict["available"],
+                                                            thermal_dict["bus"],
+                                                            TechThermal(thermal_dict["tech"]["realpower"],
+                                                                        thermal_dict["tech"]["realpowerlimits"],
+                                                                        thermal_dict["tech"]["reactivepower"],
+                                                                        thermal_dict["tech"]["reactivepowerlimits"],
+                                                                        thermal_dict["tech"]["ramplimits"],
+                                                                        thermal_dict["tech"]["timelimits"]),
+                                                            EconThermal(thermal_dict["econ"]["capacity"],
+                                                                        thermal_dict["econ"]["variablecost"],
+                                                                        thermal_dict["econ"]["fixedcost"],
+                                                                        thermal_dict["econ"]["startupcost"],
+                                                                        thermal_dict["econ"]["shutdncost"],
+                                                                        thermal_dict["econ"]["annualcapacityfactor"])
+                            ))
+            end
+        elseif gen_type_key =="Hydro"
+            for (hydro_key,hydro_dict) in gen_type_dict
+                push!(Generators,PowerSystems.HydroCurtailment(hydro_dict["name"],
+                                                            hydro_dict["available"],
+                                                            hydro_dict["bus"],
+                                                            TechHydro(  hydro_dict["tech"]["installedcapacity"],
+                                                                        hydro_dict["tech"]["realpower"],
+                                                                        hydro_dict["tech"]["realpowerlimits"],
+                                                                        hydro_dict["tech"]["reactivepower"],
+                                                                        hydro_dict["tech"]["reactivepowerlimits"],
+                                                                        hydro_dict["tech"]["ramplimits"],
+                                                                        hydro_dict["tech"]["timelimits"]),
+                                                            hydro_dict["econ"]["curtailcost"],
+                                                            hydro_dict["scalingfactor"]
+                            ))
+            end
+        elseif gen_type_key =="Renewable"
+            for (ren_key,ren_dict) in  gen_type_dict  
+                if ren_key == "PV"
+                    for (pv_key,pv_dict) in ren_dict
+                        push!(Generators,PowerSystems.RenewableCurtailment(pv_dict["name"],
+                                                                    pv_dict["available"],
+                                                                    pv_dict["bus"],
+                                                                    pv_dict["tech"]["installedcapacity"],
+                                                                    EconRenewable(pv_dict["econ"]["curtailcost"],
+                                                                                pv_dict["econ"]["interruptioncost"]),
+                                                                    pv_dict["scalingfactor"]
+                                    ))
+                    end
+                elseif ren_key == "RTPV"
+                    for (rtpv_key,rtpv_dict) in ren_dict
+                        push!(Generators,PowerSystems.RenewableFix(rtpv_dict["name"],
+                                                                    rtpv_dict["available"],
+                                                                    rtpv_dict["bus"],
+                                                                    rtpv_dict["tech"]["installedcapacity"],
+                                                                    rtpv_dict["scalingfactor"]
+                                    ))
+                    end
+                elseif ren_key == "WIND"
+                    for (wind_key,wind_dict) in ren_dict
+                        push!(Generators,PowerSystems.RenewableCurtailment(wind_dict["name"],
+                                                                    wind_dict["available"],
+                                                                    wind_dict["bus"],
+                                                                    wind_dict["tech"]["installedcapacity"],
+                                                                    EconRenewable(wind_dict["econ"]["curtailcost"],
+                                                                                wind_dict["econ"]["interruptioncost"]),
+                                                                    wind_dict["scalingfactor"]
+                                    ))
+                    end
+                end
+            end
+        elseif gen_type_key =="Storage"
+            for (storage_key,storage_dict) in  gen_type_dict 
+                push!(Storage_gen,PowerSystems.GenericBattery(storage_dict["name"],
+                                                            storage_dict["available"],
+                                                            storage_dict["bus"],
+                                                            storage_dict["energy"],
+                                                            storage_dict["capacity"],
+                                                            storage_dict["realpower"],
+                                                            storage_dict["inputrealpowerlimit"],
+                                                            storage_dict["outputrealpowerlimit"],
+                                                            storage_dict["efficiency"],
+                                                            storage_dict["reactivepower"],
+                                                            storage_dict["reactivepowerlimits"]
+                            ))
+            end
+        end
+    end
+    return Generators, Storage_gen
+end
+
+# - Parse Dict to Array
+
+function branch_dict_parser(dict)
+    Branches = Array{PowerSystems.Branch}(0)
+    for (branch_key,branch_dict) in dict
+        if branch_key == "Transformers"
+            for (trans_key,trans_dict) in branch_dict
+                if trans_dict["tap"] ==1.0
+                    push!(Branches,Transformer2W(trans_dict["name"],
+                                                trans_dict["available"],
+                                                trans_dict["connectionpoints"],
+                                                trans_dict["r"],
+                                                trans_dict["x"],
+                                                trans_dict["primaryshunt"],
+                                                trans_dict["rate"]
+                                                ))
+                elseif trans_dict["tap"] !=1.0
+                    push!(Branches,TapTransformer(trans_dict["name"],
+                                                trans_dict["available"],
+                                                trans_dict["connectionpoints"],
+                                                trans_dict["r"],
+                                                trans_dict["x"],
+                                                trans_dict["primaryshunt"],
+                                                trans_dict["tap"],
+                                                trans_dict["rate"]
+                                                ))
+                end
+            end
+        else branch_key == "Lines"
+            for (line_key,line_dict) in branch_dict
+                push!(Branches,Line(line_dict["name"],
+                                    line_dict["available"],
+                                    line_dict["connectionpoints"],
+                                    line_dict["r"],
+                                    line_dict["x"],
+                                    line_dict["b"],
+                                    line_dict["rate"],
+                                    line_dict["anglelimits"]
+                                    ))
+            end
+        end
+    end
+    return Branches
+end
+
+
+## - Parse Dict to Array
+
+function load_dict_parser(dict)
+    Loads =Array{PowerSystems.ElectricLoad}(0)
+    for (load_key,load_dict) in dict
+        push!(Loads,StaticLoad(load_dict["name"],
+                load_dict["available"],
+                load_dict["bus"],
+                load_dict["model"],
+                load_dict["maxrealpower"],
+                load_dict["maxreactivepower"],
+                load_dict["scalingfactor"]
+                ))
+    end
+    return Loads
 end
