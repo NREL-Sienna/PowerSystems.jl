@@ -1,184 +1,128 @@
-
-### Utility Functions needed for the construction of the Power System, mostly used for consistency checking ####
-
-## Time Series Length ##
-
-function TimeSeriesCheckLoad(loads::Array{T}) where {T<:ElectricLoad}
-    t = length(loads[1].scalingfactor)
-    for l in loads
-        if t == length(l.scalingfactor)
-            continue
-        else
-            error("Inconsistent load scaling factor time series length")
-        end
-    end
-    return t
-end
-
-function TimeSeriesCheckRE(generators::Array{T}, t) where {T<:Generator}
-    for g in generators
-        if typeof(g) <: RenewableGen
-            if t == length(g.scalingfactor)
-                continue
-            else
-                error("Inconsistent generation scaling factor time series length")
-            end
-        end
-    end
-end
-
-## Check that all the buses have a type defintion ##
-
-function BusCheckAC(buses::Array{Bus})
-    for b in buses
-        if b.bustype == nothing
-            warn("Bus/Nodes data does not contain information to build an AC network")
-        end
-    end
-end
-
-## Slack Bus Definition ##
-
-function SlackBusCheck(buses::Array{Bus})
-    slack = -9
-    for b in buses
-        if b.bustype == "SF"
-            slack = b.number
-        end
-    end
-    if slack == -9
-        error("Model doesn't contain a slack bus")
-    end
-end
-
-### PV Bus Check ###
-
-function PVBusCheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator}
-    pv_list = -1*ones(Int64, length(generators))
-    for (ix,g) in enumerate(generators)
-        g.bus.bustype == "PV" ? pv_list[ix] = g.bus.number : continue
-    end
-
-    for b in buses
-        if b.bustype == "PV"
-            b.number in pv_list ? continue : error("The bus ", b.number, " is declared as PV without a generator connected to it")
-        else
-            continue
-        end
-    end
-end
-
-# Generator Classifier
-function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
-
-    t = [d for d in gen if isa(d, PowerSystems.ThermalGen)]
-    r = [d for d in gen if isa(d, PowerSystems.RenewableGen)]
-    h = [d for d in gen if isa(d, PowerSystems.HydroGen)]
-
-    #Check for type stability
-    isempty(t) ? t = nothing: t
-    isempty(r) ? r = nothing: r
-    isempty(h) ? h = nothing: h
-
-    return @NT(thermal = t, renewable =r, hydro =h)
-end
-
-# TODO: Check for islanded Buses
-# TODO: Check busses have same base voltage
-
 ### Struct and different Power System constructors depending on the data provided ####
 
-struct PowerSystem
-    buses::Array{Bus}
-    # TODO: Properly define the Array{GenType} for each named field in the NamedTuples
-    generators::@NT(thermal, renewable, hydro)
-    loads::Array{<:ElectricLoad,1}
-    network::Union{Nothing,Network}
-    storage::Union{Nothing,Array{<:Storage,1}}
-    basevoltage::Real # [kV]
-    basepower::Real # [MVA]
-    timesteps::Int
-    dynamics::Union{Nothing,Bool}
-    function PowerSystem(buses, generators, loads,  network, storage, basevoltage, basepower, dynamics)
+struct PowerSystem{L <: ElectricLoad,
+                   B <: Union{Nothing,Array{<:Branch,1}},
+                   S <: Union{Nothing,Array{<: Storage,1}}}
+    buses::Array{Bus,1}
+    generators::PowerSystems.Sources
+    loads::Array{L,1}
+    branches::B
+    storage::S
+    basevoltage::Float64 # [kV]
+    basepower::Float64 # [MVA]
+    timesteps::Int64
 
-        if network != nothing
-            SlackBusCheck(buses)
-            BusCheckAC(buses)
-            PVBusCheck(buses, generators)
-        end
+    function PowerSystem(buses::Array{Bus,1},
+                        generators::Array{G,1},
+                        loads::Array{L,1},
+                        branches::Nothing,
+                        storage::Nothing,
+                        basevoltage::Float64,
+                        basepower::Float64) where {G <: PowerSystems.Generator, L <: PowerSystems.ElectricLoad}
 
+        sources = GenClassifier(generators);
         time_length = TimeSeriesCheckLoad(loads)
-        TimeSeriesCheckRE(generators, time_length)
+        TimeSeriesCheckSources(sources.renewable, time_length)
+        #TimeSeriesCheckSources(sources.hydro, time_length)
 
-        new(buses,
-            GenClassifier(generators),
-            loads,
-            network,
-            storage,
-            basevoltage,
-            basepower,
-            time_length,
-            dynamics)
+        new{L, Nothing, Nothing,}(buses,
+                        sources,
+                        loads,
+                        nothing,
+                        nothing,
+                        basevoltage,
+                        basepower,
+                        time_length)
 
     end
-end
 
-function PowerSystem(buses::Array{Bus},
-                    generators::Array{T} where {T<:Generator},
-                    loads::Array{T} where {T<:ElectricLoad},
-                    branches::Array{T} where {T<:Branch},
-                    storage::Array{T} where {T<:Storage},
-                    basevoltage::Real,
-                    basepower::Real,
-                    dynamics=false)
-    PowerSystem(buses, generators, loads, Network(branches, buses), storage, basevoltage, basepower, dynamics)
-end
+    function PowerSystem(buses::Array{Bus,1},
+                        generators::Array{G,1},
+                        loads::Array{L,1},
+                        branches::B,
+                        storage::Nothing,
+                        basevoltage::Float64,
+                        basepower::Float64) where {G <: PowerSystems.Generator, L <: ElectricLoad, B <: Array{<:Branch,1}}
 
-function PowerSystem(buses::Array{Bus},
-    generators::Array{T} where {T<:Generator},
-    loads::Array{T} where {T<:ElectricLoad},
-    network::Network,
-    basevoltage::Real,
-    basepower::Real,
-    dynamics=false)
-PowerSystem(buses, generators, loads, network, nothing, basevoltage, basepower, dynamics)
-end
+        SlackBusCheck(buses)
+        BusCheckAC(buses)
+        PVBusCheck(buses, generators)
 
-function PowerSystem(buses::Array{Bus},
-                    generators::Array{T} where {T<:Generator},
-                    loads::Array{T} where {T<:ElectricLoad},
-                    branches::Array{T} where {T<:Branch},
-                    basevoltage::Float64,
-                    basepower::Float64,
-                    dynamics=false)
-    PowerSystem(buses, generators, loads, Network(branches, buses), nothing, basevoltage, basepower, dynamics)
-end
+        sources = GenClassifier(generators);
+        time_length = TimeSeriesCheckLoad(loads)
+        TimeSeriesCheckSources(sources.renewable, time_length)
+        #TimeSeriesCheckSources(sources.hydro, time_length)
 
-function PowerSystem(buses::Array{Bus},
-                    generators::Array{T} where {T<:Generator},
-                    loads::Array{T} where {T<:ElectricLoad},
-                    storage::Array{T} where {T<:Storage},
-                    basevoltage::Real,
-                    basepower::Real,
-                    dynamics=false)
-    PowerSystem(buses, generators, loads, nothing, storage, basevoltage, basepower, dynamics)
-end
+        new{L, B, Nothing}(buses,
+                sources,
+                loads,
+                branches,
+                nothing,
+                basevoltage,
+                basepower,
+                time_length)
 
-function PowerSystem(buses::Array{Bus},
-                    generators::Array{T} where {T<:Generator},
-                    loads::Array{T} where {T<:ElectricLoad},
-                    basevoltage::Real,
-                    basepower::Real,
-                    dynamics=false)
-    PowerSystem(buses, generators, loads, nothing, nothing, basevoltage, basepower, dynamics)
+    end
+
+    function PowerSystem(buses::Array{Bus,1},
+                        generators::Array{G,1},
+                        loads::Array{L,1},
+                        branches::Nothing,
+                        storage::S,
+                        basevoltage::Float64,
+                        basepower::Float64) where {G <: PowerSystems.Generator, L <: ElectricLoad, S <: Array{<: Storage,1}}
+
+        sources = GenClassifier(generators);
+        time_length = TimeSeriesCheckLoad(loads)
+        TimeSeriesCheckSources(sources.renewable, time_length)
+        #TimeSeriesCheckSources(sources.hydro, time_length)
+
+        new{L, Nothing, S}(buses,
+                sources,
+                loads,
+                nothing,
+                storage,
+                basevoltage,
+                basepower,
+                time_length)
+
+    end
+
+    function PowerSystem(buses::Array{Bus,1},
+                        generators::Array{G,1},
+                        loads::Array{L,1},
+                        branches::B,
+                        storage::S,
+                        basevoltage::Float64,
+                        basepower::Float64) where {G <: PowerSystems.Generator, L <: ElectricLoad, B <: Array{<:Branch,1}, S <: Array{<: Storage,1}}
+
+        SlackBusCheck(buses)
+        BusCheckAC(buses)
+        PVBusCheck(buses, generators)
+
+        sources = GenClassifier(generators);
+        time_length = TimeSeriesCheckLoad(loads)
+        TimeSeriesCheckSources(sources.renewable, time_length)
+        #TimeSeriesCheckSources(sources.hydro, time_length)
+
+        new{L, B, S}(buses,
+                sources,
+                loads,
+                branches,
+                storage,
+                basevoltage,
+                basepower,
+                time_length)
+
+    end
+
 end
 
 PowerSystem(; buses = [Bus()],
             generators = [ThermalDispatch(), RenewableFix()],
             loads = [StaticLoad()],
-            network =  nothing,
+            branches =  nothing,
             storage = nothing,
             basevoltage = 0.0,
             basepower = 1000.0,
-            dynamics = false,
-        ) = PowerSystem(buses, generators, loads, network, storage, basevoltage, basepower, dynamics)
+        ) = PowerSystem(buses, generators, loads, branches, storage, basevoltage, basepower)
