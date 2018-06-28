@@ -1,6 +1,7 @@
 using PowerSystems
 using Base.Test
-
+using CSV
+using DataFrames
 
 # Testing Topological components of the schema
 
@@ -18,6 +19,10 @@ println("Test PowerSystem constructor")
 println("Read Parsing code")
 @time @test include("parsestandard.jl")
 
-#include("../data/data_5bus.jl");
-#@assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
+println("Reading forecast data ")
+@time @test include("readforecastdata.jl")
+include("../data/data_5bus.jl");
+
+@assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
+
 toc()

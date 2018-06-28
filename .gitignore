@@ -6,3 +6,7 @@ docs/build/*
 .DS_Store
 *.R
 *.PNG
+*.csv
+*.md
+*.ipynb
+*.m
