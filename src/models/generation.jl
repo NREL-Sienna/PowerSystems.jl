@@ -6,6 +6,7 @@ include("generation/renewable_generation.jl")
 include("generation/thermal_generation.jl")
 include("generation/hydro_generation.jl")
 
+#Sources shouldn't be exported. It is used internally to classify the generators.
 struct Sources{T <: Union{Nothing,Array{<:ThermalGen,1}}, R <: Union{Nothing,Array{<:RenewableGen,1}}, H <: Union{Nothing,Array{<:HydroGen,1}}}
     thermal::T
     renewable::R
@@ -24,7 +25,7 @@ function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
     isempty(r) ? r = nothing: r
     isempty(h) ? h = nothing: h
 
-    generators = Sources(t,r,h)
+    generators = PowerSystems.Sources(t,r,h)
 
     return generators
 end
