@@ -15,14 +15,12 @@ function TimeSeriesCheckLoad(loads::Array{T}) where {T<:ElectricLoad}
     return t
 end
 
-function TimeSeriesCheckRE(generators::Array{T}, t) where {T<:Generator}
+function TimeSeriesCheckSources(generators::Array{T}, t) where {T<:Generator}
     for g in generators
-        if typeof(g) <: RenewableGen
-            if t == length(g.scalingfactor)
-                continue
-            else
-                error("Inconsistent generation scaling factor time series length")
-            end
+        if t == length(g.scalingfactor)
+            continue
+        else
+            error("Inconsistent generation scaling factor time series length")
         end
     end
 end
