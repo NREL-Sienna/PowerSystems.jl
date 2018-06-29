@@ -1,5 +1,20 @@
-
 function read_csv_data(file_path::String)
+    """
+    Reads in all the data stored in csv files 
+    The general format for data is 
+        folder:
+            gen.csv
+            branch.csv
+            bus.csv
+            ..
+            load.csv
+    Args:
+        Path to folder with all the System data CSV's files
+
+    Returns:
+        Nested Data dictionary with key values as folder/file names and dataframes as values
+
+    """
     files = (joinpath(Pkg.dir(),file_path))
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
@@ -36,7 +51,26 @@ function read_csv_data(file_path::String)
     return data
 end
 
-function csv2ps_dict(data::Dict{String,Any})
+function csv2ps_dict(file_path::String)
+    """
+    Args:
+        Path to folder with all the System data CSV's files
+    Returns:
+        A Power Systems Nested dictionary with keys as devices and values as data dictionary necessary to construct the device structs
+        PS dictionary:
+            "Bus" => Dict(bus_no => Dict("name" =>
+                                         "number" => ... ) )
+            "Generator" => Dict( "Thermal" => Dict( "name" =>
+                                                    "tech" => ...)
+                                 "Hydro"  => .. 
+                                 "Renewable" => .. )
+            "Branch" => ...
+            "Load" => ...
+            "LoadZones" => ...
+            "BaseKV" => ..
+            ...
+    """
+    data =  read_csv_data(file_path)
     ps_dict =Dict{String,Any}()
     if haskey(data,"bus")
         ps_dict["bus"] =  PowerSystems.bus_csv_parser(data["bus"])
@@ -73,6 +107,13 @@ end
 ###########
 
 function bus_csv_parser(bus_raw)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC bus.csv file
+        "Bus ID"	"Bus Name"	"BaseKV"	"Bus Type"	"MW Load"	"MVAR Load"	"V Mag"	"V Angle"	"MW Shunt G"	"MVAR Shunt B"	"Area"	
+    Returns:
+        A Nested Dictionary with keys as Bus number and values as bus data dictionary with same keys as the device struct
+    """
     Buses_dict = Dict{Int64,Any}()
     for i in 1:nrow(bus_raw)
         Buses_dict[bus_raw[i,1]] = Dict{String,Any}("number" =>bus_raw[i,1] ,
@@ -93,6 +134,13 @@ end
 ###########
 
 function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any})
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC gen.csv file
+        Parsed Bus PowerSystems dictionary
+    Returns:
+        A Nested Dictionary with keys as generator types/names and values as generator data dictionary with same keys as the device struct
+    """
     Generators_dict = Dict{String,Any}()
     Generators_dict["Thermal"] = Dict{String,Any}()
     Generators_dict["Hydro"] = Dict{String,Any}()
@@ -200,6 +248,14 @@ end
 ###########
 
 function branch_csv_parser(branch_raw,Buses)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC branch.csv file
+        Parsed Bus PowerSystems dictionary
+    Returns:
+        A Nested Dictionary with keys as branch types/names and values as line/transformer data dictionary with same keys as the device struct
+    
+    """
     Branches_dict = Dict{String,Any}()
     Branches_dict["Transformers"] = Dict{String,Any}()
     Branches_dict["Lines"] = Dict{String,Any}()
@@ -239,6 +295,14 @@ end
 ###########
 
 function load_csv_parser(load_raw,bus_raw,Buses,LoadZone)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC load.csv file
+        A DataFrame with the same column names as in RTS_GMLC bus.csv file
+        Parsed Bus PowerSystems dictionary
+    Returns:
+        A Nested Dictionary with keys as load names and values as load data dictionary with same keys as the device struct
+    """
     Loads_dict = Dict{String,Any}()
     load_raw = read_datetime(load_raw)
     for (k_b,b) in Buses
@@ -263,7 +327,18 @@ function load_csv_parser(load_raw,bus_raw,Buses,LoadZone)
     return Loads_dict
 end
 
+###########
+#LoadZone data parser
+###########
+
 function loadzone_csv_parser(bus_raw,Buses)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC bus.csv file
+        Parsed Bus PowerSystems dictionary
+    Returns:
+        A Nested Dictionary with keys as loadzone names and values as loadzone data dictionary with same keys as the device struct    
+    """
     LoadZone_dict = Dict{Int64,Any}
     load_zones,b_count =rle(load_raw[:,11])
     for (count,zone) in zip(b_count,load_zones)
@@ -281,9 +356,16 @@ function loadzone_csv_parser(bus_raw,Buses)
 end
 
 # Remove missing values form dataframes 
+#TODO : Remove "NA" Strings from the data created by CSV.read()
 function remove_missing(df)
+    """
+    Arg:
+        Any DataFrame with Missing values / "NA" strings that are either created by readtable() or CSV.read()
+    Returns:
+        DataFrame with missing values replaced by 0
+    """
     for col in names(df)
-        df[isna.(df[col]), col] = 0
+        df[ismissing.(df[col]), col] = 0
     end
     return df
 end
