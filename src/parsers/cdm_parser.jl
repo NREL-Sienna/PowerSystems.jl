@@ -1,0 +1,282 @@
+
+function read_csv_data(file_path::String)
+    files = (joinpath(Pkg.dir(),file_path))
+    REGEX_DEVICE_TYPE = r"(.*?)\.csv"
+    REGEX_IS_FOLDER = r"^[A-Za-z]+$"
+    data =Dict{String,Any}()
+
+    if length(files) == 0
+        error("No test files in the folder")
+    end
+    for d_file in readdir(files)
+        try
+            if match(REGEX_IS_FOLDER, d_file) != nothing
+                print("Parsing csv timeseries files in $d_file ...\n")
+                for file in readdir(files*"/$d_file")
+                    if match(REGEX_DEVICE_TYPE, file) != nothing
+                        data[d_file] = Dict{String,Any}()
+                        file_path = files*"/$d_file/$file"
+                        raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                        data[d_file][split(file,r"[.]")[1]] = raw_data
+                    end
+                end
+                println("Successfully parsed $d_file")
+            elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
+                print("Parsing csv timeseries files in $d_file ...\n")
+                file_path = files*"/$d_file"
+                raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                data[split(d_file,r"[.]")[1]] = raw_data
+                println("Successfully parsed $d_file")
+            end
+        catch
+            warn("Error while parsing $d_file")
+            catch_stacktrace()
+        end
+    end
+    return data
+end
+
+function csv2ps_dict(data::Dict{String,Any})
+    ps_dict =Dict{String,Any}()
+    if haskey(data,"bus")
+        ps_dict["bus"] =  PowerSystems.bus_csv_parser(data["bus"])
+    else
+        error("Key Error : key 'bus' not found in PowerSystems dictionary 
+            \n Cant Construct any PowerSystem Struct")
+    end
+    if haskey(data,"gen")
+        ps_dict["gen"] =  PowerSystems.gen_csv_parser(data["gen"],ps_dict["bus"])
+    else
+        warn("Key Error : key 'gen' not found in PowerSystems dictionary, 
+          \n This will result in an ps_dict['gen'] = nothing")
+         ps_dict["gen"] = nothing
+    end
+    if haskey(data,"branch")
+        ps_dict["branch"] =  PowerSystems.branch_csv_parser(data["branch"],ps_dict["bus"])
+    else
+        warn("Key Error : key 'bus' not found in PowerSystems dictionary, 
+          \n This will result in an ps_dict['branch'] = nothing")
+         ps_dict["branch"] = nothing
+    end
+    if haskey(data,"load")
+        ps_dict["load"] =  PowerSystems.load_csv_parser(data["load"],data["bus"],ps_dict["bus"])
+    else
+        warn("Key Error : key 'load' not found in PowerSystems dictionary, 
+          \n This will result in an ps_dict['load'] = nothing")
+         ps_dict["load"] = nothing
+    end
+    return ps_dict
+end
+
+###########
+#Bus data parser
+###########
+
+function bus_csv_parser(bus_raw)
+    Buses_dict = Dict{Int64,Any}()
+    for i in 1:nrow(bus_raw)
+        Buses_dict[bus_raw[i,1]] = Dict{String,Any}("number" =>bus_raw[i,1] ,
+                                                "name" => bus_raw[i,2],
+                                                "bustype" => bus_raw[i,4],
+                                                "angle" => bus_raw[i,8],
+                                                "voltage" => bus_raw[i,7],
+                                                "voltagelimits" => @NT(min=0.95,max=1.05),
+                                                "basevoltage" => bus_raw[i,3]
+                                                )
+    end
+    return Buses_dict
+end
+
+
+###########
+#Generator data parser
+###########
+
+function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any})
+    Generators_dict = Dict{String,Any}()
+    Generators_dict["Thermal"] = Dict{String,Any}()
+    Generators_dict["Hydro"] = Dict{String,Any}()
+    Generators_dict["Renewable"] = Dict{String,Any}()
+    Generators_dict["Renewable"]["PV"]= Dict{String,Any}()
+    Generators_dict["Renewable"]["RTPV"]= Dict{String,Any}()
+    Generators_dict["Renewable"]["WIND"]= Dict{String,Any}()
+    Generators_dict["Storage"] = Dict{String,Any}()
+    for gen in 1:nrow(gen_raw)
+        if gen_raw[gen,:Fuel] in ["Oil","Coal","NG","Nuclear"]
+            var_cost = [float(gen_raw[gen,i]) for i in 31:40]
+            fuel_cost = gen_raw[gen,30] ## TODO: MMBTU -->> MBTU
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
+            Generators_dict["Thermal"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                                            "available" => true,
+                                            "bus" => make_bus(bus_id[1]),
+                                            "tech" => Dict{String,Any}("realpower" => 0,
+                                                                        "realpowerlimits" => @NT(min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
+                                                                        "reactivepower" => 0,
+                                                                        "reactivepowerlimits" => @NT(min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
+                                                                        "ramplimits" => @NT(up=gen_raw[gen,17],down=gen_raw[gen,17]),
+                                                                        "timelimits" => @NT(up=gen_raw[gen,16],down=gen_raw[gen,15])),
+                                            "econ" => Dict{String,Any}("capacity" => gen_raw[gen,11],
+                                                                        "variablecost" => var_cost,
+                                                                        "fixedcost" => 0.0,
+                                                                        "startupcost" => gen_raw[gen,21]*fuel_cost,
+                                                                        "shutdncost" => 0.0,
+                                                                        "annualcapacityfactor" => nothing)
+                                            ) 
+
+        elseif gen_raw[gen,:Fuel] in ["Hydro"]
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
+            Generators_dict["Hydro"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                                            "available" => true, # change from staus to available
+                                            "bus" => make_bus(bus_id[1]),
+                                            "tech" => Dict{String,Any}( "installedcapacity" => float(gen_raw[gen,11]),
+                                                                        "realpower" => 0.0,
+                                                                        "realpowerlimits" => @NT(min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
+                                                                        "reactivepower" => 0.0,
+                                                                        "reactivepowerlimits" => @NT(min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
+                                                                        "ramplimits" => @NT(up=gen_raw[gen,17],down=gen_raw[gen,17]),
+                                                                        "timelimits" => @NT(up=gen_raw[gen,16],down=gen_raw[gen,15])),
+                                            "econ" => Dict{String,Any}("curtailcost" => 0.0,
+                                                                        "interruptioncost" => nothing),
+                                            "scalingfactor" => nothing
+                                            )         
+
+        elseif gen_raw[gen,:Fuel] in ["Solar","Wind"]
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
+            if gen_raw[gen,5] == "PV"
+                Generators_dict["Renewable"]["PV"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                                                "available" => true, # change from staus to available
+                                                "bus" => make_bus(bus_id[1]),
+                                                "tech" => Dict{String,Any}("installedcapacity" => gen_raw[gen,11],
+                                                                            "reactivepowerlimits" => @NT(min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
+                                                                            "powerfactor" => 1),
+                                                "econ" => Dict{String,Any}("curtailcost" => 0.0,
+                                                                            "interruptioncost" => nothing),
+                                                "scalingfactor" => nothing
+                                                )            
+            elseif gen_raw[gen,5] == "RTPV"
+                Generators_dict["Renewable"]["RTPV"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                                                "available" => true, # change from staus to available
+                                                "bus" => make_bus(bus_id[1]),
+                                                "tech" => Dict{String,Any}("installedcapacity" => gen_raw[gen,11],
+                                                                            "reactivepowerlimits" => @NT(min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
+                                                                            "powerfactor" => 1),
+                                                "econ" => Dict{String,Any}("curtailcost" => 0.0,
+                                                                            "interruptioncost" => nothing),
+                                                "scalingfactor" => nothing
+                                                )
+            elseif gen_raw[gen,5] == "WIND"
+                Generators_dict["Renewable"]["WIND"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                                                "available" => true, # change from staus to available
+                                                "bus" => make_bus(bus_id[1]),
+                                                "tech" => Dict{String,Any}("installedcapacity" => gen_raw[gen,11],
+                                                                            "reactivepowerlimits" => @NT(min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
+                                                                            "powerfactor" => 1),
+                                                "econ" => Dict{String,Any}("curtailcost" => 0.0,
+                                                                            "interruptioncost" => nothing),
+                                                "scalingfactor" => nothing
+                                                )
+            end
+        elseif gen_raw[gen,:Fuel] in ["Storage"]
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
+            Generators_dict["Storage"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                                            "available" => true, # change from staus to available
+                                            "bus" => make_bus(bus_id[1]),
+                                            "energy" => 0.0,
+                                            "capacity" => @NT(min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
+                                            "realpower" => 0.0,
+                                            "inputrealpowerlimit" => 0.0,
+                                            "outputrealpowerlimit" => 0.0,
+                                            "efficiency" => @NT(in= 0.0, out = 0.0),
+                                            "reactivepower" => 0.0,
+                                            "reactivepowerlimits" => @NT(min = 0.0, max = 0.0),
+                                            )
+        end
+    end
+    return Generators_dict
+end
+
+###########
+#Branch data parser
+###########
+
+function branch_csv_parser(branch_raw,Buses)
+    Branches_dict = Dict{String,Any}()
+    Branches_dict["Transformers"] = Dict{String,Any}()
+    Branches_dict["Lines"] = Dict{String,Any}()
+    for i in 1:length(branch_raw)
+        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,2]]
+        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,3]]
+        if branch_raw[i,12] > 0.0
+            Branches_dict["Transformers"][branch_raw[i,1]] = Dict{String,Any}("name" => branch_raw[i,1],
+                                                        "available" => true,
+                                                        "connectionpoints" => @NT(from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "r" => branch_raw[i,4],
+                                                        "x" => branch_raw[i,5],
+                                                        "primaryshunt" => branch_raw[i,6] ,  #TODO: add field in CSV
+                                                       # "zb" => @NT(primary=(branch_raw[i,6]/2),secondary=(branch_raw[i,6]/2)), TODO: Phase-Shifting Transformer angle
+                                                        "tap" => branch_raw[i,12],
+                                                        "rate" => branch_raw[i,7],
+                                                        )                 
+        else
+            Branches_dict["Lines"][branch_raw[i,1]] = Dict{String,Any}("name" => branch_raw[i,1],
+                                                        "available" => true,
+                                                        "connectionpoints" => @NT(from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "r" => branch_raw[i,4],
+                                                        "x" => branch_raw[i,5],
+                                                        "b" => @NT(from=(branch_raw[i,6]/2),to=(branch_raw[i,6]/2)),#TODO: divide by 2 
+                                                        "rate" =>  branch_raw[i,7],
+                                                        "anglelimits" => @NT(max =60.0,min=-60.0) #TODO: add field in CSV
+                                                        )
+
+        end
+    end
+    return Branches_dict
+end
+
+
+###########
+#Load data parser
+###########
+
+function load_csv_parser(load_raw,bus_raw,Buses)
+    Loads_dict = Dict{String,Any}()
+    Peak_p1=sum(bus_raw[(bus_raw[:11] .== 1),5])
+    Peak_p2=sum(bus_raw[(bus_raw[:11] .== 2),5])
+    Peak_p3=sum(bus_raw[(bus_raw[:11] .== 3),5])
+    load_raw = read_datetime(load_raw)
+    for (k_b,b) in Buses
+        p = [bus_raw[n,5] for n in 1:nrow(bus_raw) if bus_raw[n,1] == b["number"]]
+        q = [bus_raw[m,6] for m in 1:nrow(bus_raw) if bus_raw[m,1] == b["number"]] 
+        region = [bus_raw[r,:11] for r in 1:nrow(bus_raw) if bus_raw[r,1] == b["number"]]
+        if region[1] ==1
+            ts_raw = load_raw[:,1]*(p[1]/Peak_p1)
+        elseif region[1] ==2
+            ts_raw = load_raw[:,2]*(p[1]/Peak_p2)
+        elseif region[1] ==3
+            ts_raw = load_raw[:,3]*(p[1]/Peak_p3)
+        end
+        Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
+                                            "available" => true,
+                                            "bus" => make_bus(b),
+                                            "model" => "P",
+                                            "maxrealpower" => p[1],
+                                            "maxreactivepower" => q[1],
+                                            "scalingfactor" => TimeSeries.TimeArray(load_raw[:,:DateTime],ts_raw)
+                                            )
+    end
+    return Loads_dict
+end
+
+
+# Remove missing values form dataframes 
+function remove_missing(df)
+    for col in names(df)
+        df[isna.(df[col]), col] = 0
+    end
+    return df
+end
+
+
+
+
+
