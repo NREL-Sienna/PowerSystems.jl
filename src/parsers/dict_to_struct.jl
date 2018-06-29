@@ -51,7 +51,6 @@ function add_realtime_ts(data::Dict{String,Any},time_series::Dict{String,Any})
     Returns:
         PowerSystems dictionary with timerseries component added
     """
-    #TODO : ADD LOAD
     if haskey(data,"gen")
         if haskey(data["gen"],"Hydro") & haskey(time_series,"HYDRO")
             data["gen"]["Hydro"] = PowerSystems.add_time_series(data["gen"]["Hydro"],time_series["HYDRO"]["RT"])
