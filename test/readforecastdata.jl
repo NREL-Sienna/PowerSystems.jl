@@ -7,10 +7,13 @@ time_series = PowerSystems.read_data_files(Pkg.dir("PowerSystems/data/forecasts/
 
 ps_dict = PowerSystems.add_realtime_ts(ps_dict,time_series)
 
-Buses, Generators, Branches, Loads  = PowerSystems.ps_dict2ps_struct(ps_dict)
+Buses, Generators, Branches, Loads, LoadZones  = PowerSystems.ps_dict2ps_struct(ps_dict)
 
-forecast = PowerSystems.make_forecast_dict(time_series,Day(1),24,Array{PowerSystems.PowerSystemDevice,1}(Generators))
+forecast_gen = PowerSystems.make_forecast_dict(time_series,Day(1),24,Generators)
+forecast_load = PowerSystems.make_forecast_dict(time_series,Day(1),24,Loads, LoadZones)
 
-Forecast_Struct = PowerSystems.make_forecast_array(forecast)
+Forecast_Struct = PowerSystems.make_forecast_array(forecast_gen)
+
+
 
 true
