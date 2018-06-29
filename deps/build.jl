@@ -1,5 +1,3 @@
-println("this is build.jl file printing ")
-
 function download_data(tag::String)
     
     if !isdir(Pkg.dir("PowerSystems/data/RTS_GMLC"))
@@ -41,6 +39,10 @@ function download_data(tag::String)
         mkpath(Pkg.dir("PowerSystems/data/forecasts/RTS_GMLC_forecasts/WIND"))
         download("https://github.com/NREL/PowerSystems.jl/releases/download/"*tag* "/DAY_AHEAD_wind.csv",Pkg.dir("PowerSystems/data/forecasts/RTS_GMLC_forecasts/WIND/DAY_AHEAD_wind.csv"))
         download("https://github.com/NREL/PowerSystems.jl/releases/download/"*tag* "/REAL_TIME_wind.csv",Pkg.dir("PowerSystems/data/forecasts/RTS_GMLC_forecasts/WIND/REAL_TIME_wind.csv"))
+    end
+    if !isfile(Pkg.dir("PowerSystems/data/matpower/RTS_GMLC.m"))
+        mkpath(Pkg.dir("PowerSystems/data/matpower"))
+        download("https://github.com/NREL/PowerSystems.jl/releases/download/"*tag* "/RTS_GMLC.m",Pkg.dir("PowerSystems/data/matpower/RTS_GMLC.m"))
     end
 end
 download_data("v0.1-alpha2")
