@@ -32,7 +32,13 @@ function ps_dict2ps_struct(data::Dict{String,Any})
         warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
         Loads =[]
     end
-    return Buses, Generators, Storage, Branches, Loads 
+    if haskey(data, "loadzone")
+        LoadZones = PowerSystems.loadzone_dict_parser(data["loadzone"])
+    else
+        warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
+        LoadZones =[]
+    end
+    return Buses, Generators, Storage, Branches, Loads, LoadZones 
 end
 
 
@@ -45,29 +51,25 @@ function add_realtime_ts(data::Dict{String,Any},time_series::Dict{String,Any})
     Returns:
         PowerSystems dictionary with timerseries component added
     """
+    #TODO : ADD LOAD
     if haskey(data,"gen")
-        if haskey(data["gen"],"Hydro")
-            if haskey(time_series,"HYDRO")
-                data["gen"]["Hydro"] = PowerSystems.add_time_series(data["gen"]["Hydro"],time_series["HYDRO"]["RT"])
-            end
+        if haskey(data["gen"],"Hydro") & haskey(time_series,"HYDRO")
+            data["gen"]["Hydro"] = PowerSystems.add_time_series(data["gen"]["Hydro"],time_series["HYDRO"]["RT"])
         end
         if haskey(data["gen"],"Renewable")
-            if haskey(data["gen"]["Renewable"],"PV")
-                if haskey(time_series,"PV")
-                    data["gen"]["Renewable"]["PV"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["PV"],time_series["PV"]["RT"])
-                end
+            if haskey(data["gen"]["Renewable"],"PV") & haskey(time_series,"PV")
+                data["gen"]["Renewable"]["PV"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["PV"],time_series["PV"]["RT"])
             end
-            if haskey(data["gen"]["Renewable"],"RTPV")
-                if haskey(time_series,"RTPV")
-                    data["gen"]["Renewable"]["RTPV"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["RTPV"],time_series["RTPV"]["RT"])
-                end
+            if haskey(data["gen"]["Renewable"],"RTPV") & haskey(time_series,"RTPV")
+                data["gen"]["Renewable"]["RTPV"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["RTPV"],time_series["RTPV"]["RT"])
             end
-            if haskey(data["gen"]["Renewable"],"WIND")
-                if haskey(time_series,"WIND")
-                    data["gen"]["Renewable"]["WIND"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["WIND"],time_series["WIND"]["RT"])
-                end
+            if haskey(data["gen"]["Renewable"],"WIND") & haskey(time_series,"WIND")
+                data["gen"]["Renewable"]["WIND"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["WIND"],time_series["WIND"]["RT"])
             end
         end
+    end
+    if haskey(data,"load") & haskey(time_series,"Load")
+        data["load"] = PowerSystems.add_time_series_load(data,time_series["Load"]["RT"])
     end
     return data
 end
@@ -91,10 +93,10 @@ function read_datetime(df)
     return df
 end
 
-function add_time_series(Device_dict,df)
+function add_time_series(Device_dict::Dict{String,Any}, df::DataFrames.DataFrame)
     """
     Arg:
-        Device dictionary - Generators/Load
+        Device dictionary - Generators
         Dataframe contains device Realtime/Forecast TimeSeries
     Returns:
         Device dictionary with timeseries added
@@ -108,11 +110,32 @@ function add_time_series(Device_dict,df)
     return Device_dict
 end
 
+function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
+    """
+    Arg:
+        Load dictionary 
+        LoadZones dictionary
+        Dataframe contains device Realtime/Forecast TimeSeries
+    Returns:
+        Device dictionary with timeseries added
+    """
+    load_dict = data["load"]
+    load_zone_dict = data["loadzone"]
+    for (l_key,l) in load_dict
+        for (lz_key,lz) in load_zone_dict
+            if l["bus"] in lz["buses"]
+                ts_raw = df[:,lz_key]*(l["maxrealpower"]/lz["maxrealpower"]) 
+                load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
+            end
+        end
+    end
+    return load_dict
+end
 
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})
-    Buses = Array{PowerSystems.Bus}(0)
+    Buses = Array{PowerSystems.PowerSystemDevice}(0)
     for (bus_key,bus_dict) in dict
         push!(Buses,PowerSystems.Bus(bus_dict["number"],
                                     bus_dict["name"],
@@ -129,8 +152,8 @@ end
 
 ## - Parse Dict to Array
 function gen_dict_parser(dict::Dict{String,Any})
-    Generators =Array{PowerSystems.Generator}(0)
-    Storage_gen =Array{PowerSystems.Storage}(0)
+    Generators =Array{PowerSystems.PowerSystemDevice}(0)
+    Storage_gen =Array{PowerSystems.PowerSystemDevice}(0)
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
@@ -224,8 +247,8 @@ end
 
 # - Parse Dict to Array
 
-function branch_dict_parser(dict)
-    Branches = Array{PowerSystems.Branch}(0)
+function branch_dict_parser(dict::Dict{String,Any})
+    Branches = Array{PowerSystems.PowerSystemDevice}(0)
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
@@ -268,10 +291,8 @@ function branch_dict_parser(dict)
 end
 
 
-## - Parse Dict to Array
-
-function load_dict_parser(dict)
-    Loads =Array{PowerSystems.ElectricLoad}(0)
+function load_dict_parser(dict::Dict{String,Any})
+    Loads =Array{PowerSystems.PowerSystemDevice}(0)
     for (load_key,load_dict) in dict
         push!(Loads,StaticLoad(load_dict["name"],
                 load_dict["available"],
@@ -283,4 +304,17 @@ function load_dict_parser(dict)
                 ))
     end
     return Loads
+end
+
+function loadzone_dict_parser(dict::Dict{Int64,Any})
+    LoadZs =Array{PowerSystems.PowerSystemDevice}(0)
+    for (lz_key,lz_dict) in dict
+        push!(LoadZs,LoadZones(lz_dict["number"],
+                                lz_dict["name"],
+                                lz_dict["buses"],
+                                lz_dict["maxrealpower"],
+                                lz_dict["maxreactivepower"]
+                                ))
+    end
+    return LoadZs
 end

@@ -321,7 +321,7 @@ function load_csv_parser(load_raw,bus_raw,Buses,LoadZone)
                                             "model" => "P",
                                             "maxrealpower" => p[1],
                                             "maxreactivepower" => q[1],
-                                            "scalingfactor" => TimeSeries.TimeArray(load_raw[:,:DateTime],ts_raw)
+                                            "scalingfactor" => TimeSeries.TimeArray(load_raw[:,:DateTime],ts_raw) #TODO remove TS
                                             )
     end
     return Loads_dict

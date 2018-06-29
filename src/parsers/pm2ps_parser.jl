@@ -51,7 +51,22 @@ function pm2ps_dict(data::Dict{String,Any})
         end
     end
     ps_dict["load"] = Loads
-    
+
+    LoadZones = Dict{Int64,Any}()
+    for (d_key,d) in data["areas"]
+        b_array  = [b["bus_i"] for (b_key, b) in data["bus"] if b["area"] == d["index"] ]
+        bus_l = [ make_bus(b) for (b_key, b) in Buses if b["number"] in b_array ]
+        realpower  = [ l["pd"] for (l_key, l) in data["load"] if l["load_bus"] in b_array ]
+        reactivepower  = [ l["qd"] for (l_key, l) in data["load"] if l["load_bus"] in b_array]
+        LoadZones[d["index"]] = Dict{String,Any}("number" => d["index"], 
+                                                "name" => d_key ,
+                                                "buses" => bus_l,
+                                                "maxrealpower" => sum(realpower),
+                                                "maxreactivepower" => sum(reactivepower) 
+                                                )
+    end
+    ps_dict["loadzone"] = LoadZones
+
     Generators = Dict{String,Any}()
     Generators["Thermal"] = Dict{String,Any}()
     Generators["Hydro"] = Dict{String,Any}()
