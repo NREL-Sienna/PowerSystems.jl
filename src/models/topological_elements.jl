@@ -22,4 +22,7 @@ Bus(;   number = 0,
 struct LoadZones
     number::Int
     name::String
+    buses::Array{PowerSystems.Bus,1}
+    maxrealpower::Float64
+    maxreactivepower::Float64
 end
