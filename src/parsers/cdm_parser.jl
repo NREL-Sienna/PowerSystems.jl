@@ -238,23 +238,19 @@ end
 #Load data parser
 ###########
 
-function load_csv_parser(load_raw,bus_raw,Buses)
+function load_csv_parser(load_raw,bus_raw,Buses,LoadZone)
     Loads_dict = Dict{String,Any}()
-    Peak_p1=sum(bus_raw[(bus_raw[:11] .== 1),5])
-    Peak_p2=sum(bus_raw[(bus_raw[:11] .== 2),5])
-    Peak_p3=sum(bus_raw[(bus_raw[:11] .== 3),5])
     load_raw = read_datetime(load_raw)
     for (k_b,b) in Buses
+        for (k_l,l)  in LoadZone
+            bus_numbers = [b.number for b in l["buses"] ]
+            if b["number"] in bus_numbers
+                load_zone = k_l
+            end
+        end
         p = [bus_raw[n,5] for n in 1:nrow(bus_raw) if bus_raw[n,1] == b["number"]]
         q = [bus_raw[m,6] for m in 1:nrow(bus_raw) if bus_raw[m,1] == b["number"]] 
-        region = [bus_raw[r,:11] for r in 1:nrow(bus_raw) if bus_raw[r,1] == b["number"]]
-        if region[1] ==1
-            ts_raw = load_raw[:,1]*(p[1]/Peak_p1)
-        elseif region[1] ==2
-            ts_raw = load_raw[:,2]*(p[1]/Peak_p2)
-        elseif region[1] ==3
-            ts_raw = load_raw[:,3]*(p[1]/Peak_p3)
-        end
+        ts_raw =load_raw[:,load_zone]*(p[1]/LoadZone[load_zone]["maxrealpower"])
         Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
                                             "available" => true,
                                             "bus" => make_bus(b),
@@ -267,6 +263,22 @@ function load_csv_parser(load_raw,bus_raw,Buses)
     return Loads_dict
 end
 
+function loadzone_csv_parser(bus_raw,Buses)
+    LoadZone_dict = Dict{Int64,Any}
+    load_zones,b_count =rle(load_raw[:,11])
+    for (count,zone) in zip(b_count,load_zones)
+        b_numbers = [b[:,1] for b in 1:nrows(bus_raw) if b[:,11] == zone ]
+        buses = [make_bus(Buses[i]) for i in keys(Buses) if Buses[i]["number"] in  b_numbers]
+        realpower = [b[:,5] for b in 1:nrows(bus_raw) if b[:,11] == zone]
+        reactivepower = [b[:,6] for b in 1:nrows(bus_raw) if b[:,11] == zone]
+        LoadZone_dict[zone] = Dict{String,Any}("number" => zone, 
+                                                        "name" => zone ,
+                                                        "buses" => buses,
+                                                        "maxrealpower" => sum(realpower),
+                                                        "maxreactivepower" => sum(reactivepower) 
+                                                        )
+    end
+end
 
 # Remove missing values form dataframes 
 function remove_missing(df)
