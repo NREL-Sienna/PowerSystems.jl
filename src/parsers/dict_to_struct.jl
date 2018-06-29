@@ -36,6 +36,80 @@ function ps_dict2ps_struct(data::Dict{String,Any})
 end
 
 
+
+function add_realtime_ts(data::Dict{String,Any},time_series::Dict{String,Any})
+    """
+    Args:
+        PowerSystems dictionary
+        Dictionary of timeseries dataframes 
+    Returns:
+        PowerSystems dictionary with timerseries component added
+    """
+    if haskey(data,"gen")
+        if haskey(data["gen"],"Hydro")
+            if haskey(time_series,"HYDRO")
+                data["gen"]["Hydro"] = PowerSystems.add_time_series(data["gen"]["Hydro"],time_series["HYDRO"]["RT"])
+            end
+        end
+        if haskey(data["gen"],"Renewable")
+            if haskey(data["gen"]["Renewable"],"PV")
+                if haskey(time_series,"PV")
+                    data["gen"]["Renewable"]["PV"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["PV"],time_series["PV"]["RT"])
+                end
+            end
+            if haskey(data["gen"]["Renewable"],"RTPV")
+                if haskey(time_series,"RTPV")
+                    data["gen"]["Renewable"]["RTPV"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["RTPV"],time_series["RTPV"]["RT"])
+                end
+            end
+            if haskey(data["gen"]["Renewable"],"WIND")
+                if haskey(time_series,"WIND")
+                    data["gen"]["Renewable"]["WIND"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["WIND"],time_series["WIND"]["RT"])
+                end
+            end
+        end
+    end
+    return data
+end
+
+
+function read_datetime(df)
+    """
+    Arg:
+        Dataframes which includes a timerseries columns Year, Month, Day, Period 
+    Returns:
+        Dataframe with a DateTime columns 
+    """
+    if df[25,:Period] > 24
+        df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1):Minute(5):
+                        DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
+    else
+        df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)):Hour(1):
+                        DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
+    end
+    delete!(df, [:Year,:Month,:Day,:Period])
+    return df
+end
+
+function add_time_series(Device_dict,df)
+    """
+    Arg:
+        Device dictionary - Generators/Load
+        Dataframe contains device Realtime/Forecast TimeSeries
+    Returns:
+        Device dictionary with timeseries added
+    """
+    for (device_key,device) in Device_dict
+        if device_key in convert(Array{String},names(df))
+            ts_raw = df[:,Symbol(device_key)]
+            Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
+        end
+    end
+    return Device_dict
+end
+
+
+
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})
     Buses = Array{PowerSystems.Bus}(0)
