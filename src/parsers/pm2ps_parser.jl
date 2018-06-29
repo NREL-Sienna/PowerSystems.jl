@@ -1,3 +1,4 @@
+
 function pm2ps_dict(data::Dict{String,Any})
     """
     Takes a dictionary parsered by PowerModels and returns a PowerSystems dictionary
@@ -17,7 +18,7 @@ function pm2ps_dict(data::Dict{String,Any})
     for (d_key, d) in data["bus"] 
         # d id the data dict for each bus
         # d_key is bus key
-        if haskey(d,"nus_name")
+        if haskey(d,"bus_name")
             bus_name = d["bus_name"]
         else
             bus_name = string(d["bus_i"])
