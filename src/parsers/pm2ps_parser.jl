@@ -75,7 +75,6 @@ function pm2ps_dict(data::Dict{String,Any})
     Generators["Renewable"]["RTPV"]= Dict{String,Any}()
     Generators["Renewable"]["WIND"]= Dict{String,Any}()
     Generators["Storage"] = Dict{String,Any}()
-#     if haskey() TODO : check if key exist
     for (d_key,d) in data["gen"]
         if haskey(d,"fuel")
             fuel =d["fuel"]

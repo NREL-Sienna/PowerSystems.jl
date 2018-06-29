@@ -152,7 +152,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any})
     for gen in 1:nrow(gen_raw)
         if gen_raw[gen,:Fuel] in ["Oil","Coal","NG","Nuclear"]
             var_cost = [float(gen_raw[gen,i]) for i in 31:40]
-            fuel_cost = gen_raw[gen,30] ## TODO: MMBTU -->> MBTU
+            fuel_cost = gen_raw[gen,30]./1000 
             bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
             Generators_dict["Thermal"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
                                             "available" => true,
@@ -279,7 +279,7 @@ function branch_csv_parser(branch_raw,Buses)
                                                         "connectionpoints" => @NT(from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
                                                         "r" => branch_raw[i,4],
                                                         "x" => branch_raw[i,5],
-                                                        "b" => @NT(from=(branch_raw[i,6]/2),to=(branch_raw[i,6]/2)),#TODO: divide by 2 
+                                                        "b" => @NT(from=(branch_raw[i,6]/2),to=(branch_raw[i,6]/2)),
                                                         "rate" =>  branch_raw[i,7],
                                                         "anglelimits" => @NT(max =60.0,min=-60.0) #TODO: add field in CSV
                                                         )
