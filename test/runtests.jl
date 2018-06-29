@@ -21,8 +21,8 @@ println("Read Parsing code")
 
 println("Reading forecast data ")
 @time @test include("readforecastdata.jl")
-include("../data/data_5bus.jl");
 
-@assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
+#include("../data/data_5bus.jl");
+#@assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
 
 toc()
