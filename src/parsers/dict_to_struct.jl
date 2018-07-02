@@ -38,6 +38,18 @@ function ps_dict2ps_struct(data::Dict{String,Any})
         warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
         LoadZones =[]
     end
+    if haskey(data, "shunt")
+        LoadZones = PowerSystems.shut_dict_parser(data["shunt"])
+    else
+        warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
+        LoadZones =[]
+    end
+    if haskey(data, "dcline")
+        LoadZones = PowerSystems.dclines_dict_parser(data["dcline"])
+    else
+        warn("Key Error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
+        LoadZones =[]
+    end
     return Buses, Generators, Storage, Branches, Loads, LoadZones 
 end
 
@@ -316,4 +328,34 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
                                 ))
     end
     return LoadZs
+end
+
+function shut_dict_parser(dict::Dict{String,Any})
+    Shunts = Array{PowerSystems.PowerSystemDevice}(0)
+    for (s_key,s_dict) in dict 
+        push!(Shunts,Shunt(s_dict["name"],
+                            s_dict["available"],
+                            s_dict["bus"],
+                            s_dict["Y"]
+                            )
+            )
+    end
+    return Shunts
+end
+
+
+function dclines_dict_parser(dict::Dict{String,Any})
+    DClines = Array{PowerSystems.PowerSystemDevice}(0)
+    for (dcl_key,dcl_dict) in dict 
+        push!(DClines,DCLine(dcl_dict["name"],
+                            dcl_dict["available"],
+                            dcl_dict["connectionpoints"],
+                            dcl_dict["realpowerlimits_from"],
+                            dcl_dict["realpowerlimits_to"],
+                            dcl_dict["reactivepowerlimits_from"],
+                            dcl_dict["reactivepowerlimits_to"],
+                            dcl_dict["loss"]
+                            ))
+    end
+    return DClines
 end
