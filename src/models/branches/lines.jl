@@ -26,7 +26,8 @@ struct DCLine <: Branch
     name::String
     available::Bool
     connectionpoints::@NT(from::Bus, to::Bus)
-    realpowerlimits:: @NT(min::Float64, max::Float64),
+    realpowerlimits_from:: @NT(min::Float64, max::Float64),
+    realpowerlimits_to:: @NT(min::Float64, max::Float64),
     reactivepowerlimits_from:: @NT(min::Float64, max::Float64),
     reactivepowerlimits_to::@NT(min::Float64, max::Float64),
     loss::@NT(l0::Float64, l1::Float64)
