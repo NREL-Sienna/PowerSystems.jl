@@ -20,7 +20,7 @@ Transformer2W(; name = "init",
                 x = 0.0,
                 primaryshunt = 0.0,
                 rate = nothing
-            ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
+            ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, rate)
 
 struct TapTransformer <: Branch
     name::String
@@ -41,7 +41,7 @@ TapTransformer(; name = "init",
                 primaryshunt = 0.0,
                 tap = 1.0,
                 rate = nothing
-            ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
+            ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, tap, rate)
 
 struct Transformer3W <: Branch
     name::String
@@ -65,7 +65,7 @@ struct PhaseShiftingTransformer <: Branch
     primaryshunt::Float64
     tap::Float64 # [0 - 2]
     α::Float64 # [radians]
-    rate::Union{Float64,Nothing} #[MVA]
+    rate::Float64 #[MVA]
 end
 
 PhaseShiftingTransformer(; name = "init",
@@ -73,8 +73,8 @@ PhaseShiftingTransformer(; name = "init",
                 connectionpoints = @NT(from::Bus(), to::Bus()),
                 r = 0.0,
                 x = 0.0,
-                primaryshunt::0.0,
+                primaryshunt=0.0,
                 tap = 1.0,
                 α = 0.0,
-                rate = nothing
+                rate = 0.0
             ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, tap, α, rate)
