@@ -62,18 +62,10 @@ Transformer3W(; name = "init",
                 connectionpoints::@NT(from::Bus, to::Bus)
                 r::Float64 #[pu]
                 x::Float64 #[pu]
-                zb::@NT(primary::Complex64, secondary::Complex64) #[pu]
+                primaryshunt = 0.0,
                 tap::Float64 # [0 - 2]
                 α::Float64 # [radians]
                 rate::Union{Float64,Nothing} #[MVA]
-
-                function PhaseShiftingTransformer(name, available, connectionpoints, r, x, zb, tap, α, rate)
-
-                    TapCheck(tap, alpha, x, zb)
-
-                    new(name, available, connectionpoints, r, x, zb, tap, α, rate)
-
-                end
             end
 
 PhaseShiftingTransformer(; name = "init",
@@ -81,7 +73,6 @@ PhaseShiftingTransformer(; name = "init",
                 connectionpoints = @NT(from::Bus(), to::Bus()),
                 r = 0.0,
                 x = 0.0,
-                zb = @NT(from::0.0, to::0.0),
                 tap = 1.0,
                 α = 0.0,
                 rate = nothing
