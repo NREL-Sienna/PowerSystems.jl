@@ -11,6 +11,7 @@ export Bus
 export Branch
 export Network
 export Line
+export DCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
@@ -44,6 +45,7 @@ export ThermalGenSeason
 
 export ElectricLoad
 export ShuntElement
+export FixedAdmittance
 
 export StaticLoad
 export ControllableLoad
