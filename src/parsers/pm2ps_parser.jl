@@ -12,7 +12,10 @@ function pm2ps_dict(data::Dict{String,Any})
     ps_dict["name"] = data["name"]
     ps_dict["baseMVA"] = data["baseMVA"]
     ps_dict["source_type"] = data["source_type"]
-    base_kv = data["bus"][collect(keys(data["bus"]))[1]]["base_kv"] # Load base kv from first bus
+
+
+
+    
     Buses = Dict{Int64,Any}()
     bus_types = ["PV", "PQ", "SF","isolated"] # Index into this using int val in buses
     for (d_key, d) in data["bus"] 
@@ -284,3 +287,36 @@ function make_bus(bus_dict::Dict{String,Any})
     return value
 end
 
+# Checks after parsing 
+
+function check_thermal_limits(data::Dict{String,Any})
+    """
+    Checks that each branch has a reasonable thermal rating, if not computes one
+    Adopted from PowerModels.jl
+    """
+
+    mva_base = data["baseMVA"]
+    for (b_key, b_dict) in data["branch"]
+        
+        theta_max = max(abs(b_dict["anglelimits"].min), abs(b_dict["anglelimits"].max))
+        r = b_dict["r"]
+        x = b_dict["x"]
+        g =  r / (r^2 + x^2)
+        b = -x / (r^2 + x^2)
+        y_mag = sqrt(g^2 + b^2)
+        fr_vmax = b_dict["connectionpoints"].from.voltagelimits.max
+        to_vmax =  b_dict["connectionpoints"].to.voltagelimits.max
+        m_vmax = max(fr_vmax, to_vmax)
+        c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2*fr_vmax*to_vmax*cos(theta_max))
+
+        new_rate = y_mag*m_vmax*c_max
+        if b_dict["rate"] <= 0.0
+            warn("this code only supports positive rate_a values, changing the value on branch $(b_dict["name"]) from $(mva_base*b_dict["rate"]) to $(mva_base*new_rate)")
+            b_dict["rate"] = new_rate
+        elseif b_dict["rate"] > new_rate
+            warn("Current line rating for line $(b_dict["name"])  are larger than SIL ratings, changing the value from  $(mva_base*b_dict["rate"]) to $(mva_base*new_rate)")
+            b_dict["rate"] = new_rate
+        end
+    end
+    return data
+end
