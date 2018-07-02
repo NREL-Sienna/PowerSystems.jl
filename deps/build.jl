@@ -1,5 +1,11 @@
 function download_data(tag::String)
     
+    if !isdir(Pkg.dir("PowerSystems/data"))
+        mkpath(Pkg.dir("PowerSystems/data"))
+        download("https://github.com/NREL/PowerSystems.jl/releases/download/"*tag* "/data.zip",Pkg.dir("PowerSystems/data.zip"))
+        InfoZIP.unzip(Pkg.dir("PowerSystems/data.zip"),Pkg.dir("PowerSystems/"))
+    end
+
     if !isdir(Pkg.dir("PowerSystems/data/RTS_GMLC"))
         mkpath(Pkg.dir("PowerSystems/data/RTS_GMLC"))
     end
@@ -58,5 +64,6 @@ function download_data(tag::String)
         download("https://github.com/NREL/PowerSystems.jl/releases/download/"*tag* "/RTS_GMLC.m",Pkg.dir("PowerSystems/data/matpower/RTS_GMLC.m"))
         println(" Downloaded RTS_GMLC.m")
     end
+    rm(Pkg.dir("PowerSystems/data.zip"),true)
 end
 download_data("v0.1-alpha2")

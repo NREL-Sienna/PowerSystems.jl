@@ -62,6 +62,7 @@ using TimeSeries
 using PowerModels
 using DataFrames
 using CSV
+using InfoZIP
 # This packages will be removed with Julia v0.7
 using Compat
 using NamedTuples
