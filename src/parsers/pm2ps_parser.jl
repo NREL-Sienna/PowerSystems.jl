@@ -173,13 +173,13 @@ function pm2ps_dict(data::Dict{String,Any})
     Branches["Lines"] = Dict{String,Any}()
     for (d_key,d) in data["branch"]
         if haskey(d,"name")
-            gen_name = d["name"]
+            b_name = d["name"]
         else
-            gen_name = d_key
+            b_name = d_key
         end
         (bus_f,bus_t) = find_bus(Buses,d)
         if d["transformer"]
-            Branches["Transformers"][gen_name] = Dict{String,Any}("name" => gen_name,
+            Branches["Transformers"][b_name] = Dict{String,Any}("name" => b_name,
                                                         "available" => convert(Bool, d["br_status"]),
                                                         "connectionpoints" => @NT(from=make_bus(bus_f),to=make_bus(bus_t)),
                                                         "r" => d["br_r"],
@@ -190,7 +190,7 @@ function pm2ps_dict(data::Dict{String,Any})
                                                         "rate" => d["rate_a"],
                                                         )               
         else
-            Branches["Lines"][gen_name] = Dict{String,Any}("name" => gen_name,
+            Branches["Lines"][b_name] = Dict{String,Any}("name" => b_name,
                                                         "available" => convert(Bool, d["br_status"]),
                                                         "connectionpoints" => @NT(from=make_bus(bus_f),to=make_bus(bus_t)),
                                                         "r" => d["br_r"],
@@ -203,6 +203,43 @@ function pm2ps_dict(data::Dict{String,Any})
         end
     end
     ps_dict["branch"] = Branches
+
+    Shunts = Dict{String,Any}()
+    for (d_key,d) in data["shunt"]
+        if haskey(d,"name")
+            s_name =d["name"]
+        else 
+            s_name = d_key
+        end
+        bus = find_bus(Buses,d)
+        Shunts[s_name] = Dict{String,Any}("name" => s_name,
+                                            "available" => d["status"],
+                                            "bus" => make_bus(bus),
+                                            "Y" => (-d["gs"] + d["bs"]im) 
+                                            )
+    end
+    ps_dict["shunt"] = Shunts
+
+    DCLines = Dict{String,Any}()
+    for (d_key,d) in data["dcline"]
+        if haskey(d,"name")
+            l_name =d["name"]
+        else 
+            l_name = d_key
+        end
+        (bus_f,bus_t) = find_bus(Buses,d)
+        DCLines[l_name] = Dict{String,Any}("name" => l_name,
+                                        "available" =>d["br_status"] ,
+                                        "connectionpoints" => @NT(from = make_bus(bus_f),to = make_bus(bus_t) ) ,
+                                        "realpowerlimits_from" => @NT(min= d["pminf"] , max = d["pmaxf"]) ,
+                                        "realpowerlimits_to" => @NT(min= d["pmint"] , max =d["pmaxt"] ) ,
+                                        "reactivepowerlimits_from" =>  @NT(min= d["qminf"], max =d["qmaxf"] ),
+                                        "reactivepowerlimits_to" =>  @NT(min=d["qmint"] , max =d["qmaxt"] ),
+                                        "loss" =>  @NT(l0=d["loss0"] , l1 =d["loss1"] )
+                                        )
+    end
+    ps_dict["dcline"] = DCLines
+
     return ps_dict
 end
 
@@ -237,7 +274,10 @@ function make_bus(bus_dict::Dict{String,Any})
         value =bus[1]
     elseif haskey(device_dict, "load_bus")
         bus =[ b for (key,b) in Buses if device_dict["load_bus"] == b["number"] ]
-        value =bus[1]                             
+        value =bus[1]     
+    elseif haskey(device_dict,"shunt_bus")      
+        bus =[ b for (key,b) in Buses if device_dict["shunt_bus"] == b["number"] ]
+        value =bus[1]                    
     else
         println("Provided Dict missing key/s  gen_bus or f_bus/t_bus or load_bus")
     end
