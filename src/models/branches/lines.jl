@@ -13,7 +13,7 @@ struct Line <: Branch
 end
 
 Line(;  name = "init",
-        status = false,
+        available = false,
         connectionpoints = @NT(from = Bus(), to = Bus()),
         r = 0.0,
         x = 0.0,
@@ -21,3 +21,22 @@ Line(;  name = "init",
         rate = 0.0,
         anglelimits = @NT(max = 60.0, min = -60.0)
     ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
+
+struct DCLine <: Branch
+    name::String
+    available::Bool
+    connectionpoints::@NT(from::Bus, to::Bus)
+    realpowerlimits:: @NT(min::Float64, max::Float64),
+    reactivepowerlimits_from:: @NT(min::Float64, max::Float64),
+    reactivepowerlimits_to::@NT(min::Float64, max::Float64),
+    loss::@NT(l0::Float64, l1::Float64)
+end
+
+DCLine(; name ="init",
+        available = true,
+        connectionpoints = @NT(from = Bus(), to = Bus()),
+        realpowerlimits = @NT(min=0.0, max=0.0),
+        reactivepowerlimits_from = @NT(min=0.0, max=0.0),
+        reactivepowerlimits_to = @NT(min=0.0, max=0.0),
+        loss = @NT(l0::Float64, l1::Float64)
+        )
