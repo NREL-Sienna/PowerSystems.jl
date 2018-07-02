@@ -20,7 +20,7 @@ Transformer2W(; name = "init",
                 x = 0.0,
                 primaryshunt = 0.0,
                 rate = nothing
-            ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
+            ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, rate)
 
 struct TapTransformer <: Branch
     name::String
@@ -41,7 +41,7 @@ TapTransformer(; name = "init",
                 primaryshunt = 0.0,
                 tap = 1.0,
                 rate = nothing
-            ) = Transformer2W(name, status, connectionpoints, r, x, zb, tap, α, rate)
+            ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, tap, rate)
 
 struct Transformer3W <: Branch
     name::String
@@ -56,19 +56,6 @@ Transformer3W(; name = "init",
                 line = Line()
             ) = Transformer3W(name, status, transformer, line)
 
-<<<<<<< HEAD
-            struct PhaseShiftingTransformer <: Branch
-                name::String
-                available::Bool
-                connectionpoints::@NT(from::Bus, to::Bus)
-                r::Float64 #[pu]
-                x::Float64 #[pu]
-                primaryshunt::Float64
-                tap::Float64 # [0 - 2]
-                α::Float64 # [radians]
-                rate::Union{Float64,Nothing} #[MVA]
-            end
-=======
 struct PhaseShiftingTransformer <: Branch
     name::String
     available::Bool
@@ -78,20 +65,16 @@ struct PhaseShiftingTransformer <: Branch
     primaryshunt::Float64
     tap::Float64 # [0 - 2]
     α::Float64 # [radians]
-    rate::Union{Float64,Nothing} #[MVA]
+    rate::Float64 #[MVA]
 end
->>>>>>> Updated phase shifting transformers
 
 PhaseShiftingTransformer(; name = "init",
                 status = false,
                 connectionpoints = @NT(from::Bus(), to::Bus()),
                 r = 0.0,
                 x = 0.0,
-<<<<<<< HEAD
-=======
-                primaryshunt::0.0,
->>>>>>> Updated phase shifting transformers
+                primaryshunt=0.0,
                 tap = 1.0,
                 α = 0.0,
-                rate = nothing
+                rate = 0.0
             ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, tap, α, rate)
