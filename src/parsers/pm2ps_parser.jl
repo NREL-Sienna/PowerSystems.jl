@@ -243,7 +243,8 @@ function pm2ps_dict(data::Dict{String,Any})
     end
     ps_dict["dcline"] = DCLines
 
-    return ps_dict
+    final_dict = PowerSystems.check_thermal_limits(ps_dict)
+    return final_dict
 end
 
 
@@ -311,7 +312,7 @@ function check_thermal_limits(data::Dict{String,Any})
 
         new_rate = y_mag*m_vmax*c_max
         if b_dict["rate"] <= 0.0
-            warn("this code only supports positive rate_a values, changing the value on branch $(b_dict["name"]) from $(mva_base*b_dict["rate"]) to $(mva_base*new_rate)")
+            warn("This code only supports positive rate_a values, changing the value on branch $(b_dict["name"]) from $(mva_base*b_dict["rate"]) to $(mva_base*new_rate)")
             b_dict["rate"] = new_rate
         elseif b_dict["rate"] > new_rate
             warn("Current line rating for line $(b_dict["name"])  are larger than SIL ratings, changing the value from  $(mva_base*b_dict["rate"]) to $(mva_base*new_rate)")
