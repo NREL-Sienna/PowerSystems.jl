@@ -181,16 +181,16 @@ function pm2ps_dict(data::Dict{String,Any})
             b_name = d_key
         end
         (bus_f,bus_t) = find_bus(Buses,d)
-        if d["transformer"]
+        if d["transformer"]  #TODO : 3W Transformer
             Branches["Transformers"][b_name] = Dict{String,Any}("name" => b_name,
                                                         "available" => convert(Bool, d["br_status"]),
                                                         "connectionpoints" => @NT(from=make_bus(bus_f),to=make_bus(bus_t)),
                                                         "r" => d["br_r"],
                                                         "x" => d["br_x"],
                                                         "primaryshunt" => d["b_fr"] ,  #TODO: which b ??
-                                                       # "zb" => @NT(primary=(branch_raw[i,6]/2),secondary=(branch_raw[i,6]/2)), TODO: Phase-Shifting Transformer angle
                                                         "tap" => d["tap"],
                                                         "rate" => d["rate_a"],
+                                                        "α" => d["shift"]
                                                         )               
         else
             Branches["Lines"][b_name] = Dict{String,Any}("name" => b_name,

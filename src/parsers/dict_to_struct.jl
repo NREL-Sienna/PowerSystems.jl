@@ -273,15 +273,28 @@ function branch_dict_parser(dict::Dict{String,Any})
                                                 trans_dict["rate"]
                                                 ))
                 elseif trans_dict["tap"] !=1.0
-                    push!(Branches,TapTransformer(trans_dict["name"],
-                                                trans_dict["available"],
-                                                trans_dict["connectionpoints"],
-                                                trans_dict["r"],
-                                                trans_dict["x"],
-                                                trans_dict["primaryshunt"],
-                                                trans_dict["tap"],
-                                                trans_dict["rate"]
-                                                ))
+                    if trans_dict["α"] !=0.0 #TODO : 3W Transformer
+                        push!(Branches,PhaseShiftingTransformer(trans_dict["name"],
+                                                    trans_dict["available"],
+                                                    trans_dict["connectionpoints"],
+                                                    trans_dict["r"],
+                                                    trans_dict["x"],
+                                                    trans_dict["primaryshunt"],
+                                                    trans_dict["tap"],
+                                                    trans_dict["α"],
+                                                    trans_dict["rate"]
+                                                    ))
+                    else
+                        push!(Branches,TapTransformer(trans_dict["name"],
+                        trans_dict["available"],
+                        trans_dict["connectionpoints"],
+                        trans_dict["r"],
+                        trans_dict["x"],
+                        trans_dict["primaryshunt"],
+                        trans_dict["tap"],
+                        trans_dict["rate"]
+                        ))
+                    end
                 end
             end
         else branch_key == "Lines"
