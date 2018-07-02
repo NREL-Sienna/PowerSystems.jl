@@ -10,7 +10,7 @@ struct PowerSystem{L <: ElectricLoad,
     storage::S
     basevoltage::Float64 # [kV]
     basepower::Float64 # [MVA]
-    timesteps::Int64
+    time_periods::Int64
 
     function PowerSystem(buses::Array{Bus,1},
                         generators::Array{G,1},

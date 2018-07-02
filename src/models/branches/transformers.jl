@@ -62,7 +62,7 @@ Transformer3W(; name = "init",
                 connectionpoints::@NT(from::Bus, to::Bus)
                 r::Float64 #[pu]
                 x::Float64 #[pu]
-                primaryshunt = 0.0,
+                primaryshunt::Float64
                 tap::Float64 # [0 - 2]
                 α::Float64 # [radians]
                 rate::Union{Float64,Nothing} #[MVA]
