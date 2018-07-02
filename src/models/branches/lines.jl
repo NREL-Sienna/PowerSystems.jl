@@ -1,5 +1,3 @@
-# TODO: proper calculation of the rates using the SIL formula
-
 struct Line <: Branch
     name::String
     available::Bool
@@ -26,10 +24,10 @@ struct DCLine <: Branch
     name::String
     available::Bool
     connectionpoints::@NT(from::Bus, to::Bus)
-    realpowerlimits_from:: @NT(min::Float64, max::Float64),
-    realpowerlimits_to:: @NT(min::Float64, max::Float64),
-    reactivepowerlimits_from:: @NT(min::Float64, max::Float64),
-    reactivepowerlimits_to::@NT(min::Float64, max::Float64),
+    realpowerlimits_from::@NT(min::Float64, max::Float64)
+    realpowerlimits_to::@NT(min::Float64, max::Float64)
+    reactivepowerlimits_from::@NT(min::Float64, max::Float64)
+    reactivepowerlimits_to::@NT(min::Float64, max::Float64)
     loss::@NT(l0::Float64, l1::Float64)
 end
 
@@ -40,5 +38,5 @@ DCLine(; name ="init",
         realpowerlimits_to = @NT(min=0.0, max=0.0),
         reactivepowerlimits_from = @NT(min=0.0, max=0.0),
         reactivepowerlimits_to = @NT(min=0.0, max=0.0),
-        loss = @NT(l0::Float64, l1::Float64)
-        )
+        loss = @NT(l0=0.0, l1=0.0)
+    ) = DCLine(name, available, connectionpoints, realpowerlimits_from, realpowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to,loss )
