@@ -2,5 +2,5 @@ struct FixedAdmittance <: ShuntElement
     name::String
     available::Bool
     bus::Bus
-    Y::Complex
+    Y::Complex64
 end
