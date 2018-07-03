@@ -6,7 +6,7 @@ function download_data(tag::String)
     if !isdir(Pkg.dir("PowerSystems/data"))
         mkpath(Pkg.dir("PowerSystems/data"))
         download("https://github.com/NREL/PowerSystems.jl/releases/download/"*tag* "/data.zip",Pkg.dir("PowerSystems/data.zip"))
-        InfoZIP.unzip(Pkg.dir("PowerSystems/data.zip"),Pkg.dir("PowerSystems/"))
+        InfoZIP.unzip(Pkg.dir("PowerSystems/data.zip"),Pkg.dir("PowerSystems/data"))
     end
 
     if !isdir(Pkg.dir("PowerSystems/data/RTS_GMLC"))
