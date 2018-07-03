@@ -30,8 +30,8 @@ S14_slackB1 = [0   -0.8380   -0.7465   -0.6675   -0.6106   -0.6291   -0.6573   -
               0   -0.0004   -0.0016   -0.0026    0.0016    0.0291   -0.0177   -0.0177   -0.0259   -0.0161    0.0061    0.4789   -0.1697   -0.0887;
               0   -0.0019   -0.0071   -0.0117    0.0070    0.1307   -0.0797   -0.0797   -0.1163   -0.0724    0.0274    0.1902    0.2367   -0.3992;]
 
-P5, A5 = PowerSystems.BuildPTFD(branches5, nodes5);
-P14, A14 = PowerSystems.BuildPTFD(branches14, nodes14);
+P5, A5 = PowerSystems.build_ptdf(branches5, nodes5);
+P14, A14 = PowerSystems.build_ptdf(branches14, nodes14);
 
 maximum(P5 - S5_slackB4) <= 1e-3
 maximum(P14 - S14_slackB1) <= 1e-3
