@@ -6,9 +6,14 @@ module PowerSystems
 # Exports
 
 export PowerSystem
+export Bus
 
+export Branch
+export Network
 export Line
+export DCLine
 export Transformer2W
+export TapTransformer
 export PhaseShiftingTransformer
 export Transformer3W
 
@@ -40,29 +45,27 @@ export ThermalGenSeason
 
 export ElectricLoad
 export ShuntElement
+export FixedAdmittance
 
 export StaticLoad
 export ControllableLoad
 export InterruptibleLoad
 
-
-export Branch
-export Network
-
 export Storage
 export GenericBattery
 
-export Bus
-
+export ParseStandardFiles
 #################################################################################
 # Imports
 
 import Base.convert
-
 using TimeSeries
 using PowerModels
 using DataFrames
 using CSV
+using Memento
+Memento.config!(getlogger("PowerModels"), "error")
+
 # This packages will be removed with Julia v0.7
 using Compat
 using NamedTuples
@@ -70,10 +73,10 @@ using NamedTuples
 #################################################################################
 # Includes
 
-# Include utilities
-include("utils/checks.jl")
-
 abstract type PowerSystemDevice end
+
+# Include utilities
+include("utils/base_checks.jl")
 
 # PowerSystems models
 include("models/topological_elements.jl")
@@ -90,8 +93,12 @@ include("models/loads.jl")
 include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/csv_parser.jl")
+include("parsers/cdm_parser.jl")
+include("parsers/forecast_parser.jl")
+include("parsers/pm2ps_parser.jl")
 
 # Definitions of PowerSystem
+include("utils/system_checks.jl")
 include("base.jl")
 
 # Better printing

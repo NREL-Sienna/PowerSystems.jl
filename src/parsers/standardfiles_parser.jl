@@ -1,5 +1,3 @@
-export ParseStandardFiles
-
 function ParseStandardFiles(file::String)
 
     data = PowerModels.parse_file(file)
@@ -8,7 +6,6 @@ function ParseStandardFiles(file::String)
     if (length(data["bus"]) < 1)
         error("There are no buses in this file")
     end
-
     return data
 
 end

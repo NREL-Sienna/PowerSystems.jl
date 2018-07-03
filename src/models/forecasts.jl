@@ -3,11 +3,12 @@ abstract type
 end
 
 struct Deterministic <: Forecast
+    device::PowerSystemDevice
     horizon::Int
     resolution::Base.Dates.Period
     interval::Base.Dates.Period
     initialtime::DateTime
-    data::Dict{Any,TimeSeries.TimeArray}
+    data::Dict{Any,Dict{Int,TimeSeries.TimeArray}}
 end
 
 struct Scenarios <: Forecast

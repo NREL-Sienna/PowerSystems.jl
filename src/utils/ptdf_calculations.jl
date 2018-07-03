@@ -1,5 +1,7 @@
-function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
+# TODO: Enable distributed slack buses
+function build_ptdf(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
 
+    buscount = length(nodes)
     linecount = length(branches)
 
     for b in nodes
@@ -21,17 +23,22 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
 
         A[b.connectionpoints.to.number, ix] = -1;
 
-        if typeof(b) == PowerSystems.Transformer2W
+        if isa(b,Transformer2W)
+
+            Y11 = 1/b.x;
+            X[ix,ix] = b.x;
+
+        elseif isa(b,TapTransformer)
 
             Y11 = (1/(b.tap*b.x));
             X[ix,ix] = b.x*b.tap;
 
-        elseif typeof(b) == PowerSystems.Line
+        elseif typeof(b) == Line
 
             Y11 = (1/b.x);
             X[ix,ix] = b.x;
 
-        elseif typeof(b) == PowerSystems.Transformer3W
+        elseif typeof(b) == Transformer3W
 
             error("3W Transformer not implemented about PTDF")
 
@@ -65,7 +72,7 @@ function build_ptdf(buscount, branches::Array{T}, nodes::Array{Bus}) where {T<:B
 
         S = inv(full(X))*A[setdiff(1:end, slack_position), :]'*inv(full(B));
 
-        S = hcat(S[:,1:slack_position-1],zeros(linecount,),S[:,slack_position:end-1])
+        S = hcat(S[:,1:slack_position-1],zeros(linecount,),S[:,slack_position:end])
 
     elseif slack_position == -9
 

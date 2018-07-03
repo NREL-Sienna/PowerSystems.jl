@@ -8,9 +8,8 @@ struct Network
 end
 
 function Network(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
-    buscount = length(nodes)
-    ybus = PowerSystems.build_ybus(buscount,branches);
-    ptdf, A = PowerSystems.build_ptdf(buscount, branches, nodes)
+    ybus = build_ybus(length(nodes),branches);
+    ptdf, A = build_ptdf(branches, nodes)
 
     return Network(branches, ybus, ptdf, A)
 

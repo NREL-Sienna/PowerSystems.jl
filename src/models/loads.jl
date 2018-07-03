@@ -1,7 +1,7 @@
 abstract type ElectricLoad <: PowerSystemDevice end
 
 abstract type
-    ShuntElement
+    ShuntElement <: PowerSystemDevice
 end
 
 include("loads/electric_loads.jl")
