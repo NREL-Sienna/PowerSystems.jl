@@ -1,4 +1,5 @@
 using InfoZIP
+Pkg.checkout("PowerModels")
 function download_data(tag::String)
     
     if !isdir(Pkg.dir("PowerSystems/data"))
