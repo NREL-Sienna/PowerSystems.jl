@@ -121,7 +121,7 @@ function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer3W)
 
 end
 
-function BuildYbus(buscount::Int64, branches::Array{T}) where {T <: Branch}
+function build_ybus(buscount::Int64, branches::Array{T}) where {T <: Branch}
 
     Ybus = spzeros(Complex{Float64}, buscount, buscount)
 

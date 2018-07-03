@@ -1,5 +1,5 @@
 # TODO: Enable distributed slack buses
-function BuildPTDF(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
+function build_ptdf(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
 
     buscount = length(nodes)
     linecount = length(branches)
