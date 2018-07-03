@@ -169,7 +169,7 @@ function gen_dict_parser(dict::Dict{String,Any})
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
                 push!(Generators,ThermalDispatch(thermal_dict["name"],
-                                                            thermal_dict["available"],
+                                                            convert(Bool, thermal_dict["available"]),
                                                             thermal_dict["bus"],
                                                             TechThermal(thermal_dict["tech"]["realpower"],
                                                                         thermal_dict["tech"]["realpowerlimits"],
@@ -206,7 +206,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                 if ren_key == "PV"
                     for (pv_key,pv_dict) in ren_dict
                         push!(Generators,RenewableCurtailment(pv_dict["name"],
-                                                                    pv_dict["available"],
+                                                                    convert(Bool, pv_dict["available"]),
                                                                     pv_dict["bus"],
                                                                     pv_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(pv_dict["econ"]["curtailcost"],
@@ -217,7 +217,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                 elseif ren_key == "RTPV"
                     for (rtpv_key,rtpv_dict) in ren_dict
                         push!(Generators,RenewableFix(rtpv_dict["name"],
-                                                                    rtpv_dict["available"],
+                                                                    convert(Bool,rtpv_dict["available"]),
                                                                     rtpv_dict["bus"],
                                                                     rtpv_dict["tech"]["installedcapacity"],
                                                                     rtpv_dict["scalingfactor"]
@@ -226,7 +226,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                 elseif ren_key == "WIND"
                     for (wind_key,wind_dict) in ren_dict
                         push!(Generators,RenewableCurtailment(wind_dict["name"],
-                                                                    wind_dict["available"],
+                                                                    convert(Bool,wind_dict["available"]),
                                                                     wind_dict["bus"],
                                                                     wind_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(wind_dict["econ"]["curtailcost"],
