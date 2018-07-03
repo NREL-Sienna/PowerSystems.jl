@@ -1,3 +1,4 @@
+using InfoZIP
 function download_data(tag::String)
     
     if !isdir(Pkg.dir("PowerSystems/data"))
@@ -64,6 +65,6 @@ function download_data(tag::String)
         download("https://github.com/NREL/PowerSystems.jl/releases/download/"*tag* "/RTS_GMLC.m",Pkg.dir("PowerSystems/data/matpower/RTS_GMLC.m"))
         println(" Downloaded RTS_GMLC.m")
     end
-    rm(Pkg.dir("PowerSystems/data.zip"),true)
+    rm(Pkg.dir("PowerSystems/data.zip"),force=true,recursive=true)
 end
 download_data("v0.1-alpha2")
