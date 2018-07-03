@@ -10,11 +10,23 @@ tEconHydro = EconHydro()
 tHydroFix = HydroFix()
 tHydroCurtailment = HydroCurtailment()
 tHydroStorage = HydroStorage()
+tTechRenewable=TechRenewable()
+tEconRenewable = EconRenewable()
+tRenewableFix = RenewableFix()
+tRenewableCurtailment = RenewableCurtailment()
 
 #Storage Constructots
 tStorage = GenericBattery()
 
 #Load Constructos
 tLoad = InterruptibleLoad()
+
+#Branch Constructors
+tLine = Line()
+tDCLine = DCLine()
+tTransformer2W = Transformer2W()
+tTapTransformer = TapTransformer()
+tTransformer3W = Transformer3W()
+tPhaseShiftingTransformer = PhaseShiftingTransformer()
 
 true
