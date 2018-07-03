@@ -59,8 +59,6 @@ export ParseStandardFiles
 # Imports
 
 import Base.convert
-using InfoZIP
-
 using TimeSeries
 using PowerModels
 using DataFrames
