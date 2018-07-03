@@ -1,5 +1,5 @@
 
-function ybus!(Ybus, b::PowerSystems.Line)
+function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::PowerSystems.Line)
 
     Y_l = (1 / (b.r + b.x * 1im))
 
@@ -25,7 +25,7 @@ function ybus!(Ybus, b::PowerSystems.Line)
 
 end
 
-function ybus!(Ybus, b::PowerSystems.Transformer2W)
+function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::PowerSystems.Transformer2W)
 
     Y_t = 1 / (b.r + b.x * 1im)
 
@@ -41,7 +41,7 @@ function ybus!(Ybus, b::PowerSystems.Transformer2W)
 
 end
 
-function ybus!(Ybus, b::PowerSystems.TapTransformer)
+function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::PowerSystems.TapTransformer)
 
     Y_t = 1 / (b.r + b.x * 1im)
     Y_a = Y_t / (b.tap)
@@ -62,7 +62,8 @@ function ybus!(Ybus, b::PowerSystems.TapTransformer)
 
 end
 
-function ybus!(Ybus, b::PowerSystems.PhaseShiftingTransformer)
+# TODO: Add testing for Ybus of a system with a PS Transformer
+function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::PowerSystems.PhaseShiftingTransformer)
 
     y = 1 / (b.r + b.x * 1im)
     y_a = y / (b.tap * exp(b.α * 1im * (π / 180)))
@@ -83,7 +84,8 @@ function ybus!(Ybus, b::PowerSystems.PhaseShiftingTransformer)
 
 end
 
-function ybus!(Ybus, b::PowerSystems.Transformer3W)
+# TODO: Add testing for Ybus of a system with a 3W transformer
+function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::PowerSystems.Transformer3W)
 
     warn("Data contains a 3W transformer")
 
@@ -119,7 +121,7 @@ function ybus!(Ybus, b::PowerSystems.Transformer3W)
 
 end
 
-function build_ybus(buscount, branches::Array{T}) where {T <: Branch}
+function BuildYbus(buscount::Int64, branches::Array{T}) where {T <: Branch}
 
     Ybus = spzeros(Complex{Float64}, buscount, buscount)
 
@@ -130,7 +132,6 @@ function build_ybus(buscount, branches::Array{T}) where {T <: Branch}
         end
 
         ybus!(Ybus, b)
-        # Update to use parametric dispatch and increase performance here.
 
     end
 
