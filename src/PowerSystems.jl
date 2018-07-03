@@ -64,7 +64,7 @@ using TimeSeries
 using PowerModels
 using DataFrames
 using CSV
-using InfoZIP
+using InfoZIP.unzip
 using Memento
 Memento.config!(getlogger("PowerModels"), "error")
 
