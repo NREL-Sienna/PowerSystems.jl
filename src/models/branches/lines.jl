@@ -18,7 +18,7 @@ Line(;  name = "init",
         b = @NT(from = 0.0, to = 0.0),
         rate = 0.0,
         anglelimits = @NT(max = 60.0, min = -60.0)
-    ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
+    ) = Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 
 struct DCLine <: Branch
     name::String

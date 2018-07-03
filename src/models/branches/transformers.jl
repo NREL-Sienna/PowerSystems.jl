@@ -10,17 +10,17 @@ struct Transformer2W <: Branch
     r::Float64 #[pu]
     x::Float64 #[pu]
     primaryshunt::Float64
-    rate::Union{Float64,Nothing} #[MVA]
+    rate::Union{Nothing,Float64} #[MVA]
 end
 
 Transformer2W(; name = "init",
-                status = false,
-                connectionpoints = @NT(from::Bus(), to::Bus()),
+                available = false,
+                connectionpoints = @NT(from = Bus(), to =Bus()),
                 r = 0.0,
                 x = 0.0,
                 primaryshunt = 0.0,
                 rate = nothing
-            ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, rate)
+            ) = Transformer2W(name, available, connectionpoints, r, x, primaryshunt, rate)
 
 struct TapTransformer <: Branch
     name::String
@@ -34,14 +34,14 @@ struct TapTransformer <: Branch
 end
 
 TapTransformer(; name = "init",
-                status = false,
-                connectionpoints = @NT(from::Bus(), to::Bus()),
+                available = false,
+                connectionpoints = @NT(from=Bus(), to=Bus()),
                 r = 0.0,
                 x = 0.0,
                 primaryshunt = 0.0,
                 tap = 1.0,
                 rate = nothing
-            ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, tap, rate)
+            ) = TapTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, rate)
 
 struct Transformer3W <: Branch
     name::String
@@ -51,10 +51,10 @@ struct Transformer3W <: Branch
 end
 
 Transformer3W(; name = "init",
-                status = false,
+                available = false,
                 transformer = Transformer2W(),
                 line = Line()
-            ) = Transformer3W(name, status, transformer, line)
+            ) = Transformer3W(name, available, transformer, line)
 
 struct PhaseShiftingTransformer <: Branch
     name::String
@@ -69,12 +69,12 @@ struct PhaseShiftingTransformer <: Branch
 end
 
 PhaseShiftingTransformer(; name = "init",
-                status = false,
-                connectionpoints = @NT(from::Bus(), to::Bus()),
+                available = false,
+                connectionpoints = @NT(from=Bus(), to=Bus()),
                 r = 0.0,
                 x = 0.0,
                 primaryshunt=0.0,
                 tap = 1.0,
                 α = 0.0,
                 rate = 0.0
-            ) = Transformer2W(name, status, connectionpoints, r, x, primaryshunt, tap, α, rate)
+            ) = PhaseShiftingTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, α, rate)
