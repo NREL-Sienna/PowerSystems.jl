@@ -65,6 +65,9 @@ using PowerModels
 using DataFrames
 using CSV
 using InfoZIP
+using Memento
+Memento.config!(getlogger("PowerModels"), "error")
+
 # This packages will be removed with Julia v0.7
 using Compat
 using NamedTuples
