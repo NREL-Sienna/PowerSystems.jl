@@ -1,4 +1,3 @@
-using InfoZIP
 cd(Pkg.dir("PowerModels"))
 run(`git pull origin master`)
 function download_data(tag::String)
