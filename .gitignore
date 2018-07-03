@@ -10,3 +10,8 @@ docs/build/*
 *.md
 *.ipynb
 *.m
+*.RAW
+*.zip
+*.json
+data_*
+.gitignore
