@@ -14,4 +14,3 @@ docs/build/*
 *.zip
 *.json
 data_*
-.gitignore
