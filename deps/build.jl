@@ -1,6 +1,8 @@
 using InfoZIP
+cd(Pkg.dir("PowerModels"))
+run(`git pull origin master`)
 function download_data(tag::String)
-    
+
     if !isdir(Pkg.dir("PowerSystems/data"))
         mkpath(Pkg.dir("PowerSystems/data"))
         download("https://github.com/NREL/PowerSystems.jl/releases/download/"*tag* "/data.zip",Pkg.dir("PowerSystems/data.zip"))
