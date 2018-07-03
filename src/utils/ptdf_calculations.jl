@@ -23,22 +23,22 @@ function BuildPTDF(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
 
         A[b.connectionpoints.to.number, ix] = -1;
 
-        if isa(b,PowerSystems.Transformer2W)
+        if isa(b,Transformer2W)
 
             Y11 = 1/b.x;
             X[ix,ix] = b.x;
 
-        elseif isa(b,PowerSystems.TapTransformer)
+        elseif isa(b,TapTransformer)
 
             Y11 = (1/(b.tap*b.x));
             X[ix,ix] = b.x*b.tap;
 
-        elseif typeof(b) == PowerSystems.Line
+        elseif typeof(b) == Line
 
             Y11 = (1/b.x);
             X[ix,ix] = b.x;
 
-        elseif typeof(b) == PowerSystems.Transformer3W
+        elseif typeof(b) == Transformer3W
 
             error("3W Transformer not implemented about PTDF")
 

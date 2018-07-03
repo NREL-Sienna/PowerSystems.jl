@@ -2,15 +2,15 @@
 function read_data_files(files::String)
     """
     Read all forecast CSV's in the path provided, the struct of the data should follow this format
-    folder : PV  
+    folder : PV
                 file : DAY_AHEAD
                 file : REAL_TIME
-    Folder name should be the device type 
+    Folder name should be the device type
     Files should only contain one real-time and day-ahead forecast
     Args:
         files: A string
     Returns:
-        A dictionary with the CSV files as dataframes and folder names as keys 
+        A dictionary with the CSV files as dataframes and folder names as keys
     # TODO : Stochasti/Multiple scenarios
     """
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
@@ -39,10 +39,10 @@ function read_data_files(files::String)
 end
 
  # -Parse csv file to dict
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates.Period,horizon::Int,Devices::Array{PowerSystems.PowerSystemDevice,1})
+function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates.Period,horizon::Int,Devices::Array{PowerSystemDevice,1})
     """
     Args:
-        Dictionary of all the data files 
+        Dictionary of all the data files
         Length of the forecast - Week()/Day()/Hour()
         Forecast horizon in hours - Int64
         Array of PowerSystems devices in the systems - Renewable Generators and Loads
@@ -60,7 +60,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates
                 last_date = df[end,:DateTime]
                 ts_dict = Dict{Any,Dict{Int,TimeSeries.TimeArray}}()
                 for name in convert(Array{String},names(df))
-                    if name == device.name 
+                    if name == device.name
                         ts_raw = TimeSeries.TimeArray(df[:,:DateTime],df[:,Symbol(name)])
                         for ts in initialtime:resolution:last_date
                             ts_dict[ts] = Dict{Int,TimeSeries.TimeArray}(1 => ts_raw[ts:time_delta:(ts+resolution)])
@@ -83,10 +83,10 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates
     return forecast
 end
 
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates.Period,horizon::Int,Devices::Array{PowerSystems.PowerSystemDevice,1},LoadZones::Array{PowerSystems.PowerSystemDevice,1})
+function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates.Period,horizon::Int,Devices::Array{PowerSystemDevice,1},LoadZones::Array{PowerSystemDevice,1})
     """
     Args:
-        Dictionary of all the data files 
+        Dictionary of all the data files
         Length of the forecast - Week()/Day()/Hour()
         Forecast horizon in hours - Int64
         Array of PowerSystems devices in the systems- Loads
@@ -101,7 +101,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates
             for lz in LoadZones
                 if device.bus in lz.buses
                     df = time_series["Load"]["DA"][:,[:DateTime,Symbol(lz.name)]]
-                    
+
                     time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
                     initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
                     last_date = df[end,:DateTime]
@@ -136,12 +136,12 @@ function make_forecast_array(dict)
     Returns:
         A PowerSystems forecast stuct array
     """
-    Forecasts =Array{PowerSystems.Forecast}(0)
+    Forecasts =Array{Forecast}(0)
     for (device_key,device_dict) in dict
                 push!(Forecasts,Deterministic(device_dict["device"],device_dict["horizon"],
                                 device_dict["resolution"],device_dict["interval"],
                                 device_dict["initialtime"],
-                                device_dict["data"] 
+                                device_dict["data"]
                                 ))
     end
     return Forecasts

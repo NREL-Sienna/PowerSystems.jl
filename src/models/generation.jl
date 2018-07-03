@@ -14,18 +14,18 @@ struct Sources{T <: Union{Nothing,Array{<:ThermalGen,1}}, R <: Union{Nothing,Arr
 end
 
 # Generator Classifier
-function GenClassifier(gen::Array{T}) where T <: PowerSystems.Generator
+function GenClassifier(gen::Array{T}) where T <: Generator
 
-    t = [d for d in gen if isa(d, PowerSystems.ThermalGen)]
-    r = [d for d in gen if isa(d, PowerSystems.RenewableGen)]
-    h = [d for d in gen if isa(d, PowerSystems.HydroGen)]
+    t = [d for d in gen if isa(d, ThermalGen)]
+    r = [d for d in gen if isa(d, RenewableGen)]
+    h = [d for d in gen if isa(d, HydroGen)]
 
     #Check for type stability
     isempty(t) ? t = nothing: t
     isempty(r) ? r = nothing: r
     isempty(h) ? h = nothing: h
 
-    generators = PowerSystems.Sources(t,r,h)
+    generators = Sources(t,r,h)
 
     return generators
 end

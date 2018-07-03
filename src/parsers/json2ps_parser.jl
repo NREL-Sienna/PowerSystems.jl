@@ -5,37 +5,37 @@ function json2ps_struct(data::Dict{String,Any})
     Takes a PowerSystems dictionary and return an array of PowerSystems struct for Bus, Generator, Branch and load
     """
     if haskey(data, "bus")
-        Buses = PowerSystems.bus_json_parse(data["bus"])
+        Buses = bus_json_parse(data["bus"])
     else
         warn("Key Error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
         Buses =[]
     end
     if haskey(data, "gen")
-        Generators, Storage = PowerSystems.gen_json_parser(data["gen"])
+        Generators, Storage = gen_json_parser(data["gen"])
     else
         warn("Key Error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
         Generators =[]
         Storage = []
     end
     if haskey(data, "branch")
-        Branches = PowerSystems.branch_json_parser(data["branch"])
+        Branches = branch_json_parser(data["branch"])
     else
         warn("Key Error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
         Branches =[]
     end
     if haskey(data, "load")
-        Loads = PowerSystems.load_json_parser(data["load"])
+        Loads = load_json_parser(data["load"])
     else
         warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
         Loads =[]
     end
-    return Buses, Generators, Storage, Branches, Loads 
+    return Buses, Generators, Storage, Branches, Loads
 end
 
 function bus_json_parse(dict::Dict{String,Any})
-    Buses = Array{PowerSystems.Bus}(0)
+    Buses = Array{Bus}(0)
     for (bus_key,bus_dict) in dict
-        push!(Buses,PowerSystems.Bus(bus_dict["number"],
+        push!(Buses,Bus(bus_dict["number"],
                                     bus_dict["name"],
                                     bus_dict["bustype"],
                                     bus_dict["angle"],
@@ -49,14 +49,14 @@ end
 
 
 function gen_json_parser(dict::Dict{String,Any})
-    Generators =Array{PowerSystems.Generator}(0)
-    Storage_gen =Array{PowerSystems.Storage}(0)
+    Generators =Array{Generator}(0)
+    Storage_gen =Array{Storage}(0)
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
-                push!(Generators,PowerSystems.ThermalDispatch(thermal_dict["name"],
+                push!(Generators,ThermalDispatch(thermal_dict["name"],
                                                             thermal_dict["available"],
-                                                            PowerSystems.Bus(thermal_dict["bus"]["number"],
+                                                            Bus(thermal_dict["bus"]["number"],
                                                                             thermal_dict["bus"]["name"],
                                                                             thermal_dict["bus"]["bustype"],
                                                                             thermal_dict["bus"]["angle"],
@@ -79,9 +79,9 @@ function gen_json_parser(dict::Dict{String,Any})
             end
         elseif gen_type_key =="Hydro"
             for (hydro_key,hydro_dict) in gen_type_dict
-                push!(Generators,PowerSystems.HydroCurtailment(hydro_dict["name"],
+                push!(Generators,HydroCurtailment(hydro_dict["name"],
                                                             hydro_dict["available"],
-                                                            PowerSystems.Bus(hydro_dict["bus"]["number"],
+                                                            Bus(hydro_dict["bus"]["number"],
                                                                             hydro_dict["bus"]["name"],
                                                                             hydro_dict["bus"]["bustype"],
                                                                             hydro_dict["bus"]["angle"],
@@ -100,12 +100,12 @@ function gen_json_parser(dict::Dict{String,Any})
                             ))
             end
         elseif gen_type_key =="Renewable"
-            for (ren_key,ren_dict) in  gen_type_dict  
+            for (ren_key,ren_dict) in  gen_type_dict
                 if ren_key == "PV"
                     for (pv_key,pv_dict) in ren_dict
-                        push!(Generators,PowerSystems.RenewableCurtailment(pv_dict["name"],
+                        push!(Generators,RenewableCurtailment(pv_dict["name"],
                                                                     pv_dict["available"],
-                                                                    PowerSystems.Bus(pv_dict["bus"]["number"],
+                                                                    Bus(pv_dict["bus"]["number"],
                                                                             pv_dict["bus"]["name"],
                                                                             pv_dict["bus"]["bustype"],
                                                                             pv_dict["bus"]["angle"],
@@ -120,9 +120,9 @@ function gen_json_parser(dict::Dict{String,Any})
                     end
                 elseif ren_key == "RTPV"
                     for (rtpv_key,rtpv_dict) in ren_dict
-                        push!(Generators,PowerSystems.RenewableFix(rtpv_dict["name"],
+                        push!(Generators,RenewableFix(rtpv_dict["name"],
                                                                     rtpv_dict["available"],
-                                                                    PowerSystems.Bus(rtpv_dict["bus"]["number"],
+                                                                    Bus(rtpv_dict["bus"]["number"],
                                                                             rtpv_dict["bus"]["name"],
                                                                             rtpv_dict["bus"]["bustype"],
                                                                             rtpv_dict["bus"]["angle"],
@@ -135,9 +135,9 @@ function gen_json_parser(dict::Dict{String,Any})
                     end
                 elseif ren_key == "WIND"
                     for (wind_key,wind_dict) in ren_dict
-                        push!(Generators,PowerSystems.RenewableCurtailment(wind_dict["name"],
+                        push!(Generators,RenewableCurtailment(wind_dict["name"],
                                                                     wind_dict["available"],
-                                                                    PowerSystems.Bus(wind_dict["bus"]["number"],
+                                                                    Bus(wind_dict["bus"]["number"],
                                                                             wind_dict["bus"]["name"],
                                                                             wind_dict["bus"]["bustype"],
                                                                             wind_dict["bus"]["angle"],
@@ -153,10 +153,10 @@ function gen_json_parser(dict::Dict{String,Any})
                 end
             end
         elseif gen_type_key =="Storage"
-            for (storage_key,storage_dict) in  gen_type_dict 
-                push!(Storage_gen,PowerSystems.GenericBattery(storage_dict["name"],
+            for (storage_key,storage_dict) in  gen_type_dict
+                push!(Storage_gen,GenericBattery(storage_dict["name"],
                                                             storage_dict["available"],
-                                                            PowerSystems.Bus(storage_dict["bus"]["number"],
+                                                            Bus(storage_dict["bus"]["number"],
                                                                             storage_dict["bus"]["name"],
                                                                             storage_dict["bus"]["bustype"],
                                                                             storage_dict["bus"]["angle"],
@@ -180,18 +180,18 @@ end
 
 
 function branch_json_parser(dict)
-    Branches = Array{PowerSystems.Branch}(0)
+    Branches = Array{Branch}(0)
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
-                bus_f =PowerSystems.Bus(trans_dict["connectionpoints"]["from"]["number"],
+                bus_f =Bus(trans_dict["connectionpoints"]["from"]["number"],
                                         trans_dict["connectionpoints"]["from"]["name"],
                                         trans_dict["connectionpoints"]["from"]["bustype"],
                                         trans_dict["connectionpoints"]["from"]["angle"],
                                         trans_dict["connectionpoints"]["from"]["voltage"],
                                         @NT(min =trans_dict["connectionpoints"]["from"]["voltagelimits"]["min"],max=trans_dict["connectionpoints"]["from"]["voltagelimits"]["max"]),
                                         trans_dict["connectionpoints"]["from"]["basevoltage"] )
-                bus_t =PowerSystems.Bus(trans_dict["connectionpoints"]["to"]["number"],
+                bus_t =Bus(trans_dict["connectionpoints"]["to"]["number"],
                                         trans_dict["connectionpoints"]["to"]["name"],
                                         trans_dict["connectionpoints"]["to"]["bustype"],
                                         trans_dict["connectionpoints"]["to"]["angle"],
@@ -221,14 +221,14 @@ function branch_json_parser(dict)
             end
         elseif branch_key == "Lines"
             for (line_key,line_dict) in branch_dict
-                bus_t =PowerSystems.Bus(line_dict["connectionpoints"]["to"]["number"],
+                bus_t =Bus(line_dict["connectionpoints"]["to"]["number"],
                                         line_dict["connectionpoints"]["to"]["name"],
                                         line_dict["connectionpoints"]["to"]["bustype"],
                                         line_dict["connectionpoints"]["to"]["angle"],
                                         line_dict["connectionpoints"]["to"]["voltage"],
                                         @NT(min =line_dict["connectionpoints"]["to"]["voltagelimits"]["min"],max=line_dict["connectionpoints"]["to"]["voltagelimits"]["max"]),
                                         line_dict["connectionpoints"]["to"]["basevoltage"] )
-                bus_f =PowerSystems.Bus(line_dict["connectionpoints"]["from"]["number"],
+                bus_f =Bus(line_dict["connectionpoints"]["from"]["number"],
                                         line_dict["connectionpoints"]["from"]["name"],
                                         line_dict["connectionpoints"]["from"]["bustype"],
                                         line_dict["connectionpoints"]["from"]["angle"],
@@ -252,11 +252,11 @@ end
 
 
 function load_json_parser(dict)
-    Loads =Array{PowerSystems.ElectricLoad}(0)
+    Loads =Array{ElectricLoad}(0)
     for (load_key,load_dict) in dict
         push!(Loads,StaticLoad(load_dict["name"],
                 load_dict["available"],
-                PowerSystems.Bus(load_dict["bus"]["number"],
+                Bus(load_dict["bus"]["number"],
                                 load_dict["bus"]["name"],
                                 load_dict["bus"]["bustype"],
                                 load_dict["bus"]["angle"],
@@ -291,14 +291,14 @@ function json_parser(filename)
         temp=JSON.parse(dicttxt)  # parse and transform data
         data =temp
         end
-        
+
     else
         println("JSON file doesn't exist")
     end
-    Buses = PowerSystems.bus_json_parse(data["Buses"])
-    Generators,Storages = PowerSystems.gen_json_parser(data["Generators"])
-    Branches = PowerSystems.branch_json_parser(data["Branches"])
-    Loads = PowerSystems.load_json_parser(data["Loads"]);
+    Buses = bus_json_parse(data["Buses"])
+    Generators,Storages = gen_json_parser(data["Generators"])
+    Branches = branch_json_parser(data["Branches"])
+    Loads = load_json_parser(data["Loads"]);
     return Buses,Generators,Branches,Loads
 end
 

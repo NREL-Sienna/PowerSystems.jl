@@ -8,8 +8,8 @@ struct Network
 end
 
 function Network(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
-    ybus = PowerSystems.BuildYbus(length(nodes),branches);
-    ptdf, A = PowerSystems.BuildPTDF(branches, nodes)
+    ybus = BuildYbus(length(nodes),branches);
+    ptdf, A = BuildPTDF(branches, nodes)
 
     return Network(branches, ybus, ptdf, A)
 

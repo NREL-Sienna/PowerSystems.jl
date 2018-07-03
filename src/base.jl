@@ -1,10 +1,10 @@
 ### Struct and different Power System constructors depending on the data provided ####
 
 struct PowerSystem{L <: ElectricLoad,
-                   B <: Union{Nothing,Array{<:Branch,1}},
-                   S <: Union{Nothing,Array{<: Storage,1}}}
+                   B <: Union{Nothing,Array{ <: Branch,1}},
+                   S <: Union{Nothing,Array{ <: Storage,1}}}
     buses::Array{Bus,1}
-    generators::PowerSystems.Sources
+    generators::Sources
     loads::Array{L,1}
     branches::B
     storage::S
@@ -18,7 +18,7 @@ struct PowerSystem{L <: ElectricLoad,
                         branches::Nothing,
                         storage::Nothing,
                         basevoltage::Float64,
-                        basepower::Float64) where {G <: PowerSystems.Generator, L <: PowerSystems.ElectricLoad}
+                        basepower::Float64) where {G <: Generator, L <: ElectricLoad}
 
         sources = GenClassifier(generators);
         time_length = TimeSeriesCheckLoad(loads)
@@ -42,7 +42,7 @@ struct PowerSystem{L <: ElectricLoad,
                         branches::B,
                         storage::Nothing,
                         basevoltage::Float64,
-                        basepower::Float64) where {G <: PowerSystems.Generator, L <: ElectricLoad, B <: Array{<:Branch,1}}
+                        basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}}
 
         SlackBusCheck(buses)
         BusCheckAC(buses)
@@ -70,7 +70,7 @@ struct PowerSystem{L <: ElectricLoad,
                         branches::Nothing,
                         storage::S,
                         basevoltage::Float64,
-                        basepower::Float64) where {G <: PowerSystems.Generator, L <: ElectricLoad, S <: Array{<: Storage,1}}
+                        basepower::Float64) where {G <: Generator, L <: ElectricLoad, S <: Array{<: Storage,1}}
 
         sources = GenClassifier(generators);
         time_length = TimeSeriesCheckLoad(loads)
@@ -94,7 +94,7 @@ struct PowerSystem{L <: ElectricLoad,
                         branches::B,
                         storage::S,
                         basevoltage::Float64,
-                        basepower::Float64) where {G <: PowerSystems.Generator, L <: ElectricLoad, B <: Array{<:Branch,1}, S <: Array{<: Storage,1}}
+                        basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}, S <: Array{<: Storage,1}}
 
         SlackBusCheck(buses)
         BusCheckAC(buses)

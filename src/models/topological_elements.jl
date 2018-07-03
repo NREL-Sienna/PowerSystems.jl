@@ -17,12 +17,12 @@ Bus(;   number = 0,
         voltage = nothing,
         voltagelimits = nothing,
         basevoltage = nothing
-    ) = Bus(number, name, bustype, angle, voltage, PowerSystems.orderedlimits(voltagelimits, "Voltage"), basevoltage)
+    ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelimits, "Voltage"), basevoltage)
 
 struct LoadZones  <: PowerSystemDevice
     number::Int
     name::String
-    buses::Array{PowerSystems.Bus,1}
+    buses::Array{Bus,1}
     maxrealpower::Float64
     maxreactivepower::Float64
 end

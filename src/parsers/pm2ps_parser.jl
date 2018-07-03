@@ -15,10 +15,10 @@ function pm2ps_dict(data::Dict{String,Any})
 
 
 
-    
+
     Buses = Dict{Int64,Any}()
     bus_types = ["PV", "PQ", "SF","isolated"] # Index into this using int val in buses
-    for (d_key, d) in data["bus"] 
+    for (d_key, d) in data["bus"]
         # d id the data dict for each bus
         # d_key is bus key
         if haskey(d,"bus_name")
@@ -35,7 +35,7 @@ function pm2ps_dict(data::Dict{String,Any})
                                                 "basevoltage" => d["base_kv"]
                                                 )
     end
-    ps_dict["bus"] = Buses   
+    ps_dict["bus"] = Buses
         # If there is a load for this bus, only information so far is the installed load.
     Loads = Dict{String,Any}() # Using least constrained Load
     for (d_key,d) in data["load"]
@@ -61,11 +61,11 @@ function pm2ps_dict(data::Dict{String,Any})
         bus_l = [ make_bus(b) for (b_key, b) in Buses if b["number"] in b_array ]
         realpower  = [ l["pd"] for (l_key, l) in data["load"] if l["load_bus"] in b_array ]
         reactivepower  = [ l["qd"] for (l_key, l) in data["load"] if l["load_bus"] in b_array]
-        LoadZones[d["index"]] = Dict{String,Any}("number" => d["index"], 
+        LoadZones[d["index"]] = Dict{String,Any}("number" => d["index"],
                                                 "name" => d_key ,
                                                 "buses" => bus_l,
                                                 "maxrealpower" => sum(realpower),
-                                                "maxreactivepower" => sum(reactivepower) 
+                                                "maxreactivepower" => sum(reactivepower)
                                                 )
     end
     ps_dict["loadzone"] = LoadZones
@@ -111,7 +111,7 @@ function pm2ps_dict(data::Dict{String,Any})
                                                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                                         "interruptioncost" => nothing),
                                                             "scalingfactor" => TimeSeries.TimeArray(Dates.today(), [1.0])
-                                                            )         
+                                                            )
 
         elseif fuel in ["Solar","Wind"] || type_gen in ["W2,PV"]
             bus = find_bus(Buses,d)
@@ -125,7 +125,7 @@ function pm2ps_dict(data::Dict{String,Any})
                                                                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                                                         "interruptioncost" => nothing),
                                                                             "scalingfactor" => TimeSeries.TimeArray(Dates.today(), [1.0])
-                                                                            )            
+                                                                            )
             elseif type_gen == "RTPV"
                 Generators["Renewable"]["RTPV"][gen_name] = Dict{String,Any}("name" => gen_name,
                                                                             "available" => d["gen_status"], # change from staus to available
@@ -166,11 +166,11 @@ function pm2ps_dict(data::Dict{String,Any})
                                                                                             "startupcost" => d["startup"],
                                                                                             "shutdncost" => d["shutdown"],
                                                                                             "annualcapacityfactor" => nothing)
-                                                                ) 
+                                                                )
         end
     end
     ps_dict["gen"] = Generators
-    
+
     Branches = Dict{String,Any}()
     Branches["Transformers"] = Dict{String,Any}()
     Branches["Lines"] = Dict{String,Any}()
@@ -191,16 +191,16 @@ function pm2ps_dict(data::Dict{String,Any})
                                                         "tap" => d["tap"],
                                                         "rate" => d["rate_a"],
                                                         "α" => d["shift"]
-                                                        )               
+                                                        )
         else
             Branches["Lines"][b_name] = Dict{String,Any}("name" => b_name,
                                                         "available" => convert(Bool, d["br_status"]),
                                                         "connectionpoints" => @NT(from=make_bus(bus_f),to=make_bus(bus_t)),
                                                         "r" => d["br_r"],
                                                         "x" => d["br_x"],
-                                                        "b" => @NT(from=d["b_fr"],to=d["b_to"]), 
+                                                        "b" => @NT(from=d["b_fr"],to=d["b_to"]),
                                                         "rate" =>  d["rate_a"],
-                                                        "anglelimits" => @NT(max =rad2deg(d["angmax"]),min=rad2deg(d["angmin"])) 
+                                                        "anglelimits" => @NT(max =rad2deg(d["angmax"]),min=rad2deg(d["angmin"]))
                                                         )
 
         end
@@ -211,14 +211,14 @@ function pm2ps_dict(data::Dict{String,Any})
     for (d_key,d) in data["shunt"]
         if haskey(d,"name")
             s_name =d["name"]
-        else 
+        else
             s_name = d_key
         end
         bus = find_bus(Buses,d)
         Shunts[s_name] = Dict{String,Any}("name" => s_name,
                                             "available" => d["status"],
                                             "bus" => make_bus(bus),
-                                            "Y" => (-d["gs"] + d["bs"]im) 
+                                            "Y" => (-d["gs"] + d["bs"]im)
                                             )
     end
     ps_dict["shunt"] = Shunts
@@ -227,7 +227,7 @@ function pm2ps_dict(data::Dict{String,Any})
     for (d_key,d) in data["dcline"]
         if haskey(d,"name")
             l_name =d["name"]
-        else 
+        else
             l_name = d_key
         end
         (bus_f,bus_t) = find_bus(Buses,d)
@@ -243,7 +243,7 @@ function pm2ps_dict(data::Dict{String,Any})
     end
     ps_dict["dcline"] = DCLines
 
-    final_dict = PowerSystems.check_thermal_limits(ps_dict)
+    final_dict = check_thermal_limits(ps_dict)
     return final_dict
 end
 
@@ -252,14 +252,14 @@ function make_bus(bus_dict::Dict{String,Any})
     """
     Creates a PowerSystems.Bus from a PowerSystems bus dictionary
     """
-    bus = PowerSystems.Bus(bus_dict["number"],
+    bus = Bus(bus_dict["number"],
                      bus_dict["name"],
                      bus_dict["bustype"],
                      bus_dict["angle"],
                      bus_dict["voltage"],
                      bus_dict["voltagelimits"],
                      bus_dict["basevoltage"]
-                     ) 
+                     )
      return bus
  end
 
@@ -278,17 +278,17 @@ function make_bus(bus_dict::Dict{String,Any})
         value =bus[1]
     elseif haskey(device_dict, "load_bus")
         bus =[ b for (key,b) in Buses if device_dict["load_bus"] == b["number"] ]
-        value =bus[1]     
-    elseif haskey(device_dict,"shunt_bus")      
+        value =bus[1]
+    elseif haskey(device_dict,"shunt_bus")
         bus =[ b for (key,b) in Buses if device_dict["shunt_bus"] == b["number"] ]
-        value =bus[1]                    
+        value =bus[1]
     else
         println("Provided Dict missing key/s  gen_bus or f_bus/t_bus or load_bus")
     end
     return value
 end
 
-# Checks after parsing 
+# Checks after parsing
 
 function check_thermal_limits(data::Dict{String,Any})
     """
