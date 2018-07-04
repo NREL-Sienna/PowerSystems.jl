@@ -6,4 +6,5 @@ CSV
 NamedTuples
 Compat
 InfoZIP
+ZipFile
 Memento
