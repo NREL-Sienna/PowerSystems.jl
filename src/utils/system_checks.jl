@@ -59,7 +59,7 @@ function PVBusCheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
 
     for b in buses
         if b.bustype == "PV"
-            b.number in pv_list ? continue : error("The bus ", b.number, " is declared as PV without a generator connected to it")
+            b.number in pv_list ? continue : warn("The bus ", b.number, " is declared as PV without a generator connected to it")
         else
             continue
         end
