@@ -6,9 +6,14 @@ struct Line <: Branch
     x::Float64 #[pu]Co
     b::@NT(from::Float64, to::Float64) #[pu]
     # TODO: add a rate and angle consistency check
-    rate::Float64 #[MVA]
+    rate::@NT(from_to::Float64, to_from::Float64)
     anglelimits::@NT(max::Float64, min::Float64)
 end
+
+function Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
+    Line(name, available, connectionpoints, r, x, b, @NT(from_to = rate, to_from = rate), anglelimits)
+end
+
 
 Line(;  name = "init",
         available = false,
