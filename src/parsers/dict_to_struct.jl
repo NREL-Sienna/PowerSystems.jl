@@ -239,7 +239,7 @@ function gen_dict_parser(dict::Dict{String,Any})
         elseif gen_type_key =="Storage"
             for (storage_key,storage_dict) in  gen_type_dict
                 push!(Storage_gen,GenericBattery(storage_dict["name"],
-                                                            storage_dict["available"],
+                                                            convert(Bool,storage_dict["available"]),
                                                             storage_dict["bus"],
                                                             storage_dict["energy"],
                                                             storage_dict["capacity"],
@@ -265,7 +265,7 @@ function branch_dict_parser(dict::Dict{String,Any})
             for (trans_key,trans_dict) in branch_dict
                 if trans_dict["tap"] ==1.0
                     push!(Branches,Transformer2W(trans_dict["name"],
-                                                trans_dict["available"],
+                                                convert(Bool,trans_dict["available"]),
                                                 trans_dict["connectionpoints"],
                                                 trans_dict["r"],
                                                 trans_dict["x"],
@@ -275,7 +275,7 @@ function branch_dict_parser(dict::Dict{String,Any})
                 elseif trans_dict["tap"] !=1.0
                     if trans_dict["α"] !=0.0 #TODO : 3W Transformer
                         push!(Branches,PhaseShiftingTransformer(trans_dict["name"],
-                                                    trans_dict["available"],
+                                                    convert(Bool,trans_dict["available"]),
                                                     trans_dict["connectionpoints"],
                                                     trans_dict["r"],
                                                     trans_dict["x"],
@@ -286,21 +286,21 @@ function branch_dict_parser(dict::Dict{String,Any})
                                                     ))
                     else
                         push!(Branches,TapTransformer(trans_dict["name"],
-                        trans_dict["available"],
-                        trans_dict["connectionpoints"],
-                        trans_dict["r"],
-                        trans_dict["x"],
-                        trans_dict["primaryshunt"],
-                        trans_dict["tap"],
-                        trans_dict["rate"]
-                        ))
+                                                    convert(Bool,trans_dict["available"]),
+                                                    trans_dict["connectionpoints"],
+                                                    trans_dict["r"],
+                                                    trans_dict["x"],
+                                                    trans_dict["primaryshunt"],
+                                                    trans_dict["tap"],
+                                                    trans_dict["rate"]
+                                                    ))
                     end
                 end
             end
         else branch_key == "Lines"
             for (line_key,line_dict) in branch_dict
                 push!(Branches,Line(line_dict["name"],
-                                    line_dict["available"],
+                                    convert(Bool,line_dict["available"]),
                                     line_dict["connectionpoints"],
                                     line_dict["r"],
                                     line_dict["x"],
@@ -319,7 +319,7 @@ function load_dict_parser(dict::Dict{String,Any})
     Loads =Array{PowerSystemDevice}(0)
     for (load_key,load_dict) in dict
         push!(Loads,StaticLoad(load_dict["name"],
-                load_dict["available"],
+                convert(Bool,load_dict["available"]),
                 load_dict["bus"],
                 load_dict["model"],
                 load_dict["maxrealpower"],
@@ -347,7 +347,7 @@ function shut_dict_parser(dict::Dict{String,Any})
     Shunts = Array{PowerSystemDevice}(0)
     for (s_key,s_dict) in dict
         push!(Shunts,FixedAdmittance(s_dict["name"],
-                            s_dict["available"],
+                            convert(Bool,s_dict["available"]),
                             s_dict["bus"],
                             s_dict["Y"]
                             )
@@ -361,7 +361,7 @@ function dclines_dict_parser(dict::Dict{String,Any})
     DClines = Array{PowerSystemDevice}(0)
     for (dcl_key,dcl_dict) in dict
         push!(DClines,DCLine(dcl_dict["name"],
-                            dcl_dict["available"],
+                            convert(Bool,dcl_dict["available"]),
                             dcl_dict["connectionpoints"],
                             dcl_dict["realpowerlimits_from"],
                             dcl_dict["realpowerlimits_to"],
