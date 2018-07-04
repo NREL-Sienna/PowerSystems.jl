@@ -146,7 +146,7 @@ end
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})
-    Buses = Array{PowerSystemDevice}(0)
+    Buses = Array{Bus,1}(0)
     for (bus_key,bus_dict) in dict
         push!(Buses,Bus(bus_dict["number"],
                                     bus_dict["name"],
@@ -163,8 +163,8 @@ end
 
 ## - Parse Dict to Array
 function gen_dict_parser(dict::Dict{String,Any})
-    Generators =Array{PowerSystemDevice}(0)
-    Storage_gen =Array{PowerSystemDevice}(0)
+    Generators =Array{Generator,1}(0)
+    Storage_gen =Array{Storage,1}(0)
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
@@ -259,7 +259,7 @@ end
 # - Parse Dict to Array
 
 function branch_dict_parser(dict::Dict{String,Any})
-    Branches = Array{PowerSystemDevice}(0)
+    Branches = Array{Branch,1}(0)
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
@@ -316,7 +316,7 @@ end
 
 
 function load_dict_parser(dict::Dict{String,Any})
-    Loads =Array{PowerSystemDevice}(0)
+    Loads =Array{ElectricLoad,1}(0)
     for (load_key,load_dict) in dict
         push!(Loads,StaticLoad(load_dict["name"],
                 convert(Bool,load_dict["available"]),
@@ -331,7 +331,7 @@ function load_dict_parser(dict::Dict{String,Any})
 end
 
 function loadzone_dict_parser(dict::Dict{Int64,Any})
-    LoadZs =Array{PowerSystemDevice}(0)
+    LoadZs =Array{PowerSystemDevice,1}(0)
     for (lz_key,lz_dict) in dict
         push!(LoadZs,LoadZones(lz_dict["number"],
                                 lz_dict["name"],
@@ -344,7 +344,7 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
 end
 
 function shut_dict_parser(dict::Dict{String,Any})
-    Shunts = Array{PowerSystemDevice}(0)
+    Shunts = Array{ShuntElement,1}(0)
     for (s_key,s_dict) in dict
         push!(Shunts,FixedAdmittance(s_dict["name"],
                             convert(Bool,s_dict["available"]),
@@ -358,7 +358,7 @@ end
 
 
 function dclines_dict_parser(dict::Dict{String,Any})
-    DClines = Array{PowerSystemDevice}(0)
+    DClines = Array{Branch,1}(0)
     for (dcl_key,dcl_dict) in dict
         push!(DClines,DCLine(dcl_dict["name"],
                             convert(Bool,dcl_dict["available"]),
