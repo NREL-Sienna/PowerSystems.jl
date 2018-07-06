@@ -1,6 +1,8 @@
 import InfoZIP
+og_dir = pwd()
 cd(Pkg.dir("PowerModels"))
 run(`git pull origin master`)
+cd(og_dir)
 function download_data(tag::String)
 
     if !isdir(Pkg.dir("PowerSystems/data"))
