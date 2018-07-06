@@ -7,50 +7,22 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     """
     Takes a PowerSystems dictionary and return an array of PowerSystems struct for Bus, Generator, Branch and load
     """
-    if haskey(data, "bus")
-        Buses = bus_dict_parse(data["bus"])
-    else
-        warn("Key Error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
-        Buses =[]
-    end
-    if haskey(data, "gen")
-        Generators, Storage = gen_dict_parser(data["gen"])
-    else
-        warn("Key Error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
-        Generators =[]
-        Storage = []
-    end
-    if haskey(data, "branch")
-        Branches = branch_dict_parser(data["branch"])
-    else
-        warn("Key Error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
-        Branches =[]
-    end
-    if haskey(data, "load")
-        Loads = load_dict_parser(data["load"])
-    else
-        warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
-        Loads =[]
-    end
-    if haskey(data, "loadzone")
-        LoadZones = loadzone_dict_parser(data["loadzone"])
-    else
-        warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
-        LoadZones =[]
-    end
-    if haskey(data, "shunt")
-        Shunts = shut_dict_parser(data["shunt"])
-    else
-        warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
-        Shunts =[]
-    end
-    if haskey(data, "dcline")
-        DClines = dclines_dict_parser(data["dcline"])
-    else
-        warn("Key Error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
-        DClines =[]
-    end
-    return Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts ,DClines
+    Generators =Array{Generator,1}(0)
+    Storage = Array{PowerSystems.Storage,1}(0)
+    Buses =Array{Bus,1}(0)
+    Branches = Array{Branch,1}(0)
+    Loads =Array{ElectricLoad,1}(0)
+    Shunts =Array{ShuntElement,1}(0)
+    LoadZones =Array{PowerSystemDevice,1}(0)
+
+    haskey(data, "bus") ? Buses = bus_dict_parse(data["bus"]) : warn("Key Error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
+    haskey(data, "gen") ? (Generators, Storage) = gen_dict_parser(data["gen"]) : warn("Key Error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
+    haskey(data, "branch") ? Branches = branch_dict_parser(data["branch"],Branches) : warn("Key Error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
+    haskey(data, "load") ? Loads = load_dict_parser(data["load"]) : warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
+    haskey(data, "loadzone") ? LoadZones = loadzone_dict_parser(data["loadzone"]) : warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
+    haskey(data, "shunt") ? Shunts = shut_dict_parser(data["shunt"]) : warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
+    haskey(data, "dcline") ? Branches = dclines_dict_parser(data["dcline"],Branches) : warn("Key Error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
+    return Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts
 end
 
 
@@ -146,17 +118,7 @@ end
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})
-    Buses = Array{Bus,1}(0)
-    for (bus_key,bus_dict) in dict
-        push!(Buses,Bus(bus_dict["number"],
-                                    bus_dict["name"],
-                                    bus_dict["bustype"],
-                                    bus_dict["angle"],
-                                    bus_dict["voltage"],
-                                    bus_dict["voltagelimits"],
-                                    bus_dict["basevoltage"]
-                                    ))
-    end
+    Buses = [Bus(b["number"],b["name"], b["bustype"],b["angle"],b["voltage"],b["voltagelimits"],b["basevoltage"]) for (k_b,b) in dict ]
     return Buses
 end
 
@@ -253,13 +215,12 @@ function gen_dict_parser(dict::Dict{String,Any})
             end
         end
     end
-    return Generators, Storage_gen
+    return (Generators, Storage_gen)
 end
 
 # - Parse Dict to Array
 
-function branch_dict_parser(dict::Dict{String,Any})
-    Branches = Array{Branch,1}(0)
+function branch_dict_parser(dict::Dict{String,Any},Branches::Array{Branch,1})
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
@@ -357,10 +318,9 @@ function shut_dict_parser(dict::Dict{String,Any})
 end
 
 
-function dclines_dict_parser(dict::Dict{String,Any})
-    DClines = Array{Branch,1}(0)
+function dclines_dict_parser(dict::Dict{String,Any},Branches::Array{Branch,1})
     for (dcl_key,dcl_dict) in dict
-        push!(DClines,DCLine(dcl_dict["name"],
+        push!(Branches,DCLine(dcl_dict["name"],
                             convert(Bool,dcl_dict["available"]),
                             dcl_dict["connectionpoints"],
                             dcl_dict["realpowerlimits_from"],
@@ -370,5 +330,5 @@ function dclines_dict_parser(dict::Dict{String,Any})
                             dcl_dict["loss"]
                             ))
     end
-    return DClines
+    return Branches
 end
