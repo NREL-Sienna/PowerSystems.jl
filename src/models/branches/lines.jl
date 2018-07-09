@@ -14,8 +14,6 @@ end
 
 function calculate_thermal_limits!(r::Float64, x::Float64, rate::@NT(from_to::Float64, to_from::Float64), anglelimits::@NT(max::Float64, min::Float64))
     theta_max = max(abs(anglelimits.min), abs(anglelimits.max))
-    r = r
-    x = x
     g =  r / (r^2 + x^2)
     b = -x / (r^2 + x^2)
     y_mag = sqrt(g^2 + b^2)
