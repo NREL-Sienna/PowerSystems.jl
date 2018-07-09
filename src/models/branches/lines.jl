@@ -33,20 +33,19 @@ end
 
 struct Line <: Branch
     name::String
-    available::Bool
+    available
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
-    x::Float64 #[pu]Co
+    x::Float64 #[pu]
     b::@NT(from::Float64, to::Float64) #[pu]
-    # TODO: angle consistency check
-    rate::@NT(from_to::Float64, to_from::Float64)
-    anglelimits::@NT(max::Float64, min::Float64)
+    rate::@NT(from_to::Float64, to_from::Float64) #MW
+    anglelimits::@NT(max::Float64, min::Float64) #Degrees
 
-    function Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
+    function Line(name::String, available::Bool, connectionpoints::@NT(from::Bus, to::Bus), r::Float64, x::Float64, b::@NT(from::Float64, to::Float64) rate, anglelimits)
 
         anglelimits = check_angle_limits!(anglelimits)
 
-        rating =  calculate_thermal_limits(r, x,  @NT(from_to = rate, to_from = rate), anglelimits)
+        rating =  calculate_thermal_limits(r, x, connectionpoints @NT(from_to = rate, to_from = rate), anglelimits)
 
         new(name, available, connectionpoints, r, x, b, rating, anglelimits)
     end
