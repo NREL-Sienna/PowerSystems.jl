@@ -1,4 +1,18 @@
-function CheckThermalLimits(name::String,connectionpoints::@NT(from::Bus,to::Bus), r::Float64, x::Float64,rate::@NT(from_to::Float64, to_from::Float64),anglelimits::@NT(max::Float64, min::Float64))
+function check_angle_limits!(anglelimits::@NT(max::Float64, min::Float64))
+
+    orderedlimits(anglelimits, "Angles")
+
+    (anglelimits.max >= 90.0 && anglelimits.min <= -90.0) ? anglelimits = @NT(max = 90.0, min = -90.0) : true
+    (anglelimits.max >= 90.0 && anglelimits.min >= -90.0) ? anglelimits = @NT(max = 90.0, min = anglelimits.min) : true
+    (anglelimits.max <= 90.0 && anglelimits.min <= -90.0) ? anglelimits = @NT(max = anglelimits.max, min = -90.0) : true
+    (anglelimits.max == 0.0 && anglelimits.min == 0.0) ? anglelimits = @NT(max = 90.0, min = -90.0): true
+
+    return anglelimits
+
+end
+
+
+function calculate_thermal_limits!(r::Float64, x::Float64, rate::@NT(from_to::Float64, to_from::Float64), anglelimits::@NT(max::Float64, min::Float64))
     theta_max = max(abs(anglelimits.min), abs(anglelimits.max))
     r = r
     x = x
@@ -15,7 +29,7 @@ function CheckThermalLimits(name::String,connectionpoints::@NT(from::Bus,to::Bus
 
     rate.from_to <= 0.0 ? rating_from_to = new_rate : rate.from_to > new_rate ? rating_from_to = new_rate : rating_from_to = rate.from_to
     rate.to_from <= 0.0 ? rating_to_from = new_rate : rate.to_from > new_rate ? rating_to_from = new_rate : rating_to_from = rate.to_from
-    
+
     return @NT(from_to = rating_from_to, to_from = rating_to_from)
 end
 
@@ -32,7 +46,9 @@ struct Line <: Branch
 
     function Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 
-        rating =  CheckThermalLimits(name, connectionpoints, r, x,  @NT(from_to = rate, to_from = rate), anglelimits)
+        anglelimits = check_angle_limits!(anglelimits)
+
+        rating =  calculate_thermal_limits(r, x,  @NT(from_to = rate, to_from = rate), anglelimits)
 
         new(name, available, connectionpoints, r, x, b, rating, anglelimits)
     end
@@ -45,7 +61,7 @@ Line(;  name = "init",
         x = 0.0,
         b = @NT(from = 0.0, to = 0.0),
         rate = 0.0,
-        anglelimits = @NT(max = 60.0, min = -60.0)
+        anglelimits = @NT(max = 90.0, min = -90.0)
     ) = Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 
 struct DCLine <: Branch
