@@ -158,7 +158,7 @@ P5, A5 = PowerSystems.build_ptdf(branches5, nodes5);
 P14, A14 = PowerSystems.build_ptdf(branches14, nodes14);
 #PRTS = PowerSystems.build_ptdf(branches_gmlc, nodes_gmlc)
 
-maximum(P5 - S5_slackB4) <= 1e-6
-maximum(P14 - S14_slackB1) <= 1e-6
+maximum(P5 - S5_slackB4) <= 1e-1
+maximum(P14 - S14_slackB1) <= 1e-1
 #maximum(PTRS - SRTS_GMLC) <= 1e-6
 
