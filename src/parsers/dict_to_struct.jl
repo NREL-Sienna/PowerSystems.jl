@@ -22,7 +22,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     haskey(data, "loadzone") ? LoadZones = loadzone_dict_parser(data["loadzone"]) : warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
     haskey(data, "shunt") ? Shunts = shut_dict_parser(data["shunt"]) : warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
     haskey(data, "dcline") ? Branches = dclines_dict_parser(data["dcline"],Branches) : warn("Key Error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
-    return Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts
+    return sort!(Buses, by = x -> x.number), Generators, Storage,  sort!(Branches, by = x -> x.connectionpoints.from.number), Loads, LoadZones, Shunts
 end
 
 
