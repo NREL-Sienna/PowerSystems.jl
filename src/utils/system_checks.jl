@@ -84,7 +84,7 @@ function check_angle_limits(anglelimits::@NT(max::Float64, min::Float64))
 
 end
 
-function calculate_thermal_limits!(r::Float64, x::Float64, rate::@NT(from_to::Float64, to_from::Float64), anglelimits::@NT(max::Float64, min::Float64), connectionpoints::@NT(from::Bus, to::Bus))
+function calculate_thermal_limits(r::Float64, x::Float64, rate::@NT(from_to::Float64, to_from::Float64), anglelimits::@NT(max::Float64, min::Float64), connectionpoints::@NT(from::Bus, to::Bus))
     theta_max = max(abs(anglelimits.min), abs(anglelimits.max))
     g =  r / (r^2 + x^2)
     b = -x / (r^2 + x^2)
