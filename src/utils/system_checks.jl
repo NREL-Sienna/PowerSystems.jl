@@ -68,16 +68,16 @@ function PVBusCheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
     end
 end
 
-function check_angle_limits!(anglelimits::@NT(max::Float64, min::Float64))
+function check_angle_limits(anglelimits::@NT(max::Float64, min::Float64))
 
     orderedlimits(anglelimits, "Angles")
 
-    (anglelimits.max >= 90.0 && anglelimits.min <= -90.0) ? anglelimits = @NT(max = 90.0, min = -90.0) : true
-    (anglelimits.max >= 90.0 && anglelimits.min >= -90.0) ? anglelimits = @NT(max = 90.0, min = anglelimits.min) : true
-    (anglelimits.max <= 90.0 && anglelimits.min <= -90.0) ? anglelimits = @NT(max = anglelimits.max, min = -90.0) : true
-    (anglelimits.max == 0.0 && anglelimits.min == 0.0) ? anglelimits = @NT(max = 90.0, min = -90.0): true
+    (anglelimits.max >= 90.0 && anglelimits.min <= -90.0) ? newanglelimits = @NT(max = 90.0, min = -90.0) : true
+    (anglelimits.max >= 90.0 && anglelimits.min >= -90.0) ? newanglelimits = @NT(max = 90.0, min = anglelimits.min) : true
+    (anglelimits.max <= 90.0 && anglelimits.min <= -90.0) ? newanglelimits = @NT(max = anglelimits.max, min = -90.0) : true
+    (anglelimits.max == 0.0 && anglelimits.min == 0.0) ? newanglelimits = @NT(max = 90.0, min = -90.0): true
 
-    return anglelimits
+    return newanglelimits
 
 end
 
