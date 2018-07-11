@@ -55,7 +55,7 @@ RenewableCurtailment(; name = "init",
                 econ = EconRenewable(),
                 scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)
 
-struct ReReactiveDispatch <: RenewableGen
+struct RenewablerFullDispatch <: RenewableGen
     name::String
     available::Bool
     bus::Bus

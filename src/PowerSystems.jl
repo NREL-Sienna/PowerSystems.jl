@@ -35,6 +35,7 @@ export TechRenewable
 export EconRenewable
 export RenewableFix
 export RenewableCurtailment
+export RenewablerFullDispatch
 
 export ThermalGen
 export TechThermal
