@@ -15,7 +15,6 @@ export DCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
-export Transformer3W
 
 export Forecast
 export Deterministic
