@@ -30,7 +30,7 @@ function build_ptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Flo
             inv_X[ix,ix] = 1/b.x;
 
         elseif isa(b,TapTransformer)
-            inv_X[ix,ix] = 1/b.x*b.tap;
+            inv_X[ix,ix] = 1/(b.x*b.tap);
 
         elseif isa(b, Line)
             inv_X[ix,ix] = 1/b.x;
