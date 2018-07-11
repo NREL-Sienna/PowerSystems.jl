@@ -50,13 +50,14 @@ function build_ptdf(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
 
     if length(slack_position) == 1
         slack_position = slack_position[1]
-        (B, bipiv, binfo) = Base.LinAlg.LAPACK.getrf!(B)
+        (B, bipiv, binfo) = getrf!(B)
         S_ = gemm('N','N', gemm('N','T', inv_X, A[setdiff(1:end, slack_position), :]), getri!(B, bipiv) )
         S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
     elseif length(slack_position) > 1
-        (B, bipiv, binfo) = Base.LinAlg.LAPACK.getrf!(B)
+        (B, bipiv, binfo) = getrf!(B)
         S_ = gemm('N','N', gemm('N','T', inv_X, A[setdiff(1:end, slack_position), :]), getri!(B, bipiv) )
         slack_array = [x in slack_position ? 1 : 0 for x in 1:buscount]
+        slack_array =slack_array/sum(slack_array)
         S = S_*ones(buscount,buscount) - slack_array*ones(1,buscount)
     elseif length(slack_position) == 0
         warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
