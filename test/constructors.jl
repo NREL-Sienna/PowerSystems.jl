@@ -26,7 +26,6 @@ tLine = Line()
 tDCLine = DCLine()
 tTransformer2W = Transformer2W()
 tTapTransformer = TapTransformer()
-tTransformer3W = Transformer3W()
 tPhaseShiftingTransformer = PhaseShiftingTransformer()
 
 true

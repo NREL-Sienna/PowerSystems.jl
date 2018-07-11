@@ -84,7 +84,7 @@ function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::PhaseShiftingTr
 
 end
 
-# TODO: Add testing for Ybus of a system with a 3W transformer
+#=
 function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer3W)
 
     warn("Data contains a 3W transformer")
@@ -120,6 +120,7 @@ function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer3W)
         b.transformer.connectionpoints.to.number] += Y22;
 
 end
+=#
 
 function build_ybus(buscount::Int64, branches::Array{T}) where {T <: Branch}
 

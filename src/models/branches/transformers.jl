@@ -43,6 +43,7 @@ TapTransformer(; name = "init",
                 rate = nothing
             ) = TapTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, rate)
 
+#=
 struct Transformer3W <: Branch
     name::String
     available::Bool
@@ -55,6 +56,7 @@ Transformer3W(; name = "init",
                 transformer = Transformer2W(),
                 line = Line()
             ) = Transformer3W(name, available, transformer, line)
+=#
 
 struct PhaseShiftingTransformer <: Branch
     name::String
