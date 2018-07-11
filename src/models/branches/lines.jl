@@ -10,9 +10,9 @@ struct Line <: Branch
 
     function Line(name::String, available::Bool, connectionpoints::@NT(from::Bus, to::Bus), r::Float64, x::Float64, b::@NT(from::Float64, to::Float64), rate, anglelimits)
 
-        anglelimits = check_angle_limits!(anglelimits)
+        anglelimits = check_angle_limits(anglelimits)
 
-        rating =  calculate_thermal_limits!(r, x,  @NT(from_to = rate, to_from = rate), anglelimits, connectionpoints)
+        rating =  calculate_thermal_limits(r, x,  @NT(from_to = rate, to_from = rate), anglelimits, connectionpoints)
 
         new(name, available, connectionpoints, r, x, b, rating, anglelimits)
     end
