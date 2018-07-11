@@ -59,6 +59,9 @@ export ParseStandardFiles
 # Imports
 
 import Base.convert
+using Base.LinAlg.LAPACK.getri!
+using Base.LinAlg.LAPACK.getrf!
+using Base.LinAlg.BLAS.gemm
 using TimeSeries
 using PowerModels
 using DataFrames
