@@ -72,10 +72,13 @@ function check_angle_limits(anglelimits::@NT(max::Float64, min::Float64))
 
     orderedlimits(anglelimits, "Angles")
 
+    newanglelimits = anglelimits
+
     (anglelimits.max >= 90.0 && anglelimits.min <= -90.0) ? newanglelimits = @NT(max = 90.0, min = -90.0) : true
     (anglelimits.max >= 90.0 && anglelimits.min >= -90.0) ? newanglelimits = @NT(max = 90.0, min = anglelimits.min) : true
     (anglelimits.max <= 90.0 && anglelimits.min <= -90.0) ? newanglelimits = @NT(max = anglelimits.max, min = -90.0) : true
     (anglelimits.max == 0.0 && anglelimits.min == 0.0) ? newanglelimits = @NT(max = 90.0, min = -90.0): true
+
 
     return newanglelimits
 
