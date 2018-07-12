@@ -1,4 +1,5 @@
 using PowerSystems
+using NamedTuples
 
 alims = @NT(max = 360.0, min = -360.0)
 alims = PowerSystems.check_angle_limits(alims)
