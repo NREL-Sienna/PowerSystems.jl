@@ -67,6 +67,8 @@ using PowerModels
 using DataFrames
 using CSV
 using Memento
+using Polynomials
+
 Memento.config!(getlogger("PowerModels"), "error")
 
 # This packages will be removed with Julia v0.7
