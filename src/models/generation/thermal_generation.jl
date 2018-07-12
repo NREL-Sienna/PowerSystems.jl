@@ -76,7 +76,7 @@ Data Structure for the economical parameters of thermal generation technologies.
 """
 struct EconThermal{T}
     capacity::Float64                       # [MW]
-    variablecost::T                         # [$/MWh]
+    variablecost::Union{Function,Array{Tuple}}                         # [$/MWh]
     fixedcost::Float64            # [$/h]
     startupcost::Float64          # [$]
     shutdncost::Float64           # [$]
