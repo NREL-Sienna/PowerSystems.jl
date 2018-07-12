@@ -84,7 +84,7 @@ struct EconThermal{T}
 end
 
 EconThermal(;   capacity = 0.0,
-            variablecost = nothing,
+            variablecost = [(0,1)],
             fixedcost = 0.0,
             startupcost = 0.0,
             shutdncost = 0.0,
