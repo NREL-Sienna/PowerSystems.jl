@@ -71,4 +71,4 @@ function download_data(tag::String)
     end
     rm(Pkg.dir("PowerSystems/data.zip"),force=true,recursive=true)
 end
-download_data("v0.1-alpha2")
+download_data("v0.1-alpha.2")
