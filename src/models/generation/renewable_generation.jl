@@ -11,11 +11,11 @@ end
 TechRenewable(; InstalledCapacity = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRenewable(InstalledCapacity, reactivepowerlimits, powerfactor)
 
 struct EconRenewable
-    curtailcost::Float64 # [$/MWh]
-    interruptioncost::Union{Float64,Nothing} # [$]
+    curtailpenalty::Float64 # [$/MWh]
+    variablecost::Union{Float64,Nothing} # [$]
 end
 
-EconRenewable(; curtailcost = 0.0, interruptioncost = nothing) = EconRenewable(curtailcost, interruptioncost)
+EconRenewable(; curtailcost = 0.0, variablecost = nothing) = EconRenewable(curtailcost, variablecost)
 
 struct RenewableFix <: RenewableGen
     name::String
