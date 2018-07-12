@@ -183,8 +183,8 @@ end
 function make_thermal_gen(gen_name, d, bus)
     if d["model"] ==1 
         cost_component = d["cost"]
-        cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]
         power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
+        cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
         cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
     elseif d["model"] ==2
         cost = Poly(d["cost"])
