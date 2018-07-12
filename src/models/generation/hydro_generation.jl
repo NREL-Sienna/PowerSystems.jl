@@ -29,13 +29,8 @@ TechHydro(;installedcapacity = 0.0,
 
 
 struct EconHydro
-<<<<<<< HEAD
     curtailpenalty::Float64 # [$/MWh]
     variablecost::Union{Float64,Nothing} # [$]
-=======
-    cost::Union{Float64,Nothing} # [$/MWh]
-    curtailcost::Union{Float64,Nothing} # [$]
->>>>>>> 427c3323cc812d2d9d7c61096853982bf97b8fa0
 end
 
 EconHydro(; cost = 0.0, curtailcost = 0.0) = EconHydro(cost, curtailcost)
