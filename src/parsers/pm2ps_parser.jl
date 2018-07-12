@@ -181,6 +181,16 @@ function make_ren_gen(gen_name, d, bus)
 end
 
 function make_thermal_gen(gen_name, d, bus)
+    if d["model"] ==1 
+        cost_component = d["cost"]
+        cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]
+        power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
+        cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
+    elseif d["model"] ==2
+        cost = Poly(d["cost"])
+    else
+        cost = d["cost"]
+    end
     thermal_gen = Dict{String,Any}("name" => gen_name,
                                     "available" => d["gen_status"],
                                     "bus" => make_bus(bus),
@@ -191,7 +201,7 @@ function make_thermal_gen(gen_name, d, bus)
                                                                 "ramplimits" => @NT(up=d["ramp_agc"],down=d["ramp_agc"]),
                                                                 "timelimits" => nothing),
                                     "econ" => Dict{String,Any}("capacity" => d["pmax"],
-                                                                "variablecost" => d["cost"],
+                                                                "variablecost" => cost,
                                                                 "fixedcost" => 0.0,
                                                                 "startupcost" => d["startup"],
                                                                 "shutdncost" => d["shutdown"],
