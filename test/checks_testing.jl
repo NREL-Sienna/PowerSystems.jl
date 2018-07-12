@@ -16,3 +16,5 @@ alims = PowerSystems.check_angle_limits(alims)
 alims = @NT(max = 0.0, min = 0.0)
 alims = PowerSystems.check_angle_limits(alims)
 @assert "$alims" == "(max = 90.0, min = -90.0)"
+
+true
