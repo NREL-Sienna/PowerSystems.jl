@@ -26,4 +26,4 @@ comment:
   require_changes: no
 
 ignore:
-  - "src/parsers/csv_parser.jl"
+  - "src/parsers/"
