@@ -29,11 +29,11 @@ TechHydro(;installedcapacity = 0.0,
 
 
 struct EconHydro
-    curtailcost::Float64 # [$/MWh]
-    interruptioncost::Union{Float64,Nothing} # [$]
+    curtailpenalty::Float64 # [$/MWh]
+    variablecost::Union{Float64,Nothing} # [$]
 end
 
-EconHydro(; curtailcost = 0.0, interruptioncost = nothing) = EconHydro(curtailcost, interruptioncost)
+EconHydro(; cost = 0.0, curtailcost = 0.0) = EconHydro(cost, curtailcost)
 
 struct HydroFix <: HydroGen
     name::String

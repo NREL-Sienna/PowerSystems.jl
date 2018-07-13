@@ -11,11 +11,11 @@ end
 TechRenewable(; InstalledCapacity = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRenewable(InstalledCapacity, reactivepowerlimits, powerfactor)
 
 struct EconRenewable
-    curtailcost::Float64 # [$/MWh]
-    interruptioncost::Union{Float64,Nothing} # [$]
+    curtailpenalty::Float64 # [$/MWh]
+    variablecost::Union{Float64,Nothing} # [$]
 end
 
-EconRenewable(; curtailcost = 0.0, interruptioncost = nothing) = EconRenewable(curtailcost, interruptioncost)
+EconRenewable(; curtailcost = 0.0, variablecost = nothing) = EconRenewable(curtailcost, variablecost)
 
 struct RenewableFix <: RenewableGen
     name::String
@@ -42,7 +42,7 @@ struct RenewableCurtailment <: RenewableGen
     tech::TechRenewable
     econ::Union{EconRenewable,Nothing}
     scalingfactor::TimeSeries.TimeArray
-    function RenewableCurtailment(name, status, bus, installedcapacity::Float64, econ, scalingfactor)
+    function RenewableCurtailment(name::String, status::Bool, bus::Bus, installedcapacity::Float64, econ::Union{EconRenewable,Nothing}, scalingfactor::TimeSeries.TimeArray)
         tech = TechRenewable(installedcapacity, nothing, 1.0)
         new(name, status, bus, tech, econ, scalingfactor)
     end
@@ -51,11 +51,11 @@ end
 RenewableCurtailment(; name = "init",
                 status = false,
                 bus= Bus(),
-                tech = TechRenewable(),
+                installedcapacity = 0.0,
                 econ = EconRenewable(),
-                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = RenewableCurtailment(name, status, bus, tech, econ, scalingfactor)
+                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)
 
-struct ReReactiveDispatch <: RenewableGen
+struct RenewableFullDispatch <: RenewableGen
     name::String
     available::Bool
     bus::Bus

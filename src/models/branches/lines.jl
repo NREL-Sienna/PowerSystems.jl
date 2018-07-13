@@ -5,9 +5,18 @@ struct Line <: Branch
     r::Float64 #[pu]
     x::Float64 #[pu]Co
     b::@NT(from::Float64, to::Float64) #[pu]
-    # TODO: add a rate and angle consistency check
-    rate::Float64 #[MVA]
-    anglelimits::@NT(max::Float64, min::Float64)
+    rate::@NT(from_to::Float64, to_from::Float64) #MW
+    anglelimits::@NT(max::Float64, min::Float64) #Degrees
+
+    function Line(name::String, available::Bool, connectionpoints::@NT(from::Bus, to::Bus), r::Float64, x::Float64, b::@NT(from::Float64, to::Float64), rate, anglelimits)
+
+        anglelimits = check_angle_limits(anglelimits)
+
+        rating =  calculate_thermal_limits(r, x,  @NT(from_to = rate, to_from = rate), anglelimits, connectionpoints)
+
+        new(name, available, connectionpoints, r, x, b, rating, anglelimits)
+    end
+
 end
 
 Line(;  name = "init",
@@ -17,8 +26,8 @@ Line(;  name = "init",
         x = 0.0,
         b = @NT(from = 0.0, to = 0.0),
         rate = 0.0,
-        anglelimits = @NT(max = 60.0, min = -60.0)
-    ) = Line(name, status, connectionpoints, r, x, b, rate, anglelimits)
+        anglelimits = @NT(max = 90.0, min = -90.0)
+    ) = Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 
 struct DCLine <: Branch
     name::String

@@ -1,86 +1,68 @@
-# TODO: Enable distributed slack buses
-function build_ptdf(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
+function build_ptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1] ) where {T<:Branch}
 
     buscount = length(nodes)
     linecount = length(branches)
-
-    for b in nodes
+    num_bus = Dict{Int,Int}()
+    Theta = zeros(Float64,buscount);
+    for (ix,b) in enumerate(nodes)
         if b.number < -1
             error("buses must be numbered consecutively in the bus/node matrix")
         end
+        num_bus[b.number] = ix
+        Theta[ix] = b.angle
     end
 
-    A = spzeros(Float64,buscount,linecount);
-    B = spzeros(Float64,buscount,buscount);
-    X = spzeros(Float64,linecount,linecount);
+    A = zeros(Float64,buscount,linecount);
+    inv_X = zeros(Float64,linecount,linecount);
 
    #build incidence matrix
    #incidence_matrix = A
 
     for (ix,b) in enumerate(branches)
 
-        A[b.connectionpoints.from.number, ix] =  1;
+        isa(b,DCLine) ? continue : true
 
-        A[b.connectionpoints.to.number, ix] = -1;
+        A[num_bus[b.connectionpoints.from.number], ix] =  1;
+
+        A[num_bus[b.connectionpoints.to.number], ix] = -1;
 
         if isa(b,Transformer2W)
-
-            Y11 = 1/b.x;
-            X[ix,ix] = b.x;
+            inv_X[ix,ix] = 1/b.x;
 
         elseif isa(b,TapTransformer)
+            inv_X[ix,ix] = 1/(b.x*b.tap);
 
-            Y11 = (1/(b.tap*b.x));
-            X[ix,ix] = b.x*b.tap;
+        elseif isa(b, Line)
+            inv_X[ix,ix] = 1/b.x;
 
-        elseif typeof(b) == Line
-
-            Y11 = (1/b.x);
-            X[ix,ix] = b.x;
-
-        elseif typeof(b) == Transformer3W
-
-            error("3W Transformer not implemented about PTDF")
-
-        end
-
-        B[b.connectionpoints.from.number,
-            b.connectionpoints.from.number] += Y11;
-        Y12 = -1*Y11;
-        B[b.connectionpoints.from.number,
-            b.connectionpoints.to.number] += Y12;
-        #Y21 = Y1
-        B[b.connectionpoints.to.number,
-            b.connectionpoints.from.number] += Y12;
-        #Y22 = Y11;
-        B[b.connectionpoints.to.number,
-            b.connectionpoints.to.number] += Y11;
-
-    end
-
-    slack_position = -9;
-
-    for n in nodes
-        if n.bustype == "SF"
-            slack_position = n.number
+        elseif isa(b,PhaseShiftingTransformer)
+            y = 1 / (b.r + b.x * 1im)
+            y_a = y / (b.tap * exp(b.α * 1im * (π / 180)))
+            inv_X[ix,ix] = 1/imag(y_a)
         end
     end
+    slacks = [num_bus[n.number] for n in nodes if n.bustype == "SF"]
+    slack_position = slacks[1]
+    B = gemm('N','T', gemm('N','N',A[setdiff(1:end, slacks[1]),1:end] ,inv_X), A[setdiff(1:end, slacks[1]),1:end])
 
-    # TODO: Make speed-up improvements in the matrix operations.
-    if slack_position != -9
-        B = B[setdiff(1:end, slack_position), setdiff(1:end, slack_position)]
+    if dist_slack[1] == 0.1 && length(dist_slack) ==1
+        (B, bipiv, binfo) = getrf!(B)
+        S_ = gemm('N','N', gemm('N','T', inv_X, A[setdiff(1:end, slack_position), :]), getri!(B, bipiv) )
+        S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
 
-        S = inv(full(X))*A[setdiff(1:end, slack_position), :]'*inv(full(B));
+    elseif dist_slack[1] != 0.1 && length(dist_slack)  == buscount
+        println("Distributed bus")
+        (B, bipiv, binfo) = getrf!(B)
+        S_ = gemm('N','N', gemm('N','T', inv_X, A[setdiff(1:end, slack_position), :]), getri!(B, bipiv) )
+        S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
+        slack_array =dist_slack/sum(dist_slack)
+        slack_array = reshape(slack_array,buscount,1)
+        S = S - gemm('N','N',gemm('N','N',S,slack_array),ones(1,buscount))
 
-        S = hcat(S[:,1:slack_position-1],zeros(linecount,),S[:,slack_position:end])
-
-    elseif slack_position == -9
-
+    elseif length(slack_position) == 0
         warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
         S = nothing
-
     end
-
-    return S, A
+    return  S , A
 
 end

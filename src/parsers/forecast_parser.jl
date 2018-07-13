@@ -39,7 +39,7 @@ function read_data_files(files::String)
 end
 
  # -Parse csv file to dict
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates.Period,horizon::Int,Devices::Array{PowerSystemDevice,1})
+function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates.Period,horizon::Int,Devices::Array{Generator,1})
     """
     Args:
         Dictionary of all the data files
@@ -83,7 +83,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates
     return forecast
 end
 
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates.Period,horizon::Int,Devices::Array{PowerSystemDevice,1},LoadZones::Array{PowerSystemDevice,1})
+function make_forecast_dict(time_series::Dict{String,Any},resolution::Base.Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
     """
     Args:
         Dictionary of all the data files

@@ -13,9 +13,9 @@ end
 Bus(;   number = 0,
         name = "init",
         bustype = nothing,
-        angle = nothing,
-        voltage = nothing,
-        voltagelimits = nothing,
+        angle = 0.0,
+        voltage = 0.0,
+        voltagelimits = @NT(min = 0.0, max = 0.0),
         basevoltage = nothing
     ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelimits, "Voltage"), basevoltage)
 

@@ -7,50 +7,22 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     """
     Takes a PowerSystems dictionary and return an array of PowerSystems struct for Bus, Generator, Branch and load
     """
-    if haskey(data, "bus")
-        Buses = PowerSystems.bus_dict_parse(data["bus"])
-    else
-        warn("Key Error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
-        Buses =[]
-    end
-    if haskey(data, "gen")
-        Generators, Storage = PowerSystems.gen_dict_parser(data["gen"])
-    else
-        warn("Key Error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
-        Generators =[]
-        Storage = []
-    end
-    if haskey(data, "branch")
-        Branches = PowerSystems.branch_dict_parser(data["branch"])
-    else
-        warn("Key Error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
-        Branches =[]
-    end
-    if haskey(data, "load")
-        Loads = PowerSystems.load_dict_parser(data["load"])
-    else
-        warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
-        Loads =[]
-    end
-    if haskey(data, "loadzone")
-        LoadZones = PowerSystems.loadzone_dict_parser(data["loadzone"])
-    else
-        warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
-        LoadZones =[]
-    end
-    if haskey(data, "shunt")
-        Shunts = PowerSystems.shut_dict_parser(data["shunt"])
-    else
-        warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
-        Shunts =[]
-    end
-    if haskey(data, "dcline")
-        DClines = PowerSystems.dclines_dict_parser(data["dcline"])
-    else
-        warn("Key Error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
-        DClines =[]
-    end
-    return Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts ,DClines
+    Generators =Array{Generator,1}(0)
+    Storage = Array{PowerSystems.Storage,1}(0)
+    Buses =Array{Bus,1}(0)
+    Branches = Array{Branch,1}(0)
+    Loads =Array{ElectricLoad,1}(0)
+    Shunts =Array{ShuntElement,1}(0)
+    LoadZones =Array{PowerSystemDevice,1}(0)
+
+    haskey(data, "bus") ? Buses = bus_dict_parse(data["bus"]) : warn("Key Error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
+    haskey(data, "gen") ? (Generators, Storage) = gen_dict_parser(data["gen"]) : warn("Key Error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
+    haskey(data, "branch") ? Branches = branch_dict_parser(data["branch"],Branches) : warn("Key Error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
+    haskey(data, "load") ? Loads = load_dict_parser(data["load"]) : warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
+    haskey(data, "loadzone") ? LoadZones = loadzone_dict_parser(data["loadzone"]) : warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
+    haskey(data, "shunt") ? Shunts = shut_dict_parser(data["shunt"]) : warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
+    haskey(data, "dcline") ? Branches = dclines_dict_parser(data["dcline"],Branches) : warn("Key Error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
+    return sort!(Buses, by = x -> x.number), Generators, Storage,  sort!(Branches, by = x -> x.connectionpoints.from.number), Loads, LoadZones, Shunts
 end
 
 
@@ -59,28 +31,28 @@ function add_realtime_ts(data::Dict{String,Any},time_series::Dict{String,Any})
     """
     Args:
         PowerSystems dictionary
-        Dictionary of timeseries dataframes 
+        Dictionary of timeseries dataframes
     Returns:
         PowerSystems dictionary with timerseries component added
     """
     if haskey(data,"gen")
         if haskey(data["gen"],"Hydro") & haskey(time_series,"HYDRO")
-            data["gen"]["Hydro"] = PowerSystems.add_time_series(data["gen"]["Hydro"],time_series["HYDRO"]["RT"])
+            data["gen"]["Hydro"] = add_time_series(data["gen"]["Hydro"],time_series["HYDRO"]["RT"])
         end
         if haskey(data["gen"],"Renewable")
             if haskey(data["gen"]["Renewable"],"PV") & haskey(time_series,"PV")
-                data["gen"]["Renewable"]["PV"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["PV"],time_series["PV"]["RT"])
+                data["gen"]["Renewable"]["PV"] = add_time_series(data["gen"]["Renewable"]["PV"],time_series["PV"]["RT"])
             end
             if haskey(data["gen"]["Renewable"],"RTPV") & haskey(time_series,"RTPV")
-                data["gen"]["Renewable"]["RTPV"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["RTPV"],time_series["RTPV"]["RT"])
+                data["gen"]["Renewable"]["RTPV"] = add_time_series(data["gen"]["Renewable"]["RTPV"],time_series["RTPV"]["RT"])
             end
             if haskey(data["gen"]["Renewable"],"WIND") & haskey(time_series,"WIND")
-                data["gen"]["Renewable"]["WIND"] = PowerSystems.add_time_series(data["gen"]["Renewable"]["WIND"],time_series["WIND"]["RT"])
+                data["gen"]["Renewable"]["WIND"] = add_time_series(data["gen"]["Renewable"]["WIND"],time_series["WIND"]["RT"])
             end
         end
     end
     if haskey(data,"load") & haskey(time_series,"Load")
-        data["load"] = PowerSystems.add_time_series_load(data,time_series["Load"]["RT"])
+        data["load"] = add_time_series_load(data,time_series["Load"]["RT"])
     end
     return data
 end
@@ -89,9 +61,9 @@ end
 function read_datetime(df)
     """
     Arg:
-        Dataframes which includes a timerseries columns Year, Month, Day, Period 
+        Dataframes which includes a timerseries columns Year, Month, Day, Period
     Returns:
-        Dataframe with a DateTime columns 
+        Dataframe with a DateTime columns
     """
     if df[25,:Period] > 24
         df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1):Minute(5):
@@ -124,7 +96,7 @@ end
 function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
     """
     Arg:
-        Load dictionary 
+        Load dictionary
         LoadZones dictionary
         Dataframe contains device Realtime/Forecast TimeSeries
     Returns:
@@ -135,7 +107,7 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
     for (l_key,l) in load_dict
         for (lz_key,lz) in load_zone_dict
             if l["bus"] in lz["buses"]
-                ts_raw = df[:,lz_key]*(l["maxrealpower"]/lz["maxrealpower"]) 
+                ts_raw = df[:,lz_key]*(l["maxrealpower"]/lz["maxrealpower"])
                 load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
             end
         end
@@ -146,30 +118,20 @@ end
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})
-    Buses = Array{PowerSystems.PowerSystemDevice}(0)
-    for (bus_key,bus_dict) in dict
-        push!(Buses,PowerSystems.Bus(bus_dict["number"],
-                                    bus_dict["name"],
-                                    bus_dict["bustype"],
-                                    bus_dict["angle"],
-                                    bus_dict["voltage"],
-                                    bus_dict["voltagelimits"],
-                                    bus_dict["basevoltage"]
-                                    ))
-    end
+    Buses = [Bus(b["number"],b["name"], b["bustype"],b["angle"],b["voltage"],b["voltagelimits"],b["basevoltage"]) for (k_b,b) in dict ]
     return Buses
 end
 
 
 ## - Parse Dict to Array
 function gen_dict_parser(dict::Dict{String,Any})
-    Generators =Array{PowerSystems.PowerSystemDevice}(0)
-    Storage_gen =Array{PowerSystems.PowerSystemDevice}(0)
+    Generators =Array{Generator,1}(0)
+    Storage_gen =Array{Storage,1}(0)
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
-                push!(Generators,PowerSystems.ThermalDispatch(thermal_dict["name"],
-                                                            thermal_dict["available"],
+                push!(Generators,ThermalDispatch(thermal_dict["name"],
+                                                            convert(Bool, thermal_dict["available"]),
                                                             thermal_dict["bus"],
                                                             TechThermal(thermal_dict["tech"]["realpower"],
                                                                         thermal_dict["tech"]["realpowerlimits"],
@@ -187,7 +149,7 @@ function gen_dict_parser(dict::Dict{String,Any})
             end
         elseif gen_type_key =="Hydro"
             for (hydro_key,hydro_dict) in gen_type_dict
-                push!(Generators,PowerSystems.HydroCurtailment(hydro_dict["name"],
+                push!(Generators,HydroCurtailment(hydro_dict["name"],
                                                             hydro_dict["available"],
                                                             hydro_dict["bus"],
                                                             TechHydro(  hydro_dict["tech"]["installedcapacity"],
@@ -202,11 +164,11 @@ function gen_dict_parser(dict::Dict{String,Any})
                             ))
             end
         elseif gen_type_key =="Renewable"
-            for (ren_key,ren_dict) in  gen_type_dict  
+            for (ren_key,ren_dict) in  gen_type_dict
                 if ren_key == "PV"
                     for (pv_key,pv_dict) in ren_dict
-                        push!(Generators,PowerSystems.RenewableCurtailment(pv_dict["name"],
-                                                                    pv_dict["available"],
+                        push!(Generators,RenewableCurtailment(pv_dict["name"],
+                                                                    convert(Bool, pv_dict["available"]),
                                                                     pv_dict["bus"],
                                                                     pv_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(pv_dict["econ"]["curtailcost"],
@@ -216,8 +178,8 @@ function gen_dict_parser(dict::Dict{String,Any})
                     end
                 elseif ren_key == "RTPV"
                     for (rtpv_key,rtpv_dict) in ren_dict
-                        push!(Generators,PowerSystems.RenewableFix(rtpv_dict["name"],
-                                                                    rtpv_dict["available"],
+                        push!(Generators,RenewableFix(rtpv_dict["name"],
+                                                                    convert(Bool,rtpv_dict["available"]),
                                                                     rtpv_dict["bus"],
                                                                     rtpv_dict["tech"]["installedcapacity"],
                                                                     rtpv_dict["scalingfactor"]
@@ -225,8 +187,8 @@ function gen_dict_parser(dict::Dict{String,Any})
                     end
                 elseif ren_key == "WIND"
                     for (wind_key,wind_dict) in ren_dict
-                        push!(Generators,PowerSystems.RenewableCurtailment(wind_dict["name"],
-                                                                    wind_dict["available"],
+                        push!(Generators,RenewableCurtailment(wind_dict["name"],
+                                                                    convert(Bool,wind_dict["available"]),
                                                                     wind_dict["bus"],
                                                                     wind_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(wind_dict["econ"]["curtailcost"],
@@ -237,9 +199,9 @@ function gen_dict_parser(dict::Dict{String,Any})
                 end
             end
         elseif gen_type_key =="Storage"
-            for (storage_key,storage_dict) in  gen_type_dict 
-                push!(Storage_gen,PowerSystems.GenericBattery(storage_dict["name"],
-                                                            storage_dict["available"],
+            for (storage_key,storage_dict) in  gen_type_dict
+                push!(Storage_gen,GenericBattery(storage_dict["name"],
+                                                            convert(Bool,storage_dict["available"]),
                                                             storage_dict["bus"],
                                                             storage_dict["energy"],
                                                             storage_dict["capacity"],
@@ -253,19 +215,18 @@ function gen_dict_parser(dict::Dict{String,Any})
             end
         end
     end
-    return Generators, Storage_gen
+    return (Generators, Storage_gen)
 end
 
 # - Parse Dict to Array
 
-function branch_dict_parser(dict::Dict{String,Any})
-    Branches = Array{PowerSystems.PowerSystemDevice}(0)
+function branch_dict_parser(dict::Dict{String,Any},Branches::Array{Branch,1})
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
                 if trans_dict["tap"] ==1.0
                     push!(Branches,Transformer2W(trans_dict["name"],
-                                                trans_dict["available"],
+                                                convert(Bool,trans_dict["available"]),
                                                 trans_dict["connectionpoints"],
                                                 trans_dict["r"],
                                                 trans_dict["x"],
@@ -275,7 +236,7 @@ function branch_dict_parser(dict::Dict{String,Any})
                 elseif trans_dict["tap"] !=1.0
                     if trans_dict["α"] !=0.0 #TODO : 3W Transformer
                         push!(Branches,PhaseShiftingTransformer(trans_dict["name"],
-                                                    trans_dict["available"],
+                                                    convert(Bool,trans_dict["available"]),
                                                     trans_dict["connectionpoints"],
                                                     trans_dict["r"],
                                                     trans_dict["x"],
@@ -286,21 +247,21 @@ function branch_dict_parser(dict::Dict{String,Any})
                                                     ))
                     else
                         push!(Branches,TapTransformer(trans_dict["name"],
-                        trans_dict["available"],
-                        trans_dict["connectionpoints"],
-                        trans_dict["r"],
-                        trans_dict["x"],
-                        trans_dict["primaryshunt"],
-                        trans_dict["tap"],
-                        trans_dict["rate"]
-                        ))
+                                                    convert(Bool,trans_dict["available"]),
+                                                    trans_dict["connectionpoints"],
+                                                    trans_dict["r"],
+                                                    trans_dict["x"],
+                                                    trans_dict["primaryshunt"],
+                                                    trans_dict["tap"],
+                                                    trans_dict["rate"]
+                                                    ))
                     end
                 end
             end
         else branch_key == "Lines"
             for (line_key,line_dict) in branch_dict
                 push!(Branches,Line(line_dict["name"],
-                                    line_dict["available"],
+                                    convert(Bool,line_dict["available"]),
                                     line_dict["connectionpoints"],
                                     line_dict["r"],
                                     line_dict["x"],
@@ -316,10 +277,10 @@ end
 
 
 function load_dict_parser(dict::Dict{String,Any})
-    Loads =Array{PowerSystems.PowerSystemDevice}(0)
+    Loads =Array{ElectricLoad,1}(0)
     for (load_key,load_dict) in dict
         push!(Loads,StaticLoad(load_dict["name"],
-                load_dict["available"],
+                convert(Bool,load_dict["available"]),
                 load_dict["bus"],
                 load_dict["model"],
                 load_dict["maxrealpower"],
@@ -331,7 +292,7 @@ function load_dict_parser(dict::Dict{String,Any})
 end
 
 function loadzone_dict_parser(dict::Dict{Int64,Any})
-    LoadZs =Array{PowerSystems.PowerSystemDevice}(0)
+    LoadZs =Array{PowerSystemDevice,1}(0)
     for (lz_key,lz_dict) in dict
         push!(LoadZs,LoadZones(lz_dict["number"],
                                 lz_dict["name"],
@@ -344,10 +305,10 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
 end
 
 function shut_dict_parser(dict::Dict{String,Any})
-    Shunts = Array{PowerSystems.PowerSystemDevice}(0)
-    for (s_key,s_dict) in dict 
+    Shunts = Array{ShuntElement,1}(0)
+    for (s_key,s_dict) in dict
         push!(Shunts,FixedAdmittance(s_dict["name"],
-                            s_dict["available"],
+                            convert(Bool,s_dict["available"]),
                             s_dict["bus"],
                             s_dict["Y"]
                             )
@@ -357,11 +318,10 @@ function shut_dict_parser(dict::Dict{String,Any})
 end
 
 
-function dclines_dict_parser(dict::Dict{String,Any})
-    DClines = Array{PowerSystems.PowerSystemDevice}(0)
-    for (dcl_key,dcl_dict) in dict 
-        push!(DClines,DCLine(dcl_dict["name"],
-                            dcl_dict["available"],
+function dclines_dict_parser(dict::Dict{String,Any},Branches::Array{Branch,1})
+    for (dcl_key,dcl_dict) in dict
+        push!(Branches,DCLine(dcl_dict["name"],
+                            convert(Bool,dcl_dict["available"]),
                             dcl_dict["connectionpoints"],
                             dcl_dict["realpowerlimits_from"],
                             dcl_dict["realpowerlimits_to"],
@@ -370,5 +330,5 @@ function dclines_dict_parser(dict::Dict{String,Any})
                             dcl_dict["loss"]
                             ))
     end
-    return DClines
+    return Branches
 end

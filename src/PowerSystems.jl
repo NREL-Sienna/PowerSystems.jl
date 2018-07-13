@@ -15,7 +15,6 @@ export DCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
-export Transformer3W
 
 export Forecast
 export Deterministic
@@ -36,6 +35,7 @@ export TechRenewable
 export EconRenewable
 export RenewableFix
 export RenewableCurtailment
+export RenewableFullDispatch
 
 export ThermalGen
 export TechThermal
@@ -59,11 +59,15 @@ export ParseStandardFiles
 # Imports
 
 import Base.convert
+using Base.LinAlg.LAPACK.getri!
+using Base.LinAlg.LAPACK.getrf!
+using Base.LinAlg.BLAS.gemm
 using TimeSeries
 using PowerModels
 using DataFrames
 using CSV
 using Memento
+
 Memento.config!(getlogger("PowerModels"), "error")
 
 # This packages will be removed with Julia v0.7
