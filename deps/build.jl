@@ -1,3 +1,4 @@
+Pkg.add("InfoZIP")
 import InfoZIP
 og_dir = pwd()
 cd(Pkg.dir("PowerModels"))
