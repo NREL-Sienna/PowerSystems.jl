@@ -8,13 +8,13 @@ include("../data/data_14bus.jl")
 @time sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, nothing, 230.0, 1000.0)
 
 battery5 = [GenericBattery(name = "Bat",
-                bus = nodes5[2],
                 status = true,
+                bus = nodes5[2],
                 realpower = 10.0,
-                energy = 100.0,
-                capacity = @NT(min = 0.0, max = 0.0,),
-                inputrealpowerlimit = 10.0,
-                outputrealpowerlimit = 10.0,
+                energy = 5.0,
+                capacity = @NT(min = 0.0, max = 0.0),
+                inputrealpowerlimits = @NT(min = 0.0, max = 50.0),
+                outputrealpowerlimits = @NT(min = 0.0, max = 50.0),
                 efficiency = @NT(in = 0.90, out = 0.80),
                 )];
 
@@ -38,13 +38,13 @@ generators_hg5 = [
 @time sys14 = PowerSystem(nodes14, generators14, loads14, branches14, nothing, 69.0, 1000.0)
 
 battery14 = [GenericBattery(name = "Bat",
-                bus = nodes14[2],
                 status = true,
+                bus = nodes14[2],
                 realpower = 10.0,
-                energy = 100.0,
-                capacity = @NT(min = 0.0, max = 0.0,),
-                inputrealpowerlimit = 10.0,
-                outputrealpowerlimit = 10.0,
+                energy = 5.0,
+                capacity = @NT(min = 0.0, max = 0.0),
+                inputrealpowerlimits = @NT(min = 0.0, max = 50.0),
+                outputrealpowerlimits = @NT(min = 0.0, max = 50.0),
                 efficiency = @NT(in = 0.90, out = 0.80),
                 )];
 
