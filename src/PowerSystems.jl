@@ -55,7 +55,9 @@ export Storage
 export GenericBattery
 
 export Product
-export ReserveProduct
+export Reserve
+export ProportionalReserve
+export StaticReserve
 
 export ParseStandardFiles
 #################################################################################
