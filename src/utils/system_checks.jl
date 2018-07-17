@@ -3,7 +3,7 @@
 
 ## Time Series Length ##
 
-function TimeSeriesCheckLoad(loads::Array{T}) where {T<:ElectricLoad}
+function timeseriescheckload(loads::Array{T}) where {T<:ElectricLoad}
     t = length(loads[1].scalingfactor)
     for l in loads
         if t == length(l.scalingfactor)
@@ -15,7 +15,7 @@ function TimeSeriesCheckLoad(loads::Array{T}) where {T<:ElectricLoad}
     return t
 end
 
-function TimeSeriesCheckSources(generators::Array{T}, t) where {T<:Generator}
+function timeserieschecksources(generators::Array{T}, t) where {T<:Generator}
     if !isa(generators,Nothing)
         for g in generators
             if t == length(g.scalingfactor)
@@ -29,17 +29,17 @@ end
 
 ## Check that all the buses have a type defintion ##
 
-function BusCheckAC(buses::Array{Bus})
+function buscheck(buses::Array{Bus})
     for b in buses
         if b.bustype == nothing
-            warn("Bus/Nodes data does not contain information to build an AC network")
+            warn("Bus/Nodes data does not contain information to build an a network")
         end
     end
 end
 
 ## Slack Bus Definition ##
 
-function SlackBusCheck(buses::Array{Bus})
+function slackbus_check(buses::Array{Bus})
     slack = -9
     for b in buses
         if b.bustype == "SF"
@@ -53,7 +53,7 @@ end
 
 ### PV Bus Check ###
 
-function PVBusCheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator}
+function pvbus_check(buses::Array{Bus}, generators::Array{T}) where {T<:Generator}
     pv_list = -1*ones(Int64, length(generators))
     for (ix,g) in enumerate(generators)
         g.bus.bustype == "PV" ? pv_list[ix] = g.bus.number : continue

@@ -20,10 +20,10 @@ struct PowerSystem{L <: ElectricLoad,
                         basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad}
 
-        sources = GenClassifier(generators);
-        time_length = TimeSeriesCheckLoad(loads)
-        TimeSeriesCheckSources(sources.renewable, time_length)
-        #TimeSeriesCheckSources(sources.hydro, time_length)
+        sources = genclassifier(generators);
+        time_length = timeseriescheckload(loads)
+        timeserieschecksources(sources.renewable, time_length)
+        #timeserieschecksources(sources.hydro, time_length)
 
         new{L, Nothing, Nothing,}(buses,
                         sources,
@@ -44,14 +44,14 @@ struct PowerSystem{L <: ElectricLoad,
                         basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}}
 
-        SlackBusCheck(buses)
-        BusCheckAC(buses)
-        PVBusCheck(buses, generators)
+        slackbus_check(buses)
+        buscheck(buses)
+        pvbus_check(buses, generators)
 
-        sources = GenClassifier(generators);
-        time_length = TimeSeriesCheckLoad(loads)
-        TimeSeriesCheckSources(sources.renewable, time_length)
-        #TimeSeriesCheckSources(sources.hydro, time_length)
+        sources = genclassifier(generators);
+        time_length = timeseriescheckload(loads)
+        timeserieschecksources(sources.renewable, time_length)
+        #timeserieschecksources(sources.hydro, time_length)
 
         new{L, B, Nothing}(buses,
                 sources,
@@ -72,10 +72,10 @@ struct PowerSystem{L <: ElectricLoad,
                         basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, S <: Array{<: Storage,1}}
 
-        sources = GenClassifier(generators);
-        time_length = TimeSeriesCheckLoad(loads)
-        TimeSeriesCheckSources(sources.renewable, time_length)
-        #TimeSeriesCheckSources(sources.hydro, time_length)
+        sources = genclassifier(generators);
+        time_length = timeseriescheckload(loads)
+        timeserieschecksources(sources.renewable, time_length)
+        #timeserieschecksources(sources.hydro, time_length)
 
         new{L, Nothing, S}(buses,
                 sources,
@@ -96,14 +96,15 @@ struct PowerSystem{L <: ElectricLoad,
                         basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}, S <: Array{<: Storage,1}}
 
-        SlackBusCheck(buses)
-        BusCheckAC(buses)
-        PVBusCheck(buses, generators)
+        slackbus_check(buses)
+        buscheck(buses)
+        pvbus_check(buses, generators)
 
-        sources = GenClassifier(generators);
-        time_length = TimeSeriesCheckLoad(loads)
-        TimeSeriesCheckSources(sources.renewable, time_length)
-        #TimeSeriesCheckSources(sources.hydro, time_length)
+
+        sources = genclassifier(generators);
+        time_length = timeseriescheckload(loads)
+        timeserieschecksources(sources.renewable, time_length)
+        #timeserieschecksources(sources.hydro, time_length)
 
         new{L, B, S}(buses,
                 sources,
