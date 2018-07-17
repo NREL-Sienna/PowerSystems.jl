@@ -1,5 +1,5 @@
 
-data = PowerSystems.ParseStandardFiles(Pkg.dir("PowerSystems/data/matpower/RTS_GMLC.m"))
+data = PowerSystems.parsestandardfiles(Pkg.dir("PowerSystems/data/matpower/RTS_GMLC.m"))
 
 ps_dict = PowerSystems.pm2ps_dict(data)
 
