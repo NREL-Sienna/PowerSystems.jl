@@ -39,7 +39,7 @@ end
 
 ## Slack Bus Definition ##
 
-function slackbus_check(buses::Array{Bus})
+function slackbuscheck(buses::Array{Bus})
     slack = -9
     for b in buses
         if b.bustype == "SF"
@@ -53,7 +53,7 @@ end
 
 ### PV Bus Check ###
 
-function pvbus_check(buses::Array{Bus}, generators::Array{T}) where {T<:Generator}
+function pvbuscheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator}
     pv_list = -1*ones(Int64, length(generators))
     for (ix,g) in enumerate(generators)
         g.bus.bustype == "PV" ? pv_list[ix] = g.bus.number : continue

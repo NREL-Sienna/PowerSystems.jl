@@ -44,9 +44,9 @@ struct PowerSystem{L <: ElectricLoad,
                         basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}}
 
-        slackbus_check(buses)
+        slackbuscheck(buses)
         buscheck(buses)
-        pvbus_check(buses, generators)
+        pvbuscheck(buses, generators)
 
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
@@ -96,9 +96,9 @@ struct PowerSystem{L <: ElectricLoad,
                         basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}, S <: Array{<: Storage,1}}
 
-        slackbus_check(buses)
+        slackbuscheck(buses)
         buscheck(buses)
-        pvbus_check(buses, generators)
+        pvbuscheck(buses, generators)
 
 
         sources = genclassifier(generators);
