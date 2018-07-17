@@ -29,6 +29,6 @@ tTapTransformer = TapTransformer()
 tPhaseShiftingTransformer = PhaseShiftingTransformer()
 
 #Product Constructors
-tReserveProduct = ReserveProduct()
+tProportionalReserve = ProportionalReserve()
 
 true
