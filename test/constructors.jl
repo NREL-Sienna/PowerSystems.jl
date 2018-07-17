@@ -28,4 +28,7 @@ tTransformer2W = Transformer2W()
 tTapTransformer = TapTransformer()
 tPhaseShiftingTransformer = PhaseShiftingTransformer()
 
+#Product Constructors
+tReserveProduct = ReserveProduct()
+
 true
