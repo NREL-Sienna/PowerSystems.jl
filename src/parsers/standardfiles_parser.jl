@@ -1,4 +1,4 @@
-function ParseStandardFiles(file::String)
+function parsestandardfiles(file::String)
 
     data = PowerModels.parse_file(file)
 

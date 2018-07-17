@@ -57,7 +57,7 @@ export GenericBattery
 export Product
 export ReserveProduct
 
-export ParseStandardFiles
+export parsestandardfiles
 #################################################################################
 # Imports
 

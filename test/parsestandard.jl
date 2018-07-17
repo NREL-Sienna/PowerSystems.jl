@@ -9,7 +9,7 @@ for f in files
     try
         ext = match(file_ext, f)
         print("Parsing $f ...\n")
-        pm_dict = ParseStandardFiles(joinpath(Pkg.dir(),"PowerSystems/data/matpower",f))
+        pm_dict = parsestandardfiles(joinpath(Pkg.dir(),"PowerSystems/data/matpower",f))
         println("Successfully parsed $f to PowerModels dict")
         ps_dict = PowerSystems.pm2ps_dict(pm_dict)
         println("Successfully parsed $f to PowerSystems dict")
@@ -34,7 +34,7 @@ for f in files
     try
         ext = match(file_ext, f)
         print("Parsing $f ...\n")
-        ParseStandardFiles(joinpath(Pkg.dir(),"PowerSystems/data/psse_raw",f))
+        parsestandardfiles(joinpath(Pkg.dir(),"PowerSystems/data/psse_raw",f))
         println("Successfully parsed $f")
     catch
         warn("Error while parsing $f")
