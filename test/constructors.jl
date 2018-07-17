@@ -30,5 +30,7 @@ tPhaseShiftingTransformer = PhaseShiftingTransformer()
 
 #Product Constructors
 tProportionalReserve = ProportionalReserve()
+tStaticReserve = StaticReserve()
+
 
 true

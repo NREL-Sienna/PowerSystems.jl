@@ -9,7 +9,7 @@ ProportionalReserve(name::String,
         timeframe::Float64,
         requirement::Dict{Any,Dict{Int,TimeSeries.TimeArray}})
 
-Data Structure for the procurement products for system simulations.
+Data Structure for a proportional reserve product for system simulations.
 The data structure can be called calling all the fields directly or using named fields.
 name - description
 contributingdevices - devices from which the product can be procured
@@ -53,3 +53,45 @@ ProportionalReserve(;name = "init",
         timeframe = 0.0,
         requirement = 0.03,
         loads = [StaticLoad()]) = ProportionalReserve(name, contributingdevices, timeframe, requirement, loads)
+
+
+"""
+StaticReserve(name::String,
+        contributingdevices::PowerSystemDevice,
+        timeframe::Float64,
+        requirement::Float64})
+
+Data Structure for the procurement products for system simulations.
+The data structure can be called calling all the fields directly or using named fields.
+name - description
+contributingdevices - devices from which the product can be procured
+timeframe - the relative saturation timeframe 
+requirement - the required quantity of the product
+
+# Examples
+
+```jldoctest
+
+
+"""
+struct StaticReserve <: Reserve
+    name::String
+    contributingdevices::Array{PowerSystemDevice}
+    timeframe::Float64
+    requirement::Float64
+
+    function StaticReserve(name::String,
+                                contributingdevices::Array{Q},
+                                timeframe::Float64,
+                                generators::Array{G}) where {Q <: PowerSystemDevice, G <: TechThermal}
+
+        requirement = maximum([gen.realpowerlimits[:max] for gen in generators])
+
+        new(name, contributingdevices, timeframe, requirement)
+    end
+end
+
+StaticReserve(;name = "init",
+        contributingdevices = [ThermalDispatch()],
+        timeframe = 0.0,
+        generators = [TechThermal()]) = StaticReserve(name, contributingdevices, timeframe, generators)
