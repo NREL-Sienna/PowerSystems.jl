@@ -54,6 +54,9 @@ export InterruptibleLoad
 export Storage
 export GenericBattery
 
+export Product
+export ReserveProduct
+
 export ParseStandardFiles
 #################################################################################
 # Imports
@@ -92,6 +95,7 @@ include("models/network.jl")
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
+include("models/products.jl")
 
 # Include Parsing files
 include("parsers/dict_to_struct.jl")

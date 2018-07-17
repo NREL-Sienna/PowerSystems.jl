@@ -14,7 +14,7 @@ struct Sources{T <: Union{Nothing,Array{<:ThermalGen,1}}, R <: Union{Nothing,Arr
 end
 
 # Generator Classifier
-function GenClassifier(gen::Array{T}) where T <: Generator
+function genclassifier(gen::Array{T}) where T <: Generator
 
     t = [d for d in gen if isa(d, ThermalGen)]
     r = [d for d in gen if isa(d, RenewableGen)]
