@@ -59,7 +59,7 @@ export Reserve
 export ProportionalReserve
 export StaticReserve
 
-export ParseStandardFiles
+export parsestandardfiles
 #################################################################################
 # Imports
 
