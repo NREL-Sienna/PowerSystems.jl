@@ -22,8 +22,8 @@ struct PowerSystem{L <: ElectricLoad,
 
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
-        timeserieschecksources(sources.renewable, time_length)
-        #timeserieschecksources(sources.hydro, time_length)
+        !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
+        !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
 
         new{L, Nothing, Nothing,}(buses,
                         sources,
@@ -50,8 +50,8 @@ struct PowerSystem{L <: ElectricLoad,
 
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
-        timeserieschecksources(sources.renewable, time_length)
-        #timeserieschecksources(sources.hydro, time_length)
+        !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
+        !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
 
         new{L, B, Nothing}(buses,
                 sources,
@@ -74,8 +74,8 @@ struct PowerSystem{L <: ElectricLoad,
 
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
-        timeserieschecksources(sources.renewable, time_length)
-        #timeserieschecksources(sources.hydro, time_length)
+        !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
+        !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
 
         new{L, Nothing, S}(buses,
                 sources,
@@ -103,8 +103,8 @@ struct PowerSystem{L <: ElectricLoad,
 
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
-        timeserieschecksources(sources.renewable, time_length)
-        #timeserieschecksources(sources.hydro, time_length)
+        !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
+        !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
 
         new{L, B, S}(buses,
                 sources,
