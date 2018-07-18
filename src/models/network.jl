@@ -9,7 +9,7 @@ end
 
 function Network(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
     ybus = build_ybus(length(nodes),branches);
-    ptdf, A = build_ptdf(branches, nodes)
+    ptdf, A = buildptdf(branches, nodes)
 
     return Network(branches, ybus, ptdf, A)
 
