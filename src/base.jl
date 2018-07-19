@@ -8,7 +8,6 @@ struct PowerSystem{L <: ElectricLoad,
     loads::Array{L,1}
     branches::B
     storage::S
-    basevoltage::Float64 # [kV]
     basepower::Float64 # [MVA]
     time_periods::Int64
 
@@ -17,7 +16,6 @@ struct PowerSystem{L <: ElectricLoad,
                         loads::Array{L,1},
                         branches::Nothing,
                         storage::Nothing,
-                        basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad}
 
         sources = genclassifier(generators);
@@ -30,7 +28,6 @@ struct PowerSystem{L <: ElectricLoad,
                         loads,
                         nothing,
                         nothing,
-                        basevoltage,
                         basepower,
                         time_length)
 
@@ -41,7 +38,6 @@ struct PowerSystem{L <: ElectricLoad,
                         loads::Array{L,1},
                         branches::B,
                         storage::Nothing,
-                        basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}}
 
         slackbuscheck(buses)
@@ -61,7 +57,6 @@ struct PowerSystem{L <: ElectricLoad,
                 loads,
                 branches,
                 nothing,
-                basevoltage,
                 basepower,
                 time_length)
 
@@ -72,7 +67,6 @@ struct PowerSystem{L <: ElectricLoad,
                         loads::Array{L,1},
                         branches::Nothing,
                         storage::S,
-                        basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, S <: Array{<: Storage,1}}
 
         sources = genclassifier(generators);
@@ -85,7 +79,6 @@ struct PowerSystem{L <: ElectricLoad,
                 loads,
                 nothing,
                 storage,
-                basevoltage,
                 basepower,
                 time_length)
 
@@ -96,7 +89,6 @@ struct PowerSystem{L <: ElectricLoad,
                         loads::Array{L,1},
                         branches::B,
                         storage::S,
-                        basevoltage::Float64,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}, S <: Array{<: Storage,1}}
 
         slackbuscheck(buses)
@@ -116,7 +108,6 @@ struct PowerSystem{L <: ElectricLoad,
                 loads,
                 branches,
                 storage,
-                basevoltage,
                 basepower,
                 time_length)
 
@@ -129,6 +120,5 @@ PowerSystem(; buses = [Bus()],
             loads = [StaticLoad()],
             branches =  nothing,
             storage = nothing,
-            basevoltage = 0.0,
             basepower = 1000.0,
-        ) = PowerSystem(buses, generators, loads, branches, storage, basevoltage, basepower)
+        ) = PowerSystem(buses, generators, loads, branches, storage,  basepower)

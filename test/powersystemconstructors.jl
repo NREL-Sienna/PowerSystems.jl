@@ -4,8 +4,8 @@ include("../data/data_14bus.jl")
 
 @time tPowerSystem = PowerSystem()
 
-@time sys5 = PowerSystem(nodes5, generators5, loads5_DA, nothing, nothing, 230.0, 1000.0)
-@time sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, nothing, 230.0, 1000.0)
+@time sys5 = PowerSystem(nodes5, generators5, loads5_DA, nothing, nothing,  1000.0)
+@time sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, nothing,  1000.0)
 
 battery5 = [GenericBattery(name = "Bat",
                 status = true,
@@ -18,7 +18,7 @@ battery5 = [GenericBattery(name = "Bat",
                 efficiency = @NT(in = 0.90, out = 0.80),
                 )];
 
-@time sys5b = PowerSystem(nodes5, generators5, loads5_DA, nothing, battery5, 230.0, 1000.0)
+@time sys5b = PowerSystem(nodes5, generators5, loads5_DA, nothing, battery5,  1000.0)
 
 generators_hg5 = [
     HydroFix("HydroFix",true,nodes5[2],
@@ -30,12 +30,12 @@ generators_hg5 = [
         1000.0,TimeSeries.TimeArray(DayAhead,wind_ts_DA) )
 ]
 
-@time sys5bh = PowerSystem(nodes5, append!(generators5, generators_hg5), loads5_DA, branches5, battery5, 230.0, 1000.0)
+@time sys5bh = PowerSystem(nodes5, append!(generators5, generators_hg5), loads5_DA, branches5, battery5,  1000.0)
 
  #Test Data for 14 Bus
 
-@time sys14 = PowerSystem(nodes14, generators14, loads14, nothing, nothing, 69.0, 1000.0)
-@time sys14 = PowerSystem(nodes14, generators14, loads14, branches14, nothing, 69.0, 1000.0)
+@time sys14 = PowerSystem(nodes14, generators14, loads14, nothing, nothing,  1000.0)
+@time sys14 = PowerSystem(nodes14, generators14, loads14, branches14, nothing,  1000.0)
 
 battery14 = [GenericBattery(name = "Bat",
                 status = true,
@@ -51,8 +51,8 @@ battery14 = [GenericBattery(name = "Bat",
 
 
 
-@time sys14b = PowerSystem(nodes14, generators14, loads14, nothing, battery14, 69.0, 1000.0)
-@time sys14b = PowerSystem(nodes14, generators14, loads14, branches14, battery14, 69.0, 1000.0)
+@time sys14b = PowerSystem(nodes14, generators14, loads14, nothing, battery14,  1000.0)
+@time sys14b = PowerSystem(nodes14, generators14, loads14, branches14, battery14,  1000.0)
 
 
 true

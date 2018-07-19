@@ -15,7 +15,7 @@ for f in files
         println("Successfully parsed $f to PowerSystems dict")
         Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts = PowerSystems.ps_dict2ps_struct(ps_dict)
         println("Successfully parsed $f to PowerSystems devices")
-        sys_test = PowerSystem(Buses, Generators,Loads,Branches,Storage,230.0,ps_dict["baseMVA"]) # TODO: Add DClines, Shunts , LoadZones
+        sys_test = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]) # TODO: Add DClines, Shunts , LoadZones
         println("Successfully parsed $f to PowerSystem struct")
     catch
         warn("Error while parsing $f")
