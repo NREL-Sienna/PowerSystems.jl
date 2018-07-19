@@ -50,8 +50,12 @@ struct PowerSystem{L <: ElectricLoad,
 
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
+<<<<<<< HEAD
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
+=======
+        timeserieschecksources(sources.renewable, time_length)
+>>>>>>> 9a89aa68c2f128d7bd1ab748a2a8b6059fbd3b0f
         calculate_thermal_limits!(branches,basepower)
         check_angle_limits!(branches)
         #timeserieschecksources(sources.hydro, time_length)
