@@ -52,6 +52,9 @@ struct PowerSystem{L <: ElectricLoad,
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
+        calculate_thermal_limits!(branches,basepower)
+        check_angle_limits!(branches)
+        #timeserieschecksources(sources.hydro, time_length)
 
         new{L, B, Nothing}(buses,
                 sources,
@@ -99,6 +102,8 @@ struct PowerSystem{L <: ElectricLoad,
         slackbuscheck(buses)
         buscheck(buses)
         pvbuscheck(buses, generators)
+        calculate_thermal_limits!(branches,basepower)
+        check_angle_limits!(branches)
 
 
         sources = genclassifier(generators);
