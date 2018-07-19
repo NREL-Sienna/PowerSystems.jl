@@ -68,43 +68,58 @@ function pvbuscheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
     end
 end
 
-function check_angle_limits(anglelimits::@NT(max::Float64, min::Float64))
+# function check_angle_limits(anglelimits::@NT(max::Float64, min::Float64))
+function check_angle_limits!(Branches::Array{<:Branch,1})
+    for (ix,l) in enumerate(Branches)
+        if isa(l,Line)
+            orderedlimits(l.anglelimits, "Angles")
 
-    orderedlimits(anglelimits, "Angles")
-
-    newanglelimits = anglelimits
-
-    (anglelimits.max >= 90.0 && anglelimits.min <= -90.0) ? newanglelimits = @NT(max = 90.0, min = -90.0) : true
-    (anglelimits.max >= 90.0 && anglelimits.min >= -90.0) ? newanglelimits = @NT(max = 90.0, min = anglelimits.min) : true
-    (anglelimits.max <= 90.0 && anglelimits.min <= -90.0) ? newanglelimits = @NT(max = anglelimits.max, min = -90.0) : true
-    (anglelimits.max == 0.0 && anglelimits.min == 0.0) ? newanglelimits = @NT(max = 90.0, min = -90.0): true
-
-
-    return newanglelimits
-
+            newanglelimits = l.anglelimits
+            flag = 0 
+            (l.anglelimits.max >= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)) : true
+            (l.anglelimits.max >= 90.0 && l.anglelimits.min >= -90.0) ? (flag,newanglelimits) =(1, @NT(max = 90.0, min = l.anglelimits.min)) : true
+            (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = l.anglelimits.max, min = -90.0)) : true
+            (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)): true
+            if flag == 1 
+                Branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
+                                    deepcopy(l.connectionpoints),deepcopy(l.r),
+                                    deepcopy(l.x),deepcopy(l.b),deepcopy(l.rate),
+                                    newanglelimits)
+            end
+        end
+    end
 end
 
-function calculate_thermal_limits(r::Float64, x::Float64, rate::@NT(from_to::Float64, to_from::Float64), anglelimits::@NT(max::Float64, min::Float64), connectionpoints::@NT(from::Bus, to::Bus))
-    theta_max = max(abs(anglelimits.min), abs(anglelimits.max))
-    g =  r / (r^2 + x^2)
-    b = -x / (r^2 + x^2)
-    y_mag = sqrt(g^2 + b^2)
-    fr_vmax = connectionpoints.from.voltagelimits.max
-    to_vmax =  connectionpoints.to.voltagelimits.max
-    if isa(fr_vmax,Nothing) || isa(to_vmax,Nothing)
-        fr_vmax = 1.0
-        to_vmax = 0.9
-        diff_angle = abs(connectionpoints.from.angle -connectionpoints.to.angle)
-        new_rate = y_mag*fr_vmax*to_vmax*cos(theta_max)
-    else
-    m_vmax = max(fr_vmax, to_vmax)
-    c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2*fr_vmax*to_vmax*cos(theta_max))
-    new_rate = y_mag*m_vmax*c_max
+function calculate_thermal_limits!(Branches::Array{<:Branch,1},baseMVA::Float64)
+    for (ix,l) in enumerate(Branches) 
+        if isa(l,Line)
+            theta_max = max(abs(l.anglelimits.min), abs(l.anglelimits.max))
+            g =  l.r / (l.r^2 + l.x^2)
+            b = -l.x / (l.r^2 + l.x^2)
+            y_mag = sqrt(g^2 + b^2)
+            fr_vmax = l.connectionpoints.from.voltagelimits.max
+            to_vmax =  l.connectionpoints.to.voltagelimits.max
+            if isa(fr_vmax,Nothing) || isa(to_vmax,Nothing)
+                fr_vmax = 1.0
+                to_vmax = 0.9
+                diff_angle = abs(l.connectionpoints.from.angle -l.connectionpoints.to.angle)
+                new_rate = y_mag*fr_vmax*to_vmax*cos(theta_max)
+            else
+            m_vmax = max(fr_vmax, to_vmax)
+            c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2*fr_vmax*to_vmax*cos(theta_max))
+            new_rate = y_mag*m_vmax*c_max
+            end       
+            flag = 0            
+            l.rate.from_to <= 0.0 ? (flag,rating_from_to) = (1,new_rate*baseMVA)  : l.rate.from_to > new_rate*baseMVA ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_from_to = l.rate.from_to
+            l.rate.to_from <= 0.0 ? (flag,rating_from_to) = (1,new_rate*baseMVA)  : l.rate.to_from > new_rate*baseMVA ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_to_from = l.rate.to_from
+            if flag == 1 
+                Branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
+                                    deepcopy(l.connectionpoints),deepcopy(l.r),
+                                    deepcopy(l.x),deepcopy(l.b),
+                                    @NT(from_to = rating_from_to, to_from = rating_to_from),deepcopy(l.anglelimits))
+            end
+        end
     end
-    rate.from_to <= 0.0 ? rating_from_to = new_rate : rate.from_to > new_rate ? rating_from_to = new_rate : rating_from_to = rate.from_to
-    rate.to_from <= 0.0 ? rating_to_from = new_rate : rate.to_from > new_rate ? rating_to_from = new_rate : rating_to_from = rate.to_from
-
-    return @NT(from_to = rating_from_to, to_from = rating_to_from)
 end
 
 # TODO: Check for islanded Buses
