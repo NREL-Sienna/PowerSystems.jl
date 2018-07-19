@@ -67,8 +67,8 @@ function pvbuscheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
 end
 
 # function check_angle_limits(anglelimits::@NT(max::Float64, min::Float64))
-function check_angle_limits!(Branches::Array{<:Branch,1})
-    for (ix,l) in enumerate(Branches)
+function checkanglelimits!(branches::Array{<:Branch,1})
+    for (ix,l) in enumerate(branches)
         if isa(l,Line)
             orderedlimits(l.anglelimits, "Angles")
 
@@ -79,7 +79,7 @@ function check_angle_limits!(Branches::Array{<:Branch,1})
             (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = l.anglelimits.max, min = -90.0)) : true
             (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)): true
             if flag == 1 
-                Branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
+                branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),deepcopy(l.rate),
                                     newanglelimits)
@@ -88,8 +88,8 @@ function check_angle_limits!(Branches::Array{<:Branch,1})
     end
 end
 
-function calculate_thermal_limits!(Branches::Array{<:Branch,1},baseMVA::Float64)
-    for (ix,l) in enumerate(Branches) 
+function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
+    for (ix,l) in enumerate(branches) 
         if isa(l,Line)
             theta_max = max(abs(l.anglelimits.min), abs(l.anglelimits.max))
             g =  l.r / (l.r^2 + l.x^2)
@@ -111,7 +111,7 @@ function calculate_thermal_limits!(Branches::Array{<:Branch,1},baseMVA::Float64)
             l.rate.from_to <= 0.0 ? (flag,rating_from_to) = (1,new_rate*baseMVA)  : l.rate.from_to > new_rate*baseMVA ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_from_to = l.rate.from_to
             l.rate.to_from <= 0.0 ? (flag,rating_from_to) = (1,new_rate*baseMVA)  : l.rate.to_from > new_rate*baseMVA ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_to_from = l.rate.to_from
             if flag == 1 
-                Branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
+                branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),
                                     @NT(from_to = rating_from_to, to_from = rating_to_from),deepcopy(l.anglelimits))
