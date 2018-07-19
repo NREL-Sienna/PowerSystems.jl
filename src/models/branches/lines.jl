@@ -8,16 +8,17 @@ struct Line <: Branch
     rate::@NT(from_to::Float64, to_from::Float64) #MW
     anglelimits::@NT(max::Float64, min::Float64) #Degrees
 
-    function Line(name::String, available::Bool, connectionpoints::@NT(from::Bus, to::Bus), r::Float64, x::Float64, b::@NT(from::Float64, to::Float64), rate, anglelimits)
-        if isa(rate,Float64)
-            rating =  @NT(from_to=rate, to_from=rate)
-            new(name, available, connectionpoints, r, x, b, rating, anglelimits)
-        else
-            new(name, available, connectionpoints, r, x, b, rate, anglelimits)
-        end
-    end
-
 end
+
+function Line(name::String, available::Bool, connectionpoints::@NT(from::Bus, to::Bus), r::Float64, x::Float64, b::@NT(from::Float64, to::Float64), rate, anglelimits)
+    if isa(rate,Float64)
+        rating =  @NT(from_to=rate, to_from=rate)
+        Line(name, available, connectionpoints, r, x, b, rating, anglelimits)
+    else
+        Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
+    end
+end
+
 
 Line(;  name = "init",
         available = false,
