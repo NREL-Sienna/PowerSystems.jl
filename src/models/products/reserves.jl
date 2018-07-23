@@ -1,6 +1,6 @@
 
 abstract type
-    Reserve <: Product
+    Reserve <: Service
 end
 
 """
@@ -13,7 +13,7 @@ Data Structure for a proportional reserve product for system simulations.
 The data structure can be called calling all the fields directly or using named fields.
 name - description
 contributingdevices - devices from which the product can be procured
-timeframe - the relative saturation timeframe 
+timeframe - the relative saturation timeframe
 requirement - the required quantity of the product
 
 # Examples
@@ -33,7 +33,7 @@ struct ProportionalReserve <: Reserve
                             timeframe::Float64,
                             requirement::Float64,
                             loads::Array{T}) where {G <: PowerSystemDevice, T <: ElectricLoad}
-        
+
         totalload = zeros(0)
         for i in timestamp(loads[1].scalingfactor)
             t = zeros(0)
@@ -65,7 +65,7 @@ Data Structure for the procurement products for system simulations.
 The data structure can be called calling all the fields directly or using named fields.
 name - description
 contributingdevices - devices from which the product can be procured
-timeframe - the relative saturation timeframe 
+timeframe - the relative saturation timeframe
 requirement - the required quantity of the product
 
 # Examples
