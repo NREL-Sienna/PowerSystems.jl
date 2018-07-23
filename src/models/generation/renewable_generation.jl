@@ -46,7 +46,7 @@ end
 
 function RenewableCurtailment(name::String, status::Bool, bus::Bus, installedcapacity::Float64, econ::Union{EconRenewable,Nothing}, scalingfactor::TimeSeries.TimeArray)
     tech = TechRenewable(installedcapacity, nothing, 1.0)
-    new(name, status, bus, tech, econ, scalingfactor)
+    return RenewableCurtailment(name, status, bus, tech, econ, scalingfactor)
 end
 
 RenewableCurtailment(; name = "init",
