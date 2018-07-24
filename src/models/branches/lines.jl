@@ -9,9 +9,9 @@ struct Line <: Branch
     anglelimits::@NT(max::Float64, min::Float64) #Degrees
 end
 
-function Line(name::String, available::Bool, connectionpoints::@NT(from::Bus, to::Bus), r::Float64, x::Float64, b::@NT(from::Float64, to::Float64), rate::Float64,anglelimits::Float64)
-    return Line(name, available, connectionpoints, r, x, b, @NT(from_to=rate, to_from=rate), @NT(max=anglelimits, min=-1*anglelimits))
-end
+Line(name::String, available::Bool, connectionpoints::@NT(from::Bus, to::Bus), r::Float64, x::Float64, b::@NT(from::Float64, to::Float64), rate::Float64, anglelimits::Float64) =
+Line(name, available, connectionpoints, r, x, b, @NT(from_to=rate, to_from=rate), @NT(max=anglelimits, min=-1*anglelimits))
+
 
 
 Line(;  name = "init",
