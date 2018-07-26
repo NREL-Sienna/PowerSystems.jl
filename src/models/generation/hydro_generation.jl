@@ -6,11 +6,11 @@ end
 struct TechHydro
     installedcapacity::Float64
     realpower::Float64 # [MW]
-    realpowerlimits::@NT(min::Float64, max::Float64)
+    realpowerlimits::@NT(min::Float64, max::Float64) # [MW]
     reactivepower::Union{Float64,Nothing} # [MVAr]
-    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing}
-    ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}
-    timelimits::Union{@NT(up::Float64, down::Float64),Nothing}
+    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing} # [MVAr]
+    ramplimits::Union{@NT(up::Float64, down::Float64),Nothing} #MW/Hr
+    timelimits::Union{@NT(up::Float64, down::Float64),Nothing} # Hrs
     function TechHydro(installedcapacity, realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
         new(installedcapacity, realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
@@ -30,7 +30,7 @@ TechHydro(;installedcapacity = 0.0,
 
 struct EconHydro
     curtailpenalty::Float64 # [$/MWh]
-    variablecost::Union{Float64,Nothing} # [$]
+    variablecost::Union{Float64,Nothing} # [$/MWh]
 end
 
 EconHydro(; cost = 0.0, curtailcost = 0.0) = EconHydro(cost, curtailcost)
@@ -56,7 +56,7 @@ struct HydroCurtailment <: HydroGen
     bus::Bus
     tech::TechHydro
     econ::Union{EconHydro,Nothing}
-    scalingfactor::TimeSeries.TimeArray
+    scalingfactor::TimeSeries.TimeArray # [0-1]
     function HydroCurtailment(name, status, bus, tech, curtailcost::Float64, scalingfactor)
         econ = EconHydro(curtailcost, nothing)
         new(name, status, bus, tech, econ, scalingfactor)
@@ -77,7 +77,7 @@ struct HydroStorage <: HydroGen
     bus::Bus
     tech::TechHydro
     econ::Union{EconHydro,Nothing}
-    storagecapacity::Float64
+    storagecapacity::Float64 #[m^3]
     scalingfactor::TimeSeries.TimeArray
 end
 

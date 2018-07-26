@@ -44,20 +44,19 @@ export ThermalDispatch
 export ThermalGenSeason
 
 export ElectricLoad
-export ShuntElement
 export FixedAdmittance
 
 export StaticLoad
-export ControllableLoad
 export InterruptibleLoad
 
 export Storage
 export GenericBattery
 
-export Product
+export Service
 export Reserve
 export ProportionalReserve
 export StaticReserve
+export Transfer
 
 export parsestandardfiles
 #################################################################################
@@ -97,7 +96,7 @@ include("models/network.jl")
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
-include("models/products.jl")
+include("models/services.jl")
 
 # Include Parsing files
 include("parsers/dict_to_struct.jl")

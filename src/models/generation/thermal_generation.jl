@@ -37,11 +37,11 @@ Data Structure for the economical parameters of thermal generation technologies.
 """
 struct TechThermal
     realpower::Float64 # [MW]
-    realpowerlimits::@NT(min::Float64, max::Float64)
+    realpowerlimits::@NT(min::Float64, max::Float64) # [MW]
     reactivepower::Union{Float64,Nothing} # [MVAr]
-    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing}
-    ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}
-    timelimits::Union{@NT(up::Float64, down::Float64),Nothing}
+    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing} # [MVAr]
+    ramplimits::Union{@NT(up::Float64, down::Float64),Nothing} #MW/Hr
+    timelimits::Union{@NT(up::Float64, down::Float64),Nothing} #Hr
     function TechThermal(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
         new(realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
@@ -75,8 +75,8 @@ Data Structure for the economical parameters of thermal generation technologies.
 
 """
 struct EconThermal
-    capacity::Float64                       # [MW]
-    variablecost::Union{Function,Array{Tuple{Float64, Float64}}}                         # [$/MWh]
+    capacity::Float64 # [MW]
+    variablecost::Union{Function,Array{Tuple{Float64, Float64}}} # [$/MWh]
     fixedcost::Float64            # [$/h]
     startupcost::Float64          # [$]
     shutdncost::Float64           # [$]

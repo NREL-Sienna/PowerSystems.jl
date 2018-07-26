@@ -9,7 +9,7 @@ struct Transformer2W <: Branch
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
-    primaryshunt::Float64
+    primaryshunt::Float64 #[pu]
     rate::Union{Nothing,Float64} #[MVA]
 end
 
@@ -28,7 +28,7 @@ struct TapTransformer <: Branch
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
-    primaryshunt::Float64
+    primaryshunt::Float64 #[pu]
     tap::Float64 # [0 - 2]
     rate::Union{Float64,Nothing} #[MVA]
 end
@@ -64,8 +64,8 @@ struct PhaseShiftingTransformer <: Branch
     connectionpoints::@NT(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
-    primaryshunt::Float64
-    tap::Float64 # [0 - 2]
+    primaryshunt::Float64 #[pu]
+    tap::Float64 #[0 - 2]
     α::Float64 # [radians]
     rate::Float64 #[MVA]
 end

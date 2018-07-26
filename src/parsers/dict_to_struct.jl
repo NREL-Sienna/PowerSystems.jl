@@ -12,7 +12,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     Buses =Array{Bus,1}(0)
     Branches = Array{Branch,1}(0)
     Loads =Array{ElectricLoad,1}(0)
-    Shunts =Array{ShuntElement,1}(0)
+    Shunts =Array{FixedAdmittance,1}(0)
     LoadZones =Array{PowerSystemDevice,1}(0)
 
     haskey(data, "bus") ? Buses = bus_dict_parse(data["bus"]) : warn("Key Error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
@@ -305,7 +305,7 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
 end
 
 function shut_dict_parser(dict::Dict{String,Any})
-    Shunts = Array{ShuntElement,1}(0)
+    Shunts = Array{FixedAdmittance,1}(0)
     for (s_key,s_dict) in dict
         push!(Shunts,FixedAdmittance(s_dict["name"],
                             convert(Bool,s_dict["available"]),

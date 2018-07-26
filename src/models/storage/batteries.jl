@@ -2,14 +2,14 @@ struct GenericBattery <: Storage
     name::String
     available::Bool
     bus::Bus
-    energy::Float64
-    capacity::@NT(min::Float64, max::Float64)
+    energy::Float64 # [MWh]
+    capacity::@NT(min::Float64, max::Float64) # [MWh]
     realpower::Float64 # [MW]
-    inputrealpowerlimits::@NT(min::Float64, max::Float64)
-    outputrealpowerlimits::@NT(min::Float64, max::Float64)
-    efficiency::@NT(in::Float64, out::Float64)
+    inputrealpowerlimits::@NT(min::Float64, max::Float64) # [MW]
+    outputrealpowerlimits::@NT(min::Float64, max::Float64) # [MW]
+    efficiency::@NT(in::Float64, out::Float64)  # [%]
     reactivepower::Union{Float64,Nothing} # [MVAr]
-    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing}
+    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing} # [MVAr]
 end
 
 GenericBattery(; name = "init",
