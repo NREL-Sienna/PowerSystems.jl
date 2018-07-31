@@ -25,8 +25,9 @@ matrix:
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
 ## uncomment the following lines to override the default test script
-#script:
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("PowerSystems"); Pkg.test("PowerSystems"; coverage=true)'
+script:
+  - julia -e 'Pkg.clone(pwd()); Pkg.test("PowerSystems"; coverage=true)'
+
 after_success:
   # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("PowerSystems")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
