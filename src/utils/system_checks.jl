@@ -122,3 +122,26 @@ end
 
 # TODO: Check for islanded Buses
 # TODO: Check busses have same base voltage
+
+# check for minimum timediff
+function minimumtimestep(timeseries::Array{DateTime})
+    n = length(timeseries)-1
+    ts = []
+    for i in 1:n
+        push!(ts,timeseries[n+1]-timeseries[n])
+    end
+    return minimum(ts)
+end
+
+# check for consistent ramp limits
+function checkramp(generators::Array{T},timeseries::Array{DateTime}) where {T<:Generator}
+    t = minimumtimestep(timeseries)
+    for (ix,g) in enumerate(generators)
+        if g.ramplimits.up >= (g.realpowerlimits.max - g.realpowerlimits.min)/t
+            warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+        end
+        if g.ramplimits.down >= (g.realpowerlimits.max - g.realpowerlimits.min)/t
+            warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+        end
+    end
+end
