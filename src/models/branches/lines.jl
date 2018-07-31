@@ -23,6 +23,6 @@ Line(;  name = "init",
         r = 0.0,
         x = 0.0,
         b = @NT(from = 0.0, to = 0.0),
-        rate = 0.0,
+        rate = @NT(from_to=0.0, to_from=0.0),
         anglelimits = @NT(max = 90.0, min = -90.0)
     ) = Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
