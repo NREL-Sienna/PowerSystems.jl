@@ -17,26 +17,26 @@ struct Line <: Branch
     anglelimits::Max_Min #Degrees
 end
 
-
 function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
-              r::Float64, x::Float64, b::From_To_Float, rate::Float64, anglelimits::Float64)
-        rating =  FromTo_ToFrom_Float(rate, rate)
+              r::Float64, x::Float64, b::From_To_Float, rate::FromTo_ToFrom_Float, anglelimits::Float64)
         anglelimits = Max_Min(anglelimits, anglelimits)
-        return Line(name, available, connectionpoints, r, x, b, rating, anglelimits)
-end
-
-function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
-              r::Float64, x::Float64, b::Float64, rate::Float64, anglelimits::Float64)
         return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
 
-function Line(name::String, available::Bool, connectionpoints::Tuple{Bus, Bus},
-              r::Float64, x::Float64, b::Float64, rate::Float64, anglelimits::Float64)
-    return Line(name, available,
-                From_To_Bus(connectionpoints[1], connectionpoints[2]),
-                r, x, b, rate, anglelimits)
+function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
+              r::Float64, x::Float64, b::From_To_Float, rate::Float64, anglelimits::Max_Min)
+        rate =  FromTo_ToFrom_Float(rate, rate)
+        return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
 
+function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
+              r::Float64, x::Float64, b::From_To_Float, rate::Float64, anglelimits::Float64)
+        rate =  FromTo_ToFrom_Float(rate, rate)
+        anglelimits = Max_Min(anglelimits, anglelimits)
+        return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
+end
+
+# TODO: Figure out if other constructors for Line are required
 
 Line(; name = "init",
        available = false,
