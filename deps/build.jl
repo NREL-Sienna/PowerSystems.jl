@@ -15,7 +15,7 @@ function download_data()
 
     if !isdir(DATA_FOLDER)
         mkpath(DATA_FOLDER)
-        temp_folder = tempname()
+        temp_folder = tempdir()
         mkpath(temp_folder)
         temp_data_zip = joinpath(temp_folder, "data.zip")
         download(ZIP_DATA_URL, temp_data_zip)
