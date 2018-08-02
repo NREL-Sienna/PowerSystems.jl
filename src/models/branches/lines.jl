@@ -1,5 +1,3 @@
-
-
 const Max_Min = @NT(max::Float64, min::Float64)
 const From_To_Float = @NT(from::Float64, to::Float64)
 const From_To_Bus = @NT(from::Bus, to::Bus)
