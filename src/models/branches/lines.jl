@@ -36,8 +36,6 @@ function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
         return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
 
-# TODO: Figure out if other constructors for Line are required
-
 Line(; name = "init",
        available = false,
        connectionpoints = From_To_Bus(Bus(), Bus()),
