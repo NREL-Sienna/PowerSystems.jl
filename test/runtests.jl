@@ -1,3 +1,5 @@
+Pkg.build("PowerSystems")
+
 using PowerSystems
 using Base.Test
 using CSV
