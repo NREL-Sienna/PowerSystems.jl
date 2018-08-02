@@ -6,7 +6,7 @@
 
 [![codecov](https://codecov.io/gh/NREL/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL/PowerSystems.jl)
 
-The PowerSystems.jl package provides a rigorous data model using Julia structures to enable power systems analysis. In addition to stand-alone system analysis tools and model building, the PowerSystems.jl package is used as the foundational data container for the [PowerSimulations.jl](https://github.com/NREL/PowerSimulations.jl) package. PowerSystems enables data structures for different devices and relies on a limited number of data file formats for parsing.
+The `PowerSystems.jl` package provides a rigorous data model using Julia structures to enable power systems analysis. In addition to stand-alone system analysis tools and model building, the `PowerSystems.jl` package is used as the foundational data container for the [PowerSimulations.jl](https://github.com/NREL/PowerSimulations.jl) package. `PowerSystems.jl` enables data structures for different devices and relies on a limited number of data file formats for parsing.
 
 ### Device data enabled in PowerSystems:
  - Generators (Thermal, Renewable, Synchronous Condensers, and Hydro)
