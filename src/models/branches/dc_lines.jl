@@ -1,7 +1,6 @@
-# TODO: Implement more complex DC Line models including control angle and transformers
-#abstract type DCLine <: Branch end
+abstract type DCLine <: Branch end
 
-struct DCLine <: Branch
+struct SimpleDCLine <: DCLine
     name::String
     available::Bool
     connectionpoints::@NT(from::Bus, to::Bus)
@@ -21,3 +20,19 @@ DCLine(; name ="init",
         reactivepowerlimits_to = @NT(min=0.0, max=0.0),
         loss = @NT(l0=0.0, l1=0.0)
     ) = DCLine(name, available, connectionpoints, realpowerlimits_from, realpowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to,loss )
+
+
+"""
+As implemented in Milano's Book Page 397
+"""
+struct VSCDCLine <: DCLine
+    name::String
+    available::Bool
+    connectionpoints::@NT(from::Bus, to::Bus)
+    rectifier_taplimits::@NT(min::Float64, max::Float64) #pu
+    rectifier_xrc::Float64
+    rectifier_firingangle::@NT(min::Float64, max::Float64) #radians
+    inverter_taplimits::@NT(min::Float64, max::Float64) #pu
+    inverter_xrc::Float64
+    inverter_firingangle::@NT(min::Float64, max::Float64) #radians
+end
