@@ -3,7 +3,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
     buscount = length(nodes)
     linecount = length(branches)
     num_bus = Dict{Int,Int}()
-    Theta = zeros(SVector{buscount});
+    Theta = zeros(Float64,buscount);
     for (ix,b) in enumerate(nodes)
         if b.number < -1
             error("buses must be numbered consecutively in the bus/node matrix")
@@ -11,10 +11,12 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         num_bus[b.number] = ix
         Theta[ix] = b.angle
     end
-    A = zeros(MMatrix{buscount,linecount});
-    inv_X = zeros(MMatrix{linecount,linecount});
+
+    A = zeros(Float64,buscount,linecount);
+    inv_X = zeros(Float64,linecount,linecount);
 
    #build incidence matrix
+   #incidence_matrix = A
 
     for (ix,b) in enumerate(branches)
 
