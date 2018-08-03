@@ -15,7 +15,7 @@ function download_data()
 
     if !isdir(DATA_FOLDER)
         mkdir(DATA_FOLDER)
-        temp_folder = tempname()
+        temp_folder = mktempdir()
         temp_data_zip = joinpath(temp_folder, "data.zip")
         download(ZIP_DATA_URL, temp_data_zip)
         InfoZIP.unzip(temp_data_zip, DATA_FOLDER)
