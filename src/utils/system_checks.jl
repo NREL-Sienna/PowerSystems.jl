@@ -124,23 +124,32 @@ end
 # TODO: Check busses have same base voltage
 
 # check for minimum timediff
-function minimumtimestep(timeseries::Array{DateTime})
+function minimumtimestep(timeseries::TimeArray)
     n = length(timeseries)-1
     ts = []
     for i in 1:n
-        push!(ts,timeseries[n+1]-timeseries[n])
+        push!(ts,timeseries.timestamp[n+1]-timeseries.timestamp[n])
     end
     return minimum(ts)
 end
 
-# check for consistent ramp limits
-function checkramp(generators::Array{T},timeseries::Array{DateTime}) where {T<:Generator}
-    t = minimumtimestep(timeseries)
+# convert generator ramp rates to a consistent denominator
+function convertramp(ramplimits::@NT(up::Float64, down::Float64), ts::TimePeriod)
+    hr = convert(typeof(ts),Dates.Minute(1))
+    scaling  = hr/ts
+    
+    ramplimits.up /= scaling
+    ramplimits.down /= scaling
+    return(ramplimits)
+end
+
+# check for valid ramp limits: currently not used
+function checkramp(generators::Array{T}) where {T<:Generator}
     for (ix,g) in enumerate(generators)
-        if g.ramplimits.up >= (g.realpowerlimits.max - g.realpowerlimits.min)/t
+        if g.ramplimits.up >= (g.realpowerlimits.max - g.realpowerlimits.min)
             warn("The generator ", g.name, " has a nonbinding ramp up limit.")
         end
-        if g.ramplimits.down >= (g.realpowerlimits.max - g.realpowerlimits.min)/t
+        if g.ramplimits.down >= (g.realpowerlimits.max - g.realpowerlimits.min)
             warn("The generator ", g.name, " has a nonbinding ramp down limit.")
         end
     end

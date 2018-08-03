@@ -22,8 +22,7 @@ struct PowerSystem{L <: ElectricLoad,
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
-        checkramp(generators,loads)
-
+        
         new{L, Nothing, Nothing,}(buses,
                         sources,
                         loads,
@@ -52,7 +51,6 @@ struct PowerSystem{L <: ElectricLoad,
         calculatethermallimits!(branches,basepower)
         checkanglelimits!(branches)
         #timeserieschecksources(sources.hydro, time_length)
-        checkramp(generators,loads)
 
         new{L, B, Nothing}(buses,
                 sources,
@@ -71,11 +69,12 @@ struct PowerSystem{L <: ElectricLoad,
                         storage::S,
                         basepower::Float64) where {G <: Generator, L <: ElectricLoad, S <: Array{<: Storage,1}}
 
+        checkramp(generators)
+        generators = convertramp(generators, minimumtimestep(loads[1].scalingfactor))
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
-        checkramp(generators,loads)
 
         new{L, Nothing, S}(buses,
                 sources,
@@ -100,12 +99,10 @@ struct PowerSystem{L <: ElectricLoad,
         calculatethermallimits!(branches,basepower)
         checkanglelimits!(branches)
 
-
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length): true
-        checkramp(generators,loads)
 
         new{L, B, S}(buses,
                 sources,

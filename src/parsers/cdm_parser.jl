@@ -93,7 +93,8 @@ function csv2ps_dict(file_path::String)
          ps_dict["branch"] = nothing
     end
     if haskey(data,"load")
-        ps_dict["load"] =  PowerSystems.load_csv_parser(data["load"],data["bus"],ps_dict["bus"])
+        ps_dict["load_zone"] =  PowerSystems.loadzone_csv_parser(data["bus"],ps_dict["bus"])
+        ps_dict["load"] =  PowerSystems.load_csv_parser(data["load"],data["bus"],ps_dict["bus"],ps_dict["load_zone"])
     else
         warn("Key Error : key 'load' not found in PowerSystems dictionary, 
           \n This will result in an ps_dict['load'] = nothing")
@@ -305,6 +306,7 @@ function load_csv_parser(load_raw,bus_raw,Buses,LoadZone)
     """
     Loads_dict = Dict{String,Any}()
     load_raw = read_datetime(load_raw)
+    load_zone = nothing
     for (k_b,b) in Buses
         for (k_l,l)  in LoadZone
             bus_numbers = [b.number for b in l["buses"] ]
@@ -339,13 +341,13 @@ function loadzone_csv_parser(bus_raw,Buses)
     Returns:
         A Nested Dictionary with keys as loadzone names and values as loadzone data dictionary with same keys as the device struct    
     """
-    LoadZone_dict = Dict{Int64,Any}
-    load_zones,b_count =rle(load_raw[:,11])
+    LoadZone_dict = Dict{Int64,Any}()
+    load_zones,b_count =rle(bus_raw[:,11])
     for (count,zone) in zip(b_count,load_zones)
-        b_numbers = [b[:,1] for b in 1:nrows(bus_raw) if b[:,11] == zone ]
+        b_numbers = [bus_raw[b,1] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone ]
         buses = [make_bus(Buses[i]) for i in keys(Buses) if Buses[i]["number"] in  b_numbers]
-        realpower = [b[:,5] for b in 1:nrows(bus_raw) if b[:,11] == zone]
-        reactivepower = [b[:,6] for b in 1:nrows(bus_raw) if b[:,11] == zone]
+        realpower = [bus_raw[b,5] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone]
+        reactivepower = [bus_raw[b,6] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone]
         LoadZone_dict[zone] = Dict{String,Any}("number" => zone, 
                                                         "name" => zone ,
                                                         "buses" => buses,
@@ -353,6 +355,7 @@ function loadzone_csv_parser(bus_raw,Buses)
                                                         "maxreactivepower" => sum(reactivepower) 
                                                         )
     end
+    return LoadZone_dict
 end
 
 # Remove missing values form dataframes 

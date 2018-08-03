@@ -12,7 +12,7 @@ struct TechHydro
     ramplimits::Union{@NT(up::Float64, down::Float64),Nothing} #MW/Hr
     timelimits::Union{@NT(up::Float64, down::Float64),Nothing} # Hrs
     function TechHydro(installedcapacity, realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
-
+        
         new(installedcapacity, realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
 
     end

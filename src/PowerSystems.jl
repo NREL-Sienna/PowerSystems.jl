@@ -71,6 +71,7 @@ using PowerModels
 using DataFrames
 using CSV
 using Memento
+using StatsBase
 
 Memento.config!(getlogger("PowerModels"), "error")
 
