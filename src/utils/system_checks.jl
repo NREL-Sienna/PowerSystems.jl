@@ -73,12 +73,12 @@ function checkanglelimits!(branches::Array{<:Branch,1})
             orderedlimits(l.anglelimits, "Angles")
 
             newanglelimits = l.anglelimits
-            flag = 0 
+            flag = 0
             (l.anglelimits.max >= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)) : true
             (l.anglelimits.max >= 90.0 && l.anglelimits.min >= -90.0) ? (flag,newanglelimits) =(1, @NT(max = 90.0, min = l.anglelimits.min)) : true
             (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = l.anglelimits.max, min = -90.0)) : true
             (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)): true
-            if flag == 1 
+            if flag == 1
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),deepcopy(l.rate),
@@ -89,7 +89,7 @@ function checkanglelimits!(branches::Array{<:Branch,1})
 end
 
 function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
-    for (ix,l) in enumerate(branches) 
+    for (ix,l) in enumerate(branches)
         if isa(l,Line)
             theta_max = max(abs(l.anglelimits.min), abs(l.anglelimits.max))
             g =  l.r / (l.r^2 + l.x^2)
@@ -106,11 +106,11 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
             m_vmax = max(fr_vmax, to_vmax)
             c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2*fr_vmax*to_vmax*cos(theta_max))
             new_rate = y_mag*m_vmax*c_max
-            end       
-            flag = 0            
+            end
+            flag = 0
             l.rate.from_to <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.from_to > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_from_to = l.rate.from_to
             l.rate.to_from <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.to_from > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_to_from = l.rate.to_from
-            if flag == 1 
+            if flag == 1
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),
@@ -133,7 +133,7 @@ function minimumtimestep(timeseries::Array{DateTime})
     return minimum(ts)
 end
 
-# check for consistent ramp limits
+#= check for consistent ramp limits
 function checkramp(generators::Array{T},timeseries::Array{DateTime}) where {T<:Generator}
     t = minimumtimestep(timeseries)
     for (ix,g) in enumerate(generators)
@@ -144,4 +144,4 @@ function checkramp(generators::Array{T},timeseries::Array{DateTime}) where {T<:G
             warn("The generator ", g.name, " has a nonbinding ramp down limit.")
         end
     end
-end
+end=#
