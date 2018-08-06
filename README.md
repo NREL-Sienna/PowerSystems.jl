@@ -25,9 +25,6 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 
 ## Installation
 
-This package is not yet registered. **Until it is, things may change. It is perfectly
-usable but should not be considered stable**.
-
 You can install it by typing
 
 ```julia
