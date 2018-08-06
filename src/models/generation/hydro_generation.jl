@@ -23,7 +23,7 @@ TechHydro(;installedcapacity = 0.0,
           realpowerlimits = @NT(min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
-          ramplimits = nothing,
+          ramplimits = @NT(up=0.0, down=0.0),
           timelimits = nothing
         ) = TechHydro(installedcapacity, realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
@@ -47,7 +47,7 @@ HydroFix(; name="init",
         status = false,
         bus = Bus(),
         tech = TechHydro(),
-        scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = HydroFix(name, status, bus, tech, scalingfactor)
+        scalingfactor = TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))) = HydroFix(name, status, bus, tech, scalingfactor)
 
 
 struct HydroCurtailment <: HydroGen
@@ -68,7 +68,7 @@ HydroCurtailment(; name = "init",
                 bus= Bus(),
                 tech = TechHydro(),
                 curtailcost = 0.0,
-                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = HydroCurtailment(name, status, bus, tech, curtailcost, scalingfactor)
+                scalingfactor = TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))) = HydroCurtailment(name, status, bus, tech, curtailcost, scalingfactor)
 
 
 struct HydroStorage <: HydroGen
@@ -87,4 +87,4 @@ HydroStorage(; name = "init",
                 tech = TechHydro(),
                 econ = EconHydro(),
                 storagecapacity = 0.0,
-                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = HydroStorage(name, status, bus, tech, econ, storagecapacity, scalingfactor)
+                scalingfactor = TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))) = HydroStorage(name, status, bus, tech, econ, storagecapacity, scalingfactor)
