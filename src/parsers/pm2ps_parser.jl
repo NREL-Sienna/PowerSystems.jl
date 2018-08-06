@@ -100,7 +100,7 @@ function make_load(d,bus)
                             "model" => "P",
                             "maxrealpower" => d["pd"],
                             "maxreactivepower" => d["qd"],
-                            "scalingfactor" => TimeSeries.TimeArray(Dates.today(), [1.0])
+                            "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))
                             )
     return load
 end
@@ -161,7 +161,7 @@ function make_hydro_gen(d,gen_name,bus)
                                                         "timelimits" => nothing),
                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                         "interruptioncost" => nothing),
-                            "scalingfactor" => TimeSeries.TimeArray(Dates.today(), [1.0])
+                            "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))
                             )
     return hydro
 end
@@ -175,7 +175,7 @@ function make_ren_gen(gen_name, d, bus)
                                                 "powerfactor" => 1),
                     "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                 "interruptioncost" => nothing),
-                    "scalingfactor" => TimeSeries.TimeArray(Dates.today(), [1.0])
+                    "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))
                     )
     return gen_re
 end
@@ -187,7 +187,13 @@ function make_thermal_gen(gen_name, d, bus)
         cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
         cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
     elseif d["model"] ==2
-        cost = Poly(d["cost"])
+        if d["ncost"] == 2
+            cost = x-> d["ncost"][1]*x + d["ncost"][2]
+        elseif d["ncost"] == 3
+            cost = x-> d["ncost"][1]*x^2 + d["ncost"][2]*x + d["ncost"][3]
+        elseif d["ncost"] == 4
+            cost = x-> d["ncost"][1]*x^3 + d["ncost"][2]*x^2 + d["ncost"][3]*x + d["ncost"][4]
+        end
     else
         cost = d["cost"]
     end
