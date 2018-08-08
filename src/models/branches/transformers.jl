@@ -2,11 +2,10 @@
 The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer.
 The model allocates the iron losses and magnetezing suceptance to the primary side
 """
-
 struct Transformer2W <: Branch
     name::String
     available::Bool
-    connectionpoints::(from::Bus, to::Bus)
+    connectionpoints::From_To_Bus
     r::Float64 #[pu]
     x::Float64 #[pu]
     primaryshunt::Float64 #[pu]
@@ -25,7 +24,7 @@ Transformer2W(; name = "init",
 struct TapTransformer <: Branch
     name::String
     available::Bool
-    connectionpoints::(from::Bus, to::Bus)
+    connectionpoints::From_To_Bus
     r::Float64 #[pu]
     x::Float64 #[pu]
     primaryshunt::Float64 #[pu]
@@ -61,7 +60,7 @@ Transformer3W(; name = "init",
 struct PhaseShiftingTransformer <: Branch
     name::String
     available::Bool
-    connectionpoints::(from::Bus, to::Bus)
+    connectionpoints::From_To_Bus
     r::Float64 #[pu]
     x::Float64 #[pu]
     primaryshunt::Float64 #[pu]

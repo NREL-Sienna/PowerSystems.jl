@@ -1,7 +1,7 @@
-const Max_Min = (max::Float64, min::Float64)
-const From_To_Float = (from::Float64, to::Float64)
-const From_To_Bus = (from::Bus, to::Bus)
-const FromTo_ToFrom_Float = (from_to::Float64, to_from::Float64)
+const Max_Min = NamedTuple{(:min, :max),Tuple{Float64,Float64}}
+const From_To_Float = NamedTuple{(:from, :to),Tuple{Float64,Float64}}
+const From_To_Bus =  NamedTuple{(:from, :to),Tuple{Bus,Bus}}
+const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from),Tuple{Float64,Float64}}
 
 
 struct Line <: Branch

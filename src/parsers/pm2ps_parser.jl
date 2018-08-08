@@ -292,7 +292,7 @@ function read_branch(data,Buses)
     if haskey(data,"branch")
         b_name = []
         for (d_key,d) in data["branch"]
-            haskey(d,"name") ? b_name = d["name"] :b_name = d_key
+            haskey(d,"name") ? b_name = d["name"] : b_name = d_key
             (bus_f,bus_t) = find_bus(Buses,d)
             if d["transformer"]  #TODO : 3W Transformer
                 Branches["Transformers"][b_name] = make_transformer(b_name, d, bus_f, bus_t)

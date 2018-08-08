@@ -1,4 +1,4 @@
-function orderedlimits(limits::Union{(max::Float64, min::Float64),NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing},limsname::String)
+function orderedlimits(limits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing},limsname::String)
     if isa(limits,Nothing)
         info("'$limsname' limits defined as nothing")
     else

@@ -1,5 +1,4 @@
 using PowerSystems
-using NamedTuples
 
 branches5 = [Line("1", true, (from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, (from=0.00356, to=0.00356), 400.0, (max = 360.0, min = -360.0)),
              Line("2", true, (from=nodes5[1],to=nodes5[4]), 0.00304, 0.0304, (from=0.00329, to=0.00329), 3960.0, (max = 75.0, min = -360.0)),

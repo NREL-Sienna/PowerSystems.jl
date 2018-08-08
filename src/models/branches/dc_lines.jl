@@ -4,12 +4,12 @@
 struct DCLine <: Branch
     name::String
     available::Bool
-    connectionpoints::(from::Bus, to::Bus)
+    connectionpoints::From_To_Bus
     realpowerlimits_from::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MW
     realpowerlimits_to::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MW
     reactivepowerlimits_from::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MVar
     reactivepowerlimits_to::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MVar
-    loss::(l0::Float64, l1::Float64)
+    loss::NamedTuple{(:l0, :l1),Tuple{Float64,Float64}}
 end
 
 DCLine(; name ="init",

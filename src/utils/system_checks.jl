@@ -77,7 +77,7 @@ function checkanglelimits!(branches::Array{<:Branch,1})
             (l.anglelimits.max >= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,(max = 90.0, min = -90.0)) : true
             (l.anglelimits.max >= 90.0 && l.anglelimits.min >= -90.0) ? (flag,newanglelimits) =(1, (max = 90.0, min = l.anglelimits.min)) : true
             (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,(max = l.anglelimits.max, min = -90.0)) : true
-            (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,(max = 90.0, min = -90.0)): true
+            (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,(max = 90.0, min = -90.0)) : true
             if flag == 1
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
