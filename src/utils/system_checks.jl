@@ -66,7 +66,7 @@ function pvbuscheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
     end
 end
 
-# function check_angle_limits(anglelimits::@NT(max::Float64, min::Float64))
+# function check_angle_limits(anglelimits::(max::Float64, min::Float64))
 function checkanglelimits!(branches::Array{<:Branch,1})
     for (ix,l) in enumerate(branches)
         if isa(l,Line)
@@ -74,10 +74,10 @@ function checkanglelimits!(branches::Array{<:Branch,1})
 
             newanglelimits = l.anglelimits
             flag = 0
-            (l.anglelimits.max >= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)) : true
-            (l.anglelimits.max >= 90.0 && l.anglelimits.min >= -90.0) ? (flag,newanglelimits) =(1, @NT(max = 90.0, min = l.anglelimits.min)) : true
-            (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = l.anglelimits.max, min = -90.0)) : true
-            (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)): true
+            (l.anglelimits.max >= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,(max = 90.0, min = -90.0)) : true
+            (l.anglelimits.max >= 90.0 && l.anglelimits.min >= -90.0) ? (flag,newanglelimits) =(1, (max = 90.0, min = l.anglelimits.min)) : true
+            (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,(max = l.anglelimits.max, min = -90.0)) : true
+            (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,(max = 90.0, min = -90.0)): true
             if flag == 1
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
@@ -114,7 +114,7 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),
-                                    @NT(from_to = rating_from_to, to_from = rating_to_from),deepcopy(l.anglelimits))
+                                    (from_to = rating_from_to, to_from = rating_to_from),deepcopy(l.anglelimits))
             end
         end
     end

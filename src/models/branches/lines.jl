@@ -1,7 +1,7 @@
-const Max_Min = @NT(max::Float64, min::Float64)
-const From_To_Float = @NT(from::Float64, to::Float64)
-const From_To_Bus = @NT(from::Bus, to::Bus)
-const FromTo_ToFrom_Float = @NT(from_to::Float64, to_from::Float64)
+const Max_Min = (max::Float64, min::Float64)
+const From_To_Float = (from::Float64, to::Float64)
+const From_To_Bus = (from::Bus, to::Bus)
+const FromTo_ToFrom_Float = (from_to::Float64, to_from::Float64)
 
 
 struct Line <: Branch

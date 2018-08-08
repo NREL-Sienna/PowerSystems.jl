@@ -4,7 +4,7 @@ end
 
 struct TechRenewable
     installedcapacity::Float64 # [MW]
-    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing} # [MVar]
+    reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVar]
     powerfactor::Union{Float64,Nothing} # [-1. -1]
 end
 

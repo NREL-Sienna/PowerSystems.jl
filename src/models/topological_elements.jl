@@ -6,7 +6,7 @@ struct Bus <: PowerSystemDevice
     bustype::Union{String,Nothing} # [PV, PQ, SF]
     angle::Union{Float64,Nothing} # [degrees]
     voltage::Union{Float64,Nothing} # [pu]
-    voltagelimits::Union{@NT(min::Float64, max::Float64),Nothing} # [pu]
+    voltagelimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [pu]
     basevoltage::Union{Float64,Nothing} # [kV]
 end
 
@@ -15,7 +15,7 @@ Bus(;   number = 0,
         bustype = nothing,
         angle = 0.0,
         voltage = 0.0,
-        voltagelimits = @NT(min = 0.0, max = 0.0),
+        voltagelimits = (min = 0.0, max = 0.0),
         basevoltage = nothing
     ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelimits, "Voltage"), basevoltage)
 

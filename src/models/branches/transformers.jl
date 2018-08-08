@@ -6,7 +6,7 @@ The model allocates the iron losses and magnetezing suceptance to the primary si
 struct Transformer2W <: Branch
     name::String
     available::Bool
-    connectionpoints::@NT(from::Bus, to::Bus)
+    connectionpoints::(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
     primaryshunt::Float64 #[pu]
@@ -15,7 +15,7 @@ end
 
 Transformer2W(; name = "init",
                 available = false,
-                connectionpoints = @NT(from = Bus(), to =Bus()),
+                connectionpoints = (from = Bus(), to =Bus()),
                 r = 0.0,
                 x = 0.0,
                 primaryshunt = 0.0,
@@ -25,7 +25,7 @@ Transformer2W(; name = "init",
 struct TapTransformer <: Branch
     name::String
     available::Bool
-    connectionpoints::@NT(from::Bus, to::Bus)
+    connectionpoints::(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
     primaryshunt::Float64 #[pu]
@@ -35,7 +35,7 @@ end
 
 TapTransformer(; name = "init",
                 available = false,
-                connectionpoints = @NT(from=Bus(), to=Bus()),
+                connectionpoints = (from=Bus(), to=Bus()),
                 r = 0.0,
                 x = 0.0,
                 primaryshunt = 0.0,
@@ -61,7 +61,7 @@ Transformer3W(; name = "init",
 struct PhaseShiftingTransformer <: Branch
     name::String
     available::Bool
-    connectionpoints::@NT(from::Bus, to::Bus)
+    connectionpoints::(from::Bus, to::Bus)
     r::Float64 #[pu]
     x::Float64 #[pu]
     primaryshunt::Float64 #[pu]
@@ -72,7 +72,7 @@ end
 
 PhaseShiftingTransformer(; name = "init",
                 available = false,
-                connectionpoints = @NT(from=Bus(), to=Bus()),
+                connectionpoints = (from=Bus(), to=Bus()),
                 r = 0.0,
                 x = 0.0,
                 primaryshunt=0.0,
