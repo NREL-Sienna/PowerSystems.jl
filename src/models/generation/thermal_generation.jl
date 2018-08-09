@@ -141,4 +141,4 @@ ThermalGenSeason(; name = "init",
                 bus = Bus(),
                 tech = TechThermal(),
                 econ = EconThermal(),
-                scalingfactor = TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
+                scalingfactor = TimeArray([round(now(),Hour(1)),round(now()+Hour(1),Hour(1))],ones(2))) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)

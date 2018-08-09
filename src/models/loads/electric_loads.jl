@@ -8,8 +8,8 @@ struct StaticLoad <: ElectricLoad
     scalingfactor::TimeSeries.TimeArray
 end
 
-StaticLoad(; name = "init", status = true, bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, scalingfactor=TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))) =
-StaticLoad(name, status, bus, model, maxrealpower, maxreactivepower, scalingfactor)
+StaticLoad(; name = "init", status = true, bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, 
+            scalingfactor=TimeArray([round(now(),Hour(1)),round(now()+Hour(1),Hour(1))],ones(2))) = StaticLoad(name, status, bus, model, maxrealpower, maxreactivepower, scalingfactor)
 
 struct InterruptibleLoad <: ElectricLoad
     name::String
@@ -22,5 +22,5 @@ struct InterruptibleLoad <: ElectricLoad
     scalingfactor::TimeSeries.TimeArray
 end
 
-InterruptibleLoad(; name = "init", status = true, bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, sheddingcost = 999, scalingfactor=TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))) =
-InterruptibleLoad(name, status, bus, model, maxrealpower, maxreactivepower, sheddingcost, scalingfactor)
+InterruptibleLoad(; name = "init", status = true, bus = Bus(), model = "0", maxrealpower = 0, maxreactivepower=0, sheddingcost = 999, 
+                scalingfactor =TimeArray([round(now(),Hour(1)),round(now()+Hour(1),Hour(1))],ones(2))) = InterruptibleLoad(name, status, bus, model, maxrealpower, maxreactivepower, sheddingcost, scalingfactor)
