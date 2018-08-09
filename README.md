@@ -2,21 +2,22 @@
 
 [![Build Status](https://travis-ci.org/NREL/PowerSystems.jl.svg?branch=master)](https://travis-ci.org/NREL/PowerSystems.jl)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/51qboor9s6x8w9tl?svg=true)](https://ci.appveyor.com/project/jdlara-berkeley/powersystems-jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/51qboor9s6x8w9tl/branch/master?svg=true)](https://ci.appveyor.com/project/jdlara-berkeley/powersystems-jl)
 
 [![codecov](https://codecov.io/gh/NREL/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL/PowerSystems.jl)
 
-The PowerSystems.jl package provides a rigorous data model using Julia structures to enable power systems analysis. In addition to stand alone system analysis, the PowerSystems.jl pakcage provides the foundational data container for the [PowerSimulations.jl](https://github.com/NREL/PowerSimulations.jl) package. PowerSystems enables data structures for a number of devices and relies on a limited number of data formats for parsing.
+The `PowerSystems.jl` package provides a rigorous data model using Julia structures to enable power systems analysis. In addition to stand-alone system analysis tools and model building, the `PowerSystems.jl` package is used as the foundational data container for the [PowerSimulations.jl](https://github.com/NREL/PowerSimulations.jl) package. `PowerSystems.jl` enables data structures for different devices and relies on a limited number of data file formats for parsing.
 
 ### Device data enabled in PowerSystems:
- - Generators (Thermal, Renewable, Synhronous Condensers, and Hydro)
- - Transmission (DC Lines, Lines, and Transformers)
+ - Generators (Thermal, Renewable, Synchronous Condensers, and Hydro)
+ - Transmission (Lines, and Transformers)
+ - Active Flow control devices (DC Lines and phase-shifters)
  - Topological elements (Buses, Areas)
  - Storage (Batteries)
- - Load (Static, curtailable, and shiftable)
+ - Load (Static, and curtailable)
  - Services (Reserves, inter-regional transfers)
  - Forecasts (Deterministic, scenario, stochastic)
- 
+
 ### Parsing capabilities in PowerSystems:
  - MATPOWER CaseFormat
  - PSS/E - PTI Format
@@ -24,13 +25,10 @@ The PowerSystems.jl package provides a rigorous data model using Julia structure
 
 ## Installation
 
-This package is not yet registered. **Until it is, things may change. It is perfectly
-usable but should not be considered stable**.
-
 You can install it by typing
 
 ```julia
-julia> Pkg.clone("https://github.com/NREL/PowerSystems.jl.git")
+julia> Pkg.add("PowerSystems")
 ```
 
 ## Usage
