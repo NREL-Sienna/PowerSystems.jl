@@ -56,7 +56,7 @@ TechThermal(; realpower = 0.0,
           realpowerlimits = @NT(min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
-          ramplimits = @NT(up=0.0, down=0.0),
+          ramplimits = @NT(up=10.0, down=10.0),
           timelimits = nothing
         ) = TechThermal(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
