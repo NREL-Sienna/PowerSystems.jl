@@ -1,0 +1,11 @@
+ERROR: LoadError: ArgumentError: Package InfoZIP not found in current path:
+- Run `Pkg.add("InfoZIP")` to install the InfoZIP package.
+
+Stacktrace:
+ [1] require(::Module, ::Symbol) at ./loading.jl:817
+ [2] include at ./boot.jl:317 [inlined]
+ [3] include_relative(::Module, ::String) at ./loading.jl:1038
+ [4] include(::Module, ::String) at ./sysimg.jl:29
+ [5] include(::String) at ./client.jl:398
+ [6] top-level scope at none:0
+in expression starting at /Users/jdlara/.julia/dev/PowerSystems/deps/build.jl:1
