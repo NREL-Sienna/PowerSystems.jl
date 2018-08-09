@@ -14,7 +14,6 @@ const DATA_FOLDER = Pkg.dir("PowerSystems/data")
 function download_data()
 
     if !isdir(DATA_FOLDER)
-        # mkpath(DATA_FOLDER)
         temp_folder = tempname()
         mkpath(temp_folder)
         temp_data_zip = joinpath(temp_folder, "data-v0.1.0.zip")
