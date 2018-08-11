@@ -17,29 +17,29 @@ end
 
 function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
               r::Float64, x::Float64, b::From_To_Float, rate::FromTo_ToFrom_Float, anglelimits::Float64)
-        anglelimits = Max_Min(anglelimits, anglelimits)
+        anglelimits = (min = -anglelimits, max = anglelimits)
         return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
 
 function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
               r::Float64, x::Float64, b::From_To_Float, rate::Float64, anglelimits::Max_Min)
-        rate =  FromTo_ToFrom_Float(rate, rate)
+        rate =  (from_to = rate, to_from = rate)
         return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
 
 function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
               r::Float64, x::Float64, b::From_To_Float, rate::Float64, anglelimits::Float64)
-        rate =  FromTo_ToFrom_Float(rate, rate)
-        anglelimits = Max_Min(anglelimits, anglelimits)
+        rate =  (from_to = rate, to_from = rate)
+        anglelimits = (min = -anglelimits, max = anglelimits)
         return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
 
 Line(; name = "init",
        available = false,
-       connectionpoints = From_To_Bus(Bus(), Bus()),
+       connectionpoints = (from = Bus(), to = Bus()),
        r = 0.0,
        x = 0.0,
-       b = From_To_Float(0.0, 0.0),
-       rate = FromTo_ToFrom_Float(0.0, 0.0),
-       anglelimits = Max_Min(90.0, -90.0)
+       b = (from=0.0, to =0.0),
+       rate = (from_to=0.0, to_from=0.0),
+       anglelimits = (min = -90, max = 90)
     ) = Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
