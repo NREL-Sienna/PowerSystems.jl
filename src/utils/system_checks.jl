@@ -140,16 +140,19 @@ function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
 end
 
 # convert generator ramp rates to a consistent denominator
-function convertramp(ramplimits::@NT(up::Float64, down::Float64), ts::TimePeriod)
-    hr = convert(typeof(ts),Dates.Minute(1))
-    scaling  = hr/ts
-
-    up = ramplimits.up/scaling
-    down = ramplimits.down/scaling
-    R = @NT(up = up, down = down)
-
-    return(R)
+function convertramp(ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}, ts::TimePeriod)
+    if isa(ramplimits,NamedTuple)
+        hr = convert(typeof(ts),Dates.Minute(1))
+        scaling  = hr/ts
+        up = ramplimits.up/scaling
+        down = ramplimits.down/scaling
+        R = @NT(up = up, down = down)
+        return R
+    else
+        return ramplimits
+    end
 end
+
 
 # check for valid ramp limits
 function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
@@ -162,11 +165,15 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                                         R,deepcopy(g.tech.timelimits)),
                                             deepcopy(g.econ)
                                             )
-            if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                warn("The generator ", g.name, " has a nonbinding ramp up limit.")
-            end
-            if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+            if isa(g.tech.ramplimits, NamedTuple)
+                if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                end
+                if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                end
+            else
+                warn("Ramp defined as nothing for ", g.name)
             end
         elseif isa(g,ThermalGenSeason)
             R = convertramp(g.tech.ramplimits,ts)
@@ -177,11 +184,15 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             deepcopy(g.econ),
                                             deepcopy(g.scalingfactor)
                                             )
-            if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                warn("The generator ", g.name, " has a nonbinding ramp up limit.")
-            end
-            if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+            if isa(g.tech.ramplimits, NamedTuple)
+                if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                end
+                if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                end
+            else
+                warn("Ramp defined as nothing for ", g.name)
             end
         elseif isa(g,HydroCurtailment)
             R = convertramp(g.tech.ramplimits,ts)
@@ -192,11 +203,15 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             deepcopy(g.econ.curtailpenalty),
                                             deepcopy(g.scalingfactor)
                                             )
-            if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                warn("The generator ", g.name, " has a nonbinding ramp up limit.")
-            end
-            if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+            if isa(g.tech.ramplimits, NamedTuple)
+                if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                end
+                if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                end
+            else
+                warn("Ramp defined as nothing for ", g.name)
             end
         elseif isa(g,HydroStorage)
             R = convertramp(g.tech.ramplimits,ts)
@@ -208,11 +223,15 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             deepcopy(g.storagecapacity),
                                             deepcopy(g.scalingfactor)
                                             )
-            if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                warn("The generator ", g.name, " has a nonbinding ramp up limit.")
-            end
-            if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+            if isa(g.tech.ramplimits, NamedTuple)
+                if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                end
+                if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                end
+            else
+                warn("Ramp defined as nothing for ", g.name)
             end
         end
     end

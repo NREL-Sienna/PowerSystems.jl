@@ -56,7 +56,7 @@ TechThermal(; realpower = 0.0,
           realpowerlimits = @NT(min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
-          ramplimits = @NT(up=10.0, down=10.0),
+          ramplimits = nothing,
           timelimits = nothing
         ) = TechThermal(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
@@ -141,4 +141,4 @@ ThermalGenSeason(; name = "init",
                 bus = Bus(),
                 tech = TechThermal(),
                 econ = EconThermal(),
-                scalingfactor = TimeArray([round(now(),Hour(1)),round(now()+Hour(1),Hour(1))],ones(2))) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
+                scalingfactor = TimeArray(today(),ones(1))) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
