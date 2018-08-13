@@ -124,24 +124,117 @@ end
 # TODO: Check busses have same base voltage
 
 # check for minimum timediff
-function minimumtimestep(timeseries::Array{DateTime})
-    n = length(timeseries)-1
-    ts = []
-    for i in 1:n
-        push!(ts,timeseries[n+1]-timeseries[n])
+function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
+    if length(loads[1].scalingfactor) > 1 
+        timeseries = loads[1].scalingfactor
+        n = length(timeseries)-1
+        ts = []
+        for i in 1:n
+            push!(ts,timeseries.timestamp[n+1]-timeseries.timestamp[n])
+        end
+        return minimum(ts)
+    else
+        ts =Dates.Minute(1)
+        return ts
     end
-    return minimum(ts)
 end
 
-#= check for consistent ramp limits
-function checkramp(generators::Array{T},timeseries::Array{DateTime}) where {T<:Generator}
-    t = minimumtimestep(timeseries)
+# convert generator ramp rates to a consistent denominator
+function convertramp(ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}, ts::TimePeriod)
+    if isa(ramplimits,NamedTuple)
+        hr = convert(typeof(ts),Dates.Minute(1))
+        scaling  = hr/ts
+        up = ramplimits.up/scaling
+        down = ramplimits.down/scaling
+        R = @NT(up = up, down = down)
+        return R
+    else
+        return ramplimits
+    end
+end
+
+
+# check for valid ramp limits
+function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
     for (ix,g) in enumerate(generators)
-        if g.ramplimits.up >= (g.realpowerlimits.max - g.realpowerlimits.min)/t
-            warn("The generator ", g.name, " has a nonbinding ramp up limit.")
-        end
-        if g.ramplimits.down >= (g.realpowerlimits.max - g.realpowerlimits.min)/t
-            warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+        if isa(g,ThermalDispatch)
+            R = convertramp(g.tech.ramplimits,ts)
+            generators[ix] = ThermalDispatch(deepcopy(g.name),deepcopy(g.available),deepcopy(g.bus),
+                                            TechThermal(deepcopy(g.tech.realpower),deepcopy(g.tech.realpowerlimits),
+                                                        deepcopy(g.tech.reactivepower),deepcopy(g.tech.reactivepowerlimits),
+                                                        R,deepcopy(g.tech.timelimits)),
+                                            deepcopy(g.econ)
+                                            )
+            if isa(g.tech.ramplimits, NamedTuple)
+                if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                end
+                if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                end
+            else
+                warn("Ramp defined as nothing for ", g.name)
+            end
+        elseif isa(g,ThermalGenSeason)
+            R = convertramp(g.tech.ramplimits,ts)
+            generators[ix] = ThermalGenSeason(deepcopy(g.name),deepcopy(g.available),deepcopy(g.bus),
+                                            TechThermal(deepcopy(g.tech.realpower),deepcopy(g.tech.realpowerlimits),
+                                                        deepcopy(g.tech.reactivepower),deepcopy(g.tech.reactivepowerlimits),
+                                                        R,deepcopy(g.tech.timelimits)),
+                                            deepcopy(g.econ),
+                                            deepcopy(g.scalingfactor)
+                                            )
+            if isa(g.tech.ramplimits, NamedTuple)
+                if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                end
+                if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                end
+            else
+                warn("Ramp defined as nothing for ", g.name)
+            end
+        elseif isa(g,HydroCurtailment)
+            R = convertramp(g.tech.ramplimits,ts)
+            generators[ix] = HydroCurtailment(deepcopy(g.name),deepcopy(g.available),deepcopy(g.bus),
+                                            TechHydro(deepcopy(g.tech.installedcapacity),deepcopy(g.tech.realpower),deepcopy(g.tech.realpowerlimits),
+                                                    deepcopy(g.tech.reactivepower),deepcopy(g.tech.reactivepowerlimits),
+                                                    R,deepcopy(g.tech.timelimits)),
+                                            deepcopy(g.econ.curtailpenalty),
+                                            deepcopy(g.scalingfactor)
+                                            )
+            if isa(g.tech.ramplimits, NamedTuple)
+                if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                end
+                if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                end
+            else
+                warn("Ramp defined as nothing for ", g.name)
+            end
+        elseif isa(g,HydroStorage)
+            R = convertramp(g.tech.ramplimits,ts)
+            generators[ix] = HydroStorage(deepcopy(g.name),deepcopy(g.available),deepcopy(g.bus),
+                                            TechHydro(deepcopy(g.tech.installedcapacity),deepcopy(g.tech.realpower),deepcopy(g.tech.realpowerlimits),
+                                                    deepcopy(g.tech.reactivepower),deepcopy(g.tech.reactivepowerlimits),
+                                                    R,deepcopy(g.tech.timelimits)),
+                                            deepcopy(g.econ),
+                                            deepcopy(g.storagecapacity),
+                                            deepcopy(g.scalingfactor)
+                                            )
+            if isa(g.tech.ramplimits, NamedTuple)
+                if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                end
+                if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
+                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                end
+            else
+                warn("Ramp defined as nothing for ", g.name)
+            end
         end
     end
-end=#
+    return generators
+end
+

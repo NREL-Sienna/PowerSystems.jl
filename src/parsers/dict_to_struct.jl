@@ -20,7 +20,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     haskey(data, "branch") ? Branches = branch_dict_parser(data["branch"],Branches) : warn("Key Error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
     haskey(data, "load") ? Loads = load_dict_parser(data["load"]) : warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
     haskey(data, "loadzone") ? LoadZones = loadzone_dict_parser(data["loadzone"]) : warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
-    haskey(data, "shunt") ? Shunts = shut_dict_parser(data["shunt"]) : warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
+    haskey(data, "shunt") ? Shunts = shunt_dict_parser(data["shunt"]) : warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
     haskey(data, "dcline") ? Branches = dclines_dict_parser(data["dcline"],Branches) : warn("Key Error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
     return sort!(Buses, by = x -> x.number), Generators, Storage,  sort!(Branches, by = x -> x.connectionpoints.from.number), Loads, LoadZones, Shunts
 end
@@ -304,7 +304,7 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
     return LoadZs
 end
 
-function shut_dict_parser(dict::Dict{String,Any})
+function shunt_dict_parser(dict::Dict{String,Any})
     Shunts = Array{FixedAdmittance,1}(0)
     for (s_key,s_dict) in dict
         push!(Shunts,FixedAdmittance(s_dict["name"],

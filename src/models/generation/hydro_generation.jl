@@ -12,7 +12,7 @@ struct TechHydro
     ramplimits::Union{@NT(up::Float64, down::Float64),Nothing} #MW/Hr
     timelimits::Union{@NT(up::Float64, down::Float64),Nothing} # Hrs
     function TechHydro(installedcapacity, realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
-
+        
         new(installedcapacity, realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
 
     end
@@ -47,7 +47,7 @@ HydroFix(; name="init",
         status = false,
         bus = Bus(),
         tech = TechHydro(),
-        scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = HydroFix(name, status, bus, tech, scalingfactor)
+        scalingfactor = TimeArray(today(),ones(1))) = HydroFix(name, status, bus, tech, scalingfactor)
 
 
 struct HydroCurtailment <: HydroGen
@@ -68,7 +68,7 @@ HydroCurtailment(; name = "init",
                 bus= Bus(),
                 tech = TechHydro(),
                 curtailcost = 0.0,
-                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = HydroCurtailment(name, status, bus, tech, curtailcost, scalingfactor)
+                scalingfactor = TimeArray(today(),ones(1))) = HydroCurtailment(name, status, bus, tech, curtailcost, scalingfactor)
 
 
 struct HydroStorage <: HydroGen
@@ -87,4 +87,4 @@ HydroStorage(; name = "init",
                 tech = TechHydro(),
                 econ = EconHydro(),
                 storagecapacity = 0.0,
-                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = HydroStorage(name, status, bus, tech, econ, storagecapacity, scalingfactor)
+                scalingfactor = TimeArray(today(),ones(1))) = HydroStorage(name, status, bus, tech, econ, storagecapacity, scalingfactor)

@@ -113,8 +113,8 @@ end
 ThermalDispatch(; name = "init",
                 status = false,
                 bus = Bus(),
-                tech = nothing,
-                econ = nothing) = ThermalDispatch(name, status, bus, tech, econ)
+                tech = TechThermal(),
+                econ = EconThermal()) = ThermalDispatch(name, status, bus, tech, econ)
 
 
 
@@ -139,6 +139,6 @@ end
 ThermalGenSeason(; name = "init",
                 status = false,
                 bus = Bus(),
-                tech = nothing,
-                econ = nothing,
-                scalingfactor = TimeSeries.TimeArray(today(), [1.0])) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
+                tech = TechThermal(),
+                econ = EconThermal(),
+                scalingfactor = TimeArray(today(),ones(1))) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
