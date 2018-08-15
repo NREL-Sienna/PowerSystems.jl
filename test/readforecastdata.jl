@@ -3,8 +3,7 @@ data = PowerSystems.parsestandardfiles(abspath(joinpath(dirname(Base.find_packag
 
 ps_dict = PowerSystems.pm2ps_dict(data)
 
-time_series = PowerSystems.read_data_files(joinpath(PowerSystems.pkgdir("PowerSystems"),"/data/forecasts/RTS_GMLC_forecasts"))
-
+time_series = PowerSystems.read_data_files(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/forecasts/RTS_GMLC_forecasts")))
 ps_dict = PowerSystems.add_realtime_ts(ps_dict,time_series)
 
 Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts  = PowerSystems.ps_dict2ps_struct(ps_dict)
