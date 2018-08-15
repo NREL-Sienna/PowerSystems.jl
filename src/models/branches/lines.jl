@@ -1,4 +1,4 @@
-const Max_Min = NamedTuple{(:min, :max),Tuple{Float64,Float64}}
+const Min_Max = NamedTuple{(:min, :max),Tuple{Float64,Float64}}
 const From_To_Float = NamedTuple{(:from, :to),Tuple{Float64,Float64}}
 const From_To_Bus =  NamedTuple{(:from, :to),Tuple{Bus,Bus}}
 const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from),Tuple{Float64,Float64}}
@@ -12,7 +12,7 @@ struct Line <: Branch
     x::Float64 #[pu]
     b::From_To_Float # [pu]
     rate::FromTo_ToFrom_Float #MW
-    anglelimits::Max_Min #Degrees
+    anglelimits::Min_Max #Degrees
 end
 
 function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
@@ -22,7 +22,7 @@ function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
 end
 
 function Line(name::String, available::Bool, connectionpoints::From_To_Bus,
-              r::Float64, x::Float64, b::From_To_Float, rate::Float64, anglelimits::Max_Min)
+              r::Float64, x::Float64, b::From_To_Float, rate::Float64, anglelimits::Min_Max)
         rate =  (from_to = rate, to_from = rate)
         return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
