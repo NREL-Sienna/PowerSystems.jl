@@ -280,7 +280,7 @@ function make_lines(b_name, d, bus_f, bus_t)
                             "x" => d["br_x"],
                             "b" => (from=d["b_fr"],to=d["b_to"]),
                             "rate" =>  d["rate_a"],
-                            "anglelimits" => (max =rad2deg(d["angmax"]),min=rad2deg(d["angmin"]))
+                            "anglelimits" => (min=rad2deg(d["angmin"]),max =rad2deg(d["angmax"]))
                             )
     return line
 end
