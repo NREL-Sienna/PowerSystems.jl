@@ -1,9 +1,9 @@
 
-data = PowerSystems.parsestandardfiles(Pkg.dir("PowerSystems/data/matpower/RTS_GMLC.m"))
+data = PowerSystems.parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower/RTS_GMLC.m")))
 
 ps_dict = PowerSystems.pm2ps_dict(data)
 
-time_series = PowerSystems.read_data_files(Pkg.dir("PowerSystems/data/forecasts/RTS_GMLC_forecasts"))
+time_series = PowerSystems.read_data_files(joinpath(PowerSystems.pkgdir("PowerSystems"),"/data/forecasts/RTS_GMLC_forecasts"))
 
 ps_dict = PowerSystems.add_realtime_ts(ps_dict,time_series)
 
