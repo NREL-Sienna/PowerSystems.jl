@@ -140,13 +140,13 @@ function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
 end
 
 # convert generator ramp rates to a consistent denominator
-function convertramp(ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}, ts::TimePeriod)
+function convertramp(ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing}, ts::TimePeriod)
     if isa(ramplimits,NamedTuple)
         hr = convert(typeof(ts),Dates.Minute(1))
         scaling  = hr/ts
         up = ramplimits.up/scaling
         down = ramplimits.down/scaling
-        R = @NT(up = up, down = down)
+        R = (up = up, down = down)
         return R
     else
         return ramplimits
