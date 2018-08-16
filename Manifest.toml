@@ -104,7 +104,7 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 [[InfoZip]]
 git-tree-sha1 = "6b73ec3abb6b67cd3c49a00f7b6d422a035582c8"
 repo-rev = "master"
-repo-url = "https://github.com/kdheepak/InfoZIP.jl"
+repo-url = "https://github.com/kdheepak/InfoZip.jl"
 uuid = "4fda2d3c-a181-11e8-2fca-c3b1916ac14e"
 version = "0.0.10"
 
@@ -198,17 +198,11 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PowerModels]]
 deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "MathOptInterface", "Memento"]
-git-tree-sha1 = "206b32752912c30c368f592087d5a33a111fef06"
+git-tree-sha1 = "bbc7e216931efad5b2c2c5cdbd5f0baa37bc8b50"
 repo-rev = "moi-julia-v0.7"
 repo-url = "https://github.com/kdheepak/PowerModels.jl"
 uuid = "23a24fe6-a169-11e8-146b-9d23c58f08d1"
-version = "0.8.3"
-
-[[PowerSystems]]
-deps = ["CSV", "Compat", "DataFrames", "Memento", "Pkg", "PowerModels", "PowerSystems", "StatsBase", "TimeSeries"]
-path = "/Users/dkrishna/.julia/dev/PowerSystems"
-uuid = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
-version = "0.1.0"
+version = "0.0.0"
 
 [[Printf]]
 deps = ["Unicode"]
