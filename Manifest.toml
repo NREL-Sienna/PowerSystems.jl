@@ -101,6 +101,13 @@ version = "0.7.5"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
+[[InfoZip]]
+git-tree-sha1 = "6b73ec3abb6b67cd3c49a00f7b6d422a035582c8"
+repo-rev = "master"
+repo-url = "https://github.com/kdheepak/InfoZIP.jl"
+uuid = "4fda2d3c-a181-11e8-2fca-c3b1916ac14e"
+version = "0.0.10"
+
 [[InfrastructureModels]]
 deps = ["Compat", "JuMP", "Memento"]
 git-tree-sha1 = "c044aad130379c10b5d03376b01ea5f4c842828f"

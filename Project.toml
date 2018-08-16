@@ -1,12 +1,13 @@
-authors = ["Dheepak Krishnamurthy"]
 name = "PowerSystems"
 uuid = "c512b964-a17e-11e8-344c-11d7c2eac237"
+authors = ["Dheepak Krishnamurthy"]
 version = "0.1.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+InfoZip = "4fda2d3c-a181-11e8-2fca-c3b1916ac14e"
 Memento = "f28f55f0-a522-5efc-85c2-fe41dfb9b2d9"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 PowerModels = "23a24fe6-a169-11e8-146b-9d23c58f08d1"
