@@ -146,6 +146,12 @@ git-tree-sha1 = "a3df6da48fcbdb56d7571b0c6f950b02dcea1754"
 uuid = "fdba3010-5040-5b88-9595-932c9decdf73"
 version = "0.7.2"
 
+[[Memento]]
+deps = ["Compat", "JSON", "Nullables", "Syslogs"]
+git-tree-sha1 = "fb72f98eb7752f00e32f593c74f2e566ebf7061b"
+uuid = "f28f55f0-a522-5efc-85c2-fe41dfb9b2d9"
+version = "0.9.0"
+
 [[Missings]]
 deps = ["Compat"]
 git-tree-sha1 = "866fb034899be6055dcb6cb1a70fbda379bb0b55"
@@ -160,6 +166,12 @@ deps = ["Compat"]
 git-tree-sha1 = "ce3b85e484a5d4c71dd5316215069311135fa9f2"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "0.3.2"
+
+[[Nullables]]
+deps = ["Compat", "Pkg"]
+git-tree-sha1 = "7777136d2169f07b9674a9d8dbd550d99fd250b8"
+uuid = "4d1e1d77-625e-5b40-9113-a560ec7a8ecd"
+version = "0.0.7"
 
 [[Pkg]]
 deps = ["Dates", "LibGit2", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
@@ -247,6 +259,12 @@ deps = ["DataStructures", "LinearAlgebra", "Missings", "Printf", "Random", "Sort
 git-tree-sha1 = "723193a13e8078cec6dcd0b8fe245c8bfd81690e"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.25.0"
+
+[[Syslogs]]
+deps = ["Compat", "Nullables"]
+git-tree-sha1 = "d3e512a044cc8873c741d88758f8e1888c7c47d3"
+uuid = "cea106d9-e007-5e6c-ad93-58fe2094e9c4"
+version = "0.2.0"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
