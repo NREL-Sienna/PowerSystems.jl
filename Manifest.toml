@@ -173,6 +173,12 @@ uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 deps = ["Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
+[[RecipesBase]]
+deps = ["Pkg", "Random", "Test"]
+git-tree-sha1 = "b18c3d875ad6805e3db59c4e81f206f04df71d66"
+uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+version = "0.5.0"
+
 [[Reexport]]
 deps = ["Pkg"]
 git-tree-sha1 = "7b1d07f411bc8ddb7977ec7f377b97b158514fe0"
@@ -233,6 +239,12 @@ version = "0.25.0"
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[[TimeSeries]]
+deps = ["RecipesBase"]
+git-tree-sha1 = "be34845fcf07f25c1f383a80347a90e65ad04807"
+uuid = "9e3dc215-6440-5c97-bce1-76c03772f85e"
+version = "0.12.0"
 
 [[TranscodingStreams]]
 deps = ["DelimitedFiles", "Pkg", "Random", "Test"]
