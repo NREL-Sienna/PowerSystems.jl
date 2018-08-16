@@ -3,9 +3,9 @@ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[BinDeps]]
 deps = ["Compat", "Libdl", "SHA", "URIParser"]
-git-tree-sha1 = "a6e1f6b5818ef909cda3a7011dd97c3dac6dc369"
+git-tree-sha1 = "12093ca6cdd0ee547c39b1870e0c9c3f154d9ca9"
 uuid = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
-version = "0.8.9"
+version = "0.8.10"
 
 [[BinaryProvider]]
 deps = ["Libdl", "Pkg", "SHA", "Test"]
@@ -101,11 +101,6 @@ version = "0.7.5"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
-[[InfoZIP]]
-git-tree-sha1 = "3447459e855132e06f1df57b9b29e2fba446fc48"
-uuid = "f4508453-b816-52ab-a864-26fc7f6211fc"
-version = "0.1.6"
-
 [[InfrastructureModels]]
 deps = ["Compat", "JuMP", "Memento"]
 git-tree-sha1 = "c044aad130379c10b5d03376b01ea5f4c842828f"
@@ -151,6 +146,12 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
+[[MathOptInterface]]
+deps = ["Compat", "Pkg", "Unicode"]
+git-tree-sha1 = "6bb3530fb9ed16a2f9324d6de54ec5ab9e5822e0"
+uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
+version = "0.5.1"
+
 [[MathProgBase]]
 deps = ["Compat"]
 git-tree-sha1 = "a3df6da48fcbdb56d7571b0c6f950b02dcea1754"
@@ -189,35 +190,18 @@ deps = ["Dates", "LibGit2", "Markdown", "Printf", "REPL", "Random", "SHA", "UUID
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PowerModels]]
-deps = ["JuMP"]
-git-tree-sha1 = "c46a67a6c34afd5a11a84072e3b956fbe6837522"
+deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "MathOptInterface", "Memento"]
+git-tree-sha1 = "206b32752912c30c368f592087d5a33a111fef06"
 repo-rev = "moi-julia-v0.7"
 repo-url = "https://github.com/kdheepak/PowerModels.jl"
 uuid = "23a24fe6-a169-11e8-146b-9d23c58f08d1"
 version = "0.8.3"
-[[PowerModels]]
-deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "MathProgBase", "Memento"]
-git-tree-sha1 = "b233abac9ff568a4f36ea2c816ccd23d00ab82da"
-uuid = "c36e90e8-916a-50a6-bd94-075b64ef4655"
-version = "0.8.2"
 
 [[PowerSystems]]
+deps = ["CSV", "Compat", "DataFrames", "Memento", "Pkg", "PowerModels", "PowerSystems", "StatsBase", "TimeSeries"]
 path = "/Users/dkrishna/.julia/dev/PowerSystems"
 uuid = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
-version = "0.1.0+"
-
-    [PowerSystems.deps]
-    CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-    Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
-    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-    Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-    InfoZIP = "f4508453-b816-52ab-a864-26fc7f6211fc"
-    LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-    Memento = "f28f55f0-a522-5efc-85c2-fe41dfb9b2d9"
-    PowerModels = "c36e90e8-916a-50a6-bd94-075b64ef4655"
-    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-    TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
+version = "0.1.0"
 
 [[Printf]]
 deps = ["Unicode"]
