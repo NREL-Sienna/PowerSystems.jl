@@ -101,6 +101,17 @@ version = "0.7.5"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
+[[InfoZIP]]
+git-tree-sha1 = "3447459e855132e06f1df57b9b29e2fba446fc48"
+uuid = "f4508453-b816-52ab-a864-26fc7f6211fc"
+version = "0.1.6"
+
+[[InfrastructureModels]]
+deps = ["Compat", "JuMP", "Memento"]
+git-tree-sha1 = "c044aad130379c10b5d03376b01ea5f4c842828f"
+uuid = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
+version = "0.0.8"
+
 [[InteractiveUtils]]
 deps = ["LinearAlgebra", "Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
@@ -184,6 +195,29 @@ repo-rev = "moi-julia-v0.7"
 repo-url = "https://github.com/kdheepak/PowerModels.jl"
 uuid = "23a24fe6-a169-11e8-146b-9d23c58f08d1"
 version = "0.8.3"
+[[PowerModels]]
+deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "MathProgBase", "Memento"]
+git-tree-sha1 = "b233abac9ff568a4f36ea2c816ccd23d00ab82da"
+uuid = "c36e90e8-916a-50a6-bd94-075b64ef4655"
+version = "0.8.2"
+
+[[PowerSystems]]
+path = "/Users/dkrishna/.julia/dev/PowerSystems"
+uuid = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
+version = "0.1.0+"
+
+    [PowerSystems.deps]
+    CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+    Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+    InfoZIP = "f4508453-b816-52ab-a864-26fc7f6211fc"
+    LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+    Memento = "f28f55f0-a522-5efc-85c2-fe41dfb9b2d9"
+    PowerModels = "c36e90e8-916a-50a6-bd94-075b64ef4655"
+    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+    TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [[Printf]]
 deps = ["Unicode"]
