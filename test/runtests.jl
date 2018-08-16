@@ -1,14 +1,9 @@
-Pkg.build("PowerSystems")
-
 using PowerSystems
-using Base.Test
-using CSV
-using DataFrames
+using Test
 
 # Testing Topological components of the schema
 
 
-tic()
 println("Read Data in *.jl files")
 @time @test include("readnetworkdata.jl")
 println("Test all the constructors")
@@ -16,7 +11,7 @@ println("Test all the constructors")
 println("Test PowerSystem constructor")
 @test include("powersystemconstructors.jl")
 println("Reading forecast data ")
-@time @test include("readforecastdata.jl")
+#@time @test include("readforecastdata.jl")
 println("Testing Check Function s")
 @time @test include("checks_testing.jl")
 
@@ -28,4 +23,3 @@ println("Read Parsing code")
 #include("../data/data_5bus.jl");
 #@assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
 
-toc()

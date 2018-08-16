@@ -5,11 +5,11 @@ end
 
 """
     TechThermal(realpower::Float64,
-            realpowerlimits::@NT(min::Float64, max::Float64),
+            realpowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}},
             reactivepower::Union{Float64,Nothing},
-            reactivepowerlimits::Union{@NT(min::Float64,max::Float64),Nothing},
-            ramplimits::Union{@NT(up::Float64, down::Float64),Nothing},
-            timelimits::Union{@NT(min::Float64, max::Float64),Nothing})
+            reactivepowerlimits::Union{(min::Float64,max::Float64),Nothing},
+            ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing},
+            timelimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing})
 
 Data Structure for the economical parameters of thermal generation technologies.
     The data structure can be called calling all the fields directly or using named fields.
@@ -19,7 +19,7 @@ Data Structure for the economical parameters of thermal generation technologies.
 
     ```jldoctest
 
-    julia> Tech = TechThermal(realpower = 100.0, realpowerlimits = @NT(min = 50.0, max = 200.0))
+    julia> Tech = TechThermal(realpower = 100.0, realpowerlimits = (min = 50.0, max = 200.0))
     WARNING: Limits defined as nothing
     Tech Gen:
         Real Power: 100.0
@@ -37,11 +37,11 @@ Data Structure for the economical parameters of thermal generation technologies.
 """
 struct TechThermal
     realpower::Float64 # [MW]
-    realpowerlimits::@NT(min::Float64, max::Float64) # [MW]
+    realpowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
     reactivepower::Union{Float64,Nothing} # [MVAr]
-    reactivepowerlimits::Union{@NT(min::Float64, max::Float64),Nothing} # [MVAr]
-    ramplimits::Union{@NT(up::Float64, down::Float64),Nothing} #MW/Hr
-    timelimits::Union{@NT(up::Float64, down::Float64),Nothing} #Hr
+    reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVAr]
+    ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} #MW/Hr
+    timelimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} #Hr
     function TechThermal(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
         new(realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
@@ -53,7 +53,7 @@ end
 # Update to named tuples when Julia 0.7 becomes available
 
 TechThermal(; realpower = 0.0,
-          realpowerlimits = @NT(min = 0.0, max = 0.0),
+          realpowerlimits = (min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
           ramplimits = nothing,

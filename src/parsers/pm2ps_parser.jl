@@ -18,7 +18,7 @@ function pm2ps_dict(data::Dict{String,Any})
     Branches= read_branch(data,ps_dict["bus"])
     Shunts = read_shunt(data,ps_dict["bus"])
     DCLines= read_dcline(data,ps_dict["bus"])
-   
+
     ps_dict["load"] = Loads
     !isa(LoadZones,Nothing) ? ps_dict["loadzone"] =  LoadZones : warn("There are no Loadzones data in this file")
     !isa(Generators,Nothing) ? ps_dict["gen"] = Generators : error("There are no Generator in this file")
@@ -75,10 +75,10 @@ function make_bus(bus_name, d, bus_types)
                             "bustype" => bus_types[d["bus_type"]],
                             "angle" => 0, # NOTE: angle 0, tuple(min, max)
                             "voltage" => d["vm"],
-                            "voltagelimits" => @NT(min=d["vmin"], max=d["vmax"]),
+                            "voltagelimits" => (min=d["vmin"], max=d["vmax"]),
                             "basevoltage" => d["base_kv"]
                             )
-    return bus 
+    return bus
 end
 
 function read_bus(data)
@@ -143,7 +143,7 @@ function read_loadzones(data,Buses)
             LoadZones[d["index"]] = make_loadzones(d_key,d,bus_l,realpower, reactivepower)
         end
         return LoadZones
-    else 
+    else
         return nothing
     end
 end
@@ -154,10 +154,10 @@ function make_hydro_gen(d,gen_name,bus)
                             "bus" => make_bus(bus),
                             "tech" => Dict{String,Any}( "installedcapacity" => float(d["pmax"]),
                                                         "realpower" => d["pg"],
-                                                        "realpowerlimits" => @NT(min=d["pmin"], max=d["pmax"]),
+                                                        "realpowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                         "reactivepower" => d["qg"],
-                                                        "reactivepowerlimits" => @NT(min=d["qmin"], max=d["qmax"]),
-                                                        "ramplimits" => @NT(up=d["ramp_agc"],down=d["ramp_agc"]),
+                                                        "reactivepowerlimits" => (min=d["qmin"], max=d["qmax"]),
+                                                        "ramplimits" => (up=d["ramp_agc"],down=d["ramp_agc"]),
                                                         "timelimits" => nothing),
                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                         "interruptioncost" => nothing),
@@ -171,7 +171,7 @@ function make_ren_gen(gen_name, d, bus)
                     "available" => d["gen_status"], # change from staus to available
                     "bus" => make_bus(bus),
                     "tech" => Dict{String,Any}("installedcapacity" => float(d["pmax"]),
-                                                "reactivepowerlimits" => @NT(min=d["pmin"], max=d["pmax"]),
+                                                "reactivepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                 "powerfactor" => 1),
                     "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                 "interruptioncost" => nothing),
@@ -181,7 +181,7 @@ function make_ren_gen(gen_name, d, bus)
 end
 
 function make_thermal_gen(gen_name, d, bus)
-    if d["model"] ==1 
+    if d["model"] ==1
         cost_component = d["cost"]
         power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
         cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
@@ -201,10 +201,10 @@ function make_thermal_gen(gen_name, d, bus)
                                     "available" => d["gen_status"],
                                     "bus" => make_bus(bus),
                                     "tech" => Dict{String,Any}("realpower" => d["pg"],
-                                                                "realpowerlimits" => @NT(min=d["pmin"], max=d["pmax"]),
+                                                                "realpowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                                 "reactivepower" => d["qg"],
-                                                                "reactivepowerlimits" => @NT(min=d["qmin"], max=d["qmax"]),
-                                                                "ramplimits" => @NT(up=d["ramp_agc"],down=d["ramp_agc"]),
+                                                                "reactivepowerlimits" => (min=d["qmin"], max=d["qmax"]),
+                                                                "ramplimits" => (up=d["ramp_agc"],down=d["ramp_agc"]),
                                                                 "timelimits" => nothing),
                                     "econ" => Dict{String,Any}("capacity" => d["pmax"],
                                                                 "variablecost" => cost,
@@ -234,7 +234,7 @@ function read_gen(data,Buses)
             haskey(d,"fuel") ? fuel =d["fuel"] : fuel = "generic"
             haskey(d,"type") ? type_gen = d["type"] : type_gen = "generic"
             haskey(d,"name") ? gen_name = d["name"] : haskey(d,"source_id") ? gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2]) : gen_name = d_key
-            
+
             if fuel in ["Hydro"] || type_gen in ["hydro","HY"]
                 bus =find_bus(Buses,d)
                 Generators["Hydro"][gen_name] = make_hydro_gen(d,gen_name,bus)
@@ -261,7 +261,7 @@ end
 function make_transformer(b_name, d, bus_f, bus_t)
     trans = Dict{String,Any}("name" => b_name,
                             "available" => convert(Bool, d["br_status"]),
-                            "connectionpoints" => @NT(from=make_bus(bus_f),to=make_bus(bus_t)),
+                            "connectionpoints" => (from=make_bus(bus_f),to=make_bus(bus_t)),
                             "r" => d["br_r"],
                             "x" => d["br_x"],
                             "primaryshunt" => d["b_fr"] ,  #TODO: which b ??
@@ -275,14 +275,14 @@ end
 function make_lines(b_name, d, bus_f, bus_t)
     line = Dict{String,Any}("name" => b_name,
                             "available" => convert(Bool, d["br_status"]),
-                            "connectionpoints" => @NT(from=make_bus(bus_f),to=make_bus(bus_t)),
+                            "connectionpoints" => (from=make_bus(bus_f),to=make_bus(bus_t)),
                             "r" => d["br_r"],
                             "x" => d["br_x"],
-                            "b" => @NT(from=d["b_fr"],to=d["b_to"]),
+                            "b" => (from=d["b_fr"],to=d["b_to"]),
                             "rate" =>  d["rate_a"],
-                            "anglelimits" => @NT(max =rad2deg(d["angmax"]),min=rad2deg(d["angmin"]))
+                            "anglelimits" => (min=rad2deg(d["angmin"]),max =rad2deg(d["angmax"]))
                             )
-    return line 
+    return line
 end
 
 function read_branch(data,Buses)
@@ -292,7 +292,7 @@ function read_branch(data,Buses)
     if haskey(data,"branch")
         b_name = []
         for (d_key,d) in data["branch"]
-            haskey(d,"name") ? b_name = d["name"] :b_name = d_key
+            haskey(d,"name") ? b_name = d["name"] : b_name = d_key
             (bus_f,bus_t) = find_bus(Buses,d)
             if d["transformer"]  #TODO : 3W Transformer
                 Branches["Transformers"][b_name] = make_transformer(b_name, d, bus_f, bus_t)
@@ -309,14 +309,14 @@ end
 function make_dcline(l_name, d, bus_f, bus_t)
     dcline = Dict{String,Any}("name" => l_name,
                             "available" =>d["br_status"] ,
-                            "connectionpoints" => @NT(from = make_bus(bus_f),to = make_bus(bus_t) ) ,
-                            "realpowerlimits_from" => @NT(min= d["pminf"] , max = d["pmaxf"]) ,
-                            "realpowerlimits_to" => @NT(min= d["pmint"] , max =d["pmaxt"] ) ,
-                            "reactivepowerlimits_from" =>  @NT(min= d["qminf"], max =d["qmaxf"] ),
-                            "reactivepowerlimits_to" =>  @NT(min=d["qmint"] , max =d["qmaxt"] ),
-                            "loss" =>  @NT(l0=d["loss0"] , l1 =d["loss1"] )
+                            "connectionpoints" => (from = make_bus(bus_f),to = make_bus(bus_t) ) ,
+                            "realpowerlimits_from" => (min= d["pminf"] , max = d["pmaxf"]) ,
+                            "realpowerlimits_to" => (min= d["pmint"] , max =d["pmaxt"] ) ,
+                            "reactivepowerlimits_from" =>  (min= d["qminf"], max =d["qmaxf"] ),
+                            "reactivepowerlimits_to" =>  (min=d["qmint"] , max =d["qmaxt"] ),
+                            "loss" =>  (l0=d["loss0"] , l1 =d["loss1"] )
                             )
-    return dcline 
+    return dcline
 end
 
 function read_dcline(data,Buses)
@@ -339,7 +339,7 @@ function make_shunt(s_name, d, bus)
                             "bus" => make_bus(bus),
                             "Y" => (-d["gs"] + d["bs"]im)
                             )
-    return shunt 
+    return shunt
 end
 
 function read_shunt(data,Buses)

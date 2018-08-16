@@ -63,9 +63,11 @@ export parsestandardfiles
 # Imports
 
 import Base.convert
-using Base.LinAlg.LAPACK.getri!
-using Base.LinAlg.LAPACK.getrf!
-using Base.LinAlg.BLAS.gemm
+using SparseArrays
+using LinearAlgebra.LAPACK.getri!
+using LinearAlgebra.LAPACK.getrf!
+using LinearAlgebra.BLAS.gemm
+using Dates
 using TimeSeries
 using PowerModels
 using DataFrames
@@ -73,10 +75,6 @@ using CSV
 using Memento
 
 Memento.config!(getlogger("PowerModels"), "error")
-
-# This packages will be removed with Julia v0.7
-using Compat
-using NamedTuples
 
 #################################################################################
 # Includes

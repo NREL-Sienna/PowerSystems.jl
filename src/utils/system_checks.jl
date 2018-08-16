@@ -66,7 +66,7 @@ function pvbuscheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
     end
 end
 
-# function check_angle_limits(anglelimits::@NT(max::Float64, min::Float64))
+# function check_angle_limits(anglelimits::(max::Float64, min::Float64))
 function checkanglelimits!(branches::Array{<:Branch,1})
     for (ix,l) in enumerate(branches)
         if isa(l,Line)
@@ -74,10 +74,10 @@ function checkanglelimits!(branches::Array{<:Branch,1})
 
             newanglelimits = l.anglelimits
             flag = 0
-            (l.anglelimits.max >= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)) : true
-            (l.anglelimits.max >= 90.0 && l.anglelimits.min >= -90.0) ? (flag,newanglelimits) =(1, @NT(max = 90.0, min = l.anglelimits.min)) : true
-            (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,@NT(max = l.anglelimits.max, min = -90.0)) : true
-            (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,@NT(max = 90.0, min = -90.0)): true
+            (l.anglelimits.max >= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,(min = -90.0,max = 90.0)) : true
+            (l.anglelimits.max >= 90.0 && l.anglelimits.min >= -90.0) ? (flag,newanglelimits) =(1, (min = l.anglelimits.min,max = 90.0)) : true
+            (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,(min = -90.0,max = l.anglelimits.max)) : true
+            (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,(min = -90.0,max = 90.0)) : true
             if flag == 1
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
@@ -114,7 +114,7 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),
-                                    @NT(from_to = rating_from_to, to_from = rating_to_from),deepcopy(l.anglelimits))
+                                    (from_to = rating_from_to, to_from = rating_to_from),deepcopy(l.anglelimits))
             end
         end
     end
@@ -140,13 +140,13 @@ function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
 end
 
 # convert generator ramp rates to a consistent denominator
-function convertramp(ramplimits::Union{@NT(up::Float64, down::Float64),Nothing}, ts::TimePeriod)
+function convertramp(ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing}, ts::TimePeriod)
     if isa(ramplimits,NamedTuple)
         hr = convert(typeof(ts),Dates.Minute(1))
         scaling  = hr/ts
         up = ramplimits.up/scaling
         down = ramplimits.down/scaling
-        R = @NT(up = up, down = down)
+        R = (up = up, down = down)
         return R
     else
         return ramplimits

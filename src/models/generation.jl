@@ -21,9 +21,9 @@ function genclassifier(gen::Array{T}) where T <: Generator
     h = [d for d in gen if isa(d, HydroGen)]
 
     #Check for type stability
-    isempty(t) ? t = nothing: t
-    isempty(r) ? r = nothing: r
-    isempty(h) ? h = nothing: h
+    isempty(t) ? t = nothing : t
+    isempty(r) ? r = nothing : r
+    isempty(h) ? h = nothing : h
 
     generators = Sources(t,r,h)
 

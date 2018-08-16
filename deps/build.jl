@@ -1,7 +1,4 @@
-
 import InfoZIP
-
-Pkg.checkout("PowerModels", "master")
 
 const GITHUB_TAG = "data"
 
@@ -9,7 +6,8 @@ const POWERSYSTEMS_GITHUB_URL = "https://github.com/NREL/PowerSystems.jl"
 
 const ZIP_DATA_URL = joinpath(POWERSYSTEMS_GITHUB_URL, "releases/download/" , GITHUB_TAG, "data-v0.1.0.zip")
 
-const DATA_FOLDER = Pkg.dir("PowerSystems/data")
+base_dir = string(dirname(dirname(@__FILE__)))
+const DATA_FOLDER = joinpath(base_dir,"data")
 
 function download_data()
 
