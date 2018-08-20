@@ -1,8 +1,0 @@
-julia 0.7-
-PowerModels v0.7.0-
-DataFrames 0.10.1
-TimeSeries 0.11.1
-CSV
-Compat
-Memento
-InfoZIP
