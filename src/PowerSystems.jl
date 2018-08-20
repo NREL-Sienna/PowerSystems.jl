@@ -63,9 +63,9 @@ export parsestandardfiles
 # Imports
 
 import Base.convert
-using LinearAlgebra.LAPACK.getri!
-using LinearAlgebra.LAPACK.getrf!
-using LinearAlgebra.BLAS.gemm
+using LinearAlgebra: LAPACK.getri!
+using LinearAlgebra: LAPACK.getrf!
+using LinearAlgebra: BLAS.gemm
 using Dates
 using TimeSeries
 using PowerModels
