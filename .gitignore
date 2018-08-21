@@ -9,6 +9,7 @@ docs/build/*
 *.csv
 *.md
 *.ipynb
+*.log
 *.m
 *.RAW
 *.zip
