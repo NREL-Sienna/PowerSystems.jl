@@ -63,6 +63,7 @@ export parsestandardfiles
 # Imports
 
 import Base.convert
+using SparseArrays
 using LinearAlgebra: LAPACK.getri!
 using LinearAlgebra: LAPACK.getrf!
 using LinearAlgebra: BLAS.gemm
