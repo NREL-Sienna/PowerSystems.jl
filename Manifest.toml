@@ -108,9 +108,9 @@ version = "0.1.6"
 
 [[InfrastructureModels]]
 deps = ["Compat", "JuMP", "Memento"]
-git-tree-sha1 = "c044aad130379c10b5d03376b01ea5f4c842828f"
+git-tree-sha1 = "811529796a8b52b8f31a1a8cf28a9d96bd90f53f"
 uuid = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
-version = "0.0.8"
+version = "0.0.9"
 
 [[InteractiveUtils]]
 deps = ["LinearAlgebra", "Markdown"]
@@ -192,11 +192,11 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PowerModels]]
 deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "MathOptInterface", "Memento", "Pkg"]
-git-tree-sha1 = "cddec4d3e3dcc02fd4a53a19a5adb2c48ff3ee18"
+git-tree-sha1 = "94f9913c02857e7ee0577306be8e513feed3af4b"
 repo-rev = "moi-julia-v0.7"
 repo-url = "https://github.com/lanl-ansi/PowerModels.jl.git"
 uuid = "23a24fe6-a169-11e8-146b-9d23c58f08d1"
-version = "0.7+"
+version = "0.7.0"
 
 [[Printf]]
 deps = ["Unicode"]
@@ -304,12 +304,12 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
 [[WeakRefStrings]]
 deps = ["Missings", "Random", "Test"]
-git-tree-sha1 = "1c28233e41ef8351c86ef42ddd50604b48238ed3"
+git-tree-sha1 = "d4631352d65840254d33ab703e2de3d9768cdb77"
 uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
-version = "0.5.1"
+version = "0.5.2"
 
 [[ZipFile]]
-deps = ["Compat"]
-git-tree-sha1 = "0d40c806c569c651fb4e08f104f33a09086b975f"
+deps = ["Printf", "Test"]
+git-tree-sha1 = "c191e56c849b1784cacbf7cd5e52cc672f1ae2db"
 uuid = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
-version = "0.6.0"
+version = "0.7.0"
