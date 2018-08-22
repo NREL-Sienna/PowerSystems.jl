@@ -196,6 +196,7 @@ git-tree-sha1 = "cddec4d3e3dcc02fd4a53a19a5adb2c48ff3ee18"
 repo-rev = "moi-julia-v0.7"
 repo-url = "https://github.com/lanl-ansi/PowerModels.jl.git"
 uuid = "23a24fe6-a169-11e8-146b-9d23c58f08d1"
+version = "0.7+"
 
 [[Printf]]
 deps = ["Unicode"]
