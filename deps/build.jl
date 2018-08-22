@@ -1,4 +1,8 @@
 import InfoZIP
+import Pkg
+
+Pkg.add("JuMP#master")
+Pkg.add("PowerModels#moi-julia-v0.7")
 
 const GITHUB_TAG = "data"
 
