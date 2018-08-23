@@ -26,11 +26,13 @@ matrix:
 
 ## uncomment the following lines to override the default test script
 script:
-  - julia --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.clone(pwd()); Pkg.build(\"PowerSystems\"); else using Pkg; Pkg.build(); end"
-  - julia --check-bounds=yes --color=yes -e "if VERSION < v\"0.7.0\"; Pkg.test(\"PowerSystems\", coverage=true); else using Pkg; Pkg.test(coverage=true); end"
+  - julia --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; using Pkg; Pkg.develop(pwd()); 
+  - cd PowerSystems
+  - julia --project; import Pkg; Pkg.build();"
+  - julia --check-bounds=yes --color=yes -e "if VERSION < v\"0.7.0\"; Pkg.test(\"PowerSystems\", coverage=true); else import Pkg; Pkg.test(coverage=true); end"
 
 after_success:
   # push coverage results to Coveralls
-  - julia -e 'Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  - julia -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
   # push coverage results to Codecov
-  - julia -e 'Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
