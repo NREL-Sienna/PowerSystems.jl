@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/NREL/PowerSystems.jl.svg?branch=master)](https://travis-ci.org/NREL/PowerSystems.jl)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/51qboor9s6x8w9tl/branch/master?svg=true)](https://ci.appveyor.com/project/jdlara-berkeley/powersystems-jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/96iqo76vjlrvnu90/branch/master?svg=true)](https://ci.appveyor.com/project/jd-lara/powersystems-jl/branch/master)
 
 [![codecov](https://codecov.io/gh/NREL/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL/PowerSystems.jl)
 
