@@ -192,7 +192,7 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PowerModels]]
 deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "MathOptInterface", "Memento", "Pkg"]
-git-tree-sha1 = "c36e90e8-916a-50a6-bd94-075b64ef4655"
+git-tree-sha1 = "94f9913c02857e7ee0577306be8e513feed3af4b"
 repo-rev = "moi-julia-v0.7"
 repo-url = "https://github.com/lanl-ansi/PowerModels.jl.git"
 uuid = "23a24fe6-a169-11e8-146b-9d23c58f08d1"
