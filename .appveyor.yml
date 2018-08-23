@@ -29,7 +29,7 @@ install:
 
 build_script:
   - C:\julia\bin\julia --project --color=yes -e " using InteractiveUtils; versioninfo();
-        import Pkg; Pkg.build(); Pkg.instantiate()"
+        import Pkg; Pkg.build(); Pkg.add("ZipFile"); Pkg.instantiate()"
 
 test_script:
   - echo "%JL_TEST_SCRIPT%"
