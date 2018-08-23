@@ -28,7 +28,7 @@ install:
   - ps: iex ((new-object net.webclient).DownloadString("https://raw.githubusercontent.com/JuliaCI/Appveyor.jl/version-1/bin/install.ps1"))
 
 build_script:
-  - C:\julia\bin\julia -e --project --color=yes -e " using InteractiveUtils; versioninfo();
+  - C:\julia\bin\julia --project --color=yes -e " using InteractiveUtils; versioninfo();
         import Pkg; Pkg.build(); Pkg.instantiate()"
 
 test_script:
