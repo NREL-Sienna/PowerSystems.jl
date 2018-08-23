@@ -26,9 +26,10 @@ matrix:
 
 ## uncomment the following lines to override the default test script
 script:
-  - julia --project --color=yes -e; import Pkg; Pkg.build(); Pkg.instantiate()"
+  - julia --project --color=yes -e "import Pkg; Pkg.build(); Pkg.instantiate()"
   - julia --check-bounds=yes --color=yes --project -e "import Pkg; Pkg.test(coverage=true);"
 
 after_success:
   # push coverage results to Codecov
+  - julia --project -e 'import Pkg; Pkg.add("Documenter"); include("docs/make.jl")'
   - julia --project -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
