@@ -1,7 +1,6 @@
 environment:
   matrix:
   - julia_version: 0.7
-  - julia_version: 1.0
   - julia_version: latest
 
 platform:
@@ -29,9 +28,9 @@ install:
   - ps: iex ((new-object net.webclient).DownloadString("https://raw.githubusercontent.com/JuliaCI/Appveyor.jl/version-1/bin/install.ps1"))
 
 build_script:
-  - echo "%JL_BUILD_SCRIPT%"
-  - C:\julia\bin\julia -e "%JL_BUILD_SCRIPT%"
+  - C:\julia\bin\julia -e --project --color=yes -e " using InteractiveUtils; versioninfo();
+        import Pkg; Pkg.build(); Pkg.instantiate()"
 
 test_script:
   - echo "%JL_TEST_SCRIPT%"
-  - C:\julia\bin\julia -e "%JL_TEST_SCRIPT%"
+  - C:\julia\bin\julia --check-bounds=yes --color=yes --project -e "%JL_TEST_SCRIPT%"
