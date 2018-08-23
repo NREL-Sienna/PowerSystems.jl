@@ -16,3 +16,9 @@ PowerModels = "c36e90e8-916a-50a6-bd94-075b64ef4655"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

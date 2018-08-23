@@ -130,7 +130,7 @@ version = "0.19.0"
 
 [[JuMP]]
 deps = ["Calculus", "Compat", "DataStructures", "ForwardDiff", "MathOptInterface", "NaNMath"]
-git-tree-sha1 = "020c7e1247cee0e890b69def31fae4344eb1a361"
+git-tree-sha1 = "9e5fa9ed35bb0a9b7080ed865ccc91db480e37dd"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaOpt/JuMP.jl.git"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
