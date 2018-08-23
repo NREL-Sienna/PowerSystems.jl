@@ -20,11 +20,11 @@ function pm2ps_dict(data::Dict{String,Any})
     DCLines= read_dcline(data,ps_dict["bus"])
 
     ps_dict["load"] = Loads
-    !isa(LoadZones,Nothing) ? ps_dict["loadzone"] =  LoadZones : warn("There are no Loadzones data in this file")
+    !isa(LoadZones,Nothing) ? ps_dict["loadzone"] =  LoadZones : @warn("There are no Loadzones data in this file")
     !isa(Generators,Nothing) ? ps_dict["gen"] = Generators : error("There are no Generator in this file")
-    !isa(Branches,Nothing) ? ps_dict["branch"] = Branches : warn("There are no Branch data in this file")
-    !isa(Shunts,Nothing) ? ps_dict["shunt"] = Shunts : warn("There are no shunt data in this file")
-    !isa(DCLines,Nothing) ? ps_dict["dcline"] = DCLines : warn("There are no DClines data in this file")
+    !isa(Branches,Nothing) ? ps_dict["branch"] = Branches : @warn("There are no Branch data in this file")
+    !isa(Shunts,Nothing) ? ps_dict["shunt"] = Shunts : @warn("There are no shunt data in this file")
+    !isa(DCLines,Nothing) ? ps_dict["dcline"] = DCLines : @warn("There are no DClines data in this file")
     return ps_dict
 end
 

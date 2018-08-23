@@ -60,7 +60,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = S - gemm('N','N',gemm('N','N',S,slack_array),ones(1,buscount))
 
     elseif length(slack_position) == 0
-        warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
+        @warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
         S = nothing
     end
     return  S , A

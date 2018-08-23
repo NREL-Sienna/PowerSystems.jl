@@ -67,14 +67,15 @@ using SparseArrays
 using LinearAlgebra: LAPACK.getri!
 using LinearAlgebra: LAPACK.getrf!
 using LinearAlgebra: BLAS.gemm
+using LinearAlgebra
 using Dates
 using TimeSeries
 using PowerModels
 using DataFrames
 using CSV
-using Memento
+import Memento
 
-Memento.config!(getlogger("PowerModels"), "error")
+Memento.config!(Memento.getlogger("PowerModels"), "error")
 
 #################################################################################
 # Includes

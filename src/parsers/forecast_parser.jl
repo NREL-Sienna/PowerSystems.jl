@@ -120,7 +120,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
                 end
             end
         else
-            warn("No forecast found for Loads ")
+            @warn("No forecast found for Loads ")
         end
     end
     return forecast

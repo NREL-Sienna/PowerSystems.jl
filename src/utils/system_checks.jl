@@ -30,7 +30,7 @@ end
 function buscheck(buses::Array{Bus})
     for b in buses
         if b.bustype == nothing
-            warn("Bus/Nodes data does not contain information to build an a network")
+            @warn("Bus/Nodes data does not contain information to build an a network")
         end
     end
 end
@@ -59,7 +59,7 @@ function pvbuscheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
 
     for b in buses
         if b.bustype == "PV"
-            b.number in pv_list ? continue : warn("The bus ", b.number, " is declared as PV without a generator connected to it")
+            b.number in pv_list ? continue : @warn("The bus ", b.number, " is declared as PV without a generator connected to it")
         else
             continue
         end
@@ -167,13 +167,13 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                    @warn("The generator ", g.name, " has a nonbinding ramp up limit.")
                 end
                 if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                    @warn("The generator ", g.name, " has a nonbinding ramp down limit.")
                 end
             else
-                warn("Ramp defined as nothing for ", g.name)
+                @info("Ramp defined as nothing for ", g.name)
             end
         elseif isa(g,ThermalGenSeason)
             R = convertramp(g.tech.ramplimits,ts)
@@ -186,13 +186,13 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                    @warn("The generator ", g.name, " has a nonbinding ramp up limit.")
                 end
                 if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                    @warn("The generator ", g.name, " has a nonbinding ramp down limit.")
                 end
             else
-                warn("Ramp defined as nothing for ", g.name)
+                @info("Ramp defined as nothing for ", g.name)
             end
         elseif isa(g,HydroCurtailment)
             R = convertramp(g.tech.ramplimits,ts)
@@ -205,13 +205,13 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                    @info("The generator ", g.name, " has a nonbinding ramp up limit.")
                 end
                 if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                    @info("The generator ", g.name, " has a nonbinding ramp down limit.")
                 end
             else
-                warn("Ramp defined as nothing for ", g.name)
+                @info("Ramp defined as nothing for ", g.name)
             end
         elseif isa(g,HydroStorage)
             R = convertramp(g.tech.ramplimits,ts)
@@ -225,13 +225,13 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                    warn("The generator ", g.name, " has a nonbinding ramp up limit.")
+                    @info("The generator ", g.name, " has a nonbinding ramp up limit.")
                 end
                 if g.tech.ramplimits.down >= (g.tech.realpowerlimits.max - g.tech.realpowerlimits.min)
-                    warn("The generator ", g.name, " has a nonbinding ramp down limit.")
+                    @info("The generator ", g.name, " has a nonbinding ramp down limit.")
                 end
             else
-                warn("Ramp defined as nothing for ", g.name)
+                @info("Ramp defined as nothing for ", g.name)
             end
         end
     end

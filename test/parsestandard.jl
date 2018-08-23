@@ -18,7 +18,7 @@ for f in files
         sys_test = PowerSystem(Buses, Generators,Loads,Branches,Storage,float(ps_dict["baseMVA"])) # TODO: Add DClines, Shunts 
         println("Successfully parsed $f to PowerSystem struct")
     catch
-        warn("Error while parsing $f")
+        @warn("Error while parsing $f")
         catch_stacktrace()
     end
 end
@@ -43,7 +43,7 @@ for f in files
         sys_test = PowerSystem(Buses, Generators,Loads,Branches,Storage,float(ps_dict["baseMVA"])) # TODO: Add DClines, Shunts 
         println("Successfully parsed $f to PowerSystem struct")
     catch
-        warn("Error while parsing $f")
+        @warn("Error while parsing $f")
         catch_stacktrace()
     end
 end

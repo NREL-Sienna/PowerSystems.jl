@@ -87,7 +87,7 @@ end
 #=
 function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer3W)
 
-    warn("Data contains a 3W transformer")
+    @warn("Data contains a 3W transformer")
 
     Y11 = (1 / (b.line.r + b.line.x * 1im) + (1im * b.line.b) / 2);
     Ybus[b.line.connectionpoints.from.number,
