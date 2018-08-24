@@ -3,30 +3,34 @@ using Test
 
 # Testing Topological components of the schema
 
-
-println("Read Data in *.jl files")
-@time @test include("readnetworkdata.jl")
-println("Test all the constructors")
-@time @test include("constructors.jl")
-println("Test PowerSystem constructor")
-@test include("powersystemconstructors.jl")
+@testset "Local Functions" begin
+    println("Read Data in *.jl files")
+    include("readnetworkdata.jl")
+    println("Test all the constructors")
+    include("constructors.jl")
+    println("Test PowerSystem constructor")
+    include("powersystemconstructors.jl")
+end
 
 #=
-println("Read Parsing code")
-@time @test include("parsestandard.jl")
-println("Testing Check Function s")
-@time @test include("checks_testing.jl")
+@testset "Parsing Code" begin
+    println("Read Parsing code")
+    include("parsestandard.jl")
+    println("Reading forecast data ")
+    include("readforecastdata.jl")
+end
 =#
 
-println("Testing Network Matrices")
-@time @test include("network_matrices.jl")
+@testset "Utilities testing" begin
+    println("Testing Network Matrices")
+    include("network_matrices.jl")
+    println("Testing Check Function s")
+    include("checks_testing.jl")
+end
 
-
-
-
-#println("Reading forecast data ")
-#@time @test include("readforecastdata.jl")
-
-#include("../data/data_5bus.jl");
-#@assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
-
+#=
+@testset "Print testing" begin
+    include("../data/data_5bus.jl");
+    @assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
+end
+=#
