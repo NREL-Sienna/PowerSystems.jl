@@ -1,4 +1,4 @@
-import InfoZIP
+include("unzip.jl")
 
 const GITHUB_TAG = "data"
 
@@ -16,7 +16,7 @@ function download_data()
         temp_folder = mktempdir()
         temp_data_zip = joinpath(temp_folder, "data-v0.1.0.zip")
         download(ZIP_DATA_URL, temp_data_zip)
-        InfoZIP.unzip(temp_data_zip, DATA_FOLDER)
+        success(unpack_cmd(temp_data_zip, DATA_FOLDER)) || error("Failed to data files")
     end
 
 end

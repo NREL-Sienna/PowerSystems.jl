@@ -101,11 +101,6 @@ version = "0.8.5"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
-[[InfoZIP]]
-git-tree-sha1 = "3447459e855132e06f1df57b9b29e2fba446fc48"
-uuid = "f4508453-b816-52ab-a864-26fc7f6211fc"
-version = "0.1.6"
-
 [[InfrastructureModels]]
 deps = ["Compat", "JuMP", "Memento"]
 git-tree-sha1 = "811529796a8b52b8f31a1a8cf28a9d96bd90f53f"
