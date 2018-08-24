@@ -1,8 +1,12 @@
 @static if Sys.iswindows()
-    global has_7z
-    global has_zip
+    
+    has_7z  = nothing
+    has_zip = nothing 
     
     function unpack_cmd(file,directory)
+
+        global has_7z
+        global has_zip
 
         if has_7z === nothing
             has_7z  = success(`where 7z`)
