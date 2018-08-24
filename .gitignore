@@ -13,4 +13,4 @@ docs/build/*
 *.RAW
 *.zip
 *.json
-data_*
+data
