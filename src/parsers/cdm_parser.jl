@@ -21,7 +21,7 @@ function read_csv_data(file_path::String)
     data =Dict{String,Any}()
 
     if length(files) == 0
-        error("No test files in the folder")
+        @error("No test files in the folder")
     end
     for d_file in readdir(files)
         try
@@ -44,7 +44,7 @@ function read_csv_data(file_path::String)
                 println("Successfully parsed $d_file")
             end
         catch
-            @warn("Error while parsing $d_file")
+            @warn("error while parsing $d_file")
             catch_stacktrace()
         end
     end
@@ -75,20 +75,20 @@ function csv2ps_dict(file_path::String)
     if haskey(data,"bus")
         ps_dict["bus"] =  PowerSystems.bus_csv_parser(data["bus"])
     else
-        error("Key Error : key 'bus' not found in PowerSystems dictionary
+        @error("Key error : key 'bus' not found in PowerSystems dictionary
             \n Cant Construct any PowerSystem Struct")
     end
     if haskey(data,"gen")
         ps_dict["gen"] =  PowerSystems.gen_csv_parser(data["gen"],ps_dict["bus"])
     else
-        @warn("Key Error : key 'gen' not found in PowerSystems dictionary,
+        @warn("Key error : key 'gen' not found in PowerSystems dictionary,
           \n This will result in an ps_dict['gen'] = nothing")
          ps_dict["gen"] = nothing
     end
     if haskey(data,"branch")
         ps_dict["branch"] =  PowerSystems.branch_csv_parser(data["branch"],ps_dict["bus"])
     else
-        @warn("Key Error : key 'bus' not found in PowerSystems dictionary,
+        @warn("Key error : key 'bus' not found in PowerSystems dictionary,
           \n This will result in an ps_dict['branch'] = nothing")
          ps_dict["branch"] = nothing
     end
@@ -96,7 +96,7 @@ function csv2ps_dict(file_path::String)
         ps_dict["load_zone"] =  PowerSystems.loadzone_csv_parser(data["bus"],ps_dict["bus"])
         ps_dict["load"] =  PowerSystems.load_csv_parser(data["load"],data["bus"],ps_dict["bus"],ps_dict["load_zone"])
     else
-        @warn("Key Error : key 'load' not found in PowerSystems dictionary,
+        @warn("Key error : key 'load' not found in PowerSystems dictionary,
           \n This will result in an ps_dict['load'] = nothing")
          ps_dict["load"] = nothing
     end

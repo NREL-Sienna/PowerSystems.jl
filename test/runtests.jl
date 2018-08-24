@@ -11,16 +11,14 @@ using Test
     println("Test PowerSystem constructor")
     @test @time include("powersystemconstructors.jl")
 end
-
 #=
 @testset "Parsing Code" begin
     println("Read Parsing code")
-    @test @time include("parsestandard.jl")
+    include("parsestandard.jl")
     println("Reading forecast data ")
-    @test @time include("readforecastdata.jl")
+    @test_broken @time include("readforecastdata.jl")
 end
 =#
-
 @testset "Utilities testing" begin
     println("Testing Network Matrices")
     @test @time include("network_matrices.jl")

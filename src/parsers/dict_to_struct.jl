@@ -1,6 +1,6 @@
 # Global method definition needs to be at top level in .7
 # Convert bool to int
-Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(InexactError())
+Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(Inexacterror())
 #############################################
 
 function ps_dict2ps_struct(data::Dict{String,Any})
@@ -15,13 +15,13 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     Shunts =Array{FixedAdmittance,1}(0)
     LoadZones =Array{PowerSystemDevice,1}(0)
 
-    haskey(data, "bus") ? Buses = bus_dict_parse(data["bus"]) : @warn("Key Error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
-    haskey(data, "gen") ? (Generators, Storage) = gen_dict_parser(data["gen"]) : @warn("Key Error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
-    haskey(data, "branch") ? Branches = branch_dict_parser(data["branch"],Branches) : @warn("Key Error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
-    haskey(data, "load") ? Loads = load_dict_parser(data["load"]) : @warn("Key Error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
-    haskey(data, "loadzone") ? LoadZones = loadzone_dict_parser(data["loadzone"]) : @warn("Key Error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
-    haskey(data, "shunt") ? Shunts = shunt_dict_parser(data["shunt"]) : @warn("Key Error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
-    haskey(data, "dcline") ? Branches = dclines_dict_parser(data["dcline"],Branches) : @warn("Key Error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
+    haskey(data, "bus") ? Buses = bus_dict_parse(data["bus"]) : @error("Key error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
+    haskey(data, "gen") ? (Generators, Storage) = gen_dict_parser(data["gen"]) : @error("Key error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
+    haskey(data, "branch") ? Branches = branch_dict_parser(data["branch"],Branches) : @warn("Key error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
+    haskey(data, "load") ? Loads = load_dict_parser(data["load"]) : @error("Key error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
+    haskey(data, "loadzone") ? LoadZones = loadzone_dict_parser(data["loadzone"]) : @info("Key error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
+    haskey(data, "shunt") ? Shunts = shunt_dict_parser(data["shunt"]) : @info("Key error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
+    haskey(data, "dcline") ? Branches = dclines_dict_parser(data["dcline"],Branches) : @info("Key error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
     return sort!(Buses, by = x -> x.number), Generators, Storage,  sort!(Branches, by = x -> x.connectionpoints.from.number), Loads, LoadZones, Shunts
 end
 

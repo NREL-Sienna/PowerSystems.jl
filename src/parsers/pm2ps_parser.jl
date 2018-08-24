@@ -5,13 +5,13 @@ function pm2ps_dict(data::Dict{String,Any})
     Currently Supports MATPOWER and PSSE data files paresed by PowerModels
 
     """
-    (length(data["bus"]) < 1) ? error("There are no busses in this file") : nothing
+    (length(data["bus"]) < 1) ? @error("There are no busses in this file") : nothing
     ps_dict = Dict{String,Any}()
     ps_dict["name"] = data["name"]
     ps_dict["baseMVA"] = data["baseMVA"]
     ps_dict["source_type"] = data["source_type"]
     Buses = read_bus(data)
-    !isa(Buses,Nothing) ? ps_dict["bus"] = Buses : error("No bus data found") # TODO : need for a model without a bus
+    !isa(Buses,Nothing) ? ps_dict["bus"] = Buses : @error("No bus data found") # TODO : need for a model without a bus
     Loads= read_loads(data,ps_dict["bus"])
     LoadZones= read_loadzones(data,ps_dict["bus"])
     Generators= read_gen(data,ps_dict["bus"])
@@ -20,11 +20,11 @@ function pm2ps_dict(data::Dict{String,Any})
     DCLines= read_dcline(data,ps_dict["bus"])
 
     ps_dict["load"] = Loads
-    !isa(LoadZones,Nothing) ? ps_dict["loadzone"] =  LoadZones : @warn("There are no Loadzones data in this file")
-    !isa(Generators,Nothing) ? ps_dict["gen"] = Generators : error("There are no Generator in this file")
-    !isa(Branches,Nothing) ? ps_dict["branch"] = Branches : @warn("There are no Branch data in this file")
-    !isa(Shunts,Nothing) ? ps_dict["shunt"] = Shunts : @warn("There are no shunt data in this file")
-    !isa(DCLines,Nothing) ? ps_dict["dcline"] = DCLines : @warn("There are no DClines data in this file")
+    !isa(LoadZones,Nothing) ? ps_dict["loadzone"] =  LoadZones : @info("There are no Load Zones data in this file")
+    !isa(Generators,Nothing) ? ps_dict["gen"] = Generators : @error("There are no Generators in this file")
+    !isa(Branches,Nothing) ? ps_dict["branch"] = Branches : @info("There is no Branch data in this file")
+    !isa(Shunts,Nothing) ? ps_dict["shunt"] = Shunts : @info("There is no shunt data in this file")
+    !isa(DCLines,Nothing) ? ps_dict["dcline"] = DCLines : @info("There is no DClines data in this file")
     return ps_dict
 end
 
@@ -118,7 +118,7 @@ function read_loads(data,Buses)
         end
         return Loads
     else
-        error("There are no loads in this file")
+        @error("There are no loads in this file")
     end
 end
 

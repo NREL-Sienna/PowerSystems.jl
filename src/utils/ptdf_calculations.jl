@@ -6,7 +6,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
     Theta = zeros(Float64,buscount);
     for (ix,b) in enumerate(nodes)
         if b.number < -1
-            error("buses must be numbered consecutively in the bus/node matrix")
+            @error("buses must be numbered consecutively in the bus/node matrix")
         end
         num_bus[b.number] = ix
         Theta[ix] = b.angle
@@ -60,7 +60,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = S - gemm('N','N',gemm('N','N',S,slack_array),ones(1,buscount))
 
     elseif length(slack_position) == 0
-        @warn("Slack bus not identified in the Bus/Nodes list, can't build PTLDF")
+        @warn("Slack bus not identified in the Bus/Nodes list, can't build PTDF")
         S = nothing
     end
     return  S , A
