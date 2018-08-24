@@ -7,7 +7,6 @@ docs/build/*
 *.R
 *.PNG
 *.csv
-*.md
 *.ipynb
 *.log
 *.m
