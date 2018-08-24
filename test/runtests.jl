@@ -5,32 +5,32 @@ using Test
 
 @testset "Local Functions" begin
     println("Read Data in *.jl files")
-    include("readnetworkdata.jl")
+    @test @time include("readnetworkdata.jl")
     println("Test all the constructors")
-    include("constructors.jl")
+    @test @time include("constructors.jl")
     println("Test PowerSystem constructor")
-    include("powersystemconstructors.jl")
+    @test @time include("powersystemconstructors.jl")
 end
 
 #=
 @testset "Parsing Code" begin
     println("Read Parsing code")
-    include("parsestandard.jl")
+    @test @time include("parsestandard.jl")
     println("Reading forecast data ")
-    include("readforecastdata.jl")
+    @test @time include("readforecastdata.jl")
 end
 =#
 
 @testset "Utilities testing" begin
     println("Testing Network Matrices")
-    include("network_matrices.jl")
-    println("Testing Check Function s")
-    include("checks_testing.jl")
+    @test @time include("network_matrices.jl")
+    println("Testing Check Functions")
+    @test @time include("checks_testing.jl")
 end
 
 #=
 @testset "Print testing" begin
     include("../data/data_5bus.jl");
-    @assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
+    @test @assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
 end
 =#
