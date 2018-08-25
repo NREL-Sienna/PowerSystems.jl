@@ -1,7 +1,7 @@
 # TODO: Implement more complex DC Line models including control angle and transformers
-#abstract type DCLine <: Branch end
+abstract type DCLine <: Branch end
 
-struct DCLine <: Branch
+struct HVDCLine <: Branch
     name::String
     available::Bool
     connectionpoints::From_To_Bus

@@ -12,7 +12,8 @@ export Branch
 export Network
 export Line
 export DCLine
-export SimpleDCLine
+export HVDCLine
+export VSCDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
