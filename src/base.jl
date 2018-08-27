@@ -1,9 +1,9 @@
 ### Struct and different Power System constructors depending on the data provided ####
 
-struct PowerSystem{L <: ElectricLoad,
-                   T <: Union{Nothing,Array{ <: Thermal,1}},
-                   R <: Union{Nothing,Array{ <: Renewable,1}},     
-                   H <: Union{Nothing,Array{ <: Hydro,1}},
+struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
+                   R <: Union{Nothing,Array{ <: RenewableGen,1}},     
+                   H <: Union{Nothing,Array{ <: HydroGen,1}},
+                   L <: ElectricLoad,
                    B <: Union{Nothing,Array{ <: Branch,1}},
                    S <: Union{Nothing,Array{ <: Storage,1}}
                    }
@@ -26,7 +26,7 @@ struct PowerSystem{L <: ElectricLoad,
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
-        new{L, Nothing, Nothing}(buses,
+        new{Union{Nothing,Array{ <: ThermalGen,1}}, Union{Nothing,Array{ <: RenewableGen,1}}, Union{Nothing,Array{ <: HydroGen,1}}, L, Nothing, Nothing}(buses,
                         sources,
                         loads,
                         nothing,
@@ -55,7 +55,7 @@ struct PowerSystem{L <: ElectricLoad,
         checkanglelimits!(branches)
         #timeserieschecksources(sources.hydro, time_length)
 
-        new{L, B, Nothing}(buses,
+        new{Union{Nothing,Array{ <: ThermalGen,1}}, Union{Nothing,Array{ <: RenewableGen,1}}, Union{Nothing,Array{ <: HydroGen,1}}, L, B, Nothing}(buses,
                 sources,
                 loads,
                 branches,
@@ -78,7 +78,7 @@ struct PowerSystem{L <: ElectricLoad,
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
 
-        new{L, Nothing, S}(buses,
+        new{Union{Nothing,Array{ <: ThermalGen,1}}, Union{Nothing,Array{ <: RenewableGen,1}}, Union{Nothing,Array{ <: HydroGen,1}}, L, Nothing, S}(buses,
                 sources,
                 loads,
                 nothing,
@@ -106,7 +106,7 @@ struct PowerSystem{L <: ElectricLoad,
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
 
-        new{L, B, S}(buses,
+        new{Union{Nothing,Array{ <: ThermalGen,1}}, Union{Nothing,Array{ <: RenewableGen,1}}, Union{Nothing,Array{ <: HydroGen,1}}, L, B, S}(buses,
                 sources,
                 loads,
                 branches,
