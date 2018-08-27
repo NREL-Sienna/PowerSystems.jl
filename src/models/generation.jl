@@ -25,7 +25,7 @@ function genclassifier(gen::Array{T}) where T <: Generator
     isempty(r) ? r = nothing : r
     isempty(h) ? h = nothing : h
 
-    generators = Sources(t,r,h)
+    generators = (thermal = t, renewables =r, hydro = h)
 
     return generators
 end
