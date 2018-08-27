@@ -1,14 +1,10 @@
 ### Struct and different Power System constructors depending on the data provided ####
 
-struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
-                   R <: Union{Nothing,Array{ <: RenewableGen,1}},     
-                   H <: Union{Nothing,Array{ <: HydroGen,1}},
-                   L <: ElectricLoad,
+struct PowerSystem{L <: ElectricLoad,
                    B <: Union{Nothing,Array{ <: Branch,1}},
-                   S <: Union{Nothing,Array{ <: Storage,1}}
-                   }
+                   S <: Union{Nothing,Array{ <: Storage,1}}}
     buses::Array{Bus,1}
-    generators::NamedTuple{(:thermal, :renewable, :hydro), Tuple{T, R, H}}
+    generators::Sources
     loads::Array{L,1}
     branches::B
     storage::S
@@ -26,7 +22,7 @@ struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
-        new{Union{Nothing,Array{ <: ThermalGen,1}}, Union{Nothing,Array{ <: RenewableGen,1}}, Union{Nothing,Array{ <: HydroGen,1}}, L, Nothing, Nothing}(buses,
+        new{L, Nothing, Nothing,}(buses,
                         sources,
                         loads,
                         nothing,
