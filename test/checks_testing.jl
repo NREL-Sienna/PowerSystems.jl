@@ -10,11 +10,10 @@ branches5 = [Line("1", true,  (from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281,  (
 
 
 
-PowerSystems.checkanglelimits!(branches5)
+@test try PowerSystems.checkanglelimits!(branches5); true finally end
 
-@assert (branches5[1].anglelimits) == (min = -90.0,max = 90.0)
-@assert (branches5[2].anglelimits) == (min = -90.0,max = 75.0)
-@assert (branches5[3].anglelimits) == (min = -75.0,max = 90.0)
-@assert (branches5[4].anglelimits) == (min = -90.0,max = 90.0)
+@test try @assert (branches5[1].anglelimits) == (min = -90.0,max = 90.0); true finally end
+@test try @assert (branches5[2].anglelimits) == (min = -90.0,max = 75.0); true finally end
+@test try @assert (branches5[3].anglelimits) == (min = -75.0,max = 90.0); true finally end
+@test try @assert (branches5[4].anglelimits) == (min = -90.0,max = 90.0); true finally end
 
-true

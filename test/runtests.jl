@@ -3,14 +3,19 @@ using Test
 
 # Testing Topological components of the schema
 
-@testset "Local Functions" begin
+
+@testset "Read PowerSystems data" begin
     println("Read Data in *.jl files")
-    @test @time include("readnetworkdata.jl")
-    println("Test all the constructors")
-    @test @time include("constructors.jl")
-    println("Test PowerSystem constructor")
-    @test @time include("powersystemconstructors.jl")
+    include("readnetworkdata.jl")
 end
+
+@testset "Local Functions" begin
+    println("Test all the constructors")
+    include("constructors.jl")
+    println("Test PowerSystem constructor")
+    include("powersystemconstructors.jl")
+end
+
 #=
 @testset "Parsing Code" begin
     println("Read Parsing code")
@@ -19,11 +24,12 @@ end
     @test_broken @time include("readforecastdata.jl")
 end
 =#
+
 @testset "Utilities testing" begin
     println("Testing Network Matrices")
     @test @time include("network_matrices.jl")
     println("Testing Check Functions")
-    @test @time include("checks_testing.jl")
+    include("checks_testing.jl")
 end
 
 #=
