@@ -30,12 +30,12 @@ generators_hg5 = [
         1000.0,TimeSeries.TimeArray(DayAhead,wind_ts_DA) )
 ]
 
-@time sys5bh = PowerSystem(nodes5, append!(generators5, generators_hg5), loads5_DA, branches5, battery5,  1000.0)
+@test try sys5bh = PowerSystem(nodes5, append!(generators5, generators_hg5), loads5_DA, branches5, battery5,  1000.0); true finally end
 
  #Test Data for 14 Bus
 
-@time sys14 = PowerSystem(nodes14, generators14, loads14, nothing, nothing,  1000.0)
-@time sys14 = PowerSystem(nodes14, generators14, loads14, branches14, nothing,  1000.0)
+@test try sys14 = PowerSystem(nodes14, generators14, loads14, nothing, nothing,  1000.0); true finally end
+@test try sys14 = PowerSystem(nodes14, generators14, loads14, branches14, nothing,  1000.0); true finally end
 
 battery14 = [GenericBattery(name = "Bat",
                 status = true,
@@ -51,8 +51,5 @@ battery14 = [GenericBattery(name = "Bat",
 
 
 
-@time sys14b = PowerSystem(nodes14, generators14, loads14, nothing, battery14,  1000.0)
-@time sys14b = PowerSystem(nodes14, generators14, loads14, branches14, battery14,  1000.0)
-
-
-true
+@test try sys14b = PowerSystem(nodes14, generators14, loads14, nothing, battery14,  1000.0); true finally end
+@test try sys14b = PowerSystem(nodes14, generators14, loads14, branches14, battery14,  1000.0); true finally end
