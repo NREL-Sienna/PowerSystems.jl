@@ -320,7 +320,7 @@ end
 
 function dclines_dict_parser(dict::Dict{String,Any},Branches::Array{Branch,1})
     for (dcl_key,dcl_dict) in dict
-        push!(Branches,DCLine(convert(String,dcl_dict["name"]),
+        push!(Branches,HVDCLine(convert(String,dcl_dict["name"]),
                             convert(Bool,dcl_dict["available"]),
                             dcl_dict["connectionpoints"],
                             dcl_dict["realpowerlimits_from"],
