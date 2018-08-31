@@ -20,7 +20,7 @@ end
     println("Read Parsing code")
     include("parsestandard.jl")
     println("Reading forecast data ")
-    @test_broken @time include("readforecastdata.jl")
+    @time include("readforecastdata.jl")
 end
 
 @testset "Utilities testing" begin

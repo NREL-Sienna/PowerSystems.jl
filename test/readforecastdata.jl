@@ -8,8 +8,8 @@ ps_dict = PowerSystems.add_realtime_ts(ps_dict,time_series)
 
 Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts  = PowerSystems.ps_dict2ps_struct(ps_dict)
 sys_RTS = PowerSystems.PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"])
-forecast_gen = PowerSystems.make_forecast_dict(time_series,Day(1),24,Generators)
-forecast_load = PowerSystems.make_forecast_dict(time_series,Day(1),24,Loads, LoadZones)
+forecast_gen = PowerSystems.make_forecast_dict(time_series,Dates.Day(1),24,Generators)
+forecast_load = PowerSystems.make_forecast_dict(time_series,Dates.Day(1),24,Loads, LoadZones)
 
 Forecast_Struct = PowerSystems.make_forecast_array(forecast_gen)
 
