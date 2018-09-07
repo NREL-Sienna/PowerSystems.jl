@@ -23,7 +23,8 @@ function read_data_files(files::String)
             for file in readdir(files*"/$folder")
                 if match(REGEX_DEVICE_TYPE, file) != nothing
                     file_path = files*"/$folder/$file"
-                    raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                    #raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                    raw_data = DataFrame(CSVFiles.load(file_path))
                     if raw_data[25,:Period] > 24
                         key = "RT"
                     else
