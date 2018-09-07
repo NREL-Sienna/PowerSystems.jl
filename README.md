@@ -10,8 +10,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 
 ## Version Advisory 
 
-- The latest tagged version in PowerSystems (v0.1.0) will work with Julia v0.6 only. 
-- The master branch in PowerSystems is designed to work in Julia v0.7 or newer only.  
+- The latest tagged version in PowerSystems (v0.1.0) will work with Julia v0.7+. 
 
 ### Device data enabled in PowerSystems:
  - Generators (Thermal, Renewable, Synchronous Condensers, and Hydro)
