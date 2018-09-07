@@ -2,10 +2,10 @@
 include("../data/data_5bus.jl")
 include("../data/data_14bus.jl")
 
-@time tPowerSystem = PowerSystem()
+@test try tPowerSystem = PowerSystem(); true finally end
 
-@time sys5 = PowerSystem(nodes5, generators5, loads5_DA, nothing, nothing,  1000.0)
-@time sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, nothing,  1000.0)
+@test try sys5 = PowerSystem(nodes5, generators5, loads5_DA, nothing, nothing,  1000.0); true finally end
+@test try sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, nothing,  1000.0); true finally end
 
 battery5 = [GenericBattery(name = "Bat",
                 status = true,
@@ -18,7 +18,7 @@ battery5 = [GenericBattery(name = "Bat",
                 efficiency = (in = 0.90, out = 0.80),
                 )];
 
-@time sys5b = PowerSystem(nodes5, generators5, loads5_DA, nothing, battery5,  1000.0)
+@test try sys5b = PowerSystem(nodes5, generators5, loads5_DA, nothing, battery5,  1000.0)
 
 generators_hg5 = [
     HydroFix("HydroFix",true,nodes5[2],
