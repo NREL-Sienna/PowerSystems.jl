@@ -172,12 +172,10 @@ uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 version = "0.19.0"
 
 [[JuMP]]
-deps = ["Calculus", "Compat", "DataStructures", "ForwardDiff", "MathOptInterface", "NaNMath"]
-git-tree-sha1 = "e355e97573913b35ac58edb9f880906fe7c9be14"
-repo-rev = "master"
-repo-url = "https://github.com/JuliaOpt/JuMP.jl.git"
+deps = ["Calculus", "ForwardDiff", "MathProgBase", "ReverseDiffSparse"]
+git-tree-sha1 = "39e300f9a3e0ddabe258897eacdfd4fab5143cf6"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
-version = "0.18.2+"
+version = "0.18.2"
 
 [[LibGit2]]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
@@ -201,6 +199,12 @@ deps = ["Compat", "Unicode"]
 git-tree-sha1 = "f2791f990529b7aea1fcb9fd45b636cd3a9d1e79"
 uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 version = "0.6.0"
+
+[[MathProgBase]]
+deps = ["Compat"]
+git-tree-sha1 = "83b11194ca1c6353f39307f3221c804fff96350d"
+uuid = "fdba3010-5040-5b88-9595-932c9decdf73"
+version = "0.7.5"
 
 [[MbedTLS]]
 deps = ["BinaryProvider", "Compat", "Libdl", "Pkg", "Sockets"]
@@ -289,6 +293,12 @@ git-tree-sha1 = "f6fbf4ba64d295e146e49e021207993b6b48c7d1"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "0.5.2"
 
+[[ReverseDiffSparse]]
+deps = ["Calculus", "Compat", "DataStructures", "ForwardDiff", "MathProgBase", "NaNMath", "Pkg"]
+git-tree-sha1 = "fe3cefe22714c9453ba2fdc23a9f61d165b37a15"
+uuid = "89212889-6d3f-5f97-b412-7825138f6c9c"
+version = "0.8.2"
+
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
@@ -354,9 +364,9 @@ version = "0.3.1"
 
 [[TableTraitsUtils]]
 deps = ["DataValues", "IteratorInterfaceExtensions", "Missings", "Pkg", "TableTraits", "Test"]
-git-tree-sha1 = "cad7e400b9886bb76aa468135ad4c3943b4751cd"
+git-tree-sha1 = "a355f1882d64881a11f853e64dcc353975c4df6e"
 uuid = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
-version = "0.3.0"
+version = "0.3.1"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]

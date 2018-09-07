@@ -1,7 +1,7 @@
 name = "PowerSystems"
 uuid = "c512b964-a17e-11e8-344c-11d7c2eac237"
 authors = ["Dheepak Krishnamurthy"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
