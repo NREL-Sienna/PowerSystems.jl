@@ -75,6 +75,7 @@ using TimeSeries
 using PowerModels
 using DataFrames
 using CSV
+using CSVFiles
 import Memento
 
 Memento.config!(Memento.getlogger("PowerModels"), "error")

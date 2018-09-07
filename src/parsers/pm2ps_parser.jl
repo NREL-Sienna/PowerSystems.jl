@@ -321,7 +321,7 @@ end
 
 function read_dcline(data,Buses)
     DCLines = Dict{String,Any}()
-    if haskey(data,"dclines")
+    if haskey(data,"dcline")
         for (d_key,d) in data["dcline"]
             haskey(d,"name") ? l_name =d["name"] : l_name = d_key
             (bus_f,bus_t) = find_bus(Buses,d)
