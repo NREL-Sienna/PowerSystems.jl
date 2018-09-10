@@ -5,8 +5,8 @@ struct HVDCLine <: Branch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
-    realpowerlimits_from::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MW
-    realpowerlimits_to::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MW
+    activepowerlimits_from::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MW
+    activepowerlimits_to::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MW
     reactivepowerlimits_from::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MVar
     reactivepowerlimits_to::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MVar
     loss::NamedTuple{(:l0, :l1),Tuple{Float64,Float64}}
@@ -15,12 +15,12 @@ end
 HVDCLine(; name ="init",
         available = true,
         connectionpoints = (from = Bus(), to = Bus()),
-        realpowerlimits_from = (min=0.0, max=0.0),
-        realpowerlimits_to = (min=0.0, max=0.0),
+        activepowerlimits_from = (min=0.0, max=0.0),
+        activepowerlimits_to = (min=0.0, max=0.0),
         reactivepowerlimits_from = (min=0.0, max=0.0),
         reactivepowerlimits_to = (min=0.0, max=0.0),
         loss = (l0=0.0, l1=0.0)
-    ) = HVDCLine(name, available, connectionpoints, realpowerlimits_from, realpowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to,loss )
+    ) = HVDCLine(name, available, connectionpoints, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to,loss )
 
 
 """

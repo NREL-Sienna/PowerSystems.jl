@@ -107,7 +107,7 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
     for (l_key,l) in load_dict
         for (lz_key,lz) in load_zone_dict
             if l["bus"] in lz["buses"]
-                ts_raw = df[:,lz_key]*(l["maxrealpower"]/lz["maxrealpower"])
+                ts_raw = df[:,lz_key]*(l["maxactivepower"]/lz["maxactivepower"])
                 load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
             end
         end
@@ -133,8 +133,8 @@ function gen_dict_parser(dict::Dict{String,Any})
                 push!(Generators,ThermalDispatch(convert(String,thermal_dict["name"]),
                                                             convert(Bool, thermal_dict["available"]),
                                                             thermal_dict["bus"],
-                                                            TechThermal(thermal_dict["tech"]["realpower"],
-                                                                        thermal_dict["tech"]["realpowerlimits"],
+                                                            TechThermal(thermal_dict["tech"]["activepower"],
+                                                                        thermal_dict["tech"]["activepowerlimits"],
                                                                         thermal_dict["tech"]["reactivepower"],
                                                                         thermal_dict["tech"]["reactivepowerlimits"],
                                                                         thermal_dict["tech"]["ramplimits"],
@@ -153,8 +153,8 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                             hydro_dict["available"],
                                                             hydro_dict["bus"],
                                                             TechHydro(  hydro_dict["tech"]["installedcapacity"],
-                                                                        hydro_dict["tech"]["realpower"],
-                                                                        hydro_dict["tech"]["realpowerlimits"],
+                                                                        hydro_dict["tech"]["activepower"],
+                                                                        hydro_dict["tech"]["activepowerlimits"],
                                                                         hydro_dict["tech"]["reactivepower"],
                                                                         hydro_dict["tech"]["reactivepowerlimits"],
                                                                         hydro_dict["tech"]["ramplimits"],
@@ -205,9 +205,9 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                             storage_dict["bus"],
                                                             storage_dict["energy"],
                                                             storage_dict["capacity"],
-                                                            storage_dict["realpower"],
-                                                            storage_dict["inputrealpowerlimit"],
-                                                            storage_dict["outputrealpowerlimit"],
+                                                            storage_dict["activepower"],
+                                                            storage_dict["inputactivepowerlimit"],
+                                                            storage_dict["outputactivepowerlimit"],
                                                             storage_dict["efficiency"],
                                                             storage_dict["reactivepower"],
                                                             storage_dict["reactivepowerlimits"]
@@ -283,7 +283,7 @@ function load_dict_parser(dict::Dict{String,Any})
                 convert(Bool,load_dict["available"]),
                 load_dict["bus"],
                 load_dict["model"],
-                load_dict["maxrealpower"],
+                load_dict["maxactivepower"],
                 load_dict["maxreactivepower"],
                 load_dict["scalingfactor"]
                 ))
@@ -297,7 +297,7 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
         push!(LoadZs,LoadZones(lz_dict["number"],
                                 convert(String,lz_dict["name"]),
                                 lz_dict["buses"],
-                                lz_dict["maxrealpower"],
+                                lz_dict["maxactivepower"],
                                 lz_dict["maxreactivepower"]
                                 ))
     end
@@ -323,8 +323,8 @@ function dclines_dict_parser(dict::Dict{String,Any},Branches::Array{Branch,1})
         push!(Branches,HVDCLine(convert(String,dcl_dict["name"]),
                             convert(Bool,dcl_dict["available"]),
                             dcl_dict["connectionpoints"],
-                            dcl_dict["realpowerlimits_from"],
-                            dcl_dict["realpowerlimits_to"],
+                            dcl_dict["activepowerlimits_from"],
+                            dcl_dict["activepowerlimits_to"],
                             dcl_dict["reactivepowerlimits_from"],
                             dcl_dict["reactivepowerlimits_to"],
                             dcl_dict["loss"]

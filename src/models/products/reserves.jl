@@ -38,7 +38,7 @@ struct ProportionalReserve <: Reserve
         for i in timestamp(loads[1].scalingfactor)
             t = zeros(0)
             for load in loads
-                push!(t,(load.maxrealpower*values(load.scalingfactor[i]))[1])
+                push!(t,(load.maxactivepower*values(load.scalingfactor[i]))[1])
             end
             push!(totalload,sum(t))
         end
@@ -85,7 +85,7 @@ struct StaticReserve <: Reserve
                                 timeframe::Float64,
                                 generators::Array{G}) where {Q <: PowerSystemDevice, G <: TechThermal}
 
-        requirement = maximum([gen.realpowerlimits[:max] for gen in generators])
+        requirement = maximum([gen.activepowerlimits[:max] for gen in generators])
 
         new(name, contributingdevices, timeframe, requirement)
     end

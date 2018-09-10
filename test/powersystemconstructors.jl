@@ -10,15 +10,15 @@ include("../data/data_14bus.jl")
 battery5 = [GenericBattery(name = "Bat",
                 status = true,
                 bus = nodes5[2],
-                realpower = 10.0,
+                activepower = 10.0,
                 energy = 5.0,
                 capacity = (min = 0.0, max = 0.0),
-                inputrealpowerlimits = (min = 0.0, max = 50.0),
-                outputrealpowerlimits = (min = 0.0, max = 50.0),
+                inputactivepowerlimits = (min = 0.0, max = 50.0),
+                outputactivepowerlimits = (min = 0.0, max = 50.0),
                 efficiency = (in = 0.90, out = 0.80),
                 )];
 
-@test try sys5b = PowerSystem(nodes5, generators5, loads5_DA, nothing, battery5,  1000.0)
+@test try sys5b = PowerSystem(nodes5, generators5, loads5_DA, nothing, battery5,  1000.0); true finally end
 
 generators_hg5 = [
     HydroFix("HydroFix",true,nodes5[2],
@@ -40,11 +40,11 @@ generators_hg5 = [
 battery14 = [GenericBattery(name = "Bat",
                 status = true,
                 bus = nodes14[2],
-                realpower = 10.0,
+                activepower = 10.0,
                 energy = 5.0,
                 capacity = (min = 0.0, max = 0.0),
-                inputrealpowerlimits = (min = 0.0, max = 50.0),
-                outputrealpowerlimits = (min = 0.0, max = 50.0),
+                inputactivepowerlimits = (min = 0.0, max = 50.0),
+                outputactivepowerlimits = (min = 0.0, max = 50.0),
                 efficiency = (in = 0.90, out = 0.80),
                 )];
 

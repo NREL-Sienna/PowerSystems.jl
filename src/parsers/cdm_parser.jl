@@ -158,8 +158,8 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any})
             Generators_dict["Thermal"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
                                             "available" => true,
                                             "bus" => make_bus(bus_id[1]),
-                                            "tech" => Dict{String,Any}("realpower" => 0,
-                                                                        "realpowerlimits" => (min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
+                                            "tech" => Dict{String,Any}("activepower" => 0,
+                                                                        "activepowerlimits" => (min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
                                                                         "reactivepower" => 0,
                                                                         "reactivepowerlimits" => (min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
                                                                         "ramplimits" => (up=gen_raw[gen,17],down=gen_raw[gen,17]),
@@ -178,8 +178,8 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any})
                                             "available" => true, # change from staus to available
                                             "bus" => make_bus(bus_id[1]),
                                             "tech" => Dict{String,Any}( "installedcapacity" => float(gen_raw[gen,11]),
-                                                                        "realpower" => 0.0,
-                                                                        "realpowerlimits" => (min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
+                                                                        "activepower" => 0.0,
+                                                                        "activepowerlimits" => (min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
                                                                         "reactivepower" => 0.0,
                                                                         "reactivepowerlimits" => (min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
                                                                         "ramplimits" => (up=gen_raw[gen,17],down=gen_raw[gen,17]),
@@ -232,9 +232,9 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any})
                                             "bus" => make_bus(bus_id[1]),
                                             "energy" => 0.0,
                                             "capacity" => (min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
-                                            "realpower" => 0.0,
-                                            "inputrealpowerlimit" => 0.0,
-                                            "outputrealpowerlimit" => 0.0,
+                                            "activepower" => 0.0,
+                                            "inputactivepowerlimit" => 0.0,
+                                            "outputactivepowerlimit" => 0.0,
                                             "efficiency" => (in= 0.0, out = 0.0),
                                             "reactivepower" => 0.0,
                                             "reactivepowerlimits" => (min = 0.0, max = 0.0),
@@ -316,12 +316,12 @@ function load_csv_parser(load_raw,bus_raw,Buses,LoadZone)
         end
         p = [bus_raw[n,5] for n in 1:nrow(bus_raw) if bus_raw[n,1] == b["number"]]
         q = [bus_raw[m,6] for m in 1:nrow(bus_raw) if bus_raw[m,1] == b["number"]]
-        ts_raw =load_raw[:,load_zone]*(p[1]/LoadZone[load_zone]["maxrealpower"])
+        ts_raw =load_raw[:,load_zone]*(p[1]/LoadZone[load_zone]["maxactivepower"])
         Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
                                             "available" => true,
                                             "bus" => make_bus(b),
                                             "model" => "P",
-                                            "maxrealpower" => p[1],
+                                            "maxactivepower" => p[1],
                                             "maxreactivepower" => q[1],
                                             "scalingfactor" => TimeSeries.TimeArray(load_raw[:,:DateTime],ts_raw) #TODO remove TS
                                             )
@@ -346,12 +346,12 @@ function loadzone_csv_parser(bus_raw,Buses)
     for (count,zone) in zip(b_count,load_zones)
         b_numbers = [bus_raw[b,1] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone ]
         buses = [make_bus(Buses[i]) for i in keys(Buses) if Buses[i]["number"] in  b_numbers]
-        realpower = [bus_raw[b,5] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone]
+        activepower = [bus_raw[b,5] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone]
         reactivepower = [bus_raw[b,6] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone]
         LoadZone_dict[zone] = Dict{String,Any}("number" => zone,
                                                         "name" => zone ,
                                                         "buses" => buses,
-                                                        "maxrealpower" => sum(realpower),
+                                                        "maxactivepower" => sum(activepower),
                                                         "maxreactivepower" => sum(reactivepower)
                                                         )
     end

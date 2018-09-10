@@ -4,8 +4,8 @@ abstract type
 end
 
 """
-    TechThermal(realpower::Float64,
-            realpowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}},
+    TechThermal(activepower::Float64,
+            activepowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}},
             reactivepower::Union{Float64,Nothing},
             reactivepowerlimits::Union{(min::Float64,max::Float64),Nothing},
             ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing},
@@ -19,7 +19,7 @@ Data Structure for the economical parameters of thermal generation technologies.
 
     ```jldoctest
 
-    julia> Tech = TechThermal(realpower = 100.0, realpowerlimits = (min = 50.0, max = 200.0))
+    julia> Tech = TechThermal(activepower = 100.0, activepowerlimits = (min = 50.0, max = 200.0))
     WARNING: Limits defined as nothing
     Tech Gen:
         Real Power: 100.0
@@ -36,15 +36,15 @@ Data Structure for the economical parameters of thermal generation technologies.
 
 """
 struct TechThermal
-    realpower::Float64 # [MW]
-    realpowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
+    activepower::Float64 # [MW]
+    activepowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
     reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVAr]
     ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} #MW/Hr
     timelimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} #Hr
-    function TechThermal(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
+    function TechThermal(activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
-        new(realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
+        new(activepower, PowerSystems.orderedlimits(activepowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
 
     end
 end
@@ -52,13 +52,13 @@ end
 #define different  constructors depending on the data available.
 # Update to named tuples when Julia 0.7 becomes available
 
-TechThermal(; realpower = 0.0,
-          realpowerlimits = (min = 0.0, max = 0.0),
+TechThermal(; activepower = 0.0,
+          activepowerlimits = (min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
           ramplimits = nothing,
           timelimits = nothing
-        ) = TechThermal(realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
+        ) = TechThermal(activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
 """"
 
