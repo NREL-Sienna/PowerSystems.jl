@@ -16,12 +16,14 @@ end
     include("powersystemconstructors.jl")
 end
 
+#=
 @testset "Parsing Code" begin
     println("Read Parsing code")
     include("parsestandard.jl")
     println("Reading forecast data ")
     @time include("readforecastdata.jl")
 end
+=#
 
 @testset "Utilities testing" begin
     println("Testing Network Matrices")
