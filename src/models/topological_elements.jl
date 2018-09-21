@@ -23,13 +23,13 @@ struct LoadZones  <: PowerSystemDevice
     number::Int
     name::String
     buses::Array{Bus,1}
-    maxrealpower::Float64
+    maxactivepower::Float64
     maxreactivepower::Float64
 end
 
 LoadZones(;   number = 0,
         name = "init",
         buses = [Bus()],
-        maxrealpower = 0.0,
+        maxactivepower = 0.0,
         maxreactivepower = 0.0
-    ) = LoadZones(number, name, buses, maxrealpower, maxreactivepower)
+    ) = LoadZones(number, name, buses, maxactivepower, maxreactivepower)

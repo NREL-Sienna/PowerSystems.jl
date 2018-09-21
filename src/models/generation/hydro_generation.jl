@@ -5,27 +5,27 @@ end
 
 struct TechHydro
     installedcapacity::Float64
-    realpower::Float64 # [MW]
-    realpowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
+    activepower::Float64 # [MW]
+    activepowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
     reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVAr]
     ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} #MW/Hr
     timelimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} # Hrs
-    function TechHydro(installedcapacity, realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
+    function TechHydro(installedcapacity, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
         
-        new(installedcapacity, realpower, PowerSystems.orderedlimits(realpowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
+        new(installedcapacity, activepower, PowerSystems.orderedlimits(activepowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
 
     end
 end
 
 TechHydro(;installedcapacity = 0.0,
-          realpower = 0.0,
-          realpowerlimits = (min = 0.0, max = 0.0),
+          activepower = 0.0,
+          activepowerlimits = (min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
           ramplimits = nothing,
           timelimits = nothing
-        ) = TechHydro(installedcapacity, realpower, realpowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
+        ) = TechHydro(installedcapacity, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
 
 struct EconHydro

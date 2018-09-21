@@ -166,8 +166,8 @@ P14, A14 = PowerSystems.buildptdf(branches14, nodes14);
 
 L5 = PowerSystems.buildlodf(branches5,nodes5) ;
 
-maximum(P5 - S5_slackB4) <= 1e-3
-maximum(P14 - S14_slackB1) <= 1e-3
+maximum(P5.data - S5_slackB4) <= 1e-3
+maximum(P14.data - S14_slackB1) <= 1e-3
 maximum(L5 - Lodf_5) <= 1e-3
 #maximum(PTRS - SRTS_GMLC) <= 1e-6
 

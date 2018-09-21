@@ -1,4 +1,4 @@
-#isdefined(Base, :__precompile__) && __precompile__()
+isdefined(Base, :__precompile__) && __precompile__()
 
 module PowerSystems
 
@@ -66,6 +66,7 @@ export parsestandardfiles
 
 import Base.convert
 using SparseArrays
+using AxisArrays
 using LinearAlgebra: LAPACK.getri!
 using LinearAlgebra: LAPACK.getrf!
 using LinearAlgebra: BLAS.gemm
