@@ -235,10 +235,8 @@ version = "0.10.0"
 [[Missings]]
 deps = ["Dates", "InteractiveUtils", "SparseArrays", "Test"]
 git-tree-sha1 = "adc26d2ee85a49c413464110d922cf21efc9d233"
-repo-rev = "5dc2d1117679ca07fd349e4e61704df8036cf3c7"
-repo-url = "https://github.com/JuliaData/Missings.jl.git"
 uuid = "e1d29d7a-bbdc-5cf2-9ac0-f12de2c33e28"
-version = "0.3.0+"
+version = "0.3.1"
 
 [[Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
@@ -401,9 +399,9 @@ uuid = "e0df1984-e451-5cb5-8b61-797a481e67e3"
 version = "0.6.0"
 
 [[TimeSeries]]
-deps = ["RecipesBase"]
-git-tree-sha1 = "be34845fcf07f25c1f383a80347a90e65ad04807"
-repo-rev = "0b23a9a1b66c0b2c1f9dd6a0ccfe841d20de8944"
+deps = ["Dates", "DelimitedFiles", "Random", "RecipesBase", "Statistics", "Test"]
+git-tree-sha1 = "2d0a9e6a4b784ca86cf890deca0a3cc58dad3568"
+repo-rev = "ib/jl-0.7"
 repo-url = "https://github.com/JuliaStats/TimeSeries.jl.git"
 uuid = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 version = "0.12.0+"
