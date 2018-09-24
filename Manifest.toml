@@ -15,9 +15,9 @@ version = "0.8.10"
 
 [[BinaryProvider]]
 deps = ["Libdl", "Pkg", "SHA", "Test"]
-git-tree-sha1 = "b530fbeb6f41ab5a83fbe3db1fcbe879334bcd2d"
+git-tree-sha1 = "48c147e63431adbcee69bc40b04c3f0fec0a4982"
 uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
-version = "0.4.2"
+version = "0.5.0"
 
 [[CSV]]
 deps = ["CategoricalArrays", "DataFrames", "DataStreams", "Dates", "InternedStrings", "Missings", "Mmap", "Test", "WeakRefStrings"]
@@ -191,7 +191,7 @@ version = "0.19.0"
 
 [[JuMP]]
 deps = ["Calculus", "Compat", "DataStructures", "ForwardDiff", "MathOptInterface", "NaNMath"]
-git-tree-sha1 = "8b9a4745d42d1766f7272146829c93ae1911c1c7"
+git-tree-sha1 = "ebd6140536a4c6d1ce0a8a5920ef71d6f944b12e"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaOpt/JuMP.jl.git"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
@@ -216,15 +216,15 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
 [[MathOptInterface]]
 deps = ["Compat", "Unicode"]
-git-tree-sha1 = "f2791f990529b7aea1fcb9fd45b636cd3a9d1e79"
+git-tree-sha1 = "ba12e7ce825c1458c03f88aae84fa630d882d303"
 uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
-version = "0.6.0"
+version = "0.6.1"
 
 [[MbedTLS]]
 deps = ["BinaryProvider", "Libdl", "Pkg", "Random", "Sockets", "Test"]
-git-tree-sha1 = "3ad21c8ff4cb16a816eb628bcb16be819da5946b"
+git-tree-sha1 = "30016e3f9359f43b76cc2185efea5de5f6c9aa62"
 uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
-version = "0.6.1"
+version = "0.6.2"
 
 [[Memento]]
 deps = ["Compat", "JSON", "Libdl", "Nullables", "Pkg", "Syslogs", "Test", "TimeZones"]
@@ -343,10 +343,10 @@ deps = ["LinearAlgebra", "Random"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[SpecialFunctions]]
-deps = ["BinDeps", "BinaryProvider", "Compat", "Libdl"]
-git-tree-sha1 = "d12f8917be3782f4b800ba16003b8d0d4858c2e5"
+deps = ["BinDeps", "BinaryProvider", "Libdl", "Test"]
+git-tree-sha1 = "c35c9c76008babf4d658060fc64aeb369a41e7bd"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "0.7.0"
+version = "0.7.1"
 
 [[StaticArrays]]
 deps = ["InteractiveUtils", "LinearAlgebra", "Random", "Statistics", "Test"]
@@ -400,11 +400,9 @@ version = "0.6.0"
 
 [[TimeSeries]]
 deps = ["Dates", "DelimitedFiles", "Random", "RecipesBase", "Statistics", "Test"]
-git-tree-sha1 = "2d0a9e6a4b784ca86cf890deca0a3cc58dad3568"
-repo-rev = "ib/jl-0.7"
-repo-url = "https://github.com/JuliaStats/TimeSeries.jl.git"
+git-tree-sha1 = "3997f5a96c9738a19592950dfc37632a91fd57b0"
 uuid = "9e3dc215-6440-5c97-bce1-76c03772f85e"
-version = "0.12.0+"
+version = "0.13.0"
 
 [[TimeZones]]
 deps = ["Compat", "EzXML", "Mocking", "Nullables", "Pkg"]
