@@ -1,4 +1,3 @@
-# TODO: Implement more complex DC Line models including control angle and transformers
 abstract type DCLine <: Branch end
 
 struct HVDCLine <: Branch

@@ -121,11 +121,10 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
 end
 
 # TODO: Check for islanded Buses
-# TODO: Check busses have same base voltage
 
 # check for minimum timediff
 function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
-    if length(loads[1].scalingfactor) > 1 
+    if length(loads[1].scalingfactor) > 1
         timeseries = loads[1].scalingfactor
         n = length(timeseries)-1
         ts = []

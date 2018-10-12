@@ -1,5 +1,3 @@
-#TODO: Update to named tuples when Julia 0.7 becomes available
-
 struct Bus <: PowerSystemDevice
     number::Int64
     name::String
