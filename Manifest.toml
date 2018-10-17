@@ -186,12 +186,12 @@ uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 version = "0.19.0"
 
 [[JuMP]]
-deps = ["Calculus", "Compat", "DataStructures", "ForwardDiff", "MathOptInterface", "NaNMath"]
-git-tree-sha1 = "ebd6140536a4c6d1ce0a8a5920ef71d6f944b12e"
+deps = ["Calculus", "Compat", "ForwardDiff", "MathProgBase", "Pkg", "ReverseDiffSparse"]
+git-tree-sha1 = "3716c8cae07d5056e7b9981d2d4dde239bd9c1d1"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaOpt/JuMP.jl.git"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
-version = "0.18.4+"
+version = "0.18.4"
 
 [[Juniper]]
 deps = ["Distributed", "JSON", "JuMP", "LinearAlgebra", "MathProgBase", "Random", "Statistics"]
@@ -217,12 +217,6 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 [[Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
-
-[[MathOptInterface]]
-deps = ["Compat", "Unicode"]
-git-tree-sha1 = "ba12e7ce825c1458c03f88aae84fa630d882d303"
-uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
-version = "0.6.1"
 
 [[MathProgBase]]
 deps = ["Compat"]
@@ -338,6 +332,12 @@ deps = ["Test"]
 git-tree-sha1 = "f6fbf4ba64d295e146e49e021207993b6b48c7d1"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "0.5.2"
+
+[[ReverseDiffSparse]]
+deps = ["Calculus", "Compat", "DataStructures", "ForwardDiff", "MathProgBase", "NaNMath", "Pkg"]
+git-tree-sha1 = "2c445d3c0a519376c950023ac67079bb71418f9b"
+uuid = "89212889-6d3f-5f97-b412-7825138f6c9c"
+version = "0.8.4"
 
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
