@@ -15,15 +15,15 @@ version = "0.8.10"
 
 [[BinaryProvider]]
 deps = ["Libdl", "Pkg", "SHA", "Test"]
-git-tree-sha1 = "48c147e63431adbcee69bc40b04c3f0fec0a4982"
+git-tree-sha1 = "9930c1a6cd49d9fcd7218df6be417e6ae4f1468a"
 uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
-version = "0.5.0"
+version = "0.5.2"
 
 [[CSV]]
-deps = ["CategoricalArrays", "DataFrames", "DataStreams", "Dates", "InternedStrings", "Missings", "Mmap", "Test", "WeakRefStrings"]
-git-tree-sha1 = "67134caa06fd033202d89385517e4d8b542f420c"
+deps = ["CategoricalArrays", "DataFrames", "DataStreams", "Dates", "Mmap", "Parsers", "Pkg", "Profile", "Random", "Tables", "Test", "Unicode", "WeakRefStrings"]
+git-tree-sha1 = "da83cb359d838758adf057719cdbfeffb074aabe"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.3.1"
+version = "0.4.1"
 
 [[CSVFiles]]
 deps = ["DataValues", "FileIO", "HTTP", "IterableTables", "IteratorInterfaceExtensions", "TableShowUtils", "TableTraits", "TableTraitsUtils", "Test", "TextParse"]
@@ -39,9 +39,9 @@ version = "0.4.1"
 
 [[CategoricalArrays]]
 deps = ["Compat", "Future", "JSON", "Missings", "Printf", "Reexport"]
-git-tree-sha1 = "8009a507e2e3db040d6854a82ce959fb5971cb37"
+git-tree-sha1 = "6362c49130b5888f5628bc197ee5f17aec7d2a88"
 uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
-version = "0.3.13"
+version = "0.4.0"
 
 [[CodecZlib]]
 deps = ["BinaryProvider", "Libdl", "Pkg", "Test", "TranscodingStreams"]
@@ -57,15 +57,15 @@ version = "0.2.0"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "ae262fa91da6a74e8937add6b613f58cd56cdad4"
+git-tree-sha1 = "2d9e14d19bad3f9ad5cc5e4cffabc3cfa59de825"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "1.1.0"
+version = "1.3.0"
 
 [[DataFrames]]
-deps = ["CategoricalArrays", "CodecZlib", "Compat", "DataStreams", "Dates", "InteractiveUtils", "LinearAlgebra", "Missings", "Pkg", "Printf", "Random", "Reexport", "SortingAlgorithms", "Statistics", "StatsBase", "Test", "TranscodingStreams", "Unicode", "WeakRefStrings"]
-git-tree-sha1 = "31cca86a48add8d5cdd9457c4f75ee5577ef3488"
+deps = ["CategoricalArrays", "CodecZlib", "Compat", "DataStreams", "Dates", "InteractiveUtils", "IteratorInterfaceExtensions", "LinearAlgebra", "Missings", "Pkg", "Printf", "Random", "Reexport", "SortingAlgorithms", "Statistics", "StatsBase", "TableTraits", "Tables", "Test", "TranscodingStreams", "Unicode", "WeakRefStrings"]
+git-tree-sha1 = "ad34fefb72b18a8dd5c17fab9089d11111b61935"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "0.13.1"
+version = "0.14.1"
 
 [[DataStreams]]
 deps = ["Dates", "Missings", "Pkg", "Test", "WeakRefStrings"]
@@ -75,9 +75,9 @@ version = "0.4.1"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections", "REPL", "Random", "Serialization", "Test"]
-git-tree-sha1 = "70c9a5215aa61d216f2f6ef209a8e190c3c17b40"
+git-tree-sha1 = "8fc6e166e24fda04b2b648d4260cdad241788c54"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.13.0"
+version = "0.14.0"
 
 [[DataValues]]
 deps = ["Dates", "InteractiveUtils", "LinearAlgebra", "Random", "Test"]
@@ -117,9 +117,9 @@ version = "0.9.0"
 
 [[FileIO]]
 deps = ["Pkg", "Random", "Test"]
-git-tree-sha1 = "b80161b7e679a1241f9441ebfa60b62d4239cf99"
+git-tree-sha1 = "481e4db939f005db39f7296599d0543c0744fe30"
 uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-version = "1.0.1"
+version = "1.0.2"
 
 [[ForwardDiff]]
 deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "InteractiveUtils", "LinearAlgebra", "NaNMath", "Pkg", "Random", "SparseArrays", "SpecialFunctions", "StaticArrays", "Test"]
@@ -133,15 +133,17 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[HTTP]]
 deps = ["Base64", "Dates", "Distributed", "IniFile", "MbedTLS", "Sockets", "Test"]
-git-tree-sha1 = "16499da36240bf80df9a7e9b0f228710be1fe37c"
+git-tree-sha1 = "b881f69331e85642be315c63d05ed65d6fc8a05b"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "0.7.0"
+version = "0.7.1"
 
 [[InfrastructureModels]]
-deps = ["Compat", "JuMP", "Memento"]
-git-tree-sha1 = "811529796a8b52b8f31a1a8cf28a9d96bd90f53f"
-uuid = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
-version = "0.0.9"
+deps = ["Compat", "JuMP", "Juniper", "LinearAlgebra", "Memento"]
+git-tree-sha1 = "ba08de93dc1e3ddbcb529bc8b8b2663f4398f466"
+repo-rev = "master"
+repo-url = "https://github.com/lanl-ansi/InfrastructureModels.jl.git"
+uuid = "e8e45514-c753-11e8-2a1b-cd93cb9d98d1"
+version = "0.0.0"
 
 [[IniFile]]
 deps = ["Test"]
@@ -153,12 +155,6 @@ version = "0.5.0"
 deps = ["LinearAlgebra", "Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
-[[InternedStrings]]
-deps = ["Random", "Test"]
-git-tree-sha1 = "eb05b5625bc5d821b8075a77e4c421933e20c76b"
-uuid = "7d512f48-7fb1-5a58-b986-67e6dc259f01"
-version = "0.7.0"
-
 [[IntervalSets]]
 deps = ["Compat"]
 git-tree-sha1 = "bf1c727a12bbe0beb4888d439ee4e91b9ba7944a"
@@ -167,15 +163,15 @@ version = "0.3.0"
 
 [[IterTools]]
 deps = ["Pkg", "SparseArrays", "Test"]
-git-tree-sha1 = "ed0787e62dc46b8d8c7c3db54391d71e0da5fefd"
+git-tree-sha1 = "3eb252416e1a5215530420cdd22b46208bb9d4c7"
 uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
-version = "1.0.0"
+version = "1.1.0"
 
 [[IterableTables]]
 deps = ["DataValues", "IteratorInterfaceExtensions", "Requires", "TableTraits", "TableTraitsUtils", "Test"]
-git-tree-sha1 = "6390a469cf0c28d475fdd43c6496a8c8614ef530"
+git-tree-sha1 = "486612943cd16ebb7fcc5b0a4dc2c80e8b9c7dbc"
 uuid = "1c8ee90f-4401-5389-894e-7a04a3dc0f4d"
-version = "0.8.3"
+version = "0.9.0"
 
 [[IteratorInterfaceExtensions]]
 deps = ["Test"]
@@ -195,7 +191,15 @@ git-tree-sha1 = "ebd6140536a4c6d1ce0a8a5920ef71d6f944b12e"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaOpt/JuMP.jl.git"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
-version = "0.18.2+"
+version = "0.18.4+"
+
+[[Juniper]]
+deps = ["Distributed", "JSON", "JuMP", "LinearAlgebra", "MathProgBase", "Random", "Statistics"]
+git-tree-sha1 = "dade749ce1e25aeec93e5ac3fa55c89f547cbdb6"
+repo-rev = "0.7"
+repo-url = "https://github.com/lanl-ansi/Juniper.jl.git"
+uuid = "2ddba703-00a4-53a7-87a5-e8b9971dde84"
+version = "0.2.0"
 
 [[LibGit2]]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
@@ -220,11 +224,17 @@ git-tree-sha1 = "ba12e7ce825c1458c03f88aae84fa630d882d303"
 uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 version = "0.6.1"
 
+[[MathProgBase]]
+deps = ["Compat"]
+git-tree-sha1 = "3bf2e534e635df810e5f4b4f1a8b6de9004a0d53"
+uuid = "fdba3010-5040-5b88-9595-932c9decdf73"
+version = "0.7.7"
+
 [[MbedTLS]]
 deps = ["BinaryProvider", "Libdl", "Pkg", "Random", "Sockets", "Test"]
-git-tree-sha1 = "30016e3f9359f43b76cc2185efea5de5f6c9aa62"
+git-tree-sha1 = "3775d205b09b624aa06d39012a8920ba99cb3b8b"
 uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
-version = "0.6.2"
+version = "0.6.3"
 
 [[Memento]]
 deps = ["Compat", "JSON", "Libdl", "Nullables", "Pkg", "Syslogs", "Test", "TimeZones"]
@@ -261,9 +271,15 @@ version = "0.0.8"
 
 [[OrderedCollections]]
 deps = ["Pkg", "Random", "Serialization", "Test"]
-git-tree-sha1 = "41da1edba028376b58520ca01d9a41e29f855d55"
+git-tree-sha1 = "85619a3f3e17bb4761fe1b1fd47f0e979f964d5b"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
-version = "1.0.1"
+version = "1.0.2"
+
+[[Parsers]]
+deps = ["Dates", "Mmap", "Pkg", "Test"]
+git-tree-sha1 = "d5252e3f228a513b9947585e95b94d146b7d66e4"
+uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
+version = "0.2.7"
 
 [[Pkg]]
 deps = ["Dates", "LibGit2", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
@@ -276,16 +292,20 @@ uuid = "2dfb63ee-cc39-5dd5-95bd-886bf059d720"
 version = "0.4.1"
 
 [[PowerModels]]
-deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "MathOptInterface", "Memento", "Pkg"]
-git-tree-sha1 = "51b0019db7b54def164b242e4c30ad0ff6669957"
-repo-rev = "moi-julia-v0.7"
+deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "Juniper", "LinearAlgebra", "MathProgBase", "Memento", "Pkg", "SparseArrays"]
+git-tree-sha1 = "86a3659396b897720d115487a33dd9f09d3cb26c"
+repo-rev = "v0.7"
 repo-url = "https://github.com/lanl-ansi/PowerModels.jl.git"
 uuid = "c36e90e8-916a-50a6-bd94-075b64ef4655"
-version = "0.7.0"
+version = "0.8.4"
 
 [[Printf]]
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+[[Profile]]
+deps = ["Printf"]
+uuid = "9abbd945-dff8-562f-b5e8-e1ebf5ef1b79"
 
 [[REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets"]
@@ -387,6 +407,12 @@ deps = ["DataValues", "IteratorInterfaceExtensions", "Missings", "Pkg", "TableTr
 git-tree-sha1 = "a355f1882d64881a11f853e64dcc353975c4df6e"
 uuid = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
 version = "0.3.1"
+
+[[Tables]]
+deps = ["Pkg", "Requires", "Test"]
+git-tree-sha1 = "7b7e95a34c2c2504f1403aa9005399e239f461b9"
+uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+version = "0.1.9"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
