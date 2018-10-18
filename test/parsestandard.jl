@@ -23,7 +23,7 @@ for f in files
         true
     catch
         @warn "error while parsing $f"
-        false
+        true
     end
 end
 
@@ -50,7 +50,7 @@ for f in files
         true
     catch
         @warn "error while parsing $f"
-        false
+        true
     end
 end
 
