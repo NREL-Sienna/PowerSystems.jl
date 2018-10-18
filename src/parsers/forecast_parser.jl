@@ -44,6 +44,7 @@ function read_data_files(rootpath::String; kwargs...)
                     data[folder_name] = read_datetime(csv_data; kwargs...)
                 end
             end
+            @info "Successfully parsed $folder"
         end
 
     end
