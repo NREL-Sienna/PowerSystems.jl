@@ -10,10 +10,10 @@ if length(files) == 0
 end
 
 for f in files
-    @test @time  try
+    @test try
         ext = match(file_ext, f)
         print("Parsing $f ...\n")
-        pm_dict = parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower",f)))
+        pm_dict = PowerSystems.parse_file(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower",f)))
         println("Successfully parsed $f to PowerModels dict")
         ps_dict = PowerSystems.pm2ps_dict(pm_dict)
         println("Successfully parsed $f to PowerSystems dict")
@@ -21,10 +21,7 @@ for f in files
         println("Successfully parsed $f to PowerSystems devices")
         sys_test = PowerSystem(Buses, Generators,Loads,Branches,Storage,float(ps_dict["baseMVA"])) 
         println("Successfully parsed $f to PowerSystem struct")
-        true
-    catch
-        @warn("error while parsing $f")
-    end
+    true finally end
 end
 
 # PSSE Files
@@ -36,10 +33,10 @@ if length(files) == 0
 end
 
 for f in files
-    @test @time  try
+    @test try
         ext = match(file_ext, f)
         print("Parsing $f ...\n")
-        pm_dict = parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/psse_raw",f)))
+        pm_dict = PowerSystems.parse_file(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/psse_raw",f)))
         println("Successfully parsed $f to PowerModels dict")
         ps_dict = PowerSystems.pm2ps_dict(pm_dict)
         println("Successfully parsed $f to PowerSystems dict")
@@ -47,10 +44,7 @@ for f in files
         println("Successfully parsed $f to PowerSystems devices")
         sys_test = PowerSystem(Buses, Generators,Loads,Branches,Storage,float(ps_dict["baseMVA"])) # TODO: Add DClines, Shunts 
         println("Successfully parsed $f to PowerSystem struct")
-        true
-    catch
-        @warn("error while parsing $f")
-    end
+    true finally end
 end
 
 true
