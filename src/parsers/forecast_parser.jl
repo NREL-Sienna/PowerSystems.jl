@@ -1,5 +1,5 @@
 # Parser for Forecasts dat files
-function read_data_files(files::String)
+function read_data_files(files::String; kwargs...)
     """
     Read all forecast CSV's in the path provided, the struct of the data should follow this format
     folder : PV
@@ -23,20 +23,46 @@ function read_data_files(files::String)
             for file in readdir(files*"/$folder")
                 if match(REGEX_DEVICE_TYPE, file) != nothing
                     file_path = files*"/$folder/$file"
-                    #raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
-                    raw_data = DataFrame(CSVFiles.load(file_path))
+                    raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                    raw_data = read_datetime(raw_data; kwargs...)
+                    #raw_data = DataFrame(CSVFiles.load(file_path))
+                    #=
                     if raw_data[25,:Period] > 24
                         key = "RT"
                     else
                         key ="DA"
                     end
-                    data[folder][key] = read_datetime(raw_data)
+                    data[folder][key] = raw_data
+                    =#
+                    data[folder] = raw_data
                 end
             end
             println("Successfully parsed $folder")
         end
     end
     return data
+end
+
+function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
+    """
+    Args:
+        PowerSystems Dictionary
+        Dictionary of all the data files
+    Returns:
+        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
+    """
+    gen_ts = Dict([(k=>ts_dict[k]) for k in keys(ts_dict) if k != "load"])
+    if "load" in keys(ts_dict)
+        ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
+    else
+        @warn("Not assigning time series to loads")
+    end
+    
+    for key in keys(gen_ts)
+        ps_dict = PowerSystems.add_time_series(ps_dict,ts_dict[key])
+    end
+    
+    return ps_dict
 end
 
  # -Parse csv file to dict
