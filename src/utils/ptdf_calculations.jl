@@ -7,7 +7,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
 
     for (ix,b) in enumerate(nodes)
         if b.number < -1
-            @error("buses must be numbered consecutively in the bus/node matrix")
+            @error "buses must be numbered consecutively in the bus/node matrix" # TODO: raise error here?
         end
         num_bus[b.number] = ix
     end

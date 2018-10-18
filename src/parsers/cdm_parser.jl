@@ -21,7 +21,7 @@ function read_csv_data(file_path::String)
     data =Dict{String,Any}()
 
     if length(files) == 0
-        @error("No test files in the folder")
+        @error "No test files in the folder"
     end
     for d_file in readdir(files)
         try

@@ -1,8 +1,8 @@
 @static if Sys.iswindows()
-    
+
     has_7z  = nothing
-    has_zip = nothing 
-    
+    has_zip = nothing
+
     function unpack_cmd(file,directory)
 
         global has_7z
@@ -17,13 +17,13 @@
             try
                 return (`7z x $file -y -o$directory`)
             catch
-                @error("Can't unpack $file")
+                @error "Can't unpack $file"
             end
         elseif has_zip
             try
                 return (`powershell -file $(joinpath(@__FILE__,"winunzip.ps1")) $file $directory`)
             catch
-                @error("Can't unpack $file")
+                @error "Can't unpack $file"
             end
         end
     end

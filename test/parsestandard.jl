@@ -5,7 +5,7 @@ files = readdir(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "..
 file_ext = r".*?\.(\w+)"
 
 if length(files) == 0
-    @error("No test files in the folder")
+    @error "No test files in the folder"
 end
 
 for f in files
@@ -22,7 +22,7 @@ for f in files
         @info "Successfully parsed $f to PowerSystem struct"
         true
     catch
-        @warn("error while parsing $f")
+        @warn "error while parsing $f"
     end
 end
 
@@ -31,7 +31,7 @@ files = readdir(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "..
 file_ext = r".*?\.(\w+)"
 
 if length(files) == 0
-    @error("No test files in the folder")
+    @error "No test files in the folder"
 end
 
 for f in files
