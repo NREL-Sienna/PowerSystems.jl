@@ -108,8 +108,9 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
             new_rate = y_mag*m_vmax*c_max
             end
             flag = 0
-            l.rate.from_to <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.from_to > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_from_to = l.rate.from_to
-            l.rate.to_from <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.to_from > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_to_from = l.rate.to_from
+            #This is the same check as implemented in PowerModels
+            l.rate.from_to <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.from_to > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*basemva) : rating_from_to = l.rate.from_to
+            l.rate.to_from <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.to_from > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*basemva) : rating_to_from = l.rate.to_from
             if flag == 1
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
