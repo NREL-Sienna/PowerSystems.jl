@@ -136,7 +136,7 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
         end
     else
         for (l_key,l) in load_dict
-            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[:,l_key])
+            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[l_key])
         end
     end
     return load_dict

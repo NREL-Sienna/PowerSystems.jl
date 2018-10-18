@@ -65,8 +65,9 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     return ps_dict
 end
 
+ 
  # -Parse csv file to dict
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
     """
     Args:
         Dictionary of all the data files
@@ -79,9 +80,8 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
     """
     forecast = Dict{String,Any}()
     for device in Devices
-        for (key_df,dict_df) in  time_series
-            if device.name in convert(Array{String},names(dict_df["DA"]))
-                df = (dict_df["DA"])
+        for (key_df,df) in  time_series
+            if device.name in convert(Array{String},names(df))
                 time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
                 initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
                 last_date = df[end,:DateTime]
@@ -110,7 +110,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
     return forecast
 end
 
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1}) 
     """
     Args:
         Dictionary of all the data files
@@ -127,7 +127,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
         if haskey(time_series,"Load")
             for lz in LoadZones
                 if device.bus in lz.buses
-                    df = time_series["Load"]["DA"][:,[:DateTime,Symbol(lz.name)]]
+                    df = time_series["Load"][:,[:DateTime,Symbol(lz.name)]]
 
                     time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
                     initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
