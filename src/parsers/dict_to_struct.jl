@@ -71,10 +71,10 @@ function read_datetime(df; kwargs...)
         Dataframe with a DateTime columns
     """
     if [c for c in [:Year,:Month,:Day,:Period] if c in names(df)] == [:Year,:Month,:Day,:Period]
-        if max(df[:Period]) <= Hour(25)
+        if Hour(DataFrames.maximum(df[:Period])) <= Hour(25)
             df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Hour(1) :
                             DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
-        elseif (max(df[:Period]) >= Minute(1440)) & (max(df[:Period]) <= Minute(1500))
+        elseif (Minute(5) * DataFrames.maximum(df[:Period]) >= Minute(1440))& (Minute(5) * DataFrames.maximum(df[:Period]) <= Minute(1500))
             df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Minute(5) :
                             DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
         else
@@ -82,6 +82,7 @@ function read_datetime(df; kwargs...)
         end
 
         delete!(df, [:Year,:Month,:Day,:Period])
+
     elseif :DateTime in names(df)
         df[:DateTime] = Datetime(df[:DateTime])
     else 
@@ -150,8 +151,8 @@ end
 
 ## - Parse Dict to Array
 function gen_dict_parser(dict::Dict{String,Any})
-    Generators =Array{Generator,1}(0)
-    Storage_gen =Array{Storage,1}(0)
+    Generators = Array{G where {G<:Generator},1}()
+    Storage_gen = Array{S where {S<:Storage},1}()
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
@@ -302,7 +303,7 @@ end
 
 
 function load_dict_parser(dict::Dict{String,Any})
-    Loads =Array{ElectricLoad,1}(0)
+    Loads =Array{L where {L<:ElectricLoad},1}()
     for (load_key,load_dict) in dict
         push!(Loads,StaticLoad(convert(String,load_dict["name"]),
                 convert(Bool,load_dict["available"]),
@@ -317,7 +318,7 @@ function load_dict_parser(dict::Dict{String,Any})
 end
 
 function loadzone_dict_parser(dict::Dict{Int64,Any})
-    LoadZs =Array{PowerSystemDevice,1}(0)
+    LoadZs =Array{D where {D<:PowerSystemDevice},1}()
     for (lz_key,lz_dict) in dict
         push!(LoadZs,LoadZones(lz_dict["number"],
                                 convert(String,lz_dict["name"]),
@@ -330,7 +331,7 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
 end
 
 function shunt_dict_parser(dict::Dict{String,Any})
-    Shunts = Array{FixedAdmittance,1}(0)
+    Shunts = Array{FixedAdmittance,1}()
     for (s_key,s_dict) in dict
         push!(Shunts,FixedAdmittance(convert(String,s_dict["name"]),
                             convert(Bool,s_dict["available"]),
