@@ -1,5 +1,4 @@
-using Memento
-Memento.setlevel!(Memento.getlogger("PowerModels"), "error")
+using Logging
 
 ## Matpower files
 files = readdir(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower")))
