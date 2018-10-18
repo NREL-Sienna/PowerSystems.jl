@@ -4,7 +4,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
     linecount = length(branches)
     line_axis = [branch.name for branch in branches]
     num_bus = Dict{Int,Int}()
-    
+
     for (ix,b) in enumerate(nodes)
         if b.number < -1
             @error("buses must be numbered consecutively in the bus/node matrix")
@@ -65,7 +65,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         @warn "Slack bus not identified in the Bus/Nodes list, can't build PTDF"
         S = Array{Float64,2}(undef,linecount,buscount)
     end
-    
+
     S_ax = AxisArray(S, Axis{:branches}(line_axis), Axis{:buses}(bus_axis))
     A_ax = AxisArray(A,  Axis{:buses}(bus_axis), Axis{:lines}(line_axis))
 

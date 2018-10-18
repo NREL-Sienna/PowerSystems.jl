@@ -288,10 +288,9 @@ function json_parser(filename)
         open("../data/CDM/RTS/JSON/RTS-GMLC_Test_Case.json", "r") do f
         global temp
         dicttxt = readstring(f)  # file information to string
-        temp=JSON.parse(dicttxt)  # parse and transform data
-        data =temp
+        temp = JSON.parse(dicttxt)  # parse and transform data
+        data = temp
         end
-
     else
         @warn "JSON file doesn't exist"
     end
