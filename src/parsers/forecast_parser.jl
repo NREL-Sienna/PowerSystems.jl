@@ -13,7 +13,11 @@ function read_data_files(files::String; kwargs...)
         A dictionary with the CSV files as dataframes and folder names as keys
     # TODO : Stochasti/Multiple scenarios
     """
-    REGEX_DEVICE_TYPE = r"(.*?)\.csv"
+    if :REGEX_FILE in keys(kwargs)
+        REGEX_FILE = kwargs[:REGEX_FILE]
+    else
+        REGEX_FILE = r"(.*?)\.csv"
+    end
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
     data =Dict{String,Any}()
     for folder in readdir(files)
@@ -21,19 +25,15 @@ function read_data_files(files::String; kwargs...)
             print("Parsing csv timeseries files in $folder ...\n")
             data[folder] = Dict{String,Any}()
             for file in readdir(files*"/$folder")
-                if match(REGEX_DEVICE_TYPE, file) != nothing
+                if match(REGEX_FILE, file) != nothing
                     file_path = files*"/$folder/$file"
-                    raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                    println("Parsing $file_path")
+                    #raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                    raw_data = DataFrame(CSVFiles.load(file_path))
+
+                    println("Assigning DateTimes...")
                     raw_data = read_datetime(raw_data; kwargs...)
-                    #raw_data = DataFrame(CSVFiles.load(file_path))
-                    #=
-                    if raw_data[25,:Period] > 24
-                        key = "RT"
-                    else
-                        key ="DA"
-                    end
-                    data[folder][key] = raw_data
-                    =#
+
                     data[folder] = raw_data
                 end
             end
