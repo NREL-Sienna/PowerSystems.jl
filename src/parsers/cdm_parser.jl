@@ -26,7 +26,7 @@ function read_csv_data(file_path::String)
     for d_file in readdir(files)
         try
             if match(REGEX_IS_FOLDER, d_file) != nothing
-                print("Parsing csv timeseries files in $d_file ...\n")
+                @info "Parsing csv timeseries files in $d_file ..."
                 for file in readdir(files*"/$d_file")
                     if match(REGEX_DEVICE_TYPE, file) != nothing
                         data[d_file] = Dict{String,Any}()
@@ -37,7 +37,7 @@ function read_csv_data(file_path::String)
                 end
                 @info "Successfully parsed $d_file"
             elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
-                print("Parsing csv timeseries files in $d_file ...\n")
+                @info "Parsing csv timeseries files in $d_file ..."
                 file_path = files*"/$d_file"
                 raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
                 data[split(d_file,r"[.]")[1]] = raw_data

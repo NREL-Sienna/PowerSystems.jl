@@ -18,7 +18,7 @@ function read_data_files(files::String)
     data =Dict{String,Any}()
     for folder in readdir(files)
         if match(REGEX_IS_FOLDER, folder) != nothing
-            print("Parsing csv timeseries files in $folder ...\n")
+            @info "Parsing csv timeseries files in $folder ..."
             data[folder] = Dict{String,Any}()
             for file in readdir(files*"/$folder")
                 if match(REGEX_DEVICE_TYPE, file) != nothing
