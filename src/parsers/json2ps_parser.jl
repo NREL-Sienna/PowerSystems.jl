@@ -293,7 +293,7 @@ function json_parser(filename)
         end
 
     else
-        println("JSON file doesn't exist")
+        @warn "JSON file doesn't exist"
     end
     Buses = bus_json_parse(data["Buses"])
     Generators,Storages = gen_json_parser(data["Generators"])

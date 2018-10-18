@@ -53,7 +53,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
 
     elseif dist_slack[1] != 0.1 && length(dist_slack)  == buscount
-        println("Distributed bus")
+        @info "Distributed bus"
         (B, bipiv, binfo) = getrf!(B)
         S_ = gemm('N','N', gemm('N','T', inv_X, A[setdiff(1:end, slack_position), :]), getri!(B, bipiv) )
         S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
@@ -62,7 +62,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = S - gemm('N','N',gemm('N','N',S,slack_array),ones(1,buscount))
 
     elseif length(slack_position) == 0
-        @warn("Slack bus not identified in the Bus/Nodes list, can't build PTDF")
+        @warn "Slack bus not identified in the Bus/Nodes list, can't build PTDF"
         S = Array{Float64,2}(undef,linecount,buscount)
     end
     

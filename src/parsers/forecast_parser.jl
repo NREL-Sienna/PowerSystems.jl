@@ -33,7 +33,7 @@ function read_data_files(files::String)
                     data[folder][key] = read_datetime(raw_data)
                 end
             end
-            println("Successfully parsed $folder")
+            @info "Successfully parsed $folder"
         end
     end
     return data
@@ -78,7 +78,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
             end
         end
         if !haskey(forecast,device.name)
-            println("No forecast found for $(device.name) ")
+            @info "No forecast found for $(device.name) "
         end
     end
     return forecast

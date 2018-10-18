@@ -64,7 +64,7 @@ function make_bus(bus_dict::Dict{String,Any})
         bus = Buses[Int(device_dict["shunt_bus"])]
         value =bus
     else
-        println("Provided Dict missing key/s  gen_bus or f_bus/t_bus or load_bus")
+        @info "Provided Dict missing key/s  gen_bus or f_bus/t_bus or load_bus"
     end
     return value
 end
