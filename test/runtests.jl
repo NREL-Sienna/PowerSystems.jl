@@ -1,7 +1,13 @@
 using PowerSystems
 using Test
+using Logging
+
+import Memento
+Memento.config!(Memento.getlogger("PowerModels"), "error")
 
 # Testing Topological components of the schema
+gl = global_logger()
+global_logger(ConsoleLogger(gl.stream, Logging.Error))
 
 
 @testset "Read PowerSystems data" begin
