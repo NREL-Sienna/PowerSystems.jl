@@ -23,6 +23,7 @@ for f in files
         true
     catch
         @warn "error while parsing $f"
+        false
     end
 end
 
@@ -35,7 +36,7 @@ if length(files) == 0
 end
 
 for f in files
-    @test @time  try
+    @test @time try
         ext = match(file_ext, f)
         @info "Parsing $f ..."
         pm_dict = parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/psse_raw",f)))
@@ -49,6 +50,7 @@ for f in files
         true
     catch
         @warn "error while parsing $f"
+        false
     end
 end
 
