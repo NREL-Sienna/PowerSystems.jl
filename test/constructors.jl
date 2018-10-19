@@ -1,19 +1,19 @@
 #Bus Constructor
-@test try tBus = Bus(); true finally end 
+@test try tBus = Bus(); true finally end
 
 #Generation Constructors
-@test try tEconThermal = EconThermal(); true finally end 
-@test try tTechThermal = TechThermal(); true finally end 
-@test try tThermalGen = ThermalDispatch(); true finally end 
-@test try tTechHydro = TechHydro(); true finally end 
-@test try tEconHydro = EconHydro(); true finally end 
-@test try tHydroFix = HydroFix(); true finally end 
-@test try tHydroCurtailment = HydroCurtailment(); true finally end 
-@test try tHydroStorage = HydroStorage(); true finally end 
-@test try tTechRenewable=TechRenewable(); true finally end 
-@test try tEconRenewable = EconRenewable(); true finally end 
-@test try tRenewableFix = RenewableFix(); true finally end 
-@test try tRenewableCurtailment = RenewableCurtailment(); true finally end 
+@test try tEconThermal = EconThermal(); true finally end
+@test try tTechThermal = TechThermal(); true finally end
+@test try tThermalGen = ThermalDispatch(); true finally end
+@test try tTechHydro = TechHydro(); true finally end
+@test try tEconHydro = EconHydro(); true finally end
+@test try tHydroFix = HydroFix(); true finally end
+@test try tHydroCurtailment = HydroCurtailment(); true finally end
+@test try tHydroStorage = HydroStorage(); true finally end
+@test try tTechRenewable=TechRenewable(); true finally end
+@test try tEconRenewable = EconRenewable(); true finally end
+@test try tRenewableFix = RenewableFix(); true finally end
+@test try tRenewableCurtailment = RenewableCurtailment(); true finally end
 
 #Storage Constructots
 @test try tStorage = GenericBattery(); true finally end
