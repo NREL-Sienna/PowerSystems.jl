@@ -1,5 +1,8 @@
 using Dates
 
+@testset "Read PowerSystems data" begin
+
+
 data = PowerSystems.parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower/RTS_GMLC.m")))
 
 ps_dict = PowerSystems.pm2ps_dict(data)
@@ -14,6 +17,8 @@ forecast_load = PowerSystems.make_forecast_dict(time_series,Dates.Day(1),24,Load
 
 Forecast_Struct = PowerSystems.make_forecast_array(forecast_gen)
 
-
-
 true
+
+end
+
+
