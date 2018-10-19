@@ -1,5 +1,12 @@
+function get_name_and_csv(path_to_filename)
+    df = DataFrames.DataFrame(Pandas.read_csv(path_to_filename))
+    folder = splitdir(splitdir(path_to_filename)[1])[2]
+    return folder, df
+end
+
+
 # Parser for Forecasts dat files
-function read_data_files(files::String; kwargs...)
+function read_data_files(rootpath::String; kwargs...)
     """
     Read all forecast CSV's in the path provided, the struct of the data should follow this format
     folder : PV
@@ -18,29 +25,29 @@ function read_data_files(files::String; kwargs...)
     else
         REGEX_FILE = r"(.*?)\.csv"
     end
-    REGEX_IS_FOLDER = r"^[A-Za-z]+$"
-    data =Dict{String,Any}()
-    for folder in readdir(files)
-        if match(REGEX_IS_FOLDER, folder) != nothing
-            print("Parsing csv timeseries files in $folder ...\n")
-            data[folder] = Dict{String,Any}()
-            for file in readdir(files*"/$folder")
-                if match(REGEX_FILE, file) != nothing
-                    file_path = files*"/$folder/$file"
-                    println("Parsing $file_path")
-                    #raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
-                    raw_data = DataFrames.DataFrame(Pandas.read_csv(file_path))
 
-                    println("Assigning DateTimes...")
-                    raw_data = read_datetime(raw_data; kwargs...)
+    DATA = Dict{String, Any}()
+    data = Dict{String, Any}()
+    DATA["gen"] = data
 
-                    data[folder] = raw_data
+    for (root, dirs, files) in walkdir(rootpath)
+
+        for filename in files
+
+            path_to_filename = joinpath(root, filename)
+            if match(REGEX_FILE, path_to_filename) != nothing
+                folder_name, csv_data = get_name_and_csv(path_to_filename)
+                if folder_name == "load"
+                    DATA["load"] = read_datetime(csv_data; kwargs...)
+                else
+                    data[folder_name] = read_datetime(csv_data; kwargs...)
                 end
             end
-            println("Successfully parsed $folder")
         end
+
     end
-    return data
+
+    return DATA
 end
 
 function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
@@ -51,15 +58,24 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     Returns:
         Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
     """
-    gen_ts = Dict([(k=>ts_dict[k]) for k in keys(ts_dict) if k != "load"])
     if "load" in keys(ts_dict)
         ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
     else
         @warn("Not assigning time series to loads")
     end
     
-    for key in keys(gen_ts)
-        ps_dict = PowerSystems.add_time_series(ps_dict,ts_dict[key])
+    device_dict = ps_dict["gen"]
+    for (key, d) in ts_dict["gen"]
+        if key in keys(device_dict)
+            device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
+        end
+    end
+
+    device_dict = ps_dict["gen"]["Renewable"]
+    for (key, d) in ts_dict["gen"]
+        if key in keys(device_dict)
+            device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
+        end
     end
     
     return ps_dict

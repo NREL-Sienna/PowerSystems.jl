@@ -19,6 +19,9 @@ end
 @testset "Parsing Code" begin
     println("Read Parsing code")
     include("parsestandard.jl")
+end
+
+@testset "Forecast parsing" begin
     println("Reading forecast data ")
     @time include("readforecastdata.jl")
 end
