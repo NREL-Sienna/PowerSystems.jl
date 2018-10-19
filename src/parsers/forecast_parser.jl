@@ -29,7 +29,7 @@ function read_data_files(files::String; kwargs...)
                     file_path = files*"/$folder/$file"
                     println("Parsing $file_path")
                     #raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
-                    raw_data = DataFrame(CSVFiles.load(file_path))
+                    raw_data = DataFrames.DataFrame(Pandas.read_csv(file_path))
 
                     println("Assigning DateTimes...")
                     raw_data = read_datetime(raw_data; kwargs...)
