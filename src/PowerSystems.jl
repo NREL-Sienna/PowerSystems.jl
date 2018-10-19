@@ -77,9 +77,7 @@ using PowerModels
 using DataFrames
 using CSV
 using CSVFiles
-import Memento
-
-Memento.config!(Memento.getlogger("PowerModels"), "error")
+using Logging
 
 #################################################################################
 # Includes
@@ -115,4 +113,5 @@ include("base.jl")
 # Better printing
 include("utils/print.jl")
 include("utils/lodf_calculations.jl")
+
 end # module

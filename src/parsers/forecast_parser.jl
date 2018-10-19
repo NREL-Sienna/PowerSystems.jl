@@ -18,7 +18,7 @@ function read_data_files(files::String)
     data =Dict{String,Any}()
     for folder in readdir(files)
         if match(REGEX_IS_FOLDER, folder) != nothing
-            print("Parsing csv timeseries files in $folder ...\n")
+            @info "Parsing csv timeseries files in $folder ..."
             data[folder] = Dict{String,Any}()
             for file in readdir(files*"/$folder")
                 if match(REGEX_DEVICE_TYPE, file) != nothing
@@ -33,7 +33,7 @@ function read_data_files(files::String)
                     data[folder][key] = read_datetime(raw_data)
                 end
             end
-            println("Successfully parsed $folder")
+            @info "Successfully parsed $folder"
         end
     end
     return data
@@ -78,7 +78,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
             end
         end
         if !haskey(forecast,device.name)
-            println("No forecast found for $(device.name) ")
+            @info "No forecast found for $(device.name) "
         end
     end
     return forecast
@@ -121,7 +121,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
                 end
             end
         else
-            @warn("No forecast found for Loads ")
+            @warn "No forecast found for Loads"
         end
     end
     return forecast

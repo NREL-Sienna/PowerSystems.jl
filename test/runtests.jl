@@ -1,38 +1,42 @@
 using PowerSystems
 using Test
+using Logging
+
+import Memento
+Memento.config!(Memento.getlogger("PowerModels"), "error")
 
 # Testing Topological components of the schema
+gl = global_logger()
+global_logger(ConsoleLogger(gl.stream, Logging.Error))
 
 
 @testset "Read PowerSystems data" begin
-    println("Read Data in *.jl files")
+    @info "Read Data in *.jl files"
     include("readnetworkdata.jl")
 end
 
 @testset "Local Functions" begin
-    println("Test all the constructors")
+    @info "Test all the constructors"
     include("constructors.jl")
-    println("Test PowerSystem constructor")
+    @info "Test PowerSystem constructor"
     include("powersystemconstructors.jl")
 end
 
 @testset "Parsing Code" begin
-    println("Read Parsing code")
     include("parsestandard.jl")
-    println("Reading forecast data ")
     @time include("readforecastdata.jl")
 end
 
 @testset "Utilities testing" begin
-    println("Testing Network Matrices")
+    @info "Testing Network Matrices"
     @test @time include("network_matrices.jl")
-    println("Testing Check Functions")
+    @info "Testing Check Functions"
     include("checks_testing.jl")
 end
 
-#=
-@testset "Print testing" begin
-    include("../data/data_5bus.jl");
-    @test @assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
-end
-=#
+# #=
+# @testset "Print testing" begin
+    # include("../data/data_5bus.jl");
+    # @test @assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
+# # end
+# =#
