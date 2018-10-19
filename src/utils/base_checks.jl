@@ -2,7 +2,7 @@ function orderedlimits(limits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float
     if isa(limits,Nothing)
         @info "'$limsname' limits defined as nothing"
     else
-        limits.max < limits.min ? @error("'$limsname' limits not in ascending order") : limits
+        if limits.max < limits.min @error "'$limsname' limits not in ascending order" else limits end
     end
     return limits
 end

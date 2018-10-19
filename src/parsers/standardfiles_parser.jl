@@ -4,7 +4,7 @@ function parsestandardfiles(file::String)
 
     # Check for at least one bus in input file
     if (length(data["bus"]) < 1)
-        @error("There are no buses in this file")
+        @error "There are no buses in this file"
     end
     return data
 
