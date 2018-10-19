@@ -20,7 +20,7 @@ function timeserieschecksources(generators::Array{T}, t) where {T<:Generator}
         if t == length(g.scalingfactor)
             continue
         else
-            @error "Inconsistent generation scaling factor time series length"
+            @error("Inconsistent generation scaling factor time series length for $(g.name)")
         end
     end
 end

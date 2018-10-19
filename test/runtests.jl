@@ -24,6 +24,10 @@ end
 
 @testset "Parsing Code" begin
     include("parsestandard.jl")
+end
+
+@testset "Forecast parsing" begin
+    @info "Reading forecast data "
     @time include("readforecastdata.jl")
 end
 
