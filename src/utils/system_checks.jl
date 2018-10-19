@@ -109,8 +109,20 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
             end
             flag = 0
             #This is the same check as implemented in PowerModels
-            l.rate.from_to <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.from_to > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*basemva) : rating_from_to = l.rate.from_to
-            l.rate.to_from <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.to_from > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*basemva) : rating_to_from = l.rate.to_from
+            if l.rate.from_to <= 0.0
+                (flag, rating_from_to) = (1,new_rate*basemva)
+            elseif l.rate.from_to > new_rate*basemva
+                 (flag, rating_from_to) = (1,new_rate*basemva)
+            else
+                rating_from_to = l.rate.from_to
+            end
+            if l.rate.to_from <= 0.0
+                (flag, rating_from_to) = (1,new_rate*basemva)
+            elseif  l.rate.to_from > new_rate*basemva
+                (flag, rating_from_to) = (1,new_rate*basemva)
+            else
+                 rating_to_from = l.rate.to_from
+            end
             if flag == 1
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
