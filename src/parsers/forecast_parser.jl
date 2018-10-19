@@ -1,5 +1,5 @@
 # Parser for Forecasts dat files
-function read_data_files(files::String)
+function read_data_files(files::String; kwargs...)
     """
     Read all forecast CSV's in the path provided, the struct of the data should follow this format
     folder : PV
@@ -13,7 +13,11 @@ function read_data_files(files::String)
         A dictionary with the CSV files as dataframes and folder names as keys
     # TODO : Stochasti/Multiple scenarios
     """
-    REGEX_DEVICE_TYPE = r"(.*?)\.csv"
+    if :REGEX_FILE in keys(kwargs)
+        REGEX_FILE = kwargs[:REGEX_FILE]
+    else
+        REGEX_FILE = r"(.*?)\.csv"
+    end
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
     data =Dict{String,Any}()
     for folder in readdir(files)
@@ -21,16 +25,16 @@ function read_data_files(files::String)
             @info "Parsing csv timeseries files in $folder ..."
             data[folder] = Dict{String,Any}()
             for file in readdir(files*"/$folder")
-                if match(REGEX_DEVICE_TYPE, file) != nothing
+                if match(REGEX_FILE, file) != nothing
                     file_path = files*"/$folder/$file"
+                    println("Parsing $file_path")
                     #raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
                     raw_data = DataFrame(CSVFiles.load(file_path))
-                    if raw_data[25,:Period] > 24
-                        key = "RT"
-                    else
-                        key ="DA"
-                    end
-                    data[folder][key] = read_datetime(raw_data)
+
+                    println("Assigning DateTimes...")
+                    raw_data = read_datetime(raw_data; kwargs...)
+
+                    data[folder] = raw_data
                 end
             end
             @info "Successfully parsed $folder"
@@ -39,8 +43,31 @@ function read_data_files(files::String)
     return data
 end
 
+function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
+    """
+    Args:
+        PowerSystems Dictionary
+        Dictionary of all the data files
+    Returns:
+        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
+    """
+    gen_ts = Dict([(k=>ts_dict[k]) for k in keys(ts_dict) if k != "load"])
+    if "load" in keys(ts_dict)
+        ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
+    else
+        @warn("Not assigning time series to loads")
+    end
+    
+    for key in keys(gen_ts)
+        ps_dict = PowerSystems.add_time_series(ps_dict,ts_dict[key])
+    end
+    
+    return ps_dict
+end
+
+ 
  # -Parse csv file to dict
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
     """
     Args:
         Dictionary of all the data files
@@ -53,9 +80,8 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
     """
     forecast = Dict{String,Any}()
     for device in Devices
-        for (key_df,dict_df) in  time_series
-            if device.name in convert(Array{String},names(dict_df["DA"]))
-                df = (dict_df["DA"])
+        for (key_df,df) in  time_series
+            if device.name in convert(Array{String},names(df))
                 time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
                 initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
                 last_date = df[end,:DateTime]
@@ -84,7 +110,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
     return forecast
 end
 
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1}) 
     """
     Args:
         Dictionary of all the data files
@@ -101,7 +127,7 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
         if haskey(time_series,"Load")
             for lz in LoadZones
                 if device.bus in lz.buses
-                    df = time_series["Load"]["DA"][:,[:DateTime,Symbol(lz.name)]]
+                    df = time_series["Load"][:,[:DateTime,Symbol(lz.name)]]
 
                     time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
                     initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast

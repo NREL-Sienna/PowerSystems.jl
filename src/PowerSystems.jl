@@ -61,6 +61,10 @@ export StaticReserve
 export Transfer
 
 export parsestandardfiles
+export ps_dict2ps_struct
+export assign_ts_data
+export read_data_files
+
 #################################################################################
 # Imports
 

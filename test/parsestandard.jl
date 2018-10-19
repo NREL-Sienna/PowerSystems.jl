@@ -9,7 +9,7 @@ if length(files) == 0
 end
 
 for f in files
-    @test @time  try
+    @test try
         ext = match(file_ext, f)
         @info "Parsing $f ..."
         pm_dict = parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower",f)))
@@ -39,7 +39,7 @@ for f in files
     @test @time try
         ext = match(file_ext, f)
         @info "Parsing $f ..."
-        pm_dict = parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/psse_raw",f)))
+        pm_dict = PowerSystems.parse_file(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/psse_raw",f)))
         @info "Successfully parsed $f to PowerModels dict"
         ps_dict = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $f to PowerSystems dict"

@@ -7,52 +7,22 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     """
     Takes a PowerSystems dictionary and return an array of PowerSystems struct for Bus, Generator, Branch and load
     """
-    Generators =Array{Generator,1}(0)
-    Storage = Array{PowerSystems.Storage,1}(0)
-    Buses =Array{Bus,1}(0)
-    Branches = Array{Branch,1}(0)
-    Loads =Array{ElectricLoad,1}(0)
-    Shunts =Array{FixedAdmittance,1}(0)
-    LoadZones =Array{PowerSystemDevice,1}(0)
+    Generators = Array{G where {G<:Generator},1}()
+    Storages = Array{S where {S<:Storage},1}()
+    Buses =Array{Bus,1}()
+    Branches = Array{B where {B<:Branch},1}()
+    Loads =Array{E where {E<:ElectricLoad},1}()
+    Shunts =Array{FixedAdmittance,1}()
+    LoadZones =Array{D where {D<:PowerSystemDevice},1}()
 
-    # TODO: should we raise an exception in the following?
-
-    if haskey(data, "bus")
-        Buses = bus_dict_parse(data["bus"])
-    else
-        @error "Key error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array"
-    end
-    if haskey(data, "gen")
-        (Generators, Storage) = gen_dict_parser(data["gen"])
-    else
-        @error "Key error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array"
-    end
-    if haskey(data, "branch")
-        Branches = branch_dict_parser(data["branch"],Branches)
-    else
-        @warn "Key error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array"
-    end
-    if haskey(data, "load")
-        Loads = load_dict_parser(data["load"])
-    else
-        @error "Key error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array"
-    end
-    if haskey(data, "loadzone")
-        LoadZones = loadzone_dict_parser(data["loadzone"])
-    else
-        @error "Key error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array"
-    end
-    if haskey(data, "shunt")
-        Shunts = shunt_dict_parser(data["shunt"])
-    else
-        @error "Key error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array"
-    end
-    if haskey(data, "dcline")
-        Branches = dclines_dict_parser(data["dcline"],Branches)
-    else
-        @error "Key error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array"
-    end
-    return sort!(Buses, by = x -> x.number), Generators, Storage,  sort!(Branches, by = x -> x.connectionpoints.from.number), Loads, LoadZones, Shunts
+    haskey(data, "bus") ? Buses = bus_dict_parse(data["bus"]) : @error("Key error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
+    haskey(data, "gen") ? (Generators, Storages) = gen_dict_parser(data["gen"]) : @error("Key error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
+    haskey(data, "branch") ? Branches = branch_dict_parser(data["branch"],Branches) : @warn("Key error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
+    haskey(data, "load") ? Loads = load_dict_parser(data["load"]) : @error("Key error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
+    haskey(data, "loadzone") ? LoadZones = loadzone_dict_parser(data["loadzone"]) : @info("Key error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
+    haskey(data, "shunt") ? Shunts = shunt_dict_parser(data["shunt"]) : @info("Key error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
+    haskey(data, "dcline") ? Branches = dclines_dict_parser(data["dcline"],Branches) : @info("Key error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
+    return sort!(Buses, by = x -> x.number), Generators, Storages,  sort!(Branches, by = x -> x.connectionpoints.from.number), Loads, LoadZones, Shunts
 end
 
 
@@ -88,21 +58,42 @@ function add_realtime_ts(data::Dict{String,Any},time_series::Dict{String,Any})
 end
 
 
-function read_datetime(df)
+function read_datetime(df; kwargs...)
     """
     Arg:
-        Dataframes which includes a timerseries columns Year, Month, Day, Period
+        Dataframes which includes a timerseries columns of either:
+            Year, Month, Day, Period 
+          or
+            DateTime
+          or
+            nothing (creates a today referenced DateTime Column)
     Returns:
         Dataframe with a DateTime columns
     """
-    if df[25,:Period] > 24
-        df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Minute(5) :
-                        DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
-    else
-        df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Hour(1) :
-                        DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
+    if [c for c in [:Year,:Month,:Day,:Period] if c in names(df)] == [:Year,:Month,:Day,:Period]
+        if Hour(DataFrames.maximum(df[:Period])) <= Hour(25)
+            df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Hour(1) :
+                            DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
+        elseif (Minute(5) * DataFrames.maximum(df[:Period]) >= Minute(1440))& (Minute(5) * DataFrames.maximum(df[:Period]) <= Minute(1500))
+            df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Minute(5) :
+                            DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
+        else
+            error("I don't know what the period length is, reformat timeseries")
+        end
+
+        delete!(df, [:Year,:Month,:Day,:Period])
+
+    elseif :DateTime in names(df)
+        df[:DateTime] = Datetime(df[:DateTime])
+    else 
+        if :startdatetime in keys(kwargs)
+            startdatetime = kwargs[:startdatetime]
+        else
+            @warn("No reference date given, assuming today")
+            startdatetime = today()
+        end
+        df[:DateTime] = collect(DateTime(startdatetime):Hour(1):DateTime(startdatetime)+Hour(size(df)[1]-1))
     end
-    delete!(df, [:Year,:Month,:Day,:Period])
     return df
 end
 
@@ -133,18 +124,23 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
         Device dictionary with timeseries added
     """
     load_dict = data["load"]
-    load_zone_dict = data["loadzone"]
-    for (l_key,l) in load_dict
-        for (lz_key,lz) in load_zone_dict
-            if l["bus"] in lz["buses"]
-                ts_raw = df[:,lz_key]*(l["maxactivepower"]/lz["maxactivepower"])
-                load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
+    if "loadzone" in keys(data)
+        load_zone_dict = data["loadzone"]
+        for (l_key,l) in load_dict
+            for (lz_key,lz) in load_zone_dict
+                if l["bus"] in lz["buses"]
+                    ts_raw = df[:,lz_key]*(l["maxactivepower"]/lz["maxactivepower"])
+                    load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
+                end
             end
+        end
+    else
+        for (l_key,l) in load_dict
+            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[l_key])
         end
     end
     return load_dict
 end
-
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})
@@ -155,8 +151,8 @@ end
 
 ## - Parse Dict to Array
 function gen_dict_parser(dict::Dict{String,Any})
-    Generators =Array{Generator,1}(0)
-    Storage_gen =Array{Storage,1}(0)
+    Generators = Array{G where {G<:Generator},1}()
+    Storage_gen = Array{S where {S<:Storage},1}()
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
@@ -250,7 +246,7 @@ end
 
 # - Parse Dict to Array
 
-function branch_dict_parser(dict::Dict{String,Any},Branches::Array{Branch,1})
+function branch_dict_parser(dict::Dict{String,Any},Branches::Array{B,1}) where {B<:Branch}
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
@@ -307,7 +303,7 @@ end
 
 
 function load_dict_parser(dict::Dict{String,Any})
-    Loads =Array{ElectricLoad,1}(0)
+    Loads =Array{L where {L<:ElectricLoad},1}()
     for (load_key,load_dict) in dict
         push!(Loads,StaticLoad(convert(String,load_dict["name"]),
                 convert(Bool,load_dict["available"]),
@@ -322,7 +318,7 @@ function load_dict_parser(dict::Dict{String,Any})
 end
 
 function loadzone_dict_parser(dict::Dict{Int64,Any})
-    LoadZs =Array{PowerSystemDevice,1}(0)
+    LoadZs =Array{D where {D<:PowerSystemDevice},1}()
     for (lz_key,lz_dict) in dict
         push!(LoadZs,LoadZones(lz_dict["number"],
                                 convert(String,lz_dict["name"]),
@@ -335,7 +331,7 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
 end
 
 function shunt_dict_parser(dict::Dict{String,Any})
-    Shunts = Array{FixedAdmittance,1}(0)
+    Shunts = Array{FixedAdmittance,1}()
     for (s_key,s_dict) in dict
         push!(Shunts,FixedAdmittance(convert(String,s_dict["name"]),
                             convert(Bool,s_dict["available"]),
