@@ -19,15 +19,6 @@ git-tree-sha1 = "9930c1a6cd49d9fcd7218df6be417e6ae4f1468a"
 uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
 version = "0.5.2"
 
-<<<<<<< HEAD
-[[CSVFiles]]
-deps = ["DataValues", "FileIO", "HTTP", "IterableTables", "IteratorInterfaceExtensions", "TableShowUtils", "TableTraits", "TableTraitsUtils", "Test", "TextParse"]
-git-tree-sha1 = "b39c9d94d944ab5c7ee9d7503509a63ea21d564c"
-uuid = "5d742f6a-9f54-50ce-8119-2520741973ca"
-version = "0.9.1"
-
-=======
->>>>>>> cleanup-parsing
 [[Calculus]]
 deps = ["Compat"]
 git-tree-sha1 = "f60954495a7afcee4136f78d1d60350abd37a409"
@@ -129,8 +120,8 @@ deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[InfrastructureModels]]
-deps = ["Compat", "JuMP", "LinearAlgebra", "Memento"]
-git-tree-sha1 = "065f053ba74dffe8dbf40843d42ee96adacdc13e"
+deps = ["Compat", "JuMP", "Juniper", "LinearAlgebra", "Memento"]
+git-tree-sha1 = "ba08de93dc1e3ddbcb529bc8b8b2663f4398f466"
 repo-rev = "master"
 repo-url = "https://github.com/lanl-ansi/InfrastructureModels.jl.git"
 uuid = "e8e45514-c753-11e8-2a1b-cd93cb9d98d1"
@@ -151,15 +142,6 @@ deps = ["Pkg", "SparseArrays", "Test"]
 git-tree-sha1 = "79246285c43602384e6f1943b3554042a3712056"
 uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 version = "1.1.1"
-<<<<<<< HEAD
-
-[[IterableTables]]
-deps = ["DataValues", "IteratorInterfaceExtensions", "Requires", "TableTraits", "TableTraitsUtils", "Test"]
-git-tree-sha1 = "486612943cd16ebb7fcc5b0a4dc2c80e8b9c7dbc"
-uuid = "1c8ee90f-4401-5389-894e-7a04a3dc0f4d"
-version = "0.9.0"
-=======
->>>>>>> cleanup-parsing
 
 [[IteratorInterfaceExtensions]]
 deps = ["Test"]
@@ -179,13 +161,15 @@ git-tree-sha1 = "3716c8cae07d5056e7b9981d2d4dde239bd9c1d1"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaOpt/JuMP.jl.git"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
-version = "0.18.4"
+version = "0.18.4+"
 
-[[Lazy]]
-deps = ["Compat", "MacroTools", "Test"]
-git-tree-sha1 = "1c2c5566f0eeaaad6979c156562384458f966e6a"
-uuid = "50d2b5c4-7a5e-59d5-8109-a42b560f39c0"
-version = "0.13.1"
+[[Juniper]]
+deps = ["Distributed", "JSON", "JuMP", "LinearAlgebra", "MathProgBase", "Random", "Statistics"]
+git-tree-sha1 = "dade749ce1e25aeec93e5ac3fa55c89f547cbdb6"
+repo-rev = "0.7"
+repo-url = "https://github.com/lanl-ansi/Juniper.jl.git"
+uuid = "2ddba703-00a4-53a7-87a5-e8b9971dde84"
+version = "0.2.0"
 
 [[Lazy]]
 deps = ["Compat", "MacroTools", "Test"]
@@ -222,15 +206,6 @@ git-tree-sha1 = "3bf2e534e635df810e5f4b4f1a8b6de9004a0d53"
 uuid = "fdba3010-5040-5b88-9595-932c9decdf73"
 version = "0.7.7"
 
-<<<<<<< HEAD
-[[MbedTLS]]
-deps = ["BinaryProvider", "Libdl", "Pkg", "Random", "Sockets", "Test"]
-git-tree-sha1 = "4b890362c0c2fdb14a575ce927f1f4eeac6dda9f"
-uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
-version = "0.6.4"
-
-=======
->>>>>>> cleanup-parsing
 [[Memento]]
 deps = ["Compat", "JSON", "Libdl", "Nullables", "Pkg", "Syslogs", "Test", "TimeZones"]
 git-tree-sha1 = "c4ade3575bcc2c180cfa14cf8b3b63eebca51629"
@@ -281,8 +256,8 @@ deps = ["Dates", "LibGit2", "Markdown", "Printf", "REPL", "Random", "SHA", "UUID
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PowerModels]]
-deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "LinearAlgebra", "MathProgBase", "Memento", "Pkg", "SparseArrays"]
-git-tree-sha1 = "1584fc0581151321bb57c0a0c613c69f98455315"
+deps = ["Compat", "InfrastructureModels", "JSON", "JuMP", "Juniper", "LinearAlgebra", "MathProgBase", "Memento", "Pkg", "SparseArrays"]
+git-tree-sha1 = "86a3659396b897720d115487a33dd9f09d3cb26c"
 repo-rev = "v0.7"
 repo-url = "https://github.com/lanl-ansi/PowerModels.jl.git"
 uuid = "c36e90e8-916a-50a6-bd94-075b64ef4655"
