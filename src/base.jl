@@ -1,7 +1,7 @@
 ### Struct and different Power System constructors depending on the data provided ####
 
 struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
-                   R <: Union{Nothing,Array{ <: RenewableGen,1}},     
+                   R <: Union{Nothing,Array{ <: RenewableGen,1}},
                    H <: Union{Nothing,Array{ <: HydroGen,1}},
                    L <: ElectricLoad,
                    B <: Union{Nothing,Array{ <: Branch,1}},
@@ -51,7 +51,7 @@ struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
-        calculatethermallimits!(branches,basepower)
+        #calculatethermallimits!(branches,basepower)
         checkanglelimits!(branches)
         #timeserieschecksources(sources.hydro, time_length)
 
@@ -98,7 +98,7 @@ struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
         slackbuscheck(buses)
         buscheck(buses)
         pvbuscheck(buses, generators)
-        calculatethermallimits!(branches,basepower)
+        #calculatethermallimits!(branches,basepower)
         checkanglelimits!(branches)
         generators = checkramp(generators, minimumtimestep(loads))
         sources = genclassifier(generators);
