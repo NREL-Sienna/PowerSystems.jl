@@ -26,7 +26,7 @@ function pm2ps_dict(data::Dict{String,Any})
     DCLines= read_dcline(data,ps_dict["bus"])
 
     ps_dict["load"] = Loads
-    if isa(LoadZones,Nothing)
+    if !isa(LoadZones,Nothing)
         ps_dict["loadzone"] = LoadZones
     else
         @info "There are no Load Zones data in this file"

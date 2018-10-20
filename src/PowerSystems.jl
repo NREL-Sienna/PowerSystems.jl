@@ -80,9 +80,6 @@ using TimeSeries
 using PowerModels
 using DataFrames
 using Pandas
-import Memento
-
-Memento.config!(Memento.getlogger("PowerModels"), "error")
 
 #################################################################################
 # Includes
