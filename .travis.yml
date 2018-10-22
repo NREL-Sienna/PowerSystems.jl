@@ -5,6 +5,7 @@ os:
   - osx
 julia:
   - 0.7
+  - 1.0
   - nightly
 notifications:
   email: false
@@ -28,9 +29,6 @@ matrix:
 script:
   - julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();"
   - julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);"
-
-#before_install:
-#  - julia -e 'ENV["PYTHON"]=""; using Pkg; Pkg.add("PyCall"); Pkg.build("PyCall");'
 
 after_success:
   # push coverage results to Codecov
