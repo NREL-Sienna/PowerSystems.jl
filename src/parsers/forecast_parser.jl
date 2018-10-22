@@ -1,5 +1,6 @@
 function get_name_and_csv(path_to_filename)
-    df = DataFrames.DataFrame(Pandas.read_csv(path_to_filename))
+    df = CSV.Files(path_to_filename) |> DataFrame
+    #df = DataFrames.DataFrame(Pandas.read_csv(path_to_filename))
     folder = splitdir(splitdir(path_to_filename)[1])[2]
     return folder, df
 end
@@ -63,7 +64,7 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     else
         @warn("Not assigning time series to loads")
     end
-    
+
     device_dict = ps_dict["gen"]
     for (key, d) in ts_dict["gen"]
         if key in keys(device_dict)
@@ -77,7 +78,7 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
             device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
         end
     end
-    
+
     return ps_dict
 end
 
@@ -130,7 +131,7 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     return forecast
 end
 
-function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1}) 
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1})
     """
     Args:
         Dictionary of all the data files
@@ -155,7 +156,7 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
 end
 
 
-function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1}) 
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
     """
     Args:
         Dictionary of all the data files
