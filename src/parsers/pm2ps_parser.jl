@@ -222,11 +222,11 @@ function make_thermal_gen(gen_name, d, bus)
         cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
     elseif d["model"] ==2
         if d["ncost"] == 2
-            cost = x-> d["ncost"][1]*x + d["ncost"][2]
+            cost = x-> d["cost"][1]*x + d["cost"][2]
         elseif d["ncost"] == 3
-            cost = x-> d["ncost"][1]*x^2 + d["ncost"][2]*x + d["ncost"][3]
+            cost = x-> d["cost"][1]*x^2 + d["cost"][2]*x + d["cost"][3]
         elseif d["ncost"] == 4
-            cost = x-> d["ncost"][1]*x^3 + d["ncost"][2]*x^2 + d["ncost"][3]*x + d["ncost"][4]
+            cost = x-> d["cost"][1]*x^3 + d["cost"][2]*x^2 + d["cost"][3]*x + d["cost"][4]
         end
     else
         cost = d["cost"]
@@ -263,8 +263,7 @@ function read_gen(data,Buses)
         fuel = []
         gen_name =[]
         type_gen =[]
-        for d_key in keys(data["gen"])
-            d = data["gen"][d_key]
+        for (d_key,d) in data["gen"]
             haskey(d,"fuel") ? fuel =d["fuel"] : fuel = "generic"
             haskey(d,"type") ? type_gen = d["type"] : type_gen = "generic"
             haskey(d,"name") ? gen_name = d["name"] : haskey(d,"source_id") ? gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2]) : gen_name = d_key
