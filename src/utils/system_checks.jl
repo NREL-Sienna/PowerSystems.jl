@@ -9,7 +9,7 @@ function timeseriescheckload(loads::Array{T}) where {T<:ElectricLoad}
         if t == length(l.scalingfactor)
             continue
         else
-            @error("Inconsistent load scaling factor time series length")
+            @error "Inconsistent load scaling factor time series length"
         end
     end
     return t
@@ -30,7 +30,7 @@ end
 function buscheck(buses::Array{Bus})
     for b in buses
         if b.bustype == nothing
-            @warn("Bus/Nodes data does not contain information to build an a network")
+            @warn "Bus/Nodes data does not contain information to build an a network"
         end
     end
 end
@@ -45,7 +45,7 @@ function slackbuscheck(buses::Array{Bus})
         end
     end
     if slack == -9
-        @error("Model doesn't contain a slack bus")
+        @error "Model doesn't contain a slack bus"
     end
 end
 
@@ -59,7 +59,7 @@ function pvbuscheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator
 
     for b in buses
         if b.bustype == "PV"
-            b.number in pv_list ? continue : 0 #@warn("The bus ", b.number, " is declared as PV without a generator connected to it")
+            b.number in pv_list ? continue : 0 #@warn "The bus ", b.number, " is declared as PV without a generator connected to it"
         else
             continue
         end
@@ -108,8 +108,9 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
             new_rate = y_mag*m_vmax*c_max
             end
             flag = 0
-            l.rate.from_to <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.from_to > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_from_to = l.rate.from_to
-            l.rate.to_from <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.to_from > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*baseMVA) : rating_to_from = l.rate.to_from
+            #This is the same check as implemented in PowerModels
+            l.rate.from_to <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.from_to > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*basemva) : rating_from_to = l.rate.from_to
+            l.rate.to_from <= 0.0 ? (flag,rating_from_to) = (1,new_rate*basemva)  : l.rate.to_from > new_rate*basemva ? (flag,rating_from_to) = (1,new_rate*basemva) : rating_to_from = l.rate.to_from
             if flag == 1
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
@@ -166,13 +167,13 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @warn("The generator $(g.name) has a nonbinding ramp up limit.")
+                    @warn "The generator $(g.name) has a nonbinding ramp up limit."
                 end
                 if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @warn("The generator $(g.name) has a nonbinding ramp down limit.")
+                    @warn "The generator $(g.name) has a nonbinding ramp down limit."
                 end
             else
-                @info("Ramp defined as nothing for $(g.name)")
+                @info "Ramp defined as nothing for $(g.name)"
             end
         elseif isa(g,ThermalGenSeason)
             R = convertramp(g.tech.ramplimits,ts)
@@ -185,13 +186,13 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @warn("The generator $(g.name) has a nonbinding ramp up limit.")
+                    @warn "The generator $(g.name) has a nonbinding ramp up limit."
                 end
                 if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @warn("The generator $(g.name) has a nonbinding ramp down limit.")
+                    @warn "The generator $(g.name) has a nonbinding ramp down limit."
                 end
             else
-                @info("Ramp defined as nothing for $(g.name)")
+                @info "Ramp defined as nothing for $(g.name)"
             end
         elseif isa(g,HydroCurtailment)
             R = convertramp(g.tech.ramplimits,ts)
@@ -204,13 +205,13 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info("The generator $(g.name) has a nonbinding ramp up limit.")
+                    @info "The generator $(g.name) has a nonbinding ramp up limit."
                 end
                 if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info("The generator $(g.name) has a nonbinding ramp down limit.")
+                    @info "The generator $(g.name) has a nonbinding ramp down limit."
                 end
             else
-                @info("Ramp defined as nothing for $(g.name)")
+                @info "Ramp defined as nothing for $(g.name)"
             end
         elseif isa(g,HydroStorage)
             R = convertramp(g.tech.ramplimits,ts)
@@ -224,13 +225,13 @@ function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info("The generator $(g.name) has a nonbinding ramp up limit.")
+                    @info "The generator $(g.name) has a nonbinding ramp up limit."
                 end
                 if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info("The generator $(g.name) has a nonbinding ramp down limit.")
+                    @info "The generator $(g.name) has a nonbinding ramp down limit."
                 end
             else
-                @info("Ramp defined as nothing for $(g.name)")
+                @info "Ramp defined as nothing for $(g.name)"
             end
         end
     end

@@ -79,10 +79,7 @@ using Dates
 using TimeSeries
 using PowerModels
 using DataFrames
-using Pandas
-import Memento
-
-Memento.config!(Memento.getlogger("PowerModels"), "error")
+import CSV
 
 #################################################################################
 # Includes
@@ -118,4 +115,5 @@ include("base.jl")
 # Better printing
 include("utils/print.jl")
 include("utils/lodf_calculations.jl")
+
 end # module

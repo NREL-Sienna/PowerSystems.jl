@@ -7,26 +7,26 @@ function json2ps_struct(data::Dict{String,Any})
     if haskey(data, "bus")
         Buses = bus_json_parse(data["bus"])
     else
-        @error("Key error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
+        @error "Key error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array"
         Buses =[]
     end
     if haskey(data, "gen")
         Generators, Storage = gen_json_parser(data["gen"])
     else
-        @error("Key error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
+        @error "Key error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array"
         Generators =[]
         Storage = []
     end
     if haskey(data, "branch")
         Branches = branch_json_parser(data["branch"])
     else
-        @warn("Key error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
+        @warn "Key error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array"
         Branches =[]
     end
     if haskey(data, "load")
         Loads = load_json_parser(data["load"])
     else
-        @error("Key error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
+        @error "Key error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array"
         Loads =[]
     end
     return Buses, Generators, Storage, Branches, Loads
@@ -288,12 +288,11 @@ function json_parser(filename)
         open("../data/CDM/RTS/JSON/RTS-GMLC_Test_Case.json", "r") do f
         global temp
         dicttxt = readstring(f)  # file information to string
-        temp=JSON.parse(dicttxt)  # parse and transform data
-        data =temp
+        temp = JSON.parse(dicttxt)  # parse and transform data
+        data = temp
         end
-
     else
-        println("JSON file doesn't exist")
+        @warn "JSON file doesn't exist"
     end
     Buses = bus_json_parse(data["Buses"])
     Generators,Storages = gen_json_parser(data["Generators"])

@@ -107,7 +107,7 @@ function add_time_series(Device_dict::Dict{String,Any}, df::DataFrames.DataFrame
     """
     for (device_key,device) in Device_dict
         if device_key in convert(Array{String},names(df))
-            ts_raw = df[:,Symbol(device_key)]
+            ts_raw = df[Symbol(device_key)]
             Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
         end
     end
@@ -129,7 +129,7 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
         for (l_key,l) in load_dict
             for (lz_key,lz) in load_zone_dict
                 if l["bus"] in lz["buses"]
-                    ts_raw = df[:,lz_key]*(l["maxactivepower"]/lz["maxactivepower"])
+                    ts_raw = df[lz_key]*(l["maxactivepower"]/lz["maxactivepower"])
                     load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
                 end
             end

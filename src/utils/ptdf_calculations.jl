@@ -4,10 +4,10 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
     linecount = length(branches)
     line_axis = [branch.name for branch in branches]
     num_bus = Dict{Int,Int}()
-    
+
     for (ix,b) in enumerate(nodes)
         if b.number < -1
-            @error("buses must be numbered consecutively in the bus/node matrix")
+            @error "buses must be numbered consecutively in the bus/node matrix" # TODO: raise error here?
         end
         num_bus[b.number] = ix
     end
@@ -53,7 +53,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
 
     elseif dist_slack[1] != 0.1 && length(dist_slack)  == buscount
-        println("Distributed bus")
+        @info "Distributed bus"
         (B, bipiv, binfo) = getrf!(B)
         S_ = gemm('N','N', gemm('N','T', inv_X, A[setdiff(1:end, slack_position), :]), getri!(B, bipiv) )
         S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
@@ -62,10 +62,10 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = S - gemm('N','N',gemm('N','N',S,slack_array),ones(1,buscount))
 
     elseif length(slack_position) == 0
-        @warn("Slack bus not identified in the Bus/Nodes list, can't build PTDF")
+        @warn "Slack bus not identified in the Bus/Nodes list, can't build PTDF"
         S = Array{Float64,2}(undef,linecount,buscount)
     end
-    
+
     S_ax = AxisArray(S, Axis{:branches}(line_axis), Axis{:buses}(bus_axis))
     A_ax = AxisArray(A,  Axis{:buses}(bus_axis), Axis{:lines}(line_axis))
 

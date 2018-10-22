@@ -1,5 +1,6 @@
 function get_name_and_csv(path_to_filename)
-    df = DataFrames.DataFrame(Pandas.read_csv(path_to_filename))
+    df = CSV.Files(path_to_filename) |> DataFrame
+    #df = DataFrames.DataFrame(Pandas.read_csv(path_to_filename))
     folder = splitdir(splitdir(path_to_filename)[1])[2]
     return folder, df
 end
@@ -63,7 +64,7 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     else
         @warn("Not assigning time series to loads")
     end
-    
+
     device_dict = ps_dict["gen"]
     for (key, d) in ts_dict["gen"]
         if key in keys(device_dict)
@@ -77,11 +78,29 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
             device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
         end
     end
-    
+
     return ps_dict
 end
 
- 
+function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::Dates.Period,horizon::Int) where {D<:PowerSystemDevice}
+    time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
+    initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
+    last_date = df[end,:DateTime]
+    ts_dict = Dict{Any,Dict{Int,TimeSeries.TimeArray}}()
+    ts_raw =  TimeSeries.TimeArray(df[1],df[2])
+    for ts in initialtime:resolution:last_date
+        ts_dict[ts] = Dict{Int,TimeSeries.TimeArray}(1 => ts_raw[ts:time_delta:(ts+resolution)])
+    end
+    forecast = Dict{String,Any}("horizon" =>horizon,
+                                            "resolution" => resolution, #TODO : fix type conversion to JSON
+                                            "interval" => time_delta,   #TODO : fix type conversion to JSON
+                                            "initialtime" => initialtime,
+                                            "device" => device,
+                                            "data" => ts_dict
+                                            )
+    return forecast
+end
+
  # -Parse csv file to dict
 function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
     """
@@ -96,37 +115,48 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     """
     forecast = Dict{String,Any}()
     for device in Devices
-        for (key_df,df) in  time_series
+        for (key_df,df) in time_series
             if device.name in convert(Array{String},names(df))
-                time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
-                initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
-                last_date = df[end,:DateTime]
-                ts_dict = Dict{Any,Dict{Int,TimeSeries.TimeArray}}()
                 for name in convert(Array{String},names(df))
                     if name == device.name
-                        ts_raw = TimeSeries.TimeArray(df[:,:DateTime],df[:,Symbol(name)])
-                        for ts in initialtime:resolution:last_date
-                            ts_dict[ts] = Dict{Int,TimeSeries.TimeArray}(1 => ts_raw[ts:time_delta:(ts+resolution)])
-                        end
-                        forecast[device.name] = Dict{String,Any}("horizon" =>horizon,
-                                                    "resolution" => resolution, #TODO : fix type conversion to JSON
-                                                    "interval" => time_delta,   #TODO : fix type conversion to JSON
-                                                    "initialtime" => initialtime,
-                                                    "device" => device,
-                                                    "data" => ts_dict
-                                                        )
+                        forecast[device.name] = make_device_forecast(device, df[[:DateTime,Symbol(device.name)]], resolution, horizon)
                     end
                 end
             end
         end
         if !haskey(forecast,device.name)
-            println("No forecast found for $(device.name) ")
+            @info "No forecast found for $(device.name) "
         end
     end
     return forecast
 end
 
-function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1}) 
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1})
+    """
+    Args:
+        Dictionary of all the data files
+        Length of the forecast - Week()/Day()/Hour()
+        Forecast horizon in hours - Int64
+        Array of PowerSystems devices in the systems- Loads
+    Returns:
+        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
+    """
+    forecast = Dict{String,Any}()
+    for device in Devices
+        if haskey(time_series,"load")
+            if device.bus.name in  convert(Array{String},names(time_series["load"]))
+                df = time_series["load"][[:DateTime,Symbol(device.bus.name)]]
+                forecast[device.name] = make_device_forecast(device, df, resolution, horizon)
+            end
+        else
+            @warn "No forecast found for Loads"
+        end
+    end
+    return forecast
+end
+
+
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
     """
     Args:
         Dictionary of all the data files
@@ -140,30 +170,15 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     """
     forecast = Dict{String,Any}()
     for device in Devices
-        if haskey(time_series,"Load")
+        if haskey(time_series,"load")
             for lz in LoadZones
                 if device.bus in lz.buses
-                    df = time_series["Load"][:,[:DateTime,Symbol(lz.name)]]
-
-                    time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
-                    initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
-                    last_date = df[end,:DateTime]
-                    ts_dict = Dict{Any,Dict{Int,TimeSeries.TimeArray}}()
-                    ts_raw =  TimeSeries.TimeArray(df[:,1],df[:,2])
-                    for ts in initialtime:resolution:last_date
-                        ts_dict[ts] = Dict{Int,TimeSeries.TimeArray}(1 => ts_raw[ts:time_delta:(ts+resolution)])
-                    end
-                    forecast[device.name] = Dict{String,Any}("horizon" =>horizon,
-                                                            "resolution" => resolution, #TODO : fix type conversion to JSON
-                                                            "interval" => time_delta,   #TODO : fix type conversion to JSON
-                                                            "initialtime" => initialtime,
-                                                            "device" => device,
-                                                            "data" => ts_dict
-                                                            )
+                    df = time_series["load"][[:DateTime,Symbol(lz.name)]]
+                    forecast[device.name] = make_device_forecast(device, df, resolution, horizon)
                 end
             end
         else
-            @warn("No forecast found for Loads ")
+            @warn "No forecast found for Loads"
         end
     end
     return forecast

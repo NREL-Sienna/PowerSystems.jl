@@ -21,31 +21,31 @@ function read_csv_data(file_path::String)
     data =Dict{String,Any}()
 
     if length(files) == 0
-        @error("No test files in the folder")
+        @error "No test files in the folder"
     end
     for d_file in readdir(files)
         try
             if match(REGEX_IS_FOLDER, d_file) != nothing
-                print("Parsing csv timeseries files in $d_file ...\n")
+                @info "Parsing csv timeseries files in $d_file ..."
                 for file in readdir(files*"/$d_file")
                     if match(REGEX_DEVICE_TYPE, file) != nothing
                         data[d_file] = Dict{String,Any}()
                         file_path = files*"/$d_file/$file"
-                        #raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
-                        raw_data = DataFrames.DataFrame(Pandas.read_csv(file_path))
+                        raw_data = CSV.File(file_path) |> DataFrame
+                        #raw_data = DataFrames.DataFrame(Pandas.read_csv(file_path))
                         data[d_file][split(file,r"[.]")[1]] = raw_data
                     end
                 end
-                println("Successfully parsed $d_file")
+                @info "Successfully parsed $d_file"
             elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
-                print("Parsing csv timeseries files in $d_file ...\n")
+                @info "Parsing csv timeseries files in $d_file ..."
                 file_path = files*"/$d_file"
-                raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                raw_data = CSV.File(file_path)|> DataFrame
                 data[split(d_file,r"[.]")[1]] = raw_data
-                println("Successfully parsed $d_file")
+                @info "Successfully parsed $d_file"
             end
         catch
-            @warn("error while parsing $d_file")
+            @error "Error occurred while parsing $d_file"
             catch_stacktrace()
         end
     end
@@ -76,29 +76,26 @@ function csv2ps_dict(file_path::String)
     if haskey(data,"bus")
         ps_dict["bus"] =  PowerSystems.bus_csv_parser(data["bus"])
     else
-        @error("Key error : key 'bus' not found in PowerSystems dictionary
-            \n Cant Construct any PowerSystem Struct")
+        @error "Key error : key 'bus' not found in PowerSystems dictionary, cannot construct any PowerSystem Struct"
     end
     if haskey(data,"gen")
         ps_dict["gen"] =  PowerSystems.gen_csv_parser(data["gen"],ps_dict["bus"])
     else
-        @warn("Key error : key 'gen' not found in PowerSystems dictionary,
-          \n This will result in an ps_dict['gen'] = nothing")
+        @warn "Key error : key 'gen' not found in PowerSystems dictionary, this will result in an ps_dict['gen'] = nothing"
          ps_dict["gen"] = nothing
     end
     if haskey(data,"branch")
         ps_dict["branch"] =  PowerSystems.branch_csv_parser(data["branch"],ps_dict["bus"])
     else
-        @warn("Key error : key 'bus' not found in PowerSystems dictionary,
-          \n This will result in an ps_dict['branch'] = nothing")
+        @warn "Key error : key 'bus' not found in PowerSystems dictionary,
+          \n This will result in an ps_dict['branch'] = nothing"
          ps_dict["branch"] = nothing
     end
     if haskey(data,"load")
         ps_dict["load_zone"] =  PowerSystems.loadzone_csv_parser(data["bus"],ps_dict["bus"])
         ps_dict["load"] =  PowerSystems.load_csv_parser(data["load"],data["bus"],ps_dict["bus"],ps_dict["load_zone"])
     else
-        @warn("Key error : key 'load' not found in PowerSystems dictionary,
-          \n This will result in an ps_dict['load'] = nothing")
+        @warn "Key error : key 'load' not found in PowerSystems dictionary, this will result in an ps_dict['load'] = nothing"
          ps_dict["load"] = nothing
     end
     return ps_dict
