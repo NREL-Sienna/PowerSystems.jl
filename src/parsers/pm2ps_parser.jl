@@ -172,8 +172,8 @@ function read_loadzones(data,Buses)
         for (d_key,d) in data["areas"]
             b_array  = [MAPPING_BUSNUMBER2INDEX[b["bus_i"]] for (b_key, b) in data["bus"] if b["area"] == d["index"] ]
             bus_l = [make_bus(Buses[Int(b_key)]) for b_key in b_array]
-            activepower  = [ l["pd"] for (l_key, l) in data["load"] if l["load_bus"] in b_array ] #TODO: Fast Implementations
-            reactivepower  = [ l["qd"] for (l_key, l) in data["load"] if l["load_bus"] in b_array]
+            activepower  = [ l["pd"] for (l_key, l) in data["load"] if MAPPING_BUSNUMBER2INDEX[l["load_bus"]] in b_array ] #TODO: Fast Implementations
+            reactivepower  = [ l["qd"] for (l_key, l) in data["load"] if MAPPING_BUSNUMBER2INDEX[l["load_bus"]] in b_array]
             LoadZones[d["index"]] = make_loadzones(d_key,d,bus_l,activepower, reactivepower)
         end
         return LoadZones

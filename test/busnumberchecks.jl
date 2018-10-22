@@ -11,6 +11,8 @@ sys = PowerSystems.PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict[
 @test sort(collect(Set([b.connectionpoints.from.number for b in sys.branches]))) == [1, 2, 4, 5]
 @test sort(collect(Set([b.connectionpoints.to.number for b in sys.branches]))) == [1, 3, 4, 5]
 
+# TOOD: add test for loadzones testing MAPPING_BUSNUMBER2INDEX
+
 end
 
 
