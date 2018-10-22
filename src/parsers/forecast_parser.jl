@@ -1,5 +1,5 @@
 function get_name_and_csv(path_to_filename)
-    df = CSV.Files(path_to_filename) |> DataFrame
+    df = CSV.File(path_to_filename) |> DataFrame
     #df = DataFrames.DataFrame(Pandas.read_csv(path_to_filename))
     folder = splitdir(splitdir(path_to_filename)[1])[2]
     return folder, df
