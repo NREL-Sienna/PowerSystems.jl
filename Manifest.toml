@@ -155,7 +155,7 @@ git-tree-sha1 = "3716c8cae07d5056e7b9981d2d4dde239bd9c1d1"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaOpt/JuMP.jl.git"
 uuid = "4076af6c-e467-56ae-b986-b466b2749572"
-version = "0.18.4"
+version = "0.18.4+"
 
 [[Juniper]]
 deps = ["Distributed", "JSON", "JuMP", "LinearAlgebra", "Logging", "MathProgBase", "Pkg", "Random", "Statistics", "Test"]
