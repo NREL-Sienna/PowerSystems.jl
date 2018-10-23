@@ -24,12 +24,3 @@ function parsestandardfiles(file::String, ts_folder::String; kwargs...)
 
     return data
 end
-
-
-function parse_file(file::String)
-
-    data = parse_file(file)
-
-    return data
-
-end
