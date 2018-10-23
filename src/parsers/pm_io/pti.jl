@@ -392,7 +392,7 @@ function parse_pti_data(data_string::String, sections::Array)
                 section = popfirst!(sections)
                 continue
             else
-                @info( "At line $line_number, unexpected section: expected: $section, comment specified: $(guess_section)")
+                @info "At line $line_number, unexpected section: expected: $section, comment specified: $(guess_section)"
                 if !isempty(sections)
                     section = popfirst!(sections)
                 end

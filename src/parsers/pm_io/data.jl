@@ -964,14 +964,14 @@ function _propagate_topology_status(data::Dict{String,Any})
 
     for (i,load) in data["load"]
         if load["status"] != 0 && all(load["pd"] .== 0.0) && all(load["qd"] .== 0.0)
-            @info( "deactivating load $(load["index"]) due to zero pd and qd")
+            @info "deactivating load $(load["index"]) due to zero pd and qd"
             load["status"] = 0
         end
     end
 
     for (i,shunt) in data["shunt"]
         if shunt["status"] != 0 && all(shunt["gs"] .== 0.0) && all(shunt["bs"] .== 0.0)
-            @info( "deactivating shunt $(shunt["index"]) due to zero gs and bs")
+            @info "deactivating shunt $(shunt["index"]) due to zero gs and bs"
             shunt["status"] = 0
         end
     end
@@ -1024,7 +1024,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     t_bus = buses[branch["t_bus"]]
 
                     if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
-                        @info( "deactivating branch $(i):($(branch["f_bus"]),$(branch["t_bus"])) due to connecting bus status")
+                        @info "deactivating branch $(i):($(branch["f_bus"]),$(branch["t_bus"])) due to connecting bus status"
                         branch["br_status"] = 0
                         updated = true
                     end
@@ -1037,7 +1037,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     t_bus = buses[dcline["t_bus"]]
 
                     if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
-                        @info( "deactivating dcline $(i):($(dcline["f_bus"]),$(dcline["t_bus"])) due to connecting bus status")
+                        @info "deactivating dcline $(i):($(dcline["f_bus"]),$(dcline["t_bus"])) due to connecting bus status"
                         dcline["br_status"] = 0
                         updated = true
                     end
@@ -1060,7 +1060,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     #println("bus $(i) active shunt $(incident_active_shunt)")
 
                     if incident_active_edge == 1 && length(incident_active_gen[i]) == 0 && length(incident_active_load[i]) == 0 && length(incident_active_shunt[i]) == 0
-                        @info( "deactivating bus $(i) due to dangling bus without generation and load")
+                        @info "deactivating bus $(i) due to dangling bus without generation and load"
                         bus["bus_type"] = 4
                         updated = true
                     end
@@ -1068,7 +1068,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                 else # bus type == 4
                     for load in incident_active_load[i]
                         if load["status"] != 0
-                            @info( "deactivating load $(load["index"]) due to inactive bus $(i)")
+                            @info "deactivating load $(load["index"]) due to inactive bus $(i)"
                             load["status"] = 0
                             updated = true
                         end
@@ -1076,7 +1076,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
                     for shunt in incident_active_shunt[i]
                         if shunt["status"] != 0
-                            @info( "deactivating shunt $(shunt["index"]) due to inactive bus $(i)")
+                            @info "deactivating shunt $(shunt["index"]) due to inactive bus $(i)"
                             shunt["status"] = 0
                             updated = true
                         end
@@ -1084,7 +1084,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
                     for gen in incident_active_gen[i]
                         if gen["gen_status"] != 0
-                            @info( "deactivating generator $(gen["index"]) due to inactive bus $(i)")
+                            @info "deactivating generator $(gen["index"]) due to inactive bus $(i)"
                             gen["gen_status"] = 0
                             updated = true
                         end
@@ -1114,7 +1114,7 @@ function _propagate_topology_status(data::Dict{String,Any})
             active_gen_count = sum(cc_active_gens)
 
             if (active_load_count == 0 && active_shunt_count == 0) || active_gen_count == 0
-                @info( "deactivating connected component $(cc) due to isolation without generation and load")
+                @info "deactivating connected component $(cc) due to isolation without generation and load"
                 for i in cc
                     buses[i]["bus_type"] = 4
                 end
@@ -1124,7 +1124,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
     end
 
-    @info( "topology status propagation fixpoint reached in $(iteration) rounds")
+    @info "topology status propagation fixpoint reached in $(iteration) rounds"
 
     check_reference_buses(data)
 end
@@ -1147,17 +1147,17 @@ end
 ""
 function _select_largest_component(data::Dict{String,Any})
     ccs = connected_components(data)
-    @info( "found $(length(ccs)) components")
+    @info "found $(length(ccs)) components"
 
     ccs_order = sort(collect(ccs); by=length)
     largest_cc = ccs_order[end]
 
-    @info( "largest component has $(length(largest_cc)) buses")
+    @info "largest component has $(length(largest_cc)) buses"
 
     for (i,bus) in data["bus"]
         if bus["bus_type"] != 4 && !(bus["index"] in largest_cc)
             bus["bus_type"] = 4
-            @info( "deactivating bus $(i) due to small connected component")
+            @info "deactivating bus $(i) due to small connected component"
         end
     end
 
