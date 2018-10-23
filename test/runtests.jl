@@ -23,11 +23,6 @@ end
     include("powersystemconstructors.jl")
 end
 
-@testset "Parsing Code" begin
-    include("parsestandard.jl")
-    @time include("readforecastdata.jl")
-end
-
 @testset "Utilities testing" begin
     @info "Testing Network Matrices"
     @test @time include("network_matrices.jl")
