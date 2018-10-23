@@ -63,7 +63,7 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     if "load" in keys(ts_dict)
         ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
     else
-        @warn("Not assigning time series to loads")
+        @warn "Not assigning time series to loads"
     end
 
     device_dict = ps_dict["gen"]

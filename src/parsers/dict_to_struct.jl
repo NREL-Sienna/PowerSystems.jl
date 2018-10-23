@@ -121,7 +121,7 @@ function read_datetime(df; kwargs...)
         if :startdatetime in keys(kwargs)
             startdatetime = kwargs[:startdatetime]
         else
-            @warn("No reference date given, assuming today")
+            @warn "No reference date given, assuming today"
             startdatetime = today()
         end
         df[:DateTime] = collect(DateTime(startdatetime):Hour(1):DateTime(startdatetime)+Hour(size(df)[1]-1))
