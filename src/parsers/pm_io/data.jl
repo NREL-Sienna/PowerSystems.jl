@@ -111,7 +111,7 @@ function update_data(data::Dict{String,Any}, new_data::Dict{String,Any})
         end
     else
         if (haskey(data, "conductors") && !haskey(new_data, "conductors")) || (!haskey(data, "conductors") && haskey(new_data, "conductors"))
-            warn(LOGGER, "running update_data with missing onductors fields, conductors may be incorrect")
+            warn( "running update_data with missing onductors fields, conductors may be incorrect")
         end
     end
     InfrastructureModels.update_data!(data, new_data)
@@ -385,7 +385,7 @@ function _rescale_cost_model(comp::Dict{String,Any}, scale::Real)
                 comp["cost"][i] = item*(scale^(degree-i))
             end
         else
-            warn(LOGGER, "Skipping cost model of type $(comp["model"]) in per unit transformation")
+            warn( "Skipping cost model of type $(comp["model"]) in per unit transformation")
         end
     end
 end
@@ -426,7 +426,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             angmax = branch["angmax"][c]
 
             if angmin <= -pi/2
-                warn(LOGGER, "this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmin)) to -$(rad2deg(default_pad)) deg.")
+                warn( "this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmin)) to -$(rad2deg(default_pad)) deg.")
                 if haskey(data, "conductors")
                     branch["angmin"][c] = -default_pad
                 else
@@ -435,7 +435,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             end
 
             if angmax >= pi/2
-                warn(LOGGER, "this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmax)) to $(rad2deg(default_pad)) deg.")
+                warn( "this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmax)) to $(rad2deg(default_pad)) deg.")
                 if haskey(data, "conductors")
                     branch["angmax"][c] = default_pad
                 else
@@ -445,7 +445,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             end
 
             if angmin == 0.0 && angmax == 0.0
-                warn(LOGGER, "angmin and angmax values are 0, widening these values on branch $i$(cnd_str) to +/- $(rad2deg(default_pad)) deg.")
+                warn( "angmin and angmax values are 0, widening these values on branch $i$(cnd_str) to +/- $(rad2deg(default_pad)) deg.")
                 if haskey(data, "conductors")
                     branch["angmin"][c] = -default_pad
                     branch["angmax"][c] =  default_pad
@@ -505,7 +505,7 @@ function check_thermal_limits(data::Dict{String,Any})
                     new_rate = min(new_rate, branch["c_rating_a"][c]*m_vmax)
                 end
 
-                warn(LOGGER, "this code only supports positive rate_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(mva_base*new_rate)")
+                warn( "this code only supports positive rate_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(mva_base*new_rate)")
 
                 if haskey(data, "conductors")
                     branch["rate_a"][c] = new_rate
@@ -567,7 +567,7 @@ function check_current_limits(data::Dict{String,Any})
                     new_c_rating = min(new_c_rating, branch["rate_a"]/vm_min)
                 end
 
-                warn(LOGGER, "this code only supports positive c_rating_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(mva_base*new_c_rating)")
+                warn( "this code only supports positive c_rating_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(mva_base*new_c_rating)")
                 if haskey(data, "conductors")
                     branch["c_rating_a"][c] = new_c_rating
                 else
@@ -591,7 +591,7 @@ function check_branch_directions(data::Dict{String,Any})
         orientation_rev = (branch["t_bus"], branch["f_bus"])
 
         if in(orientation_rev, orientations)
-            warn(LOGGER, "reversing the orientation of branch $(i) $(orientation) to be consistent with other parallel branches")
+            warn( "reversing the orientation of branch $(i) $(orientation) to be consistent with other parallel branches")
             branch_orginal = copy(branch)
             branch["f_bus"] = branch_orginal["t_bus"]
             branch["t_bus"] = branch_orginal["f_bus"]
@@ -617,7 +617,7 @@ function check_branch_loops(data::Dict{String,Any})
 
     for (i, branch) in data["branch"]
         if branch["f_bus"] == branch["t_bus"]
-            error(LOGGER, "both sides of branch $(i) connect to bus $(branch["f_bus"])")
+            error( "both sides of branch $(i) connect to bus $(branch["f_bus"])")
         end
     end
 end
@@ -634,39 +634,39 @@ function check_connectivity(data::Dict{String,Any})
 
     for (i, load) in data["load"]
         if !(load["load_bus"] in bus_ids)
-            error(LOGGER, "bus $(load["load_bus"]) in load $(i) is not defined")
+            error( "bus $(load["load_bus"]) in load $(i) is not defined")
         end
     end
 
     for (i, shunt) in data["shunt"]
         if !(shunt["shunt_bus"] in bus_ids)
-            error(LOGGER, "bus $(shunt["shunt_bus"]) in shunt $(i) is not defined")
+            error( "bus $(shunt["shunt_bus"]) in shunt $(i) is not defined")
         end
     end
 
     for (i, gen) in data["gen"]
         if !(gen["gen_bus"] in bus_ids)
-            error(LOGGER, "bus $(gen["gen_bus"]) in generator $(i) is not defined")
+            error( "bus $(gen["gen_bus"]) in generator $(i) is not defined")
         end
     end
 
     for (i, branch) in data["branch"]
         if !(branch["f_bus"] in bus_ids)
-            error(LOGGER, "from bus $(branch["f_bus"]) in branch $(i) is not defined")
+            error( "from bus $(branch["f_bus"]) in branch $(i) is not defined")
         end
 
         if !(branch["t_bus"] in bus_ids)
-            error(LOGGER, "to bus $(branch["t_bus"]) in branch $(i) is not defined")
+            error( "to bus $(branch["t_bus"]) in branch $(i) is not defined")
         end
     end
 
     for (i, dcline) in data["dcline"]
         if !(dcline["f_bus"] in bus_ids)
-            error(LOGGER, "from bus $(dcline["f_bus"]) in dcline $(i) is not defined")
+            error( "from bus $(dcline["f_bus"]) in dcline $(i) is not defined")
         end
 
         if !(dcline["t_bus"] in bus_ids)
-            error(LOGGER, "to bus $(dcline["t_bus"]) in dcline $(i) is not defined")
+            error( "to bus $(dcline["t_bus"]) in dcline $(i) is not defined")
         end
     end
 end
@@ -686,7 +686,7 @@ function check_transformer_parameters(data::Dict{String,Any})
 
     for (i, branch) in data["branch"]
         if !haskey(branch, "tap")
-            warn(LOGGER, "branch found without tap value, setting a tap to 1.0")
+            warn( "branch found without tap value, setting a tap to 1.0")
             if haskey(data, "conductors")
                 branch["tap"] = MultiConductorVector{Float64}(ones(data["conductors"]))
             else
@@ -696,7 +696,7 @@ function check_transformer_parameters(data::Dict{String,Any})
             for c in 1:get(data, "conductors", 1)
                 cnd_str = haskey(data, "conductors") ? " on conductor $(c)" : ""
                 if branch["tap"][c] <= 0.0
-                    warn(LOGGER, "branch found with non-positive tap value of $(branch["tap"][c]), setting a tap to 1.0$(cnd_str)")
+                    warn( "branch found with non-positive tap value of $(branch["tap"][c]), setting a tap to 1.0$(cnd_str)")
                     if haskey(data, "conductors")
                         branch["tap"][c] = 1.0
                     else
@@ -706,7 +706,7 @@ function check_transformer_parameters(data::Dict{String,Any})
             end
         end
         if !haskey(branch, "shift")
-            warn(LOGGER, "branch found without shift value, setting a shift to 0.0")
+            warn( "branch found without shift value, setting a shift to 0.0")
             if haskey(data, "conductors")
                 branch["shift"] = MultiConductorVector{Float64}(zeros(data["conductors"]))
             else
@@ -737,12 +737,12 @@ function check_bus_types(data::Dict{String,Any})
             bus_gens_count = length(bus_gens[i])
 
             if bus_gens_count == 0 && bus["bus_type"] != 1
-                warn(LOGGER, "no active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 1")
+                warn( "no active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 1")
                 bus["bus_type"] = 1
             end
 
             if bus_gens_count != 0 && bus["bus_type"] != 2
-                warn(LOGGER, "active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 2")
+                warn( "active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 2")
                 bus["bus_type"] = 2
             end
 
@@ -765,7 +765,7 @@ function check_dcline_limits(data::Dict{String,Any})
         for (i, dcline) in data["dcline"]
             if dcline["loss0"][c] < 0.0
                 new_rate = 0.0
-                warn(LOGGER, "this code only supports positive loss0 values, changing the value on dcline $(dcline["index"])$(cnd_str) from $(mva_base*dcline["loss0"][c]) to $(mva_base*new_rate)")
+                warn( "this code only supports positive loss0 values, changing the value on dcline $(dcline["index"])$(cnd_str) from $(mva_base*dcline["loss0"][c]) to $(mva_base*new_rate)")
                 if haskey(data, "conductors")
                     dcline["loss0"][c] = new_rate
                 else
@@ -775,7 +775,7 @@ function check_dcline_limits(data::Dict{String,Any})
 
             if dcline["loss0"][c] >= dcline["pmaxf"][c]*(1-dcline["loss1"][c] )+ dcline["pmaxt"][c]
                 new_rate = 0.0
-                warn(LOGGER, "this code only supports loss0 values which are consistent with the line flow bounds, changing the value on dcline $(dcline["index"])$(cnd_str) from $(mva_base*dcline["loss0"][c]) to $(mva_base*new_rate)")
+                warn( "this code only supports loss0 values which are consistent with the line flow bounds, changing the value on dcline $(dcline["index"])$(cnd_str) from $(mva_base*dcline["loss0"][c]) to $(mva_base*new_rate)")
                 if haskey(data, "conductors")
                     dcline["loss0"][c] = new_rate
                 else
@@ -785,7 +785,7 @@ function check_dcline_limits(data::Dict{String,Any})
 
             if dcline["loss1"][c] < 0.0
                 new_rate = 0.0
-                warn(LOGGER, "this code only supports positive loss1 values, changing the value on dcline $(dcline["index"])$(cnd_str) from $(dcline["loss1"][c]) to $(new_rate)")
+                warn( "this code only supports positive loss1 values, changing the value on dcline $(dcline["index"])$(cnd_str) from $(dcline["loss1"][c]) to $(new_rate)")
                 if haskey(data, "conductors")
                     dcline["loss1"][c] = new_rate
                 else
@@ -795,7 +795,7 @@ function check_dcline_limits(data::Dict{String,Any})
 
             if dcline["loss1"][c] >= 1.0
                 new_rate = 0.0
-                warn(LOGGER, "this code only supports loss1 values < 1, changing the value on dcline $(dcline["index"])$(cnd_str) from $(dcline["loss1"][c]) to $(new_rate)")
+                warn( "this code only supports loss1 values < 1, changing the value on dcline $(dcline["index"])$(cnd_str) from $(dcline["loss1"][c]) to $(new_rate)")
                 if haskey(data, "conductors")
                     dcline["loss1"][c] = new_rate
                 else
@@ -805,7 +805,7 @@ function check_dcline_limits(data::Dict{String,Any})
 
             if dcline["pmint"][c] <0.0 && dcline["loss1"][c] > 0.0
                 #new_rate = 0.0
-                warn(LOGGER, "the dc line model is not meant to be used bi-directionally when loss1 > 0, be careful interpreting the results as the dc line losses can now be negative. change loss1 to 0 to avoid this warning")
+                warn( "the dc line model is not meant to be used bi-directionally when loss1 > 0, be careful interpreting the results as the dc line losses can now be negative. change loss1 to 0 to avoid this warning")
                 #dcline["loss0"] = new_rate
             end
         end
@@ -825,7 +825,7 @@ function check_voltage_setpoints(data::Dict{String,Any})
             bus_id = gen["gen_bus"]
             bus = data["bus"]["$(bus_id)"]
             if gen["vg"][c] != bus["vm"][c]
-                warn(LOGGER, "the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)")
+                warn( "the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)")
             end
         end
 
@@ -837,11 +837,11 @@ function check_voltage_setpoints(data::Dict{String,Any})
             bus_to = data["bus"]["$(bus_to_id)"]
 
             if dcline["vf"][c] != bus_fr["vm"][c]
-                warn(LOGGER, "the $(cnd_str)from bus voltage setpoint on dc line $(i) does not match the value at bus $(bus_fr_id)")
+                warn( "the $(cnd_str)from bus voltage setpoint on dc line $(i) does not match the value at bus $(bus_fr_id)")
             end
 
             if dcline["vt"][c] != bus_to["vm"][c]
-                warn(LOGGER, "the $(cnd_str)to bus voltage setpoint on dc line $(i) does not match the value at bus $(bus_to_id)")
+                warn( "the $(cnd_str)to bus voltage setpoint on dc line $(i) does not match the value at bus $(bus_to_id)")
             end
         end
     end
@@ -885,7 +885,7 @@ function _check_cost_functions(id, comp, type_name)
                 pmax = sum(comp["pmax"])
                 for i in 3:2:length(comp["cost"])
                     if comp["cost"][i] < pmin || comp["cost"][i] > pmax
-                        warn(LOGGER, "pwl x value $(comp["cost"][i]) is outside the bounds $(pmin)-$(pmax) on $(type_name) $(id)")
+                        warn( "pwl x value $(comp["cost"][i]) is outside the bounds $(pmin)-$(pmax) on $(type_name) $(id)")
                     end
                 end
             end
@@ -895,7 +895,7 @@ function _check_cost_functions(id, comp, type_name)
                 error("ncost of $(comp["ncost"]) not consistent with $(length(comp["cost"])) cost values on $(type_name) $(id)")
             end
         else
-            warn(LOGGER, "Unknown cost model of type $(comp["model"]) on $(type_name) $(id)")
+            warn( "Unknown cost model of type $(comp["model"]) on $(type_name) $(id)")
         end
     end
 end
@@ -932,7 +932,7 @@ function _simplify_pwl_cost(id, comp, type_name, tolerance = 1e-2)
     push!(smpl_cost, y2)
 
     if length(smpl_cost) < length(comp["cost"])
-        warn(LOGGER, "simplifying pwl cost on $(type_name) $(id), $(comp["cost"]) -> $(smpl_cost)")
+        warn( "simplifying pwl cost on $(type_name) $(id), $(comp["cost"]) -> $(smpl_cost)")
         comp["cost"] = smpl_cost
         comp["ncost"] = length(smpl_cost)/2
     end
@@ -964,14 +964,14 @@ function _propagate_topology_status(data::Dict{String,Any})
 
     for (i,load) in data["load"]
         if load["status"] != 0 && all(load["pd"] .== 0.0) && all(load["qd"] .== 0.0)
-            info(LOGGER, "deactivating load $(load["index"]) due to zero pd and qd")
+            @info( "deactivating load $(load["index"]) due to zero pd and qd")
             load["status"] = 0
         end
     end
 
     for (i,shunt) in data["shunt"]
         if shunt["status"] != 0 && all(shunt["gs"] .== 0.0) && all(shunt["bs"] .== 0.0)
-            info(LOGGER, "deactivating shunt $(shunt["index"]) due to zero gs and bs")
+            @info( "deactivating shunt $(shunt["index"]) due to zero gs and bs")
             shunt["status"] = 0
         end
     end
@@ -1024,7 +1024,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     t_bus = buses[branch["t_bus"]]
 
                     if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
-                        info(LOGGER, "deactivating branch $(i):($(branch["f_bus"]),$(branch["t_bus"])) due to connecting bus status")
+                        @info( "deactivating branch $(i):($(branch["f_bus"]),$(branch["t_bus"])) due to connecting bus status")
                         branch["br_status"] = 0
                         updated = true
                     end
@@ -1037,7 +1037,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     t_bus = buses[dcline["t_bus"]]
 
                     if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
-                        info(LOGGER, "deactivating dcline $(i):($(dcline["f_bus"]),$(dcline["t_bus"])) due to connecting bus status")
+                        @info( "deactivating dcline $(i):($(dcline["f_bus"]),$(dcline["t_bus"])) due to connecting bus status")
                         dcline["br_status"] = 0
                         updated = true
                     end
@@ -1060,7 +1060,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     #println("bus $(i) active shunt $(incident_active_shunt)")
 
                     if incident_active_edge == 1 && length(incident_active_gen[i]) == 0 && length(incident_active_load[i]) == 0 && length(incident_active_shunt[i]) == 0
-                        info(LOGGER, "deactivating bus $(i) due to dangling bus without generation and load")
+                        @info( "deactivating bus $(i) due to dangling bus without generation and load")
                         bus["bus_type"] = 4
                         updated = true
                     end
@@ -1068,7 +1068,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                 else # bus type == 4
                     for load in incident_active_load[i]
                         if load["status"] != 0
-                            info(LOGGER, "deactivating load $(load["index"]) due to inactive bus $(i)")
+                            @info( "deactivating load $(load["index"]) due to inactive bus $(i)")
                             load["status"] = 0
                             updated = true
                         end
@@ -1076,7 +1076,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
                     for shunt in incident_active_shunt[i]
                         if shunt["status"] != 0
-                            info(LOGGER, "deactivating shunt $(shunt["index"]) due to inactive bus $(i)")
+                            @info( "deactivating shunt $(shunt["index"]) due to inactive bus $(i)")
                             shunt["status"] = 0
                             updated = true
                         end
@@ -1084,7 +1084,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
                     for gen in incident_active_gen[i]
                         if gen["gen_status"] != 0
-                            info(LOGGER, "deactivating generator $(gen["index"]) due to inactive bus $(i)")
+                            @info( "deactivating generator $(gen["index"]) due to inactive bus $(i)")
                             gen["gen_status"] = 0
                             updated = true
                         end
@@ -1114,7 +1114,7 @@ function _propagate_topology_status(data::Dict{String,Any})
             active_gen_count = sum(cc_active_gens)
 
             if (active_load_count == 0 && active_shunt_count == 0) || active_gen_count == 0
-                info(LOGGER, "deactivating connected component $(cc) due to isolation without generation and load")
+                @info( "deactivating connected component $(cc) due to isolation without generation and load")
                 for i in cc
                     buses[i]["bus_type"] = 4
                 end
@@ -1124,7 +1124,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
     end
 
-    info(LOGGER, "topology status propagation fixpoint reached in $(iteration) rounds")
+    @info( "topology status propagation fixpoint reached in $(iteration) rounds")
 
     check_reference_buses(data)
 end
@@ -1147,17 +1147,17 @@ end
 ""
 function _select_largest_component(data::Dict{String,Any})
     ccs = connected_components(data)
-    info(LOGGER, "found $(length(ccs)) components")
+    @info( "found $(length(ccs)) components")
 
     ccs_order = sort(collect(ccs); by=length)
     largest_cc = ccs_order[end]
 
-    info(LOGGER, "largest component has $(length(largest_cc)) buses")
+    @info( "largest component has $(length(largest_cc)) buses")
 
     for (i,bus) in data["bus"]
         if bus["bus_type"] != 4 && !(bus["index"] in largest_cc)
             bus["bus_type"] = 4
-            info(LOGGER, "deactivating bus $(i) due to small connected component")
+            @info( "deactivating bus $(i) due to small connected component")
         end
     end
 
@@ -1222,15 +1222,15 @@ function check_component_refrence_bus(component_bus_ids, bus_lookup, component_g
     end
 
     if length(refrence_buses) == 0
-        warn(LOGGER, "no reference bus found in connected component $(component_bus_ids)")
+        warn( "no reference bus found in connected component $(component_bus_ids)")
 
         if length(component_gens) > 0
             big_gen = biggest_generator(component_gens)
             gen_bus = bus_lookup[big_gen["gen_bus"]]
             gen_bus["bus_type"] = 3
-            warn(LOGGER, "setting bus $(gen_bus["index"]) as reference bus in connected component $(component_bus_ids), based on generator $(big_gen["index"])")
+            warn( "setting bus $(gen_bus["index"]) as reference bus in connected component $(component_bus_ids), based on generator $(big_gen["index"])")
         else
-            warn(LOGGER, "no generators found in connected component $(component_bus_ids), try running propagate_topology_status")
+            warn( "no generators found in connected component $(component_bus_ids), try running propagate_topology_status")
         end
     end
 end
@@ -1351,7 +1351,7 @@ conductor_matrix = Set(["br_r", "br_x"])
 ""
 function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
     if haskey(data, "conductors")
-        warn(LOGGER, "skipping network that is already multiconductor")
+        warn( "skipping network that is already multiconductor")
         return
     end
 

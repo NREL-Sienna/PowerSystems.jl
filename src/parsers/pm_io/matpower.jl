@@ -152,7 +152,7 @@ function parse_matpower_string(data_string::String)
     if func_name != nothing
         case["name"] = func_name
     else
-        warn(LOGGER, string("no case name found in matpower file.  The file seems to be missing \"function mpc = ...\""))
+        warn( string("no case name found in matpower file.  The file seems to be missing \"function mpc = ...\""))
         case["name"] = "no_name_found"
     end
 
@@ -160,14 +160,14 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.version")
         case["source_version"] = VersionNumber(matlab_data["mpc.version"])
     else
-        warn(LOGGER, string("no case version found in matpower file.  The file seems to be missing \"mpc.version = ...\""))
+        warn( string("no case version found in matpower file.  The file seems to be missing \"mpc.version = ...\""))
         case["source_version"] = "0.0.0+"
     end
 
     if haskey(matlab_data, "mpc.baseMVA")
         case["baseMVA"] = matlab_data["mpc.baseMVA"]
     else
-        warn(LOGGER, string("no baseMVA found in matpower file.  The file seems to be missing \"mpc.baseMVA = ...\""))
+        warn( string("no baseMVA found in matpower file.  The file seems to be missing \"mpc.baseMVA = ...\""))
         case["baseMVA"] = 1.0
     end
 
@@ -277,10 +277,10 @@ function parse_matpower_string(data_string::String)
                     push!(tbl, row_data)
                 end
                 case[case_name] = tbl
-                info(LOGGER, "extending matpower format with data: $(case_name) $(length(tbl))x$(length(tbl[1])-1)")
+                @info( "extending matpower format with data: $(case_name) $(length(tbl))x$(length(tbl[1])-1)")
             else
                 case[case_name] = value
-                info(LOGGER, "extending matpower format with constant data: $(case_name)")
+                @info( "extending matpower format with constant data: $(case_name)")
             end
         end
     end
@@ -423,7 +423,7 @@ function standardize_cost_terms(data::Dict{String,Any})
                     end
 
                     if max_nonzero_index > 1
-                        warn(LOGGER, "removing $(max_nonzero_index-1) zeros from generator cost model ($(gencost["index"]))")
+                        warn( "removing $(max_nonzero_index-1) zeros from generator cost model ($(gencost["index"]))")
                         #println(gencost["cost"])
                         gencost["cost"] = gencost["cost"][max_nonzero_index:length(gencost["cost"])]
                         #println(gencost["cost"])
@@ -437,7 +437,7 @@ function standardize_cost_terms(data::Dict{String,Any})
                     gencost["cost"] = cost_3
                     gencost["ncost"] = 3
                     #println("   ",gencost["cost"])
-                    warn(LOGGER, "added zeros to make generator cost ($(gencost["index"])) a quadratic function: $(cost_3)")
+                    warn( "added zeros to make generator cost ($(gencost["index"])) a quadratic function: $(cost_3)")
                 end
             end
         end
@@ -456,7 +456,7 @@ function standardize_cost_terms(data::Dict{String,Any})
                     end
 
                     if max_nonzero_index > 1
-                        warn(LOGGER, "removing $(max_nonzero_index-1) zeros from dcline cost model ($(dclinecost["index"]))")
+                        warn( "removing $(max_nonzero_index-1) zeros from dcline cost model ($(dclinecost["index"]))")
                         #println(dclinecost["cost"])
                         dclinecost["cost"] = dclinecost["cost"][max_nonzero_index:length(dclinecost["cost"])]
                         #println(dclinecost["cost"])
@@ -470,7 +470,7 @@ function standardize_cost_terms(data::Dict{String,Any})
                     dclinecost["cost"] = cost_3
                     dclinecost["ncost"] = 3
                     #println("   ",dclinecost["cost"])
-                    warn(LOGGER, "added zeros to make dcline cost ($(dclinecost["index"])) a quadratic function: $(cost_3)")
+                    warn( "added zeros to make dcline cost ($(dclinecost["index"])) a quadratic function: $(cost_3)")
                 end
             end
         end
@@ -568,7 +568,7 @@ end
 "adds dcline costs, if gen costs exist"
 function add_dcline_costs(data::Dict{String,Any})
     if length(data["gencost"]) > 0 && length(data["dclinecost"]) <= 0 && length(data["dcline"]) > 0
-        warn(LOGGER, "added zero cost function data for dclines")
+        warn( "added zero cost function data for dclines")
         model = data["gencost"][1]["model"]
         if model == 1
             for (i, dcline) in enumerate(data["dcline"])
@@ -660,7 +660,7 @@ function merge_generic_data(data::Dict{String,Any})
                         error("failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they do not have the same number of rows, $(length(mp_matrix)) and $(length(v)) respectively.")
                     end
 
-                    info(LOGGER, "extending matpower format by appending matrix \"$(k)\" in to \"$(mp_name)\"")
+                    @info( "extending matpower format by appending matrix \"$(k)\" in to \"$(mp_name)\"")
 
                     for (i, row) in enumerate(mp_matrix)
                         merge_row = v[i]
@@ -818,7 +818,7 @@ function export_matpower(io::IO, data::Dict{String,Any})
     i = 1
     for (idx,gen) in sort(generators)
         if idx != gen["index"]
-            warn(LOGGER, "The index of the generator does not match the matpower assigned index. Any data that uses generator indexes for reference is corrupted.");
+            warn( "The index of the generator does not match the matpower assigned index. Any data that uses generator indexes for reference is corrupted.");
         end
     println(io, "\t", gen["gen_bus"],
                 "\t", get_default(gen, "pg"),
@@ -859,7 +859,7 @@ function export_matpower(io::IO, data::Dict{String,Any})
     i = 1
     for (idx,branch) in sort(branches)
         if idx != branch["index"]
-            warn(LOGGER, "The index of the branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted.");
+            warn( "The index of the branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted.");
         end
         println(io,
             "\t", get_default(branch, "f_bus"),
@@ -938,7 +938,7 @@ function export_matpower(io::IO, data::Dict{String,Any})
         i = 1
         for (idx,branch) in sort(ne_branches)
             if idx != branch["index"]
-                warn(LOGGER, "The index of the ne_branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted.");
+                warn( "The index of the ne_branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted.");
             end
             println(io,
                 "\t", branch["f_bus"],
@@ -1054,7 +1054,7 @@ function export_extra_data(io::IO, data::Dict{String,Any}, component, excluded_f
     i = 1
     for (idx,c) in sort(components)
         if idx != c["index"]
-            warn(LOGGER, "The index of a component does not match the matpower assigned index. Any data that uses component indexes for reference is corrupted.");
+            warn( "The index of a component does not match the matpower assigned index. Any data that uses component indexes for reference is corrupted.");
         end
 
         for field in included_fields
@@ -1087,7 +1087,7 @@ function export_cost_data(io::IO, components::Dict{Int,Dict}, prefix::String)
 
         for (i,comp) in components
             if length(comp["cost"]) != ncost || comp["model"] != model
-                warn(LOGGER, "heterogeneous cost functions will be ommited in Matpower data")
+                warn( "heterogeneous cost functions will be ommited in Matpower data")
                 return
             end
         end
