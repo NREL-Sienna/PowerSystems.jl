@@ -1,5 +1,13 @@
+function get_name_and_csv(path_to_filename)
+    df = CSV.File(path_to_filename) |> DataFrame
+    #df = DataFrames.DataFrame(Pandas.read_csv(path_to_filename))
+    folder = splitdir(splitdir(path_to_filename)[1])[2]
+    return folder, df
+end
+
+
 # Parser for Forecasts dat files
-function read_data_files(files::String)
+function read_data_files(rootpath::String; kwargs...)
     """
     Read all forecast CSV's in the path provided, the struct of the data should follow this format
     folder : PV
@@ -13,34 +21,88 @@ function read_data_files(files::String)
         A dictionary with the CSV files as dataframes and folder names as keys
     # TODO : Stochasti/Multiple scenarios
     """
-    REGEX_DEVICE_TYPE = r"(.*?)\.csv"
-    REGEX_IS_FOLDER = r"^[A-Za-z]+$"
-    data =Dict{String,Any}()
-    for folder in readdir(files)
-        if match(REGEX_IS_FOLDER, folder) != nothing
-            @info "Parsing csv timeseries files in $folder ..."
-            data[folder] = Dict{String,Any}()
-            for file in readdir(files*"/$folder")
-                if match(REGEX_DEVICE_TYPE, file) != nothing
-                    file_path = files*"/$folder/$file"
-                    #raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
-                    raw_data = DataFrame(CSVFiles.load(file_path))
-                    if raw_data[25,:Period] > 24
-                        key = "RT"
-                    else
-                        key ="DA"
-                    end
-                    data[folder][key] = read_datetime(raw_data)
+    if :REGEX_FILE in keys(kwargs)
+        REGEX_FILE = kwargs[:REGEX_FILE]
+    else
+        REGEX_FILE = r"(.*?)\.csv"
+    end
+
+    DATA = Dict{String, Any}()
+    data = Dict{String, Any}()
+    DATA["gen"] = data
+
+    for (root, dirs, files) in walkdir(rootpath)
+
+        for filename in files
+
+            path_to_filename = joinpath(root, filename)
+            if match(REGEX_FILE, path_to_filename) != nothing
+                folder_name, csv_data = get_name_and_csv(path_to_filename)
+                if folder_name == "load"
+                    DATA["load"] = read_datetime(csv_data; kwargs...)
+                else
+                    data[folder_name] = read_datetime(csv_data; kwargs...)
                 end
             end
-            @info "Successfully parsed $folder"
+        end
+
+    end
+
+    return DATA
+end
+
+function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
+    """
+    Args:
+        PowerSystems Dictionary
+        Dictionary of all the data files
+    Returns:
+        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
+    """
+    if "load" in keys(ts_dict)
+        ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
+    else
+        @warn("Not assigning time series to loads")
+    end
+
+    device_dict = ps_dict["gen"]
+    for (key, d) in ts_dict["gen"]
+        if key in keys(device_dict)
+            device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
         end
     end
-    return data
+
+    device_dict = ps_dict["gen"]["Renewable"]
+    for (key, d) in ts_dict["gen"]
+        if key in keys(device_dict)
+            device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
+        end
+    end
+
+    return ps_dict
+end
+
+function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::Dates.Period,horizon::Int) where {D<:PowerSystemDevice}
+    time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
+    initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
+    last_date = df[end,:DateTime]
+    ts_dict = Dict{Any,Dict{Int,TimeSeries.TimeArray}}()
+    ts_raw =  TimeSeries.TimeArray(df[1],df[2])
+    for ts in initialtime:resolution:last_date
+        ts_dict[ts] = Dict{Int,TimeSeries.TimeArray}(1 => ts_raw[ts:time_delta:(ts+resolution)])
+    end
+    forecast = Dict{String,Any}("horizon" =>horizon,
+                                            "resolution" => resolution, #TODO : fix type conversion to JSON
+                                            "interval" => time_delta,   #TODO : fix type conversion to JSON
+                                            "initialtime" => initialtime,
+                                            "device" => device,
+                                            "data" => ts_dict
+                                            )
+    return forecast
 end
 
  # -Parse csv file to dict
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
     """
     Args:
         Dictionary of all the data files
@@ -53,26 +115,11 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
     """
     forecast = Dict{String,Any}()
     for device in Devices
-        for (key_df,dict_df) in  time_series
-            if device.name in convert(Array{String},names(dict_df["DA"]))
-                df = (dict_df["DA"])
-                time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
-                initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
-                last_date = df[end,:DateTime]
-                ts_dict = Dict{Any,Dict{Int,TimeSeries.TimeArray}}()
+        for (key_df,df) in time_series
+            if device.name in convert(Array{String},names(df))
                 for name in convert(Array{String},names(df))
                     if name == device.name
-                        ts_raw = TimeSeries.TimeArray(df[:,:DateTime],df[:,Symbol(name)])
-                        for ts in initialtime:resolution:last_date
-                            ts_dict[ts] = Dict{Int,TimeSeries.TimeArray}(1 => ts_raw[ts:time_delta:(ts+resolution)])
-                        end
-                        forecast[device.name] = Dict{String,Any}("horizon" =>horizon,
-                                                    "resolution" => resolution, #TODO : fix type conversion to JSON
-                                                    "interval" => time_delta,   #TODO : fix type conversion to JSON
-                                                    "initialtime" => initialtime,
-                                                    "device" => device,
-                                                    "data" => ts_dict
-                                                        )
+                        forecast[device.name] = make_device_forecast(device, df[[:DateTime,Symbol(device.name)]], resolution, horizon)
                     end
                 end
             end
@@ -84,7 +131,32 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
     return forecast
 end
 
-function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1})
+    """
+    Args:
+        Dictionary of all the data files
+        Length of the forecast - Week()/Day()/Hour()
+        Forecast horizon in hours - Int64
+        Array of PowerSystems devices in the systems- Loads
+    Returns:
+        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
+    """
+    forecast = Dict{String,Any}()
+    for device in Devices
+        if haskey(time_series,"load")
+            if device.bus.name in  convert(Array{String},names(time_series["load"]))
+                df = time_series["load"][[:DateTime,Symbol(device.bus.name)]]
+                forecast[device.name] = make_device_forecast(device, df, resolution, horizon)
+            end
+        else
+            @warn "No forecast found for Loads"
+        end
+    end
+    return forecast
+end
+
+
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
     """
     Args:
         Dictionary of all the data files
@@ -98,26 +170,11 @@ function make_forecast_dict(time_series::Dict{String,Any},resolution::Dates.Peri
     """
     forecast = Dict{String,Any}()
     for device in Devices
-        if haskey(time_series,"Load")
+        if haskey(time_series,"load")
             for lz in LoadZones
                 if device.bus in lz.buses
-                    df = time_series["Load"]["DA"][:,[:DateTime,Symbol(lz.name)]]
-
-                    time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
-                    initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
-                    last_date = df[end,:DateTime]
-                    ts_dict = Dict{Any,Dict{Int,TimeSeries.TimeArray}}()
-                    ts_raw =  TimeSeries.TimeArray(df[:,1],df[:,2])
-                    for ts in initialtime:resolution:last_date
-                        ts_dict[ts] = Dict{Int,TimeSeries.TimeArray}(1 => ts_raw[ts:time_delta:(ts+resolution)])
-                    end
-                    forecast[device.name] = Dict{String,Any}("horizon" =>horizon,
-                                                            "resolution" => resolution, #TODO : fix type conversion to JSON
-                                                            "interval" => time_delta,   #TODO : fix type conversion to JSON
-                                                            "initialtime" => initialtime,
-                                                            "device" => device,
-                                                            "data" => ts_dict
-                                                            )
+                    df = time_series["load"][[:DateTime,Symbol(lz.name)]]
+                    forecast[device.name] = make_device_forecast(device, df, resolution, horizon)
                 end
             end
         else

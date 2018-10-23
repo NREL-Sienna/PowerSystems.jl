@@ -1,5 +1,5 @@
 abstract type
-    Storage
+    Storage <: PowerSystemDevice
 end
 
 include("storage/batteries.jl")

@@ -31,7 +31,8 @@ function read_csv_data(file_path::String)
                     if match(REGEX_DEVICE_TYPE, file) != nothing
                         data[d_file] = Dict{String,Any}()
                         file_path = files*"/$d_file/$file"
-                        raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                        raw_data = CSV.File(file_path) |> DataFrame
+                        #raw_data = DataFrames.DataFrame(Pandas.read_csv(file_path))
                         data[d_file][split(file,r"[.]")[1]] = raw_data
                     end
                 end
@@ -39,7 +40,7 @@ function read_csv_data(file_path::String)
             elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
                 @info "Parsing csv timeseries files in $d_file ..."
                 file_path = files*"/$d_file"
-                raw_data = CSV.read(file_path,header=1,datarow =2,rows_for_type_detect=1000)
+                raw_data = CSV.File(file_path)|> DataFrame
                 data[split(d_file,r"[.]")[1]] = raw_data
                 @info "Successfully parsed $d_file"
             end
