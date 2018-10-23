@@ -9,6 +9,10 @@ Memento.config!(Memento.getlogger("PowerModels"), "error")
 gl = global_logger()
 global_logger(ConsoleLogger(gl.stream, Logging.Error))
 
+@testset "Check PowerSystems Data" begin
+    @info "Check bus index"
+    include("busnumberchecks.jl")
+end
 
 @testset "Read PowerSystems data" begin
     @info "Read Data in *.jl files"

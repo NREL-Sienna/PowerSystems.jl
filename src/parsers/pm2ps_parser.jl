@@ -1,4 +1,6 @@
 
+MAPPING_BUSNUMBER2INDEX = Dict{Int64, Int64}()
+
 function pm2ps_dict(data::Dict{String,Any})
     """
     Takes a dictionary parsered by PowerModels and returns a PowerSystems dictionary
@@ -12,15 +14,19 @@ function pm2ps_dict(data::Dict{String,Any})
     ps_dict["name"] = data["name"]
     ps_dict["baseMVA"] = data["baseMVA"]
     ps_dict["source_type"] = data["source_type"]
+    @info "Reading bus data"
     Buses = read_bus(data)
     if !isa(Buses,Nothing)
          ps_dict["bus"] = Buses
     else
         @error "No bus data found" # TODO : need for a model without a bus
     end
+    @info "Reading load data"
     Loads= read_loads(data,ps_dict["bus"])
     LoadZones= read_loadzones(data,ps_dict["bus"])
+    @info "Reading generator data"
     Generators= read_gen(data,ps_dict["bus"])
+    @info "Reading branch data"
     Branches= read_branch(data,ps_dict["bus"])
     Shunts = read_shunt(data,ps_dict["bus"])
     DCLines= read_dcline(data,ps_dict["bus"])
@@ -76,18 +82,18 @@ function make_bus(bus_dict::Dict{String,Any})
     """
   if haskey(device_dict, "t_bus")
         if haskey(device_dict, "f_bus")
-            t_bus = Buses[Int(device_dict["t_bus"])]
-            f_bus = Buses[Int(device_dict["f_bus"])]
+            t_bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["t_bus"])]]
+            f_bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["f_bus"])]]
             value =(f_bus,t_bus)
         end
     elseif haskey(device_dict, "gen_bus")
-        bus = Buses[Int(device_dict["gen_bus"])]
+        bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["gen_bus"])]]
         value =bus
     elseif haskey(device_dict, "load_bus")
-        bus = Buses[Int(device_dict["load_bus"])]
+        bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["load_bus"])]]
         value =bus
     elseif haskey(device_dict,"shunt_bus")
-        bus = Buses[Int(device_dict["shunt_bus"])]
+        bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["shunt_bus"])]]
         value =bus
     else
         @info "Provided Dict missing key/s  gen_bus or f_bus/t_bus or load_bus"
@@ -97,7 +103,7 @@ end
 
 function make_bus(bus_name, d, bus_types)
     bus = Dict{String,Any}("name" => bus_name ,
-                            "number" => d["bus_i"],
+                            "number" => MAPPING_BUSNUMBER2INDEX[d["bus_i"]],
                             "bustype" => bus_types[d["bus_type"]],
                             "angle" => 0, # NOTE: angle 0, tuple(min, max)
                             "voltage" => d["vm"],
@@ -110,11 +116,13 @@ end
 function read_bus(data)
     Buses = Dict{Int64,Any}()
     bus_types = ["PV", "PQ", "SF","isolated"]
-    for (d_key, d) in data["bus"]
+    for (i, (d_key, d)) in enumerate(data["bus"])
         # d id the data dict for each bus
         # d_key is bus key
         haskey(d,"bus_name") ? bus_name = d["bus_name"] : bus_name = string(d["bus_i"])
-        Buses[Int(d["bus_i"])] =  make_bus(bus_name, d, bus_types)
+        bus_number = Int(d["bus_i"])
+        MAPPING_BUSNUMBER2INDEX[bus_number] = i
+        Buses[MAPPING_BUSNUMBER2INDEX[bus_number]] =  make_bus(bus_name, d, bus_types)
     end
     return Buses
 end
@@ -162,10 +170,10 @@ function read_loadzones(data,Buses)
     if haskey(data,"areas")
         LoadZones = Dict{Int64,Any}()
         for (d_key,d) in data["areas"]
-            b_array  = [b["bus_i"] for (b_key, b) in data["bus"] if b["area"] == d["index"] ]
+            b_array  = [MAPPING_BUSNUMBER2INDEX[b["bus_i"]] for (b_key, b) in data["bus"] if b["area"] == d["index"] ]
             bus_l = [make_bus(Buses[Int(b_key)]) for b_key in b_array]
-            activepower  = [ l["pd"] for (l_key, l) in data["load"] if l["load_bus"] in b_array ] #TODO: Fast Implementations
-            reactivepower  = [ l["qd"] for (l_key, l) in data["load"] if l["load_bus"] in b_array]
+            activepower  = [ l["pd"] for (l_key, l) in data["load"] if MAPPING_BUSNUMBER2INDEX[l["load_bus"]] in b_array ] #TODO: Fast Implementations
+            reactivepower  = [ l["qd"] for (l_key, l) in data["load"] if MAPPING_BUSNUMBER2INDEX[l["load_bus"]] in b_array]
             LoadZones[d["index"]] = make_loadzones(d_key,d,bus_l,activepower, reactivepower)
         end
         return LoadZones
@@ -214,11 +222,11 @@ function make_thermal_gen(gen_name, d, bus)
         cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
     elseif d["model"] ==2
         if d["ncost"] == 2
-            cost = x-> d["ncost"][1]*x + d["ncost"][2]
+            cost = x-> d["cost"][1]*x + d["cost"][2]
         elseif d["ncost"] == 3
-            cost = x-> d["ncost"][1]*x^2 + d["ncost"][2]*x + d["ncost"][3]
+            cost = x-> d["cost"][1]*x^2 + d["cost"][2]*x + d["cost"][3]
         elseif d["ncost"] == 4
-            cost = x-> d["ncost"][1]*x^3 + d["ncost"][2]*x^2 + d["ncost"][3]*x + d["ncost"][4]
+            cost = x-> d["cost"][1]*x^3 + d["cost"][2]*x^2 + d["cost"][3]*x + d["cost"][4]
         end
     else
         cost = d["cost"]
@@ -255,14 +263,13 @@ function read_gen(data,Buses)
         fuel = []
         gen_name =[]
         type_gen =[]
-        for d_key in keys(data["gen"])
-            d = data["gen"][d_key]
+        for (d_key,d) in data["gen"]
             haskey(d,"fuel") ? fuel =d["fuel"] : fuel = "generic"
             haskey(d,"type") ? type_gen = d["type"] : type_gen = "generic"
             haskey(d,"name") ? gen_name = d["name"] : haskey(d,"source_id") ? gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2]) : gen_name = d_key
 
             if fuel in ["Hydro"] || type_gen in ["hydro","HY"]
-                bus =find_bus(Buses,d)
+                bus = find_bus(Buses,d)
                 Generators["Hydro"][gen_name] = make_hydro_gen(d,gen_name,bus)
             elseif fuel in ["Solar","Wind"] || type_gen in ["W2,PV"]
                 bus = find_bus(Buses,d)
