@@ -6,10 +6,10 @@ using Logging
 gl = global_logger()
 global_logger(ConsoleLogger(gl.stream, Logging.Error))
 
-@testset "Check PowerSystems Data" begin
-    @info "Check bus index"
-    include("busnumberchecks.jl")
-end
+#@testset "Check PowerSystems Data" begin
+#    @info "Check bus index"
+#    include("busnumberchecks.jl")
+#end
 
 @testset "Read PowerSystems data" begin
     @info "Read Data in *.jl files"
@@ -23,10 +23,6 @@ end
     include("powersystemconstructors.jl")
 end
 
-@testset "Parsing Code" begin
-    include("parsestandard.jl")
-end
-
 @testset "Forecast parsing" begin
     @info "Reading forecast data "
     @time include("readforecastdata.jl")
@@ -37,6 +33,10 @@ end
     @test @time include("network_matrices.jl")
     @info "Testing Check Functions"
     include("checks_testing.jl")
+end
+
+@testset "Parsing Code" begin
+    include("parsestandard.jl")
 end
 
 # #=

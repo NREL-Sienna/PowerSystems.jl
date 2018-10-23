@@ -79,6 +79,7 @@ using LinearAlgebra
 using Dates
 using TimeSeries
 using DataFrames
+using JSON
 import CSV
 import InfrastructureModels
 
