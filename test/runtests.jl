@@ -2,9 +2,6 @@ using PowerSystems
 using Test
 using Logging
 
-import Memento
-Memento.config!(Memento.getlogger("PowerModels"), "error")
-
 # Testing Topological components of the schema
 gl = global_logger()
 global_logger(ConsoleLogger(gl.stream, Logging.Error))
@@ -26,8 +23,11 @@ end
     include("powersystemconstructors.jl")
 end
 
-@testset "Parsing Code" begin
-    include("parsestandard.jl")
+@testset "Utilities testing" begin
+    @info "Testing Network Matrices"
+    @test @time include("network_matrices.jl")
+    @info "Testing Check Functions"
+    include("checks_testing.jl")
 end
 
 @testset "Forecast parsing" begin
@@ -35,11 +35,8 @@ end
     @time include("readforecastdata.jl")
 end
 
-@testset "Utilities testing" begin
-    @info "Testing Network Matrices"
-    @test @time include("network_matrices.jl")
-    @info "Testing Check Functions"
-    include("checks_testing.jl")
+@testset "Parsing Code" begin
+    include("parsestandard.jl")
 end
 
 # #=

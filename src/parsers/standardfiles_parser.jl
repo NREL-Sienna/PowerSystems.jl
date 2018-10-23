@@ -1,6 +1,6 @@
 function parsestandardfiles(file::String)
 
-    data = PowerModels.parse_file(file)
+    data = parse_file(file)
 
     # Check for at least one bus in input file
     if (length(data["bus"]) < 1)
@@ -23,13 +23,4 @@ function parsestandardfiles(file::String, ts_folder::String; kwargs...)
     data = assign_ts_data(data,ts_data)
 
     return data
-end
-
-
-function parse_file(file::String)
-
-    data = PowerModels.parse_file(file)
-
-    return data
-
 end
