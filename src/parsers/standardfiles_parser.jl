@@ -1,6 +1,6 @@
 function parsestandardfiles(file::String)
 
-    data = PowerModels.parse_file(file)
+    data = parse_file(file)
 
     # Check for at least one bus in input file
     if (length(data["bus"]) < 1)
@@ -28,7 +28,7 @@ end
 
 function parse_file(file::String)
 
-    data = PowerModels.parse_file(file)
+    data = parse_file(file)
 
     return data
 

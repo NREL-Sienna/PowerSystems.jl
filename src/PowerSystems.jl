@@ -77,7 +77,6 @@ using LinearAlgebra: BLAS.gemm
 using LinearAlgebra
 using Dates
 using TimeSeries
-using PowerModels
 using DataFrames
 import CSV
 
@@ -102,6 +101,7 @@ include("models/loads.jl")
 include("models/services.jl")
 
 # Include Parsing files
+include("parser/pm_io.jl")
 include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/cdm_parser.jl")
