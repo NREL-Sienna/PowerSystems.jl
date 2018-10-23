@@ -79,16 +79,8 @@ using LinearAlgebra
 using Dates
 using TimeSeries
 using DataFrames
-using Logging
 import CSV
 import InfrastructureModels
-
-# Create our module level logger (this will get precompiled)
-gl = global_logger()
-const LOGGER = global_logger(ConsoleLogger(gl.stream, Logging.Error))
-
-
-
 
 #################################################################################
 # Includes
