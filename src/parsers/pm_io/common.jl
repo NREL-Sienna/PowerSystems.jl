@@ -8,10 +8,10 @@ PowerModels data structure. All fields from PTI files will be imported if
 function parse_file(file::String; import_all=false)
     try
         if endswith(file, ".m")
-            pm_data = PowerModels.parse_matpower(file)
+            pm_data = parse_matpower(file)
         elseif endswith(lowercase(file), ".raw")
             info(LOGGER, "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines")
-            pm_data = PowerModels.parse_psse(file; import_all=import_all)
+            pm_data = parse_psse(file; import_all=import_all)
         else
             pm_data = parse_json(file)
         end
