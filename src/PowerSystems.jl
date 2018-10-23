@@ -61,6 +61,7 @@ export StaticReserve
 export Transfer
 
 export parsestandardfiles
+export parse_file
 export ps_dict2ps_struct
 export assign_ts_data
 export read_data_files
@@ -79,6 +80,7 @@ using Dates
 using TimeSeries
 using DataFrames
 import CSV
+import InfrastructureModels
 
 #################################################################################
 # Includes

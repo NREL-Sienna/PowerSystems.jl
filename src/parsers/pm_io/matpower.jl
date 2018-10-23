@@ -145,7 +145,7 @@ end
 
 ""
 function parse_matpower_string(data_string::String)
-    matlab_data, func_name, colnames = parse_matlab_string(data_string, extended=true)
+    matlab_data, func_name, colnames = InfrastructureModels.parse_matlab_string(data_string, extended=true)
 
     case = Dict{String,Any}()
 
