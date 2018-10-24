@@ -43,8 +43,10 @@ function read_data_files(rootpath::String; kwargs...)
                 else
                     data[folder_name] = read_datetime(csv_data; kwargs...)
                 end
+                @info "Successfully parsed $rootpath"
+            else
+                @warn "Unable to match regex with $path_to_filename"
             end
-            @info "Successfully parsed $folder"
         end
 
     end
