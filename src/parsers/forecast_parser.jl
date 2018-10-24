@@ -44,6 +44,7 @@ function read_data_files(rootpath::String; kwargs...)
                     data[folder_name] = read_datetime(csv_data; kwargs...)
                 end
             end
+            @info "Successfully parsed $folder"
         end
 
     end
@@ -62,7 +63,7 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     if "load" in keys(ts_dict)
         ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
     else
-        @warn("Not assigning time series to loads")
+        @warn "Not assigning time series to loads"
     end
 
     device_dict = ps_dict["gen"]

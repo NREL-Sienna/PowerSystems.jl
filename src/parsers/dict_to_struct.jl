@@ -7,22 +7,54 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     """
     Takes a PowerSystems dictionary and return an array of PowerSystems struct for Bus, Generator, Branch and load
     """
-    Generators = Array{G where {G<:Generator},1}()
-    Storages = Array{S where {S<:Storage},1}()
-    Buses =Array{Bus,1}()
-    Branches = Array{B where {B<:Branch},1}()
-    Loads =Array{E where {E<:ElectricLoad},1}()
-    Shunts =Array{FixedAdmittance,1}()
-    LoadZones =Array{D where {D<:PowerSystemDevice},1}()
+    generators = Array{G where {G<:Generator},1}()
+    storages = Array{S where {S<:Storage},1}()
+    buses = Array{Bus,1}()
+    branches = Array{B where {B<:Branch},1}()
+    loads = Array{E where {E<:ElectricLoad},1}()
+    shunts = Array{FixedAdmittance,1}()
+    loadZones = Array{D where {D<:PowerSystemDevice},1}()
 
-    haskey(data, "bus") ? Buses = bus_dict_parse(data["bus"]) : @error("Key error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array")
-    haskey(data, "gen") ? (Generators, Storages) = gen_dict_parser(data["gen"]) : @error("Key error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array")
-    haskey(data, "branch") ? Branches = branch_dict_parser(data["branch"],Branches) : @warn("Key error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array")
-    haskey(data, "load") ? Loads = load_dict_parser(data["load"]) : @error("Key error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array")
-    haskey(data, "loadzone") ? LoadZones = loadzone_dict_parser(data["loadzone"]) : @info("Key error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array")
-    haskey(data, "shunt") ? Shunts = shunt_dict_parser(data["shunt"]) : @info("Key error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array")
-    haskey(data, "dcline") ? Branches = dclines_dict_parser(data["dcline"],Branches) : @info("Key error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array")
-    return sort!(Buses, by = x -> x.number), Generators, Storages,  sort!(Branches, by = x -> x.connectionpoints.from.number), Loads, LoadZones, Shunts
+    # TODO: should we raise an exception in the following?
+
+    if haskey(data, "bus")
+        buses = bus_dict_parse(data["bus"])
+    else
+        @warn "key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array"
+    end
+    if haskey(data, "gen")
+        (generators, storage) = gen_dict_parser(data["gen"])
+    else
+        @warn "key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array"
+    end
+    if haskey(data, "branch")
+        branches = branch_dict_parser(data["branch"], branches)
+    else
+        @warn "key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array"
+    end
+    if haskey(data, "load")
+        loads = load_dict_parser(data["load"])
+    else
+        @warn "key 'load' not found in PowerSystems dictionary, this will result in an empty Loads array"
+    end
+    if haskey(data, "loadzone")
+        loadZones = loadzone_dict_parser(data["loadzone"])
+    else
+        @warn "key 'loadzone' not found in PowerSystems dictionary, this will result in an empty LoadZones array"
+    end
+    if haskey(data, "shunt")
+        shunts = shunt_dict_parser(data["shunt"])
+    else
+        @warn "key 'shunt' not found in PowerSystems dictionary, this will result in an empty Shunts array"
+    end
+    if haskey(data, "dcline")
+        branches = dclines_dict_parser(data["dcline"], branches)
+    else
+        @warn "key 'dcline' not found in PowerSystems dictionary, this will result in an empty DCLines array"
+    end
+
+    return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts
+
 end
 
 
@@ -62,7 +94,7 @@ function read_datetime(df; kwargs...)
     """
     Arg:
         Dataframes which includes a timerseries columns of either:
-            Year, Month, Day, Period 
+            Year, Month, Day, Period
           or
             DateTime
           or
@@ -78,18 +110,18 @@ function read_datetime(df; kwargs...)
             df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Minute(5) :
                             DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
         else
-            error("I don't know what the period length is, reformat timeseries")
+            @error "I don't know what the period length is, reformat timeseries"
         end
 
         delete!(df, [:Year,:Month,:Day,:Period])
 
     elseif :DateTime in names(df)
         df[:DateTime] = Datetime(df[:DateTime])
-    else 
+    else
         if :startdatetime in keys(kwargs)
             startdatetime = kwargs[:startdatetime]
         else
-            @warn("No reference date given, assuming today")
+            @warn "No reference date given, assuming today"
             startdatetime = today()
         end
         df[:DateTime] = collect(DateTime(startdatetime):Hour(1):DateTime(startdatetime)+Hour(size(df)[1]-1))
