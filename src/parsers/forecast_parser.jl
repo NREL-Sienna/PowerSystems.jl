@@ -119,8 +119,8 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     forecast = Dict{String,Any}()
     for device in Devices
         for (key_df,df) in time_series
-            if device.name in convert(Array{String},names(df))
-                for name in convert(Array{String},names(df))
+            if device.name in map(String, names(df))
+                for name in map(String, names(df))
                     if name == device.name
                         forecast[device.name] = make_device_forecast(device, df[[:DateTime,Symbol(device.name)]], resolution, horizon)
                     end
@@ -147,7 +147,7 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     forecast = Dict{String,Any}()
     for device in Devices
         if haskey(time_series,"load")
-            if device.bus.name in  convert(Array{String},names(time_series["load"]))
+            if device.bus.name in  map(String, names(time_series["load"]))
                 df = time_series["load"][[:DateTime,Symbol(device.bus.name)]]
                 forecast[device.name] = make_device_forecast(device, df, resolution, horizon)
             end
