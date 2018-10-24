@@ -122,7 +122,7 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
             if device.name in map(String, names(df))
                 for name in map(String, names(df))
                     if name == device.name
-                        forecast[device.name] = make_device_forecast(device, df[[:DateTime,Symbol(device.name)]], resolution, horizon)
+                        forecast[device.name] = make_device_forecast(device, df[[:DateTime, Symbol(device.name)]], resolution, horizon)
                     end
                 end
             end
