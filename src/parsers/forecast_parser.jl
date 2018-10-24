@@ -197,7 +197,7 @@ function make_forecast_array(dict)
     Returns:
         A PowerSystems forecast stuct array
     """
-    Forecasts =Array{Forecast}(0)
+    Forecasts = Array{Forecast}(undef, 0)
     for (device_key,device_dict) in dict
                 push!(Forecasts,Deterministic(device_dict["device"],device_dict["horizon"],
                                 device_dict["resolution"],device_dict["interval"],
