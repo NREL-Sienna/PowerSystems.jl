@@ -13,7 +13,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     branches = Array{B where {B<:Branch},1}()
     loads = Array{E where {E<:ElectricLoad},1}()
     shunts = Array{FixedAdmittance,1}()
-    loadZones =Array{D where {D<:PowerSystemDevice},1}()
+    loadZones = Array{D where {D<:PowerSystemDevice},1}()
 
     # TODO: should we raise an exception in the following?
 
