@@ -20,37 +20,37 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     if haskey(data, "bus")
         buses = bus_dict_parse(data["bus"])
     else
-        @error "Key error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array"
+        @warn "key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array"
     end
     if haskey(data, "gen")
         (generators, storage) = gen_dict_parser(data["gen"])
     else
-        @error "Key error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array"
+        @warn "key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array"
     end
     if haskey(data, "branch")
         branches = branch_dict_parser(data["branch"], branches)
     else
-        @warn "Key error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array"
+        @warn "key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array"
     end
     if haskey(data, "load")
         loads = load_dict_parser(data["load"])
     else
-        @error "Key error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array"
+        @warn "key 'load' not found in PowerSystems dictionary, this will result in an empty Loads array"
     end
     if haskey(data, "loadzone")
         loadZones = loadzone_dict_parser(data["loadzone"])
     else
-        @error "Key error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array"
+        @warn "key 'loadzone' not found in PowerSystems dictionary, this will result in an empty LoadZones array"
     end
     if haskey(data, "shunt")
         shunts = shunt_dict_parser(data["shunt"])
     else
-        @error "Key error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array"
+        @warn "key 'shunt' not found in PowerSystems dictionary, this will result in an empty Shunts array"
     end
     if haskey(data, "dcline")
         branches = dclines_dict_parser(data["dcline"], branches)
     else
-        @error "Key error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array"
+        @warn "key 'dcline' not found in PowerSystems dictionary, this will result in an empty DCLines array"
     end
 
     return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts
