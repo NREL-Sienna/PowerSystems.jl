@@ -188,8 +188,8 @@ function gen_dict_parser(dict::Dict{String,Any})
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
-                push!(Generators,ThermalDispatch(convert(String,thermal_dict["name"]),
-                                                            convert(Bool, thermal_dict["available"]),
+                push!(Generators,ThermalDispatch(String(thermal_dict["name"]),
+                                                            Bool(thermal_dict["available"]),
                                                             thermal_dict["bus"],
                                                             TechThermal(thermal_dict["tech"]["activepower"],
                                                                         thermal_dict["tech"]["activepowerlimits"],
@@ -207,7 +207,7 @@ function gen_dict_parser(dict::Dict{String,Any})
             end
         elseif gen_type_key =="Hydro"
             for (hydro_key,hydro_dict) in gen_type_dict
-                push!(Generators,HydroCurtailment(convert(String,hydro_dict["name"]),
+                push!(Generators,HydroCurtailment(String(hydro_dict["name"]),
                                                             hydro_dict["available"],
                                                             hydro_dict["bus"],
                                                             TechHydro(  hydro_dict["tech"]["installedcapacity"],
@@ -225,8 +225,8 @@ function gen_dict_parser(dict::Dict{String,Any})
             for (ren_key,ren_dict) in  gen_type_dict
                 if ren_key == "PV"
                     for (pv_key,pv_dict) in ren_dict
-                        push!(Generators,RenewableCurtailment(convert(String,pv_dict["name"]),
-                                                                    convert(Bool, pv_dict["available"]),
+                        push!(Generators,RenewableCurtailment(String(pv_dict["name"]),
+                                                                    Bool( pv_dict["available"]),
                                                                     pv_dict["bus"],
                                                                     pv_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(pv_dict["econ"]["curtailcost"],
@@ -236,8 +236,8 @@ function gen_dict_parser(dict::Dict{String,Any})
                     end
                 elseif ren_key == "RTPV"
                     for (rtpv_key,rtpv_dict) in ren_dict
-                        push!(Generators,RenewableFix(convert(String,rtpv_dict["name"]),
-                                                                    convert(Bool,rtpv_dict["available"]),
+                        push!(Generators,RenewableFix(String(rtpv_dict["name"]),
+                                                                    Bool(rtpv_dict["available"]),
                                                                     rtpv_dict["bus"],
                                                                     rtpv_dict["tech"]["installedcapacity"],
                                                                     rtpv_dict["scalingfactor"]
@@ -245,8 +245,8 @@ function gen_dict_parser(dict::Dict{String,Any})
                     end
                 elseif ren_key == "WIND"
                     for (wind_key,wind_dict) in ren_dict
-                        push!(Generators,RenewableCurtailment(convert(String,wind_dict["name"]),
-                                                                    convert(Bool,wind_dict["available"]),
+                        push!(Generators,RenewableCurtailment(String(wind_dict["name"]),
+                                                                    Bool(wind_dict["available"]),
                                                                     wind_dict["bus"],
                                                                     wind_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(wind_dict["econ"]["curtailcost"],
@@ -258,8 +258,8 @@ function gen_dict_parser(dict::Dict{String,Any})
             end
         elseif gen_type_key =="Storage"
             for (storage_key,storage_dict) in  gen_type_dict
-                push!(Storage_gen,GenericBattery(convert(String,storage_dict["name"]),
-                                                            convert(Bool,storage_dict["available"]),
+                push!(Storage_gen,GenericBattery(String(storage_dict["name"]),
+                                                            Bool(storage_dict["available"]),
                                                             storage_dict["bus"],
                                                             storage_dict["energy"],
                                                             storage_dict["capacity"],
@@ -283,8 +283,8 @@ function branch_dict_parser(dict::Dict{String,Any},Branches::Array{B,1}) where {
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
                 if trans_dict["tap"] ==1.0
-                    push!(Branches,Transformer2W(convert(String,trans_dict["name"]),
-                                                convert(Bool,trans_dict["available"]),
+                    push!(Branches,Transformer2W(String(trans_dict["name"]),
+                                                Bool(trans_dict["available"]),
                                                 trans_dict["connectionpoints"],
                                                 trans_dict["r"],
                                                 trans_dict["x"],
@@ -293,8 +293,8 @@ function branch_dict_parser(dict::Dict{String,Any},Branches::Array{B,1}) where {
                                                 ))
                 elseif trans_dict["tap"] !=1.0
                     if trans_dict["α"] !=0.0 #TODO : 3W Transformer
-                        push!(Branches,PhaseShiftingTransformer(convert(String,trans_dict["name"]),
-                                                    convert(Bool,trans_dict["available"]),
+                        push!(Branches,PhaseShiftingTransformer(String(trans_dict["name"]),
+                                                    Bool(trans_dict["available"]),
                                                     trans_dict["connectionpoints"],
                                                     trans_dict["r"],
                                                     trans_dict["x"],
@@ -304,8 +304,8 @@ function branch_dict_parser(dict::Dict{String,Any},Branches::Array{B,1}) where {
                                                     trans_dict["rate"]
                                                     ))
                     else
-                        push!(Branches,TapTransformer(convert(String,trans_dict["name"]),
-                                                    convert(Bool,trans_dict["available"]),
+                        push!(Branches,TapTransformer(String(trans_dict["name"]),
+                                                    Bool(trans_dict["available"]),
                                                     trans_dict["connectionpoints"],
                                                     trans_dict["r"],
                                                     trans_dict["x"],
@@ -318,8 +318,8 @@ function branch_dict_parser(dict::Dict{String,Any},Branches::Array{B,1}) where {
             end
         else branch_key == "Lines"
             for (line_key,line_dict) in branch_dict
-                push!(Branches,Line(convert(String,line_dict["name"]),
-                                    convert(Bool,line_dict["available"]),
+                push!(Branches,Line(String(line_dict["name"]),
+                                    Bool(line_dict["available"]),
                                     line_dict["connectionpoints"],
                                     line_dict["r"],
                                     line_dict["x"],
@@ -337,8 +337,8 @@ end
 function load_dict_parser(dict::Dict{String,Any})
     Loads =Array{L where {L<:ElectricLoad},1}()
     for (load_key,load_dict) in dict
-        push!(Loads,StaticLoad(convert(String,load_dict["name"]),
-                convert(Bool,load_dict["available"]),
+        push!(Loads,StaticLoad(String(load_dict["name"]),
+                Bool(load_dict["available"]),
                 load_dict["bus"],
                 load_dict["model"],
                 load_dict["maxactivepower"],
@@ -353,7 +353,7 @@ function loadzone_dict_parser(dict::Dict{Int64,Any})
     LoadZs =Array{D where {D<:PowerSystemDevice},1}()
     for (lz_key,lz_dict) in dict
         push!(LoadZs,LoadZones(lz_dict["number"],
-                                convert(String,lz_dict["name"]),
+                                String(lz_dict["name"]),
                                 lz_dict["buses"],
                                 lz_dict["maxactivepower"],
                                 lz_dict["maxreactivepower"]
@@ -365,8 +365,8 @@ end
 function shunt_dict_parser(dict::Dict{String,Any})
     Shunts = Array{FixedAdmittance,1}()
     for (s_key,s_dict) in dict
-        push!(Shunts,FixedAdmittance(convert(String,s_dict["name"]),
-                            convert(Bool,s_dict["available"]),
+        push!(Shunts,FixedAdmittance(String(s_dict["name"]),
+                            Bool(s_dict["available"]),
                             s_dict["bus"],
                             s_dict["Y"]
                             )
@@ -378,8 +378,8 @@ end
 
 function dclines_dict_parser(dict::Dict{String,Any},Branches::Array{Branch,1})
     for (dcl_key,dcl_dict) in dict
-        push!(Branches,HVDCLine(convert(String,dcl_dict["name"]),
-                            convert(Bool,dcl_dict["available"]),
+        push!(Branches,HVDCLine(String(dcl_dict["name"]),
+                            Bool(dcl_dict["available"]),
                             dcl_dict["connectionpoints"],
                             dcl_dict["activepowerlimits_from"],
                             dcl_dict["activepowerlimits_to"],

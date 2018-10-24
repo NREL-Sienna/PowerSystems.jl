@@ -294,7 +294,7 @@ end
 
 function make_transformer(b_name, d, bus_f, bus_t)
     trans = Dict{String,Any}("name" => b_name,
-                            "available" => convert(Bool, d["br_status"]),
+                            "available" => Bool(d["br_status"]),
                             "connectionpoints" => (from=make_bus(bus_f),to=make_bus(bus_t)),
                             "r" => d["br_r"],
                             "x" => d["br_x"],
@@ -308,7 +308,7 @@ end
 
 function make_lines(b_name, d, bus_f, bus_t)
     line = Dict{String,Any}("name" => b_name,
-                            "available" => convert(Bool, d["br_status"]),
+                            "available" => Bool(d["br_status"]),
                             "connectionpoints" => (from=make_bus(bus_f),to=make_bus(bus_t)),
                             "r" => d["br_r"],
                             "x" => d["br_x"],
