@@ -7,53 +7,53 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     """
     Takes a PowerSystems dictionary and return an array of PowerSystems struct for Bus, Generator, Branch and load
     """
-    Generators = Array{G where {G<:Generator},1}()
-    Storages = Array{S where {S<:Storage},1}()
-    Buses =Array{Bus,1}()
-    Branches = Array{B where {B<:Branch},1}()
-    Loads =Array{E where {E<:ElectricLoad},1}()
-    Shunts =Array{FixedAdmittance,1}()
-    LoadZones =Array{D where {D<:PowerSystemDevice},1}()
+    generators = Array{G where {G<:Generator},1}()
+    storages = Array{S where {S<:Storage},1}()
+    buses = Array{Bus,1}()
+    branches = Array{B where {B<:Branch},1}()
+    loads = Array{E where {E<:ElectricLoad},1}()
+    shunts = Array{FixedAdmittance,1}()
+    loadZones =Array{D where {D<:PowerSystemDevice},1}()
 
     # TODO: should we raise an exception in the following?
 
     if haskey(data, "bus")
-        Buses = bus_dict_parse(data["bus"])
+        buses = bus_dict_parse(data["bus"])
     else
         @error "Key error : key 'bus' not found in PowerSystems dictionary, this will result in an empty Bus array"
     end
     if haskey(data, "gen")
-        (Generators, Storage) = gen_dict_parser(data["gen"])
+        (generators, storage) = gen_dict_parser(data["gen"])
     else
         @error "Key error : key 'gen' not found in PowerSystems dictionary, this will result in an empty Generators and Storage array"
     end
     if haskey(data, "branch")
-        Branches = branch_dict_parser(data["branch"],Branches)
+        branches = branch_dict_parser(data["branch"], branches)
     else
         @warn "Key error : key 'branch' not found in PowerSystems dictionary, this will result in an empty Branches array"
     end
     if haskey(data, "load")
-        Loads = load_dict_parser(data["load"])
+        loads = load_dict_parser(data["load"])
     else
         @error "Key error : key 'load'  not found in PowerSystems dictionary, this will result in an empty Loads array"
     end
     if haskey(data, "loadzone")
-        LoadZones = loadzone_dict_parser(data["loadzone"])
+        loadZones = loadzone_dict_parser(data["loadzone"])
     else
         @error "Key error : key 'loadzone'  not found in PowerSystems dictionary, this will result in an empty LoadZones array"
     end
     if haskey(data, "shunt")
-        Shunts = shunt_dict_parser(data["shunt"])
+        shunts = shunt_dict_parser(data["shunt"])
     else
         @error "Key error : key 'shunt'  not found in PowerSystems dictionary, this will result in an empty Shunts array"
     end
     if haskey(data, "dcline")
-        Branches = dclines_dict_parser(data["dcline"],Branches)
+        branches = dclines_dict_parser(data["dcline"], branches)
     else
         @error "Key error : key 'dcline'  not found in PowerSystems dictionary, this will result in an empty DCLines array"
     end
 
-    return sort!(Buses, by = x -> x.number), Generators, Storage,  sort!(Branches, by = x -> x.connectionpoints.from.number), Loads, LoadZones, Shunts
+    return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts
 
 end
 
