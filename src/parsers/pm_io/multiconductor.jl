@@ -41,9 +41,8 @@ function Base.setindex!(mcv::MultiConductorMatrix{T}, v::T, i::Int, j::Int) wher
 end
 
 
-Base.start(mcv::MultiConductorValue) = start(mcv.values)
-Base.next(mcv::MultiConductorValue, state) = next(mcv.values, state)
-Base.done(mcv::MultiConductorValue, state) = done(mcv.values, state)
+Base.iterate(mcv::MultiConductorValue) = iterate(mcv.values)
+Base.iterate(mcv::MultiConductorValue, state) = iterate(mcv.values, state)
 
 Base.length(mcv::MultiConductorValue) = length(mcv.values)
 Base.size(mcv::MultiConductorValue, a...) = size(mcv.values, a...)
