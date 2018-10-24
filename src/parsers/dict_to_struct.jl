@@ -138,7 +138,7 @@ function add_time_series(Device_dict::Dict{String,Any}, df::DataFrames.DataFrame
         Device dictionary with timeseries added
     """
     for (device_key,device) in Device_dict
-        if device_key in convert(Array{String},names(df))
+        if device_key in map(String, names(df))
             ts_raw = df[Symbol(device_key)]
             Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
         end
