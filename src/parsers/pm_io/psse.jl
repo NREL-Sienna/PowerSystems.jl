@@ -43,7 +43,7 @@ function get_bus_value(bus_i, field, pm_data)
         end
     end
 
-    warn( "Could not find bus $bus_i, returning 0 for field $field")
+    @warn "Could not find bus $bus_i, returning 0 for field $field"
     return 0
 end
 
@@ -250,7 +250,7 @@ function psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["vmax"] = pop!(bus, "NVHI")
                 sub_data["vmin"] = pop!(bus, "NVLO")
             else
-                warn( "PTI v$(pm_data["source_version"]) does not contain vmin and vmax values, defaults of 0.9 and 1.1, respectively, assumed.")
+                @warn "PTI v$(pm_data["source_version"]) does not contain vmin and vmax values, defaults of 0.9 and 1.1, respectively, assumed."
                 sub_data["vmax"] = 1.1
                 sub_data["vmin"] = 0.9
             end
@@ -577,7 +577,7 @@ function psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     push!(anmn, pop!(dcline, key))
                 else
                     push!(anmn, 0)
-                    warn( "$key outside reasonable limits, setting to 0 degress")
+                    @warn "$key outside reasonable limits, setting to 0 degress"
                 end
             end
 

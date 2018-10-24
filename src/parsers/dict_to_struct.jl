@@ -110,7 +110,7 @@ function read_datetime(df; kwargs...)
             df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Minute(5) :
                             DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
         else
-            error("I don't know what the period length is, reformat timeseries")
+            @error "I don't know what the period length is, reformat timeseries"
         end
 
         delete!(df, [:Year,:Month,:Day,:Period])

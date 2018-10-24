@@ -280,7 +280,7 @@ function parse_line_element!(data::Dict, elements::Array, section::AbstractStrin
                 data[field] = element
             else
                 @debug "$section $field $dtype $element"
-                error( message)
+                @error message
             end
         end
     end
@@ -290,7 +290,7 @@ function parse_line_element!(data::Dict, elements::Array, section::AbstractStrin
         if !(section == "SWITCHED SHUNT" && startswith(missing_str, "N")) &&
             !(section == "MULTI-SECTION LINE" && startswith(missing_str, "DUM")) &&
             !(section == "IMPEDANCE CORRECTION" && startswith(missing_str, "T"))
-            warn( "The following fields in $section are missing: $missing_str")
+            @warn "The following fields in $section are missing: $missing_str"
         end
     end
 end
@@ -309,7 +309,7 @@ function add_section_data!(pti_data::Dict, section_data::Dict, section::Abstract
         if isa(message, KeyError)
             pti_data[section] = [deepcopy(section_data)]
         else
-            error( message)
+            @error message
         end
     end
 end
@@ -420,11 +420,11 @@ function parse_pti_data(data_string::String, sections::Array)
                     parse_line_element!(section_data, elements, section)
                     try
                         if section_data["REV"] < 33
-                            warn( "Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.")
+                            @warn "Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly."
                         end
                     catch message
                         if isa(message, KeyError)
-                            error( "This file is unrecognized and cannot be parsed")
+                            @error "This file is unrecognized and cannot be parsed"
                         end
                     end
                 else
@@ -446,7 +446,7 @@ function parse_pti_data(data_string::String, sections::Array)
                     (elements, comment) = get_line_elements(join(data_lines[line_number:line_number + 4], ','))
                     skip_lines = 4
                 else
-                    error( "Cannot detect type of Transformer")
+                    @error "Cannot detect type of Transformer"
                 end
 
                 parse_line_element!(section_data, elements, temp_section)
@@ -476,7 +476,7 @@ function parse_pti_data(data_string::String, sections::Array)
                             section_data["CONVERTER BUSES"] = [deepcopy(subsection_data)]
                             continue
                         else
-                            error( message)
+                            @error message
                         end
                     end
                 end
@@ -536,7 +536,7 @@ function parse_pti_data(data_string::String, sections::Array)
                                 continue
                             end
                         else
-                            error( message)
+                            @error message
                         end
                     end
 
@@ -559,7 +559,7 @@ function parse_pti_data(data_string::String, sections::Array)
 
             elseif section == "GNE DEVICE"
                 # TODO: handle multiple lines of GNE Device
-                warn( "GNE DEVICE parsing is not supported.")
+                @warn "GNE DEVICE parsing is not supported."
             end
         end
         if subsection != ""
