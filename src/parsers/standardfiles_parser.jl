@@ -2,6 +2,9 @@ function parsestandardfiles(file::String)
 
     data = parse_file(file)
 
+    #make sure that data is mixed units
+    make_mixed_units(data)
+
     # Check for at least one bus in input file
     if (length(data["bus"]) < 1)
         @error "There are no buses in this file"
