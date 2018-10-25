@@ -15,6 +15,8 @@ for f in files
         @info "Parsing $f ..."
         pm_dict = PowerSystems.parse_file(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower",f)))
         @info "Successfully parsed $f to PowerModels dict"
+        PowerSystems.make_mixed_units(pm_dict)
+        @info "Successfully converted $f to mixed_units"
         ps_dict = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $f to PowerSystems dict"
         Buses, Generators, Storages, Branches, Loads, LoadZones ,Shunts = PowerSystems.ps_dict2ps_struct(ps_dict)
@@ -42,6 +44,8 @@ for f in files
         @info "Parsing $f ..."
         pm_dict = PowerSystems.parse_file(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/psse_raw",f)))
         @info "Successfully parsed $f to PowerModels dict"
+        PowerSystems.make_mixed_units(pm_dict)
+        @info "Successfully converted $f to mixed_units"
         ps_dict = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $f to PowerSystems dict"
         Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts = PowerSystems.ps_dict2ps_struct(ps_dict)
