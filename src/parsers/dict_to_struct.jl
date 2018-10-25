@@ -156,21 +156,46 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
         Device dictionary with timeseries added
     """
     load_dict = data["load"]
+
+    load_names = [String(l["name"]) for (k,l) in load_dict]
+    ts_names = [String(n) for n in names(df) if n != :DateTime]
+
+    write_sf_by_lz = false
     if "loadzone" in keys(data)
         load_zone_dict = data["loadzone"]
+        z_names = [String(z["name"]) for (k,z) in load_zone_dict]
+        if length([n for n in z_names if n in ts_names]) > 0
+            write_sf_by_lz = true
+        end
+    end
+
+    assigned_loads = []
+    if write_sf_by_lz
+        @info "assigning load scaling factors by load_zone"
+        # TODO: make this faster/better
         for (l_key,l) in load_dict
             for (lz_key,lz) in load_zone_dict
                 if l["bus"] in lz["buses"]
                     ts_raw = df[lz_key]*(l["maxactivepower"]/lz["maxactivepower"])
                     load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
+                    push!(assigned_loads,l_key)
                 end
             end
+
         end
     else
+        @info "assigning load scaling factors by bus"
         for (l_key,l) in load_dict
-            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[l_key])
+            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[Symbol(l["name"])])
+            push!(assigned_loads,l["name"])
         end
+
     end
+
+    for l in [l for l in load_names if !(l in assigned_loads)]
+        @warn "No load scaling factor assigned for $l"
+    end
+
     return load_dict
 end
 
