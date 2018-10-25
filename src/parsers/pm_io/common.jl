@@ -18,8 +18,8 @@ function parse_file(file::String; import_all=false)
 
         return pm_data
     catch e
-        if isa(e, UnicodeError)
-            @error "UnicodeError: PowerModels can only load UTF-8 or ASCII encoded files, re-encode \"$file\" to supported encoding"
+        if isa(e, StringIndexError)
+            @error "StringIndexError: PowerModels can only load UTF-8 or ASCII encoded files, re-encode \"$file\" to supported encoding"
         end
     end
 end

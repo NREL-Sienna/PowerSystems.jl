@@ -33,7 +33,7 @@ function json2ps_struct(data::Dict{String,Any})
 end
 
 function bus_json_parse(dict::Dict{String,Any})
-    Buses = Array{Bus}(0)
+    Buses = Array{Bus}(undef, 0)
     for (bus_key,bus_dict) in dict
         push!(Buses,Bus(bus_dict["number"],
                                     bus_dict["name"],
@@ -49,8 +49,8 @@ end
 
 
 function gen_json_parser(dict::Dict{String,Any})
-    Generators =Array{Generator}(0)
-    Storage_gen =Array{Storage}(0)
+    Generators = Array{Generator}(undef, 0)
+    Storage_gen = Array{Storage}(undef, 0)
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
@@ -180,7 +180,7 @@ end
 
 
 function branch_json_parser(dict)
-    Branches = Array{Branch}(0)
+    Branches = Array{Branch}(undef, 0)
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
@@ -252,7 +252,7 @@ end
 
 
 function load_json_parser(dict)
-    Loads =Array{ElectricLoad}(0)
+    Loads = Array{ElectricLoad}(undef, 0)
     for (load_key,load_dict) in dict
         push!(Loads,StaticLoad(load_dict["name"],
                 load_dict["available"],

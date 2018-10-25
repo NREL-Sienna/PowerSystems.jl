@@ -41,9 +41,8 @@ function Base.setindex!(mcv::MultiConductorMatrix{T}, v::T, i::Int, j::Int) wher
 end
 
 
-Base.start(mcv::MultiConductorValue) = start(mcv.values)
-Base.next(mcv::MultiConductorValue, state) = next(mcv.values, state)
-Base.done(mcv::MultiConductorValue, state) = done(mcv.values, state)
+Base.iterate(mcv::MultiConductorValue) = iterate(mcv.values)
+Base.iterate(mcv::MultiConductorValue, state) = iterate(mcv.values, state)
 
 Base.length(mcv::MultiConductorValue) = length(mcv.values)
 Base.size(mcv::MultiConductorValue, a...) = size(mcv.values, a...)
@@ -76,8 +75,8 @@ Base.:/(a::MultiConductorVector, b::Number) = MultiConductorVector(/(a.values, b
 Base.:/(a::Union{Array,Number}, b::MultiConductorVector) = MultiConductorVector(Base.broadcast(/, a, b.values))
 Base.:/(a::MultiConductorVector, b::MultiConductorVector) = MultiConductorVector(Base.broadcast(/, a.values, b.values))
 
-Base.:*(a::MultiConductorVector, b::RowVector) = MultiConductorMatrix(Base.broadcast(*, a.values, b))
-Base.:*(a::RowVector, b::MultiConductorVector) = MultiConductorMatrix(Base.broadcast(*, a, b.values))
+Base.:*(a::MultiConductorVector, b::Adjoint) = MultiConductorMatrix(Base.broadcast(*, a.values, b))
+Base.:*(a::Adjoint, b::MultiConductorVector) = MultiConductorMatrix(Base.broadcast(*, a, b.values))
 
 # Matrices
 Base.:+(a::MultiConductorMatrix) = MultiConductorMatrix(+(a.values))
@@ -99,7 +98,7 @@ Base.:/(a::Union{Array,Number}, b::MultiConductorMatrix) = MultiConductorMatrix(
 Base.:/(a::MultiConductorMatrix, b::MultiConductorMatrix) = MultiConductorMatrix(/(a.values, b.values))
 
 Base.:*(a::MultiConductorMatrix, b::MultiConductorVector) = MultiConductorVector(*(a.values, b.values))
-Base.:/(a::MultiConductorMatrix, b::RowVector) = MultiConductorVector(squeeze(/(a.values, b), 2))
+Base.:/(a::MultiConductorMatrix, b::Adjoint) = MultiConductorVector(squeeze(/(a.values, b), 2))
 
 Base.:^(a::MultiConductorVector, b::Complex) = MultiConductorVector(Base.broadcast(^, a.values, b))
 Base.:^(a::MultiConductorVector, b::Integer) = MultiConductorVector(Base.broadcast(^, a.values, b))
