@@ -125,3 +125,10 @@ PowerSystem(; buses = [Bus()],
             storage = nothing,
             basepower = 1000.0,
         ) = PowerSystem(buses, generators, loads, branches, storage,  basepower)
+
+
+function PowerSystem(ps_dict::Dict{String,Any})
+        Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts = ps_dict2ps_struct(ps_dict)
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]);
+        return sys
+end
