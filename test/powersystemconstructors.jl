@@ -53,3 +53,8 @@ battery14 = [GenericBattery(name = "Bat",
 
 @test try sys14b = PowerSystem(nodes14, generators14, loads14, nothing, battery14,  1000.0); true finally end
 @test try sys14b = PowerSystem(nodes14, generators14, loads14, branches14, battery14,  1000.0); true finally end
+
+@test try 
+    ps_dict = PowerSystems.parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower/case5_re.m")));
+    sys = PowerSystems.PowerSystem(ps_dict)
+true finally end
