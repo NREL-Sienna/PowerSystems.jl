@@ -221,6 +221,7 @@ function make_thermal_gen(gen_name, d, bus)
         power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
         cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
         cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
+        fixedcost = cost[1][2]
     elseif d["model"] ==2
         if d["ncost"] == 2
             cost = x-> d["cost"][1]*x + d["cost"][2]
@@ -229,8 +230,10 @@ function make_thermal_gen(gen_name, d, bus)
         elseif d["ncost"] == 4
             cost = x-> d["cost"][1]*x^3 + d["cost"][2]*x^2 + d["cost"][3]*x + d["cost"][4]
         end
+        fixedcost = cost(0)
     else
         cost = d["cost"]
+        fixedcost = 0.0
     end
     thermal_gen = Dict{String,Any}("name" => gen_name,
                                     "available" => d["gen_status"],
@@ -243,7 +246,7 @@ function make_thermal_gen(gen_name, d, bus)
                                                                 "timelimits" => nothing),
                                     "econ" => Dict{String,Any}("capacity" => d["pmax"],
                                                                 "variablecost" => cost,
-                                                                "fixedcost" => 0.0,
+                                                                "fixedcost" => fixedcost,
                                                                 "startupcost" => d["startup"],
                                                                 "shutdncost" => d["shutdown"],
                                                                 "annualcapacityfactor" => nothing)
