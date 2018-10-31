@@ -145,7 +145,7 @@ function add_time_series(Device_dict::Dict{String,Any}, df::DataFrames.DataFrame
                 Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
             else
                 @info "assumed time series is MW for $device_key"
-                Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw/device.tech.installedcapacity)
+                Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw/device["tech"]["installedcapacity"])
             end
         end
     end
