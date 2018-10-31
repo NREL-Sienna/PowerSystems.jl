@@ -72,17 +72,36 @@ function checkanglelimits!(branches::Array{<:Branch,1})
         if isa(l,Line)
             orderedlimits(l.anglelimits, "Angles")
 
-            newanglelimits = l.anglelimits
-            flag = 0
-            (l.anglelimits.max >= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,(min = -90.0,max = 90.0)) : true
-            (l.anglelimits.max >= 90.0 && l.anglelimits.min >= -90.0) ? (flag,newanglelimits) =(1, (min = l.anglelimits.min,max = 90.0)) : true
-            (l.anglelimits.max <= 90.0 && l.anglelimits.min <= -90.0) ? (flag,newanglelimits) = (1,(min = -90.0,max = l.anglelimits.max)) : true
-            (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? (flag,newanglelimits) = (1,(min = -90.0,max = 90.0)) : true
-            if flag == 1
+            hist = (false,l.anglelimits)
+            new_max = 1.57
+            new_min = -1.57
+
+            if (l.anglelimits.max/1.57 > 3) | (-1*l.anglelimits.min/1.57 > 3)
+
+                @warn "The angle limits provided is larger than 3π/2 radians.\n PowerSystems infered the data provided in degrees and will transform it to radians"
+
+                (l.anglelimits.max/1.57 >= 0.99) ? new_max = min(l.anglelimits.max*(π/180),new_max) : new_max = min(l.anglelimits.max,new_max)
+
+                (-1*l.anglelimits.min/1.57 > 0.99) ? new_min = max(l.anglelimits.min*(π/180),new_min) : new_min = max(l.anglelimits.min,new_min)
+
+
+                hist = (true,(min = new_min, max = new_max))
+
+            else
+
+                (l.anglelimits.max >= 1.57 && l.anglelimits.min <= -1.57) ? hist = (true,(min = -1.57,max = 1.57)) : true
+                (l.anglelimits.max >= 1.57 && l.anglelimits.min >= -1.57) ? hist =(true, (min = l.anglelimits.min,max = 1.57)) : true
+                (l.anglelimits.max <= 1.57 && l.anglelimits.min <= -1.57) ? hist = (true,(min = -1.57,max = l.anglelimits.max)) : true
+                (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? hist = (true,(min = -1.57,max = 1.57)) : true
+
+            end
+
+            if hist[1]
+
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),deepcopy(l.rate),
-                                    newanglelimits)
+                                    hist[2])
             end
         end
     end
