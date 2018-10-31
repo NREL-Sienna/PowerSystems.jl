@@ -26,8 +26,8 @@ end
 @testset "Utilities testing" begin
     @info "Testing Network Matrices"
     @test @time include("network_matrices.jl")
-    @info "Testing Check Functions"
-    include("checks_testing.jl")
+    @info "Testing Line Check Functions"
+    include("branchchecks_testing.jl")
 end
 
 @testset "Forecast parsing" begin
