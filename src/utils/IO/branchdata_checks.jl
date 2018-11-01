@@ -79,7 +79,7 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
                 rating= l.rate
             end
 
-            if (l.rate/basemva) > 100*basemva
+            if (l.rate/basemva) > 100
                 @warn "Data for line rating is 100 times larger than the base MVA for the system\n. Power Systems infered the Data Provided is in MVA and will transform it using a base of $("basemva")"
                 (flag, rating_from_to) = (true,l.rate/basemva)
             end
