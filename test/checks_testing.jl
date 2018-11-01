@@ -17,3 +17,7 @@ branches5 = [Line("1", true,  (from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281,  (
 @test try @assert (branches5[3].anglelimits) == (min = -75.0,max = 90.0); true finally end
 @test try @assert (branches5[4].anglelimits) == (min = -90.0,max = 90.0); true finally end
 
+@test try @assert PowerSystems.getresolution(TimeArray([DateTime(today())+Minute(i*2) for i in 1:5],ones(5)))==Minute(2); true finally end
+@test try @assert PowerSystems.getresolution(TimeArray([DateTime(today())+Day(i) for i in 1:5],ones(5)))==Day(1); true finally end
+@test try @assert PowerSystems.getresolution(TimeArray([DateTime(today())+Second(i) for i in 1:5],ones(5)))==Second(1); true finally end
+@test try @assert PowerSystems.getresolution(TimeArray([DateTime(today())+Hour(i) for i in 1:5],ones(5)))==Hour(1); true finally end
