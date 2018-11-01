@@ -19,20 +19,14 @@ function genclassifier(gen::Array{T}) where T <: Generator
     #Check for data consistency
     if isempty(t)
         t = nothing
-    else
-        t
     end
 
     if isempty(r)
         r = nothing
-    else
-        r
     end
 
     if isempty(h)
         h = nothing
-    else
-        h
     end
 
     generators = (thermal = t, renewable =r, hydro = h)
