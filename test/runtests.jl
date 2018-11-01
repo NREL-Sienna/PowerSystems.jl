@@ -36,7 +36,10 @@ end
 end
 
 @testset "Parsing Code" begin
-    include("parsestandard.jl")
+    @info "Parsing Matpower"
+    include("parse_matpower.jl")
+    @info "Parsing PSSe"
+    include("parse_psse.jl")
 end
 
 # #=
