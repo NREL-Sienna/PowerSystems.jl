@@ -30,7 +30,7 @@ Line(; name = "init",
        anglelimits = (min = -1.57, max = 1.57)
     ) = Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 
-struct ConstrainedLine <: Branch
+struct MonitoredLine <: Branch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
@@ -42,13 +42,13 @@ struct ConstrainedLine <: Branch
     anglelimits::Min_Max #Degrees
 end
 
-function ConstrainedLine(name::String, available::Bool, connectionpoints::From_To_Bus,
+function MonitoredLine(name::String, available::Bool, connectionpoints::From_To_Bus,
               r::Float64, x::Float64, b::From_To_Float, flowlimits::FromTo_ToFrom_Float, rate::Float64, anglelimits::Float64)
         anglelimit_tuple = (min = -anglelimits, max = anglelimits)
-        return ConstrainedLine(name, available, connectionpoints, r, x, b, flowlimits, rate, anglelimit_tuple)
+        return MonitoredLine(name, available, connectionpoints, r, x, b, flowlimits, rate, anglelimit_tuple)
 end
 
-ConstrainedLine(; name = "init",
+MonitoredLine(; name = "init",
        available = false,
        connectionpoints = (from = Bus(), to = Bus()),
        r = 0.0,

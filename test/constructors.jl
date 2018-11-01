@@ -23,7 +23,7 @@
 
 #Branch Constructors
 @test try tLine = Line(); true finally end
-@test try tConstrainedLine = Line(); true finally end
+@test try tMonitoredLine = Line(); true finally end
 @test try tHVDCLine = HVDCLine(); true finally end
 @test try tVSCDCLine = VSCDCLine(); true finally end
 @test try tTransformer2W = Transformer2W(); true finally end

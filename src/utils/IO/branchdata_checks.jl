@@ -2,7 +2,7 @@
 # function check_angle_limits(anglelimits::(max::Float64, min::Float64))
 function checkanglelimits!(branches::Array{<:Branch,1})
     for (ix,l) in enumerate(branches)
-        if isa(l,Union{ConstrainedLine,Line})
+        if isa(l,Union{MonitoredLine,Line})
             orderedlimits(l.anglelimits, "Angles")
 
             hist = (false,l.anglelimits)

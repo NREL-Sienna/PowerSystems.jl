@@ -11,7 +11,7 @@ export Bus
 export Branch
 export Network
 export Line
-export ConstrainedLine
+export MonitoredLine
 export DCLine
 export HVDCLine
 export VSCDCLine
