@@ -44,12 +44,3 @@ EconThermal(;   capacity = 0.0,
             shutdncost = 0.0,
             annualcapacityfactor = nothing
         ) = EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor)
-
-
-
-struct EconHydro
-    curtailpenalty::Float64 # [$/MWh]
-    variablecost::Union{Float64,Nothing} # [$/MWh]
-end
-
-EconHydro(; cost = 0.0, curtailcost = 0.0) = EconHydro(cost, curtailcost)
