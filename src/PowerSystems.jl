@@ -115,6 +115,8 @@ include("parsers/pm2ps_parser.jl")
 #Data Checks
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")
+include("utils/IO/basemva_checks.jl")
+
 # Definitions of PowerSystem
 include("base.jl")
 

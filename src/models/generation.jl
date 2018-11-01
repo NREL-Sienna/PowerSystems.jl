@@ -2,17 +2,12 @@ abstract type
     Generator <: PowerSystemDevice
 end
 
+include("generation/tech_common.jl")
+include("generation/econ_common.jl")
 include("generation/renewable_generation.jl")
 include("generation/thermal_generation.jl")
 include("generation/hydro_generation.jl")
 
-#=
-struct Sources{T <: Union{Nothing,Array{<:ThermalGen,1}}, R <: Union{Nothing,Array{<:RenewableGen,1}}, H <: Union{Nothing,Array{<:HydroGen,1}}}
-    thermal::T
-    renewable::R
-    hydro::H
-end
-=#
 
 # Generator Classifier
 function genclassifier(gen::Array{T}) where T <: Generator
@@ -21,10 +16,24 @@ function genclassifier(gen::Array{T}) where T <: Generator
     r = [d for d in gen if isa(d, RenewableGen)]
     h = [d for d in gen if isa(d, HydroGen)]
 
-    #Check for type stability
-    isempty(t) ? t = nothing : t
-    isempty(r) ? r = nothing : r
-    isempty(h) ? h = nothing : h
+    #Check for data consistency
+    if isempty(t)
+        t = nothing
+    else
+        t
+    end
+
+    if isempty(r)
+        r = nothing
+    else
+        r
+    end
+
+    if isempty(h)
+        h = nothing
+    else
+        h
+    end
 
     generators = (thermal = t, renewable =r, hydro = h)
 
