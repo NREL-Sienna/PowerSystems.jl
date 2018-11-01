@@ -10,7 +10,7 @@ include("generation/hydro_generation.jl")
 
 
 # Generator Classifier
-function genclassifier(gen::Array{T}) where T <: Generator
+function genclassifier(gen::Array{T}, basemva::Float64) where T <: Generator
 
     t = [d for d in gen if isa(d, ThermalGen)]
     r = [d for d in gen if isa(d, RenewableGen)]
@@ -20,19 +20,19 @@ function genclassifier(gen::Array{T}) where T <: Generator
     if isempty(t)
         t = nothing
     else
-        t
+        pu_check_gen(t,basemva)
     end
 
     if isempty(r)
         r = nothing
     else
-        r
+        pu_check_gen(r,basemva)
     end
 
     if isempty(h)
         h = nothing
     else
-        h
+        pu_check_gen(h,basemva)
     end
 
     generators = (thermal = t, renewable =r, hydro = h)

@@ -2,39 +2,6 @@ abstract type
     HydroGen <: Generator
 end
 
-
-struct TechHydro
-    installedcapacity::Float64
-    activepower::Float64 # [MW]
-    activepowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
-    reactivepower::Union{Float64,Nothing} # [MVAr]
-    reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVAr]
-    ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} #MW/Hr
-    timelimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} # Hrs
-    function TechHydro(installedcapacity, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
-        
-        new(installedcapacity, activepower, PowerSystems.orderedlimits(activepowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
-
-    end
-end
-
-TechHydro(;installedcapacity = 0.0,
-          activepower = 0.0,
-          activepowerlimits = (min = 0.0, max = 0.0),
-          reactivepower = nothing,
-          reactivepowerlimits = nothing,
-          ramplimits = nothing,
-          timelimits = nothing
-        ) = TechHydro(installedcapacity, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
-
-
-struct EconHydro
-    curtailpenalty::Float64 # [$/MWh]
-    variablecost::Union{Float64,Nothing} # [$/MWh]
-end
-
-EconHydro(; cost = 0.0, curtailcost = 0.0) = EconHydro(cost, curtailcost)
-
 struct HydroFix <: HydroGen
     name::String
     available::Bool
