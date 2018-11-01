@@ -72,23 +72,23 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
 
             #This is the same check as implemented in PowerModels
             if l.rate <= 0.0
-                (flag, rating_from_to) = (true,linerate_calculation(l))
-            elseif l.rate.from_to > linerate_calculation(l)
-                    (flag, rating) = (true,linerate_calculation(l))
+                (flag, rate) = (true,linerate_calculation(l))
+            elseif l.rate > linerate_calculation(l)
+                    (flag, rate) = (true,linerate_calculation(l))
             else
                 rating= l.rate
             end
 
-            if (l.rate/basemva) > 10
-                @warn "Data for line rating is 10 times larger than the base MVA for the system\n. Power Systems infered the Data Provided is in MVA and will transform it using a base of $("basemva")"
-                (flag, rating_from_to) = (true,l.rate/basemva)
+            if (l.rate/basemva) > 20
+                @warn "Data for line rating is 20 times larger than the base MVA for the system\n. Power Systems infered the Data Provided is in MVA and will transform it using a base of $("basemva")"
+                (flag, rate) = (true,l.rate/basemva)
             end
 
             if flag
                 branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),
-                                    (from_to = rating_from_to, to_from = rating_to_from),deepcopy(l.anglelimits))
+                                    rate,deepcopy(l.anglelimits))
             end
         end
     end
