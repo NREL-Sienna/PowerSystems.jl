@@ -140,7 +140,13 @@ function add_time_series(Device_dict::Dict{String,Any}, df::DataFrames.DataFrame
     for (device_key,device) in Device_dict
         if device_key in map(String, names(df))
             ts_raw = df[Symbol(device_key)]
-            Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
+            if maximum(ts_raw) <= 1.0
+                @info "assumed time series is a scaling factor for $device_key"
+                Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
+            else
+                @info "assumed time series is MW for $device_key"
+                Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw/device["tech"]["installedcapacity"])
+            end
         end
     end
     return Device_dict

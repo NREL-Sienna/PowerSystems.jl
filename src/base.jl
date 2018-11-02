@@ -132,3 +132,12 @@ function PowerSystem(ps_dict::Dict{String,Any})
         sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]);
         return sys
 end
+
+function PowerSystem(file::String, ts_folder::String; kwargs...)
+
+        ps_dict = parsestandardfiles(file,ts_folder; kwargs...)
+        Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts = ps_dict2ps_struct(ps_dict)
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]);
+
+        return sys
+end
