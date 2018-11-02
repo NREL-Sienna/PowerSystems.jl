@@ -2,21 +2,6 @@ abstract type
     RenewableGen <: Generator
 end
 
-struct TechRenewable
-    installedcapacity::Float64 # [MW]
-    reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVar]
-    powerfactor::Union{Float64,Nothing} # [-1. -1]
-end
-
-TechRenewable(; InstalledCapacity = 0, reactivepowerlimits = nothing, powerfactor = nothing) = TechRenewable(InstalledCapacity, reactivepowerlimits, powerfactor)
-
-struct EconRenewable
-    curtailpenalty::Float64 # [$/MWh]
-    variablecost::Union{Float64,Nothing} # [$/MWh]
-end
-
-EconRenewable(; curtailcost = 0.0, variablecost = nothing) = EconRenewable(curtailcost, variablecost)
-
 struct RenewableFix <: RenewableGen
     name::String
     available::Bool
@@ -64,3 +49,11 @@ struct RenewableFullDispatch <: RenewableGen
     econ::Union{EconRenewable,Nothing}
     scalingfactor::TimeSeries.TimeArray # [0-1]
 end
+
+
+RenewableFullDispatch(; name = "init",
+                status = false,
+                bus= Bus(),
+                installedcapacity = 0.0,
+                econ = EconRenewable(),
+                scalingfactor =  TimeArray(today(),ones(1))) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)

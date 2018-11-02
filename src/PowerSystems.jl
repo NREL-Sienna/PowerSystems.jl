@@ -11,6 +11,7 @@ export Bus
 export Branch
 export Network
 export Line
+export MonitoredLine
 export DCLine
 export HVDCLine
 export VSCDCLine
@@ -89,7 +90,7 @@ import InfrastructureModels
 abstract type PowerSystemDevice end
 
 # Include utilities
-include("utils/base_checks.jl")
+include("utils/IO/base_checks.jl")
 
 # PowerSystems models
 include("models/topological_elements.jl")
@@ -111,8 +112,11 @@ include("parsers/cdm_parser.jl")
 include("parsers/forecast_parser.jl")
 include("parsers/pm2ps_parser.jl")
 
+#Data Checks
+include("utils/IO/system_checks.jl")
+include("utils/IO/branchdata_checks.jl")
+
 # Definitions of PowerSystem
-include("utils/system_checks.jl")
 include("base.jl")
 
 # Better printing
