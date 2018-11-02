@@ -1,6 +1,5 @@
 name = "PowerSystems"
 uuid = "c512b964-a17e-11e8-344c-11d7c2eac237"
-authors = ["Dheepak Krishnamurthy"]
 version = "0.1.2"
 
 [deps]
