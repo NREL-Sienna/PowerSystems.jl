@@ -70,6 +70,8 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
 
         if isa(l,Line)
 
+            flag = false
+
             #This is the same check as implemented in PowerModels
             if l.rate <= 0.0
                 (flag, rate) = (true,linerate_calculation(l))
