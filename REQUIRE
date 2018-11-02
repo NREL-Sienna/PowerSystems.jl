@@ -1,0 +1,8 @@
+julia 0.7
+AxisArrays
+CSV
+Compat
+DataFrames
+InfrastructureModels
+JSON
+TimeSeries
