@@ -1,4 +1,4 @@
-struct TechRenewable
+struct TechRenewable <: TechnicalParams
     installedcapacity::Float64 # [MW]
     reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVar]
     powerfactor::Union{Float64,Nothing} # [-1. -1]
@@ -38,7 +38,7 @@ Data Structure for the economical parameters of thermal generation technologies.
 
 
 """
-struct TechThermal
+struct TechThermal <: TechnicalParams
     activepower::Float64 # [MW]
     activepowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
     reactivepower::Union{Float64,Nothing} # [MVAr]

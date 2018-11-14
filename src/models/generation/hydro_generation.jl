@@ -3,7 +3,7 @@ abstract type
 end
 
 
-struct TechHydro
+struct TechHydro <: TechnicalParams
     installedcapacity::Float64
     activepower::Float64 # [MW]
     activepowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
@@ -28,7 +28,7 @@ TechHydro(;installedcapacity = 0.0,
         ) = TechHydro(installedcapacity, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
 
-struct EconHydro
+struct EconHydro <: TechnicalParams
     curtailpenalty::Float64 # [$/MWh]
     variablecost::Union{Float64,Nothing} # [$/MWh]
 end
