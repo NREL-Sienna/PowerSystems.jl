@@ -20,8 +20,12 @@ struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
                         loads::Array{L,1},
                         branches::Nothing,
                         storage::Nothing,
-                        basepower::Float64) where {G <: Generator, L <: ElectricLoad}
-        generators = checkramp(generators, minimumtimestep(loads))
+                        basepower::Float64; kwargs...) where {G <: Generator, L <: ElectricLoad}
+        
+        runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
+        if runchecks
+                generators = checkramp(generators, minimumtimestep(loads))
+        end
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
@@ -41,19 +45,26 @@ struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
                         loads::Array{L,1},
                         branches::B,
                         storage::Nothing,
-                        basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}}
+                        basepower::Float64; kwargs...) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}}
 
-        slackbuscheck(buses)
-        buscheck(buses)
-        pvbuscheck(buses, generators)
-        generators = checkramp(generators, minimumtimestep(loads))
+        runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
+        if runchecks
+                slackbuscheck(buses)
+                buscheck(buses)
+                pvbuscheck(buses, generators)
+                generators = checkramp(generators, minimumtimestep(loads))
+        end
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
         !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
-        calculatethermallimits!(branches,basepower)
-        checkanglelimits!(branches)
-        #timeserieschecksources(sources.hydro, time_length)
+
+        runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
+        if runchecks
+                calculatethermallimits!(branches,basepower)
+                checkanglelimits!(branches)
+                #timeserieschecksources(sources.hydro, time_length)
+        end
 
         new{Union{Nothing,Array{ <: ThermalGen,1}}, Union{Nothing,Array{ <: RenewableGen,1}}, Union{Nothing,Array{ <: HydroGen,1}}, L, B, Nothing}(buses,
                 sources,
@@ -70,9 +81,13 @@ struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
                         loads::Array{L,1},
                         branches::Nothing,
                         storage::S,
-                        basepower::Float64) where {G <: Generator, L <: ElectricLoad, S <: Array{<: Storage,1}}
+                        basepower::Float64; kwargs...) where {G <: Generator, L <: ElectricLoad, S <: Array{<: Storage,1}}
 
-        generators = checkramp(generators, minimumtimestep(loads))
+        
+        runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
+        if runchecks
+                generators = checkramp(generators, minimumtimestep(loads))
+        end
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
         !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
@@ -93,13 +108,16 @@ struct PowerSystem{T <: Union{Nothing,Array{ <: ThermalGen,1}},
                         loads::Array{L,1},
                         branches::B,
                         storage::S,
-                        basepower::Float64) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}, S <: Array{<: Storage,1}}
-
-        slackbuscheck(buses)
-        buscheck(buses)
-        pvbuscheck(buses, generators)
-        calculatethermallimits!(branches,basepower)
-        checkanglelimits!(branches)
+                        basepower::Float64; kwargs...) where {G <: Generator, L <: ElectricLoad, B <: Array{<:Branch,1}, S <: Array{<: Storage,1}}
+        
+        runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
+        if runchecks
+                slackbuscheck(buses)
+                buscheck(buses)
+                pvbuscheck(buses, generators)
+                calculatethermallimits!(branches,basepower)
+                checkanglelimits!(branches)
+        end
         generators = checkramp(generators, minimumtimestep(loads))
         sources = genclassifier(generators);
         time_length = timeseriescheckload(loads)
@@ -124,12 +142,13 @@ PowerSystem(; buses = [Bus()],
             branches =  nothing,
             storage = nothing,
             basepower = 1000.0,
-        ) = PowerSystem(buses, generators, loads, branches, storage,  basepower)
+            kwargs... ,
+        ) = PowerSystem(buses, generators, loads, branches, storage,  basepower; kwargs...)
 
 
-function PowerSystem(ps_dict::Dict{String,Any})
+function PowerSystem(ps_dict::Dict{String,Any}; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts = ps_dict2ps_struct(ps_dict)
-        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]);
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]; kwargs...);
         return sys
 end
 
@@ -137,7 +156,7 @@ function PowerSystem(file::String, ts_folder::String; kwargs...)
 
         ps_dict = parsestandardfiles(file,ts_folder; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones ,Shunts = ps_dict2ps_struct(ps_dict)
-        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]);
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]; kwargs...);
 
         return sys
 end
