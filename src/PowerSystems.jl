@@ -87,7 +87,11 @@ import InfrastructureModels
 #################################################################################
 # Includes
 
-abstract type PowerSystemDevice end
+abstract type PowerSystemComponent end
+# supertype for "devices" (bus, line, etc.)
+abstract type PowerSystemDevice <: PowerSystemComponent end
+# supertype for generation technologies (thermal, renewable, etc.)
+abstract type TechnicalParams <: PowerSystemComponent end
 
 # Include utilities
 include("utils/IO/base_checks.jl")

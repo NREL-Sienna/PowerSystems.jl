@@ -9,7 +9,7 @@ Data Structure for the economical parameters of renewable generation technologie
 
 
 """
-struct EconRenewable
+struct EconRenewable <: TechnicalParams
     curtailpenalty::Float64 # [$/MWh]
     variablecost::Union{Float64,Nothing} # [$/MWh]
 end
@@ -28,7 +28,7 @@ Data Structure for the economical parameters of thermal generation technologies.
 
 
 """
-struct EconThermal
+struct EconThermal <: TechnicalParams
     capacity::Float64 # [MW]
     variablecost::Union{Function,Array{Tuple{Float64, Float64}}} # [$/MWh]
     fixedcost::Float64            # [$/h]
