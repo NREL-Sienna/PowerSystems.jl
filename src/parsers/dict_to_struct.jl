@@ -295,8 +295,8 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                             storage_dict["energy"],
                                                             storage_dict["capacity"],
                                                             storage_dict["activepower"],
-                                                            storage_dict["inputactivepowerlimit"],
-                                                            storage_dict["outputactivepowerlimit"],
+                                                            storage_dict["inputactivepowerlimits"],
+                                                            storage_dict["outputactivepowerlimits"],
                                                             storage_dict["efficiency"],
                                                             storage_dict["reactivepower"],
                                                             storage_dict["reactivepowerlimits"]
@@ -323,7 +323,8 @@ function branch_dict_parser(dict::Dict{String,Any},Branches::Array{B,1}) where {
                                                 trans_dict["rate"]
                                                 ))
                 elseif trans_dict["tap"] !=1.0
-                    if trans_dict["α"] !=0.0 #TODO : 3W Transformer
+                    alpha = "α" in keys(trans_dict) ? trans_dict["α"] : 0.0
+                    if alpha !=0.0 #TODO : 3W Transformer
                         push!(Branches,PhaseShiftingTransformer(String(trans_dict["name"]),
                                                     Bool(trans_dict["available"]),
                                                     trans_dict["connectionpoints"],

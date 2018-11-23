@@ -15,7 +15,7 @@ function read_csv_data(file_path::String)
         Nested Data dictionary with key values as folder/file names and dataframes as values
 
     """
-    files = (joinpath(Pkg.dir(),file_path))
+    files = readdir(file_path)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
     data =Dict{String,Any}()
@@ -23,24 +23,30 @@ function read_csv_data(file_path::String)
     if length(files) == 0
         @error "No test files in the folder"
     end
-    for d_file in readdir(files)
+    for d_file in files
         try
             if match(REGEX_IS_FOLDER, d_file) != nothing
                 @info "Parsing csv timeseries files in $d_file ..."
-                for file in readdir(files*"/$d_file")
+                d_file_data = Dict{String,Any}()
+                for file in readdir(joinpath(file_path,d_file))
                     if match(REGEX_DEVICE_TYPE, file) != nothing
-                        data[d_file] = Dict{String,Any}()
-                        file_path = files*"/$d_file/$file"
-                        raw_data = CSV.File(file_path) |> DataFrame
-                        #raw_data = DataFrames.DataFrame(Pandas.read_csv(file_path))
-                        data[d_file][split(file,r"[.]")[1]] = raw_data
+                        @info "Parsing csv timeseries data in $file ..."
+                        fpath = joinpath(file_path,d_file,file)
+                        raw_data = CSV.File(fpath) |> DataFrame
+                        #raw_data = DataFrames.DataFrame(Pandas.read_csv(fpath))
+                        d_file_data[split(file,r"[.]")[1]] = raw_data
                     end
                 end
-                @info "Successfully parsed $d_file"
+
+                if length(d_file_data) >0
+                    data[d_file] = d_file_data
+                    @info "Successfully parsed $d_file"
+                end
+
             elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
-                @info "Parsing csv timeseries files in $d_file ..."
-                file_path = files*"/$d_file"
-                raw_data = CSV.File(file_path)|> DataFrame
+                @info "Parsing csv timeseries data in $d_file ..."
+                fpath = joinpath(file_path,d_file)
+                raw_data = CSV.File(fpath)|> DataFrame
                 data[split(d_file,r"[.]")[1]] = raw_data
                 @info "Successfully parsed $d_file"
             end
@@ -52,10 +58,10 @@ function read_csv_data(file_path::String)
     return data
 end
 
-function csv2ps_dict(file_path::String)
+function csv2ps_dict(data::Dict{String,Any})
     """
     Args:
-        Path to folder with all the System data CSV's files
+        Dict with all the System data from CSV files ... see `read_csv_data()`'
     Returns:
         A Power Systems Nested dictionary with keys as devices and values as data dictionary necessary to construct the device structs
         PS dictionary:
@@ -71,7 +77,6 @@ function csv2ps_dict(file_path::String)
             "BaseKV" => ..
             ...
     """
-    data =  read_csv_data(file_path)
     ps_dict =Dict{String,Any}()
     if haskey(data,"bus")
         ps_dict["bus"] =  PowerSystems.bus_csv_parser(data["bus"])
@@ -98,8 +103,39 @@ function csv2ps_dict(file_path::String)
         @warn "Key error : key 'load' not found in PowerSystems dictionary, this will result in an ps_dict['load'] = nothing"
          ps_dict["load"] = nothing
     end
+    if haskey(data,"baseMVA")
+        ps_dict["baseMVA"] = data["baseMVA"]
+    else
+        @warn "Key error : key 'baseMVA' not found in PowerSystems dictionary, this will result in a ps_dict['baseMVA'] = 100.0"
+        ps_dict["baseMVA"] = 100.0
+    end
     return ps_dict
 end
+
+function csv2ps_dict(file_path::String)
+    """
+    Args:
+        Path to folder with all the System data CSV's files
+    Returns:
+        A Power Systems Nested dictionary with keys as devices and values as data dictionary necessary to construct the device structs
+        PS dictionary:
+            "Bus" => Dict(bus_no => Dict("name" =>
+                                         "number" => ... ) )
+            "Generator" => Dict( "Thermal" => Dict( "name" =>
+                                                    "tech" => ...)
+                                 "Hydro"  => ..
+                                 "Renewable" => .. )
+            "Branch" => ...
+            "Load" => ...
+            "LoadZones" => ...
+            "BaseKV" => ..
+            ...
+    """
+    data =  read_csv_data(file_path)
+    ps_dict = csv2ps_dict(data)
+    return ps_dict
+end
+
 
 ###########
 #Bus data parser
@@ -115,13 +151,13 @@ function bus_csv_parser(bus_raw)
     """
     Buses_dict = Dict{Int64,Any}()
     for i in 1:nrow(bus_raw)
-        Buses_dict[bus_raw[i,1]] = Dict{String,Any}("number" =>bus_raw[i,1] ,
-                                                "name" => bus_raw[i,2],
-                                                "bustype" => bus_raw[i,4],
-                                                "angle" => bus_raw[i,8],
-                                                "voltage" => bus_raw[i,7],
+        Buses_dict[bus_raw[i,1]] = Dict{String,Any}("number" =>bus_raw[i,Symbol("Bus ID")] ,
+                                                "name" => bus_raw[i,Symbol("Bus Name")],
+                                                "bustype" => bus_raw[i,Symbol("Bus Type")],
+                                                "angle" => bus_raw[i,Symbol("V Angle")],
+                                                "voltage" => bus_raw[i,Symbol("V Mag")],
                                                 "voltagelimits" => (min=0.95,max=1.05),
-                                                "basevoltage" => bus_raw[i,3]
+                                                "basevoltage" => bus_raw[i,Symbol("BaseKV")]
                                                 )
     end
     return Buses_dict
@@ -148,93 +184,108 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any})
     Generators_dict["Renewable"]["RTPV"]= Dict{String,Any}()
     Generators_dict["Renewable"]["WIND"]= Dict{String,Any}()
     Generators_dict["Storage"] = Dict{String,Any}()
+
+    cost_colnames = []
+    for i in 0:length([n for n in names(gen_raw) if occursin("Output_pct_",String(n))])-1
+        hr = [n for n in names(gen_raw) if !isa(match(Regex("HR_.*_$i"),String(n)),Nothing)][1]
+        mw = Symbol("Output_pct_$i")
+        push!(cost_colnames, (mw,hr))
+    end
+
     for gen in 1:nrow(gen_raw)
+        pmax = tryparse(Float64,"""$(gen_raw[gen,Symbol("PMax MW")])""")
+
         if gen_raw[gen,:Fuel] in ["Oil","Coal","NG","Nuclear"]
-            var_cost = [float(gen_raw[gen,i]) for i in 31:40]
-            fuel_cost = gen_raw[gen,30]./1000
-            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
-            Generators_dict["Thermal"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+
+            fuel_cost = gen_raw[gen,Symbol("Fuel Price \$/MMBTU")]./1000
+
+            var_cost = [(tryparse(Float64,"$(gen_raw[gen,cn[1]])"), tryparse(Float64,"$(gen_raw[gen,cn[2]])")) for cn in cost_colnames]
+            var_cost = [(c[1],c[1]*c[2]*fuel_cost).*pmax for c in var_cost if !in(nothing,c)]
+            var_cost[2:end] = [(var_cost[i][1],var_cost[i-1][2]+var_cost[i][2]) for i in 2:length(var_cost)]
+
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,Symbol("Bus ID")]]
+            Generators_dict["Thermal"][gen_raw[gen,Symbol("GEN UID")]] = Dict{String,Any}("name" => gen_raw[gen,Symbol("GEN UID")],
                                             "available" => true,
                                             "bus" => make_bus(bus_id[1]),
-                                            "tech" => Dict{String,Any}("activepower" => 0,
-                                                                        "activepowerlimits" => (min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
-                                                                        "reactivepower" => 0,
-                                                                        "reactivepowerlimits" => (min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
-                                                                        "ramplimits" => (up=gen_raw[gen,17],down=gen_raw[gen,17]),
-                                                                        "timelimits" => (up=gen_raw[gen,16],down=gen_raw[gen,15])),
-                                            "econ" => Dict{String,Any}("capacity" => gen_raw[gen,11],
+                                            "tech" => Dict{String,Any}("activepower" => gen_raw[gen,Symbol("MW Inj")],
+                                                                        "activepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,Symbol("PMin MW")])"""),max=pmax),
+                                                                        "reactivepower" => tryparse(Float64,"""$(gen_raw[gen,Symbol("MVAR Inj")])"""),
+                                                                        "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMin MVAR")])"""),max=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMax MVAR")])""")),
+                                                                        "ramplimits" => (up=gen_raw[gen,Symbol("Ramp Rate MW/Min")],down=gen_raw[gen,Symbol("Ramp Rate MW/Min")]),
+                                                                        "timelimits" => (up=gen_raw[gen,Symbol("Min Up Time Hr")],down=gen_raw[gen,Symbol("Min Down Time Hr")])),
+                                            "econ" => Dict{String,Any}("capacity" => pmax,
                                                                         "variablecost" => var_cost,
                                                                         "fixedcost" => 0.0,
-                                                                        "startupcost" => gen_raw[gen,21]*fuel_cost,
+                                                                        "startupcost" => gen_raw[gen,Symbol("Start Heat Cold MBTU")]*fuel_cost,
                                                                         "shutdncost" => 0.0,
                                                                         "annualcapacityfactor" => nothing)
                                             )
 
         elseif gen_raw[gen,:Fuel] in ["Hydro"]
-            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
-            Generators_dict["Hydro"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,Symbol("Bus ID")]]
+            Generators_dict["Hydro"][gen_raw[gen,Symbol("GEN UID")]] = Dict{String,Any}("name" => gen_raw[gen,Symbol("GEN UID")],
                                             "available" => true, # change from staus to available
                                             "bus" => make_bus(bus_id[1]),
-                                            "tech" => Dict{String,Any}( "installedcapacity" => float(gen_raw[gen,11]),
-                                                                        "activepower" => 0.0,
-                                                                        "activepowerlimits" => (min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
-                                                                        "reactivepower" => 0.0,
-                                                                        "reactivepowerlimits" => (min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
-                                                                        "ramplimits" => (up=gen_raw[gen,17],down=gen_raw[gen,17]),
-                                                                        "timelimits" => (up=gen_raw[gen,16],down=gen_raw[gen,15])),
+                                            "tech" => Dict{String,Any}( "installedcapacity" => pmax,
+                                                                        "activepower" => gen_raw[gen,Symbol("MW Inj")],
+                                                                        "activepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,Symbol("PMin MW")])"""),max=pmax),
+                                                                        "reactivepower" => gen_raw[gen,Symbol("MVAR Inj")],
+                                                                        "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMin MVAR")])"""),max=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMax MVAR")])""")),
+                                                                        "ramplimits" => (up=gen_raw[gen,Symbol("Ramp Rate MW/Min")],down=gen_raw[gen,Symbol("Ramp Rate MW/Min")]),
+                                                                        "timelimits" => (up=gen_raw[gen,Symbol("Min Down Time Hr")],down=gen_raw[gen,Symbol("Min Down Time Hr")])),
                                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                         "interruptioncost" => nothing),
-                                            "scalingfactor" => nothing
+                                            "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
                                             )
 
         elseif gen_raw[gen,:Fuel] in ["Solar","Wind"]
-            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,Symbol("Bus ID")]]
             if gen_raw[gen,5] == "PV"
-                Generators_dict["Renewable"]["PV"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                Generators_dict["Renewable"]["PV"][gen_raw[gen,Symbol("GEN UID")]] = Dict{String,Any}("name" => gen_raw[gen,Symbol("GEN UID")],
                                                 "available" => true, # change from staus to available
                                                 "bus" => make_bus(bus_id[1]),
-                                                "tech" => Dict{String,Any}("installedcapacity" => gen_raw[gen,11],
-                                                                            "reactivepowerlimits" => (min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
+                                                "tech" => Dict{String,Any}("installedcapacity" => pmax,
+                                                                            "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMin MVAR")])"""),max=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMax MVAR")])""")),
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
-                                                "scalingfactor" => nothing
+                                                "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
                                                 )
             elseif gen_raw[gen,5] == "RTPV"
-                Generators_dict["Renewable"]["RTPV"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                Generators_dict["Renewable"]["RTPV"][gen_raw[gen,Symbol("GEN UID")]] = Dict{String,Any}("name" => gen_raw[gen,Symbol("GEN UID")],
                                                 "available" => true, # change from staus to available
                                                 "bus" => make_bus(bus_id[1]),
-                                                "tech" => Dict{String,Any}("installedcapacity" => gen_raw[gen,11],
-                                                                            "reactivepowerlimits" => (min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
+                                                "tech" => Dict{String,Any}("installedcapacity" => pmax,
+                                                                            "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMin MVAR")])"""),max=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMax MVAR")])""")),
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
-                                                "scalingfactor" => nothing
+                                                "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: Connect scaling factors
                                                 )
             elseif gen_raw[gen,5] == "WIND"
-                Generators_dict["Renewable"]["WIND"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+                Generators_dict["Renewable"]["WIND"][gen_raw[gen,Symbol("GEN UID")]] = Dict{String,Any}("name" => gen_raw[gen,Symbol("GEN UID")],
                                                 "available" => true, # change from staus to available
                                                 "bus" => make_bus(bus_id[1]),
-                                                "tech" => Dict{String,Any}("installedcapacity" => gen_raw[gen,11],
-                                                                            "reactivepowerlimits" => (min=float(gen_raw[gen,14]),max=float(gen_raw[gen,13])),
+                                                "tech" => Dict{String,Any}("installedcapacity" => pmax,
+                                                                            "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMin MVAR")])"""),max=tryparse(Float64,"""$(gen_raw[gen,Symbol("QMax MVAR")])""")),
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
-                                                "scalingfactor" => nothing
+                                                "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
                                                 )
             end
         elseif gen_raw[gen,:Fuel] in ["Storage"]
-            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,2]]
-            Generators_dict["Storage"][gen_raw[gen,1]] = Dict{String,Any}("name" => gen_raw[gen,1],
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,Symbol("Bus ID")]]
+            Generators_dict["Storage"][gen_raw[gen,Symbol("GEN UID")]] = Dict{String,Any}("name" => gen_raw[gen,Symbol("GEN UID")],
                                             "available" => true, # change from staus to available
                                             "bus" => make_bus(bus_id[1]),
                                             "energy" => 0.0,
-                                            "capacity" => (min=float(gen_raw[gen,12]),max=float(gen_raw[gen,11])),
-                                            "activepower" => 0.0,
-                                            "inputactivepowerlimit" => 0.0,
-                                            "outputactivepowerlimit" => 0.0,
+                                            "capacity" => (min=tryparse(Float64,"""$(gen_raw[gen,Symbol("PMin MW")])"""),max=pmax),
+                                            "activepower" => gen_raw[gen,Symbol("MW Inj")],
+                                            "inputactivepowerlimits" => (min=0.0,max=pmax),
+                                            "outputactivepowerlimits" => (min=0.0,max=pmax),
                                             "efficiency" => (in= 0.0, out = 0.0),
-                                            "reactivepower" => 0.0,
+                                            "reactivepower" => gen_raw[gen,Symbol("MVAR Inj")],
                                             "reactivepowerlimits" => (min = 0.0, max = 0.0),
                                             )
         end
@@ -259,28 +310,28 @@ function branch_csv_parser(branch_raw,Buses)
     Branches_dict["Transformers"] = Dict{String,Any}()
     Branches_dict["Lines"] = Dict{String,Any}()
     for i in 1:length(branch_raw)
-        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,2]]
-        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,3]]
-        if branch_raw[i,12] > 0.0
-            Branches_dict["Transformers"][branch_raw[i,1]] = Dict{String,Any}("name" => branch_raw[i,1],
+        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,Symbol("From Bus")]]
+        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,Symbol("To Bus")]]
+        if branch_raw[i,Symbol("Tr Ratio")] > 0.0
+            Branches_dict["Transformers"][branch_raw[i,:UID]] = Dict{String,Any}("name" => branch_raw[i,:UID],
                                                         "available" => true,
                                                         "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
-                                                        "r" => branch_raw[i,4],
-                                                        "x" => branch_raw[i,5],
-                                                        "primaryshunt" => branch_raw[i,6] ,  #TODO: add field in CSV
+                                                        "r" => branch_raw[i,:R],
+                                                        "x" => branch_raw[i,:X],
+                                                        "primaryshunt" => branch_raw[i,:B] ,  #TODO: add field in CSV
                                                        # "zb" => (primary=(branch_raw[i,6]/2),secondary=(branch_raw[i,6]/2)), TODO: Phase-Shifting Transformer angle
-                                                        "tap" => branch_raw[i,12],
-                                                        "rate" => branch_raw[i,7],
+                                                        "tap" => branch_raw[i,Symbol("Tr Ratio")],
+                                                        "rate" => branch_raw[i,Symbol("Cont Rating")],
                                                         )
         else
-            Branches_dict["Lines"][branch_raw[i,1]] = Dict{String,Any}("name" => branch_raw[i,1],
+            Branches_dict["Lines"][branch_raw[i,:UID]] = Dict{String,Any}("name" => branch_raw[i,:UID],
                                                         "available" => true,
                                                         "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
-                                                        "r" => branch_raw[i,4],
-                                                        "x" => branch_raw[i,5],
-                                                        "b" => (from=(branch_raw[i,6]/2),to=(branch_raw[i,6]/2)),
-                                                        "rate" =>  branch_raw[i,7],
-                                                        "anglelimits" => (max =60.0,min=-60.0) #TODO: add field in CSV
+                                                        "r" => branch_raw[i,:R],
+                                                        "x" => branch_raw[i,:X],
+                                                        "b" => (from=(branch_raw[i,:B]/2),to=(branch_raw[i,:B]/2)),
+                                                        "rate" =>  branch_raw[i,Symbol("Cont Rating")],
+                                                        "anglelimits" => (min=-60.0,max =60.0) #TODO: add field in CSV
                                                         )
 
         end
@@ -312,16 +363,16 @@ function load_csv_parser(load_raw,bus_raw,Buses,LoadZone)
                 load_zone = k_l
             end
         end
-        p = [bus_raw[n,5] for n in 1:nrow(bus_raw) if bus_raw[n,1] == b["number"]]
-        q = [bus_raw[m,6] for m in 1:nrow(bus_raw) if bus_raw[m,1] == b["number"]]
-        ts_raw =load_raw[:,load_zone]*(p[1]/LoadZone[load_zone]["maxactivepower"])
+        p = [bus_raw[n,Symbol("MW Load")] for n in 1:nrow(bus_raw) if bus_raw[n,Symbol("Bus ID")] == b["number"]]
+        q = [bus_raw[m,Symbol("MVAR Load")] for m in 1:nrow(bus_raw) if bus_raw[m,Symbol("Bus ID")] == b["number"]]
+        ts_raw =load_raw[load_zone]*(p[1]/LoadZone[load_zone]["maxactivepower"])
         Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
                                             "available" => true,
                                             "bus" => make_bus(b),
                                             "model" => "P",
                                             "maxactivepower" => p[1],
                                             "maxreactivepower" => q[1],
-                                            "scalingfactor" => TimeSeries.TimeArray(load_raw[:,:DateTime],ts_raw) #TODO remove TS
+                                            "scalingfactor" => TimeSeries.TimeArray(load_raw[ :DateTime],ts_raw) #TODO remove TS
                                             )
     end
     return Loads_dict
@@ -340,12 +391,12 @@ function loadzone_csv_parser(bus_raw,Buses)
         A Nested Dictionary with keys as loadzone names and values as loadzone data dictionary with same keys as the device struct
     """
     LoadZone_dict = Dict{Int64,Any}()
-    load_zones,b_count =rle(bus_raw[:,11])
-    for (count,zone) in zip(b_count,load_zones)
-        b_numbers = [bus_raw[b,1] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone ]
+    lbs = zip(unique(bus_raw[:Area]),[sum(bus_raw[:Area].==a) for a in unique(bus_raw[:Area])])
+    for (zone,count) in lbs
+        b_numbers = [bus_raw[b,Symbol("Bus ID")] for b in 1:nrow(bus_raw) if bus_raw[b,:Area] == zone ]
         buses = [make_bus(Buses[i]) for i in keys(Buses) if Buses[i]["number"] in  b_numbers]
-        activepower = [bus_raw[b,5] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone]
-        reactivepower = [bus_raw[b,6] for b in 1:nrow(bus_raw) if bus_raw[b,11] == zone]
+        activepower = [bus_raw[b,Symbol("MW Load")] for b in 1:nrow(bus_raw) if bus_raw[b,:Area] == zone]
+        reactivepower = [bus_raw[b,Symbol("MVAR Load")] for b in 1:nrow(bus_raw) if bus_raw[b,:Area] == zone]
         LoadZone_dict[zone] = Dict{String,Any}("number" => zone,
                                                         "name" => zone ,
                                                         "buses" => buses,
@@ -370,8 +421,3 @@ function remove_missing(df)
     end
     return df
 end
-
-
-
-
-
