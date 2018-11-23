@@ -40,6 +40,8 @@ end
     include("parse_matpower.jl")
     @info "Parsing PSSe"
     include("parse_psse.jl")
+    @info "Parsing CDM"
+    include("cdmparse.jl")
 end
 
 # #=
