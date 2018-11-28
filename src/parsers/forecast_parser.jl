@@ -62,24 +62,34 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     Returns:
         Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
     """
-    if "load" in keys(ts_dict)
+    if haskey(ts_dict,"load")
         ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
     else
         @warn "Not assigning time series to loads"
     end
 
-    device_dict = ps_dict["gen"]
-    for (key, d) in ts_dict["gen"]
-        if key in keys(device_dict)
-            device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
+    if haskey(ts_dict,"gen")
+        device_dict = ps_dict["gen"]
+        ts_map = _retrieve(ts_dict["gen"], Union{TimeSeries.TimeArray,DataFrames.DataFrame})
+        for (key,val) in ts_map
+            ts = _access(ts_dict["gen"],vcat(val,key))
+            dd = _access(ps_dict["gen"],vcat(val,key))
+            dd = PowerSystems.add_time_series(dd,ts)
         end
-    end
+        #=for (key, d) in ts_dict["gen"]
+            if key in keys(device_dict)
+                device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
+            end
+        end
 
-    device_dict = ps_dict["gen"]["Renewable"]
-    for (key, d) in ts_dict["gen"]
-        if key in keys(device_dict)
-            device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
-        end
+        device_dict = ps_dict["gen"]["Renewable"]
+        for (key, d) in ts_dict["gen"]
+            if key in keys(device_dict)
+                device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
+            end
+        end=#
+    else
+        @warn "Not assigning time series to gens"
     end
 
     return ps_dict

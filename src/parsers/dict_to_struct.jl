@@ -116,7 +116,7 @@ function read_datetime(df; kwargs...)
         delete!(df, [:Year,:Month,:Day,:Period])
 
     elseif :DateTime in names(df)
-        df[:DateTime] = Datetime(df[:DateTime])
+        df[:DateTime] = DateTime(df[:DateTime])
     else
         if :startdatetime in keys(kwargs)
             startdatetime = kwargs[:startdatetime]
@@ -152,6 +152,32 @@ function add_time_series(Device_dict::Dict{String,Any}, df::DataFrames.DataFrame
     return Device_dict
 end
 
+function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeArray)
+    """
+    Arg:
+        Device dictionary - Generators
+        Dict contains device Realtime/Forecast TimeArray
+    Returns:
+        Device dictionary with timeseries added
+    """
+
+    if haskey(Device_dict,"name")
+        name = Device_dict["name"]
+    else
+        @error "input dict in wrong format"
+    end
+
+    if maximum(values(ts_raw)) <= 1.0
+        @info "assumed time series is a scaling factor for $name"
+        Device_dict["scalingfactor"] = ts_raw
+    else
+        @info "assumed time series is MW for $name"
+        Device_dict["scalingfactor"] = TimeSeries.TimeArray(timestamp(ts_raw),values(ts_raw)/Device_dict["tech"]["installedcapacity"])
+    end
+
+    return Device_dict
+end
+
 function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
     """
     Arg:
@@ -167,9 +193,10 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
     ts_names = [String(n) for n in names(df) if n != :DateTime]
 
     write_sf_by_lz = false
-    if "loadzone" in keys(data)
-        load_zone_dict = data["loadzone"]
-        z_names = [String(z["name"]) for (k,z) in load_zone_dict]
+    lzkey = [k for k in ["loadzone","load_zone"] if haskey(data,k)][1]
+    if lzkey in keys(data)
+        load_zone_dict = data[lzkey]
+        z_names = [string(z["name"]) for (k,z) in load_zone_dict]
         if length([n for n in z_names if n in ts_names]) > 0
             write_sf_by_lz = true
         end
