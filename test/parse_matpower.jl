@@ -12,7 +12,7 @@ end
 for f in files
     @test try
         ext = match(file_ext, f)
-        println("Parsing $f ...")
+        @info "Parsing $f ..."
         pm_dict = PowerSystems.parse_file(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower",f)))
         @info "Successfully parsed $f to PowerModels dict"
         PowerSystems.make_mixed_units(pm_dict)
