@@ -4,7 +4,7 @@ using Logging
 
 # Testing Topological components of the schema
 gl = global_logger()
-global_logger(ConsoleLogger(gl.stream, Logging.Error))
+#global_logger(ConsoleLogger(gl.stream, Logging.Error))
 
 @testset "Check PowerSystems Data" begin
     @info "Check bus index"
