@@ -26,14 +26,13 @@ function read_csv_data(file_path::String)
     for d_file in files
         try
             if match(REGEX_IS_FOLDER, d_file) != nothing
-                @info "Parsing csv timeseries files in $d_file ..."
+                @info "Parsing csv files in $d_file ..."
                 d_file_data = Dict{String,Any}()
                 for file in readdir(joinpath(file_path,d_file))
                     if match(REGEX_DEVICE_TYPE, file) != nothing
-                        @info "Parsing csv timeseries data in $file ..."
+                        @info "Parsing csv data in $file ..."
                         fpath = joinpath(file_path,d_file,file)
                         raw_data = CSV.File(fpath) |> DataFrame
-                        #raw_data = DataFrames.DataFrame(Pandas.read_csv(fpath))
                         d_file_data[split(file,r"[.]")[1]] = raw_data
                     end
                 end
@@ -44,7 +43,7 @@ function read_csv_data(file_path::String)
                 end
 
             elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
-                @info "Parsing csv timeseries data in $d_file ..."
+                @info "Parsing csv data in $d_file ..."
                 fpath = joinpath(file_path,d_file)
                 raw_data = CSV.File(fpath)|> DataFrame
                 data[split(d_file,r"[.]")[1]] = raw_data
@@ -55,6 +54,39 @@ function read_csv_data(file_path::String)
             catch_stacktrace()
         end
     end
+
+    if "timeseries_pointers" in keys(data)
+        @info "parsing timeseries data"
+        tsp_raw = data["timeseries_pointers"]
+        data["timeseries_data"] = Dict()
+        if :Simulation in names(tsp_raw)
+            for sim in unique(tsp_raw[:Simulation])
+                data["timeseries_data"][String(sim)] = Dict()
+            end
+        end
+
+        for r in eachrow(tsp_raw)
+            fpath = joinpath(file_path,r[Symbol("Data File")])
+            if isfile(fpath)
+                # read data and insert into dict
+                @info "parsing timeseries data in $fpath for $(r.Object)"
+                raw_data = CSV.File(fpath) |> DataFrame |> read_datetime
+
+                if length([c for c in names(raw_data) if String(c) == String(r.Object)]) == 1
+                    raw_data = TimeSeries.TimeArray(raw_data[:DateTime],raw_data[Symbol(r.Object)])
+                end
+
+                if :Simulation in names(tsp_raw)
+                    data["timeseries_data"][String(r.Simulation)][String(r.Object)] = raw_data
+                else
+                    data["timeseries_data"][String(r.Object)] = raw_data
+                end
+            else
+                @warn "File referenced in timeseries_pointers.csv doesn't exist : $fpath"
+            end
+        end
+    end
+
     return data
 end
 
@@ -109,7 +141,90 @@ function csv2ps_dict(data::Dict{String,Any})
         @warn "Key error : key 'baseMVA' not found in PowerSystems dictionary, this will result in a ps_dict['baseMVA'] = 100.0"
         ps_dict["baseMVA"] = 100.0
     end
+
+    if haskey(data,"timeseries_data")
+        gen_map = _retrieve(ps_dict["gen"],"name",Dict())
+        if haskey(data["timeseries_data"],"DAY_AHEAD")
+            @info "adding DAY-AHEAD generator forcasats"
+            _add_nested_dict!(ps_dict,["forecast","DA","gen"],_format_fcdict(data["timeseries_data"]["DAY_AHEAD"],gen_map))
+            @info "adding DAY-AHEAD load forcasats"
+            ps_dict["forecast"]["DA"]["load"] = data["timeseries_data"]["DAY_AHEAD"]["Load"]
+        end
+        if haskey(data["timeseries_data"],"REAL_TIME")
+            @info "adding REAL-TIME generator forcasats"
+            _add_nested_dict!(ps_dict,["forecast","RT","gen"],_format_fcdict(data["timeseries_data"]["REAL_TIME"],gen_map))
+            @info "adding REAL-TIME load forcasats"
+            ps_dict["forecast"]["RT"]["load"] = data["timeseries_data"]["REAL_TIME"]["Load"]
+        end
+    end
+
     return ps_dict
+end
+
+function _retrieve(dict::T, key_of_interest::String, output = Dict(), path = []) where T<:AbstractDict
+    iter_result = iterate(dict)
+    last_element = length(path)
+    while iter_result !== nothing
+        ((key,value), state) = iter_result
+        if key == key_of_interest
+            output[value] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
+        end
+        if value isa AbstractDict
+            push!(path,key)
+            _retrieve(value, key_of_interest, output, path)
+            path = path[1:last_element]
+        end
+        iter_result = iterate(dict, state)
+    end
+    return output
+end
+
+function _retrieve(dict::T, type_of_interest, output = Dict(), path = []) where T<:AbstractDict
+    iter_result = iterate(dict)
+    last_element = length(path)
+    while iter_result !== nothing
+        ((key,value), state) = iter_result
+        if typeof(value) <: type_of_interest
+            output[key] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
+        end
+        if value isa AbstractDict
+            push!(path,key)
+            _retrieve(value, type_of_interest, output, path)
+            path = path[1:last_element]
+        end
+        iter_result = iterate(dict, state)
+    end
+    return output
+end
+
+function _access(nesteddict::T,keylist) where T<:AbstractDict
+    if !haskey(nesteddict,keylist[1])
+        @error "$(keylist[1]) not found in dict"        
+    end
+    if length(keylist) > 1
+        nesteddict = _access(nesteddict[keylist[1]],keylist[2:end])
+    else
+        nesteddict = nesteddict[keylist[1]]
+    end
+end
+
+function _add_nested_dict!(d,keylist,value = Dict())
+    if !haskey(d,keylist[1])
+        d[keylist[1]] = length(keylist)==1 ? value : Dict{String,Any}()
+    end
+    if length(keylist) > 1
+        _add_nested_dict!(d[keylist[1]],keylist[2:end],value)
+    end
+end
+
+function _format_fcdict(fc,obj_map)
+    paths = Dict()
+    for (k,d) in fc
+        if haskey(obj_map, k)
+            _add_nested_dict!(paths,obj_map[k],d)
+        end
+    end
+    return paths
 end
 
 function csv2ps_dict(file_path::String)
@@ -319,7 +434,7 @@ function branch_csv_parser(branch_raw,Buses)
                                                         "r" => branch_raw[i,:R],
                                                         "x" => branch_raw[i,:X],
                                                         "primaryshunt" => branch_raw[i,:B] ,  #TODO: add field in CSV
-                                                       # "zb" => (primary=(branch_raw[i,6]/2),secondary=(branch_raw[i,6]/2)), TODO: Phase-Shifting Transformer angle
+                                                        "alpha" => (branch_raw[i,:B]/2) - (branch_raw[i,:B]/2), #TODO: Phase-Shifting Transformer angle
                                                         "tap" => branch_raw[i,Symbol("Tr Ratio")],
                                                         "rate" => branch_raw[i,Symbol("Cont Rating")],
                                                         )
