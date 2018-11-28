@@ -37,9 +37,9 @@ end
 
 @testset "Parsing Code" begin
     @info "Parsing Matpower"
-    include("parse_matpower.jl")
+    #include("parse_matpower.jl")
     @info "Parsing PSSe"
-    include("parse_psse.jl")
+    #include("parse_psse.jl")
     @info "Parsing CDM"
     include("cdmparse.jl")
 end
