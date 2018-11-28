@@ -1,6 +1,5 @@
 function get_name_and_csv(path_to_filename)
     df = CSV.File(path_to_filename) |> DataFrame
-    #df = DataFrames.DataFrame(Pandas.read_csv(path_to_filename))
     folder = splitdir(splitdir(path_to_filename)[1])[2]
     return folder, df
 end
@@ -69,25 +68,19 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     end
 
     if haskey(ts_dict,"gen")
-        device_dict = ps_dict["gen"]
         ts_map = _retrieve(ts_dict["gen"], Union{TimeSeries.TimeArray,DataFrames.DataFrame})
         for (key,val) in ts_map
             ts = _access(ts_dict["gen"],vcat(val,key))
-            dd = _access(ps_dict["gen"],vcat(val,key))
+            dd_map = _retrieve(ps_dict["gen"],key)
+            if length(dd_map) > 0 
+                dd_map = string.(unique(values(dd_map))[1]) 
+            else
+                @warn("no $key entries in psdict")
+                continue
+            end
+            dd = _access(ps_dict["gen"],vcat(dd_map,key))
             dd = PowerSystems.add_time_series(dd,ts)
         end
-        #=for (key, d) in ts_dict["gen"]
-            if key in keys(device_dict)
-                device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
-            end
-        end
-
-        device_dict = ps_dict["gen"]["Renewable"]
-        for (key, d) in ts_dict["gen"]
-            if key in keys(device_dict)
-                device_dict[key] = PowerSystems.add_time_series(device_dict[key],d)
-            end
-        end=#
     else
         @warn "Not assigning time series to gens"
     end
