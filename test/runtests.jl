@@ -4,7 +4,7 @@ using Logging
 
 # Testing Topological components of the schema
 gl = global_logger()
-#global_logger(ConsoleLogger(gl.stream, Logging.Error))
+global_logger(ConsoleLogger(gl.stream, Logging.Error))
 
 @testset "Check PowerSystems Data" begin
     @info "Check bus index"
@@ -37,9 +37,9 @@ end
 
 @testset "Parsing Code" begin
     @info "Parsing Matpower"
-    #include("parse_matpower.jl")
+    include("parse_matpower.jl")
     @info "Parsing PSSe"
-    #include("parse_psse.jl")
+    include("parse_psse.jl")
     @info "Parsing CDM"
     include("cdmparse.jl")
 end
