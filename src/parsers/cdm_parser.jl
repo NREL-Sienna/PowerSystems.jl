@@ -161,53 +161,6 @@ function csv2ps_dict(data::Dict{String,Any})
     return ps_dict
 end
 
-function _retrieve(dict::T, key_of_interest::String, output = Dict(), path = []) where T<:AbstractDict
-    iter_result = iterate(dict)
-    last_element = length(path)
-    while iter_result !== nothing
-        ((key,value), state) = iter_result
-        if key == key_of_interest
-            output[value] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
-        end
-        if value isa AbstractDict
-            push!(path,key)
-            _retrieve(value, key_of_interest, output, path)
-            path = path[1:last_element]
-        end
-        iter_result = iterate(dict, state)
-    end
-    return output
-end
-
-function _retrieve(dict::T, type_of_interest, output = Dict(), path = []) where T<:AbstractDict
-    iter_result = iterate(dict)
-    last_element = length(path)
-    while iter_result !== nothing
-        ((key,value), state) = iter_result
-        if typeof(value) <: type_of_interest
-            output[key] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
-        end
-        if value isa AbstractDict
-            push!(path,key)
-            _retrieve(value, type_of_interest, output, path)
-            path = path[1:last_element]
-        end
-        iter_result = iterate(dict, state)
-    end
-    return output
-end
-
-function _access(nesteddict::T,keylist) where T<:AbstractDict
-    if !haskey(nesteddict,keylist[1])
-        @error "$(keylist[1]) not found in dict"        
-    end
-    if length(keylist) > 1
-        nesteddict = _access(nesteddict[keylist[1]],keylist[2:end])
-    else
-        nesteddict = nesteddict[keylist[1]]
-    end
-end
-
 function _add_nested_dict!(d,keylist,value = Dict())
     if !haskey(d,keylist[1])
         d[keylist[1]] = length(keylist)==1 ? value : Dict{String,Any}()
