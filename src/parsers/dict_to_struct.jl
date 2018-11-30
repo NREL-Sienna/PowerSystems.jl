@@ -105,38 +105,6 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
     end
 end
 
-
-function add_realtime_ts(data::Dict{String,Any},time_series::Dict{String,Any})
-    """
-    Args:
-        PowerSystems dictionary
-        Dictionary of timeseries dataframes
-    Returns:
-        PowerSystems dictionary with timerseries component added
-    """
-    if haskey(data,"gen")
-        if haskey(data["gen"],"Hydro") & haskey(time_series,"HYDRO")
-            data["gen"]["Hydro"] = add_time_series(data["gen"]["Hydro"],time_series["HYDRO"]["RT"])
-        end
-        if haskey(data["gen"],"Renewable")
-            if haskey(data["gen"]["Renewable"],"PV") & haskey(time_series,"PV")
-                data["gen"]["Renewable"]["PV"] = add_time_series(data["gen"]["Renewable"]["PV"],time_series["PV"]["RT"])
-            end
-            if haskey(data["gen"]["Renewable"],"RTPV") & haskey(time_series,"RTPV")
-                data["gen"]["Renewable"]["RTPV"] = add_time_series(data["gen"]["Renewable"]["RTPV"],time_series["RTPV"]["RT"])
-            end
-            if haskey(data["gen"]["Renewable"],"WIND") & haskey(time_series,"WIND")
-                data["gen"]["Renewable"]["WIND"] = add_time_series(data["gen"]["Renewable"]["WIND"],time_series["WIND"]["RT"])
-            end
-        end
-    end
-    if haskey(data,"load") & haskey(time_series,"Load")
-        data["load"] = add_time_series_load(data,time_series["Load"]["RT"])
-    end
-    return data
-end
-
-
 function read_datetime(df; kwargs...)
     """
     Arg:
