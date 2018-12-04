@@ -1,7 +1,6 @@
 # "smart" summary and REPL printing
 
 # TODO:
-#  - limit output of TimeArray (in StaticLoad, and other types?)
 #  - print tests (to go elsewhere, of course)
 
 # Generic print for power system components (a new type that includes generation
@@ -40,6 +39,7 @@ Base.show(io::IO, pst::PowerSystemComponent) = printPST(pst, true, io)
 Base.show(io::IO, ::MIME"text/plain", pst::PowerSystemComponent) =
     printPST(pst, false, io)
 
+# provide limited additional information to summary of GenClasses
 function summaryGenClasses(gens::GenClasses)
     ntherm = gens.thermal isa Nothing ? 0 : length(gens.thermal)
     nrenew = gens.renewable isa Nothing ? 0 : length(gens.renewable)
@@ -47,6 +47,9 @@ function summaryGenClasses(gens::GenClasses)
     return "GenClasses(T:$ntherm,R:$nrenew,H:$nhydro)"
 end
 Base.summary(gens::GenClasses) = summaryGenClasses(gens::GenClasses)
+
+
+# improve output for PowerSystem
 
 # overload Base.summary for PowerSystem to be useful, e.g., in output of
 # varinfo(); also used now in printPowerSystem, JJS 11/26/18
@@ -64,7 +67,6 @@ function summaryPowerSystem(system::PowerSystem)
     return output
 end
 Base.summary(system::PowerSystem) = summaryPowerSystem(system::PowerSystem)
-
 
 # print function for PowerSystem type
 function printPowerSystem(system::PowerSystem, short = false,
@@ -93,3 +95,8 @@ Base.show(io::IO, system::PowerSystem) = printPowerSystem(system, true, io)
 Base.show(io::IO, ::MIME"text/plain", system::PowerSystem) =
     printPowerSystem(system, false, io)
 
+
+# Reduce the output for "short" print of TimeArray. Because the "show" method
+# defined in TimeSeries does not differentiate, the entire function needs to be
+# reimplemented.
+include("print_timearray.jl")
