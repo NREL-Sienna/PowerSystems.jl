@@ -4,12 +4,22 @@ using PowerSystems
 
 
 basedir = abspath(joinpath(dirname(dirname(Base.find_package("PowerSystems"))), "data/RTS_GMLC"))
+data_dict = nothing
 cdm_dict = nothing
 sys_rts_da = nothing
 sys_rts_rt = nothing
 
 @test try
-    @info "parsing data from $basedir"
+    @info "parsing data from $basedir into ps_dict"
+    global data_dict = PowerSystems.read_csv_data(basedir)
+    true
+finally
+end
+
+@test haskey(data_dict,"timeseries_pointers")
+
+@test try
+    @info "parsing data from $basedir into ps_dict"
     global cdm_dict = PowerSystems.csv2ps_dict(basedir)
     true
 finally
@@ -53,12 +63,7 @@ end
 
 @test (sys_rts_rt isa PowerSystem) == true
 
-@test try
-    basedir = "."
-    @info "testing bad directory"
-    global cdm_dict = PowerSystems.csv2ps_dict(basedir);
-    true
-finally
-end
 
-@test cdm_dict == Dict{String,Any}("baseMVA"=>100.0,"gen"=>nothing,"branch"=>nothing,"load"=>nothing)
+basedir = "."
+@info "testing bad directory"
+@test PowerSystems.csv2ps_dict(basedir) == Dict{String,Any}("baseMVA"=>100.0,"gen"=>nothing,"branch"=>nothing,"load"=>nothing)
