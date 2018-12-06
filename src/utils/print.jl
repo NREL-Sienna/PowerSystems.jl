@@ -1,8 +1,5 @@
 # "smart" summary and REPL printing
 
-# TODO:
-#  - print tests (to go elsewhere, of course)
-
 # Generic print for power system components (a new type that includes generation
 # technology types). The long version simply prints every field of the
 # device. Tailored versions can be made for specific devices, if/when
@@ -18,15 +15,15 @@ function printPST(pst::PowerSystemComponent, short = false,
             print(io, "$pst_summary")
         end
     else
-        print(Base.summary(pst),":")
+        print(io, Base.summary(pst),":")
         fnames = fieldnames(typeof(pst))
         for i = 1:nfields(fnames)
             thefield = getfield(pst, i)
             # avoid warning about printing nothing
             if thefield==nothing
-                print("\n   ", fnames[i], ": nothing")
+                print(io, "\n   ", fnames[i], ": nothing")
             else
-                print("\n   ", fnames[i], ": ", thefield)
+                print(io, "\n   ", fnames[i], ": ", thefield)
             end
         end
     end
@@ -74,19 +71,20 @@ function printPowerSystem(system::PowerSystem, short = false,
     if short
         print(io, Base.summary(system))
     else
-        print("PowerSystem:")
+        print(io, "PowerSystem:")
         fnames = fieldnames(typeof(system))
         for i = 1:nfields(fnames)
             fname = fnames[i]
             thefield = getfield(system, i)
             if thefield==nothing
-                print("\n   ", fname, ": nothing")
+                print(io, "\n   ", fname, ": nothing")
             elseif fname==:generators
                 # print out long version for generators
-                print("\n ")
-                printPST(system.generators)
+                print(io, "\n   ", fname, ": \n     ")
+                printPST(system.generators, false, io)
+                print(io, "\n     (end generators)")
             else
-                print("\n   ", fname, ": ", thefield)
+                print(io, "\n   ", fname, ": ", thefield)
             end
         end
     end
