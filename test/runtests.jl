@@ -44,9 +44,6 @@ end
     include("cdmparse.jl")
 end
 
-# #=
-# @testset "Print testing" begin
-    # include("../data/data_5bus.jl");
-    # @test @assert "$sys5" == "PowerSystems.PowerSystem(buses=5, branches=6)"
-# # end
-# =#
+@testset "Print testing" begin
+    include("printing.jl");
+end

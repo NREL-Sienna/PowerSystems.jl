@@ -8,6 +8,25 @@ include("generation/renewable_generation.jl")
 include("generation/thermal_generation.jl")
 include("generation/hydro_generation.jl")
 
+# change name GenClasses to Sources ?
+struct GenClasses <: PowerSystemComponent
+    thermal::Union{Nothing,Array{ <: ThermalGen,1}}
+    renewable::Union{Nothing,Array{ <: RenewableGen,1}}
+    hydro::Union{Nothing,Array{ <: HydroGen,1}}
+end
+# create iterator for GenClasses
+function Base.iterate(iter::GenClasses, state=1)
+    if state > length(iter)
+        return nothing
+    else
+        return (getfield(iter, state), state+1)
+    end
+end
+Base.length(iter::GenClasses) = length(fieldnames(GenClasses))
+Base.eltype(iter::GenClasses) = Union{Nothing,
+                                      Array{ <: ThermalGen,1},
+                                      Array{ <: RenewableGen,1},
+                                      Array{ <: HydroGen,1}}
 
 # Generator Classifier
 function genclassifier(gen::Array{T}) where T <: Generator
@@ -29,7 +48,7 @@ function genclassifier(gen::Array{T}) where T <: Generator
         h = nothing
     end
 
-    generators = (thermal = t, renewable =r, hydro = h)
+    generators = GenClasses(t, r, h)
 
     return generators
 end
