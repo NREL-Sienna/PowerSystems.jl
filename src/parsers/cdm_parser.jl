@@ -124,9 +124,16 @@ function csv2ps_dict(data::Dict{String,Any})
     if haskey(data,"branch")
         ps_dict["branch"] =  PowerSystems.branch_csv_parser(data["branch"],ps_dict["bus"])
     else
-        @warn "Key error : key 'bus' not found in PowerSystems dictionary,
+        @warn "Key error : key 'branch' not found in PowerSystems dictionary,
           \n This will result in an ps_dict['branch'] = nothing"
          ps_dict["branch"] = nothing
+    end
+    if haskey(data,"dc_branch")
+        ps_dict["dcline"] =  PowerSystems.dc_branch_csv_parser(data["dc_branch"],ps_dict["bus"])
+    else
+        @warn "Key error : key 'dc_branch' not found in PowerSystems dictionary,
+          \n This will result in an ps_dict['dcline'] = nothing"
+         ps_dict["dcline"] = nothing
     end
     if haskey(data,"load")
         ps_dict["load_zone"] =  PowerSystems.loadzone_csv_parser(data["bus"],ps_dict["bus"])
@@ -394,7 +401,7 @@ function branch_csv_parser(branch_raw,Buses,colnames=nothing)
     """
 
     if colnames isa Nothing
-        need_cols = ["From Bus", "To Bus", "Tr Ratio", "Cont Rating"]
+        need_cols = ["From Bus", "To Bus", "Tr Ratio", "Cont Rating","UID","R","X","B"]
         tbl_cols = string.(names(branch_raw))
         colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
     end
@@ -402,34 +409,86 @@ function branch_csv_parser(branch_raw,Buses,colnames=nothing)
     Branches_dict = Dict{String,Any}()
     Branches_dict["Transformers"] = Dict{String,Any}()
     Branches_dict["Lines"] = Dict{String,Any}()
-    for i in 1:length(branch_raw)
-        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,Symbol("From Bus")]]
-        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,Symbol("To Bus")]]
+    for i in 1:nrow(branch_raw)
+        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,colnames["From Bus"]]]
+        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,colnames["To Bus"]]]
         if branch_raw[i,Symbol("Tr Ratio")] > 0.0
-            Branches_dict["Transformers"][branch_raw[i,:UID]] = Dict{String,Any}("name" => branch_raw[i,:UID],
+            Branches_dict["Transformers"][branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => branch_raw[i,colnames["UID"]],
                                                         "available" => true,
                                                         "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
-                                                        "r" => branch_raw[i,:R],
-                                                        "x" => branch_raw[i,:X],
-                                                        "primaryshunt" => branch_raw[i,:B] ,  #TODO: add field in CSV
-                                                        "alpha" => (branch_raw[i,:B]/2) - (branch_raw[i,:B]/2), #TODO: Phase-Shifting Transformer angle
-                                                        "tap" => branch_raw[i,Symbol("Tr Ratio")],
-                                                        "rate" => branch_raw[i,Symbol("Cont Rating")],
+                                                        "r" => branch_raw[i,colnames["R"]],
+                                                        "x" => branch_raw[i,colnames["X"]],
+                                                        "primaryshunt" => branch_raw[i,colnames["B"]] ,  #TODO: add field in CSV
+                                                        "alpha" => (branch_raw[i,colnames["B"]]/2) - (branch_raw[i,colnames["B"]]/2), #TODO: Phase-Shifting Transformer angle
+                                                        "tap" => branch_raw[i,colnames["Tr Ratio"]],
+                                                        "rate" => branch_raw[i,colnames["Cont Rating"]],
                                                         )
         else
             Branches_dict["Lines"][branch_raw[i,:UID]] = Dict{String,Any}("name" => branch_raw[i,:UID],
                                                         "available" => true,
                                                         "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
-                                                        "r" => branch_raw[i,:R],
-                                                        "x" => branch_raw[i,:X],
-                                                        "b" => (from=(branch_raw[i,:B]/2),to=(branch_raw[i,:B]/2)),
-                                                        "rate" =>  branch_raw[i,Symbol("Cont Rating")],
+                                                        "r" => branch_raw[i,colnames["R"]],
+                                                        "x" => branch_raw[i,colnames["X"]],
+                                                        "b" => (from=(branch_raw[i,colnames["B"]]/2),to=(branch_raw[i,colnames["B"]]/2)),
+                                                        "rate" =>  branch_raw[i,colnames["Cont Rating"]],
                                                         "anglelimits" => (min=-60.0,max =60.0) #TODO: add field in CSV
                                                         )
 
         end
     end
     return Branches_dict
+end
+
+
+###########
+#DC Branch data parser
+###########
+
+function dc_branch_csv_parser(dc_branch_raw,Buses,colnames=nothing)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC dc_branch.csv file
+        Parsed Bus PowerSystems dictionary
+    Returns:
+        A Nested Dictionary with keys as dc_branch types/names and values as dc_branch data dictionary with same keys as the device struct
+
+    """
+
+    if colnames isa Nothing
+        need_cols = ["UID","From Bus", "To Bus","From X Commutating", "From Tap Min", "From Tap Max","From Min Firing Angle","From Max Firing Angle", "To X Commutating", "To Tap Min", "To Tap Max","To Min Firing Angle","To Max Firing Angle", "Rating"]
+        tbl_cols = string.(names(dc_branch_raw))
+        colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    end
+
+    DCBranches_dict = Dict{String,Any}()
+    for i in 1:nrow(dc_branch_raw)
+        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == dc_branch_raw[i,colnames["From Bus"]]]
+        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == dc_branch_raw[i,colnames["To Bus"]]]
+        if (dc_branch_raw[i,colnames["From Max Firing Angle"]] + dc_branch_raw[i,colnames["To Max Firing Angle"]])/2 != 0.0 #TODO: Replace this with the correct conditional to create VSDC or HVDC lines
+            DCBranches_dict[dc_branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => dc_branch_raw[i,colnames["UID"]],
+                                                        "available" => true,
+                                                        "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "rectifier_taplimits" => (min=dc_branch_raw[i,colnames["From Tap Min"]],max=dc_branch_raw[i,colnames["From Tap Max"]]),
+                                                        "rectifier_xrc" => dc_branch_raw[i,colnames["From X Commutating"]], #TODO: What is this?
+                                                        "rectifier_firingangle" => (min=dc_branch_raw[i,colnames["From Min Firing Angle"]],max=dc_branch_raw[i,colnames["From Max Firing Angle"]]),
+                                                        "inverter_taplimits" => (min=dc_branch_raw[i,colnames["To Tap Min"]],max=dc_branch_raw[i,colnames["To Tap Max"]]),
+                                                        "inverter_xrc" => dc_branch_raw[i,colnames["To X Commutating"]],  #TODO: What is this?
+                                                        "inverter_firingangle" => (min=dc_branch_raw[i,colnames["To Min Firing Angle"]],max=dc_branch_raw[i,colnames["To Max Firing Angle"]])
+                                                        )
+        else
+            DCBranches_dict[dc_branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => dc_branch_raw[i,colnames["UID"]],
+                                                        "available" => true,
+                                                        "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "activepowerlimits_from" => (min=-1*dc_branch_raw[i,colnames["Rating"]],max=dc_branch_raw[i,colnames["Rating"]]), #TODO: is there a better way to calculate this?
+                                                        "activepowerlimits_to" => (min=-1*dc_branch_raw[i,colnames["Rating"]],max=dc_branch_raw[i,colnames["Rating"]]), #TODO: is there a better way to calculate this?
+                                                        "reactivepowerlimits_from" => (min=-1*dc_branch_raw[i,colnames["Rating"]],max=dc_branch_raw[i,colnames["Rating"]]), #TODO: is there a better way to calculate this?
+                                                        "reactivepowerlimits_to" => (min=-1*dc_branch_raw[i,colnames["Rating"]],max=dc_branch_raw[i,colnames["Rating"]]), #TODO: is there a better way to calculate this?
+                                                        "loss" => 0.0, #TODO: Can we infer this from the other data?
+                                                        )
+
+        end
+    end
+    return DCBranches_dict
 end
 
 
