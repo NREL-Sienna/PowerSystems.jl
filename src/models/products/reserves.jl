@@ -27,26 +27,27 @@ struct ProportionalReserve <: Reserve
     contributingdevices::Array{PowerSystemDevice}
     timeframe::Float64
     requirement::TimeSeries.TimeArray
+end
 
-    function ProportionalReserve(name::String,
+function ProportionalReserve(name::String,
                             contributingdevices::Array{G},
                             timeframe::Float64,
                             requirement::Float64,
                             loads::Array{T}) where {G <: PowerSystemDevice, T <: ElectricLoad}
 
-        totalload = zeros(0)
-        for i in timestamp(loads[1].scalingfactor)
-            t = zeros(0)
-            for load in loads
-                push!(t,(load.maxactivepower*values(load.scalingfactor[i]))[1])
-            end
-            push!(totalload,sum(t))
+    totalload = zeros(0)
+    for i in timestamp(loads[1].scalingfactor)
+        t = zeros(0)
+        for load in loads
+            push!(t,(load.maxactivepower*values(load.scalingfactor[i]))[1])
         end
-        requirement = TimeSeries.TimeArray(timestamp(loads[1].scalingfactor),totalload*requirement)
-
-        new(name, contributingdevices, timeframe, requirement)
+        push!(totalload,sum(t))
     end
+    requirement = TimeSeries.TimeArray(timestamp(loads[1].scalingfactor),totalload*requirement)
+
+    ProportionalReserve(name, contributingdevices, timeframe, requirement)
 end
+
 
 ProportionalReserve(;name = "init",
         contributingdevices = [ThermalDispatch()],
