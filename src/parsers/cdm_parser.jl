@@ -142,6 +142,12 @@ function csv2ps_dict(data::Dict{String,Any})
           \n This will result in an ps_dict['dcline'] = nothing"
          ps_dict["dcline"] = nothing
     end
+    if haskey(data,"reserves")
+        ps_dict["services"] = PowerSystems.services_csv_parser(data["reserves"],data["gen"],data["bus"])
+    else
+        @warn "Key error : key 'reserves' not found in PowerSystems dictionary, this will result in a ps_dict['services'] =  nothing"
+        ps_dict["services"] = nothing
+    end
     if haskey(data,"baseMVA")
         ps_dict["baseMVA"] = data["baseMVA"]
     else
@@ -167,6 +173,7 @@ function csv2ps_dict(data::Dict{String,Any})
 
     return ps_dict
 end
+
 
 function _add_nested_dict!(d,keylist,value = Dict())
     if !haskey(d,keylist[1])
@@ -633,6 +640,58 @@ function loadzone_csv_parser(bus_raw,Buses,colnames=nothing)
     end
     return LoadZone_dict
 end
+
+
+###########
+#reserves data parser
+###########
+
+function services_csv_parser(rsv_raw::DataFrames.DataFrame,gen_raw::DataFrames.DataFrame,bus_raw::DataFrames.DataFrame,colnames=nothing, gen_colnames = nothing,bus_colnames = nothing)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC reserves.csv file
+        A DataFrame with the same column names as in RTS_GMLC gen.csv file
+        A DataFrame with the same column names as in RTS_GMLC bus.csv file
+    Returns:
+        A Nested Dictionary with keys as loadzone names and values as loadzone data dictionary with same keys as the device struct
+    """
+    if colnames isa Nothing
+        need_cols = ["Reserve Product", "Timeframe (sec)", "Eligible Regions", "Eligible Gen Categories"]
+        tbl_cols = string.(names(rsv_raw))
+        colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    end
+
+    if gen_colnames isa Nothing
+        need_cols = ["GEN UID", "Bus ID", "Category"]
+        tbl_cols = string.(names(gen_raw))
+        gen_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    end
+
+    if bus_colnames isa Nothing
+        need_cols = ["Bus ID", "Area"]
+        tbl_cols = string.(names(bus_raw))
+        bus_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    end
+    
+    services_dict = Dict{String,Any}()
+    for r in 1:nrow(rsv_raw)
+        gen_cats = strip(rsv_raw[r,colnames["Eligible Gen Categories"]],[i for i in "()"]) |> (x->split(x, ","))
+        regions = strip(rsv_raw[r,colnames["Eligible Regions"]],[i for i in "()"]) |> (x->split(x,","))
+        contributingdevices = []
+        [push!(contributingdevices,gen_raw[g,gen_colnames["GEN UID"]]) for g in 1:nrow(gen_raw) if 
+                    (gen_raw[g,gen_colnames["Category"]] in gen_cats) & 
+                    (string(bus_raw[bus_raw[bus_colnames["Bus ID"]] .== gen_raw[g,gen_colnames["Bus ID"]],bus_colnames["Area"]][1]) in regions)];
+
+
+        services_dict[rsv_raw[r,colnames["Reserve Product"]]] = Dict{String,Any}("name" => rsv_raw[r,colnames["Reserve Product"]],
+                                                                "contributingdevices" => contributingdevices,
+                                                                "timeframe" => rsv_raw[r,colnames["Timeframe (sec)"]])
+    end
+
+
+    return services_dict
+end
+
 
 # Remove missing values form dataframes
 #TODO : Remove "NA" Strings from the data created by CSV.read()

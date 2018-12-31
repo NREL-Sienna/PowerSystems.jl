@@ -105,6 +105,21 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
     end
 end
 
+function _get_device(name, collection, devices = [])
+    if isa(collection,Array)
+        fn = fieldnames(typeof(collection[1]))
+        if :name in fn
+            [push!(devices,d) for d in collection if d.name == name]
+        end
+    else
+        fn = fieldnames(typeof(collection))
+        for f in fn
+            _get_device(name,getfield(collection,f),devices)
+        end
+    end
+    return devices
+end
+
 function read_datetime(df; kwargs...)
     """
     Arg:
