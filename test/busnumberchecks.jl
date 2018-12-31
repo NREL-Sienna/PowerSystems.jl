@@ -4,7 +4,7 @@ base_dir = dirname(dirname(pathof(PowerSystems))) #note: may have to remove the 
 
 ps_dict = PowerSystems.parsestandardfiles(abspath(joinpath(base_dir, "data/matpower/case5_re.m")));
 
-buses, generators, storage, branches, loads, loadZones, shunts = PowerSystems.ps_dict2ps_struct(ps_dict);
+buses, generators, storage, branches, loads, loadZones, shunts, services = PowerSystems.ps_dict2ps_struct(ps_dict);
 sys = PowerSystems.PowerSystem(buses, generators, loads, branches, storage, ps_dict["baseMVA"]);
 
 @test sort([b.number for b in sys.buses]) == [1, 2, 3, 4, 5]

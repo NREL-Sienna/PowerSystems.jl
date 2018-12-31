@@ -58,7 +58,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
         @warn "key 'services' not found in PowerSystems dictionary, this will result in an empty services array"
     end
 
-    return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts
+    return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts, services
 
 end
 
