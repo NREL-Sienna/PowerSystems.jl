@@ -8,7 +8,6 @@ include("generation/renewable_generation.jl")
 include("generation/thermal_generation.jl")
 include("generation/hydro_generation.jl")
 
-# change name GenClasses to Sources ?
 struct GenClasses <: PowerSystemComponent
     thermal::Union{Nothing,Array{ <: ThermalGen,1}}
     renewable::Union{Nothing,Array{ <: RenewableGen,1}}
