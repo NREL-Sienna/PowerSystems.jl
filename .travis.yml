@@ -4,8 +4,7 @@ os:
   - linux
   - osx
 julia:
-  - 0.7
-  - 1.0
+  - 1.1
   - nightly
 
 notifications:
@@ -16,7 +15,6 @@ notifications:
 matrix:
   allow_failures:
   - julia: nightly
-  - julia: 1.0
   - os: osx
 
 ## uncomment and modify the following lines to manually install system packages
