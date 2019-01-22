@@ -75,7 +75,7 @@ function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
         n = length(timeseries)-1
         ts = []
         for i in 1:n
-            push!(ts,timestamp(timeseries)[n+1]-timestamp(timeseries)[n])
+            push!(ts,TimeSeries.timestamp(timeseries)[n+1]-TimeSeries.timestamp(timeseries)[n])
         end
         return minimum(ts)
     else

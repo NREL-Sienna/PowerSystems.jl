@@ -43,7 +43,7 @@ function get_bus_value(bus_i, field, pm_data)
         end
     end
 
-    @warn "Could not find bus $bus_i, returning 0 for field $field"
+    @info("Could not find bus $bus_i, returning 0 for field $field")
     return 0
 end
 
@@ -191,28 +191,17 @@ function psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["qg"] = pop!(gen, "QG")
             sub_data["vg"] = pop!(gen, "VS")
             sub_data["mbase"] = pop!(gen, "MBASE")
-            sub_data["ramp_agc"] = 0.0
-            sub_data["ramp_q"] = 0.0
-            sub_data["ramp_10"] = 0.0
-            sub_data["ramp_30"] = 0.0
             sub_data["pmin"] = pop!(gen, "PB")
             sub_data["pmax"] = pop!(gen, "PT")
-            sub_data["apf"] = 0.0
             sub_data["qmin"] = pop!(gen, "QB")
             sub_data["qmax"] = pop!(gen, "QT")
-            sub_data["pc1"] = 0.0
-            sub_data["pc2"] = 0.0
-            sub_data["qc1min"] = 0.0
-            sub_data["qc1max"] = 0.0
-            sub_data["qc2min"] = 0.0
-            sub_data["qc2max"] = 0.0
 
             # Default Cost functions
             sub_data["model"] = 2
             sub_data["startup"] = 0.0
             sub_data["shutdown"] = 0.0
-            sub_data["ncost"] = 3
-            sub_data["cost"] = [0.0, 1.0, 0.0]
+            sub_data["ncost"] = 2
+            sub_data["cost"] = [1.0, 0.0]
 
             sub_data["source_id"] = [sub_data["gen_bus"], pop!(gen, "ID")]
             sub_data["index"] = length(pm_data["gen"]) + 1
@@ -250,12 +239,12 @@ function psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["vmax"] = pop!(bus, "NVHI")
                 sub_data["vmin"] = pop!(bus, "NVLO")
             else
-                @warn "PTI v$(pm_data["source_version"]) does not contain vmin and vmax values, defaults of 0.9 and 1.1, respectively, assumed."
+                @info("PTI v$(pm_data["source_version"]) does not contain vmin and vmax values, defaults of 0.9 and 1.1, respectively, assumed.")
                 sub_data["vmax"] = 1.1
                 sub_data["vmin"] = 0.9
             end
 
-            sub_data["source_id"] = [sub_data["bus_i"], sub_data["name"]]
+            sub_data["source_id"] = ["$(bus["I"])"]
             sub_data["index"] = pop!(bus, "I")
 
             import_remaining!(sub_data, bus, import_all)
@@ -324,7 +313,7 @@ function psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 
     if haskey(pti_data, "SWITCHED SHUNT")
-        @info "Switched shunt converted to fixed shunt, with default value gs=0.0"
+        @info("Switched shunt converted to fixed shunt, with default value gs=0.0")
 
         for shunt in pti_data["SWITCHED SHUNT"]
             sub_data = Dict{String,Any}()
@@ -550,7 +539,7 @@ function psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     if haskey(pti_data, "TWO-TERMINAL DC")
         for dcline in pti_data["TWO-TERMINAL DC"]
-            @info "Two-Terminal DC lines are supported via a simple *lossless* dc line model approximated by two generators."
+            @info("Two-Terminal DC lines are supported via a simple *lossless* dc line model approximated by two generators.")
             sub_data = Dict{String,Any}()
 
             # Unit conversions?
@@ -577,7 +566,7 @@ function psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     push!(anmn, pop!(dcline, key))
                 else
                     push!(anmn, 0)
-                    @warn "$key outside reasonable limits, setting to 0 degress"
+                    @info("$key outside reasonable limits, setting to 0 degress")
                 end
             end
 
@@ -607,7 +596,7 @@ function psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 
     if haskey(pti_data, "VOLTAGE SOURCE CONVERTER")
-        @info "VSC-HVDC lines are supported via a dc line model approximated by two generators and an associated loss."
+        @info("VSC-HVDC lines are supported via a dc line model approximated by two generators and an associated loss.")
         for dcline in pti_data["VOLTAGE SOURCE CONVERTER"]
             # Converter buses : is the distinction between ac and dc side meaningful?
             dcside, acside = dcline["CONVERTER BUSES"]
@@ -662,6 +651,11 @@ function psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 end
 
 
+function psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    pm_data["storage"] = []
+end
+
+
 """
     parse_psse(pti_data)
 
@@ -669,7 +663,7 @@ Converts PSS(R)E-style data parsed from a PTI raw file, passed by `pti_data`
 into a format suitable for use internally in PowerModels. Imports all remaining
 data from the PTI file if `import_all` is true (Default: false).
 """
-function parse_psse(pti_data::Dict; import_all=false)::Dict
+function parse_psse(pti_data::Dict; import_all=false, validate=true)::Dict
     pm_data = Dict{String,Any}()
 
     rev = pop!(pti_data["CASE IDENTIFICATION"][1], "REV")
@@ -689,6 +683,7 @@ function parse_psse(pti_data::Dict; import_all=false)::Dict
     psse2pm_branch!(pm_data, pti_data, import_all)
     psse2pm_transformer!(pm_data, pti_data, import_all)
     psse2pm_dcline!(pm_data, pti_data, import_all)
+    psse2pm_storage!(pm_data, pti_data, import_all)
 
     import_remaining!(pm_data, pti_data, import_all; exclude=[
         "CASE IDENTIFICATION", "BUS", "LOAD", "FIXED SHUNT",
@@ -709,16 +704,18 @@ function parse_psse(pti_data::Dict; import_all=false)::Dict
         end
     end
 
-    check_network_data(pm_data)
+    if validate
+        check_network_data(pm_data)
+    end
 
     return pm_data
 end
 
 
 "Parses directly from file"
-function parse_psse(filename::String; import_all=false)::Dict
+function parse_psse(filename::String; kwargs...)::Dict
     pm_data = open(filename) do f
-        parse_psse(f; import_all=import_all)
+        parse_psse(f; kwargs...)
     end
 
     return pm_data
@@ -726,8 +723,8 @@ end
 
 
 "Parses directly from iostream"
-function parse_psse(io::IO; import_all=false)::Dict
+function parse_psse(io::IO; kwargs...)::Dict
     pti_data = parse_pti(io)
 
-    return parse_psse(pti_data; import_all=import_all)
+    return parse_psse(pti_data; kwargs...)
 end
