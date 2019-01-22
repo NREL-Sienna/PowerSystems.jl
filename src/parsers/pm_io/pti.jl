@@ -285,7 +285,7 @@ function parse_line_element!(data::Dict, elements::Array, section::AbstractStrin
         if !(section == "SWITCHED SHUNT" && startswith(missing_str, "N")) &&
             !(section == "MULTI-SECTION LINE" && startswith(missing_str, "DUM")) &&
             !(section == "IMPEDANCE CORRECTION" && startswith(missing_str, "T"))
-            warn(LOGGER, "The following fields in $section are missing: $missing_str")
+            @info("The following fields in $section are missing: $missing_str")
         end
     end
 end
@@ -304,7 +304,7 @@ function add_section_data!(pti_data::Dict, section_data::Dict, section::Abstract
         if isa(message, KeyError)
             pti_data[section] = [deepcopy(section_data)]
         else
-            error(LOGGER, sprint(showerror, message))
+            @error(sprint(showerror, message))
         end
     end
 end
@@ -388,9 +388,9 @@ function parse_pti_data(data_io::IO, sections::Array)
                 continue
             else
                 if length(elements) > 1
-                    warn(LOGGER, "At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end.")
+                    @info("At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end.")
                 elseif length(comment) > 0
-                    Memento.info(LOGGER, "At line $line_number, unexpected section: expected: $section, comment specified: $(guess_section)")
+                    @info("At line $line_number, unexpected section: expected: $section, comment specified: $(guess_section)")
                 end
                 if !isempty(sections)
                     section = popfirst!(sections)
@@ -415,7 +415,7 @@ function parse_pti_data(data_io::IO, sections::Array)
                 try
                     parse_line_element!(section_data, elements, section)
                 catch message
-                    throw(error(LOGGER, "Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                    throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
                 end
 
             elseif section == "CASE IDENTIFICATION"
@@ -423,15 +423,15 @@ function parse_pti_data(data_io::IO, sections::Array)
                     try
                         parse_line_element!(section_data, elements, section)
                     catch message
-                        throw(error(LOGGER, "Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                        throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
                     end
                     try
                         if section_data["REV"] < 33
-                            warn(LOGGER, "Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.")
+                            @info("Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.")
                         end
                     catch message
                         if isa(message, KeyError)
-                            error(LOGGER, "This file is unrecognized and cannot be parsed")
+                            @error("This file is unrecognized and cannot be parsed")
                         end
                     end
                 else
@@ -453,13 +453,13 @@ function parse_pti_data(data_io::IO, sections::Array)
                     (elements, comment) = get_line_elements(join(data_lines[line_number:line_number + 4], ','))
                     skip_lines = 4
                 else
-                    error(LOGGER, "Cannot detect type of Transformer")
+                    @error("Cannot detect type of Transformer")
                 end
 
                 try
                     parse_line_element!(section_data, elements, temp_section)
                 catch message
-                    throw(error(LOGGER, "Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                    throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
                 end
 
             elseif section == "VOLTAGE SOURCE CONVERTER"
@@ -468,7 +468,7 @@ function parse_pti_data(data_io::IO, sections::Array)
                     try
                         parse_line_element!(section_data, elements, section)
                     catch message
-                        throw(error(LOGGER, "Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                        throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
                     end
                     skip_sublines = 2
                     continue
@@ -491,7 +491,7 @@ function parse_pti_data(data_io::IO, sections::Array)
                             section_data["CONVERTER BUSES"] = [deepcopy(subsection_data)]
                             continue
                         else
-                            error(LOGGER, message)
+                            @error(message)
                         end
                     end
                 end
@@ -506,7 +506,7 @@ function parse_pti_data(data_io::IO, sections::Array)
                 try
                     parse_line_element!(section_data, elements, section)
                 catch message
-                    throw(error(LOGGER, "Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                    throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
                 end
 
             elseif section == "MULTI-TERMINAL DC"
@@ -515,7 +515,7 @@ function parse_pti_data(data_io::IO, sections::Array)
                     try
                         parse_line_element!(section_data, elements, section)
                     catch message
-                        throw(error(LOGGER, "Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                        throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
                     end
 
                     if section_data["NCONV"] > 0
@@ -559,7 +559,7 @@ function parse_pti_data(data_io::IO, sections::Array)
                                 continue
                             end
                         else
-                            error(LOGGER, sprint(showerror, message))
+                            @error(sprint(showerror, message))
                         end
                     end
 
@@ -582,7 +582,7 @@ function parse_pti_data(data_io::IO, sections::Array)
 
             elseif section == "GNE DEVICE"
                 # TODO: handle multiple lines of GNE Device
-                warn(LOGGER, "GNE DEVICE parsing is not supported.")
+                @info("GNE DEVICE parsing is not supported.")
             end
         end
         if subsection != ""
