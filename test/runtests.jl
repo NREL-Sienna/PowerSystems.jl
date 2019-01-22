@@ -36,7 +36,7 @@ end
 end
 
 @testset "Parsing Code" begin
-    include("parsestandard.jl")
+    #include("parsestandard.jl")
 end
 
 # #=
