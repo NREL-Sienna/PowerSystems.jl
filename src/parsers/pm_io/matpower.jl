@@ -270,10 +270,10 @@ function parse_matpower_string(data_string::String)
                     push!(tbl, row_data)
                 end
                 case[case_name] = tbl
-                info(LOGGER, "extending matpower format with data: $(case_name) $(length(tbl))x$(length(tbl[1])-1)")
+                Memento.info(LOGGER, "extending matpower format with data: $(case_name) $(length(tbl))x$(length(tbl[1])-1)")
             else
                 case[case_name] = value
-                info(LOGGER, "extending matpower format with constant data: $(case_name)")
+                Memento.info(LOGGER, "extending matpower format with constant data: $(case_name)")
             end
         end
     end
@@ -593,7 +593,7 @@ function merge_generic_data(data::Dict{String,Any})
                         error("failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they do not have the same number of rows, $(length(mp_matrix)) and $(length(v)) respectively.")
                     end
 
-                    info(LOGGER, "extending matpower format by appending matrix \"$(k)\" in to \"$(mp_name)\"")
+                    Memento.info(LOGGER, "extending matpower format by appending matrix \"$(k)\" in to \"$(mp_name)\"")
 
                     for (i, row) in enumerate(mp_matrix)
                         merge_row = v[i]

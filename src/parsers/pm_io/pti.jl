@@ -390,7 +390,7 @@ function parse_pti_data(data_io::IO, sections::Array)
                 if length(elements) > 1
                     warn(LOGGER, "At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end.")
                 elseif length(comment) > 0
-                    info(LOGGER, "At line $line_number, unexpected section: expected: $section, comment specified: $(guess_section)")
+                    Memento.info(LOGGER, "At line $line_number, unexpected section: expected: $section, comment specified: $(guess_section)")
                 end
                 if !isempty(sections)
                     section = popfirst!(sections)

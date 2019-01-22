@@ -1226,7 +1226,7 @@ function simplify_cost_terms(data::Dict{String,Any})
                     end
                     if length(gen["cost"]) != ncost
                         gen["ncost"] = length(gen["cost"])
-                        info(LOGGER, "removing $(ncost - gen["ncost"]) cost terms from generator $(i): $(gen["cost"])")
+                        Memento.info(LOGGER, "removing $(ncost - gen["ncost"]) cost terms from generator $(i): $(gen["cost"])")
                         push!(modified_gen, gen["index"])
                     end
                 end
@@ -1246,7 +1246,7 @@ function simplify_cost_terms(data::Dict{String,Any})
                     end
                     if length(dcline["cost"]) != ncost
                         dcline["ncost"] = length(dcline["cost"])
-                        info(LOGGER, "removing $(ncost - dcline["ncost"]) cost terms from dcline $(i): $(dcline["cost"])")
+                        Memento.info(LOGGER, "removing $(ncost - dcline["ncost"]) cost terms from dcline $(i): $(dcline["cost"])")
                         push!(modified_dcline, dcline["index"])
                     end
                 end
@@ -1378,14 +1378,14 @@ function _propagate_topology_status(data::Dict{String,Any})
 
     for (i,load) in data["load"]
         if load["status"] != 0 && all(load["pd"] .== 0.0) && all(load["qd"] .== 0.0)
-            info(LOGGER, "deactivating load $(load["index"]) due to zero pd and qd")
+            Memento.info(LOGGER, "deactivating load $(load["index"]) due to zero pd and qd")
             load["status"] = 0
         end
     end
 
     for (i,shunt) in data["shunt"]
         if shunt["status"] != 0 && all(shunt["gs"] .== 0.0) && all(shunt["bs"] .== 0.0)
-            info(LOGGER, "deactivating shunt $(shunt["index"]) due to zero gs and bs")
+            Memento.info(LOGGER, "deactivating shunt $(shunt["index"]) due to zero gs and bs")
             shunt["status"] = 0
         end
     end
@@ -1438,7 +1438,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     t_bus = buses[branch["t_bus"]]
 
                     if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
-                        info(LOGGER, "deactivating branch $(i):($(branch["f_bus"]),$(branch["t_bus"])) due to connecting bus status")
+                        Memento.info(LOGGER, "deactivating branch $(i):($(branch["f_bus"]),$(branch["t_bus"])) due to connecting bus status")
                         branch["br_status"] = 0
                         updated = true
                     end
@@ -1451,7 +1451,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     t_bus = buses[dcline["t_bus"]]
 
                     if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
-                        info(LOGGER, "deactivating dcline $(i):($(dcline["f_bus"]),$(dcline["t_bus"])) due to connecting bus status")
+                        Memento.info(LOGGER, "deactivating dcline $(i):($(dcline["f_bus"]),$(dcline["t_bus"])) due to connecting bus status")
                         dcline["br_status"] = 0
                         updated = true
                     end
@@ -1474,7 +1474,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                     #println("bus $(i) active shunt $(incident_active_shunt)")
 
                     if incident_active_edge == 1 && length(incident_active_gen[i]) == 0 && length(incident_active_load[i]) == 0 && length(incident_active_shunt[i]) == 0
-                        info(LOGGER, "deactivating bus $(i) due to dangling bus without generation and load")
+                        Memento.info(LOGGER, "deactivating bus $(i) due to dangling bus without generation and load")
                         bus["bus_type"] = 4
                         updated = true
                     end
@@ -1482,7 +1482,7 @@ function _propagate_topology_status(data::Dict{String,Any})
                 else # bus type == 4
                     for load in incident_active_load[i]
                         if load["status"] != 0
-                            info(LOGGER, "deactivating load $(load["index"]) due to inactive bus $(i)")
+                            Memento.info(LOGGER, "deactivating load $(load["index"]) due to inactive bus $(i)")
                             load["status"] = 0
                             updated = true
                         end
@@ -1490,7 +1490,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
                     for shunt in incident_active_shunt[i]
                         if shunt["status"] != 0
-                            info(LOGGER, "deactivating shunt $(shunt["index"]) due to inactive bus $(i)")
+                            Memento.info(LOGGER, "deactivating shunt $(shunt["index"]) due to inactive bus $(i)")
                             shunt["status"] = 0
                             updated = true
                         end
@@ -1498,7 +1498,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
                     for gen in incident_active_gen[i]
                         if gen["gen_status"] != 0
-                            info(LOGGER, "deactivating generator $(gen["index"]) due to inactive bus $(i)")
+                            Memento.info(LOGGER, "deactivating generator $(gen["index"]) due to inactive bus $(i)")
                             gen["gen_status"] = 0
                             updated = true
                         end
@@ -1528,7 +1528,7 @@ function _propagate_topology_status(data::Dict{String,Any})
             active_gen_count = sum(cc_active_gens)
 
             if (active_load_count == 0 && active_shunt_count == 0) || active_gen_count == 0
-                info(LOGGER, "deactivating connected component $(cc) due to isolation without generation and load")
+                Memento.info(LOGGER, "deactivating connected component $(cc) due to isolation without generation and load")
                 for i in cc
                     buses[i]["bus_type"] = 4
                 end
@@ -1538,7 +1538,7 @@ function _propagate_topology_status(data::Dict{String,Any})
 
     end
 
-    info(LOGGER, "topology status propagation fixpoint reached in $(iteration) rounds")
+    Memento.info(LOGGER, "topology status propagation fixpoint reached in $(iteration) rounds")
 
     check_reference_buses(data)
 end
@@ -1561,17 +1561,17 @@ end
 ""
 function _select_largest_component(data::Dict{String,Any})
     ccs = connected_components(data)
-    info(LOGGER, "found $(length(ccs)) components")
+    Memento.info(LOGGER, "found $(length(ccs)) components")
 
     ccs_order = sort(collect(ccs); by=length)
     largest_cc = ccs_order[end]
 
-    info(LOGGER, "largest component has $(length(largest_cc)) buses")
+    Memento.info(LOGGER, "largest component has $(length(largest_cc)) buses")
 
     for (i,bus) in data["bus"]
         if bus["bus_type"] != 4 && !(bus["index"] in largest_cc)
             bus["bus_type"] = 4
-            info(LOGGER, "deactivating bus $(i) due to small connected component")
+            Memento.info(LOGGER, "deactivating bus $(i) due to small connected component")
         end
     end
 
