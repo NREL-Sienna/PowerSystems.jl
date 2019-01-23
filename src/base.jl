@@ -9,6 +9,8 @@ overall system parameters.
 # Constructor
 ```julia
 PowerSystem(buses, generators, loads, branches, storage, basepower; kwargs...)
+PowerSystem(ps_dict; kwargs...)
+PowerSystem(file, ts_folder; kwargs...)
 ```
 
 # Arguments
@@ -18,21 +20,23 @@ PowerSystem(buses, generators, loads, branches, storage, basepower; kwargs...)
 * `loads`::Array{ElectricLoad,1} : an array of load specifications that includes timing of the loads
 * `branches`::Array{Branch,1} : an array of branches; may be `nothing`
 * `storage`::Array{Storage,1} : an array of storage devices; may be `nothing`
-* `basepower`::Float64 : the base power of the system (is this true?)
+* `basepower`::Float64 : the base power of the system (DOCTODO: is this true? what are the units of base power?)
+* `ps_dict`::Dict{String,Any} : the dictionary object containing PowerSystem data
+* `file`::String, `ts_folder`::String : the filename and foldername that contain the PowerSystem data
 
 # Keyword arguments
 
 * `runchecks`::Bool : run available checks on input fields
-(any other keyword arguments?)
+DOCTODO: any other keyword arguments?
 
 """
 struct PowerSystem{L <: ElectricLoad,
                    B <: Union{Nothing,Array{ <: Branch,1}},
                    S <: Union{Nothing,Array{ <: Storage,1}}
                    }
-    # docs for PowerSystem fields are currently not working, JJS 1/15/19
+    # DOCTODO docs for PowerSystem fields are currently not working, JJS 1/15/19
     """
-    testing doc for time_periods field
+    docstrings for buses field
     """
     buses::Array{Bus,1}
     generators::GenClasses
@@ -163,6 +167,10 @@ struct PowerSystem{L <: ElectricLoad,
 
 end
 
+# DOCTODO JJS What is the purpose of this statement? OK, it looks like a
+# constructor to allow the arguments to be made as keyword arguments, with
+# defaults for those that are not provided. If so, this should be added to list
+# of constructors in the docstring above
 PowerSystem(; buses = [Bus()],
             generators = [ThermalDispatch(), RenewableFix()],
             loads = [ PowerLoad()],
