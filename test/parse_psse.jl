@@ -10,7 +10,7 @@ if length(files) == 0
 end
 
 for f in files
-    @test @time try
+    @test_skip @time try
         ext = match(file_ext, f)
         @info "Parsing $f ..."
         pm_dict = PowerSystems.parse_file(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/psse_raw",f)))
