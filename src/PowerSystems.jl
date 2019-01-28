@@ -25,6 +25,7 @@ export Scenarios
 export Probabilistic
 
 export Generator
+export GenClasses
 
 export HydroGen
 export HydroFix

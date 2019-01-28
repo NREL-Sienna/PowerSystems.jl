@@ -14,3 +14,5 @@ docs/build/*
 *.zip
 *.json
 data
+*.bak
+*~

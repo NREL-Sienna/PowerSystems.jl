@@ -5,50 +5,21 @@
 #########################################################################
 
 "Parses the matpwer data from either a filename or an IO object"
-function parse_matpower(file::Union{IO, String})
+function parse_matpower(file::Union{IO, String}; validate=true)
     mp_data = parse_matpower_file(file)
     pm_data = matpower_to_powermodels(mp_data)
-    check_network_data(pm_data)
+    if validate
+        check_network_data(pm_data)
+    end
     return pm_data
 end
-
-
-### very generic helper functions ###
-
-"takes a row from a matrix and assigns the values names and types"
-function row_to_typed_dict(row_data, columns)
-    dict_data = Dict{String,Any}()
-    for (i,v) in enumerate(row_data)
-        if i <= length(columns)
-            name, typ = columns[i]
-            dict_data[name] = InfrastructureModels.check_type(typ, v)
-        else
-            dict_data["col_$(i)"] = v
-        end
-    end
-    return dict_data
-end
-
-"takes a row from a matrix and assigns the values names"
-function row_to_dict(row_data, columns)
-    dict_data = Dict{String,Any}()
-    for (i,v) in enumerate(row_data)
-        if i <= length(columns)
-            dict_data[columns[i]] = v
-        else
-            dict_data["col_$(i)"] = v
-        end
-    end
-    return dict_data
-end
-
 
 
 ### Data and functions specific to Matpower format ###
 
 mp_data_names = ["mpc.version", "mpc.baseMVA", "mpc.bus", "mpc.gen",
     "mpc.branch", "mpc.dcline", "mpc.gencost", "mpc.dclinecost",
-    "mpc.bus_name"
+    "mpc.bus_name", "mpc.storage"
 ]
 
 mp_bus_columns = [
@@ -124,6 +95,18 @@ mp_dcline_columns = [
     ("mu_qmint", Float64), ("mu_qmaxt", Float64)
 ]
 
+mp_storage_columns = [
+    ("storage_bus", Int),
+    ("energy", Float64), ("energy_rating", Float64),
+    ("charge_rating", Float64), ("discharge_rating", Float64),
+    ("charge_efficiency", Float64), ("discharge_efficiency", Float64),
+    ("thermal_rating", Float64),
+    ("qmin", Float64), ("qmax", Float64),
+    ("r", Float64), ("x", Float64),
+    ("standby_loss", Float64),
+    ("status", Int)
+]
+
 
 ""
 function parse_matpower_file(file_string::String)
@@ -152,7 +135,7 @@ function parse_matpower_string(data_string::String)
     if func_name != nothing
         case["name"] = func_name
     else
-        @warn string("no case name found in matpower file.  The file seems to be missing \"function mpc = ...\"")
+        @info(string("no case name found in matpower file.  The file seems to be missing \"function mpc = ...\""))
         case["name"] = "no_name_found"
     end
 
@@ -160,14 +143,14 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.version")
         case["source_version"] = VersionNumber(matlab_data["mpc.version"])
     else
-        @warn string("no case version found in matpower file.  The file seems to be missing \"mpc.version = ...\"")
+        @info(string("no case version found in matpower file.  The file seems to be missing \"mpc.version = ...\""))
         case["source_version"] = "0.0.0+"
     end
 
     if haskey(matlab_data, "mpc.baseMVA")
         case["baseMVA"] = matlab_data["mpc.baseMVA"]
     else
-        @warn string("no baseMVA found in matpower file.  The file seems to be missing \"mpc.baseMVA = ...\"")
+        @info(string("no baseMVA found in matpower file.  The file seems to be missing \"mpc.baseMVA = ...\""))
         case["baseMVA"] = 1.0
     end
 
@@ -175,61 +158,71 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.bus")
         buses = []
         for bus_row in matlab_data["mpc.bus"]
-            bus_data = row_to_typed_dict(bus_row, mp_bus_columns)
+            bus_data = InfrastructureModels.row_to_typed_dict(bus_row, mp_bus_columns)
             bus_data["index"] = InfrastructureModels.check_type(Int, bus_row[1])
             push!(buses, bus_data)
         end
         case["bus"] = buses
     else
-        @error string("no bus table found in matpower file.  The file seems to be missing \"mpc.bus = [...];\"")
+        error(string("no bus table found in matpower file.  The file seems to be missing \"mpc.bus = [...];\""))
     end
 
     if haskey(matlab_data, "mpc.gen")
         gens = []
         for (i, gen_row) in enumerate(matlab_data["mpc.gen"])
-            gen_data = row_to_typed_dict(gen_row, mp_gen_columns)
+            gen_data = InfrastructureModels.row_to_typed_dict(gen_row, mp_gen_columns)
             gen_data["index"] = i
             push!(gens, gen_data)
         end
         case["gen"] = gens
     else
-        @error string("no gen table found in matpower file.  The file seems to be missing \"mpc.gen = [...];\"")
+        error(string("no gen table found in matpower file.  The file seems to be missing \"mpc.gen = [...];\""))
     end
 
     if haskey(matlab_data, "mpc.branch")
         branches = []
         for (i, branch_row) in enumerate(matlab_data["mpc.branch"])
-            branch_data = row_to_typed_dict(branch_row, mp_branch_columns)
+            branch_data = InfrastructureModels.row_to_typed_dict(branch_row, mp_branch_columns)
             branch_data["index"] = i
             push!(branches, branch_data)
         end
         case["branch"] = branches
     else
-        @error string("no branch table found in matpower file.  The file seems to be missing \"mpc.branch = [...];\"")
+        error(string("no branch table found in matpower file.  The file seems to be missing \"mpc.branch = [...];\""))
     end
 
     if haskey(matlab_data, "mpc.dcline")
         dclines = []
         for (i, dcline_row) in enumerate(matlab_data["mpc.dcline"])
-            dcline_data = row_to_typed_dict(dcline_row, mp_dcline_columns)
+            dcline_data = InfrastructureModels.row_to_typed_dict(dcline_row, mp_dcline_columns)
             dcline_data["index"] = i
             push!(dclines, dcline_data)
         end
         case["dcline"] = dclines
     end
 
+    if haskey(matlab_data, "mpc.storage")
+        storage = []
+        for (i, storage_row) in enumerate(matlab_data["mpc.storage"])
+            storage_data = InfrastructureModels.row_to_typed_dict(storage_row, mp_storage_columns)
+            storage_data["index"] = i
+            push!(storage, storage_data)
+        end
+        case["storage"] = storage
+    end
+
 
     if haskey(matlab_data, "mpc.bus_name")
         bus_names = []
         for (i, bus_name_row) in enumerate(matlab_data["mpc.bus_name"])
-            bus_name_data = row_to_typed_dict(bus_name_row, mp_bus_name_columns)
+            bus_name_data = InfrastructureModels.row_to_typed_dict(bus_name_row, mp_bus_name_columns)
             bus_name_data["index"] = i
             push!(bus_names, bus_name_data)
         end
         case["bus_name"] = bus_names
 
         if length(case["bus_name"]) != length(case["bus"])
-            @error "incorrect Matpower file, the number of bus names ($(length(case["bus_name"]))) is inconsistent with the number of buses ($(length(case["bus"]))).\n"
+            error("incorrect Matpower file, the number of bus names ($(length(case["bus_name"]))) is inconsistent with the number of buses ($(length(case["bus"]))).\n")
         end
     end
 
@@ -243,7 +236,7 @@ function parse_matpower_string(data_string::String)
         case["gencost"] = gencost
 
         if length(case["gencost"]) != length(case["gen"]) && length(case["gencost"]) != 2*length(case["gen"])
-            @error "incorrect Matpower file, the number of generator cost functions ($(length(case["gencost"]))) is inconsistent with the number of generators ($(length(case["gen"]))).\n"
+            error("incorrect Matpower file, the number of generator cost functions ($(length(case["gencost"]))) is inconsistent with the number of generators ($(length(case["gen"]))).\n")
         end
     end
 
@@ -257,7 +250,7 @@ function parse_matpower_string(data_string::String)
         case["dclinecost"] = dclinecosts
 
         if length(case["dclinecost"]) != length(case["dcline"])
-            @error "incorrect Matpower file, the number of dcline cost functions ($(length(case["dclinecost"]))) is inconsistent with the number of dclines ($(length(case["dcline"]))).\n"
+            error("incorrect Matpower file, the number of dcline cost functions ($(length(case["dclinecost"]))) is inconsistent with the number of dclines ($(length(case["dcline"]))).\n")
         end
     end
 
@@ -272,15 +265,15 @@ function parse_matpower_string(data_string::String)
                 end
                 tbl = []
                 for (i, row) in enumerate(matlab_data[k])
-                    row_data = row_to_dict(row, column_names)
+                    row_data = InfrastructureModels.row_to_dict(row, column_names)
                     row_data["index"] = i
                     push!(tbl, row_data)
                 end
                 case[case_name] = tbl
-                @info "extending matpower format with data: $(case_name) $(length(tbl))x$(length(tbl[1])-1)"
+                @info("extending matpower format with data: $(case_name) $(length(tbl))x$(length(tbl[1])-1)")
             else
                 case[case_name] = value
-                @info "extending matpower format with constant data: $(case_name)"
+                @info("extending matpower format with constant data: $(case_name)")
             end
         end
     end
@@ -289,13 +282,21 @@ function parse_matpower_string(data_string::String)
 end
 
 
+""
 function mp_cost_data(cost_row)
+    ncost = cost_row[4]
+    model = cost_row[1]
+    if model == 1
+        nr_parameters = ncost*2
+    elseif model == 2
+       nr_parameters = ncost
+    end
     cost_data = Dict{String,Any}(
         "model" => InfrastructureModels.check_type(Int, cost_row[1]),
         "startup" => InfrastructureModels.check_type(Float64, cost_row[2]),
         "shutdown" => InfrastructureModels.check_type(Float64, cost_row[3]),
         "ncost" => InfrastructureModels.check_type(Int, cost_row[4]),
-        "cost" => [InfrastructureModels.check_type(Float64, x) for x in cost_row[5:length(cost_row)]]
+        "cost" => [InfrastructureModels.check_type(Float64, x) for x in cost_row[5:5+nr_parameters-1]]
     )
 
     #=
@@ -303,7 +304,7 @@ function mp_cost_data(cost_row)
     cost_values = [InfrastructureModels.check_type(Float64, x) for x in cost_row[5:length(cost_row)]]
     if cost_data["model"] == 1:
         if length(cost_values)%2 != 0
-            @error "incorrect matpower file, odd number of pwl cost function values"
+            error("incorrect matpower file, odd number of pwl cost function values")
         end
         for i in 0:(length(cost_values)/2-1)
             p_idx = 1+2*i
@@ -339,6 +340,9 @@ function matpower_to_powermodels(mp_data::Dict{String,Any})
     if !haskey(pm_data, "dclinecost")
         pm_data["dclinecost"] = []
     end
+    if !haskey(pm_data, "storage")
+        pm_data["storage"] = []
+    end
 
     # translate component models
     mp2pm_branch(pm_data)
@@ -346,7 +350,6 @@ function matpower_to_powermodels(mp_data::Dict{String,Any})
 
     # translate cost models
     add_dcline_costs(pm_data)
-    standardize_cost_terms(pm_data)
 
     # merge data tables
     merge_bus_name_data(pm_data)
@@ -359,7 +362,7 @@ function matpower_to_powermodels(mp_data::Dict{String,Any})
     # use once available
     InfrastructureModels.arrays_to_dicts!(pm_data)
 
-    for optional in ["dcline", "load", "shunt"]
+    for optional in ["dcline", "load", "shunt", "storage"]
         if length(pm_data[optional]) == 0
             pm_data[optional] = Dict{String,Any}()
         end
@@ -403,76 +406,6 @@ function split_loads_shunts(data::Dict{String,Any})
 
         for key in ["pd", "qd", "gs", "bs"]
             delete!(bus, key)
-        end
-    end
-end
-
-
-"ensures all polynomial costs functions have at least three terms"
-function standardize_cost_terms(data::Dict{String,Any})
-    if haskey(data, "gencost")
-        for gencost in data["gencost"]
-            if gencost["model"] == 2
-                if length(gencost["cost"]) > 3
-                    max_nonzero_index = 1
-                    for i in 1:length(gencost["cost"])
-                        max_nonzero_index = i
-                        if gencost["cost"][i] != 0.0
-                            break
-                        end
-                    end
-
-                    if max_nonzero_index > 1
-                        @warn "removing $(max_nonzero_index-1) zeros from generator cost model ($(gencost["index"]))"
-                        #println(gencost["cost"])
-                        gencost["cost"] = gencost["cost"][max_nonzero_index:length(gencost["cost"])]
-                        #println(gencost["cost"])
-                        gencost["ncost"] = length(gencost["cost"])
-                    end
-                end
-
-                if length(gencost["cost"]) < 3
-                    #println("std gen cost: ",gencost["cost"])
-                    cost_3 = append!(vec(fill(0.0, (1,3 - length(gencost["cost"])))), gencost["cost"])
-                    gencost["cost"] = cost_3
-                    gencost["ncost"] = 3
-                    #println("   ",gencost["cost"])
-                    @warn "added zeros to make generator cost ($(gencost["index"])) a quadratic function: $(cost_3)"
-                end
-            end
-        end
-    end
-
-    if haskey(data, "dclinecost")
-        for dclinecost in data["dclinecost"]
-            if dclinecost["model"] == 2
-                if length(dclinecost["cost"]) > 3
-                    max_nonzero_index = 1
-                    for i in 1:length(dclinecost["cost"])
-                        max_nonzero_index = i
-                        if dclinecost["cost"][i] != 0.0
-                            break
-                        end
-                    end
-
-                    if max_nonzero_index > 1
-                        @warn "removing $(max_nonzero_index-1) zeros from dcline cost model ($(dclinecost["index"]))"
-                        #println(dclinecost["cost"])
-                        dclinecost["cost"] = dclinecost["cost"][max_nonzero_index:length(dclinecost["cost"])]
-                        #println(dclinecost["cost"])
-                        dclinecost["ncost"] = length(dclinecost["cost"])
-                    end
-                end
-
-                if length(dclinecost["cost"]) < 3
-                    #println("std gen cost: ",dclinecost["cost"])
-                    cost_3 = append!(vec(fill(0.0, (1,3 - length(dclinecost["cost"])))), dclinecost["cost"])
-                    dclinecost["cost"] = cost_3
-                    dclinecost["ncost"] = 3
-                    #println("   ",dclinecost["cost"])
-                    @warn "added zeros to make dcline cost ($(dclinecost["index"])) a quadratic function: $(cost_3)"
-                end
-            end
         end
     end
 end
@@ -568,7 +501,7 @@ end
 "adds dcline costs, if gen costs exist"
 function add_dcline_costs(data::Dict{String,Any})
     if length(data["gencost"]) > 0 && length(data["dclinecost"]) <= 0 && length(data["dcline"]) > 0
-        @warn "added zero cost function data for dclines"
+        @info("added zero cost function data for dclines")
         model = data["gencost"][1]["model"]
         if model == 1
             for (i, dcline) in enumerate(data["dcline"])
@@ -657,10 +590,10 @@ function merge_generic_data(data::Dict{String,Any})
                     push!(key_to_delete, k)
 
                     if length(mp_matrix) != length(v)
-                        @error "failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they do not have the same number of rows, $(length(mp_matrix)) and $(length(v)) respectively."
+                        error("failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they do not have the same number of rows, $(length(mp_matrix)) and $(length(v)) respectively.")
                     end
 
-                    @info "extending matpower format by appending matrix \"$(k)\" in to \"$(mp_name)\""
+                    @info("extending matpower format by appending matrix \"$(k)\" in to \"$(mp_name)\"")
 
                     for (i, row) in enumerate(mp_matrix)
                         merge_row = v[i]
@@ -668,7 +601,7 @@ function merge_generic_data(data::Dict{String,Any})
                         delete!(merge_row, "index")
                         for key in keys(merge_row)
                             if haskey(row, key)
-                                @error "failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they both share \"$(key)\" as a column name."
+                                error("failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they both share \"$(key)\" as a column name.")
                             end
                             row[key] = merge_row[key]
                         end
@@ -703,13 +636,15 @@ end
 
 "Export power network data in the matpower format"
 function export_matpower(io::IO, data::Dict{String,Any})
+    data = deepcopy(data)
 
-    is_per_unit = data["per_unit"]
     #convert data to mixed unit
-    if is_per_unit
+    if data["per_unit"]
        make_mixed_units(data)
     end
 
+    # make all costs have the name number of items (to prepare for table export)
+    standardize_cost_terms(data)
 
     # create some useful maps and data structures
     buses = Dict{Int, Dict}()
@@ -818,7 +753,7 @@ function export_matpower(io::IO, data::Dict{String,Any})
     i = 1
     for (idx,gen) in sort(generators)
         if idx != gen["index"]
-            @warn "The index of the generator does not match the matpower assigned index. Any data that uses generator indexes for reference is corrupted."
+            @info("The index of the generator does not match the matpower assigned index. Any data that uses generator indexes for reference is corrupted.");
         end
     println(io, "\t", gen["gen_bus"],
                 "\t", get_default(gen, "pg"),
@@ -859,7 +794,7 @@ function export_matpower(io::IO, data::Dict{String,Any})
     i = 1
     for (idx,branch) in sort(branches)
         if idx != branch["index"]
-            @warn "The index of the branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted."
+            @info("The index of the branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted.");
         end
         println(io,
             "\t", get_default(branch, "f_bus"),
@@ -938,7 +873,7 @@ function export_matpower(io::IO, data::Dict{String,Any})
         i = 1
         for (idx,branch) in sort(ne_branches)
             if idx != branch["index"]
-                @warn "The index of the ne_branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted."
+                @info("The index of the ne_branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted.");
             end
             println(io,
                 "\t", branch["f_bus"],
@@ -991,13 +926,6 @@ function export_matpower(io::IO, data::Dict{String,Any})
             export_extra_data(io, data, key)
         end
     end
-
-    #convert data back to per unit (if necessary)
-    if is_per_unit
-       make_per_unit(data)
-    end
-
-
 end
 
 "Export fields of a component type"
@@ -1054,7 +982,7 @@ function export_extra_data(io::IO, data::Dict{String,Any}, component, excluded_f
     i = 1
     for (idx,c) in sort(components)
         if idx != c["index"]
-            @warn "The index of a component does not match the matpower assigned index. Any data that uses component indexes for reference is corrupted."
+            @info("The index of a component does not match the matpower assigned index. Any data that uses component indexes for reference is corrupted.");
         end
 
         for field in included_fields
@@ -1087,7 +1015,7 @@ function export_cost_data(io::IO, components::Dict{Int,Dict}, prefix::String)
 
         for (i,comp) in components
             if length(comp["cost"]) != ncost || comp["model"] != model
-                @warn "heterogeneous cost functions will be ommited in Matpower data"
+                @info("heterogeneous cost functions will be ommited in Matpower data")
                 return
             end
         end

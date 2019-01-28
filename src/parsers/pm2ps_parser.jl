@@ -268,20 +268,20 @@ function read_gen(data,Buses)
         gen_name =[]
         type_gen =[]
         for (d_key,d) in data["gen"]
-            haskey(d,"fuel") ? fuel =d["fuel"] : fuel = "generic"
-            haskey(d,"type") ? type_gen = d["type"] : type_gen = "generic"
+            haskey(d,"fuel") ? fuel =d["fuel"] : haskey(data,"genfuel") ? fuel = data["genfuel"][d_key]["col_1"] : fuel = "generic"
+            haskey(d,"type") ? type_gen = d["type"] : haskey(data,"gentype") ? type_gen = data["gentype"][d_key]["col_1"] : type_gen = "generic"
             haskey(d,"name") ? gen_name = d["name"] : haskey(d,"source_id") ? gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2]) : gen_name = d_key
 
-            if fuel in ["Hydro"] || type_gen in ["hydro","HY"]
+            if uppercase(fuel) in ["HYDRO"] || uppercase(type_gen) in ["HYDRO","HY"]
                 bus = find_bus(Buses,d)
                 Generators["Hydro"][gen_name] = make_hydro_gen(d,gen_name,bus)
-            elseif fuel in ["Solar","Wind"] || type_gen in ["W2,PV"]
+            elseif uppercase(fuel) in ["SOLAR","WIND"] || uppercase(type_gen) in ["W2","PV"]
                 bus = find_bus(Buses,d)
-                if type_gen == "PV"
+                if uppercase(type_gen) == "PV"
                     Generators["Renewable"]["PV"][gen_name] =  make_ren_gen(gen_name, d, bus)
-                elseif type_gen == "RTPV"
+                elseif uppercase(type_gen) == "RTPV"
                     Generators["Renewable"]["RTPV"][gen_name] = make_ren_gen(gen_name, d, bus)
-                elseif type_gen in ["WIND","W2"]
+                elseif uppercase(type_gen) in ["WIND","W2"]
                     Generators["Renewable"]["WIND"][gen_name] = make_ren_gen(gen_name, d, bus)
                 end
             else
