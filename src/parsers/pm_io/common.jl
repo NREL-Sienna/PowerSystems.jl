@@ -81,17 +81,17 @@ function check_network_data(data::Dict{String,Any})
 end
 
 
-
+#=
 function row_to_typed_dict(row_data, columns)
-    @info("call to depreciated function  row_to_typed_dict, use InfrastructureModels.row_to_typed_dict")
-    return InfrastructureModels.row_to_typed_dict(row_data, columns)
+    @info("call to depreciated function  row_to_typed_dict, use row_to_typed_dict")
+    return row_to_typed_dict(row_data, columns)
 end
 
 function row_to_dict(row_data, columns)
-    @info("call to depreciated function  row_to_dict, use InfrastructureModels.row_to_dict")
-    return InfrastructureModels.row_to_dict(row_data, columns)
+    @info("call to depreciated function  row_to_dict, use row_to_dict")
+    return row_to_dict(row_data, columns)
 end
-
+=#
 
 
 

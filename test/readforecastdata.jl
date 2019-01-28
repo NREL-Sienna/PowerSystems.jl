@@ -1,5 +1,4 @@
-using Dates
-@test_broken try
+@test try
         ps_dict = PowerSystems.parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower/case5_re.m")));
         da_time_series = PowerSystems.read_data_files(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/forecasts/5bus_ts")); REGEX_FILE = r"da_(.*?)\.csv");
         rt_time_series = PowerSystems.read_data_files(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/forecasts/5bus_ts")); REGEX_FILE = r"rt_(.*?)\.csv");
@@ -17,7 +16,7 @@ using Dates
         false
     end
 
-@test_broken try
+@test try
         ps_dict = PowerSystems.parsestandardfiles(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower/RTS_GMLC.m")));
         da_time_series = PowerSystems.read_data_files(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/forecasts/RTS_GMLC_forecasts")); REGEX_FILE = r"DAY_AHEAD(.*?)\.csv");
         rt_time_series = PowerSystems.read_data_files(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/forecasts/RTS_GMLC_forecasts")); REGEX_FILE = r"REAL_TIME(.*?)\.csv");
