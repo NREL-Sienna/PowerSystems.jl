@@ -1,5 +1,3 @@
-# This file is machine-generated - editing it directly is not advised
-
 [[AxisArrays]]
 deps = ["Compat", "Dates", "IntervalSets", "IterTools", "Random", "RangeArrays", "Test"]
 git-tree-sha1 = "2e2536e9e6f27c4f8d09d8442b61a7ae0b910c28"
@@ -91,12 +89,14 @@ version = "0.0.3"
 
 [[DiffRules]]
 deps = ["Random", "Test"]
-git-tree-sha1 = "c49ec69428ffea0c1d1bbdc63d1a70f5df5860ad"
+git-tree-sha1 = "09d69da75967ec48a8b1ad0897ec9144ee052bf9"
+repo-rev = "4861e35d3d14882fa30f3c5d51063c655dbd2332"
+repo-url = "https://github.com/JuliaDiff/DiffRules.jl.git"
 uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
-version = "0.0.7"
+version = "0.0.8+"
 
 [[Distributed]]
-deps = ["Random", "Serialization", "Sockets"]
+deps = ["LinearAlgebra", "Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[EzXML]]
@@ -116,13 +116,15 @@ deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[InfrastructureModels]]
-deps = ["Compat", "JuMP", "LinearAlgebra", "Memento", "Random", "Test"]
-git-tree-sha1 = "950d83de160c8564145cbaa1300a9a8967867bef"
-uuid = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
+deps = ["Compat", "JuMP", "LinearAlgebra", "MathOptInterface", "Memento"]
+git-tree-sha1 = "9de064a522ad7a5cb61168c7410dd864dfa57089"
+repo-rev = "moi-2"
+repo-url = "https://github.com/lanl-ansi/InfrastructureModels.jl.git"
+uuid = "e8e45514-c753-11e8-2a1b-cd93cb9d98d1"
 version = "0.0.13"
 
 [[InteractiveUtils]]
-deps = ["Markdown"]
+deps = ["LinearAlgebra", "Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[IntervalSets]]
@@ -171,6 +173,12 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 [[Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
+
+[[MathOptInterface]]
+deps = ["Compat", "Unicode"]
+git-tree-sha1 = "6f3df4b5346485b299ae5d2b313ecb428bb46bb9"
+uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
+version = "0.8.1"
 
 [[MathProgBase]]
 deps = ["Compat"]
@@ -348,9 +356,9 @@ version = "0.14.0"
 
 [[TimeZones]]
 deps = ["Compat", "EzXML", "Mocking", "Nullables"]
-git-tree-sha1 = "bd6bd042be107147824eb583aed41d027b69704b"
+git-tree-sha1 = "5437144a2bbb5b661783ad34b0d19d5696845b25"
 uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53"
-version = "0.8.4"
+version = "0.8.5"
 
 [[TranscodingStreams]]
 deps = ["Pkg", "Random", "Test"]
@@ -365,7 +373,7 @@ uuid = "30578b45-9adc-5946-b283-645ec420af67"
 version = "0.4.0"
 
 [[UUIDs]]
-deps = ["Random", "SHA"]
+deps = ["Random"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [[Unicode]]

@@ -19,7 +19,7 @@ for f in files
         @info "Successfully converted $f to mixed_units"
         ps_dict = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $f to PowerSystems dict"
-        Buses, Generators, Storages, Branches, Loads, LoadZones ,Shunts = PowerSystems.ps_dict2ps_struct(ps_dict)
+        Buses, Generators, Storages, Branches, Loads, LoadZones, Shunts, Services = PowerSystems.ps_dict2ps_struct(ps_dict)
         @info "Successfully parsed $f to PowerSystems devices"
         sys_test = PowerSystem(Buses, Generators,Loads,Branches,Storages,float(ps_dict["baseMVA"]))
         @info "Successfully parsed $f to PowerSystem struct"

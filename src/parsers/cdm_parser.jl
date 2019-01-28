@@ -112,6 +112,13 @@ function csv2ps_dict(data::Dict{String,Any})
     ps_dict =Dict{String,Any}()
     if haskey(data,"bus")
         ps_dict["bus"] =  PowerSystems.bus_csv_parser(data["bus"])
+        if :Area in names(data["bus"])
+            ps_dict["loadzone"] =  PowerSystems.loadzone_csv_parser(data["bus"],ps_dict["bus"])
+            ps_dict["load"] =  PowerSystems.load_csv_parser(data["bus"],ps_dict["bus"],ps_dict["loadzone"],haskey(data,"load") ? data["load"] : nothing)
+        else
+            @warn "Missing Data : no 'Area' information for buses, cannot create loads based on areas" 
+            ps_dict["load"] =  PowerSystems.load_csv_parser(data["bus"],ps_dict["bus"],haskey(data,"load") ? data["load"] : nothing)
+        end
     else
         @error "Key error : key 'bus' not found in PowerSystems dictionary, cannot construct any PowerSystem Struct"
     end
@@ -124,16 +131,22 @@ function csv2ps_dict(data::Dict{String,Any})
     if haskey(data,"branch")
         ps_dict["branch"] =  PowerSystems.branch_csv_parser(data["branch"],ps_dict["bus"])
     else
-        @warn "Key error : key 'bus' not found in PowerSystems dictionary,
+        @warn "Key error : key 'branch' not found in PowerSystems dictionary,
           \n This will result in an ps_dict['branch'] = nothing"
          ps_dict["branch"] = nothing
     end
-    if haskey(data,"load")
-        ps_dict["load_zone"] =  PowerSystems.loadzone_csv_parser(data["bus"],ps_dict["bus"])
-        ps_dict["load"] =  PowerSystems.load_csv_parser(data["load"],data["bus"],ps_dict["bus"],ps_dict["load_zone"])
+    if haskey(data,"dc_branch")
+        ps_dict["dcline"] =  PowerSystems.dc_branch_csv_parser(data["dc_branch"],ps_dict["bus"])
     else
-        @warn "Key error : key 'load' not found in PowerSystems dictionary, this will result in an ps_dict['load'] = nothing"
-         ps_dict["load"] = nothing
+        @warn "Key error : key 'dc_branch' not found in PowerSystems dictionary,
+          \n This will result in an ps_dict['dcline'] = nothing"
+         ps_dict["dcline"] = nothing
+    end
+    if haskey(data,"reserves")
+        ps_dict["services"] = PowerSystems.services_csv_parser(data["reserves"],data["gen"],data["bus"])
+    else
+        @warn "Key error : key 'reserves' not found in PowerSystems dictionary, this will result in a ps_dict['services'] =  nothing"
+        ps_dict["services"] = nothing
     end
     if haskey(data,"baseMVA")
         ps_dict["baseMVA"] = data["baseMVA"]
@@ -394,7 +407,7 @@ function branch_csv_parser(branch_raw,Buses,colnames=nothing)
     """
 
     if colnames isa Nothing
-        need_cols = ["From Bus", "To Bus", "Tr Ratio", "Cont Rating"]
+        need_cols = ["From Bus", "To Bus", "Tr Ratio", "Cont Rating","UID","R","X","B"]
         tbl_cols = string.(names(branch_raw))
         colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
     end
@@ -402,28 +415,28 @@ function branch_csv_parser(branch_raw,Buses,colnames=nothing)
     Branches_dict = Dict{String,Any}()
     Branches_dict["Transformers"] = Dict{String,Any}()
     Branches_dict["Lines"] = Dict{String,Any}()
-    for i in 1:length(branch_raw)
-        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,Symbol("From Bus")]]
-        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,Symbol("To Bus")]]
+    for i in 1:nrow(branch_raw)
+        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,colnames["From Bus"]]]
+        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,colnames["To Bus"]]]
         if branch_raw[i,Symbol("Tr Ratio")] > 0.0
-            Branches_dict["Transformers"][branch_raw[i,:UID]] = Dict{String,Any}("name" => branch_raw[i,:UID],
+            Branches_dict["Transformers"][branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => branch_raw[i,colnames["UID"]],
                                                         "available" => true,
                                                         "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
-                                                        "r" => branch_raw[i,:R],
-                                                        "x" => branch_raw[i,:X],
-                                                        "primaryshunt" => branch_raw[i,:B] ,  #TODO: add field in CSV
-                                                        "alpha" => (branch_raw[i,:B]/2) - (branch_raw[i,:B]/2), #TODO: Phase-Shifting Transformer angle
-                                                        "tap" => branch_raw[i,Symbol("Tr Ratio")],
-                                                        "rate" => branch_raw[i,Symbol("Cont Rating")],
+                                                        "r" => branch_raw[i,colnames["R"]],
+                                                        "x" => branch_raw[i,colnames["X"]],
+                                                        "primaryshunt" => branch_raw[i,colnames["B"]] ,  #TODO: add field in CSV
+                                                        "alpha" => (branch_raw[i,colnames["B"]]/2) - (branch_raw[i,colnames["B"]]/2), #TODO: Phase-Shifting Transformer angle
+                                                        "tap" => branch_raw[i,colnames["Tr Ratio"]],
+                                                        "rate" => branch_raw[i,colnames["Cont Rating"]],
                                                         )
         else
             Branches_dict["Lines"][branch_raw[i,:UID]] = Dict{String,Any}("name" => branch_raw[i,:UID],
                                                         "available" => true,
                                                         "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
-                                                        "r" => branch_raw[i,:R],
-                                                        "x" => branch_raw[i,:X],
-                                                        "b" => (from=(branch_raw[i,:B]/2),to=(branch_raw[i,:B]/2)),
-                                                        "rate" =>  branch_raw[i,Symbol("Cont Rating")],
+                                                        "r" => branch_raw[i,colnames["R"]],
+                                                        "x" => branch_raw[i,colnames["X"]],
+                                                        "b" => (from=(branch_raw[i,colnames["B"]]/2),to=(branch_raw[i,colnames["B"]]/2)),
+                                                        "rate" =>  branch_raw[i,colnames["Cont Rating"]],
                                                         "anglelimits" => (min=-60.0,max =60.0) #TODO: add field in CSV
                                                         )
 
@@ -434,20 +447,78 @@ end
 
 
 ###########
+#DC Branch data parser
+###########
+
+function dc_branch_csv_parser(dc_branch_raw,Buses,colnames=nothing)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC dc_branch.csv file
+        Parsed Bus PowerSystems dictionary
+    Returns:
+        A Nested Dictionary with keys as dc_branch types/names and values as dc_branch data dictionary with same keys as the device struct
+
+    """
+
+    if colnames isa Nothing
+        need_cols = ["UID","From Bus", "To Bus","From X Commutating", "From Tap Min", "From Tap Max","From Min Firing Angle","From Max Firing Angle", "To X Commutating", "To Tap Min", "To Tap Max","To Min Firing Angle","To Max Firing Angle", "Rating"]
+        tbl_cols = string.(names(dc_branch_raw))
+        colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols if c in tbl_cols]))
+    end
+
+    DCBranches_dict = Dict{String,Any}()
+    DCBranches_dict["HVDCLine"] = Dict{String,Any}()
+    DCBranches_dict["VSCDCLine"] = Dict{String,Any}()
+
+    for i in 1:nrow(dc_branch_raw)
+        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == dc_branch_raw[i,colnames["From Bus"]]]
+        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == dc_branch_raw[i,colnames["To Bus"]]]
+        if (dc_branch_raw[i,colnames["From Max Firing Angle"]] + dc_branch_raw[i,colnames["To Max Firing Angle"]])/2 != 0.0 #TODO: Replace this with the correct conditional to create VSCDC or HVDC lines
+            DCBranches_dict["VSCDCLine"][dc_branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => dc_branch_raw[i,colnames["UID"]],
+                                                        "available" => true,
+                                                        "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "rectifier_taplimits" => (min=dc_branch_raw[i,colnames["From Tap Min"]],max=dc_branch_raw[i,colnames["From Tap Max"]]),
+                                                        "rectifier_xrc" => dc_branch_raw[i,colnames["From X Commutating"]], #TODO: What is this?
+                                                        "rectifier_firingangle" => (min=dc_branch_raw[i,colnames["From Min Firing Angle"]],max=dc_branch_raw[i,colnames["From Max Firing Angle"]]),
+                                                        "inverter_taplimits" => (min=dc_branch_raw[i,colnames["To Tap Min"]],max=dc_branch_raw[i,colnames["To Tap Max"]]),
+                                                        "inverter_xrc" => dc_branch_raw[i,colnames["To X Commutating"]],  #TODO: What is this?
+                                                        "inverter_firingangle" => (min=dc_branch_raw[i,colnames["To Min Firing Angle"]],max=dc_branch_raw[i,colnames["To Max Firing Angle"]])
+                                                        )
+        else
+            DCBranches_dict["HVDCLine"][dc_branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => dc_branch_raw[i,colnames["UID"]],
+                                                        "available" => true,
+                                                        "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "activepowerlimits_from" => (min=-1*dc_branch_raw[i,colnames["Rating"]],max=dc_branch_raw[i,colnames["Rating"]]), #TODO: is there a better way to calculate this?
+                                                        "activepowerlimits_to" => (min=-1*dc_branch_raw[i,colnames["Rating"]],max=dc_branch_raw[i,colnames["Rating"]]), #TODO: is there a better way to calculate this?
+                                                        "reactivepowerlimits_from" => (min=-1*dc_branch_raw[i,colnames["Rating"]],max=dc_branch_raw[i,colnames["Rating"]]), #TODO: is there a better way to calculate this?
+                                                        "reactivepowerlimits_to" => (min=-1*dc_branch_raw[i,colnames["Rating"]],max=dc_branch_raw[i,colnames["Rating"]]), #TODO: is there a better way to calculate this?
+                                                        "loss" => 0.0, #TODO: Can we infer this from the other data?
+                                                        )
+
+        end
+    end
+    return DCBranches_dict
+end
+
+
+###########
 #Load data parser
 ###########
 
-function load_csv_parser(load_raw,bus_raw,Buses,LoadZone,load_colnames=nothing,bus_colnames=nothing)
+function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,LoadZone::Dict,load_raw=nothing,bus_colnames=nothing,load_colnames=nothing)
     """
     Args:
-        A DataFrame with the same column names as in RTS_GMLC load.csv file
         A DataFrame with the same column names as in RTS_GMLC bus.csv file
-        Parsed Bus PowerSystems dictionary
+        Parsed Bus entry of PowerSystems dictionary
+        Parsed LoadZone entry of PowerSystems dictionary
+    Optional Args:
+        DataFrame of LoadZone timeseries data
+        Dict of bus column names
+        Dict of load LoadZone timeseries column names
     Returns:
         A Nested Dictionary with keys as load names and values as load data dictionary with same keys as the device struct
     """
     Loads_dict = Dict{String,Any}()
-    load_raw = read_datetime(load_raw)
     load_zone = nothing
 
     if bus_colnames isa Nothing
@@ -456,10 +527,13 @@ function load_csv_parser(load_raw,bus_raw,Buses,LoadZone,load_colnames=nothing,b
         bus_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
     end
 
-    if load_colnames isa Nothing
-        need_cols = ["DateTime",]
-        tbl_cols = string.(names(load_raw))
-        load_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    if !isa(load_raw,Nothing)
+        load_raw = read_datetime(load_raw)
+        if load_colnames isa Nothing
+            need_cols = ["DateTime",]
+            tbl_cols = string.(names(load_raw))
+            load_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+        end
     end
 
     for (k_b,b) in Buses
@@ -471,14 +545,61 @@ function load_csv_parser(load_raw,bus_raw,Buses,LoadZone,load_colnames=nothing,b
         end
         p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b["number"]]
         q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b["number"]]
-        ts_raw =load_raw[load_zone]*(p[1]/LoadZone[load_zone]["maxactivepower"])
+        ts = isa(load_raw,Nothing) ? nothing : TimeSeries.TimeArray(load_raw[load_colnames["DateTime"]],load_raw[load_zone]*(p[1]/LoadZone[load_zone]["maxactivepower"]))
         Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
                                             "available" => true,
                                             "bus" => make_bus(b),
                                             "model" => "P",
                                             "maxactivepower" => p[1],
                                             "maxreactivepower" => q[1],
-                                            "scalingfactor" => TimeSeries.TimeArray(load_raw[ :DateTime],ts_raw) #TODO remove TS
+                                            "scalingfactor" => ts #TODO remove TS
+                                            )
+    end
+    return Loads_dict
+end
+
+
+function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,load_raw=nothing,bus_colnames=nothing,load_colnames=nothing)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC bus.csv file
+        Parsed Bus entry of PowerSystems dictionary
+    Optional Args:
+        DataFrame of LoadZone timeseries data
+        Dict of bus column names
+        Dict of load LoadZone timeseries column names
+    Returns:
+        A Nested Dictionary with keys as load names and values as load data dictionary with same keys as the device struct
+    """
+    Loads_dict = Dict{String,Any}()
+    load_zone = nothing
+
+    if bus_colnames isa Nothing
+        need_cols = ["MW Load", "MVAR Load", "Bus ID"]
+        tbl_cols = string.(names(bus_raw))
+        bus_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    end
+
+    if !isa(load_raw,nothing)
+        load_raw = read_datetime(load_raw)
+        if load_colnames isa Nothing
+            need_cols = ["DateTime",]
+            tbl_cols = string.(names(load_raw))
+            load_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+        end
+    end
+
+    for (k_b,b) in Buses
+        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b["number"]]
+        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b["number"]]
+        ts = isa(load_raw,nothing) ? nothing : TimeSeries.TimeArray(load_raw[load_colnames["DateTime"]],load_raw[b["number"]]/p[1])
+        Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
+                                            "available" => true,
+                                            "bus" => make_bus(b),
+                                            "model" => "P",
+                                            "maxactivepower" => p[1],
+                                            "maxreactivepower" => q[1],
+                                            "scalingfactor" => ts #TODO remove TS
                                             )
     end
     return Loads_dict
@@ -518,6 +639,58 @@ function loadzone_csv_parser(bus_raw,Buses,colnames=nothing)
     end
     return LoadZone_dict
 end
+
+
+###########
+#reserves data parser
+###########
+
+function services_csv_parser(rsv_raw::DataFrames.DataFrame,gen_raw::DataFrames.DataFrame,bus_raw::DataFrames.DataFrame,colnames=nothing, gen_colnames = nothing,bus_colnames = nothing)
+    """
+    Args:
+        A DataFrame with the same column names as in RTS_GMLC reserves.csv file
+        A DataFrame with the same column names as in RTS_GMLC gen.csv file
+        A DataFrame with the same column names as in RTS_GMLC bus.csv file
+    Returns:
+        A Nested Dictionary with keys as loadzone names and values as loadzone data dictionary with same keys as the device struct
+    """
+    if colnames isa Nothing
+        need_cols = ["Reserve Product", "Timeframe (sec)", "Eligible Regions", "Eligible Gen Categories"]
+        tbl_cols = string.(names(rsv_raw))
+        colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    end
+
+    if gen_colnames isa Nothing
+        need_cols = ["GEN UID", "Bus ID", "Category"]
+        tbl_cols = string.(names(gen_raw))
+        gen_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    end
+
+    if bus_colnames isa Nothing
+        need_cols = ["Bus ID", "Area"]
+        tbl_cols = string.(names(bus_raw))
+        bus_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+    end
+    
+    services_dict = Dict{String,Any}()
+    for r in 1:nrow(rsv_raw)
+        gen_cats = strip(rsv_raw[r,colnames["Eligible Gen Categories"]],[i for i in "()"]) |> (x->split(x, ","))
+        regions = strip(rsv_raw[r,colnames["Eligible Regions"]],[i for i in "()"]) |> (x->split(x,","))
+        contributingdevices = []
+        [push!(contributingdevices,gen_raw[g,gen_colnames["GEN UID"]]) for g in 1:nrow(gen_raw) if 
+                    (gen_raw[g,gen_colnames["Category"]] in gen_cats) & 
+                    (string(bus_raw[bus_raw[bus_colnames["Bus ID"]] .== gen_raw[g,gen_colnames["Bus ID"]],bus_colnames["Area"]][1]) in regions)];
+
+
+        services_dict[rsv_raw[r,colnames["Reserve Product"]]] = Dict{String,Any}("name" => rsv_raw[r,colnames["Reserve Product"]],
+                                                                "contributingdevices" => contributingdevices,
+                                                                "timeframe" => rsv_raw[r,colnames["Timeframe (sec)"]])
+    end
+
+
+    return services_dict
+end
+
 
 # Remove missing values form dataframes
 #TODO : Remove "NA" Strings from the data created by CSV.read()

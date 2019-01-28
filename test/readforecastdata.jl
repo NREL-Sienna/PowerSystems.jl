@@ -5,7 +5,7 @@ using Dates
         rt_time_series = PowerSystems.read_data_files(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/forecasts/5bus_ts")); REGEX_FILE = r"rt_(.*?)\.csv");
         ps_dict = PowerSystems.assign_ts_data(ps_dict,rt_time_series);
 
-        buses, generators, storage, branches, loads, loadZones, shunts  = PowerSystems.ps_dict2ps_struct(ps_dict);
+        buses, generators, storage, branches, loads, loadZones, shunts, services  = PowerSystems.ps_dict2ps_struct(ps_dict);
         sys_5 = PowerSystems.PowerSystem(buses, generators, loads, branches, storage, ps_dict["baseMVA"]);
 
         forecast_gen = PowerSystems.make_forecast_dict("DA", da_time_series["gen"], Day(1), 24, generators);
@@ -23,7 +23,7 @@ using Dates
         rt_time_series = PowerSystems.read_data_files(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/forecasts/RTS_GMLC_forecasts")); REGEX_FILE = r"REAL_TIME(.*?)\.csv");
         ps_dict = PowerSystems.assign_ts_data(ps_dict,rt_time_series);
 
-        buses, generators, storage, branches, loads, loadZones, shunts  = PowerSystems.ps_dict2ps_struct(ps_dict);
+        buses, generators, storage, branches, loads, loadZones, shunts, services  = PowerSystems.ps_dict2ps_struct(ps_dict);
         sys_5 = PowerSystems.PowerSystem(buses, generators, loads, branches, storage, ps_dict["baseMVA"]);
 
         forecast_gen = PowerSystems.make_forecast_dict("DA", da_time_series["gen"], Day(1), 24, generators);

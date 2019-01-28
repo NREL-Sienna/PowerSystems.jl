@@ -8,8 +8,14 @@ struct StaticLoad <: ElectricLoad
     scalingfactor::TimeSeries.TimeArray
 end
 
-StaticLoad(; name = "init", status = true, bus = Bus(), model = "0", maxactivepower = 0, maxreactivepower=0, 
-            scalingfactor=TimeArray(today(),ones(1))) = StaticLoad(name, status, bus, model, maxactivepower, maxreactivepower, scalingfactor)
+function StaticLoad(name::String, available::Bool, bus::Bus, model::String, maxactivepower::Float64, maxreactivepower::Float64,scalingfactor=nothing)
+    scalingfactor=TimeArray(today(),ones(1)) 
+    return StaticLoad(name, available, bus, model, maxactivepower, maxreactivepower, scalingfactor)
+end
+
+
+StaticLoad(; name = "init", available = true, bus = Bus(), model = "0", maxactivepower = 0, maxreactivepower=0, 
+            scalingfactor=TimeArray(today(),ones(1))) = StaticLoad(name, available, bus, model, maxactivepower, maxreactivepower, scalingfactor)
 
 struct InterruptibleLoad <: ElectricLoad
     name::String
