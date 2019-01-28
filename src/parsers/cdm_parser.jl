@@ -463,7 +463,7 @@ function dc_branch_csv_parser(dc_branch_raw,Buses,colnames=nothing)
     if colnames isa Nothing
         need_cols = ["UID","From Bus", "To Bus","From X Commutating", "From Tap Min", "From Tap Max","From Min Firing Angle","From Max Firing Angle", "To X Commutating", "To Tap Min", "To Tap Max","To Min Firing Angle","To Max Firing Angle", "Rating"]
         tbl_cols = string.(names(dc_branch_raw))
-        colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
+        colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols if c in tbl_cols]))
     end
 
     DCBranches_dict = Dict{String,Any}()

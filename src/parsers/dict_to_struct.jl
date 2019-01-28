@@ -64,7 +64,7 @@ end
 
 
 function _retrieve(dict::T, key_of_interest::String, output = Dict(), path = []) where T<:AbstractDict
-    iter_result = iterate(dict)
+    iter_result = Base.iterate(dict)
     last_element = length(path)
     while iter_result !== nothing
         ((key,value), state) = iter_result
@@ -76,13 +76,13 @@ function _retrieve(dict::T, key_of_interest::String, output = Dict(), path = [])
             _retrieve(value, key_of_interest, output, path)
             path = path[1:last_element]
         end
-        iter_result = iterate(dict, state)
+        iter_result = Base.iterate(dict, state)
     end
     return output
 end
 
 function _retrieve(dict::T, type_of_interest, output = Dict(), path = []) where T<:AbstractDict
-    iter_result = iterate(dict)
+    iter_result = Base.iterate(dict)
     last_element = length(path)
     while iter_result !== nothing
         ((key,value), state) = iter_result
@@ -94,7 +94,7 @@ function _retrieve(dict::T, type_of_interest, output = Dict(), path = []) where 
             _retrieve(value, type_of_interest, output, path)
             path = path[1:last_element]
         end
-        iter_result = iterate(dict, state)
+        iter_result = Base.iterate(dict, state)
     end
     return output
 end
