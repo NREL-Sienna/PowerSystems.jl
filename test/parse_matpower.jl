@@ -1,6 +1,3 @@
-using Logging
-using PowerSystems
-
 ## Matpower files
 files = readdir(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/matpower")))
 file_ext = r".*?\.(\w+)"

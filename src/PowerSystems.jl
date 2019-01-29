@@ -83,7 +83,6 @@ using TimeSeries
 using DataFrames
 using JSON
 import CSV
-import InfrastructureModels
 
 #################################################################################
 # Includes
@@ -111,6 +110,7 @@ include("models/services.jl")
 
 # Include Parsing files
 include("parsers/pm_io.jl")
+include("parsers/im_io.jl")
 include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/cdm_parser.jl")

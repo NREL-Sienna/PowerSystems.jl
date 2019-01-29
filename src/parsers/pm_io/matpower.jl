@@ -128,7 +128,7 @@ end
 
 ""
 function parse_matpower_string(data_string::String)
-    matlab_data, func_name, colnames = InfrastructureModels.parse_matlab_string(data_string, extended=true)
+    matlab_data, func_name, colnames = parse_matlab_string(data_string, extended=true)
 
     case = Dict{String,Any}()
 
@@ -158,8 +158,8 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.bus")
         buses = []
         for bus_row in matlab_data["mpc.bus"]
-            bus_data = InfrastructureModels.row_to_typed_dict(bus_row, mp_bus_columns)
-            bus_data["index"] = InfrastructureModels.check_type(Int, bus_row[1])
+            bus_data = row_to_typed_dict(bus_row, mp_bus_columns)
+            bus_data["index"] = check_type(Int, bus_row[1])
             push!(buses, bus_data)
         end
         case["bus"] = buses
@@ -170,7 +170,7 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.gen")
         gens = []
         for (i, gen_row) in enumerate(matlab_data["mpc.gen"])
-            gen_data = InfrastructureModels.row_to_typed_dict(gen_row, mp_gen_columns)
+            gen_data = row_to_typed_dict(gen_row, mp_gen_columns)
             gen_data["index"] = i
             push!(gens, gen_data)
         end
@@ -182,7 +182,7 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.branch")
         branches = []
         for (i, branch_row) in enumerate(matlab_data["mpc.branch"])
-            branch_data = InfrastructureModels.row_to_typed_dict(branch_row, mp_branch_columns)
+            branch_data = row_to_typed_dict(branch_row, mp_branch_columns)
             branch_data["index"] = i
             push!(branches, branch_data)
         end
@@ -194,7 +194,7 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.dcline")
         dclines = []
         for (i, dcline_row) in enumerate(matlab_data["mpc.dcline"])
-            dcline_data = InfrastructureModels.row_to_typed_dict(dcline_row, mp_dcline_columns)
+            dcline_data = row_to_typed_dict(dcline_row, mp_dcline_columns)
             dcline_data["index"] = i
             push!(dclines, dcline_data)
         end
@@ -204,7 +204,7 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.storage")
         storage = []
         for (i, storage_row) in enumerate(matlab_data["mpc.storage"])
-            storage_data = InfrastructureModels.row_to_typed_dict(storage_row, mp_storage_columns)
+            storage_data = row_to_typed_dict(storage_row, mp_storage_columns)
             storage_data["index"] = i
             push!(storage, storage_data)
         end
@@ -215,7 +215,7 @@ function parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.bus_name")
         bus_names = []
         for (i, bus_name_row) in enumerate(matlab_data["mpc.bus_name"])
-            bus_name_data = InfrastructureModels.row_to_typed_dict(bus_name_row, mp_bus_name_columns)
+            bus_name_data = row_to_typed_dict(bus_name_row, mp_bus_name_columns)
             bus_name_data["index"] = i
             push!(bus_names, bus_name_data)
         end
@@ -265,7 +265,7 @@ function parse_matpower_string(data_string::String)
                 end
                 tbl = []
                 for (i, row) in enumerate(matlab_data[k])
-                    row_data = InfrastructureModels.row_to_dict(row, column_names)
+                    row_data = row_to_dict(row, column_names)
                     row_data["index"] = i
                     push!(tbl, row_data)
                 end
@@ -292,16 +292,16 @@ function mp_cost_data(cost_row)
        nr_parameters = ncost
     end
     cost_data = Dict{String,Any}(
-        "model" => InfrastructureModels.check_type(Int, cost_row[1]),
-        "startup" => InfrastructureModels.check_type(Float64, cost_row[2]),
-        "shutdown" => InfrastructureModels.check_type(Float64, cost_row[3]),
-        "ncost" => InfrastructureModels.check_type(Int, cost_row[4]),
-        "cost" => [InfrastructureModels.check_type(Float64, x) for x in cost_row[5:5+nr_parameters-1]]
+        "model" => check_type(Int, cost_row[1]),
+        "startup" => check_type(Float64, cost_row[2]),
+        "shutdown" => check_type(Float64, cost_row[3]),
+        "ncost" => check_type(Int, cost_row[4]),
+        "cost" => [check_type(Float64, x) for x in cost_row[5:5+nr_parameters-1]]
     )
 
     #=
     # skip this literal interpretation, as its hard to invert
-    cost_values = [InfrastructureModels.check_type(Float64, x) for x in cost_row[5:length(cost_row)]]
+    cost_values = [check_type(Float64, x) for x in cost_row[5:length(cost_row)]]
     if cost_data["model"] == 1:
         if length(cost_values)%2 != 0
             error("incorrect matpower file, odd number of pwl cost function values")
@@ -360,7 +360,7 @@ function matpower_to_powermodels(mp_data::Dict{String,Any})
     split_loads_shunts(pm_data)
 
     # use once available
-    InfrastructureModels.arrays_to_dicts!(pm_data)
+    arrays_to_dicts!(pm_data)
 
     for optional in ["dcline", "load", "shunt", "storage"]
         if length(pm_data[optional]) == 0

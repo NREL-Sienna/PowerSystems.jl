@@ -195,8 +195,8 @@ JSON.lower(mcv::MultiConductorValue) = mcv.values
 
 
 "converts a MultiConductorValue value to a string in summary"
-function InfrastructureModels._value2string(mcv::MultiConductorValue, float_precision::Int)
-    a = join([InfrastructureModels._value2string(v, float_precision) for v in mcv.values], ", ")
+function _value2string(mcv::MultiConductorValue, float_precision::Int)
+    a = join([_value2string(v, float_precision) for v in mcv.values], ", ")
     return "[$(a)]"
 end
 

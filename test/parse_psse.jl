@@ -1,6 +1,3 @@
-using Logging
-using PowerSystems
-
 # PSSE Files
 files = readdir(abspath(joinpath(dirname(Base.find_package("PowerSystems")), "../data/psse_raw")))
 file_ext = r".*?\.(\w+)"
