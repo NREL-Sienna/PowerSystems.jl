@@ -48,9 +48,11 @@ export ThermalDispatch
 export ThermalGenSeason
 
 export ElectricLoad
-export FixedAdmittance
-
+export StaticLoad
 export PowerLoad
+export PowerLoadPF
+export FixedAdmittance
+export ControllableLoad
 export InterruptibleLoad
 
 export Storage
