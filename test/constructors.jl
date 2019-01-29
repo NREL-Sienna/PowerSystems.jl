@@ -19,6 +19,8 @@
 @test try tStorage = GenericBattery(); true finally end
 
 #Load Constructos
+@test try tPowerLoad = PowerLoad(); true finally end 
+@test try tPowerLoadPF = PowerLoadPF(); true finally end
 @test try tLoad = InterruptibleLoad(); true finally end
 
 #Branch Constructors
