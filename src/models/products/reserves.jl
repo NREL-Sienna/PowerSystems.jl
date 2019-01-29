@@ -53,7 +53,7 @@ ProportionalReserve(;name = "init",
         contributingdevices = [ThermalDispatch()],
         timeframe = 0.0,
         requirement = 0.03,
-        loads = [StaticLoad()]) = ProportionalReserve(name, contributingdevices, timeframe, requirement, loads)
+        loads = [ PowerLoad()]) = ProportionalReserve(name, contributingdevices, timeframe, requirement, loads)
 
 
 """

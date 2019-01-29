@@ -50,7 +50,7 @@ export ThermalGenSeason
 export ElectricLoad
 export FixedAdmittance
 
-export StaticLoad
+export PowerLoad
 export InterruptibleLoad
 
 export Storage

@@ -12,7 +12,7 @@ sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, nothing,  100.0);
 io = IOBuffer()
 show(io, "text/plain", sys5)
 @test String(take!(io)) ==
-    "PowerSystem:\n   buses: Bus[Bus(name=\"nodeA\"), Bus(name=\"nodeB\"), Bus(name=\"nodeC\"), Bus(name=\"nodeD\"), Bus(name=\"nodeE\")]\n   generators: \n     GenClasses(T:5,R:2,H:0):\n   thermal: ThermalDispatch[ThermalDispatch(name=\"Alta\"), ThermalDispatch(name=\"Park City\"), ThermalDispatch(name=\"Solitude\"), ThermalDispatch(name=\"Sundance\"), ThermalDispatch(name=\"Brighton\")]\n   renewable: RenewableGen[RenewableFix(name=\"SolarBusC\"), RenewableCurtailment(name=\"WindBusA\")]\n   hydro: nothing\n     (end generators)\n   loads: ElectricLoad[StaticLoad(name=\"Bus2\"), StaticLoad(name=\"Bus3\"), StaticLoad(name=\"Bus4\"), InterruptibleLoad(name=\"IloadBus4\")]\n   branches: Line[Line(name=\"1\"), Line(name=\"2\"), Line(name=\"3\"), Line(name=\"4\"), Line(name=\"5\"), Line(name=\"6\")]\n   storage: nothing\n   basepower: 100.0\n   time_periods: 24"
+    "PowerSystem:\n   buses: Bus[Bus(name=\"nodeA\"), Bus(name=\"nodeB\"), Bus(name=\"nodeC\"), Bus(name=\"nodeD\"), Bus(name=\"nodeE\")]\n   generators: \n     GenClasses(T:5,R:2,H:0):\n   thermal: ThermalDispatch[ThermalDispatch(name=\"Alta\"), ThermalDispatch(name=\"Park City\"), ThermalDispatch(name=\"Solitude\"), ThermalDispatch(name=\"Sundance\"), ThermalDispatch(name=\"Brighton\")]\n   renewable: RenewableGen[RenewableFix(name=\"SolarBusC\"), RenewableCurtailment(name=\"WindBusA\")]\n   hydro: nothing\n     (end generators)\n   loads: ElectricLoad[PowerLoad(name=\"Bus2\"), PowerLoad(name=\"Bus3\"), PowerLoad(name=\"Bus4\"), InterruptibleLoad(name=\"IloadBus4\")]\n   branches: Line[Line(name=\"1\"), Line(name=\"2\"), Line(name=\"3\"), Line(name=\"4\"), Line(name=\"5\"), Line(name=\"6\")]\n   storage: nothing\n   basepower: 100.0\n   time_periods: 24"
 
 
 # test printing of a few component types
@@ -42,7 +42,7 @@ show(io, "text/plain", sys5.generators.thermal[1].tech)
     "TechThermal:\n   activepower: 40.0\n   activepowerlimits: (min = 0.0, max = 40.0)\n   reactivepower: 10.0\n   reactivepowerlimits: (min = -30.0, max = 30.0)\n   ramplimits: nothing\n   timelimits: nothing"
 
 # load
-@test repr(sys5.loads[1]) == "StaticLoad(name=\"Bus2\")"
+@test repr(sys5.loads[1]) == "PowerLoad(name=\"Bus2\")"
 show(io, "text/plain", sys5.branches[1])
 @test String(take!(io)) ==
     "Line:\n   name: 1\n   available: true\n   connectionpoints: (from = Bus(name=\"nodeA\"), to = Bus(name=\"nodeB\"))\n   r: 0.00281\n   x: 0.0281\n   b: (from = 0.00356, to = 0.00356)\n   rate: 38.038742043967325\n   anglelimits: (min = -0.7853981633974483, max = 0.7853981633974483)"

@@ -132,7 +132,6 @@ function make_load(d,bus)
     load =Dict{String,Any}("name" => bus["name"],
                             "available" => true,
                             "bus" => make_bus(bus),
-                            "model" => "P",
                             "maxactivepower" => d["pd"],
                             "maxreactivepower" => d["qd"],
                             "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))

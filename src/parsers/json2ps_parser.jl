@@ -254,7 +254,7 @@ end
 function load_json_parser(dict)
     Loads = Array{ElectricLoad}(undef, 0)
     for (load_key,load_dict) in dict
-        push!(Loads,StaticLoad(load_dict["name"],
+        push!(Loads, PowerLoad(load_dict["name"],
                 load_dict["available"],
                 Bus(load_dict["bus"]["number"],
                                 load_dict["bus"]["name"],

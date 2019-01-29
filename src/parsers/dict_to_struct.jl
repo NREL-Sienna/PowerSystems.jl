@@ -432,10 +432,9 @@ end
 function load_dict_parser(dict::Dict{String,Any})
     Loads =Array{L where {L<:ElectricLoad},1}()
     for (load_key,load_dict) in dict
-        push!(Loads,StaticLoad(string(load_dict["name"]),
+        push!(Loads,PowerLoad(string(load_dict["name"]),
                 Bool(load_dict["available"]),
                 load_dict["bus"],
-                load_dict["model"],
                 load_dict["maxactivepower"],
                 load_dict["maxreactivepower"],
                 load_dict["scalingfactor"]
