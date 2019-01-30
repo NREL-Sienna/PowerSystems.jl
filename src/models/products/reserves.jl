@@ -36,14 +36,14 @@ function ProportionalReserve(name::String,
                             loads::Array{T}) where {G <: PowerSystemDevice, T <: ElectricLoad}
 
     totalload = zeros(0)
-    for i in timestamp(loads[1].scalingfactor)
+    for i in TimeSeries.timestamp(loads[1].scalingfactor)
         t = zeros(0)
         for load in loads
             push!(t,(load.maxactivepower*values(load.scalingfactor[i]))[1])
         end
         push!(totalload,sum(t))
     end
-    requirement = TimeSeries.TimeArray(timestamp(loads[1].scalingfactor),totalload*requirement)
+    requirement = TimeSeries.TimeArray(TimeSeries.timestamp(loads[1].scalingfactor),totalload*requirement)
 
     ProportionalReserve(name, contributingdevices, timeframe, requirement)
 end

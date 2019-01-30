@@ -1,6 +1,6 @@
-# Reduce the output for "short" print of TimeArray. Because the "show" method
+# Reduce the output for "short" print of TimeSeries.TimeArray. Because the "show" method
 # defined in TimeSeries does not differentiate, the entire function needs to be
-# reimplemented here (mostly a direct copy from TimeArray.jl). I suppose we
+# reimplemented here (mostly a direct copy from TimeSeries.TimeArray.jl). I suppose we
 # could submit a PR upstream. License / acknowledgment needed? JJS 12/4/18
 
 
@@ -38,14 +38,14 @@ calculate the paging
 end
 
 
-function printTA(ta::TimeArray, short=false, io::IO=stdout)
+function printTA(ta::TimeSeries.TimeArray, short=false, io::IO=stdout)
     # summary line
     nrow = size(values(ta), 1)
     ncol = size(values(ta), 2)
     print(io, "$(nrow)×$(ncol) $(typeof(ta))")
     if nrow != 0
-        println(io, " $(timestamp(ta)[1]) to $(timestamp(ta)[end])")
-    else  # e.g. TimeArray(Date[], [])
+        println(io, " $(TimeSeries.timestamp(ta)[1]) to $(TimeSeries.timestamp(ta)[end])")
+    else  # e.g. TimeSeries.TimeArray(Date[], [])
         return
     end
 
@@ -61,14 +61,14 @@ function printTA(ta::TimeArray, short=false, io::IO=stdout)
             tophalf = 1:(half_row + add_row)
             bothalf = (nrow - half_row + 1):nrow
             strs = _showval.(@view values(ta)[[tophalf; bothalf], :])
-            ts   = @view timestamp(ta)[[tophalf; bothalf]]
+            ts   = @view TimeSeries.timestamp(ta)[[tophalf; bothalf]]
         else
             strs = _showval.(values(ta))
-            ts   = timestamp(ta)
+            ts   = TimeSeries.timestamp(ta)
         end
 
         colwidth = maximum(
-            [textwidth.(string.(colnames(ta)))'; textwidth.(strs);
+            [textwidth.(string.(TimeSeries.colnames(ta)))'; textwidth.(strs);
              fill(5, ncol)'],
             dims = 1)
 
@@ -80,7 +80,7 @@ function printTA(ta::TimeArray, short=false, io::IO=stdout)
             # row label line
             ## e.g. | Open  | High  | Low   | Close  |
             print(io, "│", " "^(spacetime + 2))
-            for (name, w) in zip(colnames(ta)[p], colwidth[p])
+            for (name, w) in zip(TimeSeries.colnames(ta)[p], colwidth[p])
                 print(io, "│ ", rpad(name, w + 1))
             end
             println(io, "│")
@@ -131,6 +131,6 @@ function printTA(ta::TimeArray, short=false, io::IO=stdout)
         end  # for p ∈ pages
     end
 end
-Base.show(io::IO, ta::TimeArray) = printTA(ta, true, io)
-Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = printTA(ta, false, io)
+Base.show(io::IO, ta::TimeSeries.TimeArray) = printTA(ta, true, io)
+Base.show(io::IO, ::MIME"text/plain", ta::TimeSeries.TimeArray) = printTA(ta, false, io)
  

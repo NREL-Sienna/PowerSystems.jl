@@ -53,4 +53,4 @@ ThermalGenSeason(; name = "init",
                 bus = Bus(),
                 tech = TechThermal(),
                 econ = EconThermal(),
-                scalingfactor = TimeArray(today(),ones(1))) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
+                scalingfactor = TimeSeries.TimeArray(today(),ones(1))) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)

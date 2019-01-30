@@ -334,7 +334,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                                                         "timelimits" => (up=gen_raw[gen,colnames["Min Down Time Hr"]],down=gen_raw[gen,colnames["Min Down Time Hr"]])),
                                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                         "interruptioncost" => nothing),
-                                            "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
+                                            "scalingfactor" => TimeSeries.TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
                                             )
 
         elseif gen_raw[gen,colnames["Fuel"]] in ["Solar","Wind"]
@@ -348,7 +348,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
-                                                "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
+                                                "scalingfactor" => TimeSeries.TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
                                                 )
             elseif gen_raw[gen,colnames["Unit Type"]] == "RTPV"
                 Generators_dict["Renewable"]["RTPV"][gen_raw[gen,colnames["GEN UID"]]] = Dict{String,Any}("name" => gen_raw[gen,colnames["GEN UID"]],
@@ -359,7 +359,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
-                                                "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: Connect scaling factors
+                                                "scalingfactor" => TimeSeries.TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: Connect scaling factors
                                                 )
             elseif gen_raw[gen,colnames["Unit Type"]] == "WIND"
                 Generators_dict["Renewable"]["WIND"][gen_raw[gen,colnames["GEN UID"]]] = Dict{String,Any}("name" => gen_raw[gen,colnames["GEN UID"]],
@@ -370,7 +370,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
-                                                "scalingfactor" => TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
+                                                "scalingfactor" => TimeSeries.TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25)) # TODO: connect scaling factors
                                                 )
             end
         elseif gen_raw[gen,colnames["Fuel"]] in ["Storage"]

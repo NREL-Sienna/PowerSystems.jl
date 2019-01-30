@@ -192,7 +192,7 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
     """
     Arg:
         Device dictionary - Generators
-        Dict contains device Realtime/Forecast TimeArray
+        Dict contains device Realtime/Forecast TimeSeries.TimeArray
     Returns:
         Device dictionary with timeseries added
     """
@@ -208,7 +208,7 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
         Device_dict["scalingfactor"] = ts_raw
     else
         @info "assumed time series is MW for $name"
-        Device_dict["scalingfactor"] = TimeSeries.TimeArray(timestamp(ts_raw),values(ts_raw)/Device_dict["tech"]["installedcapacity"])
+        Device_dict["scalingfactor"] = TimeSeries.TimeArray(TimeSeries.timestamp(ts_raw),values(ts_raw)/Device_dict["tech"]["installedcapacity"])
     end
 
     return Device_dict

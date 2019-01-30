@@ -47,7 +47,7 @@ HydroFix(; name="init",
         status = false,
         bus = Bus(),
         tech = TechHydro(),
-        scalingfactor = TimeArray(today(),ones(1))) = HydroFix(name, status, bus, tech, scalingfactor)
+        scalingfactor = TimeSeries.TimeArray(today(),ones(1))) = HydroFix(name, status, bus, tech, scalingfactor)
 
 
 struct HydroCurtailment <: HydroGen
@@ -68,7 +68,7 @@ HydroCurtailment(; name = "init",
                 bus= Bus(),
                 tech = TechHydro(),
                 curtailcost = 0.0,
-                scalingfactor = TimeArray(today(),ones(1))) = HydroCurtailment(name, status, bus, tech, curtailcost, scalingfactor)
+                scalingfactor = TimeSeries.TimeArray(today(),ones(1))) = HydroCurtailment(name, status, bus, tech, curtailcost, scalingfactor)
 
 
 struct HydroStorage <: HydroGen
@@ -87,4 +87,4 @@ HydroStorage(; name = "init",
                 tech = TechHydro(),
                 econ = EconHydro(),
                 storagecapacity = 0.0,
-                scalingfactor = TimeArray(today(),ones(1))) = HydroStorage(name, status, bus, tech, econ, storagecapacity, scalingfactor)
+                scalingfactor = TimeSeries.TimeArray(today(),ones(1))) = HydroStorage(name, status, bus, tech, econ, storagecapacity, scalingfactor)

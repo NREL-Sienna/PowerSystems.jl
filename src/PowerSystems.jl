@@ -81,7 +81,7 @@ import LinearAlgebra: LAPACK.getrf!
 import LinearAlgebra: BLAS.gemm
 import LinearAlgebra
 using Dates
-using TimeSeries
+import TimeSeries
 using DataFrames
 using JSON
 import CSV
