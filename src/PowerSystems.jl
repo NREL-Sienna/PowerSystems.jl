@@ -76,10 +76,10 @@ export read_data_files
 import Base.convert
 import SparseArrays
 using AxisArrays
-using LinearAlgebra: LAPACK.getri!
-using LinearAlgebra: LAPACK.getrf!
-using LinearAlgebra: BLAS.gemm
-using LinearAlgebra
+import LinearAlgebra: LAPACK.getri!
+import LinearAlgebra: LAPACK.getrf!
+import LinearAlgebra: BLAS.gemm
+import LinearAlgebra
 using Dates
 using TimeSeries
 using DataFrames

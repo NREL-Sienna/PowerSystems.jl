@@ -3,9 +3,9 @@ function buildlodf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
     ptdf , a = PowerSystems.buildptdf(branches,nodes,dist_slack)
     ptdf = ptdf.data; a = a.data;
     H = gemm('N','N',ptdf,a)
-    h = reshape(diag(gemm('N','N',ptdf,a)),(linecount,1))
-    (Dem, dipiv, dinfo) = getrf!(Matrix{Float64}(I,linecount,linecount) - Array(Diagonal(H)))
+    h = reshape(LinearAlgebra.diag(gemm('N','N',ptdf,a)),(linecount,1))
+    (Dem, dipiv, dinfo) = getrf!(Matrix{Float64}(LinearAlgebra.I,linecount,linecount) - Array(LinearAlgebra.Diagonal(H)))
     LODF = gemm('N','N',H,getri!(Dem,dipiv))
-    LODF = LODF - Array(Diagonal(LODF)) - Matrix{Float64}(I,linecount,linecount) 
+    LODF = LODF - Array(LinearAlgebra.Diagonal(LODF)) - Matrix{Float64}(LinearAlgebra.I,linecount,linecount) 
     return LODF
 end
