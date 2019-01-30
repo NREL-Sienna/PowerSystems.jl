@@ -135,7 +135,7 @@ end
 
 PowerSystem(; buses = [Bus()],
             generators = [ThermalDispatch(), RenewableFix()],
-            loads = [StaticLoad()],
+            loads = [ PowerLoad()],
             branches =  nothing,
             storage = nothing,
             basepower = 1000.0,

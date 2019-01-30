@@ -19,6 +19,10 @@
 @test try tStorage = GenericBattery(); true finally end
 
 #Load Constructos
+@test try tPowerLoad = PowerLoad(); true finally end 
+@test try tPowerLoadPF = PowerLoadPF(); true finally end
+@test try tPowerLoad = PowerLoad(name = "init", available = true, bus = Bus(), maxactivepower = 0.0, maxreactivepower=0.0); true finally end 
+@test try tPowerLoadPF = PowerLoadPF(name = "init", available = true, bus = Bus(), maxactivepower = 0.0, power_factor=1.0); true finally end
 @test try tLoad = InterruptibleLoad(); true finally end
 
 #Branch Constructors

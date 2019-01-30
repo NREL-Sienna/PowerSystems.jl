@@ -549,7 +549,6 @@ function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,LoadZone::Dic
         Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
                                             "available" => true,
                                             "bus" => make_bus(b),
-                                            "model" => "P",
                                             "maxactivepower" => p[1],
                                             "maxreactivepower" => q[1],
                                             "scalingfactor" => ts #TODO remove TS
@@ -595,8 +594,7 @@ function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,load_raw=noth
         ts = isa(load_raw,nothing) ? nothing : TimeSeries.TimeArray(load_raw[load_colnames["DateTime"]],load_raw[b["number"]]/p[1])
         Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
                                             "available" => true,
-                                            "bus" => make_bus(b),
-                                            "model" => "P",
+                                            "bus" => make_bus(b),                                            
                                             "maxactivepower" => p[1],
                                             "maxreactivepower" => q[1],
                                             "scalingfactor" => ts #TODO remove TS
