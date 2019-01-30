@@ -12,4 +12,4 @@ struct InterruptibleLoad <: ControllableLoad
 end
 
 InterruptibleLoad(; name = "init", status = true, bus = Bus(), model = "0", maxactivepower = 0, maxreactivepower=0, sheddingcost = 999, 
-                scalingfactor = TimeArray(today(),ones(1))) = InterruptibleLoad(name, status, bus, model, maxactivepower, maxreactivepower, sheddingcost, scalingfactor)
+                scalingfactor = TimeSeries.TimeArray(Dates.today(),ones(1))) = InterruptibleLoad(name, status, bus, model, maxactivepower, maxreactivepower, sheddingcost, scalingfactor)

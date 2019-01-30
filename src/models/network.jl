@@ -2,7 +2,7 @@
 
 struct Network
     branches::Array{Branch}
-    ybus::SparseMatrixCSC{Complex{Float64},Int64}
+    ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}
     ptdf::Union{Array{Float64},Nothing}
     incidence::Array{Int}
 end

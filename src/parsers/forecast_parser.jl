@@ -1,5 +1,5 @@
 function get_name_and_csv(path_to_filename)
-    df = CSV.File(path_to_filename) |> DataFrame
+    df = CSV.File(path_to_filename) |> DataFrames.DataFrame
     folder = splitdir(splitdir(path_to_filename)[1])[2]
     return folder, df
 end
@@ -89,7 +89,7 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
 end
 
 function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::Dates.Period,horizon::Int) where {D<:PowerSystemDevice}
-    time_delta = Minute(df[2,:DateTime]-df[1,:DateTime])
+    time_delta = Dates.Minute(df[2,:DateTime]-df[1,:DateTime])
     initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
     last_date = df[end,:DateTime]
     ts_dict = Dict{Any,Dict{Int,TimeSeries.TimeArray}}()
@@ -112,7 +112,7 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     """
     Args:
         Dictionary of all the data files
-        Length of the forecast - Week()/Day()/Hour()
+        Length of the forecast - Week()/Dates.Day()/Dates.Hour()
         Forecast horizon in hours - Int64
         Array of PowerSystems devices in the systems - Renewable Generators and Loads
 
@@ -141,7 +141,7 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     """
     Args:
         Dictionary of all the data files
-        Length of the forecast - Week()/Day()/Hour()
+        Length of the forecast - Week()/Dates.Day()/Dates.Hour()
         Forecast horizon in hours - Int64
         Array of PowerSystems devices in the systems- Loads
     Returns:
@@ -166,7 +166,7 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     """
     Args:
         Dictionary of all the data files
-        Length of the forecast - Week()/Day()/Hour()
+        Length of the forecast - Week()/Dates.Day()/Dates.Hour()
         Forecast horizon in hours - Int64
         Array of PowerSystems devices in the systems- Loads
         Array of PowerSystems LoadZones

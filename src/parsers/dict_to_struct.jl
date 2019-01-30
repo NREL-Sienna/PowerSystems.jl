@@ -139,12 +139,12 @@ function read_datetime(df; kwargs...)
         Dataframe with a DateTime columns
     """
     if [c for c in [:Year,:Month,:Day,:Period] if c in names(df)] == [:Year,:Month,:Day,:Period]
-        if Hour(DataFrames.maximum(df[:Period])) <= Hour(25)
-            df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Hour(1) :
-                            DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
-        elseif (Minute(5) * DataFrames.maximum(df[:Period]) >= Minute(1440))& (Minute(5) * DataFrames.maximum(df[:Period]) <= Minute(1500))
-            df[:DateTime] = collect(DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Minute(5) :
-                            DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
+        if Dates.Hour(DataFrames.maximum(df[:Period])) <= Dates.Hour(25)
+            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Dates.Hour(1) :
+            Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
+        elseif (Dates.Minute(5) * DataFrames.maximum(df[:Period]) >= Dates.Minute(1440))& (Dates.Minute(5) * DataFrames.maximum(df[:Period]) <= Dates.Minute(1500))
+            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Dates.Minute(5) :
+                            Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
         else
             @error "I don't know what the period length is, reformat timeseries"
         end
@@ -152,15 +152,15 @@ function read_datetime(df; kwargs...)
         delete!(df, [:Year,:Month,:Day,:Period])
 
     elseif :DateTime in names(df)
-        df[:DateTime] = DateTime(df[:DateTime])
+        df[:DateTime] = Dates.DateTime(df[:DateTime])
     else
         if :startdatetime in keys(kwargs)
             startdatetime = kwargs[:startdatetime]
         else
             @warn "No reference date given, assuming today"
-            startdatetime = today()
+            startdatetime = Dates.today()
         end
-        df[:DateTime] = collect(DateTime(startdatetime):Hour(1):DateTime(startdatetime)+Hour(size(df)[1]-1))
+        df[:DateTime] = collect(Dates.DateTime(startdatetime):Dates.Hour(1):Dates.DateTime(startdatetime)+Dates.Hour(size(df)[1]-1))
     end
     return df
 end
@@ -192,7 +192,7 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
     """
     Arg:
         Device dictionary - Generators
-        Dict contains device Realtime/Forecast TimeArray
+        Dict contains device Realtime/Forecast TimeSeries.TimeArray
     Returns:
         Device dictionary with timeseries added
     """
@@ -208,7 +208,7 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
         Device_dict["scalingfactor"] = ts_raw
     else
         @info "assumed time series is MW for $name"
-        Device_dict["scalingfactor"] = TimeSeries.TimeArray(timestamp(ts_raw),values(ts_raw)/Device_dict["tech"]["installedcapacity"])
+        Device_dict["scalingfactor"] = TimeSeries.TimeArray(TimeSeries.timestamp(ts_raw),values(ts_raw)/Device_dict["tech"]["installedcapacity"])
     end
 
     return Device_dict
@@ -512,7 +512,7 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
         push!(Services,ProportionalReserve(d["name"],
                             contributingdevices,
                             Float64(d["timeframe"]),
-                            TimeSeries.TimeArray(today(),ones(1))  #TODO : fix requirement 
+                            TimeSeries.TimeArray(Dates.today(),ones(1))  #TODO : fix requirement 
                             ))
     end
     return Services

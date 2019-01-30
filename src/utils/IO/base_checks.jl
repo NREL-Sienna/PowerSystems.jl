@@ -10,20 +10,20 @@ end
 
 function getresolution(ts::TimeSeries.TimeArray)
 
-    tstamps = timestamp(ts)
+    tstamps = TimeSeries.timestamp(ts)
     timediffs = unique([tstamps[ix]-tstamps[ix-1] for ix in 2:length(tstamps)])
 
     res = []
 
     for timediff in timediffs
-        if mod(timediff,Millisecond(Day(1))) == Millisecond(0) 
-            push!(res,Day(timediff/Millisecond(Day(1))))
-        elseif mod(timediff,Millisecond(Hour(1))) == Millisecond(0)
-            push!(res,Hour(timediff/Millisecond(Hour(1))))
-        elseif mod(timediff,Millisecond(Minute(1))) == Millisecond(0)
-            push!(res,Minute(timediff/Millisecond(Minute(1))))
-        elseif mod(timediff,Millisecond(Second(1))) == Millisecond(0)
-            push!(res,Second(timediff/Millisecond(Second(1))))
+        if mod(timediff,Dates.Millisecond(Dates.Day(1))) == Dates.Millisecond(0) 
+            push!(res,Dates.Day(timediff/Dates.Millisecond(Dates.Day(1))))
+        elseif mod(timediff,Dates.Millisecond(Dates.Hour(1))) == Dates.Millisecond(0)
+            push!(res,Dates.Hour(timediff/Dates.Millisecond(Dates.Hour(1))))
+        elseif mod(timediff,Dates.Millisecond(Dates.Minute(1))) == Dates.Millisecond(0)
+            push!(res,Dates.Minute(timediff/Dates.Millisecond(Dates.Minute(1))))
+        elseif mod(timediff,Dates.Millisecond(Dates.Second(1))) == Dates.Millisecond(0)
+            push!(res,Dates.Second(timediff/Dates.Millisecond(Dates.Second(1))))
         else
             @error "I can't understand the resolution of the timeseries"
         end

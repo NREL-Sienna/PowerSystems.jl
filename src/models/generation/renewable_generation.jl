@@ -18,7 +18,7 @@ RenewableFix(; name="init",
         status = false,
         bus = Bus(),
         installedcapacity = 0.0,
-        scalingfactor = TimeArray(today(),ones(1))) = RenewableFix(name, status, bus, installedcapacity, scalingfactor)
+        scalingfactor = TimeSeries.TimeArray(Dates.today(),ones(1))) = RenewableFix(name, status, bus, installedcapacity, scalingfactor)
 
 struct RenewableCurtailment <: RenewableGen
     name::String
@@ -39,7 +39,7 @@ RenewableCurtailment(; name = "init",
                 bus= Bus(),
                 installedcapacity = 0.0,
                 econ = EconRenewable(),
-                scalingfactor =  TimeArray(today(),ones(1))) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)
+                scalingfactor =  TimeSeries.TimeArray(Dates.today(),ones(1))) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)
 
 struct RenewableFullDispatch <: RenewableGen
     name::String
@@ -56,4 +56,4 @@ RenewableFullDispatch(; name = "init",
                 bus= Bus(),
                 installedcapacity = 0.0,
                 econ = EconRenewable(),
-                scalingfactor =  TimeArray(today(),ones(1))) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)
+                scalingfactor =  TimeSeries.TimeArray(Dates.today(),ones(1))) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)
