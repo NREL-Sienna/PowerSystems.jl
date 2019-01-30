@@ -66,8 +66,8 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = Array{Float64,2}(undef,linecount,buscount)
     end
 
-    S_ax = AxisArray(S, Axis{:branches}(line_axis), Axis{:buses}(bus_axis))
-    A_ax = AxisArray(A,  Axis{:buses}(bus_axis), Axis{:lines}(line_axis))
+    S_ax = AxisArrays.AxisArray(S, AxisArrays.Axis{:branches}(line_axis), AxisArrays.Axis{:buses}(bus_axis))
+    A_ax = AxisArrays.AxisArray(A, AxisArrays.Axis{:buses}(bus_axis), AxisArrays.Axis{:lines}(line_axis))
 
     return  S_ax , A_ax
 
