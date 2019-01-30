@@ -5,6 +5,7 @@
 @test try tEconThermal = EconThermal(); true finally end
 @test try tTechThermal = TechThermal(); true finally end
 @test try tThermalGen = ThermalDispatch(); true finally end
+@test try tThermalGenSeason = ThermalGenSeason(); true finally end
 @test try tTechHydro = TechHydro(); true finally end
 @test try tEconHydro = EconHydro(); true finally end
 @test try tHydroFix = HydroFix(); true finally end
