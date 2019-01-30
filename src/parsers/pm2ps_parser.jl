@@ -134,7 +134,7 @@ function make_load(d,bus)
                             "bus" => make_bus(bus),
                             "maxactivepower" => d["pd"],
                             "maxreactivepower" => d["qd"],
-                            "scalingfactor" => TimeSeries.TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))
+                            "scalingfactor" => TimeSeries.TimeArray(collect(Dates.DateTime(Dates.today()):Dates.Hour(1):Dates.DateTime(Dates.today()+Dates.Day(1))), ones(25))
                             )
     return load
 end
@@ -195,7 +195,7 @@ function make_hydro_gen(d,gen_name,bus)
                                                         "timelimits" => nothing),
                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                         "interruptioncost" => nothing),
-                            "scalingfactor" => TimeSeries.TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))
+                            "scalingfactor" => TimeSeries.TimeArray(collect(Dates.DateTime(Dates.today()):Dates.Hour(1):Dates.DateTime(Dates.today()+Dates.Day(1))), ones(25))
                             )
     return hydro
 end
@@ -209,7 +209,7 @@ function make_ren_gen(gen_name, d, bus)
                                                 "powerfactor" => 1),
                     "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                 "interruptioncost" => nothing),
-                    "scalingfactor" => TimeSeries.TimeArray(collect(DateTime(today()):Hour(1):DateTime(today()+Day(1))), ones(25))
+                    "scalingfactor" => TimeSeries.TimeArray(collect(Dates.DateTime(Dates.today()):Dates.Hour(1):Dates.DateTime(Dates.today()+Dates.Day(1))), ones(25))
                     )
     return gen_re
 end

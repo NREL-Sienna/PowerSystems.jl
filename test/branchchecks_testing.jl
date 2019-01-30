@@ -16,10 +16,10 @@ branches_test = [Line("1", true,  (from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281
              ];
 
 
-@test try @assert PowerSystems.getresolution(TimeSeries.TimeArray([DateTime(today())+Minute(i*2) for i in 1:5],ones(5)))==Minute(2); true finally end
-@test try @assert PowerSystems.getresolution(TimeSeries.TimeArray([DateTime(today())+Day(i) for i in 1:5],ones(5)))==Day(1); true finally end
-@test try @assert PowerSystems.getresolution(TimeSeries.TimeArray([DateTime(today())+Second(i) for i in 1:5],ones(5)))==Second(1); true finally end
-@test try @assert PowerSystems.getresolution(TimeSeries.TimeArray([DateTime(today())+Hour(i) for i in 1:5],ones(5)))==Hour(1); true finally end
+@test try @assert PowerSystems.getresolution(TimeSeries.TimeArray([DateTime(Dates.today())+Dates.Minute(i*2) for i in 1:5],ones(5)))==Dates.Minute(2); true finally end
+@test try @assert PowerSystems.getresolution(TimeSeries.TimeArray([DateTime(Dates.today())+Dates.Day(i) for i in 1:5],ones(5)))==Dates.Day(1); true finally end
+@test try @assert PowerSystems.getresolution(TimeSeries.TimeArray([DateTime(Dates.today())+Dates.Second(i) for i in 1:5],ones(5)))==Dates.Second(1); true finally end
+@test try @assert PowerSystems.getresolution(TimeSeries.TimeArray([DateTime(Dates.today())+Dates.Hour(i) for i in 1:5],ones(5)))==Dates.Hour(1); true finally end
 
 @test try PowerSystems.checkanglelimits!(branches_test); true finally end
 

@@ -312,6 +312,6 @@ end
 function dict_to_timearray(dict)
     ts_string =[dict["timestamp"][i] for i in 1:length(dict["timestamp"])]
     ts_values =[dict["values"][i] for i in 1:length(dict["values"])]
-    ts_raw =TimeSeries.TimeArray(DateTime(ts_string),ts_values)
+    ts_raw =TimeSeries.TimeArray(Dates.DateTime(ts_string),ts_values)
     return ts_raw
 end

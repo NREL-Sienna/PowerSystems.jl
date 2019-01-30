@@ -79,15 +79,15 @@ function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
         end
         return minimum(ts)
     else
-        ts =Dates.Minute(1)
+        ts =Dates.Dates.Minute(1)
         return ts
     end
 end
 
 # convert generator ramp rates to a consistent denominator
-function convertramp(ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing}, ts::TimePeriod)
+function convertramp(ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing}, ts::Dates.TimePeriod)
     if isa(ramplimits,NamedTuple)
-        hr = typeof(ts)(Dates.Minute(1))
+        hr = typeof(ts)(Dates.Dates.Minute(1))
         scaling  = hr/ts
         up = ramplimits.up/scaling
         down = ramplimits.down/scaling
@@ -100,7 +100,7 @@ end
 
 
 # check for valid ramp limits
-function checkramp(generators::Array{T}, ts::TimePeriod) where {T<:Generator}
+function checkramp(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generator}
     for (ix,g) in enumerate(generators)
         if isa(g,ThermalDispatch)
             R = convertramp(g.tech.ramplimits,ts)
