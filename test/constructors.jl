@@ -14,6 +14,7 @@
 @test try tTechRenewable=TechRenewable(); true finally end
 @test try tEconRenewable = EconRenewable(); true finally end
 @test try tRenewableFix = RenewableFix(); true finally end
+@test try tRenewableFullDispatch = RenewableFullDispatch(); true finally end
 @test try tRenewableCurtailment = RenewableCurtailment(); true finally end
 
 #Storage Constructots
