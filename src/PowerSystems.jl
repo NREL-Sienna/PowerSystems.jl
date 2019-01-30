@@ -80,9 +80,9 @@ import LinearAlgebra: LAPACK.getri!
 import LinearAlgebra: LAPACK.getrf!
 import LinearAlgebra: BLAS.gemm
 import LinearAlgebra
-import Dates
+using Dates
 import TimeSeries
-using DataFrames
+import DataFrames
 import JSON
 import CSV
 

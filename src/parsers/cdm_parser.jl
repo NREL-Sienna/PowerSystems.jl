@@ -32,7 +32,7 @@ function read_csv_data(file_path::String)
                     if match(REGEX_DEVICE_TYPE, file) != nothing
                         @info "Parsing csv data in $file ..."
                         fpath = joinpath(file_path,d_file,file)
-                        raw_data = CSV.File(fpath) |> DataFrame
+                        raw_data = CSV.File(fpath) |> DataFrames.DataFrame
                         d_file_data[split(file,r"[.]")[1]] = raw_data
                     end
                 end
@@ -45,7 +45,7 @@ function read_csv_data(file_path::String)
             elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
                 @info "Parsing csv data in $d_file ..."
                 fpath = joinpath(file_path,d_file)
-                raw_data = CSV.File(fpath)|> DataFrame
+                raw_data = CSV.File(fpath)|> DataFrames.DataFrame
                 data[split(d_file,r"[.]")[1]] = raw_data
                 @info "Successfully parsed $d_file"
             end
@@ -70,7 +70,7 @@ function read_csv_data(file_path::String)
             if isfile(fpath)
                 # read data and insert into dict
                 @info "parsing timeseries data in $fpath for $(r.Object)"
-                raw_data = CSV.File(fpath) |> DataFrame |> read_datetime
+                raw_data = CSV.File(fpath) |> DataFrames.DataFrame |> read_datetime
 
                 if length([c for c in names(raw_data) if String(c) == String(r.Object)]) == 1
                     raw_data = TimeSeries.TimeArray(raw_data[:DateTime],raw_data[Symbol(r.Object)])
@@ -238,7 +238,7 @@ function bus_csv_parser(bus_raw,colnames = nothing)
     end
 
     Buses_dict = Dict{Int64,Any}()
-    for i in 1:nrow(bus_raw)
+    for i in 1:DataFrames.nrow(bus_raw)
         Buses_dict[bus_raw[i,1]] = Dict{String,Any}("number" =>bus_raw[i,colnames["Bus ID"]] ,
                                                 "name" => bus_raw[i,colnames["Bus Name"]],
                                                 "bustype" => bus_raw[i,colnames["Bus Type"]],
@@ -291,7 +291,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
         push!(cost_colnames, (mw,hr))
     end
 
-    for gen in 1:nrow(gen_raw)
+    for gen in 1:DataFrames.nrow(gen_raw)
         pmax = tryparse(Float64,"""$(gen_raw[gen,colnames["PMax MW"]])""")
 
         if gen_raw[gen,colnames["Fuel"]] in ["Oil","Coal","NG","Nuclear"]
@@ -415,7 +415,7 @@ function branch_csv_parser(branch_raw,Buses,colnames=nothing)
     Branches_dict = Dict{String,Any}()
     Branches_dict["Transformers"] = Dict{String,Any}()
     Branches_dict["Lines"] = Dict{String,Any}()
-    for i in 1:nrow(branch_raw)
+    for i in 1:DataFrames.nrow(branch_raw)
         bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,colnames["From Bus"]]]
         bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,colnames["To Bus"]]]
         if branch_raw[i,Symbol("Tr Ratio")] > 0.0
@@ -470,7 +470,7 @@ function dc_branch_csv_parser(dc_branch_raw,Buses,colnames=nothing)
     DCBranches_dict["HVDCLine"] = Dict{String,Any}()
     DCBranches_dict["VSCDCLine"] = Dict{String,Any}()
 
-    for i in 1:nrow(dc_branch_raw)
+    for i in 1:DataFrames.nrow(dc_branch_raw)
         bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == dc_branch_raw[i,colnames["From Bus"]]]
         bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == dc_branch_raw[i,colnames["To Bus"]]]
         if (dc_branch_raw[i,colnames["From Max Firing Angle"]] + dc_branch_raw[i,colnames["To Max Firing Angle"]])/2 != 0.0 #TODO: Replace this with the correct conditional to create VSCDC or HVDC lines
@@ -543,8 +543,8 @@ function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,LoadZone::Dic
                 load_zone = k_l
             end
         end
-        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b["number"]]
-        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b["number"]]
+        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:DataFrames.nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b["number"]]
+        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:DataFrames.nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b["number"]]
         ts = isa(load_raw,Nothing) ? nothing : TimeSeries.TimeArray(load_raw[load_colnames["DateTime"]],load_raw[load_zone]*(p[1]/LoadZone[load_zone]["maxactivepower"]))
         Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
                                             "available" => true,
@@ -589,8 +589,8 @@ function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,load_raw=noth
     end
 
     for (k_b,b) in Buses
-        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b["number"]]
-        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b["number"]]
+        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:DataFrames.nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b["number"]]
+        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:DataFrames.nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b["number"]]
         ts = isa(load_raw,nothing) ? nothing : TimeSeries.TimeArray(load_raw[load_colnames["DateTime"]],load_raw[b["number"]]/p[1])
         Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
                                             "available" => true,
@@ -624,10 +624,10 @@ function loadzone_csv_parser(bus_raw,Buses,colnames=nothing)
     LoadZone_dict = Dict{Int64,Any}()
     lbs = zip(unique(bus_raw[colnames["Area"]]),[sum(bus_raw[colnames["Area"]].==a) for a in unique(bus_raw[colnames["Area"]])])
     for (zone,count) in lbs
-        b_numbers = [bus_raw[b,colnames["Bus ID"]] for b in 1:nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone ]
+        b_numbers = [bus_raw[b,colnames["Bus ID"]] for b in 1:DataFrames.nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone ]
         buses = [make_bus(Buses[i]) for i in keys(Buses) if Buses[i]["number"] in  b_numbers]
-        activepower = [bus_raw[b,colnames["MW Load"]] for b in 1:nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone]
-        reactivepower = [bus_raw[b,colnames["MVAR Load"]] for b in 1:nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone]
+        activepower = [bus_raw[b,colnames["MW Load"]] for b in 1:DataFrames.nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone]
+        reactivepower = [bus_raw[b,colnames["MVAR Load"]] for b in 1:DataFrames.nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone]
         LoadZone_dict[zone] = Dict{String,Any}("number" => zone,
                                                         "name" => zone ,
                                                         "buses" => buses,
@@ -671,11 +671,11 @@ function services_csv_parser(rsv_raw::DataFrames.DataFrame,gen_raw::DataFrames.D
     end
     
     services_dict = Dict{String,Any}()
-    for r in 1:nrow(rsv_raw)
+    for r in 1:DataFrames.nrow(rsv_raw)
         gen_cats = strip(rsv_raw[r,colnames["Eligible Gen Categories"]],[i for i in "()"]) |> (x->split(x, ","))
         regions = strip(rsv_raw[r,colnames["Eligible Regions"]],[i for i in "()"]) |> (x->split(x,","))
         contributingdevices = []
-        [push!(contributingdevices,gen_raw[g,gen_colnames["GEN UID"]]) for g in 1:nrow(gen_raw) if 
+        [push!(contributingdevices,gen_raw[g,gen_colnames["GEN UID"]]) for g in 1:DataFrames.nrow(gen_raw) if 
                     (gen_raw[g,gen_colnames["Category"]] in gen_cats) & 
                     (string(bus_raw[bus_raw[bus_colnames["Bus ID"]] .== gen_raw[g,gen_colnames["Bus ID"]],bus_colnames["Area"]][1]) in regions)];
 
