@@ -7,6 +7,7 @@ module PowerSystems
 
 export PowerSystem
 export Bus
+export LoadZones
 
 export Branch
 export Network

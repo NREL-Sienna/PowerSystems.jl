@@ -17,7 +17,7 @@ Bus(;   number = 0,
         basevoltage = nothing
     ) = Bus(number, name, bustype, angle, voltage, orderedlimits(voltagelimits, "Voltage"), basevoltage)
 
-    #=
+
 struct LoadZones  <: PowerSystemDevice
     number::Int
     name::String
@@ -32,4 +32,3 @@ LoadZones(;   number = 0,
         maxactivepower = 0.0,
         maxreactivepower = 0.0
     ) = LoadZones(number, name, buses, maxactivepower, maxreactivepower)
-=#
