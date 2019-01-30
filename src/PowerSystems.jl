@@ -74,7 +74,7 @@ export read_data_files
 # Imports
 
 import Base.convert
-using SparseArrays
+import SparseArrays
 using AxisArrays
 using LinearAlgebra: LAPACK.getri!
 using LinearAlgebra: LAPACK.getrf!

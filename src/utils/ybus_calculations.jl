@@ -1,5 +1,5 @@
 
-function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Line)
+function ybus!(Ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}, b::Line)
 
     Y_l = (1 / (b.r + b.x * 1im))
 
@@ -25,7 +25,7 @@ function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Line)
 
 end
 
-function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer2W)
+function ybus!(Ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer2W)
 
     Y_t = 1 / (b.r + b.x * 1im)
 
@@ -41,7 +41,7 @@ function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer2W)
 
 end
 
-function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::TapTransformer)
+function ybus!(Ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}, b::TapTransformer)
 
     Y_t = 1 / (b.r + b.x * 1im)
     Y_a = Y_t / (b.tap)
@@ -63,7 +63,7 @@ function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::TapTransformer)
 end
 
 # TODO: Add testing for Ybus of a system with a PS Transformer
-function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::PhaseShiftingTransformer)
+function ybus!(Ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}, b::PhaseShiftingTransformer)
 
     y = 1 / (b.r + b.x * 1im)
     y_a = y / (b.tap * exp(b.α * 1im * (π / 180)))
@@ -85,7 +85,7 @@ function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::PhaseShiftingTr
 end
 
 #=
-function ybus!(Ybus::SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer3W)
+function ybus!(Ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer3W)
 
     @warn "Data contains a 3W transformer"
 
