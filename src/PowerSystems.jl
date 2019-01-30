@@ -7,6 +7,7 @@ module PowerSystems
 
 export PowerSystem
 export Bus
+export LoadZones
 
 export Branch
 export Network
@@ -102,7 +103,7 @@ include("utils/IO/base_checks.jl")
 include("models/topological_elements.jl")
 include("models/forecasts.jl")
 include("models/branches.jl")
-include("models/network.jl")
+#include("models/network.jl")
 
 # Static types
 include("models/generation.jl")
