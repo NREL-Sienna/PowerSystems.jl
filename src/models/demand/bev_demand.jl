@@ -1,6 +1,5 @@
 # Import modules.
-using Dates
-using TimeSeries
+using Dates, TimeSeries
 
 
 """

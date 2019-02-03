@@ -28,4 +28,5 @@ PowerSystems.StaticLoad and PowerSystems.InterruptibleLoad.
 
 
 include("demand/demand.jl")
+include("demand/stationary_inflexible.jl")
 include("demand/bev_demand.jl")
