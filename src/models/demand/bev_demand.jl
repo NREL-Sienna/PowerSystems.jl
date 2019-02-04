@@ -1,3 +1,6 @@
+# Demands like BEVs, where there is some flexbility, but also hard constraints.
+
+
 # Import modules.
 using Dates, TimeSeries
 
@@ -16,7 +19,7 @@ This records the location of the demand and its consumption of its stored energy
 - `consumptions`       : time/event series of consumption rate of the vehicle [energy/time].
 - `batterymin`         : constraint on minimum battery level [energy].
 - `batterymax`         : constraint on maximum battery level [energy].
-- `timeboundary`       : `nothing` for cyclic boundary conditions in time, or a tuple of minimum and maximum storage allowed at the time boundaries [energy].
+- `timeboundary`       : `nothing` for cyclic boundary conditions in time, or a tuple of minimum and maximum battery level allowed at the time boundaries [energy].
 - `chargeratemax`      : constraint on maximum charging rate of the battery [energy/time].
 - `dischargeratemax`   : constraint on maximum discharge rate of the battery, for V2G [energy/time].
 - `chargeefficiency`   : efficiency of charging the battery [energy/energy].
@@ -24,7 +27,7 @@ This records the location of the demand and its consumption of its stored energy
 
 # Example
 ```
-vehicledemand = BevDemand(
+example = BevDemand(
     TimeArray(
         [Time(0)   , Time(8)   , Time(9)       , Time(17) , Time(18)  ],
         ["Home #23", "Road #14", "Workplace #3", "Road #9", "Home #23"]
@@ -40,7 +43,7 @@ vehicledemand = BevDemand(
 )
 ```
 """
-struct BevDemand{T <: TimeType, L}
+struct BevDemand{T,L} <: FlexibleDemand{T,L}
     locations           :: MobileDemand{T,L}
     demands             :: TemporalDemand{T}
     storagemin          :: Float64
@@ -50,4 +53,12 @@ struct BevDemand{T <: TimeType, L}
     dischargeratemax    :: Float64
     chargeefficiency    :: Float64
     dischargeefficiency :: Float64
+end
+
+
+"""
+The "envelope" of minimum and maximum allowable demands at each time pont, with a location for the demand.
+"""
+function envelope(demand :: BevDemand{T,L}) :: LocatedEnvelope{T,L} where L where T <: TimeType
+    error("TO BE IMPLEMENTED")
 end

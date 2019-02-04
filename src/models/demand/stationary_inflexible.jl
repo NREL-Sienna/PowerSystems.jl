@@ -2,7 +2,11 @@
 
 
 # Import packages.
+
 using Dates
+
+
+# Demand without flexibility.
 
 
 """
@@ -14,16 +18,16 @@ A stationary demand that has no flexibility.
 
 # Example
 ```
-simple = StationaryInflexibleDemand(
+example = StationaryInflexibleDemand(
     "a fixed location",
     TimeArray(
         [Time(0), Time(8), Time(9), Time(17), Time(18)],
-        [     0.,     10.,      0.,      11.,       0.]
+        [     5.,     10.,      8.,      11.,       3.]
     )
 ) :: StationaryInflexibleDemand{Time,String}
 ```
 """
-struct StationaryInflexibleDemand{T <: TimeType, L} <: Demand
+struct StationaryInflexibleDemand{T,L} <: InflexibleDemand{T,L}
     location :: L
     demands  :: TemporalDemand{T}
 end
@@ -32,7 +36,7 @@ end
 """
 Time-varying demands and their locations.
 """
-function temporaldemands(demand :: StationaryInflexibleDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
+function demands(demand :: StationaryInflexibleDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     TimeArray(
         timestamp(demand.demands),
         map(x -> (demand.location, x), values(demand.demands))

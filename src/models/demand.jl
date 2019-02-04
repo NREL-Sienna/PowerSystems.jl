@@ -27,6 +27,15 @@ PowerSystems.StaticLoad and PowerSystems.InterruptibleLoad.
 =#
 
 
+# Abstract.
+
 include("demand/demand.jl")
+include("demand/inflexible.jl")
+include("demand/flexible.jl")
+
+
+# Concrete.
+
 include("demand/stationary_inflexible.jl")
+include("demand/interruptible.jl")
 include("demand/bev_demand.jl")
