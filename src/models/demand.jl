@@ -3,7 +3,7 @@
 #=
 WORK IN PROGRESS
 
-See https://github.com/NREL/PowerSystems.jl/tree/master/docs/src/man/demand.svg
+See https://github.com/NREL/PowerSystems.jl/tree/demand-response/docs/src/man/demand.svg
 for a type diagram.
 
 In order to handle PHEVs, buildings, home appliances, industrial facilities,

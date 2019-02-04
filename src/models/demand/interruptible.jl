@@ -37,6 +37,9 @@ end
 
 """
 The "envelope" of minimum and maximum allowable demands at each time pont, with a location for the demand.
+
+# Arguments
+- `demand :: InteruptibleDemand{T,L}`: the demand
 """
 function envelope(demand :: InterruptibleDemand{T,L}) :: LocatedEnvelope{T,L} where L where T <: TimeType
     TimeArray(

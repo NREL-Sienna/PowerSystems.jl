@@ -67,6 +67,9 @@ abstract type Demand{T <: TimeType, L} end
 The "envelope" of minimum and maximum allowable demands at each time pont, with a location for the demand.
 
 This must be implemented by subtypes of `Demand`.
+
+# Arguments
+- `demand :: Demand{T,L}`: the demand
 """
 function envelope(demand :: Demand{T,L}) :: LocatedEnvelope{T, L} where L where T <: TimeType
 end

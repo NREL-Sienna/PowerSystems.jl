@@ -39,6 +39,9 @@ end
 
 """
 Time-varying demands and their locations.
+
+# Arguments
+- `demand :: StationaryInflexibleDemand{T,L}`: the demand
 """
 function demands(demand :: StationaryInflexibleDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     TimeArray(

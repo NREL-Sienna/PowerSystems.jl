@@ -71,6 +71,9 @@ abstract type InflexibleDemand{T,L} <: Demand{T,L} end
 Time-varying demands and their locations.
 
 This must be implemented by subtypes of `InflexibleDemand`.
+
+# Arguments
+- `demand :: InflexibleDemand{T,L}`: the demand
 """
 function demands(demand :: InflexibleDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
 end
@@ -78,6 +81,9 @@ end
 
 """
 The "envelope" of minimum and maximum allowable demands at each time pont, with a location for the demand.
+
+# Arguments
+- `demand :: InflexibleDemand{T,L}`: the demand
 """
 function envelope(demand :: InflexibleDemand{T,L}) :: LocatedEnvelope{T,L} where L where T <: TimeType
     simple = demands(demand)
