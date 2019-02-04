@@ -1,12 +1,18 @@
 # Global method definition needs to be at top level in .7
+
+# Is this redefinition of Base.convert still needed? Looks like this is
+# implemented correctly in 1.0, and with correct throw of InexactError (here, I
+# get `ERROR: UndefVarError: Inexacterror not defined`), JJS 1/31/19
+
 # Convert bool to int
 Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(Inexacterror())
 #############################################
 
+"""
+Takes a PowerSystems dictionary and return an array of PowerSystems struct for
+Bus, Generator, Branch and load
+"""
 function ps_dict2ps_struct(data::Dict{String,Any})
-    """
-    Takes a PowerSystems dictionary and return an array of PowerSystems struct for Bus, Generator, Branch and load
-    """
     generators = Array{G where {G<:Generator},1}()
     storages = Array{S where {S<:Storage},1}()
     buses = Array{Bus,1}()
@@ -126,18 +132,19 @@ function _get_device(name, collection, devices = [])
     return devices
 end
 
+
+"""
+Arg:
+    Dataframes which includes a timerseries columns of either:
+        Year, Month, Day, Period
+      or
+        DateTime
+      or
+        nothing (creates a today referenced DateTime Column)
+Returns:
+    Dataframe with a DateTime columns
+"""
 function read_datetime(df; kwargs...)
-    """
-    Arg:
-        Dataframes which includes a timerseries columns of either:
-            Year, Month, Day, Period
-          or
-            DateTime
-          or
-            nothing (creates a today referenced DateTime Column)
-    Returns:
-        Dataframe with a DateTime columns
-    """
     if [c for c in [:Year,:Month,:Day,:Period] if c in names(df)] == [:Year,:Month,:Day,:Period]
         if Dates.Hour(DataFrames.maximum(df[:Period])) <= Dates.Hour(25)
             df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Dates.Hour(1) :
@@ -165,14 +172,14 @@ function read_datetime(df; kwargs...)
     return df
 end
 
+"""
+Arg:
+    Device dictionary - Generators
+    Dataframe contains device Realtime/Forecast TimeSeries
+Returns:
+    Device dictionary with timeseries added
+"""
 function add_time_series(Device_dict::Dict{String,Any}, df::DataFrames.DataFrame)
-    """
-    Arg:
-        Device dictionary - Generators
-        Dataframe contains device Realtime/Forecast TimeSeries
-    Returns:
-        Device dictionary with timeseries added
-    """
     for (device_key,device) in Device_dict
         if device_key in map(string, names(df))
             ts_raw = df[Symbol(device_key)]
@@ -214,15 +221,15 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
     return Device_dict
 end
 
+"""
+Arg:
+    Load dictionary
+    LoadZones dictionary
+    Dataframe contains device Realtime/Forecast TimeSeries
+Returns:
+    Device dictionary with timeseries added
+"""
 function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
-    """
-    Arg:
-        Load dictionary
-        LoadZones dictionary
-        Dataframe contains device Realtime/Forecast TimeSeries
-    Returns:
-        Device dictionary with timeseries added
-    """
     load_dict = data["load"]
 
     load_names = [string(l["name"]) for (k,l) in load_dict]
