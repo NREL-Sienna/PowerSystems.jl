@@ -12,7 +12,7 @@ using Dates, TimeSeries
 Demands that vary with time.
 
 # Type parameters
-`T <: TimeType`: timestamp
+- `T <: TimeType`: timestamp
 
 # Example
 ```
@@ -29,8 +29,8 @@ const TemporalDemand{T <: TimeType} = TimeArray{Float64,1,T,Array{Float64,1}}
 Locations where demand moves.
 
 # Type parameters
-`T <: TimeType`: timestamp
-`L`            : network location
+- `T <: TimeType`: timestamp
+- `L`            : network location
 
 # Example
 ```
@@ -47,8 +47,8 @@ const MobileDemand{T <: TimeType, L} = TimeArray{L,1,T,Array{L,1}}
 Demands that move.
 
 # Type parameters
-`T <: TimeType`: timestamp
-`L`            : network location
+- `T <: TimeType`: timestamp
+- `L`            : network location
 
 # Example
 ```
@@ -70,7 +70,7 @@ abstract type InflexibleDemand{T,L} <: Demand{T,L} end
 """
 Time-varying demands and their locations.
 
-This must be implemented by subtypes of `Demand`.
+This must be implemented by subtypes of `InflexibleDemand`.
 """
 function demands(demand :: InflexibleDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
 end

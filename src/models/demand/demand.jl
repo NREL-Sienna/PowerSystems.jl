@@ -20,7 +20,7 @@ using Dates, TimeSeries
 An "envelope" of minimum and maximum allowable demands at each time point.
 
 # Type parameters
-`T <: TimeType`: timestamp
+- `T <: TimeType`: timestamp
 
 # Example
 ```
@@ -37,8 +37,8 @@ const Envelope{T <: TimeType} = TimeArray{Tuple{Float64,Float64},1,T,Array{Tuple
 An "envelope" of minimum and maximum allowable demands at each time point, with a location for the demand.
 
 # Type parameters
-`T <: TimeType`: timestamp
-`L`            : network location
+- `T <: TimeType`: timestamp
+- `L`            : network location
 
 # Example
 ```
@@ -57,14 +57,16 @@ const LocatedEnvelope{T <: TimeType, L} = TimeArray{Tuple{L,Float64,Float64},1,T
 The most abstract type of demand.
 
 # Type parameters
-`T <: TimeType`: timestamp
-`L`            : network location
+- `T <: TimeType`: timestamp
+- `L`            : network location
 """
 abstract type Demand{T <: TimeType, L} end
 
 
 """
 The "envelope" of minimum and maximum allowable demands at each time pont, with a location for the demand.
+
+This must be implemented by subtypes of `Demand`.
 """
 function envelope(demand :: Demand{T,L}) :: LocatedEnvelope{T, L} where L where T <: TimeType
 end

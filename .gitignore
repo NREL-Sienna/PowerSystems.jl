@@ -16,3 +16,7 @@ docs/build/*
 data
 *.bak
 *~
+
+tmp/
+*.tmp
+*.sw?

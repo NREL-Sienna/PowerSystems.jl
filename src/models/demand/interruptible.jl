@@ -12,8 +12,12 @@ using Dates, TimeSeries
 A simple interruptible demand.
 
 # Type parameters
-`T <: TimeType`: timestamp
-`L`            : network location
+- `T <: TimeType`: timestamp
+- `L`            : network location
+
+# Fields
+- `location`: network location of the demand
+- `envelope`: timeseries of minimum and maximum allowable demands
 
 ```
 example = InterruptibleDemand(

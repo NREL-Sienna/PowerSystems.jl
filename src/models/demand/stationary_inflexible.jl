@@ -13,8 +13,12 @@ using Dates
 A stationary demand that has no flexibility.
 
 # Type parameters
-`T <: TimeType`: timestamp
-`L`            : network location
+- `T <: TimeType`: timestamp
+- `L`            : network location
+
+# Fields
+- `location`: network location of the demand
+- `demands` : timeseries of the demands
 
 # Example
 ```

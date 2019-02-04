@@ -45,9 +45,9 @@ example = BevDemand(
 """
 struct BevDemand{T,L} <: FlexibleDemand{T,L}
     locations           :: MobileDemand{T,L}
-    demands             :: TemporalDemand{T}
-    storagemin          :: Float64
-    storagemax          :: Float64
+    consumptions        :: TemporalDemand{T}
+    batterymin          :: Float64
+    batterymax          :: Float64
     timeboundary        :: Union{Tuple{Float64,Float64},Nothing}
     chargeratemax       :: Float64
     dischargeratemax    :: Float64

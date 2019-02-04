@@ -3,6 +3,9 @@
 #=
 WORK IN PROGRESS
 
+See https://github.com/NREL/PowerSystems.jl/tree/master/docs/src/man/demand.svg
+for a type diagram.
+
 In order to handle PHEVs, buildings, home appliances, industrial facilities,
 etc., in addition to BEVs, serveral new types and subtypes will be introduced.
 The organization of `FlexibleDemand` will change, but its numerical content will
