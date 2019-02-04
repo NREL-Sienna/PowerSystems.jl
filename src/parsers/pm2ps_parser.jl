@@ -1,12 +1,12 @@
 
 MAPPING_BUSNUMBER2INDEX = Dict{Int64, Int64}()
 
+""" 
+Takes a dictionary parsered by PowerModels and returns a PowerSystems
+dictionary.  Currently Supports MATPOWER and PSSE data files paresed by
+PowerModels
+"""
 function pm2ps_dict(data::Dict{String,Any})
-    """
-    Takes a dictionary parsered by PowerModels and returns a PowerSystems dictionary
-    Currently Supports MATPOWER and PSSE data files paresed by PowerModels
-
-    """
     if length(data["bus"]) < 1
         @error "There are no buses in this file" # TODO: raise error here?
     end
@@ -62,10 +62,10 @@ function pm2ps_dict(data::Dict{String,Any})
 end
 
 
+"""
+Creates a PowerSystems.Bus from a PowerSystems bus dictionary
+"""
 function make_bus(bus_dict::Dict{String,Any})
-    """
-    Creates a PowerSystems.Bus from a PowerSystems bus dictionary
-    """
     bus = Bus(bus_dict["number"],
                      bus_dict["name"],
                      bus_dict["bustype"],
@@ -77,11 +77,12 @@ function make_bus(bus_dict::Dict{String,Any})
      return bus
  end
 
- function find_bus(Buses::Dict{Int64,Any},device_dict::Dict{String,Any})
-    """
-    Finds the  bus dictionary where a Generator/Load is located or the from & to bus for a line/transformer
-    """
-  if haskey(device_dict, "t_bus")
+"""
+Finds the bus dictionary where a Generator/Load is located or the from & to bus
+for a line/transformer
+"""
+function find_bus(Buses::Dict{Int64,Any},device_dict::Dict{String,Any})
+    if haskey(device_dict, "t_bus")
         if haskey(device_dict, "f_bus")
             t_bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["t_bus"])]]
             f_bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["f_bus"])]]
