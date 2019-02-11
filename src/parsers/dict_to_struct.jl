@@ -155,8 +155,7 @@ function read_datetime(df; kwargs...)
         else
             @error "I don't know what the period length is, reformat timeseries"
         end
-
-        delete!(df, [:Year,:Month,:Day,:Period])
+        DataFrames.deletecols!(df, [:Year,:Month,:Day,:Period])
 
     elseif :DateTime in names(df)
         df[:DateTime] = Dates.DateTime(df[:DateTime])
