@@ -72,7 +72,7 @@ end
 
 ""
 function calc_max_cost_index(data::Dict{String,Any})
-    if ismultinetwork(data)
+    if ismultinetwork(data) # ismultinetwork is in im_io/data.jl
         max_index = 0
         for (i,nw_data) in data["nw"]
             nw_max_index = _calc_max_cost_index(nw_data)
@@ -235,7 +235,7 @@ function make_per_unit(data::Dict{String,Any})
     if !haskey(data, "per_unit") || data["per_unit"] == false
         data["per_unit"] = true
         mva_base = data["baseMVA"]
-        if ismultinetwork(data)
+        if ismultinetwork(data) 
             for (i,nw_data) in data["nw"]
                 _make_per_unit(nw_data, mva_base)
             end

@@ -6,21 +6,22 @@ end
 
 
 # Parser for Forecasts dat files
-function read_data_files(rootpath::String; kwargs...)
-    """
-    Read all forecast CSV's in the path provided, the struct of the data should follow this format
-    folder : PV
-                file : DAY_AHEAD
-                file : REAL_TIME
-    Folder name should be the device type
-    Files should only contain one real-time and day-ahead forecast
-    Args:
-        files: A string
-    Returns:
-        A dictionary with the CSV files as dataframes and folder names as keys
-    # TODO : Stochasti/Multiple scenarios
-    """
-    if :REGEX_FILE in keys(kwargs)
+"""
+Read all forecast CSV's in the path provided, the struct of the data should
+follow this format
+folder : PV
+            file : DAY_AHEAD
+            file : REAL_TIME
+Folder name should be the device type
+Files should only contain one real-time and day-ahead forecast
+Args:
+    files: A string
+Returns:
+    A dictionary with the CSV files as dataframes and folder names as keys
+# TODO : Stochasti/Multiple scenarios
+"""
+ function read_data_files(rootpath::String; kwargs...)
+   if :REGEX_FILE in keys(kwargs)
         REGEX_FILE = kwargs[:REGEX_FILE]
     else
         REGEX_FILE = r"(.*?)\.csv"
@@ -53,14 +54,15 @@ function read_data_files(rootpath::String; kwargs...)
     return DATA
 end
 
+"""
+Args:
+    PowerSystems Dictionary
+    Dictionary of all the data files
+Returns:
+    Returns an dictionary with Device name as key and PowerSystems Forecasts
+    dictionary as values
+"""
 function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
-    """
-    Args:
-        PowerSystems Dictionary
-        Dictionary of all the data files
-    Returns:
-        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
-    """
     if haskey(ts_dict,"load")
         ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
     else
@@ -108,17 +110,18 @@ function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::D
 end
 
  # -Parse csv file to dict
+"""
+Args:
+    Dictionary of all the data files
+    Length of the forecast - Week()/Dates.Day()/Dates.Hour()
+    Forecast horizon in hours - Int64
+    Array of PowerSystems devices in the systems - Renewable Generators and
+    Loads
+Returns:
+    Returns an dictionary with Device name as key and PowerSystems Forecasts
+    dictionary as values
+"""
 function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
-    """
-    Args:
-        Dictionary of all the data files
-        Length of the forecast - Week()/Dates.Day()/Dates.Hour()
-        Forecast horizon in hours - Int64
-        Array of PowerSystems devices in the systems - Renewable Generators and Loads
-
-    Returns:
-        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
-    """
     forecast = Dict{String,Any}()
     for device in Devices
         for (key_df,df) in time_series
@@ -137,16 +140,17 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
     return forecast
 end
 
+"""
+Args:
+    Dictionary of all the data files
+    Length of the forecast - Week()/Dates.Day()/Dates.Hour()
+    Forecast horizon in hours - Int64
+    Array of PowerSystems devices in the systems- Loads
+Returns:
+    Returns an dictionary with Device name as key and PowerSystems Forecasts
+    dictionary as values
+"""
 function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1})
-    """
-    Args:
-        Dictionary of all the data files
-        Length of the forecast - Week()/Dates.Day()/Dates.Hour()
-        Forecast horizon in hours - Int64
-        Array of PowerSystems devices in the systems- Loads
-    Returns:
-        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
-    """
     forecast = Dict{String,Any}()
     for device in Devices
         if haskey(time_series,"load")
@@ -162,18 +166,19 @@ function make_forecast_dict(name::String,time_series::Dict{String,Any},resolutio
 end
 
 
-function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
-    """
-    Args:
-        Dictionary of all the data files
-        Length of the forecast - Week()/Dates.Day()/Dates.Hour()
-        Forecast horizon in hours - Int64
-        Array of PowerSystems devices in the systems- Loads
-        Array of PowerSystems LoadZones
+"""
+Args:
+    Dictionary of all the data files
+    Length of the forecast - Week()/Dates.Day()/Dates.Hour()
+    Forecast horizon in hours - Int64
+    Array of PowerSystems devices in the systems- Loads
+    Array of PowerSystems LoadZones
 
-    Returns:
-        Returns an dictionary with Device name as key and PowerSystems Forecasts dictionary as values
-    """
+Returns:
+    Returns an dictionary with Device name as key and PowerSystems Forecasts
+    dictionary as values
+"""
+function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
     forecast = Dict{String,Any}()
     for device in Devices
         if haskey(time_series,"load")
@@ -193,13 +198,13 @@ end
 
 # - Parse Dict to Forecast Struct
 
+"""
+Args:
+    A PowerSystems forecast dictionary
+Returns:
+    A PowerSystems forecast stuct array
+"""
 function make_forecast_array(dict)
-    """
-    Args:
-        A PowerSystems forecast dictionary
-    Returns:
-        A PowerSystems forecast stuct array
-    """
     Forecasts = Array{Forecast}(undef, 0)
     for (device_key,device_dict) in dict
                 push!(Forecasts,Deterministic(device_dict["device"],device_dict["horizon"],
