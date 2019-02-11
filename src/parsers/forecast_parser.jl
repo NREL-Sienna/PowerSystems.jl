@@ -117,8 +117,7 @@ Args:
     Forecast horizon in hours - Int64
     Array of PowerSystems devices in the systems - Renewable Generators and
     Loads
-    Returns:
-
+Returns:
     Returns an dictionary with Device name as key and PowerSystems Forecasts
     dictionary as values
 """
