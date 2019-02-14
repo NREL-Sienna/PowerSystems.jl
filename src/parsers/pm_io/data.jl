@@ -15,7 +15,7 @@ end
 
 ""
 function calc_branch_y(branch::Dict{String,Any})
-    y = pinv(branch["br_r"] + im * branch["br_x"])
+    y = LinearAlgebra.pinv(branch["br_r"] + im * branch["br_x"])
     g, b = real(y), imag(y)
     return g, b
 end
@@ -624,7 +624,7 @@ function check_thermal_limits(data::Dict{String,Any})
                 r = branch["br_r"]
                 x = branch["br_x"]
                 z = r + im * x
-                y = pinv(z)
+                y = LinearAlgebra.pinv(z)
                 y_mag = abs.(y[c,c])
 
                 fr_vmax = data["bus"][string(branch["f_bus"])]["vmax"][c]
@@ -690,7 +690,7 @@ function check_current_limits(data::Dict{String,Any})
                 r = branch["br_r"]
                 x = branch["br_x"]
                 z = r + im * x
-                y = pinv(z)
+                y = LinearAlgebra.pinv(z)
                 y_mag = abs.(y[c,c])
 
                 fr_vmax = data["bus"][string(branch["f_bus"])]["vmax"][c]

@@ -165,7 +165,7 @@ Base.:^(a::MultiConductorMatrix, b::AbstractFloat) = MultiConductorMatrix(a.valu
 
 
 LinearAlgebra.inv(a::MultiConductorMatrix) = MultiConductorMatrix(inv(a.values))
-LinearAlgebra.pinv(a::MultiConductorMatrix) = MultiConductorMatrix(pinv(a.values))
+LinearAlgebra.pinv(a::MultiConductorMatrix) = MultiConductorMatrix(LinearAlgebra.pinv(a.values))
 
 Base.real(a::MultiConductorVector) = MultiConductorVector(real(a.values))
 Base.real(a::MultiConductorMatrix) = MultiConductorMatrix(real(a.values))
