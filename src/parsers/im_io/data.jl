@@ -7,7 +7,7 @@ function update_data!(data::Dict{String,Any}, new_data::Dict{String,Any})
             error("update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
         end
     else
-        warn(LOGGER, "running update_data with data that does not include per_unit field, units may be incorrect")
+        @warn "running update_data with data that does not include per_unit field, units may be incorrect"
     end
     _update_data!(data, new_data)
 end
@@ -40,11 +40,11 @@ function im_replicate(sn_data::Dict{String,Any}, count::Int; global_keys::Set{St
     end
 
     if length(global_keys) <= 0
-        warn(LOGGER, "deprecation warning, calls to replicate should explicitly specify a set of global_keys")
+        @warn "deprecation warning, calls to replicate should explicitly specify a set of global_keys"
         # old default
         for (k,v) in sn_data
              if !(typeof(v) <: Dict)
-                warn(LOGGER, "adding global key $(k)")
+                @warn "adding global key $(k)"
                 push!(global_keys, k)
              end
         end
@@ -92,7 +92,7 @@ component_table(data::Dict{String,Any}, component::String, field::String) = comp
 function _component_table(data::Dict{String,Any}, component::String, fields::Vector{String})
     comps = data[component]
     if !_iscomponentdict(comps)
-        error(LOGGER, "$(component) does not appear to refer to a component list")
+        @error "$(component) does not appear to refer to a component list"
     end
 
     items = []

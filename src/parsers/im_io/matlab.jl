@@ -38,7 +38,7 @@ function parse_matlab_string(data_string::String; extended=false)
             function_name = value
         elseif occursin("=",line)
             if struct_name != nothing && !occursin("$(struct_name).", line)
-                warn(LOGGER, "assignments are expected to be made to \"$(struct_name)\" but given: $(line)")
+                @warn "assignments are expected to be made to \"$(struct_name)\" but given: $(line)"
             end
 
             if occursin("[", line)
@@ -61,7 +61,7 @@ function parse_matlab_string(data_string::String; extended=false)
                 matlab_dict[name] = value
             end
         else
-            warn(LOGGER, "Matlab parser skipping the following line:\n  $(line)")
+            @error "Matlab parser skipping the following line:\n  $(line)"
         end
 
         index += 1
@@ -183,7 +183,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
         if columns < 0
             columns = length(row_items)
         elseif columns != length(row_items)
-            error(LOGGER, "matrix parsing error, inconsistent number of items in each row\n$(row)")
+            @error "matrix parsing error, inconsistent number of items in each row\n$(row)"
         end
     end
 
@@ -201,10 +201,10 @@ function parse_matlab_data(lines, index, start_char, end_char)
         column_names_string = replace(column_names_string, "%column_names%" => "")
         column_names = split(column_names_string)
         if length(matrix[1]) != length(column_names)
-            error(LOGGER, "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)")
+            @error "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)"
         end
         if any([column_name == "index" for column_name in column_names])
-            error(LOGGER, "column name parsing error, \"index\" is a reserved column name \n$(column_names)")
+            @error "column name parsing error, \"index\" is a reserved column name \n$(column_names)"
         end
         matrix_dict["column_names"] = column_names
     end
@@ -288,7 +288,7 @@ function check_type(typ, value)
             value = parse(typ, value)
             return value
         catch e
-            error(LOGGER, "parsing error, the matlab string \"$(value)\" can not be parsed to $(typ) data")
+            @error "parsing error, the matlab string \"$(value)\" can not be parsed to $(typ) data"
             rethrow(e)
         end
     else
@@ -296,7 +296,7 @@ function check_type(typ, value)
             value = typ(value)
             return value
         catch e
-            error(LOGGER, "parsing error, the matlab value $(value) of type $(typeof(value)) can not be parsed to $(typ) data")
+            @error "parsing error, the matlab value $(value) of type $(typeof(value)) can not be parsed to $(typ) data"
             rethrow(e)
         end
     end
