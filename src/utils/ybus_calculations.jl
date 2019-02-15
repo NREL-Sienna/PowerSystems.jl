@@ -124,7 +124,7 @@ end
 
 function build_ybus(buscount::Int64, branches::Array{T}) where {T <: Branch}
 
-    Ybus = spzeros(Complex{Float64}, buscount, buscount)
+    Ybus = SparseArrays.spzeros(Complex{Float64}, buscount, buscount)
 
     for b in branches
 
