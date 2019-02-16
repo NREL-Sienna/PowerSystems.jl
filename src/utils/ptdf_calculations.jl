@@ -52,11 +52,11 @@ function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Flo
             y_a = y / (b.tap * exp(b.α * 1im * (π / 180)))
             inv_X[ix,ix] = 1/imag(y_a)
         end
-        
+
     end
     slacks = [num_bus[n.number] for n in nodes if n.bustype == "SF"]
     slack_position = slacks[1]
-    
+
 
     B = gemm('N','T', gemm('N','N',A[setdiff(1:end, slack_position),1:end] ,inv_X), A[setdiff(1:end, slack_position),1:end])
 
@@ -88,12 +88,12 @@ struct PTDF <: AbstractArray{Float64,2}
     axes::NTuple{2,Array}
     lookup::NTuple{2,Dict}
 
-    function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:Branch} 
+    function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:Branch}
 
         #Get axis names
         line_names = [branch.name for branch in branches]
         bus_names = [bus.name for bus in nodes]
-   
+
         S, A = _buildptdf(branches, nodes, dist_slack)
 
         axes = (line_names, bus_names)
