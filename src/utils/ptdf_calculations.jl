@@ -52,7 +52,6 @@ function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Flo
             y_a = y / (b.tap * exp(b.α * 1im * (π / 180)))
             inv_X[ix,ix] = 1/imag(y_a)
         end
-
     end
     slacks = [num_bus[n.number] for n in nodes if n.bustype == "SF"]
     slack_position = slacks[1]
