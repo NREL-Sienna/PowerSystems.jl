@@ -1,8 +1,20 @@
-function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1] ) where {T<:Branch}
+
+function make_ax_ref(ax::Array{String,1})
+    ref = Dict{String,Int}()
+    for (ix,el) in enumerate(ax)
+        if haskey(ref, el)
+            @error "Repeated index element $el. Index sets must have unique elements."
+        end
+        ref[el] = ix
+    end
+    return ref
+end
+
+
+function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1] ) where {T<:Branch}
 
     buscount = length(nodes)
     linecount = length(branches)
-    line_axis = [branch.name for branch in branches]
     num_bus = Dict{Int,Int}()
 
     for (ix,b) in enumerate(nodes)
@@ -44,7 +56,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
     end
     slacks = [num_bus[n.number] for n in nodes if n.bustype == "SF"]
     slack_position = slacks[1]
-    bus_axis = [bus.name for bus in nodes]
+    
 
     B = gemm('N','T', gemm('N','N',A[setdiff(1:end, slack_position),1:end] ,inv_X), A[setdiff(1:end, slack_position),1:end])
 
@@ -67,9 +79,37 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = Array{Float64,2}(undef,linecount,buscount)
     end
 
-    #S_ax = AxisArrays.AxisArray(S, AxisArrays.Axis{:branches}(line_axis), AxisArrays.Axis{:buses}(bus_axis))
-    #A_ax = AxisArrays.AxisArray(A, AxisArrays.Axis{:buses}(bus_axis), AxisArrays.Axis{:lines}(line_axis))
-
     return  S , A
 
 end
+
+struct PTDF <: AbstractArray{Float64,2}
+    data::Array{Float64,2}
+    axes::NTuple{2,Array}
+    lookup::NTuple{2,Dict}
+
+    function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:Branch} 
+
+        #Get axis names
+        line_names = [branch.name for branch in branches]
+        bus_names = [bus.name for bus in nodes]
+   
+        S, A = _buildptdf(branches, nodes, dist_slack)
+
+        axes = (line_names, bus_names)
+        look_up = (make_ax_ref(line_names),make_ax_ref(bus_names))
+
+        new(S, axes, look_up)
+
+    end
+
+end
+
+
+
+# AbstractArray interface
+Base.isempty(A::PTDF) = isempty(A.data)
+Base.size(A::PTDF) = size(A.data)
+Base.LinearIndices(A::PTDF) = error("PTDF does not support this operation.")
+Base.axes(A::PTDF) = A.axes
+Base.CartesianIndices(a::PTDF) = error("PTDF does not support this operation.")
