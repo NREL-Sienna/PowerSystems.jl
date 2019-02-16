@@ -79,29 +79,10 @@ function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Flo
         S = Array{Float64,2}(undef,linecount,buscount)
     end
 
+    #S_ax = AxisArrays.AxisArray(S, AxisArrays.Axis{:branches}(line_axis), AxisArrays.Axis{:buses}(bus_axis))
+    #A_ax = AxisArrays.AxisArray(A, AxisArrays.Axis{:buses}(bus_axis), AxisArrays.Axis{:lines}(line_axis))
+
     return  S , A
-
-end
-
-struct PTDF <: AbstractArray{Float64,2}
-    data::Array{Float64,2}
-    axes::NTuple{2,Array}
-    lookup::NTuple{2,Dict}
-
-    function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:Branch} 
-
-        #Get axis names
-        line_names = [branch.name for branch in branches]
-        bus_names = [bus.name for bus in nodes]
-   
-        S, A = _buildptdf(branches, nodes, dist_slack)
-
-        axes = (line_names, bus_names)
-        look_up = (make_ax_ref(line_names),make_ax_ref(bus_names))
-
-        new(S, axes, look_up)
-
-    end
 
 end
 
