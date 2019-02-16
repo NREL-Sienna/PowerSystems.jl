@@ -40,6 +40,7 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
             y_a = y / (b.tap * exp(b.α * 1im * (π / 180)))
             inv_X[ix,ix] = 1/imag(y_a)
         end
+        
     end
     slacks = [num_bus[n.number] for n in nodes if n.bustype == "SF"]
     slack_position = slacks[1]
@@ -66,9 +67,9 @@ function buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Floa
         S = Array{Float64,2}(undef,linecount,buscount)
     end
 
-    S_ax = AxisArrays.AxisArray(S, AxisArrays.Axis{:branches}(line_axis), AxisArrays.Axis{:buses}(bus_axis))
-    A_ax = AxisArrays.AxisArray(A, AxisArrays.Axis{:buses}(bus_axis), AxisArrays.Axis{:lines}(line_axis))
+    #S_ax = AxisArrays.AxisArray(S, AxisArrays.Axis{:branches}(line_axis), AxisArrays.Axis{:buses}(bus_axis))
+    #A_ax = AxisArrays.AxisArray(A, AxisArrays.Axis{:buses}(bus_axis), AxisArrays.Axis{:lines}(line_axis))
 
-    return  S_ax , A_ax
+    return  S , A
 
 end
