@@ -7,6 +7,8 @@ using Dates
 gl = global_logger()
 global_logger(ConsoleLogger(gl.stream, Logging.Error))
 
+include("data.jl")
+
 @testset "Check PowerSystems Data" begin
     @info "Check bus index"
     include("busnumberchecks.jl")

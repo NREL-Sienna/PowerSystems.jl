@@ -134,4 +134,8 @@ include("base.jl")
 include("utils/print.jl")
 include("utils/lodf_calculations.jl")
 
+# Download test data
+include("utils/data.jl")
+using .UtilsData
+
 end # module
