@@ -425,7 +425,7 @@ function branch_dict_parser(dict::Dict{String,Any},Branches::Array{B,1}) where {
                                     line_dict["r"],
                                     line_dict["x"],
                                     line_dict["b"],
-                                    line_dict["rate"],
+                                    float(line_dict["rate"]),
                                     line_dict["anglelimits"]
                                     ))
             end
