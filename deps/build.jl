@@ -1,5 +1,5 @@
 
 include(joinpath(@__DIR__, "../src/utils/data.jl"))
-using .UtilsData
+import .UtilsData: TestData
 
 download(TestData)

@@ -136,6 +136,6 @@ include("utils/lodf_calculations.jl")
 
 # Download test data
 include("utils/data.jl")
-using .UtilsData
+import .UtilsData: TestData
 
 end # module
