@@ -4,3 +4,9 @@
     piecewise_linear = 1
     polynomial = 2
 end
+
+
+"Thrown upon detection of user data that is not supported."
+struct DataFormatError <: Exception
+    msg::String
+end
