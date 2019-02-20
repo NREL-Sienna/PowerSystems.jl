@@ -294,7 +294,7 @@ function read_gen(data,Buses)
                     Generators["Renewable"]["WIND"][gen_name] = make_ren_gen(gen_name, d, bus)
                 end
             else
-                bus =find_bus(Buses, d)
+                bus = find_bus(Buses, d)
                 Generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
             end
         end
