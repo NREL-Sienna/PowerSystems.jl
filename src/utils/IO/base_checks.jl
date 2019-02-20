@@ -9,7 +9,7 @@ function orderedlimits(limits::Union{NamedTuple{(:min, :max), Tuple{Float64, Flo
         end
     end
 
-    limits
+    return limits
 end
 
 
