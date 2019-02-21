@@ -4,14 +4,15 @@ using Dates
 
 using PowerSystems
 
-include("data.jl")
 
-BASE_DIR = joinpath(dirname(Base.find_package("PowerSystems")), "..")
+BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
 DATA_DIR = joinpath(BASE_DIR, "data")
 FORECASTS_DIR = joinpath(DATA_DIR, "forecasts")
 MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
 PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
 RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
+
+download(PowerSystems.TestData)
 
 LOG_LEVELS = Dict(
     "Debug" => Logging.Debug,
@@ -60,7 +61,12 @@ macro includetests(testarg...)
 end
 
 gl = global_logger()
-global_logger(ConsoleLogger(gl.stream, LOG_LEVELS[get(ENV, "PS_LOG_LEVEL", "Error")]))
+level = get(ENV, "PS_LOG_LEVEL", "Error")
+log_level = get(LOG_LEVELS, level, nothing)
+if log_level == nothing
+    error("Invalid log level $level: Supported levels: $(values(LOG_LEVELS))")
+end
+global_logger(ConsoleLogger(gl.stream, log_level))
 
 # Testing Topological components of the schema
 @testset "Begin PowerSystems tests" begin

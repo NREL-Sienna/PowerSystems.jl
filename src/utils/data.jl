@@ -32,17 +32,24 @@ module UtilsData
 
     """
     Download Power System Data into a "data" folder in given argument path.
+    Skip the actual download if the folder already exists or if force=false.
     Defaults to the root of the PowerSystems package.
 
     Returns the downloaded folder name.
     """
-    function Base.download(::Type{TestData}, folder::AbstractString=joinpath(@__DIR__, "../..") |> abspath)
-        tempfilename = Base.download(POWERSYSTEMSTESTDATA_URL)
+    function Base.download(::Type{TestData};
+                           folder::AbstractString=joinpath(@__DIR__, "../..") |> abspath,
+                           force::Bool=false)
         directory = folder |> normpath |> abspath
-        mkpath(directory)
-        unzip(os, tempfilename, directory)
-        mv(joinpath(directory, "PowerSystemsTestData-master"), joinpath(directory, "data"), force=true)
-        return joinpath(directory, "data")
+        data = joinpath(directory, "data")
+        if !isdir(data) || force
+            tempfilename = Base.download(POWERSYSTEMSTESTDATA_URL)
+            mkpath(directory)
+            unzip(os, tempfilename, directory)
+            mv(joinpath(directory, "PowerSystemsTestData-master"), data, force=true)
+        end
+
+        return data
     end
 
     function unzip(::Type{<:BSD}, filename, directory)
