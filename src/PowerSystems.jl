@@ -68,6 +68,22 @@ export ProportionalReserve
 export StaticReserve
 export Transfer
 
+export BevDemand
+export Demand
+export Envelope
+export FlexibleDemand
+export InflexibleDemand
+export InterruptibleDemand
+export LocatedDemand
+export LocatedEnvelope
+export MobileDemand
+export StationaryInflexibleDemand
+export TemporalDemand
+export demands
+export earliestdemands
+export envelope
+export lastestdemands
+
 export parsestandardfiles
 export parse_file
 export ps_dict2ps_struct
@@ -101,6 +117,7 @@ abstract type TechnicalParams <: PowerSystemComponent end
 
 # Include utilities
 include("utils/IO/base_checks.jl")
+include("utils/timearray.jl")
 
 # PowerSystems models
 include("models/topological_elements.jl")
@@ -113,6 +130,7 @@ include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
+include("models/demand.jl")
 
 # Include Parsing files
 include("parsers/pm_io.jl")

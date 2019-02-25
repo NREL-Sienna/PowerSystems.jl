@@ -1,6 +1,11 @@
 # Utilities for `TimeArray`.
 
 
+# Import modules.
+
+using Dates, TimeSeries
+
+
 """
 Align two timeseries according to their times, padding values from earlier times.
 
@@ -21,7 +26,7 @@ y = TimeArray(
 z = align(x, y)
 ```
 """
-function align(x :: TimeArray{X,1,T,Array{X,1}}, y :: TimeArray{Y,1,T,Array{Y,1}}) :: TimeArray{Tuple{X,Y},1,T,Array{Tuple{X,Y},1}} where X where Y where T <: TimeType
+function aligntimes(x :: TimeArray{X,1,T,Array{X,1}}, y :: TimeArray{Y,1,T,Array{Y,1}}) :: TimeArray{Tuple{X,Y},1,T,Array{Tuple{X,Y},1}} where X where Y where T <: TimeType
     nx = length(x)
     ny = length(y)
     ix = 1
@@ -54,4 +59,28 @@ function align(x :: TimeArray{X,1,T,Array{X,1}}, y :: TimeArray{Y,1,T,Array{Y,1}
         end
     end
     TimeArray(zt, zv)
+end
+
+
+function fractionalhours(delta) :: Nanosecond
+    onehour = Time(1) - Time(0)
+    resolution = 3600
+    onehour * floor(Int64, resolution * delta) / resolution
+end
+
+
+function addhours(t :: Time, delta)
+    onehour = Time(1) - Time(0)
+    t1 = t.instant / onehour + delta
+    if t1 > 24
+        Time(23, 59, 59, 999, 999, 999)
+    else
+        t + fractionalhours(delta)
+    end
+end
+
+
+function addhours(t :: TimeType, delta)
+    onehour = Time(1) - Time(0)
+    t + delta * onehour
 end

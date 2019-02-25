@@ -29,17 +29,17 @@ This records the location of the demand and its consumption of its stored energy
 ```
 example = BevDemand(
     TimeArray(
-        [Time(0)          , Time(8)         , Time(9)              , Time(17)       , Time(18)         ], # [h]
-        [("Home #23", 1.4), ("Road #14", 0.), ("Workplace #3", 7.7), ("Road #9", 0.), ("Home #23", 1.4)]  # [kW]
+        [Time(0)          , Time(8)         , Time(9)              , Time(17)       , Time(18)         , Time(23,59,59)   ], # [h]
+        [("Home #23", 1.4), ("Road #14", 0.), ("Workplace #3", 7.7), ("Road #9", 0.), ("Home #23", 1.4), ("Home #23", 1.4)]  # [kW]
     ),
     TimeArray(
-        [Time(0), Time(8), Time(9), Time(17), Time(18)],
-        [     0.,     10.,      0.,      11.,       0.] # [kW]
+        [Time(0), Time(8), Time(9), Time(17), Time(18), Time(23,59,59)], # [h]
+        [     0.,     10.,      0.,      11.,       0.,             0.]  # [kW]
     ),
     0., 40., # [kWh]
     nothing,
     6.6, 0.,  # [kW]
-    0.90, 0.90 # [kWh/kWh]
+    0.90, 0. # [kWh/kWh]
 )
 ```
 """
@@ -72,9 +72,62 @@ The demand if charging takes place as early as possible.
 
     # Arguments
     - `demand :: BevDemand{T,L}`: the demand
+
+    # Returns
+    The demand over time.
 """
-function earliestdemands(demand :: BevDemand{T,L}) :: TemporalDemand{T,L} where L where T <: TimeType
-    error("TO BE IMPLEMENTED")
+function earliestdemands(demand :: BevDemand{T,L}) :: TemporalDemand{T} where L where T <: TimeType
+    if demand.timeboundary == nothing
+        b = earliestdemands(demand, demand.batterymax)[2]
+        earliestdemands(demand, b)[1]
+    else
+        earliestdemands(demand, demand.timeboundary[2])[1]
+    end
+end
+
+
+"""
+The demand if charging takes place as early as possible.
+
+    # Arguments
+    - `demand  :: BevDemand{T,L}`: the demand
+    - `initial :: Float64`       : the battery level at the start
+
+    # Returns
+    - The demand over time.
+    - The battery level at the last time.
+"""
+function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{TemporalDemand{T},Float64} where L where T <: TimeType
+    onehour = Time(1) - Time(0)
+    x = aligntimes(demand.locations, demand.consumptions)
+    xt = timestamp(x)
+    xv = values(x)
+    zt = Array{T,1}()
+    zv = Array{Float64,1}()
+    b = initial
+    tnow = xt[1]
+    ix = 2
+    print(1, "\t", xt[ix], "\t", b, "\n")
+    while ix <= length(x)
+        tnext = (xt[ix] - tnow) / onehour
+        ((_, charging), consumption) = xv[ix-1]
+        net = (b >= demand.batterymax ? 0 : charging) - consumption
+        tcrit = net > 0 ? (demand.batterymax - b) / net : Inf
+        push!(zt, tnow)
+        push!(zv, net + consumption)
+        if 0 < tcrit < tnext
+            b = b + tcrit * net
+            tnow = addhours(tnow, tcrit)
+        else
+            b = b + tnext * net
+            tnow = xt[ix]
+            ix = ix + 1
+        end
+    end
+    # FIXME: Should the last time point be output?
+    push!(zt, tnow)
+    push!(zv, b <= demand.batterymax ? xv[end][1][2] : 0)
+    (TimeArray(zt, zv), b)
 end
 
 
