@@ -32,7 +32,7 @@ module UtilsData
 
     """
     Download Power System Data into a "data" folder in given argument path.
-    Skip the actual download if the folder already exists or if force=false.
+    Skip the actual download if the folder already exists and force=false.
     Defaults to the root of the PowerSystems package.
 
     Returns the downloaded folder name.
