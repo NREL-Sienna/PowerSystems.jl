@@ -31,6 +31,12 @@ line between each group.
 Describe why something was done but not how.  The "how" should be apparent from
 the code itself.
 * Use complete sentences and proper grammar.
+* Include a space in between the "#" and the first word of the comment.
+* Use these tags in comments to describe known work:
+  * TODO:  tasks that need to be done
+  * FIXME:  code that needs refactoring
+  * BUG:  known bug that exists. Should include a bug ID and tracking system.
+  * PERF:  known performance limitation that needs improvement
 
 ## Constructors
 * Per guidance from Julia documentation, use inner constructors to enforce
@@ -59,12 +65,8 @@ builds.
 * Don't use magic numbers. Instead, define const globals or Enums (Julia
 @enum).
 
-## Macros
-TODO:  JuMP says to use ```@macro(x)``` instead of ```@macro x```.  Do we care?
-
 ## One-line Conditionals
-Instead of writing a complete if statement the Julia code base uses this idiom
-frequently:  ```<cond> && <statement>```
+Julia code base uses this idiom frequently:  ```<cond> && <statement>```
 [Example](https://docs.julialang.org/en/v1.0/manual/control-flow/#Short-Circuit-Evaluation-1):
 >
     function fact(n::Int)
@@ -73,7 +75,19 @@ frequently:  ```<cond> && <statement>```
        n * fact(n-1)
     end
 
-Do not use this idiom.  Write out the entire if statement.
+This is acceptable for simple code as in this example. However, in general,
+prefer to write out an entire if statement.
+
+Ternary operators provide a way to write clean, concise code.  Use good
+judgement.
+
+Good:
+>
+    y = x > 0 ? x : -x
+
+There are many examples in our codebase that use the form ```<cond> ?
+<statement> : <statement>```.  These can be expressed much more clearly in an
+if/else statement.
 
 ## Unit Tests
 All code should be tested.
