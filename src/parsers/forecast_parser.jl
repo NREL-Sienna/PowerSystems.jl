@@ -121,7 +121,9 @@ Returns:
     Returns an dictionary with Device name as key and PowerSystems Forecasts
     dictionary as values
 """
-function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{Generator,1})
+function make_forecast_dict(time_series::Dict{String,Any},
+                            resolution::Dates.Period, horizon::Int,
+                            Devices::Array{Generator,1})
     forecast = Dict{String,Any}()
     for device in Devices
         for (key_df,df) in time_series
@@ -150,7 +152,9 @@ Returns:
     Returns an dictionary with Device name as key and PowerSystems Forecasts
     dictionary as values
 """
-function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1})
+function make_forecast_dict(time_series::Dict{String,Any},
+                            resolution::Dates.Period, horizon::Int,
+                            Devices::Array{ElectricLoad,1})
     forecast = Dict{String,Any}()
     for device in Devices
         if haskey(time_series,"load")
@@ -178,7 +182,10 @@ Returns:
     Returns an dictionary with Device name as key and PowerSystems Forecasts
     dictionary as values
 """
-function make_forecast_dict(name::String,time_series::Dict{String,Any},resolution::Dates.Period,horizon::Int,Devices::Array{ElectricLoad,1},LoadZones::Array{PowerSystemDevice,1})
+function make_forecast_dict(time_series::Dict{String,Any},
+                            resolution::Dates.Period, horizon::Int,
+                            Devices::Array{ElectricLoad,1},
+                            LoadZones::Array{PowerSystemDevice,1})
     forecast = Dict{String,Any}()
     for device in Devices
         if haskey(time_series,"load")

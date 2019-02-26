@@ -7,8 +7,8 @@
         buses, generators, storage, branches, loads, loadZones, shunts, services  = PowerSystems.ps_dict2ps_struct(ps_dict);
         sys_5 = PowerSystems.PowerSystem(buses, generators, loads, branches, storage, ps_dict["baseMVA"]);
 
-        forecast_gen = PowerSystems.make_forecast_dict("DA", da_time_series["gen"], Dates.Day(1), 24, generators);
-        forecast_load = PowerSystems.make_forecast_dict("DA", da_time_series, Dates.Day(1), 24, loads);
+        forecast_gen = PowerSystems.make_forecast_dict(da_time_series["gen"], Dates.Day(1), 24, generators);
+        forecast_load = PowerSystems.make_forecast_dict(da_time_series, Dates.Day(1), 24, loads);
 
         forecast_struct = PowerSystems.make_forecast_array(forecast_gen);
         true
@@ -25,8 +25,8 @@
         buses, generators, storage, branches, loads, loadZones, shunts, services  = PowerSystems.ps_dict2ps_struct(ps_dict);
         sys_5 = PowerSystems.PowerSystem(buses, generators, loads, branches, storage, ps_dict["baseMVA"]);
 
-        forecast_gen = PowerSystems.make_forecast_dict("DA", da_time_series["gen"], Dates.Day(1), 24, generators);
-        forecast_load = PowerSystems.make_forecast_dict("RT", rt_time_series, Dates.Day(1), 288, loads, loadZones);
+        forecast_gen = PowerSystems.make_forecast_dict(da_time_series["gen"], Dates.Day(1), 24, generators);
+        forecast_load = PowerSystems.make_forecast_dict(rt_time_series, Dates.Day(1), 288, loads, loadZones);
 
         forecast_struct = PowerSystems.make_forecast_array(forecast_load);
         true
