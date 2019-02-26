@@ -1,7 +1,7 @@
 
 MAPPING_BUSNUMBER2INDEX = Dict{Int64, Int64}()
 
-""" 
+"""
 Takes a dictionary parsed by PowerModels and returns a PowerSystems
 dictionary.  Currently Supports MATPOWER and PSSE data files parsed by
 PowerModels
@@ -217,13 +217,13 @@ end
 
 function make_thermal_gen(gen_name, d, bus)
     model = GeneratorCostModel(d["model"])
-    if model == piecewise_linear::GeneratorCostModel
+    if model == PIECEWISE_LINEAR::GeneratorCostModel
         cost_component = d["cost"]
         power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
         cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
         cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
         fixedcost = cost[1][2]
-    elseif model == polynomial::GeneratorCostModel
+    elseif model == POLYNOMIAL::GeneratorCostModel
         if d["ncost"] == 0
             cost = x-> 0
         elseif d["ncost"] == 1
@@ -242,7 +242,7 @@ function make_thermal_gen(gen_name, d, bus)
         fixedcost = cost(d["pmin"])
     end
 
-    # GitHub #148: ramp_agc isn't always present. This value may not be correct.
+    # TODO GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_agc = get(d, "ramp_agc", 0.0)
     thermal_gen = Dict{String,Any}("name" => gen_name,
                                     "available" => d["gen_status"],
