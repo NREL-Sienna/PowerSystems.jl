@@ -160,14 +160,17 @@ Lodf_5 = [-1.0000 0.3448 0.3071 -1.0000 -1.0000 -0.3071;
         -1.0000 0.3448 0.3071 -1.0000 -1.0000 -0.3071;
         -0.4571 -0.6552 1.0000 -0.4571 -0.4571 -1.0000;]
 
-P5, A5 = PowerSystems.buildptdf(branches5, nodes5);
-P14, A14 = PowerSystems.buildptdf(branches14, nodes14);
-#PRTS = PowerSystems.buildptdf(branches_gmlc, nodes_gmlc)
 
-L5 = PowerSystems.buildlodf(branches5,nodes5) ;
+@time @testset "Network matrices" begin
+    P5, A5 = PowerSystems.buildptdf(branches5, nodes5);
+    @test maximum(P5.data - S5_slackB4) <= 1e-3
 
-maximum(P5.data - S5_slackB4) <= 1e-3
-maximum(P14.data - S14_slackB1) <= 1e-3
-maximum(L5 - Lodf_5) <= 1e-3
-#maximum(PTRS - SRTS_GMLC) <= 1e-6
+    P14, A14 = PowerSystems.buildptdf(branches14, nodes14);
+    @test maximum(P14.data - S14_slackB1) <= 1e-3
 
+    L5 = PowerSystems.buildlodf(branches5,nodes5)
+    @test maximum(L5 - Lodf_5) <= 1e-3
+
+    #PRTS = PowerSystems.buildptdf(branches_gmlc, nodes_gmlc)
+    #@test maximum(PTRS - SRTS_GMLC) <= 1e-6
+end

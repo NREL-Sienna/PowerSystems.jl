@@ -99,6 +99,8 @@ abstract type PowerSystemDevice <: PowerSystemComponent end
 # supertype for generation technologies (thermal, renewable, etc.)
 abstract type TechnicalParams <: PowerSystemComponent end
 
+include("common.jl")
+
 # Include utilities
 include("utils/IO/base_checks.jl")
 

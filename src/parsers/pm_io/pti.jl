@@ -253,7 +253,7 @@ function parse_line_element!(data::Dict, elements::Array, section::AbstractStrin
             element = popfirst!(elements)
         catch message
             if isa(message, ArgumentError)
-                debug(LOGGER, "Have run out of elements in $section at $field")
+                @debug "Have run out of elements in $section at $field"
                 push!(missing, field)
                 continue
             end
@@ -323,8 +323,8 @@ function get_line_elements(line::AbstractString)::Array
     matches = collect((m.match for m = eachmatch(match_string, line, overlap=false)))
     #matches = matchall(match_string, line)
 
-    debug(LOGGER, "$line")
-    debug(LOGGER, "$matches")
+    @debug "$line"
+    @debug "$matches"
 
     elements = []
     comment = ""
@@ -361,7 +361,7 @@ function parse_pti_data(data_io::IO, sections::Array)
     section_data = Dict{String,Any}()
 
     for (line_number, line) in enumerate(data_lines)
-        debug(LOGGER, "$line_number: $line")
+        @debug "$line_number: $line"
 
         (elements, comment) = get_line_elements(line)
 
@@ -374,7 +374,7 @@ function parse_pti_data(data_io::IO, sections::Array)
             end
 
             match_string = r"\s*END OF ([\w\s-]+) DATA(?:, BEGIN ([\w\s-]+) DATA)?"
-            debug(LOGGER, "$comment")
+            @debug "$comment"
             matches = match(match_string, comment)
 
             if !isa(matches, Nothing)
@@ -409,7 +409,7 @@ function parse_pti_data(data_io::IO, sections::Array)
                 continue
             end
 
-            debug(LOGGER, join(["Section:", section], " "))
+            @debug join(["Section:", section], " ")
             if !(section in ["CASE IDENTIFICATION","TRANSFORMER","VOLTAGE SOURCE CONVERTER","MULTI-TERMINAL DC","TWO-TERMINAL DC","GNE DEVICE"])
                 section_data = Dict{String,Any}()
                 try
@@ -586,7 +586,7 @@ function parse_pti_data(data_io::IO, sections::Array)
             end
         end
         if subsection != ""
-            debug(LOGGER, "appending data")
+            @debug "appending data"
         end
         add_section_data!(pti_data, section_data, section)
     end
