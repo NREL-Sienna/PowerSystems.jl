@@ -79,10 +79,11 @@ export LocatedEnvelope
 export MobileDemand
 export StationaryInflexibleDemand
 export TemporalDemand
+export demandconstraints
 export demands
 export earliestdemands
 export envelope
-export lastestdemands
+export latestdemands
 
 export parsestandardfiles
 export parse_file

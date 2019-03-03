@@ -22,7 +22,7 @@ This records the location of the demand and its consumption of its stored energy
 - `timeboundary`       : `nothing` for cyclic boundary conditions in time, or a tuple of minimum and maximum battery level allowed at the time boundaries [energy]
 - `chargeratemax`      : constraint on maximum charging rate of the battery [energy/time]
 - `dischargeratemax`   : constraint on maximum discharge rate of the battery, for V2G [energy/time]
-- `chargeefficiency`   : efficiency of charging the battery [energy/energy]
+- `chargeefficiency`   : efficiency of charging the battery [energy/energy], applied to computations before the charging rate
 - `dischargeefficiency`: efficiency of discharging the battery, for V2G [energy/energy]
 
 # Example
@@ -77,6 +77,23 @@ end
 
 
 """
+Apply efficiency factors to relate energy at the vehicle to energy at the charger.
+
+# Arguments
+- `demand :: BevDemand{T,L}`: the demand
+
+# Returns
+- a function that converts energy at the vehicle to energy at the charger
+"""
+function applyefficiencies(demand :: BevDemand{T,L}) where L where T <: TimeType
+    function f(x)
+        x > 0 ? x / demand.chargeefficiency : x * demand.dischargeefficiency
+    end
+    f
+end
+
+
+"""
 The demand if charging takes place as early as possible.
 
     # Arguments
@@ -107,6 +124,7 @@ The demand if charging takes place as early as possible.
     - The battery level at the last time.
 """
 function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
+    eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.consumptions)
     xt = timestamp(x)
@@ -120,10 +138,10 @@ function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{
         tnext = (xt[ix] - tnow) / onehour
         ((_, charging), consumption) = xv[ix-1]
         charging1 = min(b >= demand.batterymax ? 0 : charging, demand.chargeratemax)
-        net = charging1 * demand.chargeefficiency - consumption
+        net = charging1 - consumption
         tcrit = net > 0 ? (demand.batterymax - b) / net : Inf
         push!(zt, tnow)
-        push!(zv, charging1)
+        push!(zv, eff(charging1))
         if 0 < tcrit < tnext
             b = b + tcrit * net
             tnow = addhours(tnow, tcrit)
@@ -170,6 +188,7 @@ The demand if charging takes place as late as possible.
     - The battery level at the first time.
 """
 function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
+    eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.consumptions)
     xt = timestamp(x)
@@ -184,8 +203,8 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
     while ix >= 1
         tnext = (tnow - xt[ix]) / onehour
         ((_, charging), consumption) = xv[ix]
-        charging1 = min(b >= demand.batterymax ? min(charging, consumption / demand.chargeefficiency) : charging, demand.chargeratemax)
-        net = charging1 * demand.chargeefficiency - consumption
+        charging1 = min(b >= demand.batterymax ? min(charging, consumption) : charging, demand.chargeratemax)
+        net = charging1 - consumption
         tcrit = net > 0 ? (demand.batterymax - b) / net : Inf
         if 0 < tcrit < tnext
             b = b + tcrit * net
@@ -196,7 +215,7 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
             ix = ix - 1
         end
         push!(zt, tnow)
-        push!(zv, charging1)
+        push!(zv, eff(charging1))
     end
     (
         aligntimes(map(v -> v[1], demand.locations), TimeArray(zt, zv)),
@@ -249,7 +268,10 @@ locateddemands = constraints.result()
 """
 function demandconstraints(demand :: BevDemand{T,L}) where L where T <: TimeType
 
+    eff = applyefficiencies(demand)
+
     onehour = Time(1) - Time(0)
+    eff = applyefficiencies(demand)
     x = aligntimes(demand.locations, demand.consumptions)
     xt = timestamp(x)
     xv = values(x)
@@ -259,13 +281,15 @@ function demandconstraints(demand :: BevDemand{T,L}) where L where T <: TimeType
     hour = map(t -> t.instant / onehour, xt)
     location = map(v -> v[1][1], xv)
     duration = (xt[2:NT] - xt[1:NP]) / onehour
-    chargemax = duration .* map(v -> min(v[1][2], demand.chargeratemax), xv[1:NP])
+    chargemin = duration .* map(v -> min(v[1][2], - demand.dischargeratemax), xv[1:NP])
+    chargemax = duration .* map(v -> min(v[1][2],   demand.chargeratemax)   , xv[1:NP])
     consumption = duration .* map(v -> v[2], xv[1:NP])
 
     model = Model()
 
-    @variable(model, charge[1:NP] >= 0)
-    @constraint(model, chargeconstraint[i=1:NP], charge[i] <= chargemax[i])
+    @variable(model, charge[1:NP])
+    @constraint(model, chargeconstraint[   i=1:NP], charge[i] <= chargemax[i])
+    @constraint(model, dischargeconstraint[i=1:NP], charge[i] >= chargemin[i])
 
     @variable(model, demand.batterymin <= battery[1:NT] <= demand.batterymax)
     if demand.timeboundary == nothing
@@ -275,7 +299,7 @@ function demandconstraints(demand :: BevDemand{T,L}) where L where T <: TimeType
         @constraint(model, boundaryrightconstraint, demand.timeboundary[2] <= battery[NT] <= demand.timeboundary[2])
     end
 
-    @constraint(model, balanceconstraint[i=1:NP], battery[i+1] == battery[i] + charge[i] * demand.chargeefficiency - consumption[i])
+    @constraint(model, balanceconstraint[i=1:NP], battery[i+1] == battery[i] + charge[i] - consumption[i])
 
     @objective(model, Max, battery[NT])
 
@@ -283,7 +307,18 @@ function demandconstraints(demand :: BevDemand{T,L}) where L where T <: TimeType
     getname(model, 1)
 
     function result() :: LocatedDemand{T,L}
-        TimeArray(xt, collect(zip(location, vcat(model.colVal[1:NP] ./ duration, NaN))))
+        TimeArray(
+            xt,
+            collect(
+                zip(
+                    location,
+                    vcat(
+                        eff.(model.colVal[1:NP] ./ duration),
+                        NaN
+                    )
+                )
+            )
+        )
     end
 
     (
