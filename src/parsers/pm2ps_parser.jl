@@ -1,14 +1,14 @@
 
 MAPPING_BUSNUMBER2INDEX = Dict{Int64, Int64}()
 
+"""
+Takes a dictionary parsed by PowerModels and returns a PowerSystems
+dictionary.  Currently Supports MATPOWER and PSSE data files parsed by
+PowerModels
+"""
 function pm2ps_dict(data::Dict{String,Any})
-    """
-    Takes a dictionary parsered by PowerModels and returns a PowerSystems dictionary
-    Currently Supports MATPOWER and PSSE data files paresed by PowerModels
-
-    """
     if length(data["bus"]) < 1
-        @error "There are no buses in this file" # TODO: raise error here?
+        throw(DataFormatError("There are no buses in this file."))
     end
     ps_dict = Dict{String,Any}()
     ps_dict["name"] = data["name"]
@@ -62,10 +62,10 @@ function pm2ps_dict(data::Dict{String,Any})
 end
 
 
+"""
+Creates a PowerSystems.Bus from a PowerSystems bus dictionary
+"""
 function make_bus(bus_dict::Dict{String,Any})
-    """
-    Creates a PowerSystems.Bus from a PowerSystems bus dictionary
-    """
     bus = Bus(bus_dict["number"],
                      bus_dict["name"],
                      bus_dict["bustype"],
@@ -77,11 +77,12 @@ function make_bus(bus_dict::Dict{String,Any})
      return bus
  end
 
- function find_bus(Buses::Dict{Int64,Any},device_dict::Dict{String,Any})
-    """
-    Finds the  bus dictionary where a Generator/Load is located or the from & to bus for a line/transformer
-    """
-  if haskey(device_dict, "t_bus")
+"""
+Finds the bus dictionary where a Generator/Load is located or the from & to bus
+for a line/transformer
+"""
+function find_bus(Buses::Dict{Int64,Any},device_dict::Dict{String,Any})
+    if haskey(device_dict, "t_bus")
         if haskey(device_dict, "f_bus")
             t_bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["t_bus"])]]
             f_bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["f_bus"])]]
@@ -215,25 +216,34 @@ function make_ren_gen(gen_name, d, bus)
 end
 
 function make_thermal_gen(gen_name, d, bus)
-    if d["model"] ==1
+    model = GeneratorCostModel(d["model"])
+    if model == PIECEWISE_LINEAR::GeneratorCostModel
         cost_component = d["cost"]
         power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
         cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
         cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
         fixedcost = cost[1][2]
-    elseif d["model"] ==2
-        if d["ncost"] == 2
+    elseif model == POLYNOMIAL::GeneratorCostModel
+        if d["ncost"] == 0
+            cost = x-> 0
+        elseif d["ncost"] == 1
+            cost = x-> d["cost"][1]
+        elseif d["ncost"] == 2
             cost = x-> d["cost"][1]*x + d["cost"][2]
         elseif d["ncost"] == 3
             cost = x-> d["cost"][1]*x^2 + d["cost"][2]*x + d["cost"][3]
         elseif d["ncost"] == 4
             cost = x-> d["cost"][1]*x^3 + d["cost"][2]*x^2 + d["cost"][3]*x + d["cost"][4]
+        else
+            throw(DataFormatError("invalid value for ncost: $(d["ncost"])"))
         end
-        fixedcost = cost(0)
-    else
-        cost = d["cost"]
-        fixedcost = 0.0
+
+        # TODO: Reviewers:  Is this correct?
+        fixedcost = cost(d["pmin"])
     end
+
+    # TODO GitHub #148: ramp_agc isn't always present. This value may not be correct.
+    ramp_agc = get(d, "ramp_agc", 0.0)
     thermal_gen = Dict{String,Any}("name" => gen_name,
                                     "available" => d["gen_status"],
                                     "bus" => make_bus(bus),
@@ -241,7 +251,7 @@ function make_thermal_gen(gen_name, d, bus)
                                                                 "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                                 "reactivepower" => d["qg"],
                                                                 "reactivepowerlimits" => (min=d["qmin"], max=d["qmax"]),
-                                                                "ramplimits" => (up=d["ramp_agc"],down=d["ramp_agc"]),
+                                                                "ramplimits" => (up=ramp_agc, down=ramp_agc),
                                                                 "timelimits" => nothing),
                                     "econ" => Dict{String,Any}("capacity" => d["pmax"],
                                                                 "variablecost" => cost,
@@ -284,7 +294,7 @@ function read_gen(data,Buses)
                     Generators["Renewable"]["WIND"][gen_name] = make_ren_gen(gen_name, d, bus)
                 end
             else
-                bus =find_bus(Buses,d)
+                bus = find_bus(Buses, d)
                 Generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
             end
         end

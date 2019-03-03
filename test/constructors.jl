@@ -1,44 +1,77 @@
-#Bus Constructor
-@test try tBus = Bus(); true finally end
-@test try tLoadZones = LoadZones(); true finally end
+@testset "Bus Constructors" begin
+    tBus = Bus()
+    tLoadZones = LoadZones()
+end
 
-#Generation Constructors
-@test try tEconThermal = EconThermal(); true finally end
-@test try tTechThermal = TechThermal(); true finally end
-@test try tThermalGen = ThermalDispatch(); true finally end
-@test try tThermalGenSeason = ThermalGenSeason(); true finally end
-@test try tTechHydro = TechHydro(); true finally end
-@test try tEconHydro = EconHydro(); true finally end
-@test try tHydroFix = HydroFix(); true finally end
-@test try tHydroCurtailment = HydroCurtailment(); true finally end
-@test try tHydroStorage = HydroStorage(); true finally end
-@test try tTechRenewable=TechRenewable(); true finally end
-@test try tEconRenewable = EconRenewable(); true finally end
-@test try tRenewableFix = RenewableFix(); true finally end
-@test try tRenewableFullDispatch = RenewableFullDispatch(); true finally end
-@test try tRenewableCurtailment = RenewableCurtailment(); true finally end
+@testset "Generation Constructors" begin
+    tEconThermal = EconThermal()
+    @test tEconThermal isa PowerSystems.PowerSystemComponent
+    tTechThermal = TechThermal()
+    @test tTechThermal isa PowerSystems.PowerSystemComponent
+    tThermalGen = ThermalDispatch()
+    @test tThermalGen isa PowerSystems.PowerSystemComponent
+    tThermalGenSeason = ThermalGenSeason()
+    @test tThermalGenSeason isa PowerSystems.PowerSystemComponent
+    tTechHydro = TechHydro()
+    @test tTechHydro isa PowerSystems.PowerSystemComponent
+    tEconHydro = EconHydro()
+    @test tEconHydro isa PowerSystems.PowerSystemComponent
+    tHydroFix = HydroFix()
+    @test tHydroFix isa PowerSystems.PowerSystemComponent
+    tHydroCurtailment = HydroCurtailment()
+    @test tHydroCurtailment isa PowerSystems.PowerSystemComponent
+    tHydroStorage = HydroStorage()
+    @test tHydroStorage isa PowerSystems.PowerSystemComponent
+    tTechRenewable = TechRenewable()
+    @test tTechRenewable isa PowerSystems.PowerSystemComponent
+    tEconRenewable = EconRenewable()
+    @test tEconRenewable isa PowerSystems.PowerSystemComponent
+    tRenewableFix = RenewableFix()
+    @test tRenewableFix isa PowerSystems.PowerSystemComponent
+    tRenewableFullDispatch = RenewableFullDispatch()
+    @test tRenewableFullDispatch isa PowerSystems.PowerSystemComponent
+    tRenewableCurtailment = RenewableCurtailment()
+    @test tRenewableCurtailment isa PowerSystems.PowerSystemComponent
+end
 
-#Storage Constructots
-@test try tStorage = GenericBattery(); true finally end
+@testset "Storage Constructors" begin
+    tStorage = GenericBattery()
+    @test tStorage isa PowerSystems.PowerSystemComponent
+end
 
-#Load Constructos
-@test try tPowerLoad = PowerLoad(); true finally end 
-@test try tPowerLoadPF = PowerLoadPF(); true finally end
-@test try tPowerLoad = PowerLoad("init", true, Bus(), 0.0, 0.0); true finally end 
-@test try tPowerLoadPF = PowerLoadPF("init", true, Bus(), 0.0, 1.0); true finally end
-@test try tLoad = InterruptibleLoad(); true finally end
+@testset "Load Constructors" begin
+    tPowerLoad = PowerLoad()
+    @test tPowerLoad isa PowerSystems.PowerSystemComponent
+    tPowerLoadPF = PowerLoadPF()
+    @test tPowerLoadPF isa PowerSystems.PowerSystemComponent
+    tPowerLoad = PowerLoad("init", true, Bus(), 0.0, 0.0)
+    @test tPowerLoad isa PowerSystems.PowerSystemComponent
+    tPowerLoadPF = PowerLoadPF("init", true, Bus(), 0.0, 1.0)
+    @test tPowerLoadPF isa PowerSystems.PowerSystemComponent
+    tLoad = InterruptibleLoad()
+    @test tLoad isa PowerSystems.PowerSystemComponent
+end
 
-#Branch Constructors
-@test try tLine = Line(); true finally end
-@test_skip try tMonitoredLine = MonitoredLine(); true finally end
-@test try tHVDCLine = HVDCLine(); true finally end
-@test try tVSCDCLine = VSCDCLine(); true finally end
-@test try tTransformer2W = Transformer2W(); true finally end
-@test try tTapTransformer = TapTransformer(); true finally end
-@test try tPhaseShiftingTransformer = PhaseShiftingTransformer(); true finally end
+@testset "Branch Constructors" begin
+    tLine = Line()
+    @test tLine isa PowerSystems.PowerSystemComponent
+    tMonitoredLine = MonitoredLine()
+    @test tMonitoredLine isa PowerSystems.PowerSystemComponent
+    tHVDCLine = HVDCLine()
+    @test tHVDCLine isa PowerSystems.PowerSystemComponent
+    tVSCDCLine = VSCDCLine()
+    @test tVSCDCLine isa PowerSystems.PowerSystemComponent
+    tTransformer2W = Transformer2W()
+    @test tTransformer2W isa PowerSystems.PowerSystemComponent
+    tTapTransformer = TapTransformer()
+    @test tTapTransformer isa PowerSystems.PowerSystemComponent
+    tPhaseShiftingTransformer = PhaseShiftingTransformer()
+    @test tPhaseShiftingTransformer isa PowerSystems.PowerSystemComponent
+end
 
-#Product Constructors
-@test try tProportionalReserve = ProportionalReserve(); true finally end
-@test try tStaticReserve = StaticReserve(); true finally end
-
-
+@testset "Product Constructors" begin
+    tProportionalReserve = ProportionalReserve()
+    @test tProportionalReserve isa PowerSystems.Service
+    tStaticReserve = StaticReserve()
+    @test tStaticReserve isa PowerSystems.Service
+end

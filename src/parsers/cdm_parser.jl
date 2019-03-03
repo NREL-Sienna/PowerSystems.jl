@@ -1,20 +1,21 @@
+"""
+Reads in all the data stored in csv files
+The general format for data is
+    folder:
+        gen.csv
+        branch.csv
+        bus.csv
+        ..
+        load.csv
+Args:
+    Path to folder with all the System data CSV files
+
+Returns:
+    Nested Data dictionary with key values as folder/file names and dataframes
+    as values
+
+"""
 function read_csv_data(file_path::String)
-    """
-    Reads in all the data stored in csv files
-    The general format for data is
-        folder:
-            gen.csv
-            branch.csv
-            bus.csv
-            ..
-            load.csv
-    Args:
-        Path to folder with all the System data CSV's files
-
-    Returns:
-        Nested Data dictionary with key values as folder/file names and dataframes as values
-
-    """
     files = readdir(file_path)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
@@ -90,25 +91,27 @@ function read_csv_data(file_path::String)
     return data
 end
 
+
+"""
+Args:
+    Dict with all the System data from CSV files ... see `read_csv_data()`'
+Returns:
+    A Power Systems Nested dictionary with keys as devices and values as data
+    dictionary necessary to construct the device structs
+    PS dictionary:
+        "Bus" => Dict(bus_no => Dict("name" =>
+                                     "number" => ... ) )
+        "Generator" => Dict( "Thermal" => Dict( "name" =>
+                                                "tech" => ...)
+                             "Hydro"  => ..
+                             "Renewable" => .. )
+        "Branch" => ...
+        "Load" => ...
+        "LoadZones" => ...
+        "BaseKV" => ..
+        ...
+"""
 function csv2ps_dict(data::Dict{String,Any})
-    """
-    Args:
-        Dict with all the System data from CSV files ... see `read_csv_data()`'
-    Returns:
-        A Power Systems Nested dictionary with keys as devices and values as data dictionary necessary to construct the device structs
-        PS dictionary:
-            "Bus" => Dict(bus_no => Dict("name" =>
-                                         "number" => ... ) )
-            "Generator" => Dict( "Thermal" => Dict( "name" =>
-                                                    "tech" => ...)
-                                 "Hydro"  => ..
-                                 "Renewable" => .. )
-            "Branch" => ...
-            "Load" => ...
-            "LoadZones" => ...
-            "BaseKV" => ..
-            ...
-    """
     ps_dict =Dict{String,Any}()
     if haskey(data,"bus")
         ps_dict["bus"] =  PowerSystems.bus_csv_parser(data["bus"])
@@ -193,25 +196,27 @@ function _format_fcdict(fc,obj_map)
     return paths
 end
 
+
+"""
+Args:
+    Path to folder with all the System data CSV's files
+Returns:
+    A Power Systems Nested dictionary with keys as devices and values as data
+    dictionary necessary to construct the device structs
+    PS dictionary:
+        "Bus" => Dict(bus_no => Dict("name" =>
+                                     "number" => ... ) )
+        "Generator" => Dict( "Thermal" => Dict( "name" =>
+                                                "tech" => ...)
+                             "Hydro"  => ..
+                             "Renewable" => .. )
+        "Branch" => ...
+        "Load" => ...
+        "LoadZones" => ...
+        "BaseKV" => ..
+        ...
+"""
 function csv2ps_dict(file_path::String)
-    """
-    Args:
-        Path to folder with all the System data CSV's files
-    Returns:
-        A Power Systems Nested dictionary with keys as devices and values as data dictionary necessary to construct the device structs
-        PS dictionary:
-            "Bus" => Dict(bus_no => Dict("name" =>
-                                         "number" => ... ) )
-            "Generator" => Dict( "Thermal" => Dict( "name" =>
-                                                    "tech" => ...)
-                                 "Hydro"  => ..
-                                 "Renewable" => .. )
-            "Branch" => ...
-            "Load" => ...
-            "LoadZones" => ...
-            "BaseKV" => ..
-            ...
-    """
     data =  read_csv_data(file_path)
     ps_dict = csv2ps_dict(data)
     return ps_dict
@@ -222,14 +227,19 @@ end
 #Bus data parser
 ###########
 
+
+"""
+Args:
+    A DataFrame with the same column names as in RTS_GMLC bus.csv file
+
+    "Bus ID" "Bus Name" "BaseKV" "Bus Type" "MW Load" "MVAR Load" "V Mag" "V
+    Angle" "MW Shunt G" "MVAR Shunt B" "Area"
+
+Returns:
+    A Nested Dictionary with keys as Bus number and values as bus data
+    dictionary with same keys as the device struct
+"""
 function bus_csv_parser(bus_raw,colnames = nothing)
-    """
-    Args:
-        A DataFrame with the same column names as in RTS_GMLC bus.csv file
-        "Bus ID"	"Bus Name"	"BaseKV"	"Bus Type"	"MW Load"	"MVAR Load"	"V Mag"	"V Angle"	"MW Shunt G"	"MVAR Shunt B"	"Area"
-    Returns:
-        A Nested Dictionary with keys as Bus number and values as bus data dictionary with same keys as the device struct
-    """
 
     if colnames isa Nothing
         need_cols = ["Bus ID", "Bus Name", "BaseKV", "Bus Type", "V Mag", "V Angle"]
@@ -256,14 +266,15 @@ end
 #Generator data parser
 ###########
 
+"""
+Args:
+    A DataFrame with the same column names as in RTS_GMLC gen.csv file
+    Parsed Bus PowerSystems dictionary
+Returns:
+    A Nested Dictionary with keys as generator types/names and values as
+    generator data dictionary with same keys as the device struct
+"""
 function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},colnames = nothing)
-    """
-    Args:
-        A DataFrame with the same column names as in RTS_GMLC gen.csv file
-        Parsed Bus PowerSystems dictionary
-    Returns:
-        A Nested Dictionary with keys as generator types/names and values as generator data dictionary with same keys as the device struct
-    """
     Generators_dict = Dict{String,Any}()
     Generators_dict["Thermal"] = Dict{String,Any}()
     Generators_dict["Hydro"] = Dict{String,Any}()
@@ -396,15 +407,15 @@ end
 #Branch data parser
 ###########
 
+"""
+Args:
+    A DataFrame with the same column names as in RTS_GMLC branch.csv file
+    Parsed Bus PowerSystems dictionary
+Returns:
+    A Nested Dictionary with keys as branch types/names and values as
+    line/transformer data dictionary with same keys as the device struct
+"""
 function branch_csv_parser(branch_raw,Buses,colnames=nothing)
-    """
-    Args:
-        A DataFrame with the same column names as in RTS_GMLC branch.csv file
-        Parsed Bus PowerSystems dictionary
-    Returns:
-        A Nested Dictionary with keys as branch types/names and values as line/transformer data dictionary with same keys as the device struct
-
-    """
 
     if colnames isa Nothing
         need_cols = ["From Bus", "To Bus", "Tr Ratio", "Cont Rating","UID","R","X","B"]
@@ -450,15 +461,15 @@ end
 #DC Branch data parser
 ###########
 
+"""
+Args:
+    A DataFrame with the same column names as in RTS_GMLC dc_branch.csv file
+    Parsed Bus PowerSystems dictionary
+Returns:
+    A Nested Dictionary with keys as dc_branch types/names and values as
+    dc_branch data dictionary with same keys as the device struct
+"""
 function dc_branch_csv_parser(dc_branch_raw,Buses,colnames=nothing)
-    """
-    Args:
-        A DataFrame with the same column names as in RTS_GMLC dc_branch.csv file
-        Parsed Bus PowerSystems dictionary
-    Returns:
-        A Nested Dictionary with keys as dc_branch types/names and values as dc_branch data dictionary with same keys as the device struct
-
-    """
 
     if colnames isa Nothing
         need_cols = ["UID","From Bus", "To Bus","From X Commutating", "From Tap Min", "From Tap Max","From Min Firing Angle","From Max Firing Angle", "To X Commutating", "To Tap Min", "To Tap Max","To Min Firing Angle","To Max Firing Angle", "Rating"]
@@ -505,19 +516,20 @@ end
 #Load data parser
 ###########
 
+"""
+Args:
+    A DataFrame with the same column names as in RTS_GMLC bus.csv file
+    Parsed Bus entry of PowerSystems dictionary
+    Parsed LoadZone entry of PowerSystems dictionary
+Optional Args:
+    DataFrame of LoadZone timeseries data
+    Dict of bus column names
+    Dict of load LoadZone timeseries column names
+Returns:
+    A Nested Dictionary with keys as load names and values as load data
+    dictionary with same keys as the device struct
+"""
 function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,LoadZone::Dict,load_raw=nothing,bus_colnames=nothing,load_colnames=nothing)
-    """
-    Args:
-        A DataFrame with the same column names as in RTS_GMLC bus.csv file
-        Parsed Bus entry of PowerSystems dictionary
-        Parsed LoadZone entry of PowerSystems dictionary
-    Optional Args:
-        DataFrame of LoadZone timeseries data
-        Dict of bus column names
-        Dict of load LoadZone timeseries column names
-    Returns:
-        A Nested Dictionary with keys as load names and values as load data dictionary with same keys as the device struct
-    """
     Loads_dict = Dict{String,Any}()
     load_zone = nothing
 
@@ -558,18 +570,19 @@ function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,LoadZone::Dic
 end
 
 
+"""
+Args:
+    A DataFrame with the same column names as in RTS_GMLC bus.csv file
+    Parsed Bus entry of PowerSystems dictionary
+Optional Args:
+    DataFrame of LoadZone timeseries data
+    Dict of bus column names
+    Dict of load LoadZone timeseries column names
+Returns:
+    A Nested Dictionary with keys as load names and values as load data
+    dictionary with same keys as the device struct
+"""
 function load_csv_parser(bus_raw::DataFrames.DataFrame,Buses::Dict,load_raw=nothing,bus_colnames=nothing,load_colnames=nothing)
-    """
-    Args:
-        A DataFrame with the same column names as in RTS_GMLC bus.csv file
-        Parsed Bus entry of PowerSystems dictionary
-    Optional Args:
-        DataFrame of LoadZone timeseries data
-        Dict of bus column names
-        Dict of load LoadZone timeseries column names
-    Returns:
-        A Nested Dictionary with keys as load names and values as load data dictionary with same keys as the device struct
-    """
     Loads_dict = Dict{String,Any}()
     load_zone = nothing
 
@@ -607,14 +620,15 @@ end
 #LoadZone data parser
 ###########
 
+"""
+Args:
+    A DataFrame with the same column names as in RTS_GMLC bus.csv file
+    Parsed Bus PowerSystems dictionary
+Returns:
+    A Nested Dictionary with keys as loadzone names and values as loadzone data
+    dictionary with same keys as the device struct
+"""
 function loadzone_csv_parser(bus_raw,Buses,colnames=nothing)
-    """
-    Args:
-        A DataFrame with the same column names as in RTS_GMLC bus.csv file
-        Parsed Bus PowerSystems dictionary
-    Returns:
-        A Nested Dictionary with keys as loadzone names and values as loadzone data dictionary with same keys as the device struct
-    """
     if colnames isa Nothing
         need_cols = ["MW Load", "MVAR Load", "Bus ID", "Area"]
         tbl_cols = string.(names(bus_raw))
@@ -643,15 +657,16 @@ end
 #reserves data parser
 ###########
 
+"""
+Args:
+    A DataFrame with the same column names as in RTS_GMLC reserves.csv file
+    A DataFrame with the same column names as in RTS_GMLC gen.csv file
+    A DataFrame with the same column names as in RTS_GMLC bus.csv file
+Returns:
+    A Nested Dictionary with keys as loadzone names and values as loadzone data
+    dictionary with same keys as the device struct
+"""
 function services_csv_parser(rsv_raw::DataFrames.DataFrame,gen_raw::DataFrames.DataFrame,bus_raw::DataFrames.DataFrame,colnames=nothing, gen_colnames = nothing,bus_colnames = nothing)
-    """
-    Args:
-        A DataFrame with the same column names as in RTS_GMLC reserves.csv file
-        A DataFrame with the same column names as in RTS_GMLC gen.csv file
-        A DataFrame with the same column names as in RTS_GMLC bus.csv file
-    Returns:
-        A Nested Dictionary with keys as loadzone names and values as loadzone data dictionary with same keys as the device struct
-    """
     if colnames isa Nothing
         need_cols = ["Reserve Product", "Timeframe (sec)", "Eligible Regions", "Eligible Gen Categories"]
         tbl_cols = string.(names(rsv_raw))
@@ -692,13 +707,14 @@ end
 
 # Remove missing values form dataframes
 #TODO : Remove "NA" Strings from the data created by CSV.read()
+"""
+Arg:
+    Any DataFrame with Missing values / "NA" strings that are either created by
+    readtable() or CSV.read()
+Returns:
+    DataFrame with missing values replaced by 0
+"""
 function remove_missing(df)
-    """
-    Arg:
-        Any DataFrame with Missing values / "NA" strings that are either created by readtable() or CSV.read()
-    Returns:
-        DataFrame with missing values replaced by 0
-    """
     for col in names(df)
         df[ismissing.(df[col]), col] = 0
     end

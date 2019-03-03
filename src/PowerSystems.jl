@@ -115,6 +115,8 @@ abstract type PowerSystemDevice <: PowerSystemComponent end
 # supertype for generation technologies (thermal, renewable, etc.)
 abstract type TechnicalParams <: PowerSystemComponent end
 
+include("common.jl")
+
 # Include utilities
 include("utils/IO/base_checks.jl")
 include("utils/timearray.jl")
@@ -151,5 +153,9 @@ include("base.jl")
 # Better printing
 include("utils/print.jl")
 include("utils/lodf_calculations.jl")
+
+# Download test data
+include("utils/data.jl")
+import .UtilsData: TestData
 
 end # module
