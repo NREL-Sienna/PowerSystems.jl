@@ -85,7 +85,7 @@ The demand if charging takes place as early as possible.
     # Returns
     The demand over time.
 """
-function earliestdemands(demand :: BevDemand{T,L}) :: TemporalDemand{T} where L where T <: TimeType
+function earliestdemands(demand :: BevDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     if demand.timeboundary == nothing
         b = earliestdemands(demand, demand.batterymax)[2]
         earliestdemands(demand, b)[1]
@@ -106,7 +106,7 @@ The demand if charging takes place as early as possible.
     - The demand over time.
     - The battery level at the last time.
 """
-function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{TemporalDemand{T},Float64} where L where T <: TimeType
+function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.consumptions)
     xt = timestamp(x)
@@ -135,7 +135,10 @@ function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{
     end
     push!(zt, tnow)
     push!(zv, NaN)
-    (TimeArray(zt, zv), b)
+    (
+        aligntimes(map(v -> v[1], demand.locations), TimeArray(zt, zv)),
+        b
+    )
 end
 
 
@@ -145,7 +148,7 @@ The demand if charging takes place as late as possible.
     # Arguments
     - `demand :: BevDemand{T,L}`: the demand
 """
-function latestdemands(demand :: BevDemand{T,L}) :: TemporalDemand{T} where L where T <: TimeType
+function latestdemands(demand :: BevDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     if demand.timeboundary == nothing
         b = latestdemands(demand, demand.batterymin)[2]
         latestdemands(demand, b)[1]
@@ -166,7 +169,7 @@ The demand if charging takes place as late as possible.
     - The demand over time.
     - The battery level at the first time.
 """
-function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{TemporalDemand{T},Float64} where L where T <: TimeType
+function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.consumptions)
     xt = timestamp(x)
@@ -195,7 +198,10 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Temp
         push!(zt, tnow)
         push!(zv, charging1)
     end
-    (TimeArray(zt, zv), b)
+    (
+        aligntimes(map(v -> v[1], demand.locations), TimeArray(zt, zv)),
+        b
+    )
 end
 
 
