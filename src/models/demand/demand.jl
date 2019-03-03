@@ -73,3 +73,22 @@ This must be implemented by subtypes of `Demand`.
 """
 function envelope(demand :: Demand{T,L}) :: LocatedEnvelope{T, L} where L where T <: TimeType
 end
+
+
+"""
+Represent demand constraints as a JuMP model.
+
+This must be implemented by subtypes of `Demand`.
+
+# Arguments
+- `demand :: Demand{T,L}`: the demand
+
+# Returns
+- `locations :: TimeArray{T,L}`   : location of the demand during each time interval
+- `model :: JuMP.Model`           : a JuMP model containing the constraints`
+- `result() :: LocatedDemand{T,}` : a function that results the located demand,
+                                    but which can only be called after the model
+                                    has been solved
+"""
+function demandconstraints(demand :: Demand{T,L}) where L where T <: TimeType
+end
