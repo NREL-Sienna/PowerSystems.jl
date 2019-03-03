@@ -5,6 +5,8 @@
 
 using Dates, TimeSeries
 
+import Base.map
+
 
 """
 Align two timeseries according to their times, padding values from earlier times.
@@ -83,4 +85,11 @@ end
 function addhours(t :: TimeType, delta)
     onehour = Time(1) - Time(0)
     t + delta * onehour
+end
+
+
+function map(f, x :: TimeArray{X,1,T,Array{X,1}}) where X where T <: TimeType
+    xt = timestamp(x)
+    xv = values(x)
+    TimeArray(xt, map(f, xv))
 end
