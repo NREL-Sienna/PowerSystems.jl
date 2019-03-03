@@ -64,6 +64,12 @@ function aligntimes(x :: TimeArray{X,1,T,Array{X,1}}, y :: TimeArray{Y,1,T,Array
 end
 
 
+"""
+Compute the time difference corresponding to a fractional number of hours.
+
+# Arguments
+- `delta` : the fractional number of hours
+"""
 function fractionalhours(delta) :: Nanosecond
     onehour = Time(1) - Time(0)
     resolution = 3600
@@ -71,7 +77,14 @@ function fractionalhours(delta) :: Nanosecond
 end
 
 
-function addhours(t :: Time, delta)
+"""
+Add a fractional number of hours to a time.
+
+# Arguments
+- `t :: Time`: the time
+- `delta`    : the number of hours to add
+"""
+function addhours(t :: Time, delta) :: Time
     onehour = Time(1) - Time(0)
     t1 = t.instant / onehour + delta
     if t1 > 24
@@ -82,12 +95,26 @@ function addhours(t :: Time, delta)
 end
 
 
-function addhours(t :: TimeType, delta)
+"""
+Add a fractional number of hours to a time.
+
+# Arguments
+- `t :: Time`: the time
+- `delta`    : the number of hours to add
+"""
+function addhours(t :: TimeType, delta) :: TimeType
     onehour = Time(1) - Time(0)
     t + delta * onehour
 end
 
 
+"""
+Map the values in a time array.
+
+# Arguments
+- `f`                                : the function to apply to the values
+- `x :: TimeArray{X,1,T,Array{x,1}}` : the time array
+"""
 function map(f, x :: TimeArray{X,1,T,Array{X,1}}) where X where T <: TimeType
     xt = timestamp(x)
     xv = values(x)
