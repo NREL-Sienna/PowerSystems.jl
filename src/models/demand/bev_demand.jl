@@ -64,7 +64,7 @@ The "envelope" of minimum and maximum allowable demands at each time pont, with 
 """
 function envelope(demand :: BevDemand{T,L}) :: LocatedEnvelope{T,L} where L where T <: TimeType
     map(
-        d -> (d[1][1], d[2][1], d[2][2]),
+        d -> (d[1][1], d[2][1][2], d[2][2][2]),
         aligntimes(
             demand.locations,
             aligntimes(
