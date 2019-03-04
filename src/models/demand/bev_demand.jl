@@ -38,7 +38,7 @@ example = BevDemand(
     ),
     0., 40., # [kWh]
     nothing,
-    6.6, 0.,  # [kW]
+    6.6, 0., # [kW]
     0.90, 0. # [kWh/kWh]
 )
 ```
@@ -228,7 +228,31 @@ end
 Represent demand constraints for a BEV as a JuMP model.
 
 # Arguments
-- `demand :: BevDemand{T,}`: the BEV demand
+- `demand :: BevDemand{T,L}`: the BEV demand
+
+# Returns
+- `locations :: TimeArray{T,L}`   : location of the BEV during each time interval
+- `model :: JuMP.Model`           : a JuMP model containing the constraints, where
+                                    `charge` is the kWh charge during the time
+                                    interval and `battery` is the batter level at
+                                    the start of the interval and where the start
+                                    of the intervals are given by `locations`
+- `result() :: LocatedDemand{T,}` : a function that results the located demand,
+                                    but which can only be called after the model
+                                    has been solved
+"""
+function demandconstraints(demand :: BevDemand{T,L}) where L where T <: TimeType
+    pricing = map(v -> 1., demand.consumptions)
+    demandconstraints(demand, pricing)
+end
+
+
+"""
+Represent demand constraints for a BEV as a JuMP model, minimizing the price paid.
+
+# Arguments
+- `demand :: BevDemand{T,L}`: the BEV demand
+- `prices :: TimeArray{T}`  : the electricity prices
 
 # Returns
 - `locations :: TimeArray{T,L}`   : location of the BEV during each time interval
@@ -256,34 +280,37 @@ example = BevDemand(
     ),
     0., 40., # [kWh]
     nothing,
-    6.6, 0.,  # [kW]
+    6.6, 0., # [kW]
     0.90, 0. # [kWh/kWh]
 )
 
-constraints = demandconstraints(example)
+pricing = TimeArray([Time(0), Time(12)], [10., 3.])
+
+constraints = demandconstraints(example, pricing)
 constraints.model.solver = ClpSolver()
 solve(constraints.model)
 locateddemands = constraints.result()
 ```
 """
-function demandconstraints(demand :: BevDemand{T,L}) where L where T <: TimeType
+function demandconstraints(demand :: BevDemand{T,L}, prices :: TimeArray{Float64,1,T,Array{Float64,1}}) where L where T <: TimeType
 
     eff = applyefficiencies(demand)
 
     onehour = Time(1) - Time(0)
     eff = applyefficiencies(demand)
-    x = aligntimes(demand.locations, demand.consumptions)
+    x = aligntimes(aligntimes(demand.locations, demand.consumptions), prices)
     xt = timestamp(x)
     xv = values(x)
 
     NT = length(x)
     NP = NT - 1
     hour = map(t -> t.instant / onehour, xt)
-    location = map(v -> v[1][1], xv)
+    location = map(v -> v[1][1][1], xv)
     duration = (xt[2:NT] - xt[1:NP]) / onehour
-    chargemin = duration .* map(v -> min(v[1][2], - demand.dischargeratemax), xv[1:NP])
-    chargemax = duration .* map(v -> min(v[1][2],   demand.chargeratemax)   , xv[1:NP])
-    consumption = duration .* map(v -> v[2], xv[1:NP])
+    chargemin = duration .* map(v -> min(v[1][1][2], - demand.dischargeratemax), xv[1:NP])
+    chargemax = duration .* map(v -> min(v[1][1][2],   demand.chargeratemax)   , xv[1:NP])
+    consumption = duration .* map(v -> v[1][2], xv[1:NP])
+    price = map(v -> v[2], xv[1:NP])
 
     model = Model()
 
@@ -301,7 +328,7 @@ function demandconstraints(demand :: BevDemand{T,L}) where L where T <: TimeType
 
     @constraint(model, balanceconstraint[i=1:NP], battery[i+1] == battery[i] + charge[i] - consumption[i])
 
-    @objective(model, Max, battery[NT])
+    @objective(model, Min, sum(price[i] * charge[i] for i = 1:NP))
 
     # FIXME: This is a workaround for lazy initialization of model fields.
     getname(model, 1)
