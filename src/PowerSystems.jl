@@ -79,7 +79,6 @@ export LocatedEnvelope
 export MobileDemand
 export StationaryInflexibleDemand
 export TemporalDemand
-export demandconstraints
 export demands
 export earliestdemands
 export envelope
