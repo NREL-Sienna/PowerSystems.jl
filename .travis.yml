@@ -32,5 +32,17 @@ script:
 
 after_success:
   # push coverage results to Codecov
-  - julia --project -e 'import Pkg; Pkg.add("Documenter"); include("docs/make.jl")'
-  - julia --project -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'using Pkg; cd(Pkg.dir("PowerSystems")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  # push coverage results to Codecov
+  - julia -e 'using Pkg; cd(Pkg.dir("PowerSystems")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+
+jobs:
+  include:
+    - stage: "Documentation"
+      julia: 1.0
+      os: linux
+      script:
+        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.build("PowerSystems"); Pkg.instantiate()'
+        - DOCUMENTER_DEBUG=true julia --project=docs/ docs/make.jl
+      after_success: skip
+
