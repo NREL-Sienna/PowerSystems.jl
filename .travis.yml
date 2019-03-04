@@ -31,9 +31,6 @@ script:
   - julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);"
 
 after_success:
-  # push coverage results to Codecov
-  - julia -e 'using Pkg; cd(Pkg.dir("PowerSystems")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
-  # push coverage results to Codecov
   - julia -e 'using Pkg; cd(Pkg.dir("PowerSystems")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 
 jobs:
