@@ -79,6 +79,7 @@ export LocatedEnvelope
 export MobileDemand
 export StationaryInflexibleDemand
 export TemporalDemand
+export aligntimes
 export demands
 export earliestdemands
 export envelope
