@@ -233,9 +233,6 @@ function populate_BEV_demand(data_location :: String)
     num_el = size(full_data["chargeratemax"])[1]
     
     populated_BEV_demand = Array{BevDemand}(undef,num_el)
-#     populated_BEV_demand = []
-    
-    println("number of elements ",num_el)
     
     for i in range(1,num_el)
         # Populating locations
@@ -268,14 +265,9 @@ function populate_BEV_demand(data_location :: String)
         chargeefficiency = full_data["chargeEfficiency"][i]
         dischargeefficiency = full_data["dischargeEfficiency"][i]
         
-        # Creating the BevDemand struct
-        # populated_BEV_demand[i] = BevDemand(locations, consumptions, batterymin, batterymax, timeboundary, chargeratemax,
-        #     dischargeratemax, chargeefficiency, dischargeefficiency)
-        
-        x = BevDemand(locations, consumptions, batterymin, batterymax, timeboundary, chargeratemax, dischargeratemax, 
-            chargeefficiency, dischargeefficiency)
-        
-        println("Finished entry ", i)
+        # Adding created BevDemand struct in array
+        populated_BEV_demand[i] = BevDemand(locations, consumptions, batterymin, batterymax, timeboundary, chargeratemax,
+            dischargeratemax, chargeefficiency, dischargeefficiency)
     end
     
     return populated_BEV_demand
