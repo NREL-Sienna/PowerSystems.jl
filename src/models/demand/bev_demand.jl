@@ -222,3 +222,61 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
         b
     )
 end
+
+"""
+Function to populate an array of BevDemand structs. Receives location of ".mat" file as string input
+"""
+# Create a function to populate the demand reponse data structure with mat file values  
+function populate_BEV_demand(data_location :: String)
+    full_data = matread(data_location)["FlexibleDemand"]
+    
+    num_el = size(full_data["chargeratemax"])[1]
+    
+    populated_BEV_demand = Array{BevDemand}(undef,num_el)
+#     populated_BEV_demand = []
+    
+    println("number of elements ",num_el)
+    
+    for i in range(1,num_el)
+        # Populating locations
+        num_el = size(full_data["locations"][i]["bus_id"])[1]
+        loc_tuples = Array{Tuple{String,Float64}}(undef,num_el)
+        loc_tuples = [(string("bus id #",full_data["locations"][i]["bus_id"][j]),
+                full_data["locations"][i]["max_charging_rate"][j]) for j in range(1,num_el)]
+        
+        #Processing the time stamp for the locations
+        num = size(full_data["locations"][i]["time_stamp"])[2]
+        temp_time_loc = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in 
+                range(1,num)]
+        time_stamp_loc = [Time(temp_time_loc[j][1],temp_time_loc[j][2]) for j in range(1,num)]
+        locations = TimeArray(time_stamp_loc, loc_tuples)
+
+        #Processing the data for consumption
+        num = size(full_data["consumptions"][i]["time_stamp"])[2]
+        temp_time = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in 
+                range(1,num)]
+        time_stamp = [Time(temp_time[j][1],temp_time[j][2]) for j in range(1,num)]
+        cons_val = [full_data["consumptions"][i]["consumptions_rates"][k] for k in (1:288)]
+        consumptions = TimeArray(time_stamp,
+            cons_val)
+
+        batterymin = full_data["storagemin"][i]
+        batterymax = full_data["storagemax"][i]
+        timeboundary = nothing
+        chargeratemax = full_data["chargeratemax"][i]
+        dischargeratemax = full_data["dischargeratemax"][i]
+        chargeefficiency = full_data["chargeEfficiency"][i]
+        dischargeefficiency = full_data["dischargeEfficiency"][i]
+        
+        # Creating the BevDemand struct
+        # populated_BEV_demand[i] = BevDemand(locations, consumptions, batterymin, batterymax, timeboundary, chargeratemax,
+        #     dischargeratemax, chargeefficiency, dischargeefficiency)
+        
+        x = BevDemand(locations, consumptions, batterymin, batterymax, timeboundary, chargeratemax, dischargeratemax, 
+            chargeefficiency, dischargeefficiency)
+        
+        println("Finished entry ", i)
+    end
+    
+    return populated_BEV_demand
+end
