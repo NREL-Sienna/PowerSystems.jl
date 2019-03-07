@@ -2,7 +2,7 @@
 
 
 # Import modules.
-using Dates, TimeSeries
+using Dates, MAT, TimeSeries
 
 
 """
@@ -224,33 +224,50 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
 end
 
 """
-Function to populate an array of BevDemand structs. Receives location of ".mat" file as string input
+Function to populate an array of BevDemand structs. Receives location of ".mat" file as string input.
+
+# Arguments
+- `data_location :: String`: the path of the file containing the BEV data
 """
-# Create a function to populate the demand reponse data structure with mat file values  
-function populate_BEV_demand(data_location :: String)
+function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,String}}
     full_data = matread(data_location)["FlexibleDemand"]
-    
+
     num_el = size(full_data["chargeratemax"])[1]
-    
+
     populated_BEV_demand = Array{BevDemand}(undef,num_el)
-    
+
+    # FIXME: These two flags are for workarounds to illegal instruction errors resulting from the use of MAT to read data.
+    workaround1 = true
+    workaround2 = true
+
     for i in range(1,num_el)
         # Populating locations
-        num_el = size(full_data["locations"][i]["bus_id"])[1]
-        loc_tuples = Array{Tuple{String,Float64}}(undef,num_el)
-        loc_tuples = [(string("bus id #",full_data["locations"][i]["bus_id"][j]),
-                full_data["locations"][i]["max_charging_rate"][j]) for j in range(1,num_el)]
-        
+        num = size(full_data["locations"][i]["bus_id"])[1]
+        if workaround1
+            num = parse(Int64, string(num))
+        end
+        loc_tuples = Array{Tuple{String,Float64}}(undef,num)
+        if workaround2
+            for j in range(1,num)
+                loc = string("bus id #",full_data["locations"][i]["bus_id"][j])
+                cha = parse(Float64, string(full_data["locations"][i]["max_charging_rate"][j]))
+                loc_tuples[j] = (loc, cha)
+            end
+        else
+            loc_tuples = [(string("bus id #",full_data["locations"][i]["bus_id"][j]),
+                    full_data["locations"][i]["max_charging_rate"][j]) for j in range(1,num)]
+        end
+
         #Processing the time stamp for the locations
         num = size(full_data["locations"][i]["time_stamp"])[2]
-        temp_time_loc = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in 
+        temp_time_loc = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in
                 range(1,num)]
         time_stamp_loc = [Time(temp_time_loc[j][1],temp_time_loc[j][2]) for j in range(1,num)]
         locations = TimeArray(time_stamp_loc, loc_tuples)
 
         #Processing the data for consumption
         num = size(full_data["consumptions"][i]["time_stamp"])[2]
-        temp_time = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in 
+        temp_time = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in
                 range(1,num)]
         time_stamp = [Time(temp_time[j][1],temp_time[j][2]) for j in range(1,num)]
         cons_val = [full_data["consumptions"][i]["consumptions_rates"][k] for k in (1:288)]
@@ -264,11 +281,11 @@ function populate_BEV_demand(data_location :: String)
         dischargeratemax = full_data["dischargeratemax"][i]
         chargeefficiency = full_data["chargeEfficiency"][i]
         dischargeefficiency = full_data["dischargeEfficiency"][i]
-        
+
         # Adding created BevDemand struct in array
         populated_BEV_demand[i] = BevDemand(locations, consumptions, batterymin, batterymax, timeboundary, chargeratemax,
             dischargeratemax, chargeefficiency, dischargeefficiency)
     end
-    
+
     return populated_BEV_demand
 end
