@@ -12,6 +12,7 @@ Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+MAT = "23992714-dd62-5051-b70f-ba57cb901cac"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
