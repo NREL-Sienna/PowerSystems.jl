@@ -84,6 +84,7 @@ export demands
 export earliestdemands
 export envelope
 export latestdemands
+export populate_BEV_demand
 
 export parsestandardfiles
 export parse_file
