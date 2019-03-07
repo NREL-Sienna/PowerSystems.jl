@@ -231,8 +231,9 @@ Function to populate an array of BevDemand structs. Receives location of ".mat" 
 """
 function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,String}}
     full_data = matread(data_location)["FlexibleDemand"]
-
-    num_el = size(full_data["chargeratemax"])[1]
+    
+    dim = size(full_data["chargeratemax"])
+    num_el = max(dim[1],dim[2])
 
     populated_BEV_demand = Array{BevDemand}(undef,num_el)
 
@@ -242,7 +243,8 @@ function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,St
 
     for i in range(1,num_el)
         # Populating locations
-        num = size(full_data["locations"][i]["bus_id"])[1]
+        dim = size(full_data["locations"][i]["bus_id"])
+        num = max(dim[1],dim[2])
         if workaround1
             num = parse(Int64, string(num))
         end
@@ -259,14 +261,17 @@ function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,St
         end
 
         #Processing the time stamp for the locations
-        num = size(full_data["locations"][i]["time_stamp"])[2]
+        dim = size(full_data["locations"][i]["time_stamp"])
+        num = max(dim[1],dim[2])
+        
         temp_time_loc = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in
                 range(1,num)]
         time_stamp_loc = [Time(temp_time_loc[j][1],temp_time_loc[j][2]) for j in range(1,num)]
         locations = TimeArray(time_stamp_loc, loc_tuples)
 
         #Processing the data for consumption
-        num = size(full_data["consumptions"][i]["time_stamp"])[2]
+        dim = size(full_data["consumptions"][i]["time_stamp"])
+        num = max(dim[1],dim[2])
         temp_time = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in
                 range(1,num)]
         time_stamp = [Time(temp_time[j][1],temp_time[j][2]) for j in range(1,num)]
