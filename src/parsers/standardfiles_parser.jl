@@ -7,7 +7,7 @@ function parsestandardfiles(file::String)
     # function `parse_file` is in pm_io/common.jl
     data = parse_file(file)
 
-    #make sure that data is mixed units (in pm_io/data.jl)
+    # make sure that data is mixed units (in pm_io/data.jl)
     make_mixed_units(data)
 
     # Check for at least one bus in input file
@@ -15,6 +15,7 @@ function parsestandardfiles(file::String)
         @error "There are no buses in this file"
     end
 
+    # in pm2ps_parser.jl
     data = pm2ps_dict(data)
 
     return data

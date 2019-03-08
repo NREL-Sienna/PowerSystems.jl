@@ -277,9 +277,24 @@ function read_gen(data,Buses)
         gen_name =[]
         type_gen =[]
         for (d_key,d) in data["gen"]
-            haskey(d,"fuel") ? fuel =d["fuel"] : haskey(data,"genfuel") ? fuel = data["genfuel"][d_key]["col_1"] : fuel = "generic"
-            haskey(d,"type") ? type_gen = d["type"] : haskey(data,"gentype") ? type_gen = data["gentype"][d_key]["col_1"] : type_gen = "generic"
-            haskey(d,"name") ? gen_name = d["name"] : haskey(d,"source_id") ? gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2]) : gen_name = d_key
+
+            if haskey(d,"fuel")
+                fuel = d["fuel"]
+            else
+                fuel = "generic"
+            end
+            if haskey(d,"type") 
+                type_gen = d["type"]
+            else
+                type_gen = "generic"
+            end
+            if haskey(d,"name")
+                gen_name = d["name"]
+            elseif haskey(d,"source_id")
+                gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2])
+            else
+                gen_name = d_key
+            end
 
             if uppercase(fuel) in ["HYDRO"] || uppercase(type_gen) in ["HYDRO","HY"]
                 bus = find_bus(Buses,d)

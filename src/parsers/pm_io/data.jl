@@ -1796,3 +1796,27 @@ function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
         end
     end
 end
+
+
+"""
+Move gentype and genfuel fields to be subfields of gen
+"""
+function move_genfuel_and_gentype!(data::Dict{String,Any})
+    ## this is not modifying the dict in place! how to do that?
+    
+    if haskey(data, "genfuel")
+        # presume that genfuel length equals gen length -- do we need to check?
+        for (key,val) in data["genfuel"]
+            data["gen"][key]["fuel"] = val["col_1"]
+        end
+    end
+    delete!(data, "genfuel")
+    if haskey(data, "gentype") 
+        # presume that genfuel length equals gen length -- do we need to check?
+        for (key,val) in data["gentype"]
+            data["gen"][key]["type"] = val["col_1"]
+        end
+    end
+    delete!(data, "gentype")
+    
+end

@@ -61,7 +61,7 @@ function parse_matlab_string(data_string::String; extended=false)
                 matlab_dict[name] = value
             end
         else
-            @error "Matlab parser skipping the following line:\n  $(line)"
+            @error "Matlab parser skipping line number $(index) consisting of:\n  $(line)"
         end
 
         index += 1
