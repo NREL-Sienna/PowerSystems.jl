@@ -138,8 +138,10 @@ function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{
     tnow = xt[ix-1]
     while ix <= length(x)
         tnext = (xt[ix] - tnow) / onehour
-        ((_, charging), consumption) = xv[ix-1]
-        charging1 = min(b >= demand.batterymax ? 0 : charging, demand.chargeratemax)
+        ((_, chargingac, chargingdc), consumption) = xv[ix-1]
+        chargingac1 = min(b >= demand.batterymax ? 0 : chargingac, demand.chargerateacmax)
+        chargingdc1 = min(b >= demand.batterymax ? 0 : chargingdc, demand.chargeratedcmax)
+        charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
         tcrit = net > 0 ? (demand.batterymax - b) / net : Inf
         push!(zt, tnow)
@@ -204,8 +206,10 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
     push!(zv, NaN)
     while ix >= 1
         tnext = (tnow - xt[ix]) / onehour
-        ((_, charging), consumption) = xv[ix]
-        charging1 = min(b >= demand.batterymax ? min(charging, consumption) : charging, demand.chargeratemax)
+        ((_, chargingac, chargingdc), consumption) = xv[ix]
+        chargingac1 = min(b >= demand.batterymax ? min(chargingac, consumption) : chargingac, demand.chargerateacmax)
+        chargingdc1 = min(b >= demand.batterymax ? min(chargingdc, consumption) : chargingdc, demand.chargeratedcmax)
+        charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
         tcrit = net > 0 ? (demand.batterymax - b) / net : Inf
         if 0 < tcrit < tnext
