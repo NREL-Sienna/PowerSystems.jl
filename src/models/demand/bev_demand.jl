@@ -15,12 +15,13 @@ This records the location of the demand and its consumption of its stored energy
 - `L`            : network location
 
 # Fields
-- `locations`          : time/event series of locations of the vehicle, and their maximum charging rate [energy/time]
+- `locations`          : time/event series of locations of the vehicle, and their maximum AC and DC charging rates [energy/time]
 - `consumptions`       : time/event series of consumption rate of the vehicle [energy/time]
 - `batterymin`         : constraint on minimum battery level [energy]
 - `batterymax`         : constraint on maximum battery level [energy]
 - `timeboundary`       : `nothing` for cyclic boundary conditions in time, or a tuple of minimum and maximum battery level allowed at the time boundaries [energy]
-- `chargeratemax`      : constraint on maximum charging rate of the battery [energy/time]
+- `chargerateacmax`    : constraint on maximum AC charging rate of the battery [energy/time]
+- `chargeratedcmax`    : constraint on maximum DC charging rate of the battery [energy/time]
 - `dischargeratemax`   : constraint on maximum discharge rate of the battery, for V2G [energy/time]
 - `chargeefficiency`   : efficiency of charging the battery [energy/energy], applied to computations before the charging rate
 - `dischargeefficiency`: efficiency of discharging the battery, for V2G [energy/energy]
@@ -30,7 +31,7 @@ This records the location of the demand and its consumption of its stored energy
 example = BevDemand(
     TimeArray(
         [Time(0)          , Time(8)         , Time(9)              , Time(17)       , Time(18)         , Time(23,59,59)   ], # [h]
-        [("Home #23", 1.4), ("Road #14", 0.), ("Workplace #3", 7.7), ("Road #9", 0.), ("Home #23", 1.4), ("Home #23", 1.4)]  # [kW]
+        [("Home #23", 1.4, 0.), ("Road #14", 0., 0.), ("Workplace #3", 7.7, 0.), ("Road #9", 0., 0.), ("Home #23", 1.4, 0.), ("Home #23", 1.4, 0.)]  # [kW]
     ),
     TimeArray(
         [Time(0), Time(8), Time(9), Time(17), Time(18), Time(23,59,59)], # [h]
@@ -38,18 +39,19 @@ example = BevDemand(
     ),
     0., 40., # [kWh]
     nothing,
-    6.6, 0., # [kW]
+    20., 50., 0., # [kW]
     0.90, 0. # [kWh/kWh]
 )
 ```
 """
 struct BevDemand{T,L} <: FlexibleDemand{T,L}
-    locations           :: MobileDemand{T,Tuple{L,Float64}}
+    locations           :: MobileDemand{T,Tuple{L,Float64,Float64}}
     consumptions        :: TemporalDemand{T}
     batterymin          :: Float64
     batterymax          :: Float64
     timeboundary        :: Union{Tuple{Float64,Float64},Nothing}
-    chargeratemax       :: Float64
+    chargerateacmax     :: Float64
+    chargeratedcmax     :: Float64
     dischargeratemax    :: Float64
     chargeefficiency    :: Float64 # FIXME: Technically, this is a joint property of the EVSE and the BEV.
     dischargeefficiency :: Float64
@@ -231,7 +233,7 @@ Function to populate an array of BevDemand structs. Receives location of ".mat" 
 """
 function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,String}}
     full_data = matread(data_location)["FlexibleDemand"]
-    
+
     dim = size(full_data["chargeratemax"])
     num_el = max(dim[1],dim[2])
 
@@ -263,7 +265,7 @@ function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,St
         #Processing the time stamp for the locations
         dim = size(full_data["locations"][i]["time_stamp"])
         num = max(dim[1],dim[2])
-        
+
         temp_time_loc = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in
                 range(1,num)]
         time_stamp_loc = [Time(temp_time_loc[j][1],temp_time_loc[j][2]) for j in range(1,num)]
