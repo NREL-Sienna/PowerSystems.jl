@@ -15,44 +15,38 @@ This records the location of the demand and its consumption of its stored energy
 - `L`            : network location
 
 # Fields
-- `locations`          : time/event series of locations of the vehicle, and their maximum charging rate [energy/time]
-- `consumptions`       : time/event series of consumption rate of the vehicle [energy/time]
-- `batterymin`         : constraint on minimum battery level [energy]
-- `batterymax`         : constraint on maximum battery level [energy]
-- `timeboundary`       : `nothing` for cyclic boundary conditions in time, or a tuple of minimum and maximum battery level allowed at the time boundaries [energy]
-- `chargeratemax`      : constraint on maximum charging rate of the battery [energy/time]
-- `dischargeratemax`   : constraint on maximum discharge rate of the battery, for V2G [energy/time]
-- `chargeefficiency`   : efficiency of charging the battery [energy/energy], applied to computations before the charging rate
-- `dischargeefficiency`: efficiency of discharging the battery, for V2G [energy/energy]
+- `locations`    : time/event series of locations of the vehicle, and their maximum AC and DC charging rates [energy/time]
+- `power`        : time/event series of consumption rate of the vehicle [energy/time]
+- `capacity`     : constraint on minimum and maximum battery level [energy]
+- `rate`         : constraint on minimum and maximum AC and DC charging rates of the battery [energy/time]
+- `efficiency`   : efficiency of charging the battery [energy/energy], applied to computations before the charging rate
+- `timeboundary` : `nothing` for cyclic boundary conditions in time, or a tuple of minimum and maximum battery level allowed at the time boundaries [energy]
 
 # Example
 ```
 example = BevDemand(
     TimeArray(
         [Time(0)          , Time(8)         , Time(9)              , Time(17)       , Time(18)         , Time(23,59,59)   ], # [h]
-        [("Home #23", 1.4), ("Road #14", 0.), ("Workplace #3", 7.7), ("Road #9", 0.), ("Home #23", 1.4), ("Home #23", 1.4)]  # [kW]
+        [("Home #23", (ac=1.4, dc=0.)), ("Road #14", (ac=0., dc=0.)), ("Workplace #3", (ac=7.7, dc=0.)), ("Road #9", (ac=0., dc=0.)), ("Home #23", (ac=1.4, dc=0.)), ("Home #23", (ac=1.4, dc=0.))]  # [kW]
     ),
     TimeArray(
         [Time(0), Time(8), Time(9), Time(17), Time(18), Time(23,59,59)], # [h]
         [     0.,     10.,      0.,      11.,       0.,             0.]  # [kW]
     ),
-    0., 40., # [kWh]
+    (min=0., max=40.), # [kWh]
+    (ac=(min=0., max=20.), dc=(min=0., max=50.)), # [kW]
+    (in=0.90, out=0.), # [kWh/kWh]
     nothing,
-    6.6, 0., # [kW]
-    0.90, 0. # [kWh/kWh]
 )
 ```
 """
 struct BevDemand{T,L} <: FlexibleDemand{T,L}
-    locations           :: MobileDemand{T,Tuple{L,Float64}}
-    consumptions        :: TemporalDemand{T}
-    batterymin          :: Float64
-    batterymax          :: Float64
-    timeboundary        :: Union{Tuple{Float64,Float64},Nothing}
-    chargeratemax       :: Float64
-    dischargeratemax    :: Float64
-    chargeefficiency    :: Float64 # FIXME: Technically, this is a joint property of the EVSE and the BEV.
-    dischargeefficiency :: Float64
+    locations    :: MobileDemand{T,Tuple{L,NamedTuple{(:ac, :dc),Tuple{Float64,Float64}}}}
+    power        :: TemporalDemand{T}
+    capacity     :: NamedTuple{(:min, :max),Tuple{Float64,Float64}}
+    rate         :: NamedTuple{(:ac, :dc),Tuple{NamedTuple{(:min, :max),Tuple{Float64,Float64}},NamedTuple{(:min, :max),Tuple{Float64,Float64}}}}
+    efficiency   :: NamedTuple{(:in, :out),Tuple{Float64,Float64}}
+    timeboundary :: Union{Tuple{Float64,Float64},Nothing}
 end
 
 
@@ -87,7 +81,7 @@ Apply efficiency factors to relate energy at the vehicle to energy at the charge
 """
 function applyefficiencies(demand :: BevDemand{T,L}) where L where T <: TimeType
     function f(x)
-        x > 0 ? x / demand.chargeefficiency : x * demand.dischargeefficiency
+        x > 0 ? x / demand.efficiency.in : x * demand.efficiency.out
     end
     f
 end
@@ -104,7 +98,7 @@ The demand if charging takes place as early as possible.
 """
 function earliestdemands(demand :: BevDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     if demand.timeboundary == nothing
-        b = earliestdemands(demand, demand.batterymax)[2]
+        b = earliestdemands(demand, demand.capacity.max)[2]
         earliestdemands(demand, b)[1]
     else
         earliestdemands(demand, demand.timeboundary[2])[1]
@@ -126,7 +120,7 @@ The demand if charging takes place as early as possible.
 function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
     eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
-    x = aligntimes(demand.locations, demand.consumptions)
+    x = aligntimes(demand.locations, demand.power)
     xt = timestamp(x)
     xv = values(x)
     zt = Array{T,1}()
@@ -136,10 +130,12 @@ function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{
     tnow = xt[ix-1]
     while ix <= length(x)
         tnext = (xt[ix] - tnow) / onehour
-        ((_, charging), consumption) = xv[ix-1]
-        charging1 = min(b >= demand.batterymax ? 0 : charging, demand.chargeratemax)
+        ((_, (chargingac, chargingdc)), consumption) = xv[ix-1]
+        chargingac1 = min(b >= demand.capacity.max ? 0 : chargingac, demand.rate.ac.max)
+        chargingdc1 = min(b >= demand.capacity.max ? 0 : chargingdc, demand.rate.dc.max)
+        charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
-        tcrit = net > 0 ? (demand.batterymax - b) / net : Inf
+        tcrit = net > 0 ? (demand.capacity.max - b) / net : Inf
         push!(zt, tnow)
         push!(zv, eff(charging1))
         if 0 < tcrit < tnext
@@ -168,7 +164,7 @@ The demand if charging takes place as late as possible.
 """
 function latestdemands(demand :: BevDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     if demand.timeboundary == nothing
-        b = latestdemands(demand, demand.batterymin)[2]
+        b = latestdemands(demand, demand.capacity.min)[2]
         latestdemands(demand, b)[1]
     else
         latestdemands(demand, demand.timeboundary[2])[1]
@@ -190,7 +186,7 @@ The demand if charging takes place as late as possible.
 function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
     eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
-    x = aligntimes(demand.locations, demand.consumptions)
+    x = aligntimes(demand.locations, demand.power)
     xt = timestamp(x)
     xv = values(x)
     zt = Array{T,1}()
@@ -202,10 +198,12 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
     push!(zv, NaN)
     while ix >= 1
         tnext = (tnow - xt[ix]) / onehour
-        ((_, charging), consumption) = xv[ix]
-        charging1 = min(b >= demand.batterymax ? min(charging, consumption) : charging, demand.chargeratemax)
+        ((_, (chargingac, chargingdc)), consumption) = xv[ix]
+        chargingac1 = min(b >= demand.capacity.max ? min(chargingac, consumption) : chargingac, demand.rate.ac.max)
+        chargingdc1 = min(b >= demand.capacity.max ? min(chargingdc, consumption) : chargingdc, demand.rate.dc.max)
+        charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
-        tcrit = net > 0 ? (demand.batterymax - b) / net : Inf
+        tcrit = net > 0 ? (demand.capacity.max - b) / net : Inf
         if 0 < tcrit < tnext
             b = b + tcrit * net
             tnow = addhours(tnow, - tcrit)
@@ -231,7 +229,7 @@ Function to populate an array of BevDemand structs. Receives location of ".mat" 
 """
 function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,String}}
     full_data = matread(data_location)["FlexibleDemand"]
-    
+
     dim = size(full_data["chargeratemax"])
     num_el = max(dim[1],dim[2])
 
@@ -263,7 +261,7 @@ function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,St
         #Processing the time stamp for the locations
         dim = size(full_data["locations"][i]["time_stamp"])
         num = max(dim[1],dim[2])
-        
+
         temp_time_loc = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in
                 range(1,num)]
         time_stamp_loc = [Time(temp_time_loc[j][1],temp_time_loc[j][2]) for j in range(1,num)]
