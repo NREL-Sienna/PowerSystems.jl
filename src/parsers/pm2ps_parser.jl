@@ -25,7 +25,7 @@ function pm2ps_dict(data::Dict{String,Any})
     Loads= read_loads(data,ps_dict["bus"])
     LoadZones= read_loadzones(data,ps_dict["bus"])
     @info "Reading generator data"
-    Generators= read_gen(data,ps_dict["bus"])
+    Generators= read_gen(data, ps_dict["bus"])
     @info "Reading branch data"
     Branches= read_branch(data,ps_dict["bus"])
     Shunts = read_shunt(data,ps_dict["bus"])
@@ -183,7 +183,7 @@ function read_loadzones(data,Buses)
     end
 end
 
-function make_hydro_gen(d,gen_name,bus)
+function make_hydro_gen(gen_name, d, bus)
     hydro =  Dict{String,Any}("name" => gen_name,
                             "available" => d["gen_status"], # change from staus to available
                             "bus" => make_bus(bus),
@@ -263,7 +263,17 @@ function make_thermal_gen(gen_name, d, bus)
     return thermal_gen
 end
 
-function read_gen(data,Buses)
+"""
+Transfer generators to ps_dict according to their classification
+"""
+function read_gen(data, Buses, genmap_file=nothing)
+
+    if genmap_file == nothing
+        genmap_file = joinpath(dirname(dirname(pathof(PowerSystems))),
+                               "src/parsers/generator_mapping.toml")
+    end
+    genmap_dict = TOML.parsefile(genmap_file) # not working... map to current path??
+    
     Generators = Dict{String,Any}()
     Generators["Thermal"] = Dict{String,Any}()
     Generators["Hydro"] = Dict{String,Any}()
@@ -271,7 +281,8 @@ function read_gen(data,Buses)
     Generators["Renewable"]["PV"]= Dict{String,Any}()
     Generators["Renewable"]["RTPV"]= Dict{String,Any}()
     Generators["Renewable"]["WIND"]= Dict{String,Any}()
-    Generators["Storage"] = Dict{String,Any}()
+    Generators["Storage"] = Dict{String,Any}() # not currently used? JJS 3/13/19
+    
     if haskey(data,"gen")
         fuel = []
         gen_name =[]
@@ -295,24 +306,33 @@ function read_gen(data,Buses)
             else
                 gen_name = d_key
             end
+            
+            bus = find_bus(Buses, d)
 
-            if uppercase(fuel) in ["HYDRO"] || uppercase(type_gen) in ["HYDRO","HY"]
-                bus = find_bus(Buses,d)
-                Generators["Hydro"][gen_name] = make_hydro_gen(d,gen_name,bus)
-            elseif uppercase(fuel) in ["SOLAR","WIND"] || uppercase(type_gen) in ["W2","PV"]
-                bus = find_bus(Buses,d)
-                if uppercase(type_gen) == "PV"
-                    Generators["Renewable"]["PV"][gen_name] =  make_ren_gen(gen_name, d, bus)
-                elseif uppercase(type_gen) == "RTPV"
-                    Generators["Renewable"]["RTPV"][gen_name] = make_ren_gen(gen_name, d, bus)
-                elseif uppercase(type_gen) in ["WIND","W2"]
-                    Generators["Renewable"]["WIND"][gen_name] = make_ren_gen(gen_name, d, bus)
+            assigned = false 
+            for (rkey, rval) in Generators["Renewable"]
+                fuelkeys = genmap_dict[rkey]["fuel"]
+                typekeys = genmap_dict[rkey]["type"]
+                if uppercase(fuel) in fuelkeys && uppercase(type_gen) in typekeys
+                    Generators["Renewable"][rkey][gen_name] = make_ren_gen(gen_name, d, bus)
+                    assigned = true
+                    break
                 end
-            else
-                bus = find_bus(Buses, d)
+            end
+            if !assigned
+                fuelkeys = genmap_dict["Hydro"]["fuel"]
+                typekeys = genmap_dict["Hydro"]["type"]
+                if uppercase(fuel) in fuelkeys && uppercase(type_gen) in typekeys
+                    Generators["Hydro"][gen_name] = make_hydro_gen(gen_name, d, bus)
+                    assigned = true
+                end
+            end
+            if !assigned
+                # default to Thermal type if not already assigned
                 Generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
             end
-        end
+
+        end # for (d_key,d) in data["gen"]
         return Generators
     else
         return nothing
