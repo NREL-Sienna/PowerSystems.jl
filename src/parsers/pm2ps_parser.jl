@@ -6,7 +6,7 @@ Takes a dictionary parsed by PowerModels and returns a PowerSystems
 dictionary.  Currently Supports MATPOWER and PSSE data files parsed by
 PowerModels
 """
-function pm2ps_dict(data::Dict{String,Any})
+function pm2ps_dict(data::Dict{String,Any}, genmap_file::Union{String,Nothing}=nothing)
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
     end
@@ -25,7 +25,7 @@ function pm2ps_dict(data::Dict{String,Any})
     Loads= read_loads(data,ps_dict["bus"])
     LoadZones= read_loadzones(data,ps_dict["bus"])
     @info "Reading generator data"
-    Generators= read_gen(data, ps_dict["bus"])
+    Generators= read_gen(data, ps_dict["bus"], genmap_file)
     @info "Reading branch data"
     Branches= read_branch(data,ps_dict["bus"])
     Shunts = read_shunt(data,ps_dict["bus"])
@@ -266,13 +266,13 @@ end
 """
 Transfer generators to ps_dict according to their classification
 """
-function read_gen(data, Buses, genmap_file=nothing)
+function read_gen(data, Buses, genmap_file::Union{String,Nothing})
 
     if genmap_file == nothing
         genmap_file = joinpath(dirname(dirname(pathof(PowerSystems))),
                                "src/parsers/generator_mapping.toml")
     end
-    genmap_dict = TOML.parsefile(genmap_file) # not working... map to current path??
+    genmap_dict = TOML.parsefile(genmap_file) 
     
     Generators = Dict{String,Any}()
     Generators["Thermal"] = Dict{String,Any}()
