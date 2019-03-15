@@ -283,60 +283,53 @@ function read_gen(data, Buses, genmap_file::Union{String,Nothing})
     Generators["Renewable"]["WIND"]= Dict{String,Any}()
     Generators["Storage"] = Dict{String,Any}() # not currently used? JJS 3/13/19
     
-    if haskey(data,"gen")
-        fuel = []
-        gen_name =[]
-        type_gen =[]
-        for (d_key,d) in data["gen"]
-
-            if haskey(d,"fuel")
-                fuel = d["fuel"]
-            else
-                fuel = "generic"
-            end
-            if haskey(d,"type") 
-                type_gen = d["type"]
-            else
-                type_gen = "generic"
-            end
-            if haskey(d,"name")
-                gen_name = d["name"]
-            elseif haskey(d,"source_id")
-                gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2])
-            else
-                gen_name = d_key
-            end
-            
-            bus = find_bus(Buses, d)
-
-            assigned = false 
-            for (rkey, rval) in Generators["Renewable"]
-                fuelkeys = genmap_dict[rkey]["fuel"]
-                typekeys = genmap_dict[rkey]["type"]
-                if uppercase(fuel) in fuelkeys && uppercase(type_gen) in typekeys
-                    Generators["Renewable"][rkey][gen_name] = make_ren_gen(gen_name, d, bus)
-                    assigned = true
-                    break
-                end
-            end
-            if !assigned
-                fuelkeys = genmap_dict["Hydro"]["fuel"]
-                typekeys = genmap_dict["Hydro"]["type"]
-                if uppercase(fuel) in fuelkeys && uppercase(type_gen) in typekeys
-                    Generators["Hydro"][gen_name] = make_hydro_gen(gen_name, d, bus)
-                    assigned = true
-                end
-            end
-            if !assigned
-                # default to Thermal type if not already assigned
-                Generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
-            end
-
-        end # for (d_key,d) in data["gen"]
-        return Generators
-    else
+    if !haskey(data, "gen")
         return nothing
     end
+    
+    fuel = []
+    gen_name =[]
+    type_gen =[]
+    for (d_key,d) in data["gen"]
+
+        fuel = uppercase(get(d, "fuel", "generic"))
+        type_gen = uppercase(get(d, "type", "generic"))
+        if haskey(d, "name")
+            gen_name = d["name"]
+        elseif haskey(d, "source_id")
+            gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2])
+        else
+            gen_name = d_key
+        end
+        
+        bus = find_bus(Buses, d)
+
+        assigned = false 
+        for (rkey, rval) in Generators["Renewable"]
+            fuelkeys = genmap_dict[rkey]["fuel"]
+            typekeys = genmap_dict[rkey]["type"]
+            if fuel in fuelkeys && type_gen in typekeys
+                Generators["Renewable"][rkey][gen_name] = make_ren_gen(gen_name, d, bus)
+                assigned = true
+                break
+            end
+        end
+        if !assigned
+            fuelkeys = genmap_dict["Hydro"]["fuel"]
+            typekeys = genmap_dict["Hydro"]["type"]
+            if fuel in fuelkeys && type_gen in typekeys
+                Generators["Hydro"][gen_name] = make_hydro_gen(gen_name, d, bus)
+                assigned = true
+            end
+        end
+        if !assigned
+            # default to Thermal type if not already assigned
+            Generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
+        end
+
+    end # for (d_key,d) in data["gen"]
+
+    return Generators
 end
 
 function make_transformer(b_name, d, bus_f, bus_t)

@@ -1802,21 +1802,22 @@ end
 Move gentype and genfuel fields to be subfields of gen
 """
 function move_genfuel_and_gentype!(data::Dict{String,Any})
-    ## this is not modifying the dict in place! how to do that?
+    ngen = length(data["gen"])
     
-    if haskey(data, "genfuel")
-        # presume that genfuel length equals gen length -- do we need to check?
-        for (key,val) in data["genfuel"]
-            data["gen"][key]["fuel"] = val["col_1"]
+    toplevkeys = ("genfuel", "gentype")
+    sublevkeys = ("fuel", "type")
+    for i in range(1, stop=2)
+        if haskey(data, toplevkeys[i])
+            # check that lengths of category and generators match
+            if length(data[toplevkeys[i]]) != ngen
+                str = toplevkeys[i]
+                throw("length of $str does not equal the number of generators")
+            end
+            for (key,val) in data[toplevkeys[i]]
+                data["gen"][key][sublevkeys[i]] = val["col_1"]
+            end
+            delete!(data, toplevkeys[i])        
         end
     end
-    delete!(data, "genfuel")
-    if haskey(data, "gentype") 
-        # presume that genfuel length equals gen length -- do we need to check?
-        for (key,val) in data["gentype"]
-            data["gen"][key]["type"] = val["col_1"]
-        end
-    end
-    delete!(data, "gentype")
     
 end
