@@ -58,5 +58,5 @@ include("../data/data_14bus.jl")
     sys14b = PowerSystem(nodes14, generators14, loads14, branches14, battery14, 1000.0)
 
     ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "case5_re.m"))
-    sys = PowerSystems.PowerSystem(ps_dict)
+    sys, services= PowerSystems.PowerSystem(ps_dict)
 end

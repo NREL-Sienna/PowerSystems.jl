@@ -15,16 +15,20 @@ end
     @test length(cdm_dict["gen"]["Renewable"]["PV"]["102_PV_1"]["scalingfactor"]) == 24
 
     @info "making DA System"
-    sys_rts_da = PowerSystem(cdm_dict)
+    sys_rts_da, rts_da_services = PowerSystem(cdm_dict)
     @test sys_rts_da isa PowerSystem
+    @test rts_da_services isa Array{Service}
+    @test length(rts_da_services) == 7
 
     @info "assigning time series data for RT"
     cdm_dict = PowerSystems.assign_ts_data(cdm_dict, cdm_dict["forecast"]["RT"])
     @test length(cdm_dict["gen"]["Renewable"]["PV"]["102_PV_1"]["scalingfactor"]) == 288
+    
 
     @info "making RT System"
-    sys_rts_rt = PowerSystem(cdm_dict)
+    sys_rts_rt, rts_rt_services = PowerSystem(cdm_dict)
     @test sys_rts_rt isa PowerSystem
+    @test rts_rt_services isa Array{Service}
 end
 
 @testset "CDM parsing invalid directory" begin
