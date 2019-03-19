@@ -1,13 +1,5 @@
 # Global method definition needs to be at top level in .7
 
-# Is this redefinition of Base.convert still needed? Looks like this is
-# implemented correctly in 1.0, and with correct throw of InexactError (here, I
-# get `ERROR: UndefVarError: Inexacterror not defined`), JJS 1/31/19
-
-# Convert bool to int
-Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(Inexacterror())
-#############################################
-
 """
 Takes a PowerSystems dictionary and return an array of PowerSystems struct for
 Bus, Generator, Branch and load
@@ -108,7 +100,7 @@ end
 
 function _access(nesteddict::T,keylist) where T<:AbstractDict
     if !haskey(nesteddict,keylist[1])
-        @error "$(keylist[1]) not found in dict"        
+        @error "$(keylist[1]) not found in dict"
     end
     if length(keylist) > 1
         nesteddict = _access(nesteddict[keylist[1]],keylist[2:end])
@@ -518,7 +510,7 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
         push!(Services,ProportionalReserve(d["name"],
                             contributingdevices,
                             Float64(d["timeframe"]),
-                            TimeSeries.TimeArray(Dates.today(),ones(1))  #TODO : fix requirement 
+                            TimeSeries.TimeArray(Dates.today(),ones(1))  #TODO : fix requirement
                             ))
     end
     return Services

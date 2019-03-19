@@ -77,7 +77,6 @@ export read_data_files
 #################################################################################
 # Imports
 
-import Base.convert
 import SparseArrays
 import AxisArrays
 import LinearAlgebra: LAPACK.getri!
