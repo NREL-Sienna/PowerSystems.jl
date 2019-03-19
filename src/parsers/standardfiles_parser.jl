@@ -3,7 +3,7 @@
 Read in power-system parameters from a Matpower, PTI, or JSON file and do some
 data checks.
 """
-function parsestandardfiles(file::String; genmap_file::Union{String,Nothing}=nothing)
+function parsestandardfiles(file::String; kwargs...)
 
     # function `parse_file` is in pm_io/common.jl
     data = parse_file(file)
@@ -17,23 +17,22 @@ function parsestandardfiles(file::String; genmap_file::Union{String,Nothing}=not
     end
 
     # in pm2ps_parser.jl
-    data = pm2ps_dict(data, genmap_file)
+    data = pm2ps_dict(data; kwargs...)
 
     return data
 
 end
 
     
-function parsestandardfiles(file::String, ts_folder::String;
-                            genmap_file::Union{String,Nothing}=nothing, kwargs...)
+function parsestandardfiles(file::String, ts_folder::String; kwargs...)
 
     # TODO: assert a naming convention
-    data = parsestandardfiles(file, genmap_file=genmap_file)
+    data = parsestandardfiles(file; kwargs...)
 
     ts_data = read_data_files(ts_folder; kwargs...)
 
     # assign_ts_data is in forecast_parser.jl
-    data = assign_ts_data(data,ts_data)
+    data = assign_ts_data(data, ts_data)
 
     return data
 end
