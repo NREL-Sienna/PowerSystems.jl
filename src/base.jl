@@ -184,7 +184,7 @@ PowerSystem(; buses = [Bus()],
 function PowerSystem(ps_dict::Dict{String,Any}; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = ps_dict2ps_struct(ps_dict)
         sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]; kwargs...);
-        return sys
+        return sys , Services
 end
 
 function PowerSystem(file::String, ts_folder::String; kwargs...)
@@ -193,5 +193,5 @@ function PowerSystem(file::String, ts_folder::String; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = ps_dict2ps_struct(ps_dict)
         sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"]; kwargs...);
 
-        return sys
+        return sys, Services
 end
