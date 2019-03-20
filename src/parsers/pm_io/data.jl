@@ -1806,12 +1806,13 @@ function move_genfuel_and_gentype!(data::Dict{String,Any})
     
     toplevkeys = ("genfuel", "gentype")
     sublevkeys = ("fuel", "type")
-    for i in range(1, stop=2)
+    for i in range(1, stop=length(toplevkeys))
         if haskey(data, toplevkeys[i])
             # check that lengths of category and generators match
             if length(data[toplevkeys[i]]) != ngen
                 str = toplevkeys[i]
-                throw("length of $str does not equal the number of generators")
+                throw(DataFormatError(
+                    "length of $str does not equal the number of generators"))
             end
             for (key,val) in data[toplevkeys[i]]
                 data["gen"][key][sublevkeys[i]] = val["col_1"]
