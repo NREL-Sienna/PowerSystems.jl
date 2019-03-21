@@ -276,14 +276,14 @@ function read_gen(data, Buses; kwargs...)
     end
     genmap_dict = TOML.parsefile(genmap_file) 
     
-    Generators = Dict{String,Any}()
-    Generators["Thermal"] = Dict{String,Any}()
-    Generators["Hydro"] = Dict{String,Any}()
-    Generators["Renewable"] = Dict{String,Any}()
-    Generators["Renewable"]["PV"]= Dict{String,Any}()
-    Generators["Renewable"]["RTPV"]= Dict{String,Any}()
-    Generators["Renewable"]["WIND"]= Dict{String,Any}()
-    Generators["Storage"] = Dict{String,Any}() # not currently used? JJS 3/13/19
+    generators = Dict{String,Any}()
+    generators["Thermal"] = Dict{String,Any}()
+    generators["Hydro"] = Dict{String,Any}()
+    generators["Renewable"] = Dict{String,Any}()
+    generators["Renewable"]["PV"]= Dict{String,Any}()
+    generators["Renewable"]["RTPV"]= Dict{String,Any}()
+    generators["Renewable"]["WIND"]= Dict{String,Any}()
+    generators["Storage"] = Dict{String,Any}() # not currently used? JJS 3/13/19
     
     if !haskey(data, "gen")
         return nothing
@@ -307,11 +307,11 @@ function read_gen(data, Buses; kwargs...)
         bus = find_bus(Buses, d)
 
         assigned = false 
-        for (rkey, rval) in Generators["Renewable"]
+        for (rkey, rval) in generators["Renewable"]
             fuelkeys = genmap_dict[rkey]["fuel"]
             typekeys = genmap_dict[rkey]["type"]
             if fuel in fuelkeys && type_gen in typekeys
-                Generators["Renewable"][rkey][gen_name] = make_ren_gen(gen_name, d, bus)
+                generators["Renewable"][rkey][gen_name] = make_ren_gen(gen_name, d, bus)
                 assigned = true
                 break
             end
@@ -320,18 +320,18 @@ function read_gen(data, Buses; kwargs...)
             fuelkeys = genmap_dict["Hydro"]["fuel"]
             typekeys = genmap_dict["Hydro"]["type"]
             if fuel in fuelkeys && type_gen in typekeys
-                Generators["Hydro"][gen_name] = make_hydro_gen(gen_name, d, bus)
+                generators["Hydro"][gen_name] = make_hydro_gen(gen_name, d, bus)
                 assigned = true
             end
         end
         if !assigned
             # default to Thermal type if not already assigned
-            Generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
+            generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
         end
 
     end # for (d_key,d) in data["gen"]
 
-    return Generators
+    return generators
 end
 
 function make_transformer(b_name, d, bus_f, bus_t)
