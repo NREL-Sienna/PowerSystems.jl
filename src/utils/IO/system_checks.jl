@@ -33,6 +33,8 @@ function buscheck(buses::Array{Bus})
             @warn "Bus/Nodes data does not contain information to build an a network"
         end
     end
+
+    check_ascending_order([x.number for x in buses], "Bus")
 end
 
 ## Slack Bus Definition ##

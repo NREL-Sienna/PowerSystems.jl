@@ -1,4 +1,9 @@
 
+function check_branches!(branches::Array{<:Branch,1})
+    checkanglelimits!(branches)
+    check_ascending_order([b.connectionpoints.from.number for b in branches], "Branch")
+end
+
 # function check_angle_limits(anglelimits::(max::Float64, min::Float64))
 function checkanglelimits!(branches::Array{<:Branch,1})
     for (ix,l) in enumerate(branches)
