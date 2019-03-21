@@ -93,7 +93,7 @@ struct PowerSystem{L <: ElectricLoad,
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
         if runchecks
                 calculatethermallimits!(branches,basepower)
-                checkanglelimits!(branches)
+                check_branches!(branches)
                 #timeserieschecksources(sources.hydro, time_length)
         end
 
@@ -147,7 +147,7 @@ struct PowerSystem{L <: ElectricLoad,
                 buscheck(buses)
                 pvbuscheck(buses, generators)
                 calculatethermallimits!(branches,basepower)
-                checkanglelimits!(branches)
+                check_branches!(branches)
         end
         generators = checkramp(generators, minimumtimestep(loads))
         sources = genclassifier(generators);
