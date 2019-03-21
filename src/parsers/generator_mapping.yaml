@@ -2,21 +2,21 @@
 # generator categories in PowerSystems. All mapping strings should be in
 # uppercase because that is what is assumed in read_gen().
 
-[Hydro]
-fuel = ["HYDRO"]
-type = ["HYDRO", "HY"]
+Hydro:
+ fuel: [HYDRO]
+ type: [HYDRO, HY]
 
-[WIND]
-fuel = ["WIND"]
-type = ["WIND", "W2"]
+WIND:
+ fuel: [WIND]
+ type: [WIND, W2]
 
-[PV]
-fuel = ["SOLAR", "PV"]
-type = ["PV"]
+PV:
+ fuel: [SOLAR, PV]
+ type: [PV]
 
-[RTPV]
-fuel = ["SOLAR", "PV"]
-type = ["RTPV"]
+RTPV:
+ fuel: [SOLAR, PV]
+ type: [RTPV]
 
 # right now, everything else is classified as thermal, but could create
 # mappings for other types if needed/wanted

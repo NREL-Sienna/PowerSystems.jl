@@ -272,9 +272,11 @@ function read_gen(data, Buses; kwargs...)
         genmap_file = kwargs[:genmap_file]
     else # use default generator mapping config file
         genmap_file = joinpath(dirname(dirname(pathof(PowerSystems))),
-                               "src/parsers/generator_mapping.toml")
+                               "src/parsers/generator_mapping.yaml")
     end
-    genmap_dict = TOML.parsefile(genmap_file) 
+    genmap_dict = open(genmap_file) do file
+        YAML.load(file)
+    end
     
     generators = Dict{String,Any}()
     generators["Thermal"] = Dict{String,Any}()
