@@ -216,14 +216,6 @@ git-tree-sha1 = "435707791dc85a67d98d671c1c3fcf1b20b00f94"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.29.0"
 
-[[TOML]]
-deps = ["Dates"]
-git-tree-sha1 = "e9fd97ec8b0cf1ffa41a3ab9c27296dbb8797125"
-repo-rev = "3064b9660627539a6ae0609099ede7099e044d3a"
-repo-url = "https://github.com/wildart/TOML.jl"
-uuid = "191fdcea-f9f2-43e0-b922-d33f71e2abc3"
-version = "0.4.0"
-
 [[TableTraits]]
 deps = ["IteratorInterfaceExtensions", "Test"]
 git-tree-sha1 = "eba4b1d0a82bdd773307d652c6e5f8c82104c676"
