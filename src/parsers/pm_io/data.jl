@@ -554,7 +554,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             angmax = branch["angmax"][c]
 
             if angmin <= -pi/2
-                @info("this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmin)) to -$(default_pad_deg) deg.")
+                @info "this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmin)) to -$(default_pad_deg) deg." maxlog=PS_MAX_LOG
                 if haskey(data, "conductors")
                     branch["angmin"][c] = -default_pad
                 else
@@ -564,7 +564,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             end
 
             if angmax >= pi/2
-                @info("this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmax)) to $(default_pad_deg) deg.")
+                @info "this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmax)) to $(default_pad_deg) deg." maxlog=PS_MAX_LOG
                 if haskey(data, "conductors")
                     branch["angmax"][c] = default_pad
                 else
@@ -574,7 +574,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             end
 
             if angmin == 0.0 && angmax == 0.0
-                @info("angmin and angmax values are 0, widening these values on branch $i$(cnd_str) to +/- $(default_pad_deg) deg.")
+                @info "angmin and angmax values are 0, widening these values on branch $i$(cnd_str) to +/- $(default_pad_deg) deg." maxlog=PS_MAX_LOG
                 if haskey(data, "conductors")
                     branch["angmin"][c] = -default_pad
                     branch["angmax"][c] =  default_pad
@@ -639,7 +639,7 @@ function check_thermal_limits(data::Dict{String,Any})
                     new_rate = min(new_rate, branch["c_rating_a"][c]*m_vmax)
                 end
 
-                @info("this code only supports positive rate_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(round(mva_base*new_rate, digits=4))")
+                @info "this code only supports positive rate_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(round(mva_base*new_rate, digits=4))" maxlog=PS_MAX_LOG
 
                 if haskey(data, "conductors")
                     branch["rate_a"][c] = new_rate
@@ -972,13 +972,13 @@ function check_bus_types(data::Dict{String,Any})
             bus_gens_count = length(bus_gens[i])
 
             if bus_gens_count == 0 && bus["bus_type"] != 1
-                @info("no active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 1")
+                @info "no active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 1" maxlog=PS_MAX_LOG
                 bus["bus_type"] = 1
                 push!(modified, bus["index"])
             end
 
             if bus_gens_count != 0 && bus["bus_type"] != 2
-                @info("active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 2")
+                @info "active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 2" maxlog=PS_MAX_LOG
                 bus["bus_type"] = 2
                 push!(modified, bus["index"])
             end
@@ -1072,7 +1072,7 @@ function check_voltage_setpoints(data::Dict{String,Any})
             bus_id = gen["gen_bus"]
             bus = data["bus"]["$(bus_id)"]
             if gen["vg"][c] != bus["vm"][c]
-                @info("the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)")
+                @info "the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)" maxlog=PS_MAX_LOG
             end
         end
 
@@ -1226,7 +1226,7 @@ function simplify_cost_terms(data::Dict{String,Any})
                     end
                     if length(gen["cost"]) != ncost
                         gen["ncost"] = length(gen["cost"])
-                        @info("removing $(ncost - gen["ncost"]) cost terms from generator $(i): $(gen["cost"])")
+                        @info "removing $(ncost - gen["ncost"]) cost terms from generator $(i): $(gen["cost"])" maxlog=PS_MAX_LOG
                         push!(modified_gen, gen["index"])
                     end
                 end

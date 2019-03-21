@@ -118,7 +118,6 @@ include("models/loads.jl")
 include("models/services.jl")
 
 # Include Parsing files
-include("parsers/utils.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/dict_to_struct.jl")

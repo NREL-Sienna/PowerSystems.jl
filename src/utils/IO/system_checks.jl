@@ -152,10 +152,10 @@ function checkramp(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generat
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info "The generator $(g.name) has a nonbinding ramp up limit."
+                    @info "The generator $(g.name) has a nonbinding ramp up limit." maxlog=PS_MAX_LOG
                 end
                 if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info "The generator $(g.name) has a nonbinding ramp down limit."
+                    @info "The generator $(g.name) has a nonbinding ramp down limit." maxlog=PS_MAX_LOG
                 end
             else
                 @info "Ramp defined as nothing for $(g.name)"
@@ -172,10 +172,10 @@ function checkramp(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generat
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info "The generator $(g.name) has a nonbinding ramp up limit."
+                    @info "The generator $(g.name) has a nonbinding ramp up limit." maxlog=PS_MAX_LOG
                 end
                 if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info "The generator $(g.name) has a nonbinding ramp down limit."
+                    @info "The generator $(g.name) has a nonbinding ramp down limit." maxlog=PS_MAX_LOG
                 end
             else
                 @info "Ramp defined as nothing for $(g.name)"

@@ -98,7 +98,7 @@ function find_bus(Buses::Dict{Int64,Any},device_dict::Dict{String,Any})
         bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["shunt_bus"])]]
         value =bus
     else
-        @info "Provided Dict missing key/s  gen_bus or f_bus/t_bus or load_bus"
+        throw(DataFormatError("Provided Dict missing key/s:  gen_bus or f_bus/t_bus or load_bus"))
     end
     return value
 end
