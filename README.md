@@ -48,31 +48,6 @@ using PowerSystems
 
 Contributions to the development and enahancement of PowerSystems is welcome. Please see [CONTRIBUTING.md](https://github.com/NREL/PowerSystems.jl/blob/master/CONTRIBUTING.md) for code contribution guidelines.
 
-## Testing
-
-The unit test module supports several customizations.
-
-- Run a subset of tests in the REPL:
-
-```julia
-julia> push!(ARGS, "<test_filename_without_.jl>")
-julia> include("test/runtests.jl")
-```
-
-- Change console logging level (defaults to Error):
-
-```julia
-julia> ENV["PS_CONSOLE_LOG_LEVEL"] = Info
-julia> include("test/runtests.jl")
-```
-
-- Change log file (power-systems.log) logging level (defaults to Info):
-
-```julia
-julia> ENV["PS_LOG_LEVEL"] = Debug
-julia> include("test/runtests.jl")
-```
-
 ## License
 
 PowerSystems is released under a BSD [license](https://github.com/NREL/PowerSystems.jl/blob/master/LICENSE). PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning (SIIP)
