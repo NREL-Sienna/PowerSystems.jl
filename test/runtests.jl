@@ -71,8 +71,8 @@ function get_logging_level(env_name::String, default)
     return log_level
 end
 
-console_level = get_logging_level("PS_LOG_LEVEL", "Error")
-file_level = get_logging_level("PS_CONSOLE_LOG_LEVEL", "Info")
+console_level = get_logging_level("PS_CONSOLE_LOG_LEVEL", "Error")
+file_level = get_logging_level("PS_LOG_LEVEL", "Info")
 
 open_file_logger(LOG_FILE, file_level) do file_logger
     console_logger = ConsoleLogger(stderr, console_level)
