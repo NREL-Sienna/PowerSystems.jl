@@ -136,7 +136,7 @@ end
 "prints the text summary for a data file to IO"
 function summary(io::IO, file::String; kwargs...)
     data = parse_file(file)
-    summary(io, data; kwargs...)
+    _summary(io, data; kwargs...)
     return data
 end
 
@@ -184,7 +184,7 @@ pm_component_status_parameters = Set(["status", "gen_status", "br_status"])
 
 
 "prints the text summary for a data dictionary to IO"
-function summary(io::IO, data::Dict{String,Any}; kwargs...)
+function _summary(io::IO, data::Dict{String,Any}; kwargs...)
     summary(io, data; 
         component_types_order = pm_component_types_order,
         component_parameter_order = pm_component_parameter_order,
