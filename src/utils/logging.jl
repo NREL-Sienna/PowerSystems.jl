@@ -45,8 +45,10 @@ end
 
 LogEvent(file, line, id, message, level) = LogEvent(file, line, id, message, level, 1, 0)
 
-mutable struct LogEventTracker
+struct LogEventTracker
     events::Dict{Logging.LogLevel, Dict{Symbol, LogEvent}}
+
+    LogEventTracker(events::Dict{Logging.LogLevel, Dict{Symbol, LogEvent}}) = new(events)
 end
 
 """
@@ -134,7 +136,7 @@ Creates a MultiLogger with no event tracking.
 MultiLogger([ConsoleLogger(stderr), SimpleLogger(stream)])
 ```
 """
-function MultiLogger(loggers::Array{Logging.AbstractLogger})
+function MultiLogger(loggers::Array{T}) where T <: Logging.AbstractLogger
     return MultiLogger(loggers, nothing)
 end
 
