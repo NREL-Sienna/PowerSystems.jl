@@ -261,6 +261,13 @@ function bus_csv_parser(bus_raw,colnames = nothing)
     return Buses_dict
 end
 
+function _get_value_or_nothing(value::Union{Real, String})::Union{Float64, Nothing}
+    if value == "NA"
+        return nothing
+    end
+
+    return Float64(value)
+end
 
 ###########
 #Generator data parser
@@ -303,13 +310,13 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
     end
 
     for gen in 1:DataFrames.nrow(gen_raw)
-        pmax = tryparse(Float64,"""$(gen_raw[gen,colnames["PMax MW"]])""")
+        pmax = _get_value_or_nothing(gen_raw[gen,colnames["PMax MW"]])
 
         if gen_raw[gen,colnames["Fuel"]] in ["Oil","Coal","NG","Nuclear"]
 
             fuel_cost = gen_raw[gen,colnames["Fuel Price \$/MMBTU"]]./1000
 
-            var_cost = [(tryparse(Float64,"$(gen_raw[gen,cn[1]])"), tryparse(Float64,"$(gen_raw[gen,cn[2]])")) for cn in cost_colnames]
+            var_cost = [(_get_value_or_nothing(gen_raw[gen,cn[1]]), _get_value_or_nothing(gen_raw[gen,cn[2]])) for cn in cost_colnames]
             var_cost = [(c[1],c[1]*c[2]*fuel_cost).*pmax for c in var_cost if !in(nothing,c)]
             var_cost[2:end] = [(var_cost[i][1],var_cost[i-1][2]+var_cost[i][2]) for i in 2:length(var_cost)]
 
@@ -318,9 +325,9 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                             "available" => true,
                                             "bus" => make_bus(bus_id[1]),
                                             "tech" => Dict{String,Any}("activepower" => gen_raw[gen,colnames["MW Inj"]],
-                                                                        "activepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,colnames["PMin MW"]])"""),max=pmax),
-                                                                        "reactivepower" => tryparse(Float64,"""$(gen_raw[gen,colnames["MVAR Inj"]])"""),
-                                                                        "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,colnames["QMin MVAR"]])"""),max=tryparse(Float64,"""$(gen_raw[gen,colnames["QMax MVAR"]])""")),
+                                                                        "activepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen,colnames["PMin MW"]]),max=pmax),
+                                                                        "reactivepower" => _get_value_or_nothing(gen_raw[gen,colnames["MVAR Inj"]]),
+                                                                        "reactivepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen,colnames["QMin MVAR"]]),max=_get_value_or_nothing(gen_raw[gen,colnames["QMax MVAR"]])),
                                                                         "ramplimits" => (up=gen_raw[gen,colnames["Ramp Rate MW/Min"]],down=gen_raw[gen,colnames["Ramp Rate MW/Min"]]),
                                                                         "timelimits" => (up=gen_raw[gen,colnames["Min Up Time Hr"]],down=gen_raw[gen,colnames["Min Down Time Hr"]])),
                                             "econ" => Dict{String,Any}("capacity" => pmax,
@@ -338,9 +345,9 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                             "bus" => make_bus(bus_id[1]),
                                             "tech" => Dict{String,Any}( "installedcapacity" => pmax,
                                                                         "activepower" => gen_raw[gen,colnames["MW Inj"]],
-                                                                        "activepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,colnames["PMin MW"]])"""),max=pmax),
+                                                                        "activepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen,colnames["PMin MW"]]),max=pmax),
                                                                         "reactivepower" => gen_raw[gen,colnames["MVAR Inj"]],
-                                                                        "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,colnames["QMin MVAR"]])"""),max=tryparse(Float64,"""$(gen_raw[gen,colnames["QMax MVAR"]])""")),
+                                                                        "reactivepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen,colnames["QMin MVAR"]]),max=_get_value_or_nothing(gen_raw[gen,colnames["QMax MVAR"]])),
                                                                         "ramplimits" => (up=gen_raw[gen,colnames["Ramp Rate MW/Min"]],down=gen_raw[gen,colnames["Ramp Rate MW/Min"]]),
                                                                         "timelimits" => (up=gen_raw[gen,colnames["Min Down Time Hr"]],down=gen_raw[gen,colnames["Min Down Time Hr"]])),
                                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
@@ -355,7 +362,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                                 "available" => true, # change from staus to available
                                                 "bus" => make_bus(bus_id[1]),
                                                 "tech" => Dict{String,Any}("installedcapacity" => pmax,
-                                                                            "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,colnames["QMin MVAR"]])"""),max=tryparse(Float64,"""$(gen_raw[gen,colnames["QMax MVAR"]])""")),
+                                                                            "reactivepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen,colnames["QMin MVAR"]]),max=_get_value_or_nothing(gen_raw[gen,colnames["QMax MVAR"]])),
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
@@ -366,7 +373,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                                 "available" => true, # change from staus to available
                                                 "bus" => make_bus(bus_id[1]),
                                                 "tech" => Dict{String,Any}("installedcapacity" => pmax,
-                                                                            "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,colnames["QMin MVAR"]])"""),max=tryparse(Float64,"""$(gen_raw[gen,colnames["QMax MVAR"]])""")),
+                                                                            "reactivepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen,colnames["QMin MVAR"]]),max=_get_value_or_nothing(gen_raw[gen,colnames["QMax MVAR"]])),
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
@@ -377,7 +384,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                                 "available" => true, # change from staus to available
                                                 "bus" => make_bus(bus_id[1]),
                                                 "tech" => Dict{String,Any}("installedcapacity" => pmax,
-                                                                            "reactivepowerlimits" => (min=tryparse(Float64,"""$(gen_raw[gen,colnames["QMin MVAR"]])"""),max=tryparse(Float64,"""$(gen_raw[gen,colnames["QMax MVAR"]])""")),
+                                                                            "reactivepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen,colnames["QMin MVAR"]]),max=_get_value_or_nothing(gen_raw[gen,colnames["QMax MVAR"]])),
                                                                             "powerfactor" => 1),
                                                 "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                                             "interruptioncost" => nothing),
@@ -390,7 +397,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any},co
                                             "available" => true, # change from staus to available
                                             "bus" => make_bus(bus_id[1]),
                                             "energy" => 0.0,
-                                            "capacity" => (min=tryparse(Float64,"""$(gen_raw[gen,colnames["PMin MW"]])"""),max=pmax),
+                                            "capacity" => (min=_get_value_or_nothing(gen_raw[gen,colnames["PMin MW"]]),max=pmax),
                                             "activepower" => gen_raw[gen,colnames["MW Inj"]],
                                             "inputactivepowerlimits" => (min=0.0,max=pmax),
                                             "outputactivepowerlimits" => (min=0.0,max=pmax),
