@@ -6,7 +6,7 @@ Takes a dictionary parsed by PowerModels and returns a PowerSystems
 dictionary.  Currently Supports MATPOWER and PSSE data files parsed by
 PowerModels
 """
-function pm2ps_dict(data::Dict{String,Any})
+function pm2ps_dict(data::Dict{String,Any}; kwargs...)
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
     end
@@ -25,7 +25,7 @@ function pm2ps_dict(data::Dict{String,Any})
     Loads= read_loads(data,ps_dict["bus"])
     LoadZones= read_loadzones(data,ps_dict["bus"])
     @info "Reading generator data"
-    Generators= read_gen(data,ps_dict["bus"])
+    Generators= read_gen(data, ps_dict["bus"]; kwargs...)
     @info "Reading branch data"
     Branches= read_branch(data,ps_dict["bus"])
     Shunts = read_shunt(data,ps_dict["bus"])
@@ -183,7 +183,7 @@ function read_loadzones(data,Buses)
     end
 end
 
-function make_hydro_gen(d,gen_name,bus)
+function make_hydro_gen(gen_name, d, bus)
     hydro =  Dict{String,Any}("name" => gen_name,
                             "available" => d["gen_status"], # change from staus to available
                             "bus" => make_bus(bus),
@@ -263,45 +263,77 @@ function make_thermal_gen(gen_name, d, bus)
     return thermal_gen
 end
 
-function read_gen(data,Buses)
-    Generators = Dict{String,Any}()
-    Generators["Thermal"] = Dict{String,Any}()
-    Generators["Hydro"] = Dict{String,Any}()
-    Generators["Renewable"] = Dict{String,Any}()
-    Generators["Renewable"]["PV"]= Dict{String,Any}()
-    Generators["Renewable"]["RTPV"]= Dict{String,Any}()
-    Generators["Renewable"]["WIND"]= Dict{String,Any}()
-    Generators["Storage"] = Dict{String,Any}()
-    if haskey(data,"gen")
-        fuel = []
-        gen_name =[]
-        type_gen =[]
-        for (d_key,d) in data["gen"]
-            haskey(d,"fuel") ? fuel =d["fuel"] : haskey(data,"genfuel") ? fuel = data["genfuel"][d_key]["col_1"] : fuel = "generic"
-            haskey(d,"type") ? type_gen = d["type"] : haskey(data,"gentype") ? type_gen = data["gentype"][d_key]["col_1"] : type_gen = "generic"
-            haskey(d,"name") ? gen_name = d["name"] : haskey(d,"source_id") ? gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2]) : gen_name = d_key
+"""
+Transfer generators to ps_dict according to their classification
+"""
+function read_gen(data, Buses; kwargs...)
 
-            if uppercase(fuel) in ["HYDRO"] || uppercase(type_gen) in ["HYDRO","HY"]
-                bus = find_bus(Buses,d)
-                Generators["Hydro"][gen_name] = make_hydro_gen(d,gen_name,bus)
-            elseif uppercase(fuel) in ["SOLAR","WIND"] || uppercase(type_gen) in ["W2","PV"]
-                bus = find_bus(Buses,d)
-                if uppercase(type_gen) == "PV"
-                    Generators["Renewable"]["PV"][gen_name] =  make_ren_gen(gen_name, d, bus)
-                elseif uppercase(type_gen) == "RTPV"
-                    Generators["Renewable"]["RTPV"][gen_name] = make_ren_gen(gen_name, d, bus)
-                elseif uppercase(type_gen) in ["WIND","W2"]
-                    Generators["Renewable"]["WIND"][gen_name] = make_ren_gen(gen_name, d, bus)
-                end
-            else
-                bus = find_bus(Buses, d)
-                Generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
-            end
-        end
-        return Generators
-    else
+    if :genmap_file in keys(kwargs)
+        genmap_file = kwargs[:genmap_file]
+    else # use default generator mapping config file
+        genmap_file = joinpath(dirname(dirname(pathof(PowerSystems))),
+                               "src/parsers/generator_mapping.yaml")
+    end
+    genmap_dict = open(genmap_file) do file
+        YAML.load(file)
+    end
+    
+    generators = Dict{String,Any}()
+    generators["Thermal"] = Dict{String,Any}()
+    generators["Hydro"] = Dict{String,Any}()
+    generators["Renewable"] = Dict{String,Any}()
+    generators["Renewable"]["PV"]= Dict{String,Any}()
+    generators["Renewable"]["RTPV"]= Dict{String,Any}()
+    generators["Renewable"]["WIND"]= Dict{String,Any}()
+    generators["Storage"] = Dict{String,Any}() # not currently used? JJS 3/13/19
+    
+    if !haskey(data, "gen")
         return nothing
     end
+    
+    fuel = []
+    gen_name =[]
+    type_gen =[]
+    for (d_key,d) in data["gen"]
+
+        fuel = uppercase(get(d, "fuel", "generic"))
+        type_gen = uppercase(get(d, "type", "generic"))
+        if haskey(d, "name")
+            gen_name = d["name"]
+        elseif haskey(d, "source_id")
+            gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2])
+        else
+            gen_name = d_key
+        end
+        
+        bus = find_bus(Buses, d)
+
+        assigned = false 
+        for (rkey, rval) in generators["Renewable"]
+            fuelkeys = genmap_dict[rkey]["fuel"]
+            typekeys = genmap_dict[rkey]["type"]
+            if fuel in fuelkeys && type_gen in typekeys
+                generators["Renewable"][rkey][gen_name] = make_ren_gen(gen_name, d, bus)
+                assigned = true
+                break
+            end
+        end
+        if !assigned
+            fuelkeys = genmap_dict["Hydro"]["fuel"]
+            typekeys = genmap_dict["Hydro"]["type"]
+            if fuel in fuelkeys && type_gen in typekeys
+                generators["Hydro"][gen_name] = make_hydro_gen(gen_name, d, bus)
+                assigned = true
+            end
+        end
+        if !assigned
+            # default to Thermal type if not already assigned
+            generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
+        end
+
+    end # for (d_key,d) in data["gen"]
+
+    return generators
 end
 
 function make_transformer(b_name, d, bus_f, bus_t)

@@ -1796,3 +1796,29 @@ function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
         end
     end
 end
+
+
+"""
+Move gentype and genfuel fields to be subfields of gen
+"""
+function move_genfuel_and_gentype!(data::Dict{String,Any})
+    ngen = length(data["gen"])
+    
+    toplevkeys = ("genfuel", "gentype")
+    sublevkeys = ("fuel", "type")
+    for i in range(1, stop=length(toplevkeys))
+        if haskey(data, toplevkeys[i])
+            # check that lengths of category and generators match
+            if length(data[toplevkeys[i]]) != ngen
+                str = toplevkeys[i]
+                throw(DataFormatError(
+                    "length of $str does not equal the number of generators"))
+            end
+            for (key,val) in data[toplevkeys[i]]
+                data["gen"][key][sublevkeys[i]] = val["col_1"]
+            end
+            delete!(data, toplevkeys[i])        
+        end
+    end
+    
+end
