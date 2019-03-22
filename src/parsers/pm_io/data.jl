@@ -771,7 +771,7 @@ function check_branch_loops(data::Dict{String,Any})
 
     for (i, branch) in data["branch"]
         if branch["f_bus"] == branch["t_bus"]
-            @error("both sides of branch $(i) connect to bus $(branch["f_bus"])")
+            throw(DataFormatError("both sides of branch $(i) connect to bus $(branch["f_bus"])"))
         end
     end
 end
@@ -788,45 +788,45 @@ function check_connectivity(data::Dict{String,Any})
 
     for (i, load) in data["load"]
         if !(load["load_bus"] in bus_ids)
-            @error("bus $(load["load_bus"]) in load $(i) is not defined")
+            throw(DataFormatError("bus $(load["load_bus"]) in load $(i) is not defined"))
         end
     end
 
     for (i, shunt) in data["shunt"]
         if !(shunt["shunt_bus"] in bus_ids)
-            @error("bus $(shunt["shunt_bus"]) in shunt $(i) is not defined")
+            throw(DataFormatError("bus $(shunt["shunt_bus"]) in shunt $(i) is not defined"))
         end
     end
 
     for (i, gen) in data["gen"]
         if !(gen["gen_bus"] in bus_ids)
-            @error("bus $(gen["gen_bus"]) in generator $(i) is not defined")
+            throw(DataFormatError("bus $(gen["gen_bus"]) in generator $(i) is not defined"))
         end
     end
 
     for (i, strg) in data["storage"]
         if !(strg["storage_bus"] in bus_ids)
-            @error("bus $(strg["storage_bus"]) in storage unit $(i) is not defined")
+            throw(DataFormatError("bus $(strg["storage_bus"]) in storage unit $(i) is not defined"))
         end
     end
 
     for (i, branch) in data["branch"]
         if !(branch["f_bus"] in bus_ids)
-            @error("from bus $(branch["f_bus"]) in branch $(i) is not defined")
+            throw(DataFormatError("from bus $(branch["f_bus"]) in branch $(i) is not defined"))
         end
 
         if !(branch["t_bus"] in bus_ids)
-            @error("to bus $(branch["t_bus"]) in branch $(i) is not defined")
+            throw(DataFormatError("to bus $(branch["t_bus"]) in branch $(i) is not defined"))
         end
     end
 
     for (i, dcline) in data["dcline"]
         if !(dcline["f_bus"] in bus_ids)
-            @error("from bus $(dcline["f_bus"]) in dcline $(i) is not defined")
+            throw(DataFormatError("from bus $(dcline["f_bus"]) in dcline $(i) is not defined"))
         end
 
         if !(dcline["t_bus"] in bus_ids)
-            @error("to bus $(dcline["t_bus"]) in dcline $(i) is not defined")
+            throw(DataFormatError("to bus $(dcline["t_bus"]) in dcline $(i) is not defined"))
         end
     end
 end
@@ -894,44 +894,44 @@ function check_storage_parameters(data::Dict{String,Any})
 
     for (i, strg) in data["storage"]
         if strg["energy"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive energy level $(strg["energy"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive energy level $(strg["energy"])"))
         end
         if strg["energy_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive energy rating $(strg["energy_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive energy rating $(strg["energy_rating"])"))
         end
         if strg["charge_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive charge rating $(strg["energy_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive charge rating $(strg["energy_rating"])"))
         end
         if strg["discharge_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive discharge rating $(strg["energy_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive discharge rating $(strg["energy_rating"])"))
         end
         if strg["r"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive resistance $(strg["r"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive resistance $(strg["r"])"))
         end
         if strg["x"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive reactance $(strg["x"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive reactance $(strg["x"])"))
         end
         if strg["standby_loss"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])"))
         end
 
         if haskey(strg, "thermal_rating") && strg["thermal_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive thermal rating $(strg["thermal_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive thermal rating $(strg["thermal_rating"])"))
         end
         if haskey(strg, "current_rating") && strg["current_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive current rating $(strg["thermal_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive current rating $(strg["thermal_rating"])"))
         end
 
 
         if strg["charge_efficiency"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive charge efficiency of $(strg["charge_efficiency"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive charge efficiency of $(strg["charge_efficiency"])"))
         end
         if strg["charge_efficiency"] <= 0.0 || strg["charge_efficiency"] > 1.0
             @info("storage unit $(strg["index"]) charge efficiency of $(strg["charge_efficiency"]) is out of the valid range (0.0. 1.0]")
         end
 
         if strg["discharge_efficiency"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive discharge efficiency of $(strg["discharge_efficiency"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive discharge efficiency of $(strg["discharge_efficiency"])"))
         end
         if strg["discharge_efficiency"] <= 0.0 || strg["discharge_efficiency"] > 1.0
             @info("storage unit $(strg["index"]) discharge efficiency of $(strg["discharge_efficiency"]) is out of the valid range (0.0. 1.0]")
