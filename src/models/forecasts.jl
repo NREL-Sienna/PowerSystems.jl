@@ -20,7 +20,7 @@ struct Deterministic <: Forecast
                             initialtime::Dates.DateTime,
                             data::TimeSeries.TimeArray; kwargs...)
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
-        if runchecks
+        if runchecks # TODO: Should this go here, or in the PowerSystem constructors?
             if !isafield(device,field)
                 @error "Device $device has no field: $field"
             end
