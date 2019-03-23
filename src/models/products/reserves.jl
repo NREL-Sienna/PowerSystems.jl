@@ -28,7 +28,7 @@ struct ProportionalReserve <: Reserve
     timeframe::Float64
     requirement::TimeSeries.TimeArray
 end
-
+# TODO: update this to create a forecast entry based on loads in forecast array
 function ProportionalReserve(name::String,
                             contributingdevices::Array{G},
                             timeframe::Float64,

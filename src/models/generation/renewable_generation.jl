@@ -7,18 +7,16 @@ struct RenewableFix <: RenewableGen
     available::Bool
     bus::Bus
     tech::TechRenewable
-    scalingfactor::TimeSeries.TimeArray
-    function RenewableFix(name, status, bus, installedcapacity::Float64, scalingfactor)
+    function RenewableFix(name, status, bus, installedcapacity::Float64)
         tech = TechRenewable(installedcapacity, nothing, 1.0)
-        new(name, status, bus, tech, scalingfactor)
+        new(name, status, bus, tech)
     end
 end
 
 RenewableFix(; name="init",
         status = false,
         bus = Bus(),
-        installedcapacity = 0.0,
-        scalingfactor = TimeSeries.TimeArray(Dates.today(),ones(1))) = RenewableFix(name, status, bus, installedcapacity, scalingfactor)
+        installedcapacity = 0.0) = RenewableFix(name, status, bus, installedcapacity)
 
 struct RenewableCurtailment <: RenewableGen
     name::String
@@ -26,20 +24,18 @@ struct RenewableCurtailment <: RenewableGen
     bus::Bus
     tech::TechRenewable
     econ::Union{EconRenewable,Nothing}
-    scalingfactor::TimeSeries.TimeArray # [0-1]
 end
 
-function RenewableCurtailment(name::String, status::Bool, bus::Bus, installedcapacity::Float64, econ::Union{EconRenewable,Nothing}, scalingfactor::TimeSeries.TimeArray)
+function RenewableCurtailment(name::String, status::Bool, bus::Bus, installedcapacity::Float64, econ::Union{EconRenewable,Nothing})
     tech = TechRenewable(installedcapacity, nothing, 1.0)
-    return RenewableCurtailment(name, status, bus, tech, econ, scalingfactor)
+    return RenewableCurtailment(name, status, bus, tech, econ)
 end
 
 RenewableCurtailment(; name = "init",
                 status = false,
                 bus= Bus(),
                 installedcapacity = 0.0,
-                econ = EconRenewable(),
-                scalingfactor =  TimeSeries.TimeArray(Dates.today(),ones(1))) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)
+                econ = EconRenewable()) = RenewableCurtailment(name, status, bus, installedcapacity, econ)
 
 struct RenewableFullDispatch <: RenewableGen
     name::String
@@ -47,7 +43,6 @@ struct RenewableFullDispatch <: RenewableGen
     bus::Bus
     tech::TechRenewable
     econ::Union{EconRenewable,Nothing}
-    scalingfactor::TimeSeries.TimeArray # [0-1]
 end
 
 
@@ -55,5 +50,4 @@ RenewableFullDispatch(; name = "init",
                 status = false,
                 bus= Bus(),
                 installedcapacity = 0.0,
-                econ = EconRenewable(),
-                scalingfactor =  TimeSeries.TimeArray(Dates.today(),ones(1))) = RenewableCurtailment(name, status, bus, installedcapacity, econ, scalingfactor)
+                econ = EconRenewable()) = RenewableCurtailment(name, status, bus, installedcapacity, econ)
