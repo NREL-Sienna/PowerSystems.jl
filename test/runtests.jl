@@ -74,8 +74,8 @@ end
 console_level = get_logging_level("PS_CONSOLE_LOG_LEVEL", "Error")
 file_level = get_logging_level("PS_LOG_LEVEL", "Info")
 
+console_logger = ConsoleLogger(stderr, console_level)
 open_file_logger(LOG_FILE, file_level) do file_logger
-    console_logger = ConsoleLogger(stderr, console_level)
     multi_logger = MultiLogger([console_logger, file_logger],
                                LogEventTracker((Logging.Info, Logging.Warn, Logging.Error)))
     global_logger(multi_logger)
@@ -87,3 +87,7 @@ open_file_logger(LOG_FILE, file_level) do file_logger
 
     @info report_log_summary(multi_logger)
 end
+
+# Reset the global logger since the file logger is no longer valid.
+global_logger(console_logger)
+nothing
