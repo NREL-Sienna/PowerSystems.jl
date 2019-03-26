@@ -71,7 +71,7 @@ export Transfer
 export parsestandardfiles
 export parse_file
 export ps_dict2ps_struct
-export assign_ts_data
+export pushforecast!
 export read_data_files
 
 #################################################################################
