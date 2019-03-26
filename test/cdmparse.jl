@@ -10,21 +10,25 @@ end
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR)
     @test cdm_dict isa Dict && haskey(cdm_dict, "loadzone")
 
-    @info "assigning time series data for DA"
-    cdm_dict = PowerSystems.assign_ts_data(cdm_dict, cdm_dict["forecast"]["DA"])
-    @test length(cdm_dict["gen"]["Renewable"]["PV"]["102_PV_1"]["scalingfactor"]) == 24
-
-    @info "making DA System"
-    sys_rts_da = PowerSystem(cdm_dict)
+    @info "making RTS System"
+    sys_rts = PowerSystem(cdm_dict)
     @test sys_rts_da isa PowerSystem
 
-    @info "assigning time series data for RT"
-    cdm_dict = PowerSystems.assign_ts_data(cdm_dict, cdm_dict["forecast"]["RT"])
-    @test length(cdm_dict["gen"]["Renewable"]["PV"]["102_PV_1"]["scalingfactor"]) == 288
+    @info "making forecasts array for DA"
+    rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
+    @test length(rts_da[1].data) == 24
+    @test length(rts_da) == 131
 
-    @info "making RT System"
-    sys_rts_rt = PowerSystem(cdm_dict)
-    @test sys_rts_rt isa PowerSystem
+    @info "assigning time series data for RT"
+    rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])
+    @test length(rts_rt[1].data) == 288
+    @test length(rts_rt) == 131
+
+    @info "adding forecasts to System"
+    PowerSystems.pushforecast!(sys_rts,:DA=>rts_da)
+    PowerSystems.pushforecast!(sys_rts,:RT=>rts_rt)
+    @test length(sys_rts.forecasts) == 2
+
 end
 
 @testset "CDM parsing invalid directory" begin

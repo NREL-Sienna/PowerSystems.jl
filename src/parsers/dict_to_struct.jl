@@ -64,6 +64,9 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     else
         @warn "key 'services' not found in PowerSystems dictionary, this will result in an empty services array"
     end
+    #if haskey(data,"forecasts")
+        # TODO: create a forecasts dict of an array of Forecasts...
+    #end
 
     return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts, services
 
@@ -118,10 +121,12 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
 end
 
 function _get_device(name, collection, devices = [])
-    if isa(collection,Array)
-        fn = fieldnames(typeof(collection[1]))
-        if :name in fn
-            [push!(devices,d) for d in collection if d.name == name]
+    if isa(collection,Union{Array,Dict}) 
+        if !isempty(collection)
+            fn = fieldnames(typeof(collection[1]))
+            if :name in fn
+                [push!(devices,d) for d in collection if d.name == name]
+            end
         end
     else
         fn = fieldnames(typeof(collection))
@@ -317,8 +322,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                                         hydro_dict["tech"]["reactivepowerlimits"],
                                                                         hydro_dict["tech"]["ramplimits"],
                                                                         hydro_dict["tech"]["timelimits"]),
-                                                            hydro_dict["econ"]["curtailcost"],
-                                                            hydro_dict["scalingfactor"]
+                                                            hydro_dict["econ"]["curtailcost"]
                             ))
             end
         elseif gen_type_key =="Renewable"
@@ -330,8 +334,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                                     pv_dict["bus"],
                                                                     pv_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(pv_dict["econ"]["curtailcost"],
-                                                                                pv_dict["econ"]["interruptioncost"]),
-                                                                    pv_dict["scalingfactor"]
+                                                                                pv_dict["econ"]["interruptioncost"])
                                     ))
                     end
                 elseif ren_key == "RTPV"
@@ -339,8 +342,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                         push!(Generators,RenewableFix(string(rtpv_dict["name"]),
                                                                     Bool(rtpv_dict["available"]),
                                                                     rtpv_dict["bus"],
-                                                                    rtpv_dict["tech"]["installedcapacity"],
-                                                                    rtpv_dict["scalingfactor"]
+                                                                    rtpv_dict["tech"]["installedcapacity"]
                                     ))
                     end
                 elseif ren_key == "WIND"
@@ -350,8 +352,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                                     wind_dict["bus"],
                                                                     wind_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(wind_dict["econ"]["curtailcost"],
-                                                                                wind_dict["econ"]["interruptioncost"]),
-                                                                    wind_dict["scalingfactor"]
+                                                                                wind_dict["econ"]["interruptioncost"])
                                     ))
                     end
                 end
@@ -442,8 +443,7 @@ function load_dict_parser(dict::Dict{String,Any})
                 Bool(load_dict["available"]),
                 load_dict["bus"],
                 load_dict["maxactivepower"],
-                load_dict["maxreactivepower"],
-                load_dict["scalingfactor"]
+                load_dict["maxreactivepower"]
                 ))
     end
     return Loads

@@ -66,10 +66,14 @@ struct PowerSystem{L <: ElectricLoad,
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
         if runchecks
-                generators = checkramp(generators, minimumtimestep(loads))
-                time_length = timeseriescheckload(loads)
-                !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
-                !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
+                if (!isa(forecasts,Nothing)) & (length(forecasts)>0)
+                        generators = checkramp(generators, minimumtimestep(loads))
+                        time_length = timeseriescheckload(loads)
+                        !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
+                        !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
+                else
+                        @warn "No time series info, skipping related data checks"
+                end
         end
         new{L, Nothing, Nothing, V, F}(buses,
                                  sources,
@@ -103,10 +107,14 @@ struct PowerSystem{L <: ElectricLoad,
                 slackbuscheck(buses)
                 buscheck(buses)
                 pvbuscheck(buses, generators)
-                generators = checkramp(generators, minimumtimestep(loads))
-                time_length = timeseriescheckload(loads)
-                !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
-                !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
+                if (!isa(forecasts,Nothing)) & (length(forecasts)>0)
+                        generators = checkramp(generators, minimumtimestep(loads))
+                        time_length = timeseriescheckload(loads)
+                        !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
+                        !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
+                else
+                        @warn "No time series info, skipping related data checks"
+                end
                 calculatethermallimits!(branches,basepower)
                 check_branches!(branches)
         end
@@ -140,10 +148,14 @@ struct PowerSystem{L <: ElectricLoad,
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
         if runchecks
-                generators = checkramp(generators, minimumtimestep(loads))
-                time_length = timeseriescheckload(loads)
-                !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
-                !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
+                if (!isa(forecasts,Nothing)) & (length(forecasts)>0)
+                        generators = checkramp(generators, minimumtimestep(loads))
+                        time_length = timeseriescheckload(loads)
+                        !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
+                        !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
+                else
+                        @warn "No time series info, skipping related data checks"
+                end
         end
 
         new{L, Nothing, S, V, F}(buses,
@@ -179,10 +191,14 @@ struct PowerSystem{L <: ElectricLoad,
                 slackbuscheck(buses)
                 buscheck(buses)
                 pvbuscheck(buses, generators)
-                generators = checkramp(generators, minimumtimestep(loads))
-                time_length = timeseriescheckload(loads)
-                !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
-                !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
+                if (!isa(forecasts,Nothing)) & (length(forecasts)>0)
+                        generators = checkramp(generators, minimumtimestep(loads))
+                        time_length = timeseriescheckload(loads)
+                        !isa(sources.renewable, Nothing) ? timeserieschecksources(sources.renewable, time_length) : true
+                        !isa(sources.hydro, Nothing) ? timeserieschecksources(sources.hydro, time_length) : true
+                else
+                        @warn "No time series info, skipping related data checks"
+                end
                 calculatethermallimits!(branches,basepower)
                 check_branches!(branches)
         end
@@ -211,16 +227,27 @@ PowerSystem(; buses = [Bus()],
             branches =  nothing,
             storage = nothing,
             basepower = 1000.0,
-            forecasts = nothing,
+            forecasts = Dict{Symbol,Array{ <: Forecast,1}}(),
             services = nothing,
             annex = nothing,
             kwargs... ,
         ) = PowerSystem(buses, generators, loads, branches, storage,  basepower, forecasts, services, annex; kwargs...)
 
+function PowerSystem(buses::Array{Bus,1},
+        generators::Array{G,1},
+        loads::Array{L,1},
+        branches::B,
+        storage::S,
+        basepower::Float64; kwargs...) where {G <: Generator, 
+                                                                L <: ElectricLoad,
+                                                                B <: Array{<:Branch,1},
+                                                                S <: Array{ <: Storage,1}}
+        return PowerSystem(buses,generators,loads,branches,storage,basepower,Dict{Symbol,Array{ <: Forecast,1}}(),nothing,nothing; kwargs...)
+end
 
 function PowerSystem(ps_dict::Dict{String,Any}; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = ps_dict2ps_struct(ps_dict)
-        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], nothing, Services, nothing; kwargs...);
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Array{ <: Forecast,1}}(), Services, nothing; kwargs...);
         return sys
 end
 
@@ -228,7 +255,7 @@ function PowerSystem(file::String, ts_folder::String; kwargs...)
 
         ps_dict = parsestandardfiles(file,ts_folder; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = ps_dict2ps_struct(ps_dict)
-        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], nothing, Services, nothing; kwargs...);
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Array{ <: Forecast,1}}(), Services, nothing; kwargs...);
 
         return sys
 end

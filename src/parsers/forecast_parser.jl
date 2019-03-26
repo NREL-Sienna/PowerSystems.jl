@@ -62,6 +62,7 @@ Returns:
     Returns an dictionary with Device name as key and PowerSystems Forecasts
     dictionary as values
 """
+
 function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     if haskey(ts_dict,"load")
         ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
@@ -207,20 +208,44 @@ end
 
 """
 Args:
-    A PowerSystems forecast dictionary
+    A PowerSystem struct
+    A PowerSystems forecast array
 Returns:
     A PowerSystems forecast stuct array
 """
-function make_forecast_array(dict)
-    Forecasts = Array{Forecast}(undef, 0)
-    for (device_key,device_dict) in dict
-                push!(Forecasts,Deterministic(device_dict["device"],device_dict["horizon"],
-                                device_dict["resolution"],device_dict["interval"],
-                                device_dict["initialtime"],
-                                device_dict["data"]
-                                ))
+
+function make_forecast_array(sys::PowerSystem,ts_dict::Dict{String,Any})
+    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame})
+    fc = Array{Forecast}(undef, 0)
+    for (key,val) in ts_map
+        ts = _access(ts_dict,vcat(val,key))
+        dl = _get_device(key,sys)
+        if length(dl) > 0 
+            dl = unique(values(dl))
+            for d in dl
+                for c in TimeSeries.colnames(ts)
+                    push!(fc,Deterministic(d,c,ts[c]))
+                end
+            end
+        else
+            @warn("no $key entries in psdict")
+        end
     end
-    return Forecasts
+    return fc
+ end
+
+
+# - Assign Forecast to PowerSystem Struct
+
+"""
+Args:
+    A PowerSystem struct
+    A :Symbol=>Array{ <: Forecast,1} Pair denoting the forecast name and array of device forecasts
+Returns:
+    A PowerSystem struct with a modeified forecasts field
+"""
+function pushforecast!(sys::PowerSystem,fc::Pair{Symbol,Array{Forecast,1}})
+    sys.forecasts[fc.first] = fc.second
 end
 
 # Write dict to Json

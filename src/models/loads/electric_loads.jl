@@ -8,10 +8,6 @@ struct PowerLoad <: StaticLoad
     maxreactivepower::Float64 # [MVAr]
 end
 
-function PowerLoad(name::String, available::Bool, bus::Bus, maxactivepower::Float64, maxreactivepower::Float64)
-    return PowerLoad(name, available, bus, maxactivepower, maxreactivepower)
-end
-
 function PowerLoadPF(name::String, available::Bool, bus::Bus, maxactivepower::Float64, power_factor::Float64)
     maxreactivepower = maxactivepower*sin(acos(power_factor)) 
     return PowerLoad(name, available, bus, maxactivepower, maxreactivepower)
