@@ -116,6 +116,13 @@ include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
 
+#Data Checks
+include("utils/IO/system_checks.jl")
+include("utils/IO/branchdata_checks.jl")
+
+# Definitions of PowerSystem
+include("base.jl")
+
 # Include Parsing files
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
@@ -124,13 +131,6 @@ include("parsers/standardfiles_parser.jl")
 include("parsers/cdm_parser.jl")
 include("parsers/forecast_parser.jl")
 include("parsers/pm2ps_parser.jl")
-
-#Data Checks
-include("utils/IO/system_checks.jl")
-include("utils/IO/branchdata_checks.jl")
-
-# Definitions of PowerSystem
-include("base.jl")
 
 # Better printing
 include("utils/print.jl")
