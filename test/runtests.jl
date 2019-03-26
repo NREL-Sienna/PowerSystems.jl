@@ -71,23 +71,35 @@ function get_logging_level(env_name::String, default)
     return log_level
 end
 
-console_level = get_logging_level("PS_CONSOLE_LOG_LEVEL", "Error")
-file_level = get_logging_level("PS_LOG_LEVEL", "Info")
+function run_tests()
+    console_level = get_logging_level("PS_CONSOLE_LOG_LEVEL", "Error")
+    console_logger = ConsoleLogger(stderr, console_level)
+    file_level = get_logging_level("PS_LOG_LEVEL", "Info")
 
-console_logger = ConsoleLogger(stderr, console_level)
-open_file_logger(LOG_FILE, file_level) do file_logger
-    multi_logger = MultiLogger([console_logger, file_logger],
-                               LogEventTracker((Logging.Info, Logging.Warn, Logging.Error)))
-    global_logger(multi_logger)
+    open_file_logger(LOG_FILE, file_level) do file_logger
+        levels = (Logging.Info, Logging.Warn, Logging.Error)
+        multi_logger = MultiLogger([console_logger, file_logger],
+                                   LogEventTracker(levels))
+        global_logger(multi_logger)
 
-    # Testing Topological components of the schema
-    @time @testset "Begin PowerSystems tests" begin
-        @includetests ARGS
+        # Testing Topological components of the schema
+        @time @testset "Begin PowerSystems tests" begin
+            @includetests ARGS
+        end
+
+        # TODO: once all known error logs are fixed, add this test:
+        #@test length(get_log_events(multi_logger.tracker, Logging.Error)) == 0
+
+        @info report_log_summary(multi_logger)
     end
-
-    @info report_log_summary(multi_logger)
 end
 
-# Reset the global logger since the file logger is no longer valid.
-global_logger(console_logger)
-nothing
+logger = global_logger()
+
+try
+    run_tests()
+finally
+    # Guarantee that the global logger is reset.
+    global_logger(logger)
+    nothing
+end

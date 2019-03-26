@@ -1,6 +1,7 @@
 
 import Logging
 
+export configure_logging
 export open_file_logger
 export MultiLogger
 export LogEvent
@@ -8,6 +9,72 @@ export LogEventTracker
 export report_log_summary
 export get_log_events
 
+
+"""
+    configure_logging([console, console_stream, console_level,
+                       file, filename, file_level, file_mode,
+                       tracker, set_global])
+
+Creates console and file loggers per caller specification and returns a MultiLogger.
+
+**Note:** If logging to a file users must call Base.close() on the returned MultiLogger to
+ensure that all events get flushed.
+
+# Arguments
+- `console::Bool=true`: create console logger
+- `console_stream::IOStream=stderr`: stream for console logger
+- `console_level::Logging.LogLevel=Logging.Error`: level for console messages
+- `file::Bool=true`: create file logger
+- `filename::String=log.txt`: log file
+- `file_level::Logging.LogLevel=Logging.Info`: level for file messages
+- `file_mode::String=w+`: mode used when opening log file
+- `tracker::Union{LogEventTracker, Nothing}=LogEventTracker()`: optionally track log events
+- `set_global::Bool=true`: set the created logger as the global logger
+
+# Example
+```julia
+logger = configure_logging(filename="mylog.txt")
+```
+"""
+function configure_logging(;
+                           console=true,
+                           console_stream=stderr,
+                           console_level=Logging.Error,
+                           file=true,
+                           filename="log.txt",
+                           file_level=Logging.Info,
+                           file_mode="w+",
+                           tracker=LogEventTracker(),
+                           set_global=true
+                          )::MultiLogger
+    if !console && !file
+        error("At least one of console or file must be true")
+    end
+
+    loggers = Array{Logging.AbstractLogger, 1}()
+    if console
+        console_logger = Logging.ConsoleLogger(console_stream, console_level)
+        push!(loggers, console_logger)
+    end
+
+    if file
+        io = open(filename, file_mode)
+        try
+            file_logger = Logging.SimpleLogger(io, file_level)
+            push!(loggers, file_logger)
+        catch
+            close(io)
+            rethrow() 
+        end
+    end
+
+    logger = MultiLogger(loggers, tracker)
+    if set_global
+        Logging.global_logger(logger)
+    end
+
+    return logger
+end
 
 """
     open_file_logger(func, filename[, level, mode])
@@ -181,8 +248,17 @@ end
 """Returns a summary of log event counts by level."""
 function report_log_summary(logger::MultiLogger)::String
     if logger.tracker == nothing
-        throw(InvalidParameter("log event tracking is not enabled"))
+        error("log event tracking is not enabled")
     end
 
     return report_log_summary(logger.tracker)
+end
+
+"""Ensures that any file streams are flushed and closed."""
+function Base.close(logger::MultiLogger)
+    for logger_ in logger.loggers
+        if isa(logger_, Logging.SimpleLogger)
+            close(logger_.stream)
+        end
+    end
 end

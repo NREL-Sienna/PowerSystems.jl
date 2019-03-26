@@ -1,18 +1,22 @@
 
+import PowerSystems: MultiLogger, InvalidParameter, configure_logging, increment_count
+
+TEST_MSG = "test log message"
+
 @testset "Test LogEventTracker" begin
     levels = (Logging.Info, Logging.Warn, Logging.Error)
     tracker = LogEventTracker(levels)
 
     events = (
-        LogEvent("file", 14, :id, "test log message", Logging.Debug),
-        LogEvent("file", 14, :id, "test log message", Logging.Info),
-        LogEvent("file", 14, :id, "test log message", Logging.Warn),
-        LogEvent("file", 14, :id, "test log message", Logging.Error),
+        LogEvent("file", 14, :id, TEST_MSG, Logging.Debug),
+        LogEvent("file", 14, :id, TEST_MSG, Logging.Info),
+        LogEvent("file", 14, :id, TEST_MSG, Logging.Warn),
+        LogEvent("file", 14, :id, TEST_MSG, Logging.Error),
     )
 
     for i in range(1, length=2)
         for event in events
-            PowerSystems.increment_count(tracker, event, false)
+            increment_count(tracker, event, false)
         end
     end
 
@@ -31,36 +35,34 @@
     end
 
     # Test again with suppression.
-    PowerSystems.increment_count(tracker, events[2], true)
+    increment_count(tracker, events[2], true)
     text = report_log_summary(tracker)
     @test occursin("suppressed=1", text)
 end
 
 @testset "Test MultiLogger with no event tracking" begin
-    orig_logger = global_logger()
-    logger = PowerSystems.MultiLogger([ConsoleLogger(devnull, Logging.Info),
-                                       SimpleLogger(devnull, Logging.Debug)])
-    global_logger(logger)
-    @info "test log message"
+    logger = MultiLogger([ConsoleLogger(devnull, Logging.Info),
+                          SimpleLogger(devnull, Logging.Debug)])
+    with_logger(logger) do
+        @info TEST_MSG
+    end
 
-    @test_throws PowerSystems.InvalidParameter report_log_summary(logger)
-
-    global_logger(orig_logger)
-    
+    @test_throws ErrorException report_log_summary(logger)
 end
 
 @testset "Test MultiLogger with event tracking" begin
-    orig_logger = global_logger()
     levels = (Logging.Debug, Logging.Info, Logging.Warn, Logging.Error)
-    logger = PowerSystems.MultiLogger([ConsoleLogger(devnull, Logging.Info),
-                                       SimpleLogger(devnull, Logging.Debug)],
-                                      LogEventTracker(levels))
-    global_logger(logger)
-    for i in range(1, length=2)
-        @debug "test log message"
-        @info "test log message"
-        @warn "test log message"
-        @error "test log message" maxlog=1
+    logger = MultiLogger([ConsoleLogger(devnull, Logging.Info),
+                          SimpleLogger(devnull, Logging.Debug)],
+                          LogEventTracker(levels))
+
+    with_logger(logger) do
+        for i in range(1, length=2)
+            @debug TEST_MSG
+            @info TEST_MSG
+            @warn TEST_MSG
+            @error TEST_MSG maxlog=1
+        end
     end
 
     events = collect(get_log_events(logger.tracker, Logging.Error))
@@ -71,6 +73,59 @@ end
     for level in levels
         @test occursin("1 $level event", text)
     end
+end
 
+@testset "Test configure_logging" begin
+    # Verify logging to a file.
+    logfile = "testlog.txt"
+    logger = configure_logging(; file=true, filename=logfile, file_level=Logging.Info,
+                               set_global=false)
+    with_logger(logger) do
+        @info TEST_MSG
+    end
+
+    close(logger)
+
+    @test isfile(logfile)
+    open(logfile) do io
+        lines = readlines(io)
+        @test length(lines) == 2  # two lines per message
+        @test occursin(TEST_MSG, lines[1])
+    end
+    rm(logfile)
+
+    # Verify logging with no file.
+    logger = configure_logging(; console=true, file=false,
+                               console_stream=devnull,
+                               filename=logfile, file_level=Logging.Info,
+                               set_global=false)
+    with_logger(logger) do
+        @error TEST_MSG
+    end
+
+    events = collect(get_log_events(logger.tracker, Logging.Error))
+    @test length(events) == 1
+    close(logger)
+
+    @test !isfile(logfile)
+
+    # Verify disabling of tracker.
+    logger = configure_logging(; console=true, file=false,
+                               console_stream=devnull,
+                               filename=logfile, file_level=Logging.Info,
+                               set_global=false, tracker=nothing)
+    with_logger(logger) do
+        @error TEST_MSG
+        @test isnothing(logger.tracker)
+    end
+
+    # Verify setting of global logger
+    orig_logger = global_logger()
+    logger = configure_logging(; console=true, file=false,
+                               console_stream=devnull,
+                               filename=logfile, file_level=Logging.Info,
+                               set_global=true, tracker=nothing)
+    @error TEST_MSG
+    @test orig_logger != global_logger()
     global_logger(orig_logger)
 end
