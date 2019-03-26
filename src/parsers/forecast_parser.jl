@@ -54,6 +54,7 @@ Returns:
     return DATA
 end
 
+#=
 """
 Args:
     PowerSystems Dictionary
@@ -109,6 +110,7 @@ function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::D
                                             )
     return forecast
 end
+
 
  # -Parse csv file to dict
 """
@@ -202,7 +204,7 @@ function make_forecast_dict(time_series::Dict{String,Any},
     end
     return forecast
 end
-
+=#
 
 # - Parse Dict to Forecast Struct
 
