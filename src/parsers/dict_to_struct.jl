@@ -176,6 +176,7 @@ function read_datetime(df; kwargs...)
     return df
 end
 
+#=
 """
 Arg:
     Device dictionary - Generators
@@ -225,59 +226,72 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
     return Device_dict
 end
 
+
 """
 Arg:
     Load dictionary
-    LoadZones dictionary
     Dataframe contains device Realtime/Forecast TimeSeries
 Returns:
-    Device dictionary with timeseries added
+    Forecast dictionary
 """
-function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
-    load_dict = data["load"]
+function add_time_series_load(sys::PowerSystem, df::DataFrames.DataFrame)
 
-    load_names = [string(l["name"]) for (k,l) in load_dict]
     ts_names = [string(n) for n in names(df) if n != :DateTime]
 
-    write_sf_by_lz = false
-    lzkey = [k for k in ["loadzone","load_zone"] if haskey(data,k)][1]
-    if lzkey in keys(data)
-        load_zone_dict = data[lzkey]
-        z_names = [string(z["name"]) for (k,z) in load_zone_dict]
-        if length([n for n in z_names if n in ts_names]) > 0
-            write_sf_by_lz = true
-        end
-    end
-
+    load_dict = Dict()
     assigned_loads = []
-    if write_sf_by_lz
-        @info "assigning load scaling factors by load_zone"
-        # TODO: make this faster/better
-        for (l_key,l) in load_dict
-            for (lz_key,lz) in load_zone_dict
-                if l["bus"] in lz["buses"]
-                    ts_raw = df[lz_key]/lz["maxactivepower"]
-                    load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
-                    push!(assigned_loads,l_key)
-                end
-            end
 
-        end
-    else
-        @info "assigning load scaling factors by bus"
-        for (l_key,l) in load_dict
-            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[Symbol(l["name"])])
-            push!(assigned_loads,l["name"])
-        end
-
+    @info "assigning load scaling factors by bus"
+    for l in sys.loads
+        load_dict[l.name] = TimeSeries.TimeArray(df[:DateTime],df[Symbol(l.name)],[:maxactivepower])
+        push!(assigned_loads,l.name)
     end
 
-    for l in [l for l in load_names if !(l in assigned_loads)]
+    for l in [l.name for l in sys.loads if !(l.name in assigned_loads)]
         @warn "No load scaling factor assigned for $l"
     end
 
     return load_dict
 end
+
+"""
+Arg:
+    PowerSystem
+    Dataframe contains device Realtime/Forecast TimeSeries
+    LoadZones dictionary
+Returns:
+    Forecast dictionary
+"""
+function add_time_series_load(sys::PowerSystem, df::DataFrames.DataFrame,lz_dict::Dict)
+
+    ts_names = [string(n) for n in names(df) if n != :DateTime]
+
+    z_names = [string(z["name"]) for (k,z) in lz_dict]
+    if !(length([n for n in z_names if n in ts_names]) > 0)
+        @error "loadzone names don't match names of dataframe"
+    end
+
+    load_dict = Dict()
+    assigned_loads = []
+    @info "assigning load scaling factors by load_zone"
+    # TODO: make this faster/better
+    for l in sys.loads
+        for (lz_key,lz) in lz_dict
+            if l.bus in lz["buses"]
+                ts_raw = df[lz_key]/lz["maxactivepower"]
+                load_dict[l.name] = TimeSeries.TimeArray(df[:DateTime],ts_raw,[:maxactivepower])
+                push!(assigned_loads,l.name)
+            end
+        end
+    end
+
+    for l in [l.name for l in sys.loads if !(l.name in assigned_loads)]
+        @warn "No load scaling factor assigned for $l"
+    end
+
+    return load_dict
+end
+=#
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})

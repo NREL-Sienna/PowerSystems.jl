@@ -12,7 +12,7 @@ end
 
     @info "making RTS System"
     sys_rts = PowerSystem(cdm_dict)
-    @test sys_rts_da isa PowerSystem
+    @test sys_rts isa PowerSystem
 
     @info "making forecasts array for DA"
     rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])

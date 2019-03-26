@@ -1,4 +1,4 @@
-function get_name_and_csv(path_to_filename)
+function _get_name_and_csv(path_to_filename)
     df = CSV.File(path_to_filename) |> DataFrames.DataFrame
     folder = splitdir(splitdir(path_to_filename)[1])[2]
     return folder, df
@@ -37,7 +37,7 @@ Returns:
 
             path_to_filename = joinpath(root, filename)
             if match(REGEX_FILE, path_to_filename) != nothing
-                folder_name, csv_data = get_name_and_csv(path_to_filename)
+                folder_name, csv_data = _get_name_and_csv(path_to_filename)
                 if folder_name == "load"
                     DATA["load"] = read_datetime(csv_data; kwargs...)
                 else
@@ -91,6 +91,7 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
 
     return ps_dict
 end
+
 
 function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::Dates.Period,horizon::Int) where {D<:PowerSystemDevice}
     time_delta = Dates.Minute(df[2,:DateTime]-df[1,:DateTime])
@@ -211,7 +212,7 @@ end
 """
 Args:
     A PowerSystem struct
-    A PowerSystems forecast array
+    A dictonary of forecasts
 Returns:
     A PowerSystems forecast stuct array
 """
@@ -221,16 +222,25 @@ function make_forecast_array(sys::PowerSystem,ts_dict::Dict{String,Any})
     fc = Array{Forecast}(undef, 0)
     for (key,val) in ts_map
         ts = _access(ts_dict,vcat(val,key))
-        dl = _get_device(key,sys)
-        if length(dl) > 0 
-            dl = unique(values(dl))
+        if typeof(ts)==DataFrames.DataFrame
+            dl = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts))])
             for d in dl
-                for c in TimeSeries.colnames(ts)
-                    push!(fc,Deterministic(d,c,ts[c]))
-                end
+                push!(fc,Deterministic(d,:maxactivepower,TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode maxactivepower
             end
         else
-            @warn("no $key entries in psdict")
+            dl = _get_device(key,sys)
+            cn = TimeSeries.colnames(ts)
+        
+            if length(dl) > 0 
+                dl = unique(values(dl))
+                for d in dl
+                    for c in cn
+                        push!(fc,Deterministic(d,c,ts[c]))
+                    end
+                end
+            else
+                @warn("no $key entries in sys")
+            end
         end
     end
     return fc
