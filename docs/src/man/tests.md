@@ -6,7 +6,8 @@ Unit tests can be executed in the REPL by executing the following:
 julia> include("test/runtests.jl")
 ```
 
-The unit test module supports several customizations to aid development and debug.
+The unit test module supports several customizations to aid development and
+debug.
 
 - Run a subset of tests in the REPL:
 
@@ -28,3 +29,7 @@ julia> include("test/runtests.jl")
 julia> ENV["PS_LOG_LEVEL"] = Debug
 julia> include("test/runtests.jl")
 ```
+
+The unit test module appends a summary of all log message counts to the log
+file.  If a message is logged too frequently then consider tagging that message
+with maxlog=X to suppress it.
