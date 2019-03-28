@@ -137,6 +137,10 @@ function _get_device(name, collection, devices = [])
     return devices
 end
 
+function _getfield(device,fieldpath::Array{Symbol,1})
+    f = getfield(device,fieldpath[1])
+    length(fieldpath)>1 ? _getfield(f,fieldpath[2:end]) : return f
+end
 
 """
 Arg:

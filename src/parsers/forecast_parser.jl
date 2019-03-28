@@ -218,23 +218,23 @@ Returns:
 """
 
 function make_forecast_array(sys::PowerSystem,ts_dict::Dict{String,Any})
-    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame})
+    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame}) #find key-path to timeseries data fields
     fc = Array{Forecast}(undef, 0)
     for (key,val) in ts_map
-        ts = _access(ts_dict,vcat(val,key))
+        ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
         if typeof(ts)==DataFrames.DataFrame
-            dl = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts))])
-            for d in dl
+            devices = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts))]) #retrieve devices from system that are in the timeseries data
+            for d in devices
                 push!(fc,Deterministic(d,:maxactivepower,TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode maxactivepower
             end
         else
-            dl = _get_device(key,sys)
+            devices = _get_device(key,sys)
             cn = TimeSeries.colnames(ts)
         
             if length(dl) > 0 
-                dl = unique(values(dl))
-                for d in dl
-                    for c in cn
+                devices = unique(values(devices))
+                for d in devices
+                    for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
                         push!(fc,Deterministic(d,c,ts[c]))
                     end
                 end
@@ -274,6 +274,7 @@ function write_to_json(filename,Forecasts_dict)
 end
 
 
+#=
 # Parse json to dict
 #TODO : fix broken data formats
 function parse_json(filename,device_names)
@@ -291,3 +292,4 @@ function parse_json(filename,device_names)
     end
     return Devices
 end
+=#
