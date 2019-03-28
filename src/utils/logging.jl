@@ -115,6 +115,9 @@ LogEvent(file, line, id, message, level) = LogEvent(file, line, id, message, lev
 struct LogEventTracker
     events::Dict{Logging.LogLevel, Dict{Symbol, LogEvent}}
 
+    # Defining an inner constructor to prohibit creation of a default constructor that
+    # takes a parameter of type Any. The outer constructor below causes an overwrite of
+    # that method, which results in a warning message from Julia.
     LogEventTracker(events::Dict{Logging.LogLevel, Dict{Symbol, LogEvent}}) = new(events)
 end
 
@@ -252,6 +255,15 @@ function report_log_summary(logger::MultiLogger)::String
     end
 
     return report_log_summary(logger.tracker)
+end
+
+"""Flush any file streams."""
+function Base.flush(logger::MultiLogger)
+    for logger_ in logger.loggers
+        if isa(logger_, Logging.SimpleLogger)
+           flush(logger_.stream)
+        end
+    end
 end
 
 """Ensures that any file streams are flushed and closed."""
