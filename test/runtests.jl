@@ -14,6 +14,7 @@ RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
 
 download(PowerSystems.TestData)
 
+LOG_FILE = "power-systems.log"
 LOG_LEVELS = Dict(
     "Debug" => Logging.Debug,
     "Info" => Logging.Info,
@@ -60,15 +61,45 @@ macro includetests(testarg...)
     end
 end
 
-gl = global_logger()
-level = get(ENV, "PS_LOG_LEVEL", "Error")
-log_level = get(LOG_LEVELS, level, nothing)
-if log_level == nothing
-    error("Invalid log level $level: Supported levels: $(values(LOG_LEVELS))")
-end
-global_logger(ConsoleLogger(gl.stream, log_level))
+function get_logging_level(env_name::String, default)
+    level = get(ENV, env_name, default)
+    log_level = get(LOG_LEVELS, level, nothing)
+    if log_level == nothing
+        error("Invalid log level $level: Supported levels: $(values(LOG_LEVELS))")
+    end
 
-# Testing Topological components of the schema
-@testset "Begin PowerSystems tests" begin
-    @includetests ARGS
+    return log_level
+end
+
+function run_tests()
+    console_level = get_logging_level("PS_CONSOLE_LOG_LEVEL", "Error")
+    console_logger = ConsoleLogger(stderr, console_level)
+    file_level = get_logging_level("PS_LOG_LEVEL", "Info")
+
+    open_file_logger(LOG_FILE, file_level) do file_logger
+        levels = (Logging.Info, Logging.Warn, Logging.Error)
+        multi_logger = MultiLogger([console_logger, file_logger],
+                                   LogEventTracker(levels))
+        global_logger(multi_logger)
+
+        # Testing Topological components of the schema
+        @time @testset "Begin PowerSystems tests" begin
+            @includetests ARGS
+        end
+
+        # TODO: once all known error logs are fixed, add this test:
+        #@test length(get_log_events(multi_logger.tracker, Logging.Error)) == 0
+
+        @info report_log_summary(multi_logger)
+    end
+end
+
+logger = global_logger()
+
+try
+    run_tests()
+finally
+    # Guarantee that the global logger is reset.
+    global_logger(logger)
+    nothing
 end

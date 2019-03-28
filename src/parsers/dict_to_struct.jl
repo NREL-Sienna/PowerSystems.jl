@@ -195,10 +195,9 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
         Device dictionary with timeseries added
     """
 
-    if haskey(Device_dict,"name")
-        name = Device_dict["name"]
-    else
-        @error "input dict in wrong format"
+    name = get(Device_dict, "name", "")
+    if name == ""
+        throw(DataFormatError("input dict to add_time_series in wrong format"))
     end
 
     if maximum(values(ts_raw)) <= 1.0
@@ -260,7 +259,7 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
     end
 
     for l in [l for l in load_names if !(l in assigned_loads)]
-        @warn "No load scaling factor assigned for $l"
+        @warn "No load scaling factor assigned for $l" maxlog=PS_MAX_LOG
     end
 
     return load_dict

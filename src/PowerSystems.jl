@@ -102,6 +102,7 @@ abstract type TechnicalParams <: PowerSystemComponent end
 include("common.jl")
 
 # Include utilities
+include("utils/logging.jl")
 include("utils/IO/base_checks.jl")
 
 # PowerSystems models
