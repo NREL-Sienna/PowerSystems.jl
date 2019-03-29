@@ -72,13 +72,17 @@ function ps_dict2ps_struct(data::Dict{String,Any})
 
 end
 
-
-function _retrieve(dict::T, key_of_interest::String, output = Dict(), path = []) where T<:AbstractDict
+#Union{String,DataType,Union}
+function _retrieve(dict::T, key_of_interest::Union{DataType,Union,String,Symbol}, output::Dict, path::Array) where T<:AbstractDict
     iter_result = Base.iterate(dict)
     last_element = length(path)
     while iter_result !== nothing
         ((key,value), state) = iter_result
-        if key == key_of_interest
+        if isa(key_of_interest,Union{DataType,Union})
+            if typeof(value) <: key_of_interest
+                output[key] = !haskey(output,key) ? path[1:end] : push!(output[key],path[1:end])
+            end
+        elseif key == key_of_interest
             output[value] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
         end
         if value isa AbstractDict
@@ -91,23 +95,7 @@ function _retrieve(dict::T, key_of_interest::String, output = Dict(), path = [])
     return output
 end
 
-function _retrieve(dict::T, type_of_interest, output = Dict(), path = []) where T<:AbstractDict
-    iter_result = Base.iterate(dict)
-    last_element = length(path)
-    while iter_result !== nothing
-        ((key,value), state) = iter_result
-        if typeof(value) <: type_of_interest
-            output[key] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
-        end
-        if value isa AbstractDict
-            push!(path,key)
-            _retrieve(value, type_of_interest, output, path)
-            path = path[1:last_element]
-        end
-        iter_result = Base.iterate(dict, state)
-    end
-    return output
-end
+
 
 function _access(nesteddict::T,keylist) where T<:AbstractDict
     if !haskey(nesteddict,keylist[1])
@@ -120,7 +108,7 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
     end
 end
 
-function _get_device(name, collection, devices = [])
+function _get_device(name::Union{String,Symbol}, collection, devices = [])
     if isa(collection,Union{Array,Dict}) 
         if !isempty(collection)
             fn = fieldnames(typeof(collection[1]))
@@ -137,10 +125,37 @@ function _get_device(name, collection, devices = [])
     return devices
 end
 
+#=
+function _getfieldpath(device,field::Symbol)
+    # function to map struct fields into a dict
+    function _getsubfields(device)
+        fn = fieldnames(typeof(device))
+        fielddict = Dict()
+        for f in fn
+            fielddict[f] = _getsubfields(getfield(device,f))
+        end
+        return fielddict
+    end
+
+    fielddict = _getsubfields(device)
+
+    tmp = PowerSystems._retrieve(fielddict,field,Dict(),[])
+    if isempty(tmp)
+        @error "Device $(device.name) has no field $field"
+    else
+        fieldpath = collect(Iterators.flatten(values(tmp)))
+        push!(fieldpath,field)
+    end
+
+    return fieldpath
+end
+
+
 function _getfield(device,fieldpath::Array{Symbol,1})
     f = getfield(device,fieldpath[1])
     length(fieldpath)>1 ? _getfield(f,fieldpath[2:end]) : return f
 end
+=#
 
 """
 Arg:

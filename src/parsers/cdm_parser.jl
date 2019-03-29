@@ -158,7 +158,7 @@ function csv2ps_dict(data::Dict{String,Any})
     end
 
     if haskey(data,"timeseries_data")
-        gen_map = _retrieve(ps_dict["gen"],"name",Dict())
+        gen_map = _retrieve(ps_dict["gen"],"name",Dict(),[])
         if haskey(data["timeseries_data"],"DAY_AHEAD")
             @info "adding DAY-AHEAD generator forcasats"
             _add_nested_dict!(ps_dict,["forecasts","DA","gen"],_format_fcdict(data["timeseries_data"]["DAY_AHEAD"],gen_map))

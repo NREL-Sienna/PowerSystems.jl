@@ -218,7 +218,7 @@ Returns:
 """
 
 function make_forecast_array(sys::PowerSystem,ts_dict::Dict{String,Any})
-    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame}) #find key-path to timeseries data fields
+    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
     fc = Array{Forecast}(undef, 0)
     for (key,val) in ts_map
         ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
@@ -228,18 +228,21 @@ function make_forecast_array(sys::PowerSystem,ts_dict::Dict{String,Any})
                 push!(fc,Deterministic(d,:maxactivepower,TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode maxactivepower
             end
         else
-            devices = _get_device(key,sys)
+            devices = _get_device(key,sys) #retrieve the device object
             cn = TimeSeries.colnames(ts)
         
-            if length(dl) > 0 
+            if length(devices) > 0 
                 devices = unique(values(devices))
                 for d in devices
                     for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
+                        if !isafield(d,c)
+                            @warn("no field $c exists in the $(typeof(d)) struct")
+                        end
                         push!(fc,Deterministic(d,c,ts[c]))
                     end
                 end
             else
-                @warn("no $key entries in sys")
+                @warn("no $key entries for devices in sys")
             end
         end
     end
