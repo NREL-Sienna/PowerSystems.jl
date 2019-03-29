@@ -49,13 +49,6 @@ function ProportionalReserve(name::String,
 end
 
 
-ProportionalReserve(;name = "init",
-        contributingdevices = [ThermalDispatch()],
-        timeframe = 0.0,
-        requirement = 0.03,
-        loads = [ PowerLoad()]) = ProportionalReserve(name, contributingdevices, timeframe, requirement, loads)
-
-
 """
 StaticReserve(name::String,
         contributingdevices::PowerSystemDevice,
