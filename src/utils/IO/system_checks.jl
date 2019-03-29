@@ -71,9 +71,9 @@ end
 # TODO: Check for islanded Buses
 
 # check for minimum timediff
-function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
-    if length(loads[1].scalingfactor) > 1
-        timeseries = loads[1].scalingfactor
+function minimumtimestep(forecasts::Array{T})where {T<:Forecast}
+    if length(forecasts[1].data) > 1
+        timeseries = forecasts[1].data
         n = length(timeseries)-1
         ts = []
         for i in 1:n
