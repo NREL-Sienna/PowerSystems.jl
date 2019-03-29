@@ -78,8 +78,8 @@ end
 
 @testset "Forecast Constructors" begin
     tg = RenewableFix()
-    tDeterministicForecast = Deterministic(tg,:installedcapacity,Hour(1),DateTime("01-01-01"),24)
+    tDeterministicForecast = Deterministic(tg,"scalingfactor",Hour(1),DateTime("01-01-01"),24)
     @test tDeterministicForecast isa PowerSystems.Forecast
-    tDeterministicForecast = Deterministic(tg,:installedcapacity,PowerSystems.TimeSeries.TimeArray([DateTime("01-01-01"),DateTime("01-01-02")],ones(2)))
+    tDeterministicForecast = Deterministic(tg,"scalingfactor",PowerSystems.TimeSeries.TimeArray([DateTime("01-01-01"),DateTime("01-01-02")],ones(2)))
     @test tDeterministicForecast isa PowerSystems.Forecast
 end

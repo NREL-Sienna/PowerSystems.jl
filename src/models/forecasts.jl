@@ -8,24 +8,24 @@ end
 
 """
 struct Deterministic <: Forecast
-    device::PowerSystemDevice              # device
-    field::Symbol      # field of device
+    device::PowerSystemDevice       # device
+    id::String                      # identifier
     resolution::Dates.Period        # resolution
     initialtime::Dates.DateTime     # forecast availability time
     data::TimeSeries.TimeArray      # TimeStamp - scalingfactor
 end
 
 
-function Deterministic(device::PowerSystemDevice, field::Symbol, resolution::Dates.Period, initialtime::Dates.DateTime, time_steps::Int; kwargs...)
+function Deterministic(device::PowerSystemDevice, id::String, resolution::Dates.Period, initialtime::Dates.DateTime, time_steps::Int; kwargs...)
     data = TimeSeries.TimeArray(initialtime:Dates.Hour(1):initialtime+resolution*(time_steps-1), ones(time_steps))
-    Deterministic(device, field, resolution, initialtime, data; kwargs...)
+    Deterministic(device, id, resolution, initialtime, data; kwargs...)
 end
 
-function Deterministic(device::PowerSystemDevice, field::Symbol, data::TimeSeries.TimeArray; kwargs...)
+function Deterministic(device::PowerSystemDevice, id::String, data::TimeSeries.TimeArray; kwargs...)
     resolution = getresolution(data)
     initialtime = TimeSeries.timestamp(data)[1]
     time_steps = length(data)
-    Deterministic(device, field, resolution, initialtime, data; kwargs...)
+    Deterministic(device, id, resolution, initialtime, data; kwargs...)
 end
 
 struct Scenarios <: Forecast

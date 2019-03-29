@@ -225,7 +225,7 @@ function make_forecast_array(sys::PowerSystem,ts_dict::Dict{String,Any})
         if typeof(ts)==DataFrames.DataFrame
             devices = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts))]) #retrieve devices from system that are in the timeseries data
             for d in devices
-                push!(fc,Deterministic(d,:maxactivepower,TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode maxactivepower
+                push!(fc,Deterministic(d,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
             end
         else
             devices = _get_device(key,sys) #retrieve the device object
@@ -235,10 +235,7 @@ function make_forecast_array(sys::PowerSystem,ts_dict::Dict{String,Any})
                 devices = unique(values(devices))
                 for d in devices
                     for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
-                        if !isafield(d,c)
-                            @warn("no field $c exists in the $(typeof(d)) struct")
-                        end
-                        push!(fc,Deterministic(d,c,ts[c]))
+                        push!(fc,Deterministic(d,string(c),ts[c]))
                     end
                 end
             else
