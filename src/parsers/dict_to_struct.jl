@@ -64,9 +64,11 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     else
         @warn "key 'services' not found in PowerSystems dictionary, this will result in an empty services array"
     end
-    #if haskey(data,"forecasts")
-        # TODO: create a forecasts dict of an array of Forecasts...
-    #end
+    if haskey(data,"forecasts")
+        devices = collect(vcat(buses,generators,storage,branches,loads,loadZones,shunts,branches,services))
+        forecasts = PowerSystems.forecasts_dict_parser(data["forecasts"],devices)
+
+    end
 
     return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts, services
 
@@ -555,4 +557,15 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
                             ))
     end
     return Services
+end
+
+
+function forecasts_dict_parser(dict::Dict{String, Any}, devices::Array{Any,1})
+    
+    forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}()
+
+    for (k,v) in dict
+        forecasts[Symbol(k)] =  make_forecast_array(devices, v)
+    end
+    return forecasts
 end
