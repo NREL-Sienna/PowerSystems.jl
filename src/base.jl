@@ -34,7 +34,7 @@ struct PowerSystem{L <: ElectricLoad,
                    B <: Union{Nothing,Array{ <: Branch,1}},
                    S <: Union{Nothing,Array{ <: Storage,1}},
                    V <: Union{Nothing,Array{ <: Service,1}},
-                   F <: Union{Nothing,Dict{Symbol,Array{ <: Forecast,1}}}
+                   F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}
                    }
     # DOCTODO docs for PowerSystem fields are currently not working, JJS 1/15/19
     """
@@ -61,7 +61,7 @@ struct PowerSystem{L <: ElectricLoad,
                         annex::Union{Nothing,Dict{Any,Any}}; kwargs...) where {G <: Generator, 
                                                                                 L <: ElectricLoad,
                                                                                 V <: Union{Nothing,Array{ <: Service,1}},
-                                                                                F <: Union{Nothing,Dict{Symbol,Array{ <: Forecast,1}}}}
+                                                                                F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}}
         
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
@@ -99,7 +99,7 @@ struct PowerSystem{L <: ElectricLoad,
                                                                                 L <: ElectricLoad,
                                                                                 B <: Array{ <: Branch,1},
                                                                                 V <: Union{Nothing,Array{ <: Service,1}},
-                                                                                F <: Union{Nothing,Dict{Symbol,Array{ <: Forecast,1}}}}
+                                                                                F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}}
 
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
@@ -110,7 +110,9 @@ struct PowerSystem{L <: ElectricLoad,
                 
                 if !isnothing(forecasts)
                         if length(forecasts)>0
-                                generators = checkramp(generators, minimumtimestep(loads))
+                                for (k,f) in forecasts
+                                        checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
+                                end
                                 time_length = timeseriescheckload(loads)
                                 !isnothing(sources.renewable) && timeserieschecksources(sources.renewable, time_length)
                                 !isnothing(sources.hydro) && timeserieschecksources(sources.hydro, time_length)
@@ -144,7 +146,7 @@ struct PowerSystem{L <: ElectricLoad,
                                                                                 L <: ElectricLoad,
                                                                                 S <: Array{ <: Storage,1},
                                                                                 V <: Union{Nothing,Array{ <: Service,1}},
-                                                                                F <: Union{Nothing,Dict{Symbol,Array{ <: Forecast,1}}}}
+                                                                                F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}}
 
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
@@ -184,7 +186,7 @@ struct PowerSystem{L <: ElectricLoad,
                                                                                 B <: Array{<:Branch,1},
                                                                                 S <: Array{ <: Storage,1},
                                                                                 V <: Union{Nothing,Array{ <: Service,1}},
-                                                                                F <: Union{Nothing,Dict{Symbol,Array{ <: Forecast,1}}}}
+                                                                                F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}}
         
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
@@ -228,7 +230,7 @@ PowerSystem(; buses = [Bus()],
             branches =  nothing,
             storage = nothing,
             basepower = 1000.0,
-            forecasts = Dict{Symbol,Array{ <: Forecast,1}}(),
+            forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}(),
             services = nothing,
             annex = nothing,
             kwargs... ,
@@ -243,7 +245,7 @@ function PowerSystem(buses::Array{Bus,1},
                                                                 L <: ElectricLoad,
                                                                 B <: Array{<:Branch,1},
                                                                 S <: Array{ <: Storage,1}}
-        return PowerSystem(buses,generators,loads,branches,storage,basepower,Dict{Symbol,Array{ <: Forecast,1}}(),nothing,nothing; kwargs...)
+        return PowerSystem(buses,generators,loads,branches,storage,basepower,Dict{Symbol,Array{C,1} where C <: Forecast}(),nothing,nothing; kwargs...)
 end
 
 function PowerSystem(buses::Array{Bus,1},
@@ -258,7 +260,7 @@ end
 
 function PowerSystem(ps_dict::Dict{String,Any}; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = ps_dict2ps_struct(ps_dict)
-        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Array{ <: Forecast,1}}(), Services, nothing; kwargs...);
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Array{C,1} where C <: Forecast}(), Services, nothing; kwargs...);
         return sys
 end
 
@@ -266,7 +268,7 @@ function PowerSystem(file::String, ts_folder::String; kwargs...)
 
         ps_dict = parsestandardfiles(file,ts_folder; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = ps_dict2ps_struct(ps_dict)
-        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Array{ <: Forecast,1}}(), Services, nothing; kwargs...);
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Array{C,1} where C <: Forecast}(), Services, nothing; kwargs...);
 
         return sys
 end

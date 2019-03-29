@@ -3,24 +3,11 @@
 
 ## Time Series Length ##
 
-function timeseriescheckload(loads::Array{T}) where {T<:ElectricLoad}
-    t = length(loads[1].scalingfactor)
-    for l in loads
-        if t == length(l.scalingfactor)
-            continue
-        else
-            @error "Inconsistent load scaling factor time series length"
-        end
-    end
-    return t
-end
-
-function timeserieschecksources(generators::Array{T}, t) where {T<:Generator}
-    for g in generators
-        if t == length(g.scalingfactor)
-            continue
-        else
-            @error "Inconsistent generation scaling factor time series length for $(g.name)"
+function timeseriescheckforecast(forecasts::Dict{Symbol,Array{C,1} where C<:Forecast})
+    for (key,v) in forecasts
+        t = length(unique([length(f.data) for f in v]))
+        if t > 1
+            @error "$key forecast array contains $t different time series lengths"
         end
     end
 end
@@ -102,7 +89,7 @@ end
 
 
 # check for valid ramp limits
-function checkramp(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generator}
+function checkramp!(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generator}
     for (ix,g) in enumerate(generators)
         if isa(g,ThermalDispatch)
             R = convertramp(g.tech.ramplimits,ts)
