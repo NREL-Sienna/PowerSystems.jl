@@ -68,10 +68,10 @@ struct PowerSystem{L <: ElectricLoad,
         if runchecks
                 if !isnothing(forecasts)
                         if length(forecasts)>0
-                                generators = checkramp(generators, minimumtimestep(loads))
-                                time_length = timeseriescheckload(loads)
-                                !isnothing(sources.renewable,) &&  timeserieschecksources(sources.renewable, time_length)
-                                !isnothing(sources.hydro) && timeserieschecksources(sources.hydro, time_length)
+                                for (k,f) in forecasts
+                                        checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
+                                end
+                                timeseriescheckforecast(forecasts)
                         end
                 end
         end
@@ -113,9 +113,7 @@ struct PowerSystem{L <: ElectricLoad,
                                 for (k,f) in forecasts
                                         checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
                                 end
-                                time_length = timeseriescheckload(loads)
-                                !isnothing(sources.renewable) && timeserieschecksources(sources.renewable, time_length)
-                                !isnothing(sources.hydro) && timeserieschecksources(sources.hydro, time_length)
+                                timeseriescheckforecast(forecasts)
                         end
                 end
                 calculatethermallimits!(branches,basepower)
@@ -153,10 +151,10 @@ struct PowerSystem{L <: ElectricLoad,
         if runchecks
                 if !isnothing(forecasts)
                         if length(forecasts)>0
-                                generators = checkramp(generators, minimumtimestep(loads))
-                                time_length = timeseriescheckload(loads)
-                                !isnothing(sources.renewable) && timeserieschecksources(sources.renewable, time_length)
-                                !isnothing(sources.hydro) && timeserieschecksources(sources.hydro, time_length)
+                                for (k,f) in forecasts
+                                        checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
+                                end
+                                timeseriescheckforecast(forecasts)
                         end
                 end
         end
@@ -196,10 +194,10 @@ struct PowerSystem{L <: ElectricLoad,
                 pvbuscheck(buses, generators)
                 if !isnothing(forecasts)
                         if length(forecasts)>0
-                                generators = checkramp(generators, minimumtimestep(loads))
-                                time_length = timeseriescheckload(loads)
-                                !isnothing(sources.renewable) && timeserieschecksources(sources.renewable, time_length)
-                                !isnothing(sources.hydro) && timeserieschecksources(sources.hydro, time_length)
+                                for (k,f) in forecasts
+                                        checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
+                                end
+                                timeseriescheckforecast(forecasts)
                         end
                 end
                 calculatethermallimits!(branches,basepower)
