@@ -171,10 +171,16 @@ Returns:
     Dataframe with a DateTime columns
 """
 function read_datetime(df; kwargs...)
-    if [c for c in [:Year,:Month,:Day,:Period] if c in names(df)] == [:Year,:Month,:Day,:Period]
+    if [c for c in [:Year,:Month,:Day] if c in names(df)] == [:Year,:Month,:Day]
+        if !(:Period in names(df))
+            df = DataFrames.rename!(DataFrames.stack(df,[c for c in names(df) if !(c in [:Year,:Month,:Day])]),:variable=>:Period)
+            df.Period = parse.(Int,string.(df.Period))
+            if :valuecolname in keys(kwargs)
+                DataFrames.rename!(df,:value=>kwargs[:valuecolname])
+            end
+        end
         if Dates.Hour(DataFrames.maximum(df[:Period])) <= Dates.Hour(25)
-            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Dates.Hour(1) :
-            Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
+            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Dates.Hour(1) : Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
         elseif (Dates.Minute(5) * DataFrames.maximum(df[:Period]) >= Dates.Minute(1440))& (Dates.Minute(5) * DataFrames.maximum(df[:Period]) <= Dates.Minute(1500))
             df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Dates.Minute(5) :
                             Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
@@ -560,7 +566,7 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
 end
 
 
-function forecasts_dict_parser(dict::Dict{String, Any}, devices::Array{Any,1})
+function forecasts_dict_parser(dict::Dict, devices::Array{Any,1})
     
     forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}()
 

@@ -8,11 +8,11 @@ end
 
 """
 struct Deterministic <: Forecast
-    device::PowerSystemDevice       # device
-    id::String                      # identifier
-    resolution::Dates.Period        # resolution
-    initialtime::Dates.DateTime     # forecast availability time
-    data::TimeSeries.TimeArray      # TimeStamp - scalingfactor
+    device::PowerSystemDevice        # device
+    id::String                                      # identifier
+    resolution::Dates.Period                        # resolution
+    initialtime::Dates.DateTime                     # forecast availability time
+    data::TimeSeries.TimeArray                      # TimeStamp - scalingfactor
 end
 
 
@@ -26,6 +26,32 @@ function Deterministic(device::PowerSystemDevice, id::String, data::TimeSeries.T
     initialtime = TimeSeries.timestamp(data)[1]
     time_steps = length(data)
     Deterministic(device, id, resolution, initialtime, data; kwargs...)
+end
+
+"""
+    DeterministicService
+        A deterministic forecast for a particular data field in a Service.
+
+"""
+struct DeterministicService <: Forecast
+    service::Service        # service
+    id::String                                      # identifier
+    resolution::Dates.Period                        # resolution
+    initialtime::Dates.DateTime                     # forecast availability time
+    data::TimeSeries.TimeArray                      # TimeStamp - scalingfactor
+end
+
+
+function Deterministic(service::Service, id::String, resolution::Dates.Period, initialtime::Dates.DateTime, time_steps::Int; kwargs...)
+    data = TimeSeries.TimeArray(initialtime:Dates.Hour(1):initialtime+resolution*(time_steps-1), ones(time_steps))
+    DeterministicService(service, id, resolution, initialtime, data; kwargs...)
+end
+
+function Deterministic(service::Service, id::String, data::TimeSeries.TimeArray; kwargs...)
+    resolution = getresolution(data)
+    initialtime = TimeSeries.timestamp(data)[1]
+    time_steps = length(data)
+    DeterministicService(service, id, resolution, initialtime, data; kwargs...)
 end
 
 struct Scenarios <: Forecast

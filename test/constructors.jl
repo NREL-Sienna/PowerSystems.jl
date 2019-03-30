@@ -70,8 +70,8 @@ end
 end
 
 @testset "Product Constructors" begin
-    tProportionalReserve = ProportionalReserve()
-    @test tProportionalReserve isa PowerSystems.Service
+    #tProportionalReserve = ProportionalReserve()
+    #@test tProportionalReserve isa PowerSystems.Service
     tStaticReserve = StaticReserve()
     @test tStaticReserve isa PowerSystems.Service
 end

@@ -217,25 +217,27 @@ Returns:
     A PowerSystems forecast stuct array
 """
 
-function make_forecast_array(sys::Union{PowerSystem,Array{Any,1}},ts_dict::Dict{String,Any})
+function make_forecast_array(sys::Union{PowerSystem,Array{Any,1}},ts_dict::Dict)
     ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
     fc = Array{Forecast}(undef, 0)
     for (key,val) in ts_map
         ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
-        if typeof(ts)==DataFrames.DataFrame
+        if (typeof(ts)==DataFrames.DataFrame) & (length(ts) > 2)
             devices = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts))]) #retrieve devices from system that are in the timeseries data
             for d in devices
                 push!(fc,Deterministic(d,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
             end
         else
             devices = _get_device(key,sys) #retrieve the device object
-            cn = TimeSeries.colnames(ts)
+            cn = isa(ts,DataFrames.DataFrame) ? names(ts) : TimeSeries.colnames(ts)
+            cn = [c for c in cn if c != :DateTime]
         
             if length(devices) > 0 
                 devices = unique(values(devices))
                 for d in devices
                     for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
-                        push!(fc,Deterministic(d,string(c),ts[c]))
+                        timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
+                        push!(fc,Deterministic(d,string(c),timeseries))
                     end
                 end
             else

@@ -71,9 +71,8 @@ function read_csv_data(file_path::String)
             if isfile(fpath)
                 # read data and insert into dict
                 @info "parsing timeseries data in $fpath for $(r.Object)"
-                raw_data = CSV.File(fpath) |> DataFrames.DataFrame |> read_datetime
-
                 param  = :Parameter in names(tsp_raw) ? r.Parameter : :scalingfactor
+                raw_data = read_datetime(CSV.File(fpath) |> DataFrames.DataFrame, valuecolname = Symbol(r.Object))
 
                 if length([c for c in names(raw_data) if String(c) == String(r.Object)]) == 1
                     raw_data = TimeSeries.TimeArray(raw_data[:DateTime],raw_data[Symbol(r.Object)],[param])
@@ -159,9 +158,13 @@ function csv2ps_dict(data::Dict{String,Any})
 
     if haskey(data,"timeseries_data")
         gen_map = _retrieve(ps_dict["gen"],"name",Dict(),[])
+        device_map = _retrieve(ps_dict,"name",Dict(),[])
+
         if haskey(data["timeseries_data"],"DAY_AHEAD")
             @info "adding DAY-AHEAD generator forcasats"
-            _add_nested_dict!(ps_dict,["forecasts","DA","gen"],_format_fcdict(data["timeseries_data"]["DAY_AHEAD"],gen_map))
+            _add_nested_dict!(ps_dict,["forecasts","DA"],_format_fcdict(data["timeseries_data"]["DAY_AHEAD"],device_map))
+
+            #_add_nested_dict!(ps_dict,["forecasts","DA","gen"],_format_fcdict(data["timeseries_data"]["DAY_AHEAD"],gen_map))
             @info "adding DAY-AHEAD load forcasats"
             ps_dict["forecasts"]["DA"]["load"] = data["timeseries_data"]["DAY_AHEAD"]["Load"]
         end
