@@ -558,15 +558,14 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
         [PowerSystems._get_device(dev,generators) for dev in d["contributingdevices"]] |> (x->[push!(contributingdevices,d[1]) for d in x if length(d)==1])
         push!(Services,ProportionalReserve(d["name"],
                             contributingdevices,
-                            Float64(d["timeframe"]),
-                            TimeSeries.TimeArray(Dates.today(),ones(1))  #TODO : fix requirement 
+                            Float64(d["timeframe"])
                             ))
     end
     return Services
 end
 
 
-function forecasts_dict_parser(dict::Dict, devices::Array{Any,1})
+function forecasts_dict_parser(dict::Dict, devices::Array{PowerSystemComponent,1})
     
     forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}()
 

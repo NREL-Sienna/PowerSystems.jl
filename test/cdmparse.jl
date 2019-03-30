@@ -17,7 +17,7 @@ end
     @info "making forecasts array for DA"
     rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
     @test length(rts_da[1].data) == 24
-    @test length(rts_da) == 131
+    @test length(rts_da) == 138
 
     @info "assigning time series data for RT"
     rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])

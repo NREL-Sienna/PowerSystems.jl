@@ -94,7 +94,7 @@ import CSV
 # Includes
 
 abstract type PowerSystemComponent end
-# supertype for "devices" (bus, line, etc.)
+# supertype for "devices" (bus, line, etc.) and "services" (reserves, transfers)
 abstract type PowerSystemDevice <: PowerSystemComponent end
 # supertype for generation technologies (thermal, renewable, etc.)
 abstract type TechnicalParams <: PowerSystemComponent end
