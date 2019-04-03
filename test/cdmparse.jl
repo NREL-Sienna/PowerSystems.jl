@@ -1,13 +1,13 @@
 @testset "PowerSystems dict parsing" begin
     @info "parsing data from $RTS_GMLC_DIR into ps_dict"
-    data_dict = PowerSystems.read_csv_data(RTS_GMLC_DIR)
+    data_dict = PowerSystems.read_csv_data(RTS_GMLC_DIR, 100.0)
     @test haskey(data_dict, "timeseries_pointers")
 end
 
 @testset "CDM parsing" begin
     cdm_dict = nothing
     @info "parsing data from $RTS_GMLC_DIR into ps_dict"
-    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR)
+    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
     @test cdm_dict isa Dict && haskey(cdm_dict, "loadzone")
 
     @info "assigning time series data for DA"
@@ -32,7 +32,7 @@ end
     @info "testing bad directory"
     data = Dict{String, Any}("dcline" => nothing, "baseMVA"=> 100.0, "gen" => nothing,
                              "branch" => nothing, "services"=> nothing)
-    @test PowerSystems.csv2ps_dict(baddir) == data
+    @test PowerSystems.csv2ps_dict(baddir, 100.0) == data
 end
 
 @testset "consistency between CDM and standardfiles" begin
@@ -43,7 +43,7 @@ end
 
     mpsys = PowerSystem(mp_dict)
 
-    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR)
+    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
     cdmsys = PowerSystem(cdm_dict)
 
     @test cdmsys.generators.thermal[1].tech.activepowerlimits == mpsys.generators.thermal[1].tech.activepowerlimits
