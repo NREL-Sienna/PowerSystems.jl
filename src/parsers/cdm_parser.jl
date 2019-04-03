@@ -15,7 +15,7 @@ Returns:
     as values
 
 """
-function read_csv_data(file_path::String, baseMVA = 100.0)
+function read_csv_data(file_path::String, baseMVA::Float64)
     files = readdir(file_path)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
@@ -220,8 +220,8 @@ Returns:
         "BaseKV" => ..
         ...
 """
-function csv2ps_dict(file_path::String)
-    data =  read_csv_data(file_path)
+function csv2ps_dict(file_path::String, baseMVA::Float64)
+    data =  read_csv_data(file_path, baseMVA)
     ps_dict = csv2ps_dict(data)
     return ps_dict
 end
