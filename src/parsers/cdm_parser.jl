@@ -149,7 +149,7 @@ function csv2ps_dict(data::Dict{String,Any})
          ps_dict["branch"] = nothing
     end
     if haskey(data,"dc_branch")
-        ps_dict["dcline"] =  PowerSystems.dc_branch_csv_parser(data["dc_branch"],ps_dict["bus"])
+        ps_dict["dcline"] =  PowerSystems.dc_branch_csv_parser(data["dc_branch"],ps_dict["bus"], ps_dict["baseMVA"])
     else
         @warn "Key error : key 'dc_branch' not found in PowerSystems dictionary,
           \n This will result in an ps_dict['dcline'] = nothing"
