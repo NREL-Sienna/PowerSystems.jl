@@ -8,9 +8,6 @@ function parsestandardfiles(file::String; kwargs...)
     # function `parse_file` is in pm_io/common.jl
     data = parse_file(file)
 
-    # make sure that data is mixed units (in pm_io/data.jl)
-    make_mixed_units(data)
-
     # Check for at least one bus in input file
     if (length(data["bus"]) < 1)
         @error "There are no buses in this file"
