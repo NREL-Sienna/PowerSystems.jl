@@ -184,6 +184,7 @@ function read_loadzones(data,Buses)
 end
 
 function make_hydro_gen(gen_name, d, bus)
+    ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
     hydro =  Dict{String,Any}("name" => gen_name,
                             "available" => d["gen_status"], # change from staus to available
                             "bus" => make_bus(bus),
@@ -192,7 +193,7 @@ function make_hydro_gen(gen_name, d, bus)
                                                         "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                         "reactivepower" => d["qg"],
                                                         "reactivepowerlimits" => (min=d["qmin"], max=d["qmax"]),
-                                                        "ramplimits" => (up=d["ramp_agc"],down=d["ramp_agc"]),
+                                                        "ramplimits" => (up=ramp_agc/d["mbase"],down=ramp_agc/d["mbase"]),
                                                         "timelimits" => nothing),
                             "econ" => Dict{String,Any}("curtailcost" => 0.0,
                                                         "interruptioncost" => nothing),
@@ -243,7 +244,7 @@ function make_thermal_gen(gen_name, d, bus)
     end
 
     # TODO GitHub #148: ramp_agc isn't always present. This value may not be correct.
-    ramp_agc = get(d, "ramp_agc", 0.0)
+    ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
     thermal_gen = Dict{String,Any}("name" => gen_name,
                                     "available" => d["gen_status"],
                                     "bus" => make_bus(bus),
@@ -251,7 +252,7 @@ function make_thermal_gen(gen_name, d, bus)
                                                                 "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                                 "reactivepower" => d["qg"],
                                                                 "reactivepowerlimits" => (min=d["qmin"], max=d["qmax"]),
-                                                                "ramplimits" => (up=ramp_agc, down=ramp_agc),
+                                                                "ramplimits" => (up=ramp_agc/d["mbase"], down=ramp_agc/d["mbase"]),
                                                                 "timelimits" => nothing),
                                     "econ" => Dict{String,Any}("capacity" => d["pmax"],
                                                                 "variablecost" => cost,
