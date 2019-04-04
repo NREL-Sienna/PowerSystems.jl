@@ -22,10 +22,12 @@ function read_csv_data(file_path::String, baseMVA::Float64)
     data =Dict{String,Any}()
 
     if length(files) == 0
-        @error "No test files in the folder"
+        error("No files in the folder")
     else
         data["baseMVA"] = baseMVA
     end
+
+    encountered_files = 0
     for d_file in files
         try
             if match(REGEX_IS_FOLDER, d_file) != nothing
@@ -34,28 +36,32 @@ function read_csv_data(file_path::String, baseMVA::Float64)
                 for file in readdir(joinpath(file_path,d_file))
                     if match(REGEX_DEVICE_TYPE, file) != nothing
                         @info "Parsing csv data in $file ..."
+                        encountered_files += 1
                         fpath = joinpath(file_path,d_file,file)
                         raw_data = CSV.File(fpath) |> DataFrames.DataFrame
                         d_file_data[split(file,r"[.]")[1]] = raw_data
                     end
                 end
 
-                if length(d_file_data) >0
+                if length(d_file_data) > 0
                     data[d_file] = d_file_data
                     @info "Successfully parsed $d_file"
                 end
 
             elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
                 @info "Parsing csv data in $d_file ..."
+                encountered_files += 1
                 fpath = joinpath(file_path,d_file)
                 raw_data = CSV.File(fpath)|> DataFrames.DataFrame
                 data[split(d_file,r"[.]")[1]] = raw_data
                 @info "Successfully parsed $d_file"
             end
-        catch
-            @error "Error occurred while parsing $d_file"
-            catch_stacktrace()
+        catch ex
+            @error "Error occurred while parsing $d_file" exception=ex
         end
+    end
+    if encountered_files == 0 
+        error("No csv files or folders in $file_path")
     end
 
     if "timeseries_pointers" in keys(data)
@@ -133,7 +139,7 @@ function csv2ps_dict(data::Dict{String,Any})
             ps_dict["load"] =  PowerSystems.load_csv_parser(data["bus"], ps_dict["bus"], ps_dict["baseMVA"], haskey(data,"load") ? data["load"] : nothing)
         end
     else
-        @error "Key error : key 'bus' not found in PowerSystems dictionary, cannot construct any PowerSystem Struct"
+        error("Key error : key 'bus' not found in PowerSystems dictionary, cannot construct any PowerSystem Struct")
     end
     if haskey(data,"gen")
         ps_dict["gen"] =  PowerSystems.gen_csv_parser(data["gen"], ps_dict["bus"], ps_dict["baseMVA"])
