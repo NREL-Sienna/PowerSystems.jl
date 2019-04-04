@@ -30,9 +30,7 @@ end
 @testset "CDM parsing invalid directory" begin
     baddir = joinpath(RTS_GMLC_DIR, "../../test")
     @info "testing bad directory"
-    data = Dict{String, Any}("dcline" => nothing, "baseMVA"=> 100.0, "gen" => nothing,
-                             "branch" => nothing, "services"=> nothing)
-    @test PowerSystems.csv2ps_dict(baddir, 100.0) == data
+    @test_throws ErrorException PowerSystems.csv2ps_dict(baddir, 100.0)
 end
 
 @testset "consistency between CDM and standardfiles" begin
