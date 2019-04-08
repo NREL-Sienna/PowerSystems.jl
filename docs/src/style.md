@@ -118,3 +118,16 @@ Good:
 >
     x = 1
     foo = 2
+
+* Define abstract types on one line. Given the lack of IDE support for Julia,
+this makes it easier to find type definitions.
+
+Bad:
+>
+    abstract type
+        Foo
+    end
+
+Good:
+>
+    abstract type Foo end
