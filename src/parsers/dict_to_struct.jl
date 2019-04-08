@@ -1,13 +1,5 @@
 # Global method definition needs to be at top level in .7
 
-# Is this redefinition of Base.convert still needed? Looks like this is
-# implemented correctly in 1.0, and with correct throw of InexactError (here, I
-# get `ERROR: UndefVarError: Inexacterror not defined`), JJS 1/31/19
-
-# Convert bool to int
-Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(Inexacterror())
-#############################################
-
 """
 Takes a PowerSystems dictionary and return an array of PowerSystems struct for
 Bus, Generator, Branch and load
@@ -101,7 +93,7 @@ end
 
 function _access(nesteddict::T,keylist) where T<:AbstractDict
     if !haskey(nesteddict,keylist[1])
-        @error "$(keylist[1]) not found in dict"        
+        @error "$(keylist[1]) not found in dict"
     end
     if length(keylist) > 1
         nesteddict = _access(nesteddict[keylist[1]],keylist[2:end])
@@ -236,10 +228,9 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
         Device dictionary with timeseries added
     """
 
-    if haskey(Device_dict,"name")
-        name = Device_dict["name"]
-    else
-        @error "input dict in wrong format"
+    name = get(Device_dict, "name", "")
+    if name == ""
+        throw(DataFormatError("input dict to add_time_series in wrong format"))
     end
 
     if maximum(values(ts_raw)) <= 1.0
@@ -312,8 +303,8 @@ function add_time_series_load(sys::PowerSystem, df::DataFrames.DataFrame,lz_dict
         end
     end
 
-    for l in [l.name for l in sys.loads if !(l.name in assigned_loads)]
-        @warn "No load scaling factor assigned for $l"
+    for l in [l for l in load_names if !(l in assigned_loads)]
+        @warn "No load scaling factor assigned for $l" maxlog=PS_MAX_LOG
     end
 
     return load_dict

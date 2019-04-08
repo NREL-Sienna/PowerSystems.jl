@@ -136,7 +136,7 @@ end
 "prints the text summary for a data file to IO"
 function summary(io::IO, file::String; kwargs...)
     data = parse_file(file)
-    summary(io, data; kwargs...)
+    _summary(io, data; kwargs...)
     return data
 end
 
@@ -184,7 +184,7 @@ pm_component_status_parameters = Set(["status", "gen_status", "br_status"])
 
 
 "prints the text summary for a data dictionary to IO"
-function summary(io::IO, data::Dict{String,Any}; kwargs...)
+function _summary(io::IO, data::Dict{String,Any}; kwargs...)
     summary(io, data; 
         component_types_order = pm_component_types_order,
         component_parameter_order = pm_component_parameter_order,
@@ -554,7 +554,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             angmax = branch["angmax"][c]
 
             if angmin <= -pi/2
-                @info("this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmin)) to -$(default_pad_deg) deg.")
+                @info "this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmin)) to -$(default_pad_deg) deg." maxlog=PS_MAX_LOG
                 if haskey(data, "conductors")
                     branch["angmin"][c] = -default_pad
                 else
@@ -564,7 +564,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             end
 
             if angmax >= pi/2
-                @info("this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmax)) to $(default_pad_deg) deg.")
+                @info "this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch $i$(cnd_str) from $(rad2deg(angmax)) to $(default_pad_deg) deg." maxlog=PS_MAX_LOG
                 if haskey(data, "conductors")
                     branch["angmax"][c] = default_pad
                 else
@@ -574,7 +574,7 @@ function check_voltage_angle_differences(data::Dict{String,Any}, default_pad = 1
             end
 
             if angmin == 0.0 && angmax == 0.0
-                @info("angmin and angmax values are 0, widening these values on branch $i$(cnd_str) to +/- $(default_pad_deg) deg.")
+                @info "angmin and angmax values are 0, widening these values on branch $i$(cnd_str) to +/- $(default_pad_deg) deg." maxlog=PS_MAX_LOG
                 if haskey(data, "conductors")
                     branch["angmin"][c] = -default_pad
                     branch["angmax"][c] =  default_pad
@@ -639,7 +639,7 @@ function check_thermal_limits(data::Dict{String,Any})
                     new_rate = min(new_rate, branch["c_rating_a"][c]*m_vmax)
                 end
 
-                @info("this code only supports positive rate_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(round(mva_base*new_rate, digits=4))")
+                @info "this code only supports positive rate_a values, changing the value on branch $(branch["index"])$(cnd_str) to $(round(mva_base*new_rate, digits=4))" maxlog=PS_MAX_LOG
 
                 if haskey(data, "conductors")
                     branch["rate_a"][c] = new_rate
@@ -771,7 +771,7 @@ function check_branch_loops(data::Dict{String,Any})
 
     for (i, branch) in data["branch"]
         if branch["f_bus"] == branch["t_bus"]
-            @error("both sides of branch $(i) connect to bus $(branch["f_bus"])")
+            throw(DataFormatError("both sides of branch $(i) connect to bus $(branch["f_bus"])"))
         end
     end
 end
@@ -788,45 +788,45 @@ function check_connectivity(data::Dict{String,Any})
 
     for (i, load) in data["load"]
         if !(load["load_bus"] in bus_ids)
-            @error("bus $(load["load_bus"]) in load $(i) is not defined")
+            throw(DataFormatError("bus $(load["load_bus"]) in load $(i) is not defined"))
         end
     end
 
     for (i, shunt) in data["shunt"]
         if !(shunt["shunt_bus"] in bus_ids)
-            @error("bus $(shunt["shunt_bus"]) in shunt $(i) is not defined")
+            throw(DataFormatError("bus $(shunt["shunt_bus"]) in shunt $(i) is not defined"))
         end
     end
 
     for (i, gen) in data["gen"]
         if !(gen["gen_bus"] in bus_ids)
-            @error("bus $(gen["gen_bus"]) in generator $(i) is not defined")
+            throw(DataFormatError("bus $(gen["gen_bus"]) in generator $(i) is not defined"))
         end
     end
 
     for (i, strg) in data["storage"]
         if !(strg["storage_bus"] in bus_ids)
-            @error("bus $(strg["storage_bus"]) in storage unit $(i) is not defined")
+            throw(DataFormatError("bus $(strg["storage_bus"]) in storage unit $(i) is not defined"))
         end
     end
 
     for (i, branch) in data["branch"]
         if !(branch["f_bus"] in bus_ids)
-            @error("from bus $(branch["f_bus"]) in branch $(i) is not defined")
+            throw(DataFormatError("from bus $(branch["f_bus"]) in branch $(i) is not defined"))
         end
 
         if !(branch["t_bus"] in bus_ids)
-            @error("to bus $(branch["t_bus"]) in branch $(i) is not defined")
+            throw(DataFormatError("to bus $(branch["t_bus"]) in branch $(i) is not defined"))
         end
     end
 
     for (i, dcline) in data["dcline"]
         if !(dcline["f_bus"] in bus_ids)
-            @error("from bus $(dcline["f_bus"]) in dcline $(i) is not defined")
+            throw(DataFormatError("from bus $(dcline["f_bus"]) in dcline $(i) is not defined"))
         end
 
         if !(dcline["t_bus"] in bus_ids)
-            @error("to bus $(dcline["t_bus"]) in dcline $(i) is not defined")
+            throw(DataFormatError("to bus $(dcline["t_bus"]) in dcline $(i) is not defined"))
         end
     end
 end
@@ -894,44 +894,44 @@ function check_storage_parameters(data::Dict{String,Any})
 
     for (i, strg) in data["storage"]
         if strg["energy"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive energy level $(strg["energy"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive energy level $(strg["energy"])"))
         end
         if strg["energy_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive energy rating $(strg["energy_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive energy rating $(strg["energy_rating"])"))
         end
         if strg["charge_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive charge rating $(strg["energy_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive charge rating $(strg["energy_rating"])"))
         end
         if strg["discharge_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive discharge rating $(strg["energy_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive discharge rating $(strg["energy_rating"])"))
         end
         if strg["r"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive resistance $(strg["r"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive resistance $(strg["r"])"))
         end
         if strg["x"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive reactance $(strg["x"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive reactance $(strg["x"])"))
         end
         if strg["standby_loss"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])"))
         end
 
         if haskey(strg, "thermal_rating") && strg["thermal_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive thermal rating $(strg["thermal_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive thermal rating $(strg["thermal_rating"])"))
         end
         if haskey(strg, "current_rating") && strg["current_rating"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive current rating $(strg["thermal_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive current rating $(strg["thermal_rating"])"))
         end
 
 
         if strg["charge_efficiency"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive charge efficiency of $(strg["charge_efficiency"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive charge efficiency of $(strg["charge_efficiency"])"))
         end
         if strg["charge_efficiency"] <= 0.0 || strg["charge_efficiency"] > 1.0
             @info("storage unit $(strg["index"]) charge efficiency of $(strg["charge_efficiency"]) is out of the valid range (0.0. 1.0]")
         end
 
         if strg["discharge_efficiency"] < 0.0
-            @error("storage unit $(strg["index"]) has a non-positive discharge efficiency of $(strg["discharge_efficiency"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive discharge efficiency of $(strg["discharge_efficiency"])"))
         end
         if strg["discharge_efficiency"] <= 0.0 || strg["discharge_efficiency"] > 1.0
             @info("storage unit $(strg["index"]) discharge efficiency of $(strg["discharge_efficiency"]) is out of the valid range (0.0. 1.0]")
@@ -972,13 +972,13 @@ function check_bus_types(data::Dict{String,Any})
             bus_gens_count = length(bus_gens[i])
 
             if bus_gens_count == 0 && bus["bus_type"] != 1
-                @info("no active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 1")
+                @info "no active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 1" maxlog=PS_MAX_LOG
                 bus["bus_type"] = 1
                 push!(modified, bus["index"])
             end
 
             if bus_gens_count != 0 && bus["bus_type"] != 2
-                @info("active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 2")
+                @info "active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 2" maxlog=PS_MAX_LOG
                 bus["bus_type"] = 2
                 push!(modified, bus["index"])
             end
@@ -1072,7 +1072,7 @@ function check_voltage_setpoints(data::Dict{String,Any})
             bus_id = gen["gen_bus"]
             bus = data["bus"]["$(bus_id)"]
             if gen["vg"][c] != bus["vm"][c]
-                @info("the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)")
+                @info "the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)" maxlog=PS_MAX_LOG
             end
         end
 
@@ -1226,7 +1226,7 @@ function simplify_cost_terms(data::Dict{String,Any})
                     end
                     if length(gen["cost"]) != ncost
                         gen["ncost"] = length(gen["cost"])
-                        @info("removing $(ncost - gen["ncost"]) cost terms from generator $(i): $(gen["cost"])")
+                        @info "removing $(ncost - gen["ncost"]) cost terms from generator $(i): $(gen["cost"])" maxlog=PS_MAX_LOG
                         push!(modified_gen, gen["index"])
                     end
                 end
@@ -1795,4 +1795,30 @@ function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
             #root non-dict items
         end
     end
+end
+
+
+"""
+Move gentype and genfuel fields to be subfields of gen
+"""
+function move_genfuel_and_gentype!(data::Dict{String,Any})
+    ngen = length(data["gen"])
+    
+    toplevkeys = ("genfuel", "gentype")
+    sublevkeys = ("fuel", "type")
+    for i in range(1, stop=length(toplevkeys))
+        if haskey(data, toplevkeys[i])
+            # check that lengths of category and generators match
+            if length(data[toplevkeys[i]]) != ngen
+                str = toplevkeys[i]
+                throw(DataFormatError(
+                    "length of $str does not equal the number of generators"))
+            end
+            for (key,val) in data[toplevkeys[i]]
+                data["gen"][key][sublevkeys[i]] = val["col_1"]
+            end
+            delete!(data, toplevkeys[i])        
+        end
+    end
+    
 end

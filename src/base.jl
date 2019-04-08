@@ -27,7 +27,7 @@ PowerSystem(file, ts_folder; kwargs...)
 # Keyword arguments
 
 * `runchecks`::Bool : run available checks on input fields
-DOCTODO: any other keyword arguments?
+DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 
 """
 struct PowerSystem{L <: ElectricLoad,
@@ -258,8 +258,10 @@ end
 function PowerSystem(file::String, ts_folder::String; kwargs...)
 
         ps_dict = parsestandardfiles(file,ts_folder; kwargs...)
-        Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = ps_dict2ps_struct(ps_dict)
-        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Array{C,1} where C <: Forecast}(), Services, nothing; kwargs...);
+        Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = 
+            ps_dict2ps_struct(ps_dict)
+        sys = PowerSystem(Buses, Generators, Loads, Branches, Storage, ps_dict["baseMVA"], 
+            Dict{Symbol,Array{C,1} where C <: Forecast}(), Services, nothing; kwargs...);
 
         return sys
 end
