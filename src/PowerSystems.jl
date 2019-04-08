@@ -73,6 +73,7 @@ export parse_file
 export ps_dict2ps_struct
 export assign_ts_data
 export read_data_files
+export validate
 
 #################################################################################
 # Imports
@@ -132,6 +133,7 @@ include("utils/IO/branchdata_checks.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+include("validation/powersystem.jl")
 
 # Better printing
 include("utils/print.jl")

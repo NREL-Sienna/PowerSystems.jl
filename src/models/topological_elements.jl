@@ -39,6 +39,8 @@ struct Bus <: PowerSystemDevice
     basevoltage::Union{Float64,Nothing} # [kV]
 end
 
+const Buses = Array{Bus, 1}
+
 # DOCTODO  add this constructor type to docstring for Bus
 Bus(;   number = 0,
         name = "init",

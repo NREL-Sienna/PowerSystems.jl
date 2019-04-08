@@ -1,6 +1,5 @@
-abstract type
-    Generator <: PowerSystemDevice
-end
+abstract type Generator <: PowerSystemDevice end
+const Generators = Array{<: Generator, 1}
 
 include("generation/tech_common.jl")
 include("generation/econ_common.jl")
