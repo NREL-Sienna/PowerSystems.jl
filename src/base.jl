@@ -65,14 +65,13 @@ struct PowerSystem{L <: ElectricLoad,
         
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
+        
         if runchecks
-                if !isnothing(forecasts)
-                        if length(forecasts)>0
-                                for (k,f) in forecasts
-                                        checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
-                                end
-                                timeseriescheckforecast(forecasts)
+                if ! ( isnothing(forecasts) || isempty(forecasts) )
+                        for (k,f) in forecasts
+                                checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
                         end
+                        timeseriescheckforecast(forecasts)
                 end
         end
         new{L, Nothing, Nothing, V, F}(buses,
@@ -108,13 +107,11 @@ struct PowerSystem{L <: ElectricLoad,
                 buscheck(buses)
                 pvbuscheck(buses, generators)
                 
-                if !isnothing(forecasts)
-                        if length(forecasts)>0
-                                for (k,f) in forecasts
-                                        checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
-                                end
-                                timeseriescheckforecast(forecasts)
+                if ! ( isnothing(forecasts) || isempty(forecasts) )
+                        for (k,f) in forecasts
+                                checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
                         end
+                        timeseriescheckforecast(forecasts)
                 end
                 calculatethermallimits!(branches,basepower)
                 check_branches!(branches)
@@ -149,13 +146,11 @@ struct PowerSystem{L <: ElectricLoad,
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
         if runchecks
-                if !isnothing(forecasts)
-                        if length(forecasts)>0
-                                for (k,f) in forecasts
-                                        checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
-                                end
-                                timeseriescheckforecast(forecasts)
+                if ! ( isnothing(forecasts) || isempty(forecasts) )
+                        for (k,f) in forecasts
+                                checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
                         end
+                        timeseriescheckforecast(forecasts)
                 end
         end
 
@@ -192,13 +187,11 @@ struct PowerSystem{L <: ElectricLoad,
                 slackbuscheck(buses)
                 buscheck(buses)
                 pvbuscheck(buses, generators)
-                if !isnothing(forecasts)
-                        if length(forecasts)>0
-                                for (k,f) in forecasts
-                                        checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
-                                end
-                                timeseriescheckforecast(forecasts)
+                if ! ( isnothing(forecasts) || isempty(forecasts) )
+                        for (k,f) in forecasts
+                                checkramp!(generators, minimumtimestep(f)) # TODO: I think this should be removed
                         end
+                        timeseriescheckforecast(forecasts)
                 end
                 calculatethermallimits!(branches,basepower)
                 check_branches!(branches)
