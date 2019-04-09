@@ -31,11 +31,11 @@ Defaults to the root of the PowerSystems package.
 
 Returns the downloaded folder name.
 """
-function Base.download(::Type{TestData};
-                       folder::AbstractString=joinpath(@__DIR__, "../..") |> abspath,
+function Base.download(::Type{TestData}
                        ;
-                       branch::String="master"
-                       force::Bool=false
+                       folder::AbstractString=joinpath(@__DIR__, "../..") |> abspath,
+                       branch::String="master",
+                       force::Bool=false,
                       )
 
     if Sys.iswindows()
