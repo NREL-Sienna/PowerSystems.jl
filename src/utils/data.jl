@@ -25,7 +25,7 @@ module UtilsData
     abstract type TestData end
 
     """
-    Download Power System Data into a "data" folder in given argument path.
+    Download Power System Data from `branch="master"` name into a "data" folder in given argument path.
     Skip the actual download if the folder already exists and force=false.
     Defaults to the root of the PowerSystems package.
 
