@@ -494,7 +494,7 @@ Returns:
 function dc_branch_csv_parser(dc_branch_raw::DataFrames.DataFrame, Buses::Dict, baseMVA::Float64, colnames=nothing)
 
     if colnames isa Nothing
-        need_cols = ["UID","From Bus", "To Bus","From X Commutating", "From Tap Min", "From Tap Max","From Min Firing Angle","From Max Firing Angle", "To X Commutating", "To Tap Min", "To Tap Max","To Min Firing Angle","To Max Firing Angle", "MW Load"]
+        need_cols = ["UID","From Bus", "To Bus", "Control Mode", "Margin", "From X Commutating", "From Tap Min", "From Tap Max","From Min Firing Angle","From Max Firing Angle", "To X Commutating", "To Tap Min", "To Tap Max","To Min Firing Angle","To Max Firing Angle", "MW Load"]
         tbl_cols = string.(names(dc_branch_raw))
         colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols if c in tbl_cols]))
     end
@@ -509,7 +509,7 @@ function dc_branch_csv_parser(dc_branch_raw::DataFrames.DataFrame, Buses::Dict, 
     for i in 1:DataFrames.nrow(dc_branch_raw)
         bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == dc_branch_raw[i,colnames["From Bus"]]]
         bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == dc_branch_raw[i,colnames["To Bus"]]]
-        if (dc_branch_raw[i,colnames["From Max Firing Angle"]] + dc_branch_raw[i,colnames["To Max Firing Angle"]])/2 != 0.0 #TODO: Replace this with the correct conditional to create VSCDC or HVDC lines
+        if dc_branch_raw[i,colnames["Control Mode"]] != "Power"
             DCBranches_dict["VSCDCLine"][dc_branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => dc_branch_raw[i,colnames["UID"]],
                                                         "available" => true,
                                                         "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
@@ -525,10 +525,10 @@ function dc_branch_csv_parser(dc_branch_raw::DataFrames.DataFrame, Buses::Dict, 
                                                         "available" => true,
                                                         "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
                                                         "activepowerlimits_from" => (min=-1*dc_branch_raw[i,colnames["MW Load"]], max=dc_branch_raw[i,colnames["MW Load"]]), #TODO: is there a better way to calculate this?
-                                                        "activepowerlimits_to" => (min=-1*dc_branch_raw[i,colnames["Rating"]], max=dc_branch_raw[i,colnames["MW Load"]]), #TODO: is there a better way to calculate this?
-                                                        "reactivepowerlimits_from" => (min=-1*dc_branch_raw[i,colnames["MW Load"]], max=dc_branch_raw[i,colnames["MW Load"]]), #TODO: is there a better way to calculate this?
-                                                        "reactivepowerlimits_to" => (min=-1*dc_branch_raw[i,colnames["MW Load"]], max=dc_branch_raw[i,colnames["MW Load"]]), #TODO: is there a better way to calculate this?
-                                                        "loss" => 0.0, #TODO: Can we infer this from the other data?
+                                                        "activepowerlimits_to" => (min=-1*dc_branch_raw[i,colnames["MW Load"]], max=dc_branch_raw[i,colnames["MW Load"]]), #TODO: is there a better way to calculate this?
+                                                        "reactivepowerlimits_from" => (min=0.0, max=0.0), #TODO: is there a better way to calculate this?
+                                                        "reactivepowerlimits_to" => (min=0.0, max=0.0), #TODO: is there a better way to calculate this?
+                                                        "loss" => (l0=0.0, l1=dc_branch_raw[i,colnames["Margin"]]) #TODO: Can we infer this from the other data?
                                                         )
 
         end
