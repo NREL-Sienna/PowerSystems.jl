@@ -24,12 +24,6 @@ module UtilsData
 
     abstract type TestData end
 
-    if Sys.iswindows()
-        const POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/master.zip"
-    else
-        const POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/master.tar.gz"
-    end
-
     """
     Download Power System Data into a "data" folder in given argument path.
     Skip the actual download if the folder already exists and force=false.
@@ -39,14 +33,23 @@ module UtilsData
     """
     function Base.download(::Type{TestData};
                            folder::AbstractString=joinpath(@__DIR__, "../..") |> abspath,
-                           force::Bool=false)
+                           ;
+                           branch::String="master"
+                           force::Bool=false
+                          )
+
+        if Sys.iswindows()
+            POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.zip"
+        else
+            POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.tar.gz"
+        end
         directory = folder |> normpath |> abspath
         data = joinpath(directory, "data")
         if !isdir(data) || force
             tempfilename = Base.download(POWERSYSTEMSTESTDATA_URL)
             mkpath(directory)
             unzip(os, tempfilename, directory)
-            mv(joinpath(directory, "PowerSystemsTestData-master"), data, force=true)
+            mv(joinpath(directory, "PowerSystemsTestData-$branch"), data, force=true)
         end
 
         return data
