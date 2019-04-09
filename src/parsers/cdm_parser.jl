@@ -78,18 +78,18 @@ function read_csv_data(file_path::String, baseMVA::Float64)
             fpath = joinpath(file_path,r[Symbol("Data File")])
             if isfile(fpath)
                 # read data and insert into dict
-                @info "parsing timeseries data in $fpath for $(r.Object)"
+                #@info "parsing timeseries data in $fpath for $(String(r.Object))"
                 param  = :Parameter in names(tsp_raw) ? r.Parameter : :scalingfactor
                 raw_data = read_datetime(CSV.File(fpath) |> DataFrames.DataFrame, valuecolname = Symbol(r.Object))
 
                 if length([c for c in names(raw_data) if String(c) == String(r.Object)]) == 1
-                    raw_data = TimeSeries.TimeArray(raw_data[:DateTime],raw_data[Symbol(r.Object)],[param])
+                    raw_data = TimeSeries.TimeArray(raw_data[:DateTime],raw_data[Symbol(r.Object)],Symbol.([param]))
                 end
 
                 d = :Simulation in names(tsp_raw) ? data["timeseries_data"][String(r.Simulation)] : data["timeseries_data"] 
                 d[String(r.Object)] = haskey(d,String(r.Object)) ? merge(d[String(r.Object)],raw_data) : raw_data
             else
-                @warn "File referenced in timeseries_pointers.csv doesn't exist : $fpath"
+                #@warn "File referenced in timeseries_pointers.csv doesn't exist : $fpath"
             end
         end
     end
