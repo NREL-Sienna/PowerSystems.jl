@@ -10,7 +10,6 @@ overall system parameters.
 ```julia
 PowerSystem(buses, generators, loads, branches, storage, basepower; kwargs...)
 PowerSystem(buses, generators, loads, branches, basepower; kwargs...)
-PowerSystem(buses, generators, loads, branches, basepower; kwargs...)
 PowerSystem(buses, generators, loads, basepower; kwargs...)
 PowerSystem(ps_dict; kwargs...)
 PowerSystem(file, ts_folder; kwargs...)
@@ -128,7 +127,7 @@ function PowerSystem(; buses=[Bus()],
                      loads=[PowerLoad()],
                      branches=nothing,
                      storage=nothing,
-                     basepower=1000.0,
+                     basepower=100.0,
                      kwargs...)
     return PowerSystem(buses, generators, loads, branches, storage,  basepower; kwargs...)
 end
