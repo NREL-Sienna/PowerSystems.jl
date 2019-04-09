@@ -9,11 +9,11 @@ module PowerSystems
 # Exports
 
 export PowerSystem
+export PowerSystemConcrete
 export Bus
 export LoadZones
 
 export Branch
-export Network
 export Line
 export MonitoredLine
 export DCLine
@@ -74,6 +74,7 @@ export ps_dict2ps_struct
 export assign_ts_data
 export read_data_files
 export validate
+export get_devices
 
 #################################################################################
 # Imports
@@ -103,6 +104,7 @@ abstract type TechnicalParams <: PowerSystemComponent end
 include("common.jl")
 
 # Include utilities
+include("utils/utils.jl")
 include("utils/logging.jl")
 include("utils/IO/base_checks.jl")
 

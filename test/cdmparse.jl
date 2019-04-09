@@ -25,6 +25,18 @@ end
     @info "making RT System"
     sys_rts_rt = PowerSystem(cdm_dict)
     @test sys_rts_rt isa PowerSystem
+
+    # Verify functionality of the concrete version of PowerSystem.
+    # TODO: Refactor once the PowerSystemConcrete implementation is finalized.
+    sys_concrete = PowerSystemConcrete(sys_rts_da)
+    @test length(sys_rts_rt.buses) == length(get_devices(Bus, sys_concrete))
+    @test length(sys_rts_rt.branches) == length(get_devices(Branch, sys_concrete))
+    @test length(sys_rts_rt.loads) == length(get_devices(ElectricLoad, sys_concrete))
+    @test length(sys_rts_rt.storage) == length(get_devices(Storage, sys_concrete))
+    @test length(sys_rts_rt.generators.thermal) == length(get_devices(ThermalGen, sys_concrete))
+    @test length(sys_rts_rt.generators.renewable) == length(get_devices(RenewableGen, sys_concrete))
+    @test length(sys_rts_rt.generators.hydro) == length(get_devices(HydroGen, sys_concrete))
+    @test length(get_devices(ThermalDispatch, sys_concrete)) > 0
 end
 
 @testset "CDM parsing invalid directory" begin

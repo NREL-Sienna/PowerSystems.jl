@@ -150,3 +150,77 @@ function PowerSystem(file::String, ts_folder::String; kwargs...)
     return PowerSystem(Buses, Generators, Loads, Branches, Storage, ps_dict["baseMVA"];
                        kwargs...);
 end
+
+"""A PowerSystem struct that stores all devices in arrays with concrete types.
+This is a temporary implementation that will allow consumers of PowerSystems to test the
+functionality before it is finalized.
+"""
+struct PowerSystemConcrete
+    devices::Dict{DataType, Array{<: PowerSystemDevice, 1}}
+    basepower::Float64 # [MVA]
+    time_periods::Int64
+
+    function PowerSystemConcrete(devices, basepower, time_periods)
+        return new(devices, basepower, time_periods)
+    end
+end
+
+function PowerSystemConcrete(sys::PowerSystem)
+    devices = Dict{DataType, Array{<: PowerSystemDevice, 1}}()
+    for subtype in get_subtypes(PowerSystemDevice, PowerSystems)
+        devices[subtype] = Array{subtype, 1}()
+    end
+
+    @debug "Created devices keys" keys(devices)
+
+    for field in (:buses, :loads)
+        objs = getfield(sys, field)
+        for obj in objs
+            push!(devices[typeof(obj)], obj)
+        end
+    end
+
+    for field in (:thermal, :renewable, :hydro)
+        generators = getfield(sys.generators, field)
+        if !isnothing(generators)
+            for gen in generators
+                push!(devices[typeof(gen)], gen)
+            end
+        end
+    end
+
+    for field in (:branches, :storage)
+        objs = getfield(sys, field)
+        if !isnothing(objs)
+            for obj in objs
+                push!(devices[typeof(obj)], obj)
+            end
+        end
+    end
+
+    for (key, value) in devices
+        @debug "Devices: $(string(key)): count=$(string(length(value)))"
+    end
+
+    return PowerSystemConcrete(devices, sys.basepower, sys.time_periods)
+end
+
+"""Returns an array of devices from the PowerSystem."""
+function get_devices(
+                     ::Type{T},
+                     sys::PowerSystemConcrete,
+                    )::Vector{T} where {T <: PowerSystemDevice}
+    if isconcretetype(T)
+        return sys.devices[T]
+    elseif isabstracttype(T)
+        # PERF:  This makes copies and could be optimized.
+        devices = Array{T, 1}()
+        for subtype in get_subtypes(T, PowerSystems)
+            devices = vcat(devices, sys.devices[subtype])
+        end
+
+        return devices
+    else
+        error("Invalid type $T")
+    end
+end
