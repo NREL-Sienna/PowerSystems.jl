@@ -1,6 +1,4 @@
 abstract type Branch <: PowerSystemDevice end
-const Branches = Array{<: Branch, 1}
-const OptionalBranches = Union{Nothing, Branches}
 
 include("./branches/lines.jl")
 include("./branches/transformers.jl")

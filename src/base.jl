@@ -18,11 +18,11 @@ PowerSystem(; kwargs...)
 
 # Arguments
 
-* `buses`::Buses : an array of buses
-* `generators`::Generators : an array of generators of (possibly) different types
-* `loads`::ElectricLoads : an array of load specifications that includes timing of the loads
-* `branches`::OptionalBranches : an array of branches; may be `nothing`
-* `storage`::OptionalStorage : an array of storage devices; may be `nothing`
+* `buses`::Vector{Bus} : an array of buses
+* `generators`::Vector{Generator} : an array of generators of (possibly) different types
+* `loads`::Vector{ElectricLoad} : an array of load specifications that includes timing of the loads
+* `branches`::Union{Nothing, Vector{Branch}} : an array of branches; may be `nothing`
+* `storage`::Union{Nothing, Vector{Storage}} : an array of storage devices; may be `nothing`
 * `basepower`::Float64 : the base power of the system (DOCTODO: is this true? what are the units of base power?)
 * `ps_dict`::Dict{String,Any} : the dictionary object containing PowerSystem data
 * `file`::String, `ts_folder`::String : the filename and foldername that contain the PowerSystem data
@@ -35,11 +35,11 @@ DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
 struct PowerSystem
     # DOCTODO docs for PowerSystem fields are currently not working, JJS 1/15/19
-    buses::Buses
+    buses::Vector{Bus}
     generators::GenClasses
-    loads::ElectricLoads
-    branches::OptionalBranches
-    storage::OptionalStorage
+    loads::Vector{<: ElectricLoad}
+    branches::Union{Nothing, Vector{<: Branch}}
+    storage::Union{Nothing, Vector{<: Storage}}
     basepower::Float64 # [MVA]
     time_periods::Int64
 
@@ -59,11 +59,11 @@ struct PowerSystem
 end
 
 """Primary PowerSystem constructor. Funnel point for all other outer constructors."""
-function PowerSystem(buses::Buses,
-                     generators::Generators,
-                     loads::ElectricLoads,
-                     branches::OptionalBranches,
-                     storage::OptionalStorage,
+function PowerSystem(buses::Vector{Bus},
+                     generators::Vector{<: Generator},
+                     loads::Vector{<: ElectricLoad},
+                     branches::Union{Nothing, Vector{<: Branch}},
+                     storage::Union{Nothing, Vector{<: Storage}},
                      basepower::Float64; kwargs...)
     runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
     if runchecks
@@ -96,27 +96,27 @@ function PowerSystem(buses::Buses,
 end
 
 """Constructs PowerSystem with Generators but no branches or storage."""
-function PowerSystem(buses::Buses,
-                     generators::Generators,
-                     loads::ElectricLoads,
+function PowerSystem(buses::Vector{<: Bus},
+                     generators::Vector{<: Generator},
+                     loads::Vector{<: ElectricLoad},
                      basepower::Float64; kwargs...)
     return PowerSystem(buses, generators, loads, nothing, nothing, basepower; kwargs...)
 end
 
 """Constructs PowerSystem with Generators but no storage."""
-function PowerSystem(buses::Buses,
-                     generators::Generators,
-                     loads::ElectricLoads,
-                     branches::Branches,
+function PowerSystem(buses::Vector{Bus},
+                     generators::Vector{<: Generator},
+                     loads::Vector{<: ElectricLoad},
+                     branches::Vector{<: Branch},
                      basepower::Float64; kwargs...)
     return PowerSystem(buses, generators, loads, branches, nothing, basepower; kwargs...)
 end
 
 """Constructs PowerSystem with Generators but no branches."""
-function PowerSystem(buses::Buses,
-                     generators::Generators,
-                     loads::ElectricLoads,
-                     storage::StorageDevices,
+function PowerSystem(buses::Vector{<: Bus},
+                     generators::Vector{<: Generator},
+                     loads::Vector{<: ElectricLoad},
+                     storage::Vector{<: Storage},
                      basepower::Float64; kwargs...)
     return PowerSystem(buses, generators, loads, nothing, storage, basepower; kwargs...)
 end
@@ -144,10 +144,10 @@ end
 """Constructs PowerSystem from a file containing Matpower, PTI, or JSON data."""
 function PowerSystem(file::String, ts_folder::String; kwargs...)
     ps_dict = parsestandardfiles(file,ts_folder; kwargs...)
-    buses, generators, storage, Branches, Loads, LoadZones, Shunts, Services =
+    buses, generators, storage, branches, loads, loadZones, shunts, services =
         ps_dict2ps_struct(ps_dict)
 
-    return PowerSystem(Buses, Generators, Loads, Branches, Storage, ps_dict["baseMVA"];
+    return PowerSystem(buses, generators, loads, branches, storage, ps_dict["baseMVA"];
                        kwargs...);
 end
 
@@ -156,19 +156,15 @@ This is a temporary implementation that will allow consumers of PowerSystems to 
 functionality before it is finalized.
 """
 struct PowerSystemConcrete
-    devices::Dict{DataType, Array{<: PowerSystemDevice, 1}}
+    devices::Dict{DataType, Vector{<: PowerSystemDevice}}
     basepower::Float64 # [MVA]
     time_periods::Int64
-
-    function PowerSystemConcrete(devices, basepower, time_periods)
-        return new(devices, basepower, time_periods)
-    end
 end
 
 function PowerSystemConcrete(sys::PowerSystem)
-    devices = Dict{DataType, Array{<: PowerSystemDevice, 1}}()
+    devices = Dict{DataType, Vector{<: PowerSystemDevice}}()
     for subtype in get_subtypes(PowerSystemDevice, PowerSystems)
-        devices[subtype] = Array{subtype, 1}()
+        devices[subtype] = Vector{subtype}()
     end
 
     @debug "Created devices keys" keys(devices)
@@ -214,7 +210,7 @@ function get_devices(
         return sys.devices[T]
     elseif isabstracttype(T)
         # PERF:  This makes copies and could be optimized.
-        devices = Array{T, 1}()
+        devices = Vector{T}()
         for subtype in get_subtypes(T, PowerSystems)
             devices = vcat(devices, sys.devices[subtype])
         end
