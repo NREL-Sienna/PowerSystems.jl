@@ -9,23 +9,23 @@ end
 """
 struct Deterministic <: Forecast
     device::PowerSystemComponent        # device
-    id::String                                      # identifier
-    resolution::Dates.Period                        # resolution
-    initialtime::Dates.DateTime                     # forecast availability time
-    data::TimeSeries.TimeArray                      # TimeStamp - scalingfactor
+    label::String                       # label of device parameter foreccasted
+    resolution::Dates.Period            # resolution
+    initialtime::Dates.DateTime         # forecast availability time
+    data::TimeSeries.TimeArray          # TimeStamp - scalingfactor
 end
 
 
-function Deterministic(device::PowerSystemComponent, id::String, resolution::Dates.Period, initialtime::Dates.DateTime, time_steps::Int; kwargs...)
+function Deterministic(device::PowerSystemComponent, label::String, resolution::Dates.Period, initialtime::Dates.DateTime, time_steps::Int; kwargs...)
     data = TimeSeries.TimeArray(initialtime:Dates.Hour(1):initialtime+resolution*(time_steps-1), ones(time_steps))
-    Deterministic(device, id, resolution, initialtime, data; kwargs...)
+    Deterministic(device, label, resolution, initialtime, data; kwargs...)
 end
 
-function Deterministic(device::PowerSystemComponent, id::String, data::TimeSeries.TimeArray; kwargs...)
+function Deterministic(device::PowerSystemComponent, label::String, data::TimeSeries.TimeArray; kwargs...)
     resolution = getresolution(data)
     initialtime = TimeSeries.timestamp(data)[1]
     time_steps = length(data)
-    Deterministic(device, id, resolution, initialtime, data; kwargs...)
+    Deterministic(device, label, resolution, initialtime, data; kwargs...)
 end
 
 #=
