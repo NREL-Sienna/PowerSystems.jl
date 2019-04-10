@@ -7,7 +7,7 @@ include("storage.jl")
 
 
 """Validates an array of devices."""
-function validate_devices(devices::Array{<: PowerSystemDevice, 1})::Bool
+function validate_devices(devices::Array{<: Device, 1})::Bool
     is_valid = true
 
     for device in devices
@@ -19,8 +19,8 @@ function validate_devices(devices::Array{<: PowerSystemDevice, 1})::Bool
     return is_valid
 end
 
-"""Validates the contents of a PowerSystem."""
-function validate(sys::PowerSystem)::Bool
+"""Validates the contents of a System."""
+function validate(sys::System)::Bool
     is_valid = true
 
     for field in (:buses, :loads)
@@ -43,6 +43,6 @@ function validate(sys::PowerSystem)::Bool
         end
     end
 
-    @debug "PowerSystem validation" is_valid
+    @debug "System validation" is_valid
     return is_valid
 end

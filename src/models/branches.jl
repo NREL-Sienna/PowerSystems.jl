@@ -1,4 +1,4 @@
-abstract type Branch <: PowerSystemDevice end
+abstract type Branch <: Device end
 
 include("./branches/lines.jl")
 include("./branches/transformers.jl")

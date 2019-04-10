@@ -139,7 +139,7 @@ function csv2ps_dict(data::Dict{String,Any})
             ps_dict["load"] =  PowerSystems.load_csv_parser(data["bus"], ps_dict["bus"], ps_dict["baseMVA"], haskey(data,"load") ? data["load"] : nothing)
         end
     else
-        error("Key error : key 'bus' not found in PowerSystems dictionary, cannot construct any PowerSystem Struct")
+        error("Key error : key 'bus' not found in PowerSystems dictionary, cannot construct any System Struct")
     end
     if haskey(data,"gen")
         ps_dict["gen"] =  PowerSystems.gen_csv_parser(data["gen"], ps_dict["bus"], ps_dict["baseMVA"])

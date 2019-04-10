@@ -11,7 +11,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     branches = Array{B where {B<:Branch},1}()
     loads = Array{E where {E<:ElectricLoad},1}()
     shunts = Array{FixedAdmittance,1}()
-    loadZones = Array{D where {D<:PowerSystemDevice},1}()
+    loadZones = Array{D where {D<:Device},1}()
     services = Array{S where {S<:Service},1}()
 
     # TODO: should we raise an exception in the following?
@@ -441,7 +441,7 @@ function load_dict_parser(dict::Dict{String,Any})
 end
 
 function loadzone_dict_parser(dict::Dict{Int64,Any})
-    LoadZs =Array{D where {D<:PowerSystemDevice},1}()
+    LoadZs =Array{D where {D<:Device},1}()
     for (lz_key,lz_dict) in dict
         push!(LoadZs,LoadZones(lz_dict["number"],
                                 string(lz_dict["name"]),
@@ -504,7 +504,7 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
     Services = Array{D where {D <: Service},1}()
 
     for (k,d) in dict
-        contributingdevices = Array{D where {D<:PowerSystems.PowerSystemDevice},1}()
+        contributingdevices = Array{D where {D<:PowerSystems.Device},1}()
         [PowerSystems._get_device(dev,generators) for dev in d["contributingdevices"]] |> (x->[push!(contributingdevices,d[1]) for d in x if length(d)==1])
         push!(Services,ProportionalReserve(d["name"],
                             contributingdevices,

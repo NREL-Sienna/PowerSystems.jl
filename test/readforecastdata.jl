@@ -8,7 +8,7 @@
 
     buses, generators, storage, branches, loads, loadZones, shunts, services =
         PowerSystems.ps_dict2ps_struct(ps_dict)
-    sys_5 = PowerSystems.PowerSystem(buses, generators, loads, branches, storage,
+    sys_5 = PowerSystems.System(buses, generators, loads, branches, storage,
                                      ps_dict["baseMVA"])
 
     forecast_gen = PowerSystems.make_forecast_dict(da_time_series["gen"],
@@ -34,7 +34,7 @@
 
     buses, generators, storage, branches, loads, loadZones, shunts, services =
         PowerSystems.ps_dict2ps_struct(ps_dict)
-    sys_5 = PowerSystems.PowerSystem(buses, generators, loads, branches, storage,
+    sys_5 = PowerSystems.System(buses, generators, loads, branches, storage,
                                      ps_dict["baseMVA"])
 
     forecast_gen = PowerSystems.make_forecast_dict(da_time_series["gen"],

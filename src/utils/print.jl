@@ -4,7 +4,7 @@
 # technology types). The long version simply prints every field of the
 # device. Tailored versions can be made for specific devices, if/when
 # desired. JJS 11/15/18
-function printPST(pst::PowerSystemComponent, short = false,
+function printPST(pst::Component, short = false,
                   io::IO = stdout)
     if short
         pst_summary = Base.summary(pst)
@@ -30,10 +30,10 @@ function printPST(pst::PowerSystemComponent, short = false,
 end
 # overload Base.show with printPST function defined above
 # single-line format
-Base.show(io::IO, pst::PowerSystemComponent) = printPST(pst, true, io)
+Base.show(io::IO, pst::Component) = printPST(pst, true, io)
 # Multi-line format for plaintext (e.g. from repl); can specify for HTML and
 # others too
-Base.show(io::IO, ::MIME"text/plain", pst::PowerSystemComponent) =
+Base.show(io::IO, ::MIME"text/plain", pst::Component) =
     printPST(pst, false, io)
 
 # provide limited additional information to summary of GenClasses
@@ -46,11 +46,11 @@ end
 Base.summary(gens::GenClasses) = summaryGenClasses(gens::GenClasses)
 
 
-# improve output for PowerSystem
+# improve output for System
 
-# overload Base.summary for PowerSystem to be useful, e.g., in output of
+# overload Base.summary for System to be useful, e.g., in output of
 # varinfo(); also used now in printPowerSystem, JJS 11/26/18
-function summaryPowerSystem(system::PowerSystem)
+function summaryPowerSystem(system::System)
     busstr = string("buses:", length(system.buses))
     genstr = Base.summary(system.generators)
     loadstr = string("loads:", length(system.loads))
@@ -60,18 +60,18 @@ function summaryPowerSystem(system::PowerSystem)
     storstr = system.storage isa Nothing ? "nothing" :
         string("storage:", length(system.storage))
     # include some output for basepower or time_periods? currently not doing so
-    output = string("PowerSystem($busstr,$genstr,$loadstr,$branchstr,$storstr)")
+    output = string("System($busstr,$genstr,$loadstr,$branchstr,$storstr)")
     return output
 end
-Base.summary(system::PowerSystem) = summaryPowerSystem(system::PowerSystem)
+Base.summary(system::System) = summaryPowerSystem(system::System)
 
-# print function for PowerSystem type
-function printPowerSystem(system::PowerSystem, short = false,
+# print function for System type
+function printPowerSystem(system::System, short = false,
                   io::IO = stdout)
     if short
         print(io, Base.summary(system))
     else
-        print(io, "PowerSystem:")
+        print(io, "System:")
         fnames = fieldnames(typeof(system))
         for i = 1:nfields(fnames)
             fname = fnames[i]
@@ -89,8 +89,8 @@ function printPowerSystem(system::PowerSystem, short = false,
         end
     end
 end
-Base.show(io::IO, system::PowerSystem) = printPowerSystem(system, true, io)
-Base.show(io::IO, ::MIME"text/plain", system::PowerSystem) =
+Base.show(io::IO, system::System) = printPowerSystem(system, true, io)
+Base.show(io::IO, ::MIME"text/plain", system::System) =
     printPowerSystem(system, false, io)
 
 

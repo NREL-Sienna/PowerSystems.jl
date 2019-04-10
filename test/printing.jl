@@ -4,15 +4,15 @@ base_dir = string(dirname(dirname(@__FILE__)))
 include(joinpath(base_dir,"data/data_5bus.jl"))
 
 
-# test printing of PowerSystem type
-sys5 = PowerSystem(nodes5, generators5, loads5_DA, branches5, nothing,  100.0);
+# test printing of System type
+sys5 = System(nodes5, generators5, loads5_DA, branches5, nothing,  100.0);
 # short output
-@test repr(sys5) == "PowerSystem(buses:5,GenClasses(T:5,R:2,H:0),loads:4,branches:6,nothing)"
+@test repr(sys5) == "System(buses:5,GenClasses(T:5,R:2,H:0),loads:4,branches:6,nothing)"
 # long output
 io = IOBuffer()
 show(io, "text/plain", sys5)
 @test String(take!(io)) ==
-    "PowerSystem:\n   buses: Bus[Bus(name=\"nodeA\"), Bus(name=\"nodeB\"), Bus(name=\"nodeC\"), Bus(name=\"nodeD\"), Bus(name=\"nodeE\")]\n   generators: \n     GenClasses(T:5,R:2,H:0):\n   thermal: ThermalDispatch[ThermalDispatch(name=\"Alta\"), ThermalDispatch(name=\"Park City\"), ThermalDispatch(name=\"Solitude\"), ThermalDispatch(name=\"Sundance\"), ThermalDispatch(name=\"Brighton\")]\n   renewable: RenewableGen[RenewableFix(name=\"SolarBusC\"), RenewableCurtailment(name=\"WindBusA\")]\n   hydro: nothing\n     (end generators)\n   loads: ElectricLoad[PowerLoad(name=\"Bus2\"), PowerLoad(name=\"Bus3\"), PowerLoad(name=\"Bus4\"), InterruptibleLoad(name=\"IloadBus4\")]\n   branches: Line[Line(name=\"1\"), Line(name=\"2\"), Line(name=\"3\"), Line(name=\"4\"), Line(name=\"5\"), Line(name=\"6\")]\n   storage: nothing\n   basepower: 100.0\n   time_periods: 24"
+    "System:\n   buses: Bus[Bus(name=\"nodeA\"), Bus(name=\"nodeB\"), Bus(name=\"nodeC\"), Bus(name=\"nodeD\"), Bus(name=\"nodeE\")]\n   generators: \n     GenClasses(T:5,R:2,H:0):\n   thermal: ThermalDispatch[ThermalDispatch(name=\"Alta\"), ThermalDispatch(name=\"Park City\"), ThermalDispatch(name=\"Solitude\"), ThermalDispatch(name=\"Sundance\"), ThermalDispatch(name=\"Brighton\")]\n   renewable: RenewableGen[RenewableFix(name=\"SolarBusC\"), RenewableCurtailment(name=\"WindBusA\")]\n   hydro: nothing\n     (end generators)\n   loads: ElectricLoad[PowerLoad(name=\"Bus2\"), PowerLoad(name=\"Bus3\"), PowerLoad(name=\"Bus4\"), InterruptibleLoad(name=\"IloadBus4\")]\n   branches: Line[Line(name=\"1\"), Line(name=\"2\"), Line(name=\"3\"), Line(name=\"4\"), Line(name=\"5\"), Line(name=\"6\")]\n   storage: nothing\n   basepower: 100.0\n   time_periods: 24"
 
 
 # test printing of a few component types

@@ -15,20 +15,20 @@ end
     @test length(cdm_dict["gen"]["Renewable"]["PV"]["102_PV_1"]["scalingfactor"]) == 24
 
     @info "making DA System"
-    sys_rts_da = PowerSystem(cdm_dict)
-    @test sys_rts_da isa PowerSystem
+    sys_rts_da = System(cdm_dict)
+    @test sys_rts_da isa System
 
     @info "assigning time series data for RT"
     cdm_dict = PowerSystems.assign_ts_data(cdm_dict, cdm_dict["forecast"]["RT"])
     @test length(cdm_dict["gen"]["Renewable"]["PV"]["102_PV_1"]["scalingfactor"]) == 288
 
     @info "making RT System"
-    sys_rts_rt = PowerSystem(cdm_dict)
-    @test sys_rts_rt isa PowerSystem
+    sys_rts_rt = System(cdm_dict)
+    @test sys_rts_rt isa System
 
-    # Verify functionality of the concrete version of PowerSystem.
-    # TODO: Refactor once the PowerSystemConcrete implementation is finalized.
-    sys_concrete = PowerSystemConcrete(sys_rts_da)
+    # Verify functionality of the concrete version of System.
+    # TODO: Refactor once the SystemConcrete implementation is finalized.
+    sys_concrete = SystemConcrete(sys_rts_da)
     @test length(sys_rts_rt.buses) == length(get_devices(Bus, sys_concrete))
     @test length(sys_rts_rt.branches) == length(get_devices(Branch, sys_concrete))
     @test length(sys_rts_rt.loads) == length(get_devices(ElectricLoad, sys_concrete))
@@ -49,12 +49,12 @@ end
     mp_dict  = parsestandardfiles(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     pm_dict = parse_file(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     pmmp_dict = PowerSystems.pm2ps_dict(pm_dict)
-    mpmmpsys = PowerSystem(pmmp_dict)
+    mpmmpsys = System(pmmp_dict)
 
-    mpsys = PowerSystem(mp_dict)
+    mpsys = System(mp_dict)
 
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    cdmsys = PowerSystem(cdm_dict)
+    cdmsys = System(cdm_dict)
 
     @test cdmsys.generators.thermal[1].tech.activepowerlimits == mpsys.generators.thermal[1].tech.activepowerlimits
     @test cdmsys.generators.thermal[1].tech.reactivepowerlimits == mpsys.generators.thermal[1].tech.reactivepowerlimits

@@ -1,4 +1,4 @@
-abstract type Generator <: PowerSystemDevice end
+abstract type Generator <: Device end
 const Generators = Array{<: Generator, 1}
 
 include("generation/tech_common.jl")
@@ -7,7 +7,7 @@ include("generation/renewable_generation.jl")
 include("generation/thermal_generation.jl")
 include("generation/hydro_generation.jl")
 
-struct GenClasses <: PowerSystemComponent
+struct GenClasses <: Component
     thermal::Union{Nothing,Array{ <: ThermalGen,1}}
     renewable::Union{Nothing,Array{ <: RenewableGen,1}}
     hydro::Union{Nothing,Array{ <: HydroGen,1}}

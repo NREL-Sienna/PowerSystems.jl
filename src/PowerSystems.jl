@@ -8,8 +8,8 @@ module PowerSystems
 #################################################################################
 # Exports
 
-export PowerSystem
-export PowerSystemConcrete
+export System
+export SystemConcrete
 export Bus
 export LoadZones
 
@@ -95,11 +95,11 @@ import YAML
 #################################################################################
 # Includes
 
-abstract type PowerSystemComponent end
+abstract type Component end
 # supertype for "devices" (bus, line, etc.)
-abstract type PowerSystemDevice <: PowerSystemComponent end
+abstract type Device <: Component end
 # supertype for generation technologies (thermal, renewable, etc.)
-abstract type TechnicalParams <: PowerSystemComponent end
+abstract type TechnicalParams <: Component end
 
 include("common.jl")
 
@@ -133,7 +133,7 @@ include("parsers/pm2ps_parser.jl")
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")
 
-# Definitions of PowerSystem
+# Definitions of System
 include("base.jl")
 include("validation/powersystem.jl")
 
