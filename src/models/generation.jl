@@ -1,4 +1,4 @@
-abstract type Generator <: Device end
+abstract type Generator <: Injection end
 const Generators = Array{<: Generator, 1}
 
 include("generation/tech_common.jl")

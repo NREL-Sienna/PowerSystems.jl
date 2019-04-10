@@ -95,9 +95,12 @@ import YAML
 #################################################################################
 # Includes
 
-abstract type Component end
+# supertype for all PowerSystems types
+abstract type PowerSystemType end
+abstract type Component <: PowerSystemType end
 # supertype for "devices" (bus, line, etc.)
 abstract type Device <: Component end
+abstract type Injection <: Device end
 # supertype for generation technologies (thermal, renewable, etc.)
 abstract type TechnicalParams <: Component end
 

@@ -1,3 +1,3 @@
-abstract type Storage <: Device end
+abstract type Storage <: Injection end
 
 include("storage/batteries.jl")

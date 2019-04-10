@@ -33,7 +33,7 @@ System(; kwargs...)
 DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 
 """
-struct System
+struct System <: PowerSystemType
     # DOCTODO docs for System fields are currently not working, JJS 1/15/19
     buses::Vector{Bus}
     generators::GenClasses
@@ -155,14 +155,14 @@ end
 This is a temporary implementation that will allow consumers of PowerSystems to test the
 functionality before it is finalized.
 """
-struct SystemConcrete
-    devices::Dict{DataType, Vector{<: Device}}
+struct SystemConcrete <: PowerSystemType
+    devices::Dict{DataType, Vector{<: Component}}
     basepower::Float64 # [MVA]
     time_periods::Int64
 end
 
 function SystemConcrete(sys::System)
-    devices = Dict{DataType, Vector{<: Device}}()
+    devices = Dict{DataType, Vector{<: Component}}()
     for subtype in get_subtypes(Device, PowerSystems)
         devices[subtype] = Vector{subtype}()
     end
@@ -205,7 +205,7 @@ end
 function get_devices(
                      ::Type{T},
                      sys::SystemConcrete,
-                    )::Vector{T} where {T <: Device}
+                    )::Vector{T} where {T <: Component}
     if isconcretetype(T)
         return sys.devices[T]
     elseif isabstracttype(T)

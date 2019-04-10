@@ -1,6 +1,4 @@
-abstract type
-    Forecast
-end
+abstract type Forecast <: Component end
 
 struct Deterministic <: Forecast
     device::Device
