@@ -93,8 +93,3 @@ Base.show(io::IO, system::PowerSystem) = printPowerSystem(system, true, io)
 Base.show(io::IO, ::MIME"text/plain", system::PowerSystem) =
     printPowerSystem(system, false, io)
 
-
-# Reduce the output for "short" print of TimeSeries.TimeArray. Because the "show" method
-# defined in TimeSeries does not differentiate, the entire function needs to be
-# reimplemented.
-include("print_timearray.jl")
