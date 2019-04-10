@@ -261,9 +261,10 @@ function bus_csv_parser(bus_raw::DataFrames.DataFrame,colnames = nothing)
 
     Buses_dict = Dict{Int64,Any}()
     for i in 1:DataFrames.nrow(bus_raw)
+        bus_type = bus_raw[i,colnames["Bus Type"]] == "Ref" ? "SF" : bus_raw[i,colnames["Bus Type"]]
         Buses_dict[bus_raw[i,1]] = Dict{String,Any}("number" =>bus_raw[i,colnames["Bus ID"]] ,
                                                 "name" => bus_raw[i,colnames["Bus Name"]],
-                                                "bustype" => bus_raw[i,colnames["Bus Type"]],
+                                                "bustype" => bus_type,
                                                 "angle" => bus_raw[i,colnames["V Angle"]],
                                                 "voltage" => bus_raw[i,colnames["V Mag"]],
                                                 "voltagelimits" => (min=0.95,max=1.05),
