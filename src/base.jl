@@ -37,9 +37,9 @@ struct System <: PowerSystemType
     # DOCTODO docs for System fields are currently not working, JJS 1/15/19
     buses::Vector{Bus}
     generators::GenClasses
-    loads::Vector{<: ElectricLoad}
-    branches::Union{Nothing, Vector{<: Branch}}
-    storage::Union{Nothing, Vector{<: Storage}}
+    loads::Vector{<:ElectricLoad}
+    branches::Union{Nothing, Vector{<:Branch}}
+    storage::Union{Nothing, Vector{<:Storage}}
     basepower::Float64 # [MVA]
     time_periods::Int64
 
@@ -60,10 +60,10 @@ end
 
 """Primary System constructor. Funnel point for all other outer constructors."""
 function System(buses::Vector{Bus},
-                generators::Vector{<: Generator},
-                loads::Vector{<: ElectricLoad},
-                branches::Union{Nothing, Vector{<: Branch}},
-                storage::Union{Nothing, Vector{<: Storage}},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
+                branches::Union{Nothing, Vector{<:Branch}},
+                storage::Union{Nothing, Vector{<:Storage}},
                 basepower::Float64; kwargs...)
     runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
     if runchecks
@@ -96,27 +96,27 @@ function System(buses::Vector{Bus},
 end
 
 """Constructs System with Generators but no branches or storage."""
-function System(buses::Vector{<: Bus},
-                generators::Vector{<: Generator},
-                loads::Vector{<: ElectricLoad},
+function System(buses::Vector{<:Bus},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
                 basepower::Float64; kwargs...)
     return System(buses, generators, loads, nothing, nothing, basepower; kwargs...)
 end
 
 """Constructs System with Generators but no storage."""
 function System(buses::Vector{Bus},
-                generators::Vector{<: Generator},
-                loads::Vector{<: ElectricLoad},
-                branches::Vector{<: Branch},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
+                branches::Vector{<:Branch},
                 basepower::Float64; kwargs...)
     return System(buses, generators, loads, branches, nothing, basepower; kwargs...)
 end
 
 """Constructs System with Generators but no branches."""
-function System(buses::Vector{<: Bus},
-                generators::Vector{<: Generator},
-                loads::Vector{<: ElectricLoad},
-                storage::Vector{<: Storage},
+function System(buses::Vector{<:Bus},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
+                storage::Vector{<:Storage},
                 basepower::Float64; kwargs...)
     return System(buses, generators, loads, nothing, storage, basepower; kwargs...)
 end
@@ -156,7 +156,7 @@ This is a temporary implementation that will allow consumers of PowerSystems to 
 functionality before it is finalized.
 """
 struct ConcreteSystem <: PowerSystemType
-    data::Dict{DataType, Vector{<: Component}}  # Contains arrays of concrete types.
+    data::Dict{DataType, Vector{<:Component}}  # Contains arrays of concrete types.
     components::Dict{DataType, Any}             # Nested dict based on type hierarchy
                                                 # containing references to component arrays.
     basepower::Float64                          # [MVA]
@@ -164,7 +164,7 @@ struct ConcreteSystem <: PowerSystemType
 end
 
 function ConcreteSystem(sys::System)
-    data = Dict{DataType, Vector{<: Component}}()
+    data = Dict{DataType, Vector{<:Component}}()
     for subtype in get_all_concrete_subtypes(Component)
         data[subtype] = Vector{subtype}()
     end
@@ -211,7 +211,7 @@ end
 devices = PowerSystems.get_components(ThermalDispatch, system)
 ```
 """
-function get_components(::Type{T}, sys::ConcreteSystem,)::Vector{T} where {T <: Component}
+function get_components(::Type{T}, sys::ConcreteSystem)::Vector{T} where {T <: Component}
     if !isconcretetype(T)
         error("$T must be a concrete type")
     end
@@ -232,13 +232,13 @@ for device in iter
 end
 ```
 """
-function get_mixed_components(::Type{T}, sys::ConcreteSystem,) where {T <: Component}
+function get_mixed_components(::Type{T}, sys::ConcreteSystem) where {T <: Component}
     return _get_mixed_components(T, sys.data)
 end
 
 function _get_mixed_components(
                                ::Type{T},
-                               data::Dict{DataType, Vector{<: Component}}
+                               data::Dict{DataType, Vector{<:Component}},
                               ) where {T <: Component}
     if !isabstracttype(T)
         error("$T must be an abstract type")
@@ -263,7 +263,7 @@ ThermalDispatch:
 """
 function _get_components_by_type(
                                  ::Type{T},
-                                 data::Dict{DataType, Vector{<: Component}},
+                                 data::Dict{DataType, Vector{<:Component}},
                                  components::Dict{DataType, Any}=Dict{DataType, Any}(),
                                 ) where {T <: Component}
     abstract_types = get_abstract_subtypes(T)
