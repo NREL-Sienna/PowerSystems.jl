@@ -60,8 +60,8 @@ struct PowerSystem{L <: ElectricLoad,
                         services::V,
                         annex::Union{Nothing,Dict{Any,Any}}; kwargs...) where {G <: Generator, 
                                                                                 L <: ElectricLoad,
-                                                                                V <: Union{Nothing,Array{ <: Service,1}},
-                                                                                F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}}
+                                                                                V <: Union{Nothing,Vector{ <: Service,}},
+                                                                                F <: Union{Nothing,Dict{Symbol,Vector{<: Forecast}}}}
         
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
@@ -97,8 +97,8 @@ struct PowerSystem{L <: ElectricLoad,
                         annex::Union{Nothing,Dict{Any,Any}}; kwargs...) where {G <: Generator, 
                                                                                 L <: ElectricLoad,
                                                                                 B <: Array{ <: Branch,1},
-                                                                                V <: Union{Nothing,Array{ <: Service,1}},
-                                                                                F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}}
+                                                                                V <: Union{Nothing,Vector{ <: Service}},
+                                                                                F <: Union{Nothing,Dict{Symbol,Vector{ <: Forecast}}}}
 
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
@@ -140,8 +140,8 @@ struct PowerSystem{L <: ElectricLoad,
                         annex::Union{Nothing,Dict{Any,Any}}; kwargs...) where {G <: Generator, 
                                                                                 L <: ElectricLoad,
                                                                                 S <: Array{ <: Storage,1},
-                                                                                V <: Union{Nothing,Array{ <: Service,1}},
-                                                                                F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}}
+                                                                                V <: Union{Nothing,Vector{ <: Service}},
+                                                                                F <: Union{Nothing,Dict{Symbol,Vector{ <: Forecast}}}}
 
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
@@ -178,8 +178,8 @@ struct PowerSystem{L <: ElectricLoad,
                                                                                 L <: ElectricLoad,
                                                                                 B <: Array{<:Branch,1},
                                                                                 S <: Array{ <: Storage,1},
-                                                                                V <: Union{Nothing,Array{ <: Service,1}},
-                                                                                F <: Union{Nothing,Dict{Symbol,Array{C,1} where C <: Forecast}}}
+                                                                                V <: Union{Nothing,Vector{ <: Service}},
+                                                                                F <: Union{Nothing,Dict{Symbol,Vector{ <: Forecast}}}}
         
         sources = genclassifier(generators);
         runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
@@ -221,7 +221,7 @@ PowerSystem(; buses = [Bus()],
             branches =  nothing,
             storage = nothing,
             basepower = 1000.0,
-            forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}(),
+            forecasts = Dict{Symbol,Vector{ <: Forecast}}(),
             services = nothing,
             annex = nothing,
             kwargs... ,
@@ -236,7 +236,7 @@ function PowerSystem(buses::Array{Bus,1},
                                                                 L <: ElectricLoad,
                                                                 B <: Array{<:Branch,1},
                                                                 S <: Array{ <: Storage,1}}
-        return PowerSystem(buses,generators,loads,branches,storage,basepower,Dict{Symbol,Array{C,1} where C <: Forecast}(),nothing,nothing; kwargs...)
+        return PowerSystem(buses,generators,loads,branches,storage,basepower, Dict{Symbol,Vector{ <: Forecast}}(),nothing,nothing; kwargs...)
 end
 
 function PowerSystem(buses::Array{Bus,1},
@@ -246,12 +246,12 @@ function PowerSystem(buses::Array{Bus,1},
         basepower::Float64; kwargs...) where {G <: Generator, 
                                                                 L <: ElectricLoad,
                                                                 B <: Array{<:Branch,1}}
-        return PowerSystem(buses,generators,loads,branches,nothing,basepower,Dict{Symbol,Array{ <: Forecast,1}}(),nothing,nothing; kwargs...)
+        return PowerSystem(buses,generators,loads,branches,nothing,basepower,Dict{Symbol,Vector{ <: Forecast}}(),nothing,nothing; kwargs...)
 end
 
 function PowerSystem(ps_dict::Dict{String,Any}; kwargs...)
         Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts, Services = ps_dict2ps_struct(ps_dict)
-        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Array{C,1} where C <: Forecast}(), Services, nothing; kwargs...);
+        sys = PowerSystem(Buses, Generators,Loads,Branches,Storage,ps_dict["baseMVA"], Dict{Symbol,Vector{ <: Forecast}}(), Services, nothing; kwargs...);
         return sys
 end
 
