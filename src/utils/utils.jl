@@ -2,11 +2,15 @@ import InteractiveUtils: subtypes
 
 
 """Returns an array of all concrete subtypes of T."""
-function get_all_concrete_subtypes(::Type{T}, sub_types=[]) where T
+function get_all_concrete_subtypes(::Type{T}) where T
+    return _get_all_concrete_subtypes(T)
+end
+
+function _get_all_concrete_subtypes(::Type{T}, sub_types=[]) where T
     for sub_type in subtypes(T)
         push!(sub_types, sub_type)
         if isabstracttype(sub_type)
-            get_all_concrete_subtypes(sub_type, sub_types)
+            _get_all_concrete_subtypes(sub_type, sub_types)
         end
     end
 

@@ -160,7 +160,6 @@ struct ConcreteSystem <: PowerSystemType
     components::Dict{DataType, Any}             # Nested dict based on type hierarchy
                                                 # containing references to component arrays.
     basepower::Float64                          # [MVA]
-    time_periods::Int64
 end
 
 function ConcreteSystem(sys::System)
@@ -282,10 +281,14 @@ function _get_components_by_type(
 end
 
 """Returns a Tuple of Arrays of component types and counts."""
-function get_component_counts(components::Dict{DataType, Any}, types=[], counts=[])
+function get_component_counts(components::Dict{DataType, Any})
+    return _get_component_counts(components)
+end
+
+function _get_component_counts(components::Dict{DataType, Any}, types=[], counts=[])
     for (ps_type, val) in components
         if isabstracttype(ps_type)
-            get_component_counts(val, types, counts)
+            _get_component_counts(val, types, counts)
         else
             push!(types, ps_type)
             push!(counts, length(val))
@@ -299,7 +302,8 @@ end
 a column showing the type hierachy. The display is in order of depth-first type
 hierarchy.
 """
-function show_component_counts(sys::ConcreteSystem, show_hierarchy::Bool=false)
+function show_component_counts(sys::ConcreteSystem, io::IO=stderr;
+                               show_hierarchy::Bool=false)
     # Build a table of strings showing the counts.
     types, counts = get_component_counts(sys.components)
     if show_hierarchy
@@ -315,6 +319,6 @@ function show_component_counts(sys::ConcreteSystem, show_hierarchy::Bool=false)
         df = DataFrames.DataFrame(PowerSystemType=types, Count=counts)
     end
 
-    @show df
+    print(io, df)
     return nothing
 end
