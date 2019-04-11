@@ -90,7 +90,7 @@ function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     return ps_dict
 end
 
-function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::Dates.Period,horizon::Int) where {D<:PowerSystemDevice}
+function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::Dates.Period,horizon::Int) where {D<:Device}
     time_delta = Dates.Minute(df[2,:DateTime]-df[1,:DateTime])
     initialtime = df[1,:DateTime] # TODO :read the correct date/time when that was issued  forecast
     last_date = df[end,:DateTime]
@@ -185,7 +185,7 @@ Returns:
 function make_forecast_dict(time_series::Dict{String,Any},
                             resolution::Dates.Period, horizon::Int,
                             Devices::Array{ElectricLoad,1},
-                            LoadZones::Array{PowerSystemDevice,1})
+                            LoadZones::Array{Device,1})
     forecast = Dict{String,Any}()
     for device in Devices
         if haskey(time_series,"load")

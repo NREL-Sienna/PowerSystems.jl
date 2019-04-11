@@ -5,68 +5,68 @@ end
 
 @testset "Generation Constructors" begin
     tEconThermal = EconThermal()
-    @test tEconThermal isa PowerSystems.PowerSystemComponent
+    @test tEconThermal isa PowerSystems.Component
     tTechThermal = TechThermal()
-    @test tTechThermal isa PowerSystems.PowerSystemComponent
+    @test tTechThermal isa PowerSystems.Component
     tThermalGen = ThermalDispatch()
-    @test tThermalGen isa PowerSystems.PowerSystemComponent
+    @test tThermalGen isa PowerSystems.Component
     tThermalGenSeason = ThermalGenSeason()
-    @test tThermalGenSeason isa PowerSystems.PowerSystemComponent
+    @test tThermalGenSeason isa PowerSystems.Component
     tTechHydro = TechHydro()
-    @test tTechHydro isa PowerSystems.PowerSystemComponent
+    @test tTechHydro isa PowerSystems.Component
     tEconHydro = EconHydro()
-    @test tEconHydro isa PowerSystems.PowerSystemComponent
+    @test tEconHydro isa PowerSystems.Component
     tHydroFix = HydroFix()
-    @test tHydroFix isa PowerSystems.PowerSystemComponent
+    @test tHydroFix isa PowerSystems.Component
     tHydroCurtailment = HydroCurtailment()
-    @test tHydroCurtailment isa PowerSystems.PowerSystemComponent
+    @test tHydroCurtailment isa PowerSystems.Component
     tHydroStorage = HydroStorage()
-    @test tHydroStorage isa PowerSystems.PowerSystemComponent
+    @test tHydroStorage isa PowerSystems.Component
     tTechRenewable = TechRenewable()
-    @test tTechRenewable isa PowerSystems.PowerSystemComponent
+    @test tTechRenewable isa PowerSystems.Component
     tEconRenewable = EconRenewable()
-    @test tEconRenewable isa PowerSystems.PowerSystemComponent
+    @test tEconRenewable isa PowerSystems.Component
     tRenewableFix = RenewableFix()
-    @test tRenewableFix isa PowerSystems.PowerSystemComponent
+    @test tRenewableFix isa PowerSystems.Component
     tRenewableFullDispatch = RenewableFullDispatch()
-    @test tRenewableFullDispatch isa PowerSystems.PowerSystemComponent
+    @test tRenewableFullDispatch isa PowerSystems.Component
     tRenewableCurtailment = RenewableCurtailment()
-    @test tRenewableCurtailment isa PowerSystems.PowerSystemComponent
+    @test tRenewableCurtailment isa PowerSystems.Component
 end
 
 @testset "Storage Constructors" begin
     tStorage = GenericBattery()
-    @test tStorage isa PowerSystems.PowerSystemComponent
+    @test tStorage isa PowerSystems.Component
 end
 
 @testset "Load Constructors" begin
     tPowerLoad = PowerLoad()
-    @test tPowerLoad isa PowerSystems.PowerSystemComponent
+    @test tPowerLoad isa PowerSystems.Component
     tPowerLoadPF = PowerLoadPF()
-    @test tPowerLoadPF isa PowerSystems.PowerSystemComponent
+    @test tPowerLoadPF isa PowerSystems.Component
     tPowerLoad = PowerLoad("init", true, Bus(), 0.0, 0.0)
-    @test tPowerLoad isa PowerSystems.PowerSystemComponent
+    @test tPowerLoad isa PowerSystems.Component
     tPowerLoadPF = PowerLoadPF("init", true, Bus(), 0.0, 1.0)
-    @test tPowerLoadPF isa PowerSystems.PowerSystemComponent
+    @test tPowerLoadPF isa PowerSystems.Component
     tLoad = InterruptibleLoad()
-    @test tLoad isa PowerSystems.PowerSystemComponent
+    @test tLoad isa PowerSystems.Component
 end
 
 @testset "Branch Constructors" begin
     tLine = Line()
-    @test tLine isa PowerSystems.PowerSystemComponent
+    @test tLine isa PowerSystems.Component
     tMonitoredLine = MonitoredLine()
-    @test tMonitoredLine isa PowerSystems.PowerSystemComponent
+    @test tMonitoredLine isa PowerSystems.Component
     tHVDCLine = HVDCLine()
-    @test tHVDCLine isa PowerSystems.PowerSystemComponent
+    @test tHVDCLine isa PowerSystems.Component
     tVSCDCLine = VSCDCLine()
-    @test tVSCDCLine isa PowerSystems.PowerSystemComponent
+    @test tVSCDCLine isa PowerSystems.Component
     tTransformer2W = Transformer2W()
-    @test tTransformer2W isa PowerSystems.PowerSystemComponent
+    @test tTransformer2W isa PowerSystems.Component
     tTapTransformer = TapTransformer()
-    @test tTapTransformer isa PowerSystems.PowerSystemComponent
+    @test tTapTransformer isa PowerSystems.Component
     tPhaseShiftingTransformer = PhaseShiftingTransformer()
-    @test tPhaseShiftingTransformer isa PowerSystems.PowerSystemComponent
+    @test tPhaseShiftingTransformer isa PowerSystems.Component
 end
 
 @testset "Product Constructors" begin

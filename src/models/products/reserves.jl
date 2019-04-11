@@ -5,7 +5,7 @@ end
 
 """
 ProportionalReserve(name::String,
-        contributingdevices::PowerSystemDevice,
+        contributingdevices::Device,
         timeframe::Float64,
         requirement::Dict{Any,Dict{Int,TimeSeries.TimeArray}})
 
@@ -24,7 +24,7 @@ requirement - the required quantity of the product
 """
 struct ProportionalReserve <: Reserve
     name::String
-    contributingdevices::Array{PowerSystemDevice}
+    contributingdevices::Array{Device}
     timeframe::Float64
     requirement::TimeSeries.TimeArray
 end
@@ -33,7 +33,7 @@ function ProportionalReserve(name::String,
                             contributingdevices::Array{G},
                             timeframe::Float64,
                             requirement::Float64,
-                            loads::Array{T}) where {G <: PowerSystemDevice, T <: ElectricLoad}
+                            loads::Array{T}) where {G <: Device, T <: ElectricLoad}
 
     totalload = zeros(0)
     for i in TimeSeries.timestamp(loads[1].scalingfactor)
@@ -58,7 +58,7 @@ ProportionalReserve(;name = "init",
 
 """
 StaticReserve(name::String,
-        contributingdevices::PowerSystemDevice,
+        contributingdevices::Device,
         timeframe::Float64,
         requirement::Float64})
 
@@ -77,14 +77,14 @@ requirement - the required quantity of the product
 """
 struct StaticReserve <: Reserve
     name::String
-    contributingdevices::Array{PowerSystemDevice}
+    contributingdevices::Array{Device}
     timeframe::Float64
     requirement::Float64
 
     function StaticReserve(name::String,
                                 contributingdevices::Array{Q},
                                 timeframe::Float64,
-                                generators::Array{G}) where {Q <: PowerSystemDevice, G <: TechThermal}
+                                generators::Array{G}) where {Q <: Device, G <: TechThermal}
 
         requirement = maximum([gen.activepowerlimits[:max] for gen in generators])
 

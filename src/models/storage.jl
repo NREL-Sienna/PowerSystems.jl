@@ -1,5 +1,3 @@
-abstract type
-    Storage <: PowerSystemDevice
-end
+abstract type Storage <: Injection end
 
 include("storage/batteries.jl")

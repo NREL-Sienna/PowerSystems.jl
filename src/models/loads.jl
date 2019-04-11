@@ -1,4 +1,4 @@
-abstract type ElectricLoad <: PowerSystemDevice end
+abstract type ElectricLoad <: Injection end
 
 include("loads/electric_loads.jl")
 include("loads/controllable_loads.jl")

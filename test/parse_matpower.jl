@@ -40,8 +40,8 @@ POWER_MODELS_KEYS = [
             PowerSystems.ps_dict2ps_struct(ps_dict)
         @info "Successfully parsed $path to PowerSystems devices"
 
-        sys_test = PowerSystem(Buses, Generators, Loads, Branches, Storages,
+        sys_test = System(Buses, Generators, Loads, Branches, Storages,
                                float(ps_dict["baseMVA"]))
-        @info "Successfully parsed $path to PowerSystem struct"
+        @info "Successfully parsed $path to System struct"
     end
 end

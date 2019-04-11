@@ -15,12 +15,13 @@ function timeseriescheckload(loads::Array{T}) where {T<:ElectricLoad}
     return t
 end
 
-function timeserieschecksources(generators::Array{T}, t) where {T<:Generator}
+function timeserieschecksources(generators::Array{T}, expected) where {T<:Generator}
     for g in generators
-        if t == length(g.scalingfactor)
+        actual = length(g.scalingfactor)
+        if expected == actual
             continue
         else
-            @error "Inconsistent generation scaling factor time series length for $(g.name)"
+            @error "Inconsistent generation scaling factor time series length for $(g.name)" expected actual
         end
     end
 end
