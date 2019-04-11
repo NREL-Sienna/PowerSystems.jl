@@ -13,7 +13,11 @@ export SystemConcrete
 export Bus
 export LoadZones
 
+export PowerSystemType
+export Component
+export Device
 export Branch
+export Injection
 export Line
 export MonitoredLine
 export DCLine
@@ -74,7 +78,10 @@ export ps_dict2ps_struct
 export assign_ts_data
 export read_data_files
 export validate
-export get_devices
+export get_components
+export get_mixed_components
+export get_component_counts
+export show_component_counts
 
 #################################################################################
 # Imports

@@ -28,15 +28,15 @@ end
 
     # Verify functionality of the concrete version of System.
     # TODO: Refactor once the SystemConcrete implementation is finalized.
-    sys_concrete = SystemConcrete(sys_rts_da)
-    @test length(sys_rts_rt.buses) == length(get_devices(Bus, sys_concrete))
-    @test length(sys_rts_rt.branches) == length(get_devices(Branch, sys_concrete))
-    @test length(sys_rts_rt.loads) == length(get_devices(ElectricLoad, sys_concrete))
-    @test length(sys_rts_rt.storage) == length(get_devices(Storage, sys_concrete))
-    @test length(sys_rts_rt.generators.thermal) == length(get_devices(ThermalGen, sys_concrete))
-    @test length(sys_rts_rt.generators.renewable) == length(get_devices(RenewableGen, sys_concrete))
-    @test length(sys_rts_rt.generators.hydro) == length(get_devices(HydroGen, sys_concrete))
-    @test length(get_devices(ThermalDispatch, sys_concrete)) > 0
+    sys = SystemConcrete(sys_rts_da)
+    @test length(sys_rts_rt.branches) == length(collect(get_mixed_components(Branch, sys)))
+    @test length(sys_rts_rt.loads) == length(collect(get_mixed_components(ElectricLoad, sys)))
+    @test length(sys_rts_rt.storage) == length(collect(get_mixed_components(Storage, sys)))
+    @test length(sys_rts_rt.generators.thermal) == length(collect(get_mixed_components(ThermalGen, sys)))
+    @test length(sys_rts_rt.generators.renewable) == length(collect(get_mixed_components(RenewableGen, sys)))
+    @test length(sys_rts_rt.generators.hydro) == length(collect(get_mixed_components(HydroGen, sys)))
+    @test length(get_components(Bus, sys)) > 0
+    @test length(get_components(ThermalDispatch, sys)) > 0
 end
 
 @testset "CDM parsing invalid directory" begin
