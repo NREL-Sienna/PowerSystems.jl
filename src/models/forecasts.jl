@@ -7,8 +7,8 @@ end
         A deterministic forecast for a particular data field in a PowerSystemDevice.
 
 """
-struct Deterministic <: Forecast
-    device::PowerSystemComponent        # device
+struct Deterministic{ T <: PowerSystemComponent} <: Forecast
+    device::T                           # device
     label::String                       # label of device parameter foreccasted
     resolution::Dates.Period            # resolution
     initialtime::Dates.DateTime         # forecast availability time
