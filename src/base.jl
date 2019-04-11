@@ -96,7 +96,7 @@ function System(buses::Vector{Bus},
 end
 
 """Constructs System with Generators but no branches or storage."""
-function System(buses::Vector{<:Bus},
+function System(buses::Vector{Bus},
                 generators::Vector{<:Generator},
                 loads::Vector{<:ElectricLoad},
                 basepower::Float64; kwargs...)
@@ -113,7 +113,7 @@ function System(buses::Vector{Bus},
 end
 
 """Constructs System with Generators but no branches."""
-function System(buses::Vector{<:Bus},
+function System(buses::Vector{Bus},
                 generators::Vector{<:Generator},
                 loads::Vector{<:ElectricLoad},
                 storage::Vector{<:Storage},
