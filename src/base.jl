@@ -37,9 +37,9 @@ struct System <: PowerSystemType
     # DOCTODO docs for System fields are currently not working, JJS 1/15/19
     buses::Vector{Bus}
     generators::GenClasses
-    loads::Vector{<: ElectricLoad}
-    branches::Union{Nothing, Vector{<: Branch}}
-    storage::Union{Nothing, Vector{<: Storage}}
+    loads::Vector{<:ElectricLoad}
+    branches::Union{Nothing, Vector{<:Branch}}
+    storage::Union{Nothing, Vector{<:Storage}}
     basepower::Float64 # [MVA]
     time_periods::Int64
 
@@ -60,10 +60,10 @@ end
 
 """Primary System constructor. Funnel point for all other outer constructors."""
 function System(buses::Vector{Bus},
-                generators::Vector{<: Generator},
-                loads::Vector{<: ElectricLoad},
-                branches::Union{Nothing, Vector{<: Branch}},
-                storage::Union{Nothing, Vector{<: Storage}},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
+                branches::Union{Nothing, Vector{<:Branch}},
+                storage::Union{Nothing, Vector{<:Storage}},
                 basepower::Float64; kwargs...)
     runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
     if runchecks
@@ -96,27 +96,27 @@ function System(buses::Vector{Bus},
 end
 
 """Constructs System with Generators but no branches or storage."""
-function System(buses::Vector{<: Bus},
-                generators::Vector{<: Generator},
-                loads::Vector{<: ElectricLoad},
+function System(buses::Vector{Bus},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
                 basepower::Float64; kwargs...)
     return System(buses, generators, loads, nothing, nothing, basepower; kwargs...)
 end
 
 """Constructs System with Generators but no storage."""
 function System(buses::Vector{Bus},
-                generators::Vector{<: Generator},
-                loads::Vector{<: ElectricLoad},
-                branches::Vector{<: Branch},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
+                branches::Vector{<:Branch},
                 basepower::Float64; kwargs...)
     return System(buses, generators, loads, branches, nothing, basepower; kwargs...)
 end
 
 """Constructs System with Generators but no branches."""
-function System(buses::Vector{<: Bus},
-                generators::Vector{<: Generator},
-                loads::Vector{<: ElectricLoad},
-                storage::Vector{<: Storage},
+function System(buses::Vector{Bus},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
+                storage::Vector{<:Storage},
                 basepower::Float64; kwargs...)
     return System(buses, generators, loads, nothing, storage, basepower; kwargs...)
 end
@@ -156,26 +156,24 @@ This is a temporary implementation that will allow consumers of PowerSystems to 
 functionality before it is finalized.
 """
 struct ConcreteSystem <: PowerSystemType
-    components::Dict{DataType, Vector{<: Component}}  # Contains arrays of concrete types.
-    components_by_type::Dict{DataType, Any}           # Nested dict based on type hierarchy
-                                                      # containing references to component
-                                                      # arrays.
-    basepower::Float64                                # [MVA]
-    time_periods::Int64
+    data::Dict{DataType, Vector{<:Component}}  # Contains arrays of concrete types.
+    components::Dict{DataType, Any}             # Nested dict based on type hierarchy
+                                                # containing references to component arrays.
+    basepower::Float64                          # [MVA]
 end
 
 function ConcreteSystem(sys::System)
-    components = Dict{DataType, Vector{<: Component}}()
+    data = Dict{DataType, Vector{<:Component}}()
     for subtype in get_all_concrete_subtypes(Component)
-        components[subtype] = Vector{subtype}()
+        data[subtype] = Vector{subtype}()
     end
 
-    @debug "Created components keys" keys(components)
+    @debug "Created data keys" keys(data)
 
     for field in (:buses, :loads)
         objs = getfield(sys, field)
         for obj in objs
-            push!(components[typeof(obj)], obj)
+            push!(data[typeof(obj)], obj)
         end
     end
 
@@ -183,7 +181,7 @@ function ConcreteSystem(sys::System)
         generators = getfield(sys.generators, field)
         if !isnothing(generators)
             for gen in generators
-                push!(components[typeof(gen)], gen)
+                push!(data[typeof(gen)], gen)
             end
         end
     end
@@ -192,17 +190,17 @@ function ConcreteSystem(sys::System)
         objs = getfield(sys, field)
         if !isnothing(objs)
             for obj in objs
-                push!(components[typeof(obj)], obj)
+                push!(data[typeof(obj)], obj)
             end
         end
     end
 
-    for (key, value) in components
-        @debug "components: $(string(key)): count=$(string(length(value)))"
+    for (key, value) in data
+        @debug "data: $(string(key)): count=$(string(length(value)))"
     end
 
-    components_by_type = _get_components_by_type(Component, components)
-    return ConcreteSystem(components, components_by_type, sys.basepower, sys.time_periods)
+    components = _get_components_by_type(Component, data)
+    return ConcreteSystem(data, components, sys.basepower)
 end
 
 """Returns an array of components from the System. T must be a concrete type.
@@ -212,12 +210,12 @@ end
 devices = PowerSystems.get_components(ThermalDispatch, system)
 ```
 """
-function get_components(::Type{T}, sys::ConcreteSystem,)::Vector{T} where {T <: Component}
+function get_components(::Type{T}, sys::ConcreteSystem)::Vector{T} where {T <: Component}
     if !isconcretetype(T)
         error("$T must be a concrete type")
     end
 
-    return sys.components[T]
+    return sys.data[T]
 end
 
 """Returns an iterable over component arrays that are subtypes of T. To create a new array
@@ -233,19 +231,19 @@ for device in iter
 end
 ```
 """
-function get_mixed_components(::Type{T}, sys::ConcreteSystem,) where {T <: Component}
-    return _get_mixed_components(T, sys.components)
+function get_mixed_components(::Type{T}, sys::ConcreteSystem) where {T <: Component}
+    return _get_mixed_components(T, sys.data)
 end
 
 function _get_mixed_components(
                                ::Type{T},
-                               components::Dict{DataType, Vector{<: Component}}
+                               data::Dict{DataType, Vector{<:Component}},
                               ) where {T <: Component}
     if !isabstracttype(T)
         error("$T must be an abstract type")
     end
 
-    return Iterators.flatten(components[x] for x in get_all_concrete_subtypes(T))
+    return Iterators.flatten(data[x] for x in get_all_concrete_subtypes(T))
 end
 
 """Builds a nested dictionary by traversing through the PowerSystems type hierarchy. The
@@ -264,29 +262,33 @@ ThermalDispatch:
 """
 function _get_components_by_type(
                                  ::Type{T},
-                                 components::Dict{DataType, Vector{<: Component}},
-                                 data::Dict{DataType, Any}=Dict{DataType, Any}(),
+                                 data::Dict{DataType, Vector{<:Component}},
+                                 components::Dict{DataType, Any}=Dict{DataType, Any}(),
                                 ) where {T <: Component}
     abstract_types = get_abstract_subtypes(T)
     if length(abstract_types) > 0
         for abstract_type in abstract_types
-            data[abstract_type] = Dict{DataType, Any}()
-            _get_components_by_type(abstract_type, components, data[abstract_type])
+            components[abstract_type] = Dict{DataType, Any}()
+            _get_components_by_type(abstract_type, data, components[abstract_type])
         end
     end
 
     for concrete_type in get_concrete_subtypes(T)
-        data[concrete_type] = components[concrete_type]
+        components[concrete_type] = data[concrete_type]
     end
 
-    return data
+    return components
 end
 
 """Returns a Tuple of Arrays of component types and counts."""
-function get_component_counts(components_by_type::Dict{DataType, Any}, types=[], counts=[])
-    for (ps_type, val) in components_by_type
+function get_component_counts(components::Dict{DataType, Any})
+    return _get_component_counts(components)
+end
+
+function _get_component_counts(components::Dict{DataType, Any}, types=[], counts=[])
+    for (ps_type, val) in components
         if isabstracttype(ps_type)
-            get_component_counts(val, types, counts)
+            _get_component_counts(val, types, counts)
         else
             push!(types, ps_type)
             push!(counts, length(val))
@@ -300,9 +302,10 @@ end
 a column showing the type hierachy. The display is in order of depth-first type
 hierarchy.
 """
-function show_component_counts(sys::ConcreteSystem, show_hierarchy::Bool=false)
+function show_component_counts(sys::ConcreteSystem, io::IO=stderr;
+                               show_hierarchy::Bool=false)
     # Build a table of strings showing the counts.
-    types, counts = get_component_counts(sys.components_by_type)
+    types, counts = get_component_counts(sys.components)
     if show_hierarchy
         hierarchies = []
         for ps_type in types
@@ -316,6 +319,6 @@ function show_component_counts(sys::ConcreteSystem, show_hierarchy::Bool=false)
         df = DataFrames.DataFrame(PowerSystemType=types, Count=counts)
     end
 
-    @show df
+    print(io, df)
     return nothing
 end

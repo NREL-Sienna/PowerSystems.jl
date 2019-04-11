@@ -37,6 +37,9 @@ end
     @test length(sys_rts_rt.generators.hydro) == length(collect(get_mixed_components(HydroGen, sys)))
     @test length(get_components(Bus, sys)) > 0
     @test length(get_components(ThermalDispatch, sys)) > 0
+    for x in (true, false)
+        show_component_counts(sys, devnull; show_hierarchy=x)
+    end
 end
 
 @testset "CDM parsing invalid directory" begin
