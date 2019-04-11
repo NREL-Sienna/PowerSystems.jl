@@ -27,8 +27,8 @@ end
     @test sys_rts_rt isa System
 
     # Verify functionality of the concrete version of System.
-    # TODO: Refactor once the SystemConcrete implementation is finalized.
-    sys = SystemConcrete(sys_rts_da)
+    # TODO: Refactor once the ConcreteSystem implementation is finalized.
+    sys = ConcreteSystem(sys_rts_da)
     @test length(sys_rts_rt.branches) == length(collect(get_mixed_components(Branch, sys)))
     @test length(sys_rts_rt.loads) == length(collect(get_mixed_components(ElectricLoad, sys)))
     @test length(sys_rts_rt.storage) == length(collect(get_mixed_components(Storage, sys)))

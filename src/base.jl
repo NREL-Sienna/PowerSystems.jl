@@ -155,7 +155,7 @@ end
 This is a temporary implementation that will allow consumers of PowerSystems to test the
 functionality before it is finalized.
 """
-struct SystemConcrete <: PowerSystemType
+struct ConcreteSystem <: PowerSystemType
     components::Dict{DataType, Vector{<: Component}}  # Contains arrays of concrete types.
     components_by_type::Dict{DataType, Any}           # Nested dict based on type hierarchy
                                                       # containing references to component
@@ -164,7 +164,7 @@ struct SystemConcrete <: PowerSystemType
     time_periods::Int64
 end
 
-function SystemConcrete(sys::System)
+function ConcreteSystem(sys::System)
     components = Dict{DataType, Vector{<: Component}}()
     for subtype in get_all_concrete_subtypes(Component)
         components[subtype] = Vector{subtype}()
@@ -202,7 +202,7 @@ function SystemConcrete(sys::System)
     end
 
     components_by_type = _get_components_by_type(Component, components)
-    return SystemConcrete(components, components_by_type, sys.basepower, sys.time_periods)
+    return ConcreteSystem(components, components_by_type, sys.basepower, sys.time_periods)
 end
 
 """Returns an array of components from the System. T must be a concrete type.
@@ -212,7 +212,7 @@ end
 devices = PowerSystems.get_components(ThermalDispatch, system)
 ```
 """
-function get_components(::Type{T}, sys::SystemConcrete,)::Vector{T} where {T <: Component}
+function get_components(::Type{T}, sys::ConcreteSystem,)::Vector{T} where {T <: Component}
     if !isconcretetype(T)
         error("$T must be a concrete type")
     end
@@ -233,7 +233,7 @@ for device in iter
 end
 ```
 """
-function get_mixed_components(::Type{T}, sys::SystemConcrete,) where {T <: Component}
+function get_mixed_components(::Type{T}, sys::ConcreteSystem,) where {T <: Component}
     return _get_mixed_components(T, sys.components)
 end
 
@@ -300,7 +300,7 @@ end
 a column showing the type hierachy. The display is in order of depth-first type
 hierarchy.
 """
-function show_component_counts(sys::SystemConcrete, show_hierarchy::Bool=false)
+function show_component_counts(sys::ConcreteSystem, show_hierarchy::Bool=false)
     # Build a table of strings showing the counts.
     types, counts = get_component_counts(sys.components_by_type)
     if show_hierarchy

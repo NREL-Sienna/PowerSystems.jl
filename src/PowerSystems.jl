@@ -9,7 +9,7 @@ module PowerSystems
 # Exports
 
 export System
-export SystemConcrete
+export ConcreteSystem
 export Bus
 export LoadZones
 
