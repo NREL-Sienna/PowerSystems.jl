@@ -59,13 +59,8 @@ function configure_logging(;
 
     if file
         io = open(filename, file_mode)
-        try
-            file_logger = Logging.SimpleLogger(io, file_level)
-            push!(loggers, file_logger)
-        catch
-            close(io)
-            rethrow() 
-        end
+        file_logger = Logging.SimpleLogger(io, file_level)
+        push!(loggers, file_logger)
     end
 
     logger = MultiLogger(loggers, tracker)
@@ -241,7 +236,7 @@ function Logging.handle_message(logger::MultiLogger,
     end
 
     if logger.tracker != nothing
-        event = LogEvent(file, line, id, message, level)
+        event = LogEvent(file, line, id, string(message), level)
         increment_count(logger.tracker, event, suppressed)
     end
 
