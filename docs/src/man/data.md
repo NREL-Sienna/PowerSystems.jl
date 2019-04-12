@@ -7,8 +7,14 @@ PowerSystems.to_json(system, "system.json")
 system = ConcreteSystem("system.json")
 ```
 
-It can be useful to view and filter the PowerSystems data in this format.  Here are some
-example commands to do this with [jq](https://github.com/stedolan/jq).
+It can be useful to view and filter the PowerSystems data in this format. There
+are many tools available to browse JSON data.
+
+Here is an example [GUI tool](http://jsonviewer.stack.hu) that is available
+online in a browser.
+
+The command line utility [jq](https://stedolan.github.io/jq/) offers even more
+features. The rest of this document provides example commands.
 
 ## View the entire file pretty-printed.
 ```
