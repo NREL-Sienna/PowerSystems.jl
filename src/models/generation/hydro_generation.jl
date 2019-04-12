@@ -57,10 +57,11 @@ struct HydroCurtailment <: HydroGen
     tech::TechHydro
     econ::Union{EconHydro,Nothing}
     scalingfactor::TimeSeries.TimeArray # [0-1]
-    function HydroCurtailment(name, status, bus, tech, curtailcost::Float64, scalingfactor)
-        econ = EconHydro(curtailcost, nothing)
-        new(name, status, bus, tech, econ, scalingfactor)
-    end
+end
+
+function HydroCurtailment(name, status, bus, tech, curtailcost::Float64, scalingfactor)
+    econ = EconHydro(curtailcost, nothing)
+    HydroCurtailment(name, status, bus, tech, econ, scalingfactor)
 end
 
 HydroCurtailment(; name = "init",

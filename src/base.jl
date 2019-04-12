@@ -203,6 +203,34 @@ function ConcreteSystem(sys::System)
     return ConcreteSystem(data, components, sys.basepower)
 end
 
+# The components field gets rebuilt in the constructor after deserialization.
+JSON2.@format ConcreteSystem keywordargs begin
+    components => (; exclude=true)
+end
+
+"""Constructs a ConcreteSystem from a JSON file."""
+function ConcreteSystem(filename::String)
+    return from_json(ConcreteSystem, filename)
+end
+
+"""Deserializes a ConcreteSystem from String or IO."""
+function from_json(io::Union{IO, String}, ::Type{ConcreteSystem})
+    raw = JSON2.read(io, NamedTuple)
+
+    data = Dict{DataType, Vector{<: Component}}()
+    for name in fieldnames(typeof(raw.data))
+        component_type = getfield(PowerSystems, Symbol(strip_module_names(string(name))))
+        data[component_type] = Vector{component_type}()
+        for dev in getfield(raw.data, name)
+            component = JSON2.read(JSON2.write(dev), component_type)
+            push!(data[component_type], component)
+        end
+    end
+
+    components = _get_components_by_type(Component, data)
+    return ConcreteSystem(data, components, float(raw.basepower))
+end
+
 """Returns an array of components from the System. T must be a concrete type.
 
 # Example

@@ -82,6 +82,8 @@ export get_components
 export get_mixed_components
 export get_component_counts
 export show_component_counts
+export to_json
+export from_json
 
 #################################################################################
 # Imports
@@ -96,6 +98,7 @@ import Dates
 import TimeSeries
 import DataFrames
 import JSON
+import JSON2
 import CSV
 import YAML
 
@@ -145,6 +148,7 @@ include("utils/IO/branchdata_checks.jl")
 
 # Definitions of System
 include("base.jl")
+include("models/serialization.jl")
 include("validation/powersystem.jl")
 
 # Better printing

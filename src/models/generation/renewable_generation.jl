@@ -8,10 +8,11 @@ struct RenewableFix <: RenewableGen
     bus::Bus
     tech::TechRenewable
     scalingfactor::TimeSeries.TimeArray
-    function RenewableFix(name, status, bus, installedcapacity::Float64, scalingfactor)
-        tech = TechRenewable(installedcapacity, nothing, 1.0)
-        new(name, status, bus, tech, scalingfactor)
-    end
+end
+
+function RenewableFix(name, status, bus, installedcapacity::Float64, scalingfactor)
+    tech = TechRenewable(installedcapacity, nothing, 1.0)
+    RenewableFix(name, status, bus, tech, scalingfactor)
 end
 
 RenewableFix(; name="init",

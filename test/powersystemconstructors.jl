@@ -23,6 +23,10 @@ include("../data/data_14bus.jl")
 
     sys5b = System(nodes5, generators5, loads5_DA, nothing, battery5,  1000.0)
 
+    # Serializing this isn't yet supported. Refer to GitHub issue #198.
+    sys = ConcreteSystem(sys5b)
+    @test_throws ErrorException to_json(sys)
+
     generators_hg5 = [
         HydroFix("HydroFix", true, nodes5[2],
                  TechHydro(60.0, 15.0, (min=0.0, max=60.0), nothing, nothing, nothing,

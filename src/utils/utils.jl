@@ -40,11 +40,58 @@ end
 
 """Converts a DataType to a Symbol, stripping off the module name(s)."""
 function type_to_symbol(data_type::DataType)
-    text = string(data_type)
-    index = findlast(".", text)
+    return Symbol(strip_module_names(string(data_type)))
+end
+
+function strip_module_names(name::String)
+    index = findlast(".", name)
     if !isnothing(index)
-        text = text[index.start + 1:end]
+        basename = name[index.start + 1:end]
+    else
+        basename = name
     end
 
-    return Symbol(text)
+    return basename
 end
+
+"""
+Compares immutable struct values by performing == on each field in the struct.
+When performing == on values of immutable structs Julia will perform === on
+each field.  This will return false if any field is mutable even if the
+contents are the same.  So, comparison of any PowerSystems type with an array
+will fail.
+
+This is an unresolved Julia issue. Refer to
+https://github.com/JuliaLang/julia/issues/4648.
+
+An option is to overload == for all subtypes of PowerSystemType. That may not be
+appropriate in all cases. Until the Julia developers decide on a solution, this
+function is provided for convenience for specific comparisons.
+
+"""
+function compare_values(x::T, y::T) where T
+    match = true
+    fields = fieldnames(T)
+    if isempty(fields)
+        match = x == y
+    else
+        for fieldname in fields
+            val1 = getfield(x, fieldname)
+            val2 = getfield(y, fieldname)
+            if !isempty(fieldnames(typeof(val1)))
+                if !compare_values(val1, val2)
+                    match = false
+                    break
+                end
+            else
+                if val1 != val2
+                    match = false
+                    break
+                end
+            end
+        end
+    end
+
+    return match
+end
+
