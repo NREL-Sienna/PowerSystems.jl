@@ -1,4 +1,4 @@
-function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1] ) where {T<:Branch}
+function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:Branch}
 
     buscount = length(nodes)
     linecount = length(branches)
@@ -63,7 +63,7 @@ function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Flo
         S = Array{Float64,2}(undef,linecount,buscount)
     end
 
-    return  S , A
+    return  S, A
 
 end
 
