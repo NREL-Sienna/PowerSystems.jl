@@ -40,14 +40,12 @@ struct HydroFix <: HydroGen
     available::Bool
     bus::Bus
     tech::TechHydro
-    scalingfactor::TimeSeries.TimeArray
 end
 
 HydroFix(; name="init",
         status = false,
         bus = Bus(),
-        tech = TechHydro(),
-        scalingfactor = TimeSeries.TimeArray(Dates.today(),ones(1))) = HydroFix(name, status, bus, tech, scalingfactor)
+        tech = TechHydro()) = HydroFix(name, status, bus, tech)
 
 
 struct HydroCurtailment <: HydroGen
@@ -56,10 +54,9 @@ struct HydroCurtailment <: HydroGen
     bus::Bus
     tech::TechHydro
     econ::Union{EconHydro,Nothing}
-    scalingfactor::TimeSeries.TimeArray # [0-1]
-    function HydroCurtailment(name, status, bus, tech, curtailcost::Float64, scalingfactor)
+    function HydroCurtailment(name, status, bus, tech, curtailcost::Float64)
         econ = EconHydro(curtailcost, nothing)
-        new(name, status, bus, tech, econ, scalingfactor)
+        new(name, status, bus, tech, econ)
     end
 end
 
@@ -67,8 +64,7 @@ HydroCurtailment(; name = "init",
                 status = false,
                 bus= Bus(),
                 tech = TechHydro(),
-                curtailcost = 0.0,
-                scalingfactor = TimeSeries.TimeArray(Dates.today(),ones(1))) = HydroCurtailment(name, status, bus, tech, curtailcost, scalingfactor)
+                curtailcost = 0.0) = HydroCurtailment(name, status, bus, tech, curtailcost)
 
 
 struct HydroStorage <: HydroGen
@@ -78,7 +74,6 @@ struct HydroStorage <: HydroGen
     tech::TechHydro
     econ::Union{EconHydro,Nothing}
     storagecapacity::Float64 #[m^3]
-    scalingfactor::TimeSeries.TimeArray
 end
 
 HydroStorage(; name = "init",
@@ -86,5 +81,4 @@ HydroStorage(; name = "init",
                 bus= Bus(),
                 tech = TechHydro(),
                 econ = EconHydro(),
-                storagecapacity = 0.0,
-                scalingfactor = TimeSeries.TimeArray(Dates.today(),ones(1))) = HydroStorage(name, status, bus, tech, econ, storagecapacity, scalingfactor)
+                storagecapacity = 0.0) = HydroStorage(name, status, bus, tech, econ, storagecapacity)

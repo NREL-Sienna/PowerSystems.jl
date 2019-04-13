@@ -3,25 +3,11 @@
 
 ## Time Series Length ##
 
-function timeseriescheckload(loads::Array{T}) where {T<:ElectricLoad}
-    t = length(loads[1].scalingfactor)
-    for l in loads
-        if t == length(l.scalingfactor)
-            continue
-        else
-            @error "Inconsistent load scaling factor time series length"
-        end
-    end
-    return t
-end
-
-function timeserieschecksources(generators::Array{T}, expected) where {T<:Generator}
-    for g in generators
-        actual = length(g.scalingfactor)
-        if expected == actual
-            continue
-        else
-            @error "Inconsistent generation scaling factor time series length for $(g.name)" expected actual
+function timeseriescheckforecast(forecasts::Dict{Symbol,Array{C,1} where C<:Forecast})
+    for (key,v) in forecasts
+        t = length(unique([length(f.data) for f in v]))
+        if t > 1
+            @error "$key forecast array contains $t different time series lengths"
         end
     end
 end
@@ -72,9 +58,9 @@ end
 # TODO: Check for islanded Buses
 
 # check for minimum timediff
-function minimumtimestep(loads::Array{T})where {T<:ElectricLoad}
-    if length(loads[1].scalingfactor) > 1
-        timeseries = loads[1].scalingfactor
+function minimumtimestep(forecasts::Array{T})where {T<:Forecast}
+    if length(forecasts[1].data) > 1
+        timeseries = forecasts[1].data
         n = length(timeseries)-1
         ts = []
         for i in 1:n
@@ -103,7 +89,7 @@ end
 
 
 # check for valid ramp limits
-function checkramp(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generator}
+function checkramp!(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generator}
     for (ix,g) in enumerate(generators)
         if isa(g,ThermalDispatch)
             R = convertramp(g.tech.ramplimits,ts)

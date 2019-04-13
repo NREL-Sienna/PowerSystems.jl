@@ -56,18 +56,27 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     else
         @warn "key 'services' not found in PowerSystems dictionary, this will result in an empty services array"
     end
+    if haskey(data,"forecasts")
+        devices = collect(vcat(buses,generators,storage,branches,loads,loadZones,shunts,branches,services))
+        forecasts = PowerSystems.forecasts_dict_parser(data["forecasts"],devices)
+
+    end
 
     return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts, services
 
 end
 
-
-function _retrieve(dict::T, key_of_interest::String, output = Dict(), path = []) where T<:AbstractDict
+#Union{String,DataType,Union}
+function _retrieve(dict::T, key_of_interest::Union{DataType,Union,String,Symbol}, output::Dict, path::Array) where T<:AbstractDict
     iter_result = Base.iterate(dict)
     last_element = length(path)
     while iter_result !== nothing
         ((key,value), state) = iter_result
-        if key == key_of_interest
+        if isa(key_of_interest,Union{DataType,Union})
+            if typeof(value) <: key_of_interest
+                output[key] = !haskey(output,key) ? path[1:end] : push!(output[key],path[1:end])
+            end
+        elseif key == key_of_interest
             output[value] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
         end
         if value isa AbstractDict
@@ -80,23 +89,7 @@ function _retrieve(dict::T, key_of_interest::String, output = Dict(), path = [])
     return output
 end
 
-function _retrieve(dict::T, type_of_interest, output = Dict(), path = []) where T<:AbstractDict
-    iter_result = Base.iterate(dict)
-    last_element = length(path)
-    while iter_result !== nothing
-        ((key,value), state) = iter_result
-        if typeof(value) <: type_of_interest
-            output[key] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
-        end
-        if value isa AbstractDict
-            push!(path,key)
-            _retrieve(value, type_of_interest, output, path)
-            path = path[1:last_element]
-        end
-        iter_result = Base.iterate(dict, state)
-    end
-    return output
-end
+
 
 function _access(nesteddict::T,keylist) where T<:AbstractDict
     if !haskey(nesteddict,keylist[1])
@@ -109,11 +102,13 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
     end
 end
 
-function _get_device(name, collection, devices = [])
-    if isa(collection,Array)
-        fn = fieldnames(typeof(collection[1]))
-        if :name in fn
-            [push!(devices,d) for d in collection if d.name == name]
+function _get_device(name::Union{String,Symbol}, collection, devices = [])
+    if isa(collection,Union{Array,Dict}) 
+        if !isempty(collection)
+            fn = fieldnames(typeof(collection[1]))
+            if :name in fn
+                [push!(devices,d) for d in collection if d.name == name]
+            end
         end
     else
         fn = fieldnames(typeof(collection))
@@ -124,6 +119,37 @@ function _get_device(name, collection, devices = [])
     return devices
 end
 
+#=
+function _getfieldpath(device,field::Symbol)
+    # function to map struct fields into a dict
+    function _getsubfields(device)
+        fn = fieldnames(typeof(device))
+        fielddict = Dict()
+        for f in fn
+            fielddict[f] = _getsubfields(getfield(device,f))
+        end
+        return fielddict
+    end
+
+    fielddict = _getsubfields(device)
+
+    tmp = PowerSystems._retrieve(fielddict,field,Dict(),[])
+    if isempty(tmp)
+        @error "Device $(device.name) has no field $field"
+    else
+        fieldpath = collect(Iterators.flatten(values(tmp)))
+        push!(fieldpath,field)
+    end
+
+    return fieldpath
+end
+
+
+function _getfield(device,fieldpath::Array{Symbol,1})
+    f = getfield(device,fieldpath[1])
+    length(fieldpath)>1 ? _getfield(f,fieldpath[2:end]) : return f
+end
+=#
 
 """
 Arg:
@@ -137,10 +163,16 @@ Returns:
     Dataframe with a DateTime columns
 """
 function read_datetime(df; kwargs...)
-    if [c for c in [:Year,:Month,:Day,:Period] if c in names(df)] == [:Year,:Month,:Day,:Period]
+    if [c for c in [:Year,:Month,:Day] if c in names(df)] == [:Year,:Month,:Day]
+        if !(:Period in names(df))
+            df = DataFrames.rename!(DataFrames.stack(df,[c for c in names(df) if !(c in [:Year,:Month,:Day])]),:variable=>:Period)
+            df.Period = parse.(Int,string.(df.Period))
+            if :valuecolname in keys(kwargs)
+                DataFrames.rename!(df,:value=>kwargs[:valuecolname])
+            end
+        end
         if Dates.Hour(DataFrames.maximum(df[:Period])) <= Dates.Hour(25)
-            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Dates.Hour(1) :
-            Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
+            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Dates.Hour(1) : Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
         elseif (Dates.Minute(5) * DataFrames.maximum(df[:Period]) >= Dates.Minute(1440))& (Dates.Minute(5) * DataFrames.maximum(df[:Period]) <= Dates.Minute(1500))
             df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Dates.Minute(5) :
                             Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
@@ -163,6 +195,7 @@ function read_datetime(df; kwargs...)
     return df
 end
 
+#=
 """
 Arg:
     Device dictionary - Generators
@@ -211,51 +244,63 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
     return Device_dict
 end
 
+
 """
 Arg:
     Load dictionary
-    LoadZones dictionary
     Dataframe contains device Realtime/Forecast TimeSeries
 Returns:
-    Device dictionary with timeseries added
+    Forecast dictionary
 """
-function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
-    load_dict = data["load"]
+function add_time_series_load(sys::PowerSystem, df::DataFrames.DataFrame)
 
-    load_names = [string(l["name"]) for (k,l) in load_dict]
     ts_names = [string(n) for n in names(df) if n != :DateTime]
 
-    write_sf_by_lz = false
-    lzkey = [k for k in ["loadzone","load_zone"] if haskey(data,k)][1]
-    if lzkey in keys(data)
-        load_zone_dict = data[lzkey]
-        z_names = [string(z["name"]) for (k,z) in load_zone_dict]
-        if length([n for n in z_names if n in ts_names]) > 0
-            write_sf_by_lz = true
-        end
+    load_dict = Dict()
+    assigned_loads = []
+
+    @info "assigning load scaling factors by bus"
+    for l in sys.loads
+        load_dict[l.name] = TimeSeries.TimeArray(df[:DateTime],df[Symbol(l.name)],[:maxactivepower])
+        push!(assigned_loads,l.name)
     end
 
+    for l in [l.name for l in sys.loads if !(l.name in assigned_loads)]
+        @warn "No load scaling factor assigned for $l"
+    end
+
+    return load_dict
+end
+
+"""
+Arg:
+    PowerSystem
+    Dataframe contains device Realtime/Forecast TimeSeries
+    LoadZones dictionary
+Returns:
+    Forecast dictionary
+"""
+function add_time_series_load(sys::PowerSystem, df::DataFrames.DataFrame,lz_dict::Dict)
+
+    ts_names = [string(n) for n in names(df) if n != :DateTime]
+
+    z_names = [string(z["name"]) for (k,z) in lz_dict]
+    if !(length([n for n in z_names if n in ts_names]) > 0)
+        @error "loadzone names don't match names of dataframe"
+    end
+
+    load_dict = Dict()
     assigned_loads = []
-    if write_sf_by_lz
-        @info "assigning load scaling factors by load_zone"
-        # TODO: make this faster/better
-        for (l_key,l) in load_dict
-            for (lz_key,lz) in load_zone_dict
-                if l["bus"] in lz["buses"]
-                    ts_raw = df[lz_key]/lz["maxactivepower"]
-                    load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
-                    push!(assigned_loads,l_key)
-                end
+    @info "assigning load scaling factors by load_zone"
+    # TODO: make this faster/better
+    for l in sys.loads
+        for (lz_key,lz) in lz_dict
+            if l.bus in lz["buses"]
+                ts_raw = df[lz_key]/lz["maxactivepower"]
+                load_dict[l.name] = TimeSeries.TimeArray(df[:DateTime],ts_raw,[:maxactivepower])
+                push!(assigned_loads,l.name)
             end
-
         end
-    else
-        @info "assigning load scaling factors by bus"
-        for (l_key,l) in load_dict
-            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[Symbol(l["name"])])
-            push!(assigned_loads,l["name"])
-        end
-
     end
 
     for l in [l for l in load_names if !(l in assigned_loads)]
@@ -264,6 +309,7 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
 
     return load_dict
 end
+=#
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})
@@ -308,8 +354,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                                         hydro_dict["tech"]["reactivepowerlimits"],
                                                                         hydro_dict["tech"]["ramplimits"],
                                                                         hydro_dict["tech"]["timelimits"]),
-                                                            hydro_dict["econ"]["curtailcost"],
-                                                            hydro_dict["scalingfactor"]
+                                                            hydro_dict["econ"]["curtailcost"]
                             ))
             end
         elseif gen_type_key =="Renewable"
@@ -321,8 +366,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                                     pv_dict["bus"],
                                                                     pv_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(pv_dict["econ"]["curtailcost"],
-                                                                                pv_dict["econ"]["interruptioncost"]),
-                                                                    pv_dict["scalingfactor"]
+                                                                                pv_dict["econ"]["interruptioncost"])
                                     ))
                     end
                 elseif ren_key == "RTPV"
@@ -330,8 +374,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                         push!(Generators,RenewableFix(string(rtpv_dict["name"]),
                                                                     Bool(rtpv_dict["available"]),
                                                                     rtpv_dict["bus"],
-                                                                    rtpv_dict["tech"]["installedcapacity"],
-                                                                    rtpv_dict["scalingfactor"]
+                                                                    rtpv_dict["tech"]["installedcapacity"]
                                     ))
                     end
                 elseif ren_key == "WIND"
@@ -341,8 +384,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                                                                     wind_dict["bus"],
                                                                     wind_dict["tech"]["installedcapacity"],
                                                                     EconRenewable(wind_dict["econ"]["curtailcost"],
-                                                                                wind_dict["econ"]["interruptioncost"]),
-                                                                    wind_dict["scalingfactor"]
+                                                                                wind_dict["econ"]["interruptioncost"])
                                     ))
                     end
                 end
@@ -433,8 +475,7 @@ function load_dict_parser(dict::Dict{String,Any})
                 Bool(load_dict["available"]),
                 load_dict["bus"],
                 load_dict["maxactivepower"],
-                load_dict["maxreactivepower"],
-                load_dict["scalingfactor"]
+                load_dict["maxreactivepower"]
                 ))
     end
     return Loads
@@ -508,9 +549,19 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
         [PowerSystems._get_device(dev,generators) for dev in d["contributingdevices"]] |> (x->[push!(contributingdevices,d[1]) for d in x if length(d)==1])
         push!(Services,ProportionalReserve(d["name"],
                             contributingdevices,
-                            Float64(d["timeframe"]),
-                            TimeSeries.TimeArray(Dates.today(),ones(1))  #TODO : fix requirement
+                            Float64(d["timeframe"])
                             ))
     end
     return Services
+end
+
+
+function forecasts_dict_parser(dict::Dict, devices::Array{PowerSystemComponent,1})
+    
+    forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}()
+
+    for (k,v) in dict
+        forecasts[Symbol(k)] =  make_forecast_array(devices, v)
+    end
+    return forecasts
 end

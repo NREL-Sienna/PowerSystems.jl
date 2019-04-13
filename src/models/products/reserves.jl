@@ -14,7 +14,7 @@ The data structure can be called calling all the fields directly or using named 
 name - description
 contributingdevices - devices from which the product can be procured
 timeframe - the relative saturation timeframe
-requirement - the required quantity of the product
+requirement - the required quantity of the product should be scaled by a Forecast
 
 # Examples
 
@@ -26,34 +26,11 @@ struct ProportionalReserve <: Reserve
     name::String
     contributingdevices::Array{Device}
     timeframe::Float64
-    requirement::TimeSeries.TimeArray
 end
-
-function ProportionalReserve(name::String,
-                            contributingdevices::Array{G},
-                            timeframe::Float64,
-                            requirement::Float64,
-                            loads::Array{T}) where {G <: Device, T <: ElectricLoad}
-
-    totalload = zeros(0)
-    for i in TimeSeries.timestamp(loads[1].scalingfactor)
-        t = zeros(0)
-        for load in loads
-            push!(t,(load.maxactivepower*values(load.scalingfactor[i]))[1])
-        end
-        push!(totalload,sum(t))
-    end
-    requirement = TimeSeries.TimeArray(TimeSeries.timestamp(loads[1].scalingfactor),totalload*requirement)
-
-    ProportionalReserve(name, contributingdevices, timeframe, requirement)
-end
-
 
 ProportionalReserve(;name = "init",
         contributingdevices = [ThermalDispatch()],
-        timeframe = 0.0,
-        requirement = 0.03,
-        loads = [ PowerLoad()]) = ProportionalReserve(name, contributingdevices, timeframe, requirement, loads)
+        timeframe = 0.0) = ProportionalReserve(name, contributingdevices, timeframe)
 
 
 """

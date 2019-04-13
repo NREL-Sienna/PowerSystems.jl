@@ -41,13 +41,15 @@ struct System <: PowerSystemType
     branches::Union{Nothing, Vector{<:Branch}}
     storage::Union{Nothing, Vector{<:Storage}}
     basepower::Float64 # [MVA]
-    time_periods::Int64
+    forecasts::Union{Nothing, Dict{Symbol, Vector{ <: Forecast}}}
+    services::Union{Nothing, Vector{ <: Service}}
+    annex::Union{Nothing,Dict{Any,Any}}
 
     function System(buses, generators, loads, branches, storage_devices, basepower,
-                    time_periods; kwargs...)
+                    forecasts, services, annex; kwargs...)
 
         sys = new(buses, generators, loads, branches, storage_devices, basepower,
-                  time_periods)
+                    forecasts, services, annex)
 
         # TODO Default validate to true once validation code is written.
         if get(kwargs, :validate, false) && !validate(sys)
@@ -64,7 +66,10 @@ function System(buses::Vector{Bus},
                 loads::Vector{<:ElectricLoad},
                 branches::Union{Nothing, Vector{<:Branch}},
                 storage::Union{Nothing, Vector{<:Storage}},
-                basepower::Float64; kwargs...)
+                basepower::Float64,
+                forecasts::Union{Nothing, Dict{Symbol, Vector{ <: Forecast}}}
+                services::Union{Nothing, Vector{ <: Service}}
+                annex::Union{Nothing,Dict{Any,Any}}; kwargs...)
     runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
     if runchecks
         slackbuscheck(buses)
@@ -75,20 +80,10 @@ function System(buses::Vector{Bus},
         end
 
         pvbuscheck(buses, generators)
-        generators = checkramp(generators, minimumtimestep(loads))
     end
 
-    time_periods = timeseriescheckload(loads)
-
-    # This constructor receives an array of Generator structs. It separates them by category
-    # in GenClasses.
-    gen_classes = genclassifier(generators)
-    if !isnothing(gen_classes.renewable)
-        timeserieschecksources(gen_classes.renewable, time_periods)
-    end
-
-    if !isnothing(gen_classes.hydro)
-        timeserieschecksources(gen_classes.hydro, time_periods)
+    if ! ( isnothing(forecasts) || isempty(forecasts) )
+        timeseriescheckforecast(forecasts)
     end
 
     return System(buses, gen_classes, loads, branches, storage, basepower, time_periods;

@@ -241,6 +241,7 @@ function Logging.handle_message(logger::MultiLogger,
     end
 
     if logger.tracker != nothing
+        id = isa(id,Symbol) ? id : :empty
         event = LogEvent(file, line, id, message, level)
         increment_count(logger.tracker, event, suppressed)
     end

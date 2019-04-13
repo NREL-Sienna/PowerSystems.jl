@@ -70,8 +70,16 @@ end
 end
 
 @testset "Product Constructors" begin
-    tProportionalReserve = ProportionalReserve()
-    @test tProportionalReserve isa PowerSystems.Service
+    #tProportionalReserve = ProportionalReserve()
+    #@test tProportionalReserve isa PowerSystems.Service
     tStaticReserve = StaticReserve()
     @test tStaticReserve isa PowerSystems.Service
+end
+
+@testset "Forecast Constructors" begin
+    tg = RenewableFix()
+    tDeterministicForecast = Deterministic(tg,"scalingfactor",Hour(1),DateTime("01-01-01"),24)
+    @test tDeterministicForecast isa PowerSystems.Forecast
+    tDeterministicForecast = Deterministic(tg,"scalingfactor",PowerSystems.TimeSeries.TimeArray([DateTime("01-01-01"),DateTime("01-01-02")],ones(2)))
+    @test tDeterministicForecast isa PowerSystems.Forecast
 end

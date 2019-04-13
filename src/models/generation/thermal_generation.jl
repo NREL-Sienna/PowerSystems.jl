@@ -39,18 +39,16 @@ Data Structure for thermal generation technologies subjecto to seasonality const
     Examples
 
 """
-struct ThermalGenSeason <: ThermalGen
+struct ThermalGenSeason <: ThermalGen # TODO: Do we need this? Removal of scalingfactor makes it a duplicate of above
     name::String
     available::Bool
     bus::Bus
     tech::Union{TechThermal,Nothing}
     econ::Union{EconThermal,Nothing}
-    scalingfactor::TimeSeries.TimeArray
 end
 
 ThermalGenSeason(; name = "init",
                 status = false,
                 bus = Bus(),
                 tech = TechThermal(),
-                econ = EconThermal(),
-                scalingfactor = TimeSeries.TimeArray(Dates.today(),ones(1))) = ThermalGenSeason(name, status, bus, tech, econ, scalingfactor)
+                econ = EconThermal()) = ThermalGenSeason(name, status, bus, tech, econ)
