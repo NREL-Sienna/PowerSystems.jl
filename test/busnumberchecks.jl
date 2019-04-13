@@ -7,7 +7,7 @@ ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "case5_re.m"))
 buses, generators, storage, branches, loads, loadZones, shunts, services =
     PowerSystems.ps_dict2ps_struct(ps_dict);
 sys = PowerSystems.System(buses, generators, loads, branches, storage,
-                               ps_dict["baseMVA"]);
+                               ps_dict["baseMVA"], nothing, nothing, nothing);
 
 @testset "Check bus index" begin
     @test sort([b.number for b in sys.buses]) == [1, 2, 3, 4, 5]

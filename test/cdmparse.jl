@@ -8,8 +8,8 @@ end
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
     @test cdm_dict isa Dict && haskey(cdm_dict, "loadzone")
 
-    sys_rts = PowerSystem(cdm_dict)
-    @test sys_rts isa PowerSystem
+    sys_rts = System(cdm_dict)
+    @test sys_rts isa System
 
     rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
     @test length(rts_da[1].data) == 24
@@ -29,7 +29,7 @@ end
 
     # Verify functionality of the concrete version of System.
     # TODO: Refactor once the ConcreteSystem implementation is finalized.
-    sys = ConcreteSystem(sys_rts_da)
+    sys = ConcreteSystem(sys_rts)
     @test length(sys_rts_rt.branches) == length(collect(get_mixed_components(Branch, sys)))
     @test length(sys_rts_rt.loads) == length(collect(get_mixed_components(ElectricLoad, sys)))
     @test length(sys_rts_rt.storage) == length(collect(get_mixed_components(Storage, sys)))

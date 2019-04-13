@@ -67,8 +67,8 @@ function System(buses::Vector{Bus},
                 branches::Union{Nothing, Vector{<:Branch}},
                 storage::Union{Nothing, Vector{<:Storage}},
                 basepower::Float64,
-                forecasts::Union{Nothing, Dict{Symbol, Vector{ <: Forecast}}}
-                services::Union{Nothing, Vector{ <: Service}}
+                forecasts::Union{Nothing, Dict{Symbol, Vector{ <: Forecast}}},
+                services::Union{Nothing, Vector{ <: Service}},
                 annex::Union{Nothing,Dict{Any,Any}}; kwargs...)
     runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
     if runchecks
@@ -81,12 +81,15 @@ function System(buses::Vector{Bus},
 
         pvbuscheck(buses, generators)
     end
+    # This constructor receives an array of Generator structs. It separates them by category
+    # in GenClasses.
+    gen_classes = genclassifier(generators)
 
     if ! ( isnothing(forecasts) || isempty(forecasts) )
         timeseriescheckforecast(forecasts)
     end
 
-    return System(buses, gen_classes, loads, branches, storage, basepower, time_periods;
+    return System(buses, gen_classes, loads, branches, storage, basepower, forecasts, services, annex;
                   kwargs...)
 end
 
@@ -95,7 +98,7 @@ function System(buses::Vector{Bus},
                 generators::Vector{<:Generator},
                 loads::Vector{<:ElectricLoad},
                 basepower::Float64; kwargs...)
-    return System(buses, generators, loads, nothing, nothing, basepower; kwargs...)
+    return System(buses, generators, loads, nothing, nothing, basepower, nothing, nothing, nothing; kwargs...)
 end
 
 """Constructs System with Generators but no storage."""
@@ -104,7 +107,7 @@ function System(buses::Vector{Bus},
                 loads::Vector{<:ElectricLoad},
                 branches::Vector{<:Branch},
                 basepower::Float64; kwargs...)
-    return System(buses, generators, loads, branches, nothing, basepower; kwargs...)
+    return System(buses, generators, loads, branches, nothing, basepower, nothing, nothing, nothing; kwargs...)
 end
 
 """Constructs System with Generators but no branches."""
@@ -113,7 +116,7 @@ function System(buses::Vector{Bus},
                 loads::Vector{<:ElectricLoad},
                 storage::Vector{<:Storage},
                 basepower::Float64; kwargs...)
-    return System(buses, generators, loads, nothing, storage, basepower; kwargs...)
+    return System(buses, generators, loads, nothing, storage, basepower, nothing, nothing, nothing; kwargs...)
 end
 
 """Constructs System with default values."""
@@ -123,16 +126,19 @@ function System(; buses=[Bus()],
                 branches=nothing,
                 storage=nothing,
                 basepower=100.0,
+                forecasts = nothing,
+                services = nothing,
+                annex = nothing,
                 kwargs...)
-    return System(buses, generators, loads, branches, storage,  basepower; kwargs...)
+    return System(buses, generators, loads, branches, storage, basepower, forecasts, services, annex; kwargs...)
 end
 
 """Constructs System from a ps_dict."""
 function System(ps_dict::Dict{String,Any}; kwargs...)
-    buses, generators, storage, branches, loads, loadZones, shunts, services =
+    buses, generators, storage, branches, loads, loadZones, shunts, forecasts, services =
         ps_dict2ps_struct(ps_dict)
 
-    return System(buses, generators, loads, branches, storage, ps_dict["baseMVA"];
+    return System(buses, generators, loads, branches, storage, ps_dict["baseMVA"], forecasts, services, nothing;
                   kwargs...);
 end
 

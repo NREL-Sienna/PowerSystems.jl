@@ -59,10 +59,11 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     if haskey(data,"forecasts")
         devices = collect(vcat(buses,generators,storage,branches,loads,loadZones,shunts,branches,services))
         forecasts = PowerSystems.forecasts_dict_parser(data["forecasts"],devices)
-
+    else
+        forecasts = Dict{Symbol, Vector{ <: Forecast}}()
     end
 
-    return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts, services
+    return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts, forecasts, services
 
 end
 
@@ -103,12 +104,14 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
 end
 
 function _get_device(name::Union{String,Symbol}, collection, devices = [])
-    if isa(collection,Union{Array,Dict}) 
-        if !isempty(collection)
+    if isa(collection,Array) && !isempty(collection)
             fn = fieldnames(typeof(collection[1]))
             if :name in fn
                 [push!(devices,d) for d in collection if d.name == name]
             end
+    elseif isa(collection, Dict) && !isempty(collection)
+        for (key, val) in collection
+            _get_device(name, val, devices)
         end
     else
         fn = fieldnames(typeof(collection))
@@ -556,7 +559,7 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
 end
 
 
-function forecasts_dict_parser(dict::Dict, devices::Array{PowerSystemComponent,1})
+function forecasts_dict_parser(dict::Dict, devices::Array{Component,1})
     
     forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}()
 

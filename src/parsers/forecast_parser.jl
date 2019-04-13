@@ -210,13 +210,13 @@ end
 
 """
 Args:
-    A PowerSystem struct
+    A System struct
     A dictonary of forecasts
 Returns:
     A PowerSystems forecast stuct array
 """
 
-function make_forecast_array(sys::Union{PowerSystem,Array{Component,1}},ts_dict::Dict)
+function make_forecast_array(sys::Union{System,Array{Component,1}},ts_dict::Dict)
     ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
     fc = Array{Forecast}(undef, 0)
     for (key,val) in ts_map
@@ -248,16 +248,16 @@ function make_forecast_array(sys::Union{PowerSystem,Array{Component,1}},ts_dict:
  end
 
 
-# - Assign Forecast to PowerSystem Struct
+# - Assign Forecast to System Struct
 
 """
 Args:
-    A PowerSystem struct
+    A System struct
     A :Symbol=>Array{ <: Forecast,1} Pair denoting the forecast name and array of device forecasts
 Returns:
-    A PowerSystem struct with a modeified forecasts field
+    A System struct with a modeified forecasts field
 """
-function pushforecast!(sys::PowerSystem,fc::Pair{Symbol,Array{Forecast,1}})
+function pushforecast!(sys::System,fc::Pair{Symbol,Array{Forecast,1}})
     sys.forecasts[fc.first] = fc.second
 end
 
