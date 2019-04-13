@@ -1,41 +1,23 @@
 
 function validate_serialization(sys::ConcreteSystem)
     path, io = mktemp()
-    io = open(path, "w")
     @info "Serializing to $path"
+
     try
         to_json(io, sys)
-    finally
+    catch
         close(io)
+        rm(path)
+        rethrow()
     end
+    close(io)
 
-    sys2 = nothing
     try
         sys2 = ConcreteSystem(path)
+        return PowerSystems.compare_values(sys, sys2)
     finally
         rm(path)
     end
-
-    match = true
-    for key in keys(sys.data)
-        lengths_match = length(sys.data[key]) == length(sys2.data[key])
-        if lengths_match
-            for i in range(1, length=length(sys.data[key]))
-                val1 = sys.data[key][i]
-                val2 = sys2.data[key][i]
-                if !PowerSystems.compare_values(val1, val2)
-                    match = false
-                    @error "$(typeof(val1)) i=$i does not match" val1 val2
-                end
-            end
-        else
-            @error "lengths of component arrays do not match" key length(sys.data[key])
-                                                              length(sys2.data[key])
-            match = false
-        end
-    end
-
-    return match
 end
 
 @testset "Test JSON serialization" begin

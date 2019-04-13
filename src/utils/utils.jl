@@ -80,11 +80,13 @@ function compare_values(x::T, y::T) where T
             val2 = getfield(y, fieldname)
             if !isempty(fieldnames(typeof(val1)))
                 if !compare_values(val1, val2)
+                    @debug "values don't match" fieldname val1 val2
                     match = false
                     break
                 end
             else
                 if val1 != val2
+                    @debug "values don't match" fieldname val1 val2
                     match = false
                     break
                 end
@@ -94,4 +96,3 @@ function compare_values(x::T, y::T) where T
 
     return match
 end
-

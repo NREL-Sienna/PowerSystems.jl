@@ -350,3 +350,37 @@ function show_component_counts(sys::ConcreteSystem, io::IO=stderr;
     print(io, df)
     return nothing
 end
+
+function compare_values(x::ConcreteSystem, y::ConcreteSystem)
+    match = true
+    for key in keys(x.data)
+        lengths_match = length(x.data[key]) == length(y.data[key])
+        if lengths_match
+            for i in range(1, length=length(x.data[key]))
+                val1 = x.data[key][i]
+                val2 = y.data[key][i]
+                if !compare_values(val1, val2)
+                    match = false
+                    @debug "$(typeof(val1)) i=$i does not match" val1 val2
+                end
+            end
+        else
+            @debug "lengths of component arrays do not match" key length(x.data[key])
+                                                              length(y.data[key])
+            match = false
+        end
+    end
+
+    if x.basepower != y.basepower
+        @debug "basepower does not match" x.basepower y.basepower
+        match = false
+    end
+
+    # Skip comparing all nested dicts in components. It just contains references to data.
+    if length(x.components) != length(y.components)
+        @debug "components do not match" length(x.components) length(y.components)
+        match = false
+    end
+
+    return match
+end
