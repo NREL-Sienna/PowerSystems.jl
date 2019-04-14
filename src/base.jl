@@ -207,7 +207,8 @@ function ConcreteSystem(sys::System)
         @debug "data: $(string(key)): count=$(string(length(value)))"
     end
 
-    components = _get_components_by_type(Component, data)
+    # components = _get_components_by_type(Component, data)
+    components = Dict{DataType, Any}()
     return ConcreteSystem(data, components, sys.basepower)
 end
 
