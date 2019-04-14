@@ -165,16 +165,15 @@ end
 
 function ConcreteSystem(sys::System)
     data = Dict{DataType, Vector{<:Component}}()
-    for subtype in get_all_concrete_subtypes(Component)
-        data[subtype] = Vector{subtype}()
-    end
-
-    @debug "Created data keys" keys(data)
 
     for field in (:buses, :loads)
         objs = getfield(sys, field)
         for obj in objs
-            push!(data[typeof(obj)], obj)
+            datatype = typeof(obj)
+            if !haskey(data, datatype)
+                data[datatype] = Vector{datatype}()
+            end
+            push!(data[datatype], obj)
         end
     end
 
@@ -182,7 +181,11 @@ function ConcreteSystem(sys::System)
         generators = getfield(sys.generators, field)
         if !isnothing(generators)
             for gen in generators
-                push!(data[typeof(gen)], gen)
+                datatype = typeof(gen)
+                if !haskey(data, datatype)
+                    data[datatype] = Vector{datatype}()
+                end
+                push!(data[datatype], gen)
             end
         end
     end
@@ -191,7 +194,11 @@ function ConcreteSystem(sys::System)
         objs = getfield(sys, field)
         if !isnothing(objs)
             for obj in objs
-                push!(data[typeof(obj)], obj)
+                datatype = typeof(obj)
+                if !haskey(data, datatype)
+                    data[datatype] = Vector{datatype}()
+                end
+                push!(data[datatype], obj)
             end
         end
     end
