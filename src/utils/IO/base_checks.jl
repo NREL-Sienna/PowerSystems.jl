@@ -54,7 +54,7 @@ function check_ascending_order(array::Array{Int}, name::AbstractString)
 end
 
 """Checks if a PowerSystemDevice has a field or subfield name."""
-function isafield(device::Device, field::Symbol)
+function isafield(component::Component, field::Symbol)
     
     function _wrap(t,d=[])
         fn = fieldnames(typeof(t))
@@ -68,7 +68,7 @@ function isafield(device::Device, field::Symbol)
         return d
     end
 
-    allfields = _wrap(device)
+    allfields = _wrap(component)
     return field in allfields
 end
 

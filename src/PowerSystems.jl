@@ -109,7 +109,7 @@ abstract type Component <: PowerSystemType end
 abstract type Device <: Component end
 abstract type Injection <: Device end
 # supertype for generation technologies (thermal, renewable, etc.)
-abstract type TechnicalParams <: Component end
+abstract type TechnicalParams <: PowerSystemType end
 
 include("common.jl")
 
