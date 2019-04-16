@@ -3,10 +3,13 @@ import InteractiveUtils: subtypes
 
 """Returns an array of all concrete subtypes of T."""
 function get_all_concrete_subtypes(::Type{T}) where T
-    return _get_all_concrete_subtypes(T)
+    sub_types = Vector{Any}()
+    _get_all_concrete_subtypes(T, sub_types)
+    return sub_types
 end
 
-function _get_all_concrete_subtypes(::Type{T}, sub_types=[]) where T
+"""Recursively builds a vector of subtypes."""
+function _get_all_concrete_subtypes(::Type{T}, sub_types::Vector{Any}) where T
     for sub_type in subtypes(T)
         push!(sub_types, sub_type)
         if isabstracttype(sub_type)
@@ -14,7 +17,7 @@ function _get_all_concrete_subtypes(::Type{T}, sub_types=[]) where T
         end
     end
 
-    return sub_types
+    return nothing
 end
 
 """Returns an array of concrete types that are direct subtypes of T.""" 
@@ -40,11 +43,21 @@ end
 
 """Converts a DataType to a Symbol, stripping off the module name(s)."""
 function type_to_symbol(data_type::DataType)
-    text = string(data_type)
-    index = findlast(".", text)
+    return Symbol(strip_module_names(string(data_type)))
+end
+
+"""Strips the module name(s) off of a type."""
+function strip_module_names(name::String)
+    index = findlast(".", name)
     if !isnothing(index)
-        text = text[index.start + 1:end]
+        basename = name[index.start + 1:end]
+    else
+        basename = name
     end
 
-    return Symbol(text)
+    return basename
+end
+
+function strip_module_names(::Type{T}) where T
+    return strip_module_names(type_to_symbol(T))
 end

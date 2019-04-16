@@ -79,9 +79,7 @@ export pushforecast!
 export read_data_files
 export validate
 export get_components
-export get_mixed_components
 export get_component_counts
-export show_component_counts
 
 #################################################################################
 # Imports

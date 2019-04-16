@@ -1,5 +1,8 @@
 abstract type Forecast <: PowerSystemType end
 
+const Forecasts = Vector{ <: Forecast}
+const SystemForecasts = Dict{Symbol, Forecasts}
+
 """
     Deterministic
         A deterministic forecast for a particular data field in a PowerSystemDevice.
