@@ -4,7 +4,7 @@
 # technology types). The long version simply prints every field of the
 # device. Tailored versions can be made for specific devices, if/when
 # desired. JJS 11/15/18
-function printPST(pst::Component, short = false,
+function printPST(pst::Union{Component, GenClasses}, short = false,
                   io::IO = stdout)
     if short
         pst_summary = Base.summary(pst)
@@ -30,10 +30,10 @@ function printPST(pst::Component, short = false,
 end
 # overload Base.show with printPST function defined above
 # single-line format
-Base.show(io::IO, pst::Component) = printPST(pst, true, io)
+Base.show(io::IO, pst::Union{Component, GenClasses}) = printPST(pst, true, io)
 # Multi-line format for plaintext (e.g. from repl); can specify for HTML and
 # others too
-Base.show(io::IO, ::MIME"text/plain", pst::Component) =
+Base.show(io::IO, ::MIME"text/plain", pst::Union{Component, GenClasses}) =
     printPST(pst, false, io)
 
 # provide limited additional information to summary of GenClasses
