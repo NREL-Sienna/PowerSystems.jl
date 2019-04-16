@@ -5,17 +5,17 @@ end
 
 @testset "Generation Constructors" begin
     tEconThermal = EconThermal()
-    @test tEconThermal isa PowerSystems.Component
+    @test tEconThermal isa PowerSystemType
     tTechThermal = TechThermal()
-    @test tTechThermal isa PowerSystems.Component
+    @test tTechThermal isa PowerSystemType
     tThermalGen = ThermalDispatch()
     @test tThermalGen isa PowerSystems.Component
     tThermalGenSeason = ThermalGenSeason()
     @test tThermalGenSeason isa PowerSystems.Component
     tTechHydro = TechHydro()
-    @test tTechHydro isa PowerSystems.Component
+    @test tTechHydro isa PowerSystemType
     tEconHydro = EconHydro()
-    @test tEconHydro isa PowerSystems.Component
+    @test tEconHydro isa PowerSystemType
     tHydroFix = HydroFix()
     @test tHydroFix isa PowerSystems.Component
     tHydroCurtailment = HydroCurtailment()
@@ -23,9 +23,9 @@ end
     tHydroStorage = HydroStorage()
     @test tHydroStorage isa PowerSystems.Component
     tTechRenewable = TechRenewable()
-    @test tTechRenewable isa PowerSystems.Component
+    @test tTechRenewable isa PowerSystemType
     tEconRenewable = EconRenewable()
-    @test tEconRenewable isa PowerSystems.Component
+    @test tEconRenewable isa PowerSystemType
     tRenewableFix = RenewableFix()
     @test tRenewableFix isa PowerSystems.Component
     tRenewableFullDispatch = RenewableFullDispatch()

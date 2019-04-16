@@ -16,7 +16,7 @@
             PowerSystems.ps_dict2ps_struct(ps_dict)
         @info "Successfully parsed $f to PowerSystems devices"
         sys_test = System(Buses, Generators, Loads, Branches, Storage,
-            float(ps_dict["baseMVA"])) # TODO: Add DClines, Shunts
+            float(ps_dict["baseMVA"]), nothing, nothing, nothing) # TODO: Add DClines, Shunts
         @info "Successfully parsed $f to System struct"
     end
 
