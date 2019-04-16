@@ -78,8 +78,8 @@ export ps_dict2ps_struct
 export pushforecast!
 export read_data_files
 export validate
+export add_component
 export get_components
-export get_component_counts
 
 #################################################################################
 # Imports
