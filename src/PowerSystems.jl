@@ -53,7 +53,6 @@ export ThermalGen
 export TechThermal
 export EconThermal
 export ThermalDispatch
-export ThermalGenSeason
 
 export ElectricLoad
 export StaticLoad
@@ -75,19 +74,16 @@ export Transfer
 export parsestandardfiles
 export parse_file
 export ps_dict2ps_struct
-export pushforecast!
+export add_forecast!
 export read_data_files
 export validate
+export add_component!
 export get_components
-export get_mixed_components
-export get_component_counts
-export show_component_counts
 
 #################################################################################
 # Imports
 
 import SparseArrays
-import AxisArrays
 import LinearAlgebra: LAPACK.getri!
 import LinearAlgebra: LAPACK.getrf!
 import LinearAlgebra: BLAS.gemm
@@ -109,7 +105,7 @@ abstract type Component <: PowerSystemType end
 abstract type Device <: Component end
 abstract type Injection <: Device end
 # supertype for generation technologies (thermal, renewable, etc.)
-abstract type TechnicalParams <: Component end
+abstract type TechnicalParams <: PowerSystemType end
 
 include("common.jl")
 

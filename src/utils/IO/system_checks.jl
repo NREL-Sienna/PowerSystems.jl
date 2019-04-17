@@ -109,25 +109,6 @@ function checkramp!(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Genera
             else
                 @info "Ramp defined as nothing for $(g.name)"
             end
-        elseif isa(g,ThermalGenSeason)
-            R = convertramp(g.tech.ramplimits,ts)
-            generators[ix] = ThermalGenSeason(deepcopy(g.name),deepcopy(g.available),deepcopy(g.bus),
-                                            TechThermal(deepcopy(g.tech.activepower),deepcopy(g.tech.activepowerlimits),
-                                                        deepcopy(g.tech.reactivepower),deepcopy(g.tech.reactivepowerlimits),
-                                                        R,deepcopy(g.tech.timelimits)),
-                                            deepcopy(g.econ),
-                                            deepcopy(g.scalingfactor)
-                                            )
-            if isa(g.tech.ramplimits, NamedTuple)
-                if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @warn "The generator $(g.name) has a nonbinding ramp up limit."
-                end
-                if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @warn "The generator $(g.name) has a nonbinding ramp down limit."
-                end
-            else
-                @info "Ramp defined as nothing for $(g.name)"
-            end
         elseif isa(g,HydroCurtailment)
             R = convertramp(g.tech.ramplimits,ts)
             generators[ix] = HydroCurtailment(deepcopy(g.name),deepcopy(g.available),deepcopy(g.bus),

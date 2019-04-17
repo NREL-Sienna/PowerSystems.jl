@@ -41,7 +41,7 @@ POWER_MODELS_KEYS = [
         @info "Successfully parsed $path to PowerSystems devices"
 
         sys_test = System(Buses, Generators, Loads, Branches, Storages,
-                               float(ps_dict["baseMVA"]))
+                          float(ps_dict["baseMVA"]), nothing, nothing, nothing)
         @info "Successfully parsed $path to System struct"
     end
 end

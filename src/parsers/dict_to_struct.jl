@@ -67,7 +67,10 @@ function ps_dict2ps_struct(data::Dict{String,Any})
 
 end
 
-#Union{String,DataType,Union}
+"""
+Finds the values matching an identifier within a dictionary and returns a dict with keyed by
+objects with values as arrays of keys to navigate to the object within the input dict
+"""
 function _retrieve(dict::T, key_of_interest::Union{DataType,Union,String,Symbol}, output::Dict, path::Array) where T<:AbstractDict
     iter_result = Base.iterate(dict)
     last_element = length(path)
@@ -91,7 +94,10 @@ function _retrieve(dict::T, key_of_interest::Union{DataType,Union,String,Symbol}
 end
 
 
-
+"""
+Takes a nested dict, and an array of keys to navigate to specific values. Returns the value 
+at the end of the navigation path.
+"""
 function _access(nesteddict::T,keylist) where T<:AbstractDict
     if !haskey(nesteddict,keylist[1])
         @error "$(keylist[1]) not found in dict"
@@ -103,8 +109,11 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
     end
 end
 
+"""
+Takes a string or symbol "name" and returns a list of devices within a collection 
+(Dict, Array, PowerSystem) that have matching names"""
 function _get_device(name::Union{String,Symbol}, collection, devices = [])
-    if isa(collection,Array) && !isempty(collection)
+    if isa(collection,Array) && !isempty(collection) && isassigned(collection)
             fn = fieldnames(typeof(collection[1]))
             if :name in fn
                 [push!(devices,d) for d in collection if d.name == name]
@@ -122,37 +131,6 @@ function _get_device(name::Union{String,Symbol}, collection, devices = [])
     return devices
 end
 
-#=
-function _getfieldpath(device,field::Symbol)
-    # function to map struct fields into a dict
-    function _getsubfields(device)
-        fn = fieldnames(typeof(device))
-        fielddict = Dict()
-        for f in fn
-            fielddict[f] = _getsubfields(getfield(device,f))
-        end
-        return fielddict
-    end
-
-    fielddict = _getsubfields(device)
-
-    tmp = PowerSystems._retrieve(fielddict,field,Dict(),[])
-    if isempty(tmp)
-        @error "Device $(device.name) has no field $field"
-    else
-        fieldpath = collect(Iterators.flatten(values(tmp)))
-        push!(fieldpath,field)
-    end
-
-    return fieldpath
-end
-
-
-function _getfield(device,fieldpath::Array{Symbol,1})
-    f = getfield(device,fieldpath[1])
-    length(fieldpath)>1 ? _getfield(f,fieldpath[2:end]) : return f
-end
-=#
 
 """
 Arg:
@@ -198,121 +176,7 @@ function read_datetime(df; kwargs...)
     return df
 end
 
-#=
-"""
-Arg:
-    Device dictionary - Generators
-    Dataframe contains device Realtime/Forecast TimeSeries
-Returns:
-    Device dictionary with timeseries added
-"""
-function add_time_series(Device_dict::Dict{String,Any}, df::DataFrames.DataFrame)
-    for (device_key,device) in Device_dict
-        if device_key in map(string, names(df))
-            ts_raw = df[Symbol(device_key)]
-            if maximum(ts_raw) <= 1.0
-                @info "assumed time series is a scaling factor for $device_key"
-                Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
-            else
-                @info "assumed time series is MW for $device_key"
-                Device_dict[device_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw/device["tech"]["installedcapacity"])
-            end
-        end
-    end
-    return Device_dict
-end
 
-function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeArray)
-    """
-    Arg:
-        Device dictionary - Generators
-        Dict contains device Realtime/Forecast TimeSeries.TimeArray
-    Returns:
-        Device dictionary with timeseries added
-    """
-
-    name = get(Device_dict, "name", "")
-    if name == ""
-        throw(DataFormatError("input dict to add_time_series in wrong format"))
-    end
-
-    if maximum(values(ts_raw)) <= 1.0
-        @info "assumed time series is a scaling factor for $name"
-        Device_dict["scalingfactor"] = ts_raw
-    else
-        @info "assumed time series is MW for $name"
-        Device_dict["scalingfactor"] = TimeSeries.TimeArray(TimeSeries.timestamp(ts_raw),values(ts_raw)/Device_dict["tech"]["installedcapacity"])
-    end
-
-    return Device_dict
-end
-
-
-"""
-Arg:
-    Load dictionary
-    Dataframe contains device Realtime/Forecast TimeSeries
-Returns:
-    Forecast dictionary
-"""
-function add_time_series_load(sys::PowerSystem, df::DataFrames.DataFrame)
-
-    ts_names = [string(n) for n in names(df) if n != :DateTime]
-
-    load_dict = Dict()
-    assigned_loads = []
-
-    @info "assigning load scaling factors by bus"
-    for l in sys.loads
-        load_dict[l.name] = TimeSeries.TimeArray(df[:DateTime],df[Symbol(l.name)],[:maxactivepower])
-        push!(assigned_loads,l.name)
-    end
-
-    for l in [l.name for l in sys.loads if !(l.name in assigned_loads)]
-        @warn "No load scaling factor assigned for $l"
-    end
-
-    return load_dict
-end
-
-"""
-Arg:
-    PowerSystem
-    Dataframe contains device Realtime/Forecast TimeSeries
-    LoadZones dictionary
-Returns:
-    Forecast dictionary
-"""
-function add_time_series_load(sys::PowerSystem, df::DataFrames.DataFrame,lz_dict::Dict)
-
-    ts_names = [string(n) for n in names(df) if n != :DateTime]
-
-    z_names = [string(z["name"]) for (k,z) in lz_dict]
-    if !(length([n for n in z_names if n in ts_names]) > 0)
-        @error "loadzone names don't match names of dataframe"
-    end
-
-    load_dict = Dict()
-    assigned_loads = []
-    @info "assigning load scaling factors by load_zone"
-    # TODO: make this faster/better
-    for l in sys.loads
-        for (lz_key,lz) in lz_dict
-            if l.bus in lz["buses"]
-                ts_raw = df[lz_key]/lz["maxactivepower"]
-                load_dict[l.name] = TimeSeries.TimeArray(df[:DateTime],ts_raw,[:maxactivepower])
-                push!(assigned_loads,l.name)
-            end
-        end
-    end
-
-    for l in [l for l in load_names if !(l in assigned_loads)]
-        @warn "No load scaling factor assigned for $l" maxlog=PS_MAX_LOG
-    end
-
-    return load_dict
-end
-=#
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})

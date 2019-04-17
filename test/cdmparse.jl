@@ -19,28 +19,10 @@ end
     @test length(rts_rt[1].data) == 288
     @test length(rts_rt) == 131
 
-    PowerSystems.pushforecast!(sys_rts,:DA=>rts_da)
-    PowerSystems.pushforecast!(sys_rts,:RT=>rts_rt)
+    PowerSystems.add_forecast!(sys_rts,:DA=>rts_da)
+    PowerSystems.add_forecast!(sys_rts,:RT=>rts_rt)
     @test length(sys_rts.forecasts) == 2
-
-    @info "making RT System"
-    sys_rts_rt = System(cdm_dict)
-    @test sys_rts_rt isa System
-
-    # Verify functionality of the concrete version of System.
-    # TODO: Refactor once the ConcreteSystem implementation is finalized.
-    sys = ConcreteSystem(sys_rts)
-    @test length(sys_rts_rt.branches) == length(collect(get_mixed_components(Branch, sys)))
-    @test length(sys_rts_rt.loads) == length(collect(get_mixed_components(ElectricLoad, sys)))
-    @test length(sys_rts_rt.storage) == length(collect(get_mixed_components(Storage, sys)))
-    @test length(sys_rts_rt.generators.thermal) == length(collect(get_mixed_components(ThermalGen, sys)))
-    @test length(sys_rts_rt.generators.renewable) == length(collect(get_mixed_components(RenewableGen, sys)))
-    @test length(sys_rts_rt.generators.hydro) == length(collect(get_mixed_components(HydroGen, sys)))
-    @test length(get_components(Bus, sys)) > 0
-    @test length(get_components(ThermalDispatch, sys)) > 0
-    for x in (true, false)
-        show_component_counts(sys, devnull; show_hierarchy=x)
-    end
+    
 end
 
 @testset "CDM parsing invalid directory" begin

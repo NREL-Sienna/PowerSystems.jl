@@ -1,6 +1,6 @@
 @testset "Forecast data" begin
     ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "case5_re.m"))
-    sys = PowerSystem(ps_dict)
+    sys = System(ps_dict)
     da_time_series = PowerSystems.read_data_files(joinpath(FORECASTS_DIR, "5bus_ts");
                                                   REGEX_FILE=r"da_(.*?)\.csv")
     rt_time_series = PowerSystems.read_data_files(joinpath(FORECASTS_DIR, "5bus_ts");
@@ -8,8 +8,8 @@
     da_forecasts = PowerSystems.make_forecast_array(sys,da_time_series)
     rt_forecasts = PowerSystems.make_forecast_array(sys,rt_time_series)
 
-    PowerSystems.pushforecast!(sys,:DA=>da_forecasts)
-    PowerSystems.pushforecast!(sys,:RT=>rt_forecasts)
+    PowerSystems.add_forecast!(sys,:DA=>da_forecasts)
+    PowerSystems.add_forecast!(sys,:RT=>rt_forecasts)
 
 
     #= default forecast creation disabled
@@ -33,12 +33,12 @@
                                                            "RTS_GMLC_forecasts");
                                                   REGEX_FILE=r"REAL_TIME(.*?)\.csv")
 
-    sys = PowerSystem(ps_dict)
+    sys = System(ps_dict)
     #make forecast arrays
     da_forecasts = PowerSystems.make_forecast_array(sys,da_time_series)
     rt_forecasts = PowerSystems.make_forecast_array(sys,rt_time_series)
 
     #push to sys
-    PowerSystems.pushforecast!(sys,:DA=>da_forecasts)
-    PowerSystems.pushforecast!(sys,:RT=>rt_forecasts)
+    PowerSystems.add_forecast!(sys,:DA=>da_forecasts)
+    PowerSystems.add_forecast!(sys,:RT=>rt_forecasts)
 end
