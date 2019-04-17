@@ -8,8 +8,8 @@
     da_forecasts = PowerSystems.make_forecast_array(sys,da_time_series)
     rt_forecasts = PowerSystems.make_forecast_array(sys,rt_time_series)
 
-    PowerSystems.pushforecast!(sys,:DA=>da_forecasts)
-    PowerSystems.pushforecast!(sys,:RT=>rt_forecasts)
+    PowerSystems.add_forecast!(sys,:DA=>da_forecasts)
+    PowerSystems.add_forecast!(sys,:RT=>rt_forecasts)
 
 
     #= default forecast creation disabled
@@ -39,6 +39,6 @@
     rt_forecasts = PowerSystems.make_forecast_array(sys,rt_time_series)
 
     #push to sys
-    PowerSystems.pushforecast!(sys,:DA=>da_forecasts)
-    PowerSystems.pushforecast!(sys,:RT=>rt_forecasts)
+    PowerSystems.add_forecast!(sys,:DA=>da_forecasts)
+    PowerSystems.add_forecast!(sys,:RT=>rt_forecasts)
 end

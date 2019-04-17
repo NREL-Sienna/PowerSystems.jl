@@ -75,7 +75,7 @@ export Transfer
 export parsestandardfiles
 export parse_file
 export ps_dict2ps_struct
-export pushforecast!
+export add_forecast!
 export read_data_files
 export validate
 export add_component

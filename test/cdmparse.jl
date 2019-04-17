@@ -19,8 +19,8 @@ end
     @test length(rts_rt[1].data) == 288
     @test length(rts_rt) == 131
 
-    PowerSystems.pushforecast!(sys_rts,:DA=>rts_da)
-    PowerSystems.pushforecast!(sys_rts,:RT=>rts_rt)
+    PowerSystems.add_forecast!(sys_rts,:DA=>rts_da)
+    PowerSystems.add_forecast!(sys_rts,:RT=>rts_rt)
     @test length(sys_rts.forecasts) == 2
     
 end

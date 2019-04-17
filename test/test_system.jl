@@ -5,8 +5,8 @@
     rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
     rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])
 
-    PowerSystems.pushforecast!(sys_rts, :DA=>rts_da)
-    PowerSystems.pushforecast!(sys_rts, :RT=>rts_rt)
+    PowerSystems.add_forecast!(sys_rts, :DA=>rts_da)
+    PowerSystems.add_forecast!(sys_rts, :RT=>rts_rt)
 
     sys_rts_rt = System(cdm_dict)
     sys = ConcreteSystem(sys_rts)

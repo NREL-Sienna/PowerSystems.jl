@@ -257,7 +257,7 @@ Args:
 Returns:
     A System struct with a modeified forecasts field
 """
-function pushforecast!(sys::System,fc::Pair{Symbol,Array{Forecast,1}})
+function add_forecast!(sys::System,fc::Pair{Symbol,Array{Forecast,1}})
     sys.forecasts[fc.first] = fc.second
 end
 
