@@ -1,9 +1,9 @@
 
-include(joinpath(DATA_DIR,"data_5bus.jl"))
+include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
 
 
 # test printing of System type
-sys5 = System(nodes5, generators5, loads5_DA, branches5, nothing, 100.0, forecasts5, nothing, nothing);
+sys5 = System(nodes5, thermal_generators5, loads5, branches5, nothing, 100.0, forecasts5, nothing, nothing);
 # short output
 @test repr(sys5) == "System(buses:5,GenClasses(T:5,R:2,H:0),loads:4,branches:6,nothing)"
 # long output
