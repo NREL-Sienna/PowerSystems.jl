@@ -212,7 +212,7 @@ function gen_dict_parser(dict::Dict{String,Any})
         elseif gen_type_key =="Hydro"
             for (hydro_key,hydro_dict) in gen_type_dict
                 push!(Generators,HydroCurtailment(string(hydro_dict["name"]),
-                                                            hydro_dict["available"],
+                                                            Bool(hydro_dict["available"]),
                                                             hydro_dict["bus"],
                                                             TechHydro(  hydro_dict["tech"]["installedcapacity"],
                                                                         hydro_dict["tech"]["activepower"],
