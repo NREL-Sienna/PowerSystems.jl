@@ -85,7 +85,6 @@ export get_components
 # Imports
 
 import SparseArrays
-import AxisArrays
 import LinearAlgebra: LAPACK.getri!
 import LinearAlgebra: LAPACK.getrf!
 import LinearAlgebra: BLAS.gemm
