@@ -70,7 +70,7 @@ function System(buses::Vector{Bus},
                 forecasts::Union{Nothing, SystemForecasts},
                 services::Union{Nothing, Vector{ <: Service}},
                 annex::Union{Nothing,Dict{Any,Any}}; kwargs...)
-    runchecks = in(:runchecks, keys(kwargs)) ? kwargs[:runchecks] : true
+    runchecks = get(kwargs, :runchecks, true)
     if runchecks
         slackbuscheck(buses)
         buscheck(buses)
@@ -91,32 +91,6 @@ function System(buses::Vector{Bus},
 
     return System(buses, gen_classes, loads, branches, storage, basepower, forecasts, services, annex;
                   kwargs...)
-end
-
-"""Constructs System with Generators but no branches or storage."""
-function System(buses::Vector{Bus},
-                generators::Vector{<:Generator},
-                loads::Vector{<:ElectricLoad},
-                basepower::Float64; kwargs...)
-    return System(buses, generators, loads, nothing, nothing, basepower, nothing, nothing, nothing; kwargs...)
-end
-
-"""Constructs System with Generators but no storage."""
-function System(buses::Vector{Bus},
-                generators::Vector{<:Generator},
-                loads::Vector{<:ElectricLoad},
-                branches::Vector{<:Branch},
-                basepower::Float64; kwargs...)
-    return System(buses, generators, loads, branches, nothing, basepower, nothing, nothing, nothing; kwargs...)
-end
-
-"""Constructs System with Generators but no branches."""
-function System(buses::Vector{Bus},
-                generators::Vector{<:Generator},
-                loads::Vector{<:ElectricLoad},
-                storage::Vector{<:Storage},
-                basepower::Float64; kwargs...)
-    return System(buses, generators, loads, nothing, storage, basepower, nothing, nothing, nothing; kwargs...)
 end
 
 """Constructs System with default values."""
@@ -150,6 +124,19 @@ function System(file::String, ts_folder::String; kwargs...)
 
     return System(buses, generators, loads, branches, storage, ps_dict["baseMVA"];
                   kwargs...);
+end
+
+# - Assign Forecast to System Struct
+
+"""
+Args:
+    A System struct
+    A :Symbol=>Array{ <: Forecast,1} Pair denoting the forecast name and array of device forecasts
+Returns:
+    A System struct with a modified forecasts field
+"""
+function add_forecast!(sys::System,fc::Pair{Symbol,Array{Forecast,1}})
+    sys.forecasts[fc.first] = fc.second
 end
 
 """A System struct that stores all devices in arrays with concrete types.

@@ -93,21 +93,7 @@ function make_forecast_array(sys::Union{System,Array{Component,1}},ts_dict::Dict
     return fc
  end
 
-
-# - Assign Forecast to System Struct
-
-"""
-Args:
-    A System struct
-    A :Symbol=>Array{ <: Forecast,1} Pair denoting the forecast name and array of device forecasts
-Returns:
-    A System struct with a modeified forecasts field
-"""
-function add_forecast!(sys::System,fc::Pair{Symbol,Array{Forecast,1}})
-    sys.forecasts[fc.first] = fc.second
-end
-
-# Write dict to Json
+ # Write dict to Json
 
 function write_to_json(filename,Forecasts_dict)
     for (type_key,type_fc) in Forecasts_dict
@@ -119,7 +105,6 @@ function write_to_json(filename,Forecasts_dict)
         end
     end
 end
-
 
 #=
 # Parse json to dict
