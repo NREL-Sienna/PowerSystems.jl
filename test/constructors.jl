@@ -67,7 +67,7 @@ end
     @test tPhaseShiftingTransformer isa PowerSystems.Component
 end
 
-@testset "Product Constructors" begin
+@testset "Service Constructors" begin
     #tProportionalReserve = ProportionalReserve()
     #@test tProportionalReserve isa PowerSystems.Service
     tStaticReserve = StaticReserve()

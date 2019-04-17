@@ -54,6 +54,7 @@ Returns:
     return DATA
 end
 
+
 """
 Args:
     A System struct
@@ -79,6 +80,46 @@ function make_forecast_array(sys::Union{System,Array{Component,1}},ts_dict::Dict
         
             if length(devices) > 0 
                 devices = unique(values(devices))
+                for d in devices
+                    for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
+                        timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
+                        push!(fc,Deterministic(d,string(c),timeseries))
+                    end
+                end
+            else
+                @warn("no $key entries for devices in sys")
+            end
+        end
+    end
+    return fc
+ end
+
+ """
+Args:
+    A ConcreteSystem struct
+    A dictonary of forecasts
+Returns:
+    A PowerSystems forecast stuct array
+"""
+
+function make_forecast_array(sys::ConcreteSystem,ts_dict::Dict)
+    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
+    fc = Array{Forecast}(undef, 0)
+    all_devices = collect(get_components(Device,sys))
+    for (key,val) in ts_map
+        ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
+        if (typeof(ts)==DataFrames.DataFrame) & (size(ts,2) > 2)
+            devices = [d for d in all_devices if d.name in string.(names(ts))]
+            for d in devices
+                push!(fc,Deterministic(d,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
+            end
+        else
+            devices = [d for d in all_devices if d.name == key]
+
+            cn = isa(ts,DataFrames.DataFrame) ? names(ts) : TimeSeries.colnames(ts)
+            cn = [c for c in cn if c != :DateTime]
+        
+            if length(devices) > 0 
                 for d in devices
                     for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
                         timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]

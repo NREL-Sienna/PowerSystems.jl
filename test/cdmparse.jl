@@ -13,15 +13,30 @@ end
 
     rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
     @test length(rts_da[1].data) == 24
-    @test length(rts_da) == 138
+    @test length(rts_da) == 141
 
     rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])
     @test length(rts_rt[1].data) == 288
-    @test length(rts_rt) == 131
+    @test length(rts_rt) == 134
 
     PowerSystems.add_forecast!(sys_rts,:DA=>rts_da)
     PowerSystems.add_forecast!(sys_rts,:RT=>rts_rt)
     @test length(sys_rts.forecasts) == 2
+
+    cs_rts = ConcreteSystem(System(cdm_dict))
+    @test cs_rts isa ConcreteSystem
+
+    rts_da_cs = PowerSystems.make_forecast_array(cs_rts, cdm_dict["forecasts"]["DA"])
+    @test length(rts_da[1].data) == 24
+    @test length(rts_da) == 141
+
+    rts_rt_cs = PowerSystems.make_forecast_array(cs_rts, cdm_dict["forecasts"]["RT"])
+    @test length(rts_rt[1].data) == 288
+    @test length(rts_rt) == 134
+
+    PowerSystems.add_forecast!(cs_rts,:DA=>rts_da)
+    PowerSystems.add_forecast!(cs_rts,:RT=>rts_rt)
+    @test length(cs_rts.forecasts) == 2
     
 end
 

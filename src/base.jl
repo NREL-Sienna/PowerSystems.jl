@@ -44,12 +44,12 @@ struct System <: PowerSystemType
     forecasts::Union{Nothing, SystemForecasts}
     services::Union{Nothing, Vector{ <: Service}}
     annex::Union{Nothing,Dict{Any,Any}}
-
-    function System(buses, generators, loads, branches, storage_devices, basepower,
+#=
+    function System(buses, generators, loads, branches, storage, basepower,
                     forecasts, services, annex; kwargs...)
 
-        sys = new(buses, generators, loads, branches, storage_devices, basepower,
-                    forecasts, services, annex)
+        sys = new(buses, generators, loads, branches, storage, basepower,
+                    forecasts, services, annex; kwargs...)
 
         # TODO Default validate to true once validation code is written.
         if get(kwargs, :validate, false) && !validate(sys)
@@ -57,7 +57,7 @@ struct System <: PowerSystemType
         end
 
         return sys
-    end
+    end=#
 end
 
 """Primary System constructor. Funnel point for all other outer constructors."""
@@ -69,7 +69,8 @@ function System(buses::Vector{Bus},
                 basepower::Float64,
                 forecasts::Union{Nothing, SystemForecasts},
                 services::Union{Nothing, Vector{ <: Service}},
-                annex::Union{Nothing,Dict{Any,Any}}; kwargs...)
+                annex::Union{Nothing,Dict}; kwargs...)
+
     runchecks = get(kwargs, :runchecks, true)
     if runchecks
         slackbuscheck(buses)
@@ -85,12 +86,11 @@ function System(buses::Vector{Bus},
     # in GenClasses.
     gen_classes = genclassifier(generators)
 
-    if ! ( isnothing(forecasts) || isempty(forecasts) )
+    if !( isnothing(forecasts) || isempty(forecasts) )
         timeseriescheckforecast(forecasts)
     end
 
-    return System(buses, gen_classes, loads, branches, storage, basepower, forecasts, services, annex;
-                  kwargs...)
+    return System(buses, gen_classes, loads, branches, storage, basepower, forecasts, services, annex)
 end
 
 """Constructs System with default values."""
@@ -112,7 +112,8 @@ function System(ps_dict::Dict{String,Any}; kwargs...)
     buses, generators, storage, branches, loads, loadZones, shunts, forecasts, services =
         ps_dict2ps_struct(ps_dict)
 
-    return System(buses, generators, loads, branches, storage, ps_dict["baseMVA"], forecasts, services, nothing;
+    return System(buses, generators, loads, branches, storage, ps_dict["baseMVA"],
+                  forecasts, services, Dict(:LoadZones=>loadZones);
                   kwargs...);
 end
 
@@ -177,6 +178,13 @@ function ConcreteSystem(sys::System)
         end
     end
 
+    loadZones = get(sys.annex, :LoadZones, nothing)
+    if !isnothing(loadZones)
+        for lz in loadZones
+            add_component!(concrete_sys, lz)
+        end
+    end
+
     for (key, value) in concrete_sys.components
         @debug "components: $(string(key)): count=$(string(length(value)))"
     end
@@ -198,6 +206,16 @@ function add_component!(sys::ConcreteSystem, component::T) where T <: Component
     return nothing
 end
 
+"""
+Args:
+    A ConcreteSystem struct
+    A :Symbol=>Array{ <: Forecast,1} Pair denoting the forecast name and array of device forecasts
+Returns:
+    A System struct with a modified forecasts field
+"""
+function add_forecast!(sys::ConcreteSystem,fc::Pair{Symbol,Array{Forecast,1}})
+    sys.forecasts[fc.first] = fc.second
+end
 
 # TODO: implement methods to remove components and forecasts. In order to do this we will
 # need each PowerSystemType to store a UUID.
