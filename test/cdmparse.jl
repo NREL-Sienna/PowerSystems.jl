@@ -26,7 +26,7 @@ end
 end
 
 @testset "CDM parsing invalid directory" begin
-    baddir = joinpath(RTS_GMLC_DIR, "../../test")
+    baddir = abspath(joinpath(RTS_GMLC_DIR, "../../test"))
     @test_throws ErrorException PowerSystems.csv2ps_dict(baddir, 100.0)
 end
 
