@@ -54,10 +54,11 @@ struct HydroCurtailment <: HydroGen
     bus::Bus
     tech::TechHydro
     econ::Union{EconHydro,Nothing}
-    function HydroCurtailment(name, status, bus, tech, curtailcost::Float64)
-        econ = EconHydro(curtailcost, nothing)
-        new(name, status, bus, tech, econ)
-    end
+end
+
+function HydroCurtailment(name::String, status::Bool, bus::Bus, tech::TechHydro, curtailcost::Float64)
+            econ = EconHydro(curtailcost, nothing)
+        return HydroCurtailment(name, status, bus, tech, econ)
 end
 
 HydroCurtailment(; name = "init",
