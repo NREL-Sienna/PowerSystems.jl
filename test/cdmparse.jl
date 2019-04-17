@@ -1,51 +1,33 @@
 @testset "PowerSystems dict parsing" begin
-    @info "parsing data from $RTS_GMLC_DIR into ps_dict"
     data_dict = PowerSystems.read_csv_data(RTS_GMLC_DIR, 100.0)
     @test haskey(data_dict, "timeseries_pointers")
 end
 
 @testset "CDM parsing" begin
     cdm_dict = nothing
-    @info "parsing data from $RTS_GMLC_DIR into ps_dict"
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
     @test cdm_dict isa Dict && haskey(cdm_dict, "loadzone")
 
-    @info "assigning time series data for DA"
-    cdm_dict = PowerSystems.assign_ts_data(cdm_dict, cdm_dict["forecast"]["DA"])
-    @test length(cdm_dict["gen"]["Renewable"]["PV"]["102_PV_1"]["scalingfactor"]) == 24
+    sys_rts = System(cdm_dict)
+    @test sys_rts isa System
 
-    @info "making DA System"
-    sys_rts_da = System(cdm_dict)
-    @test sys_rts_da isa System
+    rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
+    @test length(rts_da[1].data) == 24
+    @test length(rts_da) == 138
 
-    @info "assigning time series data for RT"
-    cdm_dict = PowerSystems.assign_ts_data(cdm_dict, cdm_dict["forecast"]["RT"])
-    @test length(cdm_dict["gen"]["Renewable"]["PV"]["102_PV_1"]["scalingfactor"]) == 288
+    rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])
+    @test length(rts_rt[1].data) == 288
+    @test length(rts_rt) == 131
 
-    @info "making RT System"
-    sys_rts_rt = System(cdm_dict)
-    @test sys_rts_rt isa System
-
-    # Verify functionality of the concrete version of System.
-    # TODO: Refactor once the ConcreteSystem implementation is finalized.
-    sys = ConcreteSystem(sys_rts_da)
-    @test length(sys_rts_rt.branches) == length(collect(get_mixed_components(Branch, sys)))
-    @test length(sys_rts_rt.loads) == length(collect(get_mixed_components(ElectricLoad, sys)))
-    @test length(sys_rts_rt.storage) == length(collect(get_mixed_components(Storage, sys)))
-    @test length(sys_rts_rt.generators.thermal) == length(collect(get_mixed_components(ThermalGen, sys)))
-    @test length(sys_rts_rt.generators.renewable) == length(collect(get_mixed_components(RenewableGen, sys)))
-    @test length(sys_rts_rt.generators.hydro) == length(collect(get_mixed_components(HydroGen, sys)))
-    @test length(get_components(Bus, sys)) > 0
-    @test length(get_components(ThermalDispatch, sys)) > 0
-    for x in (true, false)
-        show_component_counts(sys, devnull; show_hierarchy=x)
-    end
+    PowerSystems.add_forecast!(sys_rts,:DA=>rts_da)
+    PowerSystems.add_forecast!(sys_rts,:RT=>rts_rt)
+    @test length(sys_rts.forecasts) == 2
+    
 end
 
 @testset "CDM parsing invalid directory" begin
     baddir = joinpath(RTS_GMLC_DIR, "../../test")
-    @info "testing bad directory"
-    @test_throws ErrorException PowerSystems.csv2ps_dict(baddir, 100.0)
+    @test_throws SystemError PowerSystems.csv2ps_dict(baddir, 100.0)
 end
 
 @testset "consistency between CDM and standardfiles" begin

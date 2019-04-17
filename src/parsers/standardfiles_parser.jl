@@ -24,12 +24,13 @@ end
 function parsestandardfiles(file::String, ts_folder::String; kwargs...)
 
     # TODO: assert a naming convention
-    data = parsestandardfiles(file; kwargs...)
-
+    data = parsestandardfiles(file)
+    sys = System(data)
+    
     ts_data = read_data_files(ts_folder; kwargs...)
 
-    # assign_ts_data is in forecast_parser.jl
-    data = assign_ts_data(data, ts_data)
+    forecast = make_forecast_array(sys,ts_data)
+    pushforecast(sys,:default=>forecast)
 
     return data
 end

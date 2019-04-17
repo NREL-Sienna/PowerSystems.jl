@@ -1,4 +1,4 @@
-function get_name_and_csv(path_to_filename)
+function _get_name_and_csv(path_to_filename)
     df = CSV.File(path_to_filename) |> DataFrames.DataFrame
     folder = splitdir(splitdir(path_to_filename)[1])[2]
     return folder, df
@@ -37,7 +37,7 @@ Returns:
 
             path_to_filename = joinpath(root, filename)
             if match(REGEX_FILE, path_to_filename) != nothing
-                folder_name, csv_data = get_name_and_csv(path_to_filename)
+                folder_name, csv_data = _get_name_and_csv(path_to_filename)
                 if folder_name == "load"
                     DATA["load"] = read_datetime(csv_data; kwargs...)
                 else
@@ -54,6 +54,7 @@ Returns:
     return DATA
 end
 
+#=
 """
 Args:
     PowerSystems Dictionary
@@ -62,6 +63,7 @@ Returns:
     Returns an dictionary with Device name as key and PowerSystems Forecasts
     dictionary as values
 """
+
 function assign_ts_data(ps_dict::Dict{String,Any},ts_dict::Dict{String,Any})
     if haskey(ts_dict,"load")
         ps_dict["load"] =  PowerSystems.add_time_series_load(ps_dict,ts_dict["load"])
@@ -108,6 +110,7 @@ function make_device_forecast(device::D, df::DataFrames.DataFrame, resolution::D
                                             )
     return forecast
 end
+
 
  # -Parse csv file to dict
 """
@@ -201,26 +204,61 @@ function make_forecast_dict(time_series::Dict{String,Any},
     end
     return forecast
 end
-
+=#
 
 # - Parse Dict to Forecast Struct
 
 """
 Args:
-    A PowerSystems forecast dictionary
+    A System struct
+    A dictonary of forecasts
 Returns:
     A PowerSystems forecast stuct array
 """
-function make_forecast_array(dict)
-    Forecasts = Array{Forecast}(undef, 0)
-    for (device_key,device_dict) in dict
-                push!(Forecasts,Deterministic(device_dict["device"],device_dict["horizon"],
-                                device_dict["resolution"],device_dict["interval"],
-                                device_dict["initialtime"],
-                                device_dict["data"]
-                                ))
+
+function make_forecast_array(sys::Union{System,Array{Component,1}},ts_dict::Dict)
+    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
+    fc = Array{Forecast}(undef, 0)
+    for (key,val) in ts_map
+        ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
+        if (typeof(ts)==DataFrames.DataFrame) & (size(ts,2) > 2)
+            devices = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts)) if c != "DateTime"]) #retrieve devices from system that are in the timeseries data
+            for d in devices
+                push!(fc,Deterministic(d,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
+            end
+        else
+            devices = _get_device(key,sys) #retrieve the device object
+            cn = isa(ts,DataFrames.DataFrame) ? names(ts) : TimeSeries.colnames(ts)
+            cn = [c for c in cn if c != :DateTime]
+        
+            if length(devices) > 0 
+                devices = unique(values(devices))
+                for d in devices
+                    for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
+                        timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
+                        push!(fc,Deterministic(d,string(c),timeseries))
+                    end
+                end
+            else
+                @warn("no $key entries for devices in sys")
+            end
+        end
     end
-    return Forecasts
+    return fc
+ end
+
+
+# - Assign Forecast to System Struct
+
+"""
+Args:
+    A System struct
+    A :Symbol=>Array{ <: Forecast,1} Pair denoting the forecast name and array of device forecasts
+Returns:
+    A System struct with a modeified forecasts field
+"""
+function add_forecast!(sys::System,fc::Pair{Symbol,Array{Forecast,1}})
+    sys.forecasts[fc.first] = fc.second
 end
 
 # Write dict to Json
@@ -237,6 +275,7 @@ function write_to_json(filename,Forecasts_dict)
 end
 
 
+#=
 # Parse json to dict
 #TODO : fix broken data formats
 function parse_json(filename,device_names)
@@ -254,3 +293,4 @@ function parse_json(filename,device_names)
     end
     return Devices
 end
+=#

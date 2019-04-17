@@ -75,13 +75,11 @@ export Transfer
 export parsestandardfiles
 export parse_file
 export ps_dict2ps_struct
-export assign_ts_data
+export add_forecast!
 export read_data_files
 export validate
+export add_component
 export get_components
-export get_mixed_components
-export get_component_counts
-export show_component_counts
 
 #################################################################################
 # Imports
@@ -108,7 +106,7 @@ abstract type Component <: PowerSystemType end
 abstract type Device <: Component end
 abstract type Injection <: Device end
 # supertype for generation technologies (thermal, renewable, etc.)
-abstract type TechnicalParams <: Component end
+abstract type TechnicalParams <: PowerSystemType end
 
 include("common.jl")
 
@@ -129,6 +127,13 @@ include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
 
+#Data Checks
+include("utils/IO/system_checks.jl")
+include("utils/IO/branchdata_checks.jl")
+
+# Definitions of PowerSystem
+include("base.jl")
+
 # Include Parsing files
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
@@ -138,12 +143,7 @@ include("parsers/cdm_parser.jl")
 include("parsers/forecast_parser.jl")
 include("parsers/pm2ps_parser.jl")
 
-#Data Checks
-include("utils/IO/system_checks.jl")
-include("utils/IO/branchdata_checks.jl")
-
-# Definitions of System
-include("base.jl")
+# validation of System
 include("validation/powersystem.jl")
 
 # Better printing
