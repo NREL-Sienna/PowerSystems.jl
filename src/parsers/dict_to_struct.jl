@@ -104,7 +104,7 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
 end
 
 function _get_device(name::Union{String,Symbol}, collection, devices = [])
-    if isa(collection,Array) && !isempty(collection)
+    if isa(collection,Array) && !isempty(collection) && isassigned(collection)
             fn = fieldnames(typeof(collection[1]))
             if :name in fn
                 [push!(devices,d) for d in collection if d.name == name]

@@ -221,8 +221,8 @@ function make_forecast_array(sys::Union{System,Array{Component,1}},ts_dict::Dict
     fc = Array{Forecast}(undef, 0)
     for (key,val) in ts_map
         ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
-        if (typeof(ts)==DataFrames.DataFrame) & (length(ts) > 2)
-            devices = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts))]) #retrieve devices from system that are in the timeseries data
+        if (typeof(ts)==DataFrames.DataFrame) & (size(ts,2) > 2)
+            devices = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts)) if c != "DateTime"]) #retrieve devices from system that are in the timeseries data
             for d in devices
                 push!(fc,Deterministic(d,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
             end
