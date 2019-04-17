@@ -10,8 +10,6 @@ end
     @test tTechThermal isa PowerSystemType
     tThermalGen = ThermalDispatch()
     @test tThermalGen isa PowerSystems.Component
-    tThermalGenSeason = ThermalGenSeason()
-    @test tThermalGenSeason isa PowerSystems.Component
     tTechHydro = TechHydro()
     @test tTechHydro isa PowerSystemType
     tEconHydro = EconHydro()

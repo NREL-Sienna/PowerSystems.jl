@@ -53,7 +53,6 @@ export ThermalGen
 export TechThermal
 export EconThermal
 export ThermalDispatch
-export ThermalGenSeason
 
 export ElectricLoad
 export StaticLoad
