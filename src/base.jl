@@ -62,7 +62,7 @@ end
 
 """Primary System constructor. Funnel point for all other outer constructors."""
 function System(buses::Vector{Bus},
-                generators::Vector{Generator},
+                generators::Vector{<:Generator},
                 loads::Vector{<:ElectricLoad},
                 branches::Union{Nothing, Vector{<:Branch}},
                 storage::Union{Nothing, Vector{<:Storage}},
