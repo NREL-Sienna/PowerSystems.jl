@@ -78,7 +78,7 @@ export ps_dict2ps_struct
 export add_forecast!
 export read_data_files
 export validate
-export add_component
+export add_component!
 export get_components
 
 #################################################################################

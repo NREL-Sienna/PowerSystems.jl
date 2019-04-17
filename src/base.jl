@@ -168,7 +168,7 @@ function ConcreteSystem(sys::System)
 
     for field in (:buses, :loads)
         for obj in getfield(sys, field)
-            add_component(concrete_sys, obj)
+            add_component!(concrete_sys, obj)
         end
     end
 
@@ -176,7 +176,7 @@ function ConcreteSystem(sys::System)
         generators = getfield(sys.generators, field)
         if !isnothing(generators)
             for gen in generators
-                add_component(concrete_sys, gen)
+                add_component!(concrete_sys, gen)
             end
         end
     end
@@ -185,7 +185,7 @@ function ConcreteSystem(sys::System)
         objs = getfield(sys, field)
         if !isnothing(objs)
             for obj in objs
-                add_component(concrete_sys, obj)
+                add_component!(concrete_sys, obj)
             end
         end
     end
@@ -198,9 +198,9 @@ function ConcreteSystem(sys::System)
 end
 
 """Adds a component to the system."""
-function add_component(sys::ConcreteSystem, component::T) where T <: Component
+function add_component!(sys::ConcreteSystem, component::T) where T <: Component
     if !isconcretetype(T)
-        error("add_component only accepts concrete types")
+        error("add_component! only accepts concrete types")
     end
 
     if !haskey(sys.components, T)

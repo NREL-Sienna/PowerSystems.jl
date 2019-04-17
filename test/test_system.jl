@@ -36,7 +36,7 @@
     # For the next test to work there must be at least one component to add back.
     @test length(components) > 0
     for component in components
-        add_component(sys, component)
+        add_component!(sys, component)
     end
 
     @test length(collect(get_components(ThermalGen, sys))) > 0
