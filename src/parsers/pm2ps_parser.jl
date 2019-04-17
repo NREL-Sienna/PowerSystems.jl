@@ -239,10 +239,8 @@ function make_thermal_gen(gen_name, d, bus)
         elseif d["ncost"] == 3
             cost = (d["cost"][1], d["cost"][2]) 
             fixedcost = d["cost"][3]
-        elseif d["ncost"] == 4
-            @error("PowerSystems currently can only support polynomial functions upto second degree")
         else
-            throw(DataFormatError("invalid value for ncost: $(d["ncost"])"))
+            throw(DataFormatError("invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree"))
         end
     end
 
