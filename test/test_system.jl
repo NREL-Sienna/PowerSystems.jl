@@ -22,7 +22,7 @@
 
     # Negative test of missing type.
     components = Vector{ThermalGen}()
-    for subtype in subtypes(ThermalGen)
+    for subtype in PowerSystems.subtypes(ThermalGen)
         if haskey(sys.components, subtype)
             for component in pop!(sys.components, subtype)
                 push!(components, component)
