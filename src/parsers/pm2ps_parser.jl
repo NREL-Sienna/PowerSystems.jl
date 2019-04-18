@@ -223,7 +223,7 @@ function make_thermal_gen(gen_name, d, bus)
     if model == PIECEWISE_LINEAR::GeneratorCostModel
         cost_component = d["cost"]
         power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
-        cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
+        cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)] #./power_p : removing this to make cost values in $/hr
         cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
         fixedcost = cost[1][2]
     elseif model == POLYNOMIAL::GeneratorCostModel
