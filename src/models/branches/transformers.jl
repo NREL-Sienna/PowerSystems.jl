@@ -10,6 +10,12 @@ struct Transformer2W <: Branch
     x::Float64 #[pu]
     primaryshunt::Float64 #[pu]
     rate::Union{Nothing,Float64} #[MVA]
+    internal::PowerSystemInternal
+end
+
+function Transformer2W(name, available, connectionpoints, r, x, primaryshunt, rate)
+    return Transformer2W(name, available, connectionpoints, r, x, primaryshunt, rate,
+                         PowerSystemInternal())
 end
 
 Transformer2W(; name = "init",
@@ -30,6 +36,12 @@ struct TapTransformer <: Branch
     primaryshunt::Float64 #[pu]
     tap::Float64 # [0 - 2]
     rate::Union{Float64,Nothing} #[MVA]
+    internal::PowerSystemInternal
+end
+
+function TapTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, rate)
+    return TapTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, rate,
+                          PowerSystemInternal())
 end
 
 TapTransformer(; name = "init",
@@ -67,6 +79,12 @@ struct PhaseShiftingTransformer <: Branch
     tap::Float64 #[0 - 2]
     α::Float64 # [radians]
     rate::Float64 #[MVA]
+    internal::PowerSystemInternal
+end
+
+function PhaseShiftingTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, α, rate)
+    PhaseShiftingTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, α,
+                             rate, PowerSystemInternal())
 end
 
 PhaseShiftingTransformer(; name = "init",

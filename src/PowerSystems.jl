@@ -94,12 +94,19 @@ import DataFrames
 import JSON
 import CSV
 import YAML
+import UUIDs
 
 #################################################################################
 # Includes
 
-# supertype for all PowerSystems types
+"""
+Supertype for all PowerSystems types.
+All subtypes must include a PowerSystemInternal member.
+Subtypes should call PowerSystemInternal() by default, but also must provide a constructor
+that allows existing values to be deserialized.
+"""
 abstract type PowerSystemType end
+
 abstract type Component <: PowerSystemType end
 # supertype for "devices" (bus, line, etc.)
 abstract type Device <: Component end
@@ -108,6 +115,7 @@ abstract type Injection <: Device end
 abstract type TechnicalParams <: PowerSystemType end
 
 include("common.jl")
+include("internal.jl")
 
 # Include utilities
 include("utils/utils.jl")

@@ -10,9 +10,6 @@ Data Structure for thermal generation technologies.
 
     Examples
 
-
-
-
 """
 struct ThermalDispatch <: ThermalGen
     name::String
@@ -20,6 +17,11 @@ struct ThermalDispatch <: ThermalGen
     bus::Bus
     tech::Union{TechThermal,Nothing}
     econ::Union{EconThermal,Nothing}
+    internal::PowerSystemInternal
+end
+
+function ThermalDispatch(name, available, bus, tech, econ)
+    return ThermalDispatch(name, available, bus, tech, econ, PowerSystemInternal())
 end
 
 ThermalDispatch(; name = "init",

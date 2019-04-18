@@ -3,6 +3,12 @@ struct TechRenewable <: TechnicalParams
     installedcapacity::Float64 # [MW]
     reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVar]
     powerfactor::Union{Float64,Nothing} # [-1. -1]
+    internal::PowerSystemInternal
+end
+
+function TechRenewable(installedcapacity, reactivepowerlimits, powerfactor)
+    return TechRenewable(installedcapacity, reactivepowerlimits, powerfactor,
+                         PowerSystemInternal())
 end
 
 # DOCTODO document this constructor for TechRenewable
@@ -47,11 +53,22 @@ struct TechThermal <: TechnicalParams
     reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVAr]
     ramplimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} #MW/Hr
     timelimits::Union{NamedTuple{(:up, :down),Tuple{Float64,Float64}},Nothing} #Hr
-    function TechThermal(activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
+    internal::PowerSystemInternal
+end
 
-        new(activepower, PowerSystems.orderedlimits(activepowerlimits, "Real Power"), reactivepower, PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"), ramplimits, timelimits)
-
-    end
+function TechThermal(activepower,
+                     activepowerlimits,
+                     reactivepower,
+                     reactivepowerlimits,
+                     ramplimits,
+                     timelimits)
+    return TechThermal(activepower,
+                       PowerSystems.orderedlimits(activepowerlimits, "Real Power"),
+                       reactivepower,
+                       PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"),
+                       ramplimits,
+                       timelimits,
+                       PowerSystemInternal())
 end
 
 # DOCTODO document this constructor 

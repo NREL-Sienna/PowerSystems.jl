@@ -37,6 +37,12 @@ struct Bus <: Injection
     the base voltage in kV
     """
     basevoltage::Union{Float64,Nothing} # [kV]
+    internal::PowerSystemInternal
+end
+
+function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage)
+    return Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage,
+               PowerSystemInternal())
 end
 
 # DOCTODO  add this constructor type to docstring for Bus
@@ -57,6 +63,12 @@ struct LoadZones  <: Injection
     buses::Array{Bus,1}
     maxactivepower::Float64
     maxreactivepower::Float64
+    internal::PowerSystemInternal
+end
+
+function LoadZones(number, name, buses, maxactivepower, maxreactivepower)
+    return LoadZones(number, name, buses, maxactivepower, maxreactivepower,
+                     PowerSystemInternal())
 end
 
 LoadZones(;   number = 0,

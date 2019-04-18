@@ -10,6 +10,23 @@ struct GenericBattery <: Storage
     efficiency::NamedTuple{(:in, :out),Tuple{Float64,Float64}}  # [%]
     reactivepower::Union{Float64,Nothing} # [MVAr]
     reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVAr]
+    internal::PowerSystemInternal
+end
+
+function GenericBattery(name,
+                        available,
+                        bus,
+                        energy,
+                        capacity,
+                        activepower,
+                        inputactivepowerlimits,
+                        outputactivepowerlimits,
+                        efficiency,
+                        reactivepower,
+                        reactivepowerlimits)
+    return GenericBattery(name, available, bus, energy, capacity, activepower,
+                          inputactivepowerlimits, outputactivepowerlimits, efficiency,
+                          reactivepower, reactivepowerlimits, PowerSystemInternal())
 end
 
 GenericBattery(; name = "init",

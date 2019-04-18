@@ -7,10 +7,17 @@ struct RenewableFix <: RenewableGen
     available::Bool
     bus::Bus
     tech::TechRenewable
-    function RenewableFix(name, status, bus, installedcapacity::Float64)
-        tech = TechRenewable(installedcapacity, nothing, 1.0)
-        new(name, status, bus, tech)
-    end
+    internal::PowerSystemInternal
+end
+
+function RenewableFix(name, available, bus, tech)
+    return RenewableFix(name, available, bus, tech, PowerSystemInternal())
+end
+
+"""Accepts installedcapacity as a Float64 and then creates a TechRenewable."""
+function RenewableFix(name, status, bus, installedcapacity::Float64)
+    tech = TechRenewable(installedcapacity, nothing, 1.0)
+    RenewableFix(name, status, bus, tech)
 end
 
 RenewableFix(; name="init",
@@ -24,8 +31,14 @@ struct RenewableCurtailment <: RenewableGen
     bus::Bus
     tech::TechRenewable
     econ::Union{EconRenewable,Nothing}
+    internal::PowerSystemInternal
 end
 
+function RenewableCurtailment(name, available, bus, tech, econ)
+    return RenewableCurtailment(name, available, bus, tech, econ, PowerSystemInternal())
+end
+
+"""Accepts installedcapacity as a Float64 and then creates a TechRenewable."""
 function RenewableCurtailment(name::String, status::Bool, bus::Bus, installedcapacity::Float64, econ::Union{EconRenewable,Nothing})
     tech = TechRenewable(installedcapacity, nothing, 1.0)
     return RenewableCurtailment(name, status, bus, tech, econ)
@@ -43,8 +56,12 @@ struct RenewableFullDispatch <: RenewableGen
     bus::Bus
     tech::TechRenewable
     econ::Union{EconRenewable,Nothing}
+    internal::PowerSystemInternal
 end
 
+function RenewableFullDispatch(name, available, bus, tech, econ)
+    return RenewableFullDispatch(name, available, bus, tech, econ, PowerSystemInternal())
+end
 
 RenewableFullDispatch(; name = "init",
                 status = false,

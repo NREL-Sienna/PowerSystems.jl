@@ -11,7 +11,12 @@ Data Structure for the economical parameters of renewable generation technologie
 """
 struct EconRenewable <: TechnicalParams
     curtailpenalty::Float64 # [$/MWh]
-    variablecost::Union{Float64,Nothing} # [$/MWh]
+    variablecost::Union{Float64, Nothing} # [$/MWh]
+    internal::PowerSystemInternal
+end
+
+function EconRenewable(curtailpenalty, variablecost)
+    return EconRenewable(curtailpenalty, variablecost, PowerSystemInternal())
 end
 
 EconRenewable(; curtailcost = 0.0, variablecost = nothing) = EconRenewable(curtailcost, variablecost)
@@ -35,6 +40,12 @@ struct EconThermal <: TechnicalParams
     startupcost::Float64          # [$]
     shutdncost::Float64           # [$]
     annualcapacityfactor::Union{Float64,Nothing}  # [0-1]
+    internal::PowerSystemInternal
+end
+
+function EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor)
+    return EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost,
+                       annualcapacityfactor, PowerSystemInternal())
 end
 
 EconThermal(;   capacity = 0.0,
