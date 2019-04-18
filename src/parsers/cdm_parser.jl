@@ -333,8 +333,12 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any}, b
             fuel_cost = gen_raw[gen,colnames["Fuel Price \$/MMBTU"]]./1000
 
             var_cost = [(_get_value_or_nothing(gen_raw[gen,cn[1]]), _get_value_or_nothing(gen_raw[gen,cn[2]])) for cn in cost_colnames]
-            var_cost = [(c[1]*c[2]*fuel_cost*baseMVA, c[2]).*pmax for c in var_cost if !in(nothing,c)]
-            var_cost[2:end] = [(var_cost[i-1][1]+var_cost[i][1], var_cost[i][2]) for i in 2:length(var_cost)]
+            var_cost = [(c[1], c[2]) for c in var_cost if !in(nothing,c)]
+            var_cost[2:end] = [(var_cost[i][1]*(var_cost[i][2]-var_cost[i-1][2]) * fuel_cost*baseMVA, var_cost[i][2]).*pmax for i in 2:length(var_cost)]
+            var_cost[1] = (var_cost[1][1]*var_cost[1][2]*fuel_cost*baseMVA, var_cost[1][2]).*pmax
+            for i in 2:length(var_cost)
+                var_cost[i] = (var_cost[i-1][1]+var_cost[i][1], var_cost[i][2])
+            end
 
             bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,colnames["Bus ID"]]]
 
