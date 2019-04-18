@@ -228,7 +228,7 @@ function make_thermal_gen(gen_name, d, bus)
         fixedcost = cost[1][2]
     elseif model == POLYNOMIAL::GeneratorCostModel
         if d["ncost"] == 0
-            cost = 0
+            cost = (0.0, 0.0)
             fixedcost = 0.0
         elseif d["ncost"] == 1
             cost = (0.0, 0.0)
