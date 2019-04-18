@@ -148,6 +148,11 @@ struct ConcreteSystem <: PowerSystemType
     components::Dict{DataType, Vector{<:Component}}    # Contains arrays of concrete types.
     forecasts::Union{Nothing, SystemForecasts}
     basepower::Float64                                 # [MVA]
+    internal::PowerSystemInternal
+end
+
+function ConcreteSystem(components, forecasts, basepower)
+    return ConcreteSystem(components, forecasts, basepower, PowerSystemInternal())
 end
 
 function ConcreteSystem(sys::System)

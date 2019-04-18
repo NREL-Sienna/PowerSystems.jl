@@ -6,6 +6,12 @@ struct PowerLoad <: StaticLoad
     bus::Bus
     maxactivepower::Float64 # [MW]
     maxreactivepower::Float64 # [MVAr]
+    internal::PowerSystemInternal
+end
+
+function PowerLoad(name, available, bus, maxactivepower, maxreactivepower)
+    return PowerLoad(name, available, bus, maxactivepower, maxreactivepower,
+                     PowerSystemInternal())
 end
 
 function PowerLoadPF(name::String, available::Bool, bus::Bus, maxactivepower::Float64, power_factor::Float64)
