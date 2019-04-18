@@ -1,5 +1,47 @@
 import UUIDs
 
+"""Recursively validates that the object and fields have UUIDs."""
+function validate_uuids(obj::T) where T
+    if !(obj isa PowerSystemType)
+        return true
+    end
+
+    result = true
+    if !(PowerSystems.get_uuid(obj) isa UUIDs.UUID)
+        result = false
+        @error "object does not have a UUID" obj
+    end
+
+    for fieldname in fieldnames(T)
+        val = getfield(obj, fieldname)
+        if !validate_uuids(val)
+            result = false
+        end
+    end
+
+    return result
+end
+
+function validate_uuids(obj::T) where T <: AbstractArray
+    result = true
+    for elem in obj
+        if !validate_uuids(elem)
+            result = false
+        end
+    end
+    return result
+end
+
+function validate_uuids(obj::T) where T <: AbstractDict
+    result = true
+    for elem in values(obj)
+        if !validate_uuids(elem)
+            result = false
+        end
+    end
+    return result
+end
+
 @testset "Test internal values" begin
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
     sys_rts = System(cdm_dict)
@@ -12,15 +54,5 @@ import UUIDs
     sys_rts_rt = System(cdm_dict)
     sys = ConcreteSystem(sys_rts)
 
-    # Every type should have a UUID.
-    @test PowerSystems.get_uuid(sys) isa UUIDs.UUID
-    for component in get_components(Component, sys)
-        @test PowerSystems.get_uuid(component) isa UUIDs.UUID
-    end
-
-    for (key, val) in sys.forecasts
-        for forecast in val
-            @test PowerSystems.get_uuid(forecast) isa UUIDs.UUID
-        end
-    end
+    @test validate_uuids(sys)
 end
