@@ -7,7 +7,7 @@ function validate_uuids(obj::T) where T
     end
 
     result = true
-    if !(PowerSystems.get_uuid(obj) isa UUIDs.UUID)
+    if !(PowerSystems.get_uuid(obj) isa Base.UUID)
         result = false
         @error "object does not have a UUID" obj
     end

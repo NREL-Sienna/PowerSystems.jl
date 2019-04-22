@@ -55,3 +55,23 @@ EconThermal(;   capacity = 0.0,
             shutdncost = 0.0,
             annualcapacityfactor = nothing
         ) = EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor)
+
+"""Enables deserialization of EconThermal. The default implementation can't figure out the
+variablecost Union.
+"""
+function JSON2.read(io::IO, ::Type{T}) where {T <: EconThermal}
+    data = JSON2.read(io)
+    if data.variablecost isa Array
+        variablecost = Vector{Tuple{Float64, Float64}}()
+        for array in data.variablecost
+            push!(variablecost, Tuple{Float64, Float64}(array))
+        end
+    else
+        @assert data.variablecost isa Tuple
+        variablecost = Tuple{Float64, Float64}(data.variablecost)
+    end
+
+    internal = convert_type(PowerSystemInternal, data.internal)
+    return EconThermal(data.capacity, variablecost, data.fixedcost, data.startupcost,
+                       data.shutdncost, data.annualcapacityfactor, internal)
+end

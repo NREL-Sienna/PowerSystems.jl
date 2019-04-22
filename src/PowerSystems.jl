@@ -79,6 +79,8 @@ export read_data_files
 export validate
 export add_component!
 export get_components
+export to_json
+export from_json
 
 #################################################################################
 # Imports
@@ -92,6 +94,7 @@ import Dates
 import TimeSeries
 import DataFrames
 import JSON
+import JSON2
 import CSV
 import YAML
 import UUIDs
@@ -120,6 +123,7 @@ include("internal.jl")
 # Include utilities
 include("utils/utils.jl")
 include("utils/logging.jl")
+include("utils/lazy_dict_from_iterator.jl")
 include("utils/IO/base_checks.jl")
 
 # PowerSystems models
@@ -156,6 +160,8 @@ include("validation/powersystem.jl")
 # Better printing
 include("utils/print.jl")
 include("utils/lodf_calculations.jl")
+
+include("models/serialization.jl")
 
 # Download test data
 include("utils/data.jl")
