@@ -38,6 +38,68 @@ function Deterministic(component::Component, label::String, data::TimeSeries.Tim
     Deterministic(component, label, resolution, initialtime, data)
 end
 
+# Refer to docstrings in services.jl.
+
+function JSON2.write(io::IO, forecast::Deterministic)
+    return JSON2.write(io, encode_for_json(forecast))
+end
+
+function JSON2.write(forecast::Deterministic)
+    return JSON2.write(encode_for_json(forecast))
+end
+
+function encode_for_json(forecast::Deterministic)
+    fields = fieldnames(Deterministic)
+    vals = []
+
+    for name in fields
+        val = getfield(forecast, name)
+        if val isa Component
+            push!(vals, get_uuid(val))
+        else
+            push!(vals, val)
+        end
+    end
+
+    return NamedTuple{fields}(vals)
+end
+
+"""Creates a Deterministic object by decoding the data that was in JSON. This data stores
+the values for the field contributingdevices as UUIDs, so this will lookup each device in
+devices.
+"""
+function convert_type(
+                      ::Type{T},
+                      data::NamedTuple,
+                      components::LazyDictFromIterator,
+                     ) where T <: Deterministic
+    @debug T data
+    values = []
+    component_type = nothing
+
+    for (fieldname, fieldtype)  in zip(fieldnames(T), fieldtypes(T))
+        val = getfield(data, fieldname)
+        if fieldtype <: Component
+            uuid = Base.UUID(val.value)
+            component = get(components, uuid)
+            @assert isnothing(component_type)
+            component_type = typeof(component)
+            push!(values, component)
+        else
+            obj = convert_type(fieldtype, val)
+            push!(values, obj)
+        end
+    end
+
+    @assert !isnothing(component_type)
+
+    return T{component_type}(values...)
+end
+
+function convert_type(::Type{T}, data::Any) where T <: Deterministic
+    error("This form of convert_type is not supported for Deterministic")
+end
+
 struct Scenarios <: Forecast
     horizon::Int
     resolution::Dates.Period

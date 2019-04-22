@@ -24,7 +24,7 @@ requirement - the required quantity of the product should be scaled by a Forecas
 """
 struct ProportionalReserve <: Reserve
     name::String
-    contributingdevices::Array{Device}
+    contributingdevices::Vector{Device}
     timeframe::Float64
     internal::PowerSystemInternal
 end
@@ -59,7 +59,7 @@ requirement - the required quantity of the product
 """
 struct StaticReserve <: Reserve
     name::String
-    contributingdevices::Array{Device}
+    contributingdevices::Vector{Device}
     timeframe::Float64
     requirement::Float64
     internal::PowerSystemInternal
