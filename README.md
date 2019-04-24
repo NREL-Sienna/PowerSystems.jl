@@ -32,7 +32,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 You can install it by typing
 
 ```julia
-julia> Pkg.add("PowerSystems")
+julia> ] add PowerSystems
 ```
 
 ## Usage
