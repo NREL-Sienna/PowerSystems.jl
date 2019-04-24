@@ -1,7 +1,7 @@
 name = "PowerSystems"
-uuid = "c512b964-a17e-11e8-344c-11d7c2eac237"
+uuid = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
 authors = ["Jose Daniel Lara", "Dheepak Krishnamurthy", "Clayton Barrows"]
-version = "0.2.1"
+version = "0.3.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -14,6 +14,14 @@ Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
+
+[compat]
+julia = ">= 1.1.0" 
+CSV = ">= 0.4.3"
+DataFrames = ">= 0.4.3"
+JSON = ">= 0.4.3"
+TimeSeries = ">= 0.14.1"
+YAML = ">= 0.3.2"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
