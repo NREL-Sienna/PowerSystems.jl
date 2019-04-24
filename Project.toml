@@ -1,7 +1,7 @@
 name = "PowerSystems"
 uuid = "c512b964-a17e-11e8-344c-11d7c2eac237"
 authors = ["Jose Daniel Lara", "Dheepak Krishnamurthy", "Clayton Barrows"]
-version = "0.2.1"
+version = "0.3.0"
 
 [deps]
 AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
