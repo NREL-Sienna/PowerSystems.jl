@@ -178,9 +178,9 @@ function ConcreteSystem(sys::System)
         end
     end
 
-    !isnothing(sys.annex) ? loadZones = get(sys.annex, :LoadZones, nothing) : loadZones = nothing
-    if !isnothing(loadZones)
-        for lz in loadZones
+    load_zones = isnothing(sys.annex) ? nothing : get(sys.annex, :LoadZones, nothing)
+    if !isnothing(load_zones)
+        for lz in load_zones
             add_component!(concrete_sys, lz)
         end
     end
