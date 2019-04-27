@@ -1,6 +1,6 @@
 abstract type DCLine <: Branch end
 
-struct HVDCLine <: Branch
+struct HVDCLine <: DCLine
     name::String
     available::Bool
     connectionpoints::From_To_Bus
