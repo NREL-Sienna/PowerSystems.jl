@@ -261,6 +261,6 @@ function Base.summary(io::IO, sys::ConcreteSystem)
 
     sort!(rows, by = x -> x.ConcreteType)
 
-    df = DataFrames.DataFrame(rows)
-    print(io, df)
+    #df = DataFrames.DataFrame(rows)
+    print(io, "This is currently broken")
 end
