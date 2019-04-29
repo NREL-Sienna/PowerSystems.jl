@@ -234,9 +234,9 @@ function get_components(::Type{T}, sys::ConcreteSystem) where {T <: Component}
     if isconcretetype(T)
         components = get(sys.components, T, nothing)
         if isnothing(components)
-            return Iterators.take([], 0)
+            return Iterators.flatten([], 0)
         else
-            return Iterators.take(components, length(components))
+            return Iterators.flatten([components], length(components))
         end
     else
         types = [x for x in get_all_concrete_subtypes(T) if haskey(sys.components, x)]
