@@ -1,3 +1,4 @@
+using SparseArrays
 include("../data/data_5bus.jl")
 include("../data/data_14bus.jl")
 
@@ -222,8 +223,7 @@ end
 end
 
 
-@time testset "Ybus Matrix" begin
-    include(joinpath(base_dir,"data/data_5bus_pu.jl"));
+@time @testset "Ybus Matrix" begin
     Ybus = PSY.build_ybus(length(nodes5), branches5)
 
     I, J, V = findnz(Ybus)
