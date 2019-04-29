@@ -181,13 +181,36 @@ Lodf_14 = [-1.0 1.0 -0.207667 -0.272435 -0.360507 -0.207667 -0.289868 -0.0293549
             0.00255259 -0.00255259 0.00266262 0.00349304 -0.0031259 0.00266262 -0.0211974 0.0435042 0.0319291 -0.0884437 0.0877169 -1.0 0.652198 -1.38778e-16 0.0435042 -0.0877169 0.222319 -0.0877169 -1.0 -0.222319; 
             0.0114817 -0.0114817 0.0119766 0.0157118 -0.0140605 0.0119766 -0.0953466 0.195684 0.143618 -0.397823 0.394554 -0.132283 -0.347802 1.38778e-16 0.195684 -0.394554 1.0 -0.394554 -0.132283 -1.0]
 
-@time @testset "Network matrices" begin
+
+Ybus5_matpower = Matrix{Complex{Float64}}(undef,5,5)
+Ybus5_matpower[1,1] =  22.2506856885351 -  222.484376885351im
+Ybus5_matpower[2,1] = -3.52348402099997 +  35.2348402099996im
+Ybus5_matpower[4,1] =  -3.2569046378322 +   32.569046378322im
+Ybus5_matpower[5,1] =  -15.470297029703 +   154.70297029703im
+Ybus5_matpower[1,2] = -3.52348402099997 +  35.2348402099996im
+Ybus5_matpower[2,2] =  12.6910674460091 -  126.897854460091im
+Ybus5_matpower[3,2] = -9.16758342500917 +  91.6758342500917im
+Ybus5_matpower[2,3] = -9.16758342500917 +  91.6758342500917im
+Ybus5_matpower[3,3] =  12.5012501250125 -  124.999871250125im
+Ybus5_matpower[4,3] = -3.33366670000333 +  33.3366670000333im
+Ybus5_matpower[1,4] =  -3.2569046378322 +   32.569046378322im
+Ybus5_matpower[3,4] = -3.33366670000333 +  33.3366670000333im
+Ybus5_matpower[4,4] =  9.92423803783887 -  99.2323503783887im
+Ybus5_matpower[5,4] = -3.33366670000333 +  33.3366670000333im
+Ybus5_matpower[1,5] =  -15.470297029703 +   154.70297029703im
+Ybus5_matpower[4,5] = -3.33366670000333 +  33.3366670000333im
+Ybus5_matpower[5,5] =  18.8039637297063 -  188.020637297063im
+
+@time @testset "PTDF matrices" begin
     P5, A5 = PowerSystems.buildptdf(branches5, nodes5);
     @test maximum(P5.data - S5_slackB4) <= 1e-3
 
     P14, A14 = PowerSystems.buildptdf(branches14, nodes14);
     @test maximum(P14.data - S14_slackB1) <= 1e-3
 
+end
+
+@time @testset "LODF matrices" begin
     L5 = PowerSystems.buildlodf(branches5,nodes5)
     @test maximum(L5 - Lodf_5) <= 1e-3
 
@@ -196,4 +219,18 @@ Lodf_14 = [-1.0 1.0 -0.207667 -0.272435 -0.360507 -0.207667 -0.289868 -0.0293549
     
     #PRTS = PowerSystems.buildptdf(branches_gmlc, nodes_gmlc)
     #@test maximum(PTRS - SRTS_GMLC) <= 1e-6
+end
+
+
+@time testset "Ybus Matrix" begin
+    include(joinpath(base_dir,"data/data_5bus_pu.jl"));
+    Ybus = PSY.build_ybus(length(nodes5), branches5)
+
+    I, J, V = findnz(Ybus)
+    indices = collect(zip(I,J))
+
+    for i in indices 
+        @test isapprox(Ybus[i[1], i[2]], Ybus5_matpower[i[1], i[2]], atol=1e-2)
+    end
+
 end
