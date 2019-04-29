@@ -234,7 +234,7 @@ function get_components(::Type{T}, sys::ConcreteSystem) where {T <: Component}
     if isconcretetype(T)
         components = get(sys.components, T, nothing)
         if isnothing(components)
-            return Iterators.flatten([])
+            return Iterators.flatten([[]])
         else
             return Iterators.flatten([components])
         end
