@@ -19,5 +19,3 @@ sys = PowerSystems.System(buses, generators, loads, branches, storage,
     # TODO: add test for loadzones testing MAPPING_BUSNUMBER2INDEX
 
 end
-
-
