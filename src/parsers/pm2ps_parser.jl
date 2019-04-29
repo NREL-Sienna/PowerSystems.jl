@@ -118,6 +118,7 @@ end
 function read_bus(data)
     Buses = Dict{Int64,Any}()
     bus_types = ["PV", "PQ", "SF","isolated"]
+    data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))    
     for (i, (d_key, d)) in enumerate(data["bus"])
         # d id the data dict for each bus
         # d_key is bus key
