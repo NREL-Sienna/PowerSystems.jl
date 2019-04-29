@@ -12,9 +12,9 @@ sys = PowerSystems.System(buses, generators, loads, branches, storage,
 @testset "Check bus index" begin
     @test sort([b.number for b in sys.buses]) == [1, 2, 3, 4, 5]
     @test sort(collect(Set([b.connectionpoints.from.number for b in sys.branches]))) ==
-        [1, 2, 4, 5]
+        [1, 2, 3, 4]
     @test sort(collect(Set([b.connectionpoints.to.number for b in sys.branches]))) ==
-        [1, 3, 4, 5]
+        [2, 3, 4, 5]
 
     # TODO: add test for loadzones testing MAPPING_BUSNUMBER2INDEX
 
