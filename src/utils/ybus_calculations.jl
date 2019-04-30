@@ -59,22 +59,22 @@ end
 # TODO: Add testing for Ybus of a system with a PS Transformer
 function ybus!(Ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}, b::PhaseShiftingTransformer)
 
-    Y_t = 1 / (b.r + b.x * 1im)
-    tap =  (b.tap * exp(b.α * 1im * (π / 180)))
-    c_tap =  (b.tap * exp(-1*b.α * 1im * (π / 180)))
+    @show Y_t = 1 / (b.r + b.x * 1im)
+    tap =  (b.tap * exp(b.α * 1im))
+    c_tap =  (b.tap * exp(-1*b.α * 1im))
     
-    Y11 = (Y_t/tap^2) + (1im * b.primaryshunt);
+    @show Y11 = (Y_t/abs(tap)^2);
     Ybus[b.connectionpoints.from.number,
         b.connectionpoints.from.number] += Y11;
-    Y12 = (-Y_t/c_tap);
+    @show Y12 = (-Y_t/c_tap);
     Ybus[b.connectionpoints.from.number,
         b.connectionpoints.to.number] += Y12;
-    Y21 = (-Y_t/tap);
+    @show Y21 = (-Y_t/tap);
     Ybus[b.connectionpoints.to.number,
-        b.connectionpoints.from.number] += Y12;
-    Y22 = Y_t;
+        b.connectionpoints.from.number] += Y21;
+    @show Y22 = Y_t;
     Ybus[b.connectionpoints.to.number,
-        b.connectionpoints.to.number] += Y22;
+        b.connectionpoints.to.number] += Y22 + (1im * b.primaryshunt);
 
 end
 

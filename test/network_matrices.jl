@@ -1,6 +1,10 @@
 using SparseArrays
 include("../data/data_5bus.jl")
 include("../data/data_14bus.jl")
+pm_dict = PSY.parse_file(joinpath(MATPOWER_DIR, "case5.m"));
+ps_dict = PSY.pm2ps_dict(pm_dict);
+Buses_ps, Generators_ps, Storages_ps, Branches_ps, Loads_ps, Shunts_ps, Services_ps = PSY.ps_dict2ps_struct(ps_dict);
+
 
 #PTDFs obtained from Matpower
 S5_slackB4 =     [0.1939   -0.4759   -0.3490         0    0.1595;
@@ -258,6 +262,24 @@ Ybus14_matpower[9,14] = -1.42400548701993 +   3.0290504569306im
 Ybus14_matpower[13,14]=  -1.13699415780633 +  2.31496347510535im
 Ybus14_matpower[14,14]=   2.56099964482626 -  5.34401393203596im;
 
+Ybus5_phaseshifter = Matrix{Complex{Float64}}(undef,5,5)   
+Ybus5_phaseshifter[1,1]=  22.2506856885351 - 222.484376885351im
+Ybus5_phaseshifter[2,1]= -3.52348402099997 + 35.2348402099996im
+Ybus5_phaseshifter[4,1]=  -3.2569046378322 +  32.569046378322im
+Ybus5_phaseshifter[5,1]=  -15.470297029703 +  154.70297029703im
+Ybus5_phaseshifter[1,2]= -3.52348402099997 + 35.2348402099996im
+Ybus5_phaseshifter[2,2]=  12.6910674460091 - 126.897854460091im
+Ybus5_phaseshifter[3,2]= -9.16758342500917 + 91.6758342500917im
+Ybus5_phaseshifter[2,3]= -9.16758342500917 + 91.6758342500917im
+Ybus5_phaseshifter[3,3]=  15.5249840932695 - 155.234154243353im
+Ybus5_phaseshifter[4,3]=  -5.2406741041314 + 63.5995622292464im
+Ybus5_phaseshifter[1,4]=  -3.2569046378322 +  32.569046378322im
+Ybus5_phaseshifter[3,4]= -7.45707433936553 +  63.377922205723im
+Ybus5_phaseshifter[4,4]=  12.9479720060959 - 129.466633371616im
+Ybus5_phaseshifter[5,4]= -3.33366670000333 + 33.3366670000333im
+Ybus5_phaseshifter[1,5]=  -15.470297029703 +  154.70297029703im
+Ybus5_phaseshifter[4,5]= -3.33366670000333 + 33.3366670000333im
+Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
 
 @time @testset "PTDF matrices" begin
     P5, A5 = PowerSystems.buildptdf(branches5, nodes5);
@@ -297,6 +319,15 @@ end
 
     for i in indices
         @test isapprox(Ybus14[i[1], i[2]], Ybus14_matpower[i[1], i[2]], atol=1e-2)
+    end
+
+
+    Ybus5_ps = PowerSystems.build_ybus(length(Buses_ps), Branches_ps)
+    I, J, V = findnz(Ybus5_ps)
+    indices = collect(zip(I,J))
+
+    for i in indices
+        @test isapprox(Ybus5_phaseshifter[i[1], i[2]], Ybus5_ps[i[1], i[2]], atol=1e-2)
     end
 
 end
