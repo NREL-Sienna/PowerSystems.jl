@@ -291,7 +291,7 @@ end
     end
 
 
-    Ybus14 = PSY.build_ybus(length(nodes14), branches14);
+    Ybus14 = PowerSystems.build_ybus(length(nodes14), branches14);
     I, J, V = findnz(Ybus14)
     indices = collect(zip(I,J))
 
