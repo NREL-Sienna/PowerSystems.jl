@@ -17,17 +17,17 @@ TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
-julia = ">= 1.1.0" 
 AxisArrays = ">= 0.3.0"
 CSV = ">= 0.4.3"
 DataFrames = ">= 0.4.3"
 JSON = ">= 0.4.3"
 TimeSeries = ">= 0.14.1"
 YAML = ">= 0.3.2"
+julia = ">= 1.1.0"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "SparseArrays"]
