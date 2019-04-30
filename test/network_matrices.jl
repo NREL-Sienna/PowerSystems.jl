@@ -202,6 +202,63 @@ Ybus5_matpower[1,5] =  -15.470297029703 +   154.70297029703im
 Ybus5_matpower[4,5] = -3.33366670000333 +  33.3366670000333im
 Ybus5_matpower[5,5] =  18.8039637297063 -  188.020637297063im
 
+Ybus14_matpower = Matrix{Complex{Float64}}(undef,14,14)
+Ybus14_matpower[1,1] =   6.02502905576822 -  19.4470702055144im
+Ybus14_matpower[2,1] =  -4.99913160079803 +  15.2630865231796im
+Ybus14_matpower[5,1] =  -1.02589745497019 +  4.23498368233483im
+Ybus14_matpower[1,2] =  -4.99913160079803 +  15.2630865231796im
+Ybus14_matpower[2,2] =   9.52132361081478 -  30.2721153987791im
+Ybus14_matpower[3,2] =   -1.1350191923074 +  4.78186315175772im
+Ybus14_matpower[4,2] =  -1.68603315061494 +  5.11583832587208im
+Ybus14_matpower[5,2] =   -1.7011396670944 +  5.19392739796971im
+Ybus14_matpower[2,3] =   -1.1350191923074 +  4.78186315175772im
+Ybus14_matpower[3,3] =   3.12099490223296 -  9.82238012935164im
+Ybus14_matpower[4,3] =  -1.98597570992556 +  5.06881697759392im
+Ybus14_matpower[2,4] =  -1.68603315061494 +  5.11583832587208im
+Ybus14_matpower[3,4] =  -1.98597570992556 +  5.06881697759392im
+Ybus14_matpower[4,4] =   10.5129895220362 -  38.6541712076078im
+Ybus14_matpower[5,4] =  -6.84098066149567 +  21.5785539816916im
+Ybus14_matpower[7,4] =                  0 +  4.88951266031734im
+Ybus14_matpower[9,4] =                  0 +   1.8554995578159im
+Ybus14_matpower[1,5] =  -1.02589745497019 +  4.23498368233483im
+Ybus14_matpower[2,5] =   -1.7011396670944 +  5.19392739796971im
+Ybus14_matpower[4,5] =  -6.84098066149567 +  21.5785539816916im
+Ybus14_matpower[5,5] =   9.56801778356026 -  35.5336394560448im
+Ybus14_matpower[6,5] =                  0 +  4.25744533525338im
+Ybus14_matpower[5,6] =                  0 +  4.25744533525338im
+Ybus14_matpower[6,6] =   6.57992340746622 -  17.3407328099191im
+Ybus14_matpower[11,6] =  -1.95502856317726 +  4.09407434424044im
+Ybus14_matpower[12,6] =  -1.52596744045097 +   3.1759639650294im
+Ybus14_matpower[13,6] =  -3.09892740383799 +  6.10275544819312im
+Ybus14_matpower[4,7]  =                 0 +  4.88951266031734im
+Ybus14_matpower[7,7]  =                 0 -  19.5490059482647im
+Ybus14_matpower[8,7]  =                 0 +  5.67697984672154im
+Ybus14_matpower[9,7]  =                 0 +  9.09008271975275im
+Ybus14_matpower[7,8]  =                 0 +  5.67697984672154im
+Ybus14_matpower[8,8]  =                 0 -  5.67697984672154im
+Ybus14_matpower[4,9]  =                 0 +   1.8554995578159im
+Ybus14_matpower[7,9]  =                 0 +  9.09008271975275im
+Ybus14_matpower[9,9]  =  5.32605503946736 -  24.2825063752679im
+Ybus14_matpower[10,9] =  -3.90204955244743 +  10.3653941270609im
+Ybus14_matpower[14,9] =  -1.42400548701993 +   3.0290504569306im
+Ybus14_matpower[9,10] = -3.90204955244743 +  10.3653941270609im
+Ybus14_matpower[10,10]=   5.78293430614783 -  14.7683378765214im
+Ybus14_matpower[11,10]=   -1.8808847537004 +  4.40294374946052im
+Ybus14_matpower[6,11] = -1.95502856317726 +  4.09407434424044im
+Ybus14_matpower[10,11]=   -1.8808847537004 +  4.40294374946052im
+Ybus14_matpower[11,11]=   3.83591331687766 -  8.49701809370096im
+Ybus14_matpower[6,12] = -1.52596744045097 +   3.1759639650294im
+Ybus14_matpower[12,12]=   4.01499202727289 -  5.42793859120161im
+Ybus14_matpower[13,12]=  -2.48902458682192 +  2.25197462617221im
+Ybus14_matpower[6,13] = -3.09892740383799 +  6.10275544819312im
+Ybus14_matpower[12,13]=  -2.48902458682192 +  2.25197462617221im
+Ybus14_matpower[13,13]=   6.72494614846623 -  10.6696935494707im
+Ybus14_matpower[14,13]=  -1.13699415780633 +  2.31496347510535im
+Ybus14_matpower[9,14] = -1.42400548701993 +   3.0290504569306im
+Ybus14_matpower[13,14]=  -1.13699415780633 +  2.31496347510535im
+Ybus14_matpower[14,14]=   2.56099964482626 -  5.34401393203596im;
+
+
 @time @testset "PTDF matrices" begin
     P5, A5 = PowerSystems.buildptdf(branches5, nodes5);
     @test maximum(P5.data - S5_slackB4) <= 1e-3
@@ -224,13 +281,22 @@ end
 
 
 @time @testset "Ybus Matrix" begin
-    Ybus = PowerSystems.build_ybus(length(nodes5), branches5)
+    Ybus5 = PowerSystems.build_ybus(length(nodes5), branches5)
 
-    I, J, V = findnz(Ybus)
+    I, J, V = findnz(Ybus5)
     indices = collect(zip(I,J))
 
     for i in indices
-        @test isapprox(Ybus[i[1], i[2]], Ybus5_matpower[i[1], i[2]], atol=1e-2)
+        @test isapprox(Ybus5[i[1], i[2]], Ybus5_matpower[i[1], i[2]], atol=1e-2)
+    end
+
+
+    Ybus14 = PSY.build_ybus(length(nodes14), branches14);
+    I, J, V = findnz(Ybus14)
+    indices = collect(zip(I,J))
+
+    for i in indices
+        @test isapprox(Ybus14[i[1], i[2]], Ybus14_matpower[i[1], i[2]], atol=1e-2)
     end
 
 end
