@@ -1,3 +1,7 @@
+
+include("../data/data_5bus_pu.jl")
+include("../data/data_14bus_pu.jl")
+
 @testset "Test System constructors from .jl files" begin
     tPowerSystem = System()
 
