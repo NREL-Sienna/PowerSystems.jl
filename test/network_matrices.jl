@@ -1,6 +1,7 @@
 using SparseArrays
 include("../data/data_5bus.jl")
 include("../data/data_14bus.jl")
+# The 5-bus case from PowerModels data is modified to include 2 phase shifters
 pm_dict = PSY.parse_file(joinpath(MATPOWER_DIR, "case5.m"));
 ps_dict = PSY.pm2ps_dict(pm_dict);
 Buses_ps, Generators_ps, Storages_ps, Branches_ps, Loads_ps, Shunts_ps, Services_ps = PSY.ps_dict2ps_struct(ps_dict);
