@@ -44,8 +44,8 @@ function JSON2.read(io::IO, ::Type{T}) where {T <: TimeSeries.TimeArray}
 end
 
 """Enables JSON deserialization of Dates.Period.
-The default implementation fails because the field is defined as abstract. Converts to a
-common unit when serializing so that any value can be read back.
+The default implementation fails because the field is defined as abstract.
+Encode the type when serializing so that the correct value can be deserialized.
 """
 function JSON2.write(resolution::Dates.Period)
     return JSON2.write(encode_for_json(resolution))
@@ -55,16 +55,14 @@ function JSON2.write(io::IO, resolution::Dates.Period)
     return JSON2.write(io, encode_for_json(resolution))
 end
 
-# TODO: should this actually be milliseconds? What is the lowest resolution we use?
-RESOLUTION_UNITS_FUNC = Dates.Second
-
 function encode_for_json(resolution::Dates.Period)
-    return (value=RESOLUTION_UNITS_FUNC(resolution).value,)
+    return (value=resolution.value,
+            unit=string(typeof(resolution)))
 end
 
 function JSON2.read(io::IO, ::Type{T}) where {T <: Dates.Period}
     data = JSON2.read(io)
-    return RESOLUTION_UNITS_FUNC(data.value)
+    return getfield(Dates, Symbol(data.unit))(data.value)
 end
 
 """
