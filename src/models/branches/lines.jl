@@ -15,7 +15,7 @@ struct Line <: ACBranch
     internal::PowerSystemInternal
 end
 
-function Line(name, available, connectionpoints, r, x, b, rate, anglelimits::Min_Max)
+function Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
     return Line(name, available, connectionpoints, r, x, b, rate, anglelimits,
                 PowerSystemInternal())
 end

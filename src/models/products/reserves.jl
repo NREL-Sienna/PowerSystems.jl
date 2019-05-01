@@ -70,7 +70,7 @@ function StaticReserve(
                        contributingdevices,
                        timeframe,
                        generators,
-                      ) where {Q <: Device, G <: TechThermal}
+                      )
 
     requirement = maximum([gen.activepowerlimits[:max] for gen in generators])
 
