@@ -6,6 +6,8 @@
 
 [![codecov](https://codecov.io/gh/NREL/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL/PowerSystems.jl)
 
+[![Gitter](https://badges.gitter.im/NREL/PowerSystems.jl.svg)](https://gitter.im/NREL/PowerSystems.jl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 The `PowerSystems.jl` package provides a rigorous data model using Julia structures to enable power systems analysis. In addition to stand-alone system analysis tools and model building, the `PowerSystems.jl` package is used as the foundational data container for the [PowerSimulations.jl](https://github.com/NREL/PowerSimulations.jl) package. `PowerSystems.jl` enables data structures for different devices and relies on a limited number of data file formats for parsing.
 
 ## Version Advisory
