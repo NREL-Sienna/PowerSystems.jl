@@ -1,6 +1,6 @@
 using SparseArrays
-include("../data/data_5bus.jl")
-include("../data/data_14bus.jl")
+include("../data/data_5bus_pu.jl")
+include("../data/data_14bus_pu.jl")
 # The 5-bus case from PowerModels data is modified to include 2 phase shifters
 pm_dict = PowerSystems.parse_file(joinpath(MATPOWER_DIR, "case5.m"));
 ps_dict = PowerSystems.pm2ps_dict(pm_dict);
@@ -282,7 +282,7 @@ Ybus5_phaseshifter[4,5]= -3.33366670000333 + 33.3366670000333im
 Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
 
 @time @testset "PTDF matrices" begin
-    P5, A5 = PowerSystems.buildptdf(branches5, nodes5);
+    P5 = PowerSystems.PTDF(branches5, nodes5);
     @test maximum(P5.data - S5_slackB4) <= 1e-3
 
     P14 = PowerSystems.PTDF(branches14, nodes14);
