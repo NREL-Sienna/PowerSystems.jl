@@ -228,8 +228,7 @@ end
 """
 const ComponentIterator{T} = Base.Iterators.Flatten{Array{Array{T,1},1}} where {T <: Component}
 
-
-"""Returns an ComponentIterator{T} from the System. T can be concrete or abstract.
+"""Returns a ComponentIterator{T} from the System. T can be concrete or abstract.
 
 # Examples
 ```julia
