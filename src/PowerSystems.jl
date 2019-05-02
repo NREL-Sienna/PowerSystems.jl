@@ -108,9 +108,6 @@ abstract type Injection <: Device end
 # supertype for generation technologies (thermal, renewable, etc.)
 abstract type TechnicalParams <: PowerSystemType end
 
-# Const Definitions
-const ComponentIterator{T} = Base.Iterators.Flatten{Array{Array{T,1},1}} where {T <: Component}
-
 include("common.jl")
 
 # Include utilities

@@ -221,6 +221,13 @@ end
 # need each PowerSystemType to store a UUID.
 # GitHub issue #203
 
+# Const Definitions
+
+
+"""Defines the Iterator to contain variables of type Component.
+"""
+const ComponentIterator{T} = Base.Iterators.Flatten{Array{Array{T,1},1}} where {T <: Component}
+
 
 """Returns an iterable of components from the System. T can be concrete or abstract.
 
@@ -234,13 +241,13 @@ function get_components(::Type{T}, sys::ConcreteSystem) where {T <: Component}
     if isconcretetype(T)
         components = get(sys.components, T, nothing)
         if isnothing(components)
-            return Iterators.flatten([Vector{T}()])
+            return ComponentIterator{T}(Vector{T}())
         else
-            return Iterators.flatten([components])
+            return ComponentIterator{T}([components])
         end
     else
         types = [x for x in get_all_concrete_subtypes(T) if haskey(sys.components, x)]
-        return Iterators.flatten(Vector{Vector{T}}([sys.components[x] for x in types]))
+        return ComponentIterator{T}([sys.components[x] for x in types])
     end
 end
 
