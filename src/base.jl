@@ -226,7 +226,7 @@ end
 
 """Defines the Iterator to contain variables of type Component.
 """
-const ComponentIterator{T} = Base.Iterators.Flatten{Array{Array{T,1},1}} where {T <: Component}
+const ComponentIterator{T} = Base.Iterators.Flatten{Vector{Vector{T}}} where {T <: Component}
 
 """Returns a ComponentIterator{T} from the System. T can be concrete or abstract.
 
