@@ -229,7 +229,7 @@ end
 const ComponentIterator{T} = Base.Iterators.Flatten{Array{Array{T,1},1}} where {T <: Component}
 
 
-"""Returns an iterable of components from the System. T can be concrete or abstract.
+"""Returns an ComponentIterator{T} from the System. T can be concrete or abstract.
 
 # Examples
 ```julia
@@ -237,7 +237,7 @@ devices = PowerSystems.get_components(ThermalDispatch, system)
 generators = PowerSystems.get_components(Generator, system)
 ```
 """
-function get_components(::Type{T}, sys::ConcreteSystem) where {T <: Component}
+function get_components(::Type{T}, sys::ConcreteSystem)::ComponentIterator{T} where {T <: Component}
     if isconcretetype(T)
         components = get(sys.components, T, nothing)
         if isnothing(components)
