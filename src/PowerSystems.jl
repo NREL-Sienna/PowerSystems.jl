@@ -15,6 +15,7 @@ export LoadZones
 
 export PowerSystemType
 export Component
+export ComponentIterator
 export Device
 export Branch
 export Injection
@@ -106,6 +107,9 @@ abstract type Device <: Component end
 abstract type Injection <: Device end
 # supertype for generation technologies (thermal, renewable, etc.)
 abstract type TechnicalParams <: PowerSystemType end
+
+# Const Definitions
+const ComponentIterator{T} = Base.Iterators.Flatten{Array{Array{T,1},1}} where {T <: Component}
 
 include("common.jl")
 

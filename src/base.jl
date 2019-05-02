@@ -234,19 +234,13 @@ function get_components(::Type{T}, sys::ConcreteSystem) where {T <: Component}
     if isconcretetype(T)
         components = get(sys.components, T, nothing)
         if isnothing(components)
-            return Iterators.take(Vector{T}(), 0)
+            return Iterators.flatten([Vector{T}()])
         else
-            return Iterators.take(components, length(components))
+            return Iterators.flatten([components])
         end
     else
-        types = [x for x in get_all_concrete_subtypes(T) if haskey(sys.components, x)]  
-        components_arrays = [sys.components[x] for x in types]
-        if  !isempty(components_arrays) 
-            abstract_type_vector = Vector{T}(reduce(vcat, components_arrays))
-            return Iterators.take(abstract_type_vector, length(abstract_type_vector))
-        else
-            return Iterators.take(Vector{T}(), 0)
-        end
+        types = [x for x in get_all_concrete_subtypes(T) if haskey(sys.components, x)]
+        return Iterators.flatten(Vector{Vector{T}}([sys.components[x] for x in types]))
     end
 end
 
