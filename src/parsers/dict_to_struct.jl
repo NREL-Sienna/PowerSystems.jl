@@ -200,13 +200,11 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
         throw(DataFormatError("input dict to add_time_series in wrong format"))
     end
 
-    if maximum(values(ts_raw)) <= 1.0
-        @info "assumed time series is a scaling factor for $name"
-        Device_dict["scalingfactor"] = ts_raw
-    else
-        @info "assumed time series is MW for $name"
-        Device_dict["scalingfactor"] = TimeSeries.TimeArray(TimeSeries.timestamp(ts_raw),values(ts_raw)/Device_dict["tech"]["installedcapacity"])
+    if maximum(values(ts_raw)) > 1.0
+        @warn "Time series for $name has values > 1.0, expected values in range {0.0,1.0}"
     end
+    Device_dict["scalingfactor"] = ts_raw
+
 
     return Device_dict
 end
