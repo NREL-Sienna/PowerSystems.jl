@@ -223,31 +223,28 @@ function make_thermal_gen(gen_name, d, bus)
     if haskey(d,"model")
         model = GeneratorCostModel(d["model"])
         if model == PIECEWISE_LINEAR::GeneratorCostModel
-            cost_component = d["cost"]
-            power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
-            cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
-            cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
+            cost_component = d["cost"]		        
+            power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]		        
+            cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)] 
+            cost = [(p,c) for (p,c) in zip(cost_p,power_p)]		     
             fixedcost = cost[1][2]
         elseif model == POLYNOMIAL::GeneratorCostModel
-            if d["ncost"] == 0
-                cost = x-> 0
-            elseif d["ncost"] == 1
-                cost = x-> d["cost"][1]
-            elseif d["ncost"] == 2
-                cost = x-> d["cost"][1]*x + d["cost"][2]
-            elseif d["ncost"] == 3
-                cost = x-> d["cost"][1]*x^2 + d["cost"][2]*x + d["cost"][3]
-            elseif d["ncost"] == 4
-                cost = x-> d["cost"][1]*x^3 + d["cost"][2]*x^2 + d["cost"][3]*x + d["cost"][4]
-            else
-                throw(DataFormatError("invalid value for ncost: $(d["ncost"])"))
+            if d["ncost"] == 0		         
+                cost = (0.0, 0.0)		           
+                fixedcost = 0.0		                
+            elseif d["ncost"] == 1		            
+                cost = (0.0, 0.0)		                 
+                fixedcost = d["cost"][1]		            
+            elseif d["ncost"] == 2		                 
+                cost = (0.0, d["cost"][1])		            
+                fixedcost = d["cost"][2]		                
+            elseif d["ncost"] == 3		            
+                cost = (d["cost"][1], d["cost"][2]) 		                 
+                fixedcost = d["cost"][3]		             
+            else		                
+                throw(DataFormatError("invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree"))
             end
-
-            # TODO: Reviewers:  Is this correct?
-            fixedcost = cost(d["pmin"])
         end
-        startupcost = d["startup"]
-        shutdncost = d["shutdown"]
     else
         @warn "Generator cost data not included for Generator: $gen_name"
         tmpcost = EconThermal()
@@ -271,8 +268,8 @@ function make_thermal_gen(gen_name, d, bus)
                                     "econ" => Dict{String,Any}("capacity" => d["pmax"],
                                                                 "variablecost" => cost,
                                                                 "fixedcost" => fixedcost,
-                                                                "startupcost" => startupcost,
-                                                                "shutdncost" => shutdncost,
+                                                                "startupcost" => d["startup"],
+                                                                "shutdncost" => d["shutdown"],
                                                                 "annualcapacityfactor" => nothing)
                                     )
     return thermal_gen
