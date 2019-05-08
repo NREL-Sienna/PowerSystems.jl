@@ -102,11 +102,11 @@ end
     @test compare_values_without_uuids(cdmsys.generators.hydro[1].econ,
                                        mpsys.generators.hydro[1].econ)
 
-    @test compare_values_without_uuids(cdmsys.generators.renewable[1].tech,
-                                       mpsys.generators.renewable[1].tech)
+    @test compare_values_without_uuids(tech(cdmsys.generators.renewable[1]),
+                                       tech(mpsys.generators.renewable[1]))
 
-    @test compare_values_without_uuids(cdmsys.generators.renewable[1].econ,
-                                       mpsys.generators.renewable[1].econ)
+    @test compare_values_without_uuids(econ(cdmsys.generators.renewable[1]),
+                                       econ(mpsys.generators.renewable[1]))
 
     @test cdmsys.branches[1].rate ==
         [b for b in mpsys.branches if 

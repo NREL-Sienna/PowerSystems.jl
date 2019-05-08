@@ -51,3 +51,9 @@ function genclassifier(gen::Array{T}) where T <: Generator
     return generators
 end
 
+# TODO DT temporary functions to support changes in the current PR.
+# Can be removed when all Generators implement the method-forward paradigm.
+name(value::Generator) = value.name
+available(value::Generator) = value.available
+bus(value::Generator) = value.bus
+tech(value::Generator) = value.tech

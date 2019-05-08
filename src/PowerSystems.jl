@@ -49,6 +49,15 @@ export RenewableFix
 export RenewableCurtailment
 export RenewableFullDispatch
 
+export available
+export bus
+export econ
+export internal
+export name
+export tech
+export uuid
+export uuids
+
 export ThermalGen
 export TechThermal
 export EconThermal
@@ -98,6 +107,7 @@ import JSON2
 import CSV
 import YAML
 import UUIDs
+import ReusePatterns: forward, @forward
 
 #################################################################################
 # Includes
@@ -166,5 +176,8 @@ include("models/serialization.jl")
 # Download test data
 include("utils/data.jl")
 import .UtilsData: TestData
+
+# TODO DT: temporay workaround
+name(value::T) where T <: Component = value.name
 
 end # module

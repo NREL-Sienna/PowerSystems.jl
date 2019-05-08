@@ -96,7 +96,7 @@ end
 function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:Branch}
 
     #Get axis names
-    line_ax = [branch.name for branch in branches]
+    line_ax = [name(branch) for branch in branches]
     bus_ax = [bus.number for bus in nodes]
     S, A = _buildptdf(branches, nodes, dist_slack)
 

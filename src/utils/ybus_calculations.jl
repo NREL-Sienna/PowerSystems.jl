@@ -128,7 +128,7 @@ function build_ybus(buscount::Int64, branches::Array{T}) where {T <: Branch}
 
     for b in branches
 
-        if b.name == "init"
+        if name(b) == "init"
             @error "The data in Branch is incomplete" # TODO: raise error here?
         end
 

@@ -20,6 +20,6 @@ end
 function validate(generator::Generator)::Bool
     is_valid = true
 
-    @debug "Generator validation" generator.name is_valid
+    @debug "Generator validation" name(generator) is_valid
     return is_valid
 end

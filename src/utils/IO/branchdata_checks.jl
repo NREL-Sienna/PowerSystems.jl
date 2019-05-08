@@ -36,7 +36,7 @@ function checkanglelimits!(branches::Array{<:Branch,1})
 
             if hist[1]
 
-                branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
+                branches[ix] = Line(deepcopy(name(l)),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),deepcopy(l.rate),
                                     hist[2])
@@ -92,7 +92,7 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
             end
 
             if flag
-                branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
+                branches[ix] = Line(deepcopy(name(l)),deepcopy(l.available),
                                     deepcopy(l.connectionpoints),deepcopy(l.r),
                                     deepcopy(l.x),deepcopy(l.b),
                                     rate,deepcopy(l.anglelimits))

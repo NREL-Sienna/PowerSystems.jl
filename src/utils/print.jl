@@ -9,8 +9,8 @@ function printPST(pst::Union{Component, GenClasses}, short = false,
     if short
         pst_summary = Base.summary(pst)
         # objects of type TechnicalParams do not have a 'name' field
-        if in(:name, fieldnames(typeof(pst)))
-            print(io, "$pst_summary(name=\"$(pst.name)\")")
+        if in(:name, fieldnames(typeof(pst))) || in(:base, fieldnames(typeof(pst)))
+            print(io, "$pst_summary(name=\"$(name(pst))\")")
         else
             print(io, "$pst_summary")
         end

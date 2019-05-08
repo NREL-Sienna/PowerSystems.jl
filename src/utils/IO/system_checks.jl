@@ -43,7 +43,7 @@ end
 function pvbuscheck(buses::Array{Bus}, generators::Array{T}) where {T<:Generator}
     pv_list = -1*ones(Int64, length(generators))
     for (ix,g) in enumerate(generators)
-        g.bus.bustype == "PV" ? pv_list[ix] = g.bus.number : continue
+        bus(g).bustype == "PV" ? pv_list[ix] = bus(g).number : continue
     end
 
     for b in buses

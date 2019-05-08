@@ -115,8 +115,8 @@ Takes a string or symbol "name" and returns a list of devices within a collectio
 function _get_device(name::Union{String,Symbol}, collection, devices = [])
     if isa(collection,Array) && !isempty(collection) && isassigned(collection)
             fn = fieldnames(typeof(collection[1]))
-            if :name in fn
-                [push!(devices,d) for d in collection if d.name == name]
+            if :name in fn || :base in fn
+                [push!(devices,d) for d in collection if PowerSystems.name(d) == name]
             end
     elseif isa(collection, Dict) && !isempty(collection)
         for (key, val) in collection
