@@ -19,9 +19,10 @@ export ComponentIterator
 export Device
 export Branch
 export Injection
+export ACBranch
 export Line
 export MonitoredLine
-export DCLine
+export DCBranch
 export HVDCLine
 export VSCDCLine
 export Transformer2W

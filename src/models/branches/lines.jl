@@ -3,7 +3,7 @@ const From_To_Float = NamedTuple{(:from, :to),Tuple{Float64,Float64}}
 const From_To_Bus =  NamedTuple{(:from, :to),Tuple{Bus,Bus}}
 const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from),Tuple{Float64,Float64}}
 
-struct Line <: Branch
+struct Line <: ACBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
@@ -37,7 +37,7 @@ function Line(; name="init",
     return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
 
-struct MonitoredLine <: Branch
+struct MonitoredLine <: ACBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus

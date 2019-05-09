@@ -1,4 +1,4 @@
-function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:Branch}
+function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:ACBranch}
 
     buscount = length(nodes)
     linecount = length(branches)
@@ -16,7 +16,7 @@ function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Flo
 
     for (ix,b) in enumerate(branches)
 
-        if isa(b,DCLine)
+        if isa(b,DCBranch)
             @warn("PTDF construction ignores DC-Lines")
             continue
         end
@@ -93,7 +93,7 @@ struct PTDF <: AbstractArray{Float64,2}
     lookup::NTuple{2,Dict}
 end
 
-function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:Branch}
+function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:ACBranch}
 
     #Get axis names
     line_ax = [branch.name for branch in branches]

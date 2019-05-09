@@ -1,6 +1,6 @@
-abstract type DCLine <: Branch end
+abstract type DCBranch <: Branch end
 
-struct HVDCLine <: DCLine
+struct HVDCLine <: DCBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
@@ -25,7 +25,7 @@ HVDCLine(; name ="init",
 """
 As implemented in Milano's Book Page 397
 """
-struct VSCDCLine <: DCLine
+struct VSCDCLine <: DCBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus

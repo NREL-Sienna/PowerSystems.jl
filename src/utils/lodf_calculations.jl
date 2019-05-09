@@ -1,4 +1,4 @@
-function buildlodf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1] ) where {T<:Branch}
+function buildlodf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1] ) where {T<:ACBranch}
     linecount = length(branches)
     ptdf , a = PowerSystems._buildptdf(branches,nodes,dist_slack)
     H =  gemm('N','N',ptdf,a)
