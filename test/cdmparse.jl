@@ -23,8 +23,8 @@ end
     PowerSystems.add_forecast!(sys_rts,:RT=>rts_rt)
     @test length(sys_rts.forecasts) == 2
 
-    cs_rts = ConcreteSystem(System(cdm_dict))
-    @test cs_rts isa ConcreteSystem
+    cs_rts = System(cdm_dict)
+    @test cs_rts isa System
 
     rts_da_cs = PowerSystems.make_forecast_array(cs_rts, cdm_dict["forecasts"]["DA"])
     @test length(rts_da[1].data) == 24

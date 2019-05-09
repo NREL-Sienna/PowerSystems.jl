@@ -96,13 +96,13 @@ function make_forecast_array(sys::Union{System,Array{Component,1}},ts_dict::Dict
 
  """
 Args:
-    A ConcreteSystem struct
+    A System struct
     A dictonary of forecasts
 Returns:
     A PowerSystems forecast stuct array
 """
 
-function make_forecast_array(sys::ConcreteSystem,ts_dict::Dict)
+function make_forecast_array(sys::System,ts_dict::Dict)
     ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
     fc = Array{Forecast}(undef, 0)
     all_devices = collect(get_components(Device,sys))
