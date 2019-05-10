@@ -243,7 +243,7 @@ function System(buses::Vector{Bus},
                 basepower::Float64; kwargs...)
 
     
-    return = System(buses, generators, loads, nothing, nothing, basepower, nothing, nothing, nothing; kwargs...)
+    return System(buses, generators, loads, nothing, nothing, basepower, nothing, nothing, nothing; kwargs...)
 end
 
 """Constructs System with default values."""
