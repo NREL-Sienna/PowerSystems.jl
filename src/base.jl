@@ -61,7 +61,7 @@ struct _System <: PowerSystemType
 end
 
 """Primary _System constructor. Funnel point for all other outer constructors."""
-function System(buses::Vector{Bus},
+function _System(buses::Vector{Bus},
                 generators::Vector{<:Generator},
                 loads::Vector{<:ElectricLoad},
                 branches::Union{Nothing, Vector{<:Branch}},
@@ -90,8 +90,7 @@ function System(buses::Vector{Bus},
         timeseriescheckforecast(forecasts)
     end
 
-    _sys = _System(buses, gen_classes, loads, branches, storage, basepower, forecasts, services, annex)
-    return System(_sys)
+    return _System(buses, gen_classes, loads, branches, storage, basepower, forecasts, services, annex)
 end
 
 """Constructs _System with default values."""
@@ -141,7 +140,8 @@ function add_forecast!(sys::_System,fc::Pair{Symbol,Array{Forecast,1}})
     sys.forecasts[fc.first] = fc.second
 end
 
-"""A _System struct that stores all devices in arrays with concrete types.
+"""
+A _System struct that stores all devices in arrays with concrete types.
 This is a temporary implementation that will allow consumers of PowerSystems to test the
 functionality before it is finalized.
 """
