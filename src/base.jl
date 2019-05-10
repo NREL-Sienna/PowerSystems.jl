@@ -3,8 +3,7 @@
 """
     _System
 
-A power system defined by fields for buses, generators, loads, branches, and
-overall system parameters.
+An internal struct that collects system components.
 
 # Constructor
 ```julia
@@ -141,9 +140,36 @@ function add_forecast!(sys::_System,fc::Pair{Symbol,Array{Forecast,1}})
 end
 
 """
-A _System struct that stores all devices in arrays with concrete types.
-This is a temporary implementation that will allow consumers of PowerSystems to test the
-functionality before it is finalized.
+    System
+
+    A power system defined by fields for buses, generators, loads, branches, and
+    overall system parameters.
+
+    # Constructor
+    ```julia
+    System(buses, generators, loads, branches, storage, basepower, forecasts, services, annex; kwargs...)
+    System(ps_dict; kwargs...)
+    System(file, ts_folder; kwargs...)
+    System(; kwargs...)
+    ```
+
+    # Arguments
+
+    * `buses`::Vector{Bus} : an array of buses
+    * `generators`::Vector{Generator} : an array of generators of (possibly) different types
+    * `loads`::Vector{ElectricLoad} : an array of load specifications that includes timing of the loads
+    * `branches`::Union{Nothing, Vector{Branch}} : an array of branches; may be `nothing`
+    * `storage`::Union{Nothing, Vector{Storage}} : an array of storage devices; may be `nothing`
+    * `basepower`::Float64 : the base power value for the system 
+    * `ps_dict`::Dict{String,Any} : the dictionary object containing System data
+    * `forecasts`::Union{Nothing, SystemForecasts} : dictionary of forecasts
+    * `services`::Union{Nothing, Vector{ <: Service}} : an array of services; may be `nothing`
+    * `file`::String, `ts_folder`::String : the filename and foldername that contain the System data
+
+    # Keyword arguments
+
+    * `runchecks`::Bool : run available checks on input fields
+    DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
 struct System <: PowerSystemType
     components::Dict{DataType, Vector{<:Component}}    # Contains arrays of concrete types.
