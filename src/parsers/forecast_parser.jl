@@ -105,7 +105,7 @@ Returns:
 function make_forecast_array(sys::ConcreteSystem,ts_dict::Dict)
     ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
     fc = Array{Forecast}(undef, 0)
-    all_devices = collect(get_components(Device,sys))
+    all_devices = collect(get_components(Component,sys))
     for (key,val) in ts_map
         ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
         if (typeof(ts)==DataFrames.DataFrame) & (size(ts,2) > 2)
