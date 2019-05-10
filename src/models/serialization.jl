@@ -57,7 +57,7 @@ end
 
 function encode_for_json(resolution::Dates.Period)
     return (value=resolution.value,
-            unit=string(typeof(resolution)))
+            unit=strip_module_names(string(typeof(resolution))))
 end
 
 function JSON2.read(io::IO, ::Type{T}) where {T <: Dates.Period}
