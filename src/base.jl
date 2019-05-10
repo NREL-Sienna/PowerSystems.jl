@@ -253,7 +253,7 @@ function from_json(io::Union{IO, String}, ::Type{ConcreteSystem})
     end
 
     # Services have been added; reset the iterator to make sure we find them.
-    reset_iterator(components)
+    replace_iterator(components, get_components(Component, sys))
     for name in forecast_names
         for forecast in getfield(raw.forecasts, name)
             if :component in fieldnames(typeof(forecast))

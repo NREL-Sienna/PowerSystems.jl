@@ -1,5 +1,5 @@
 
-import PowerSystems: LazyDictFromIterator, reset_iterator
+import PowerSystems: LazyDictFromIterator, replace_iterator, reset_iterator
 
 struct TestItem
     field::Int
@@ -30,4 +30,12 @@ end
     @test get(container, 22) isa TestItem
 
     @test_throws(KeyError, get(container, 25))
+
+    third = [TestItem(x) for x in 11:15]
+    items = [third]
+    @test_throws(KeyError, get(container, 12))
+    replace_iterator(container, Iterators.flatten(items))
+    @test get(container, 12) isa TestItem
+     # The old values should still be there.
+    @test get(container, 5) isa TestItem
 end

@@ -49,7 +49,7 @@ function Base.get(container::LazyDictFromIterator, key::K) where K
         end
 
         if isnothing(result)
-            throw(KeyError("failed to find $key"))
+            throw(KeyError(string(key)))
         end
 
         item = result[1]
@@ -70,4 +70,11 @@ end
 function reset_iterator(container::LazyDictFromIterator)
     @debug "reset_iterator"
     container.state = nothing
+end
+
+"""Replace the iterator, maintaining the cached dict."""
+function replace_iterator(container::LazyDictFromIterator, iter)
+    @debug "replace_iterator"
+    container.state = nothing
+    container.iter = iter
 end
