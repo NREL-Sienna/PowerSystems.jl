@@ -10,11 +10,6 @@ end
 PowerSystemInternal() = PowerSystemInternal(UUIDs.uuid4())
 
 """Gets the UUID for any PowerSystemType."""
-function get_uuid(obj::T)::Base.UUID where T <: PowerSystemType
+function get_uuid(obj::PowerSystemType)::Base.UUID
     return obj.internal.uuid
-end
-
-"""Gets the UUIDs for a vector of any PowerSystemType."""
-function get_uuids(objs::Vector{T})::Vector{Base.UUID} where T <: PowerSystemType
-    return [get_uuid(x) for x in objs]
 end

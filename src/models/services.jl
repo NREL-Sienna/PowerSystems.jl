@@ -36,7 +36,7 @@ function encode_for_json(service::T) where T <: Service
     for name in fields
         val = getfield(service, name)
         if val isa Vector{<:Device}
-            push!(vals, get_uuids(val))
+            push!(vals, get_uuid.(val))
         else
             push!(vals, val)
         end
