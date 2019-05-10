@@ -12,8 +12,15 @@ struct Line <: ACBranch
     b::From_To_Float # [pu]
     rate::Float64
     anglelimits::Min_Max #Degrees
+    internal::PowerSystemInternal
 end
 
+function Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
+    return Line(name, available, connectionpoints, r, x, b, rate, anglelimits,
+                PowerSystemInternal())
+end
+
+"""Accepts anglelimits as a Float64."""
 function Line(name::String,
               available::Bool,
               connectionpoints::From_To_Bus,
@@ -47,6 +54,13 @@ struct MonitoredLine <: ACBranch
     flowlimits::FromTo_ToFrom_Float #MW
     rate::Float64
     anglelimits::Min_Max #Degrees
+    internal::PowerSystemInternal
+end
+
+function MonitoredLine(name, available, connectionpoints, r, x, b, flowlimits, rate,
+                       anglelimits)
+    return MonitoredLine(name, available, connectionpoints, r, x, b, flowlimits, rate,
+                         anglelimits, PowerSystemInternal())
 end
 
 function MonitoredLine(; name="init",

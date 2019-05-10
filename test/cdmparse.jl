@@ -45,6 +45,36 @@ end
     @test_throws ErrorException PowerSystems.csv2ps_dict(baddir, 100.0)
 end
 
+"""Allows comparison of structs that were created from different parsers which causes them
+to have different UUIDs."""
+function compare_values_without_uuids(x::T, y::T)::Bool where T <: PowerSystemType
+    match = true
+
+    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
+        if fieldname == :internal
+            continue
+        end
+
+        val1 = getfield(x, fieldname)
+        val2 = getfield(y, fieldname)
+
+        # Recurse if this is a PowerSystemType.
+        if val1 isa PowerSystemType
+            if !compare_values_without_uuids(val1, val2)
+                match = false
+            end
+            continue
+        end
+
+        if val1 != val2
+            @error "values do not match" fieldname val1 val2
+            match = false
+        end
+    end
+
+    return match
+end
+
 @testset "consistency between CDM and standardfiles" begin
     mp_dict  = parsestandardfiles(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     pm_dict = parse_file(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -69,11 +99,14 @@ end
     @test cdmsys.generators.hydro[1].tech.installedcapacity == mpsys.generators.hydro[1].tech.installedcapacity
     @test cdmsys.generators.hydro[1].tech.ramplimits == mpsys.generators.hydro[1].tech.ramplimits # this gets adjusted in the pm2ps_dict 
 
-    @test cdmsys.generators.hydro[1].econ == mpsys.generators.hydro[1].econ
+    @test compare_values_without_uuids(cdmsys.generators.hydro[1].econ,
+                                       mpsys.generators.hydro[1].econ)
 
-    @test cdmsys.generators.renewable[1].tech == mpsys.generators.renewable[1].tech
+    @test compare_values_without_uuids(cdmsys.generators.renewable[1].tech,
+                                       mpsys.generators.renewable[1].tech)
 
-    @test cdmsys.generators.renewable[1].econ == mpsys.generators.renewable[1].econ
+    @test compare_values_without_uuids(cdmsys.generators.renewable[1].econ,
+                                       mpsys.generators.renewable[1].econ)
 
     @test cdmsys.branches[1].rate ==
         [b for b in mpsys.branches if 

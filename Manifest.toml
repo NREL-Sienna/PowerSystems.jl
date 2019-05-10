@@ -76,6 +76,12 @@ git-tree-sha1 = "1f7a25b53ec67f5e9422f1f551ee216503f4a0fa"
 uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 version = "0.20.0"
 
+[[JSON2]]
+deps = ["Dates", "Parsers", "Test"]
+git-tree-sha1 = "7e46c37f892d98a0b676e6663c828859fff89ecd"
+uuid = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
+version = "0.2.4"
+
 [[LibGit2]]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 

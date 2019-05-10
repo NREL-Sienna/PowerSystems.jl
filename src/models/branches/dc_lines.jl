@@ -9,6 +9,20 @@ struct HVDCLine <: DCBranch
     reactivepowerlimits_from::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MVar
     reactivepowerlimits_to::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #MVar
     loss::NamedTuple{(:l0, :l1),Tuple{Float64,Float64}}
+    internal::PowerSystemInternal
+end
+
+function HVDCLine(name,
+                  available,
+                  connectionpoints,
+                  activepowerlimits_from,
+                  activepowerlimits_to,
+                  reactivepowerlimits_from,
+                  reactivepowerlimits_to,
+                  loss)
+    return HVDCLine(name, available, connectionpoints, activepowerlimits_from,
+                    activepowerlimits_to, reactivepowerlimits_from,
+                    reactivepowerlimits_to,loss, PowerSystemInternal())
 end
 
 HVDCLine(; name ="init",
@@ -19,7 +33,9 @@ HVDCLine(; name ="init",
         reactivepowerlimits_from = (min=0.0, max=0.0),
         reactivepowerlimits_to = (min=0.0, max=0.0),
         loss = (l0=0.0, l1=0.0)
-    ) = HVDCLine(name, available, connectionpoints, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to,loss )
+    ) = HVDCLine(name, available, connectionpoints, activepowerlimits_from,
+                 activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to,
+                 loss)
 
 
 """
@@ -35,6 +51,21 @@ struct VSCDCLine <: DCBranch
     inverter_taplimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #pu
     inverter_xrc::Float64
     inverter_firingangle::NamedTuple{(:min, :max),Tuple{Float64,Float64}} #radians
+    internal::PowerSystemInternal
+end
+
+function VSCDCLine(name,
+                   available,
+                   connectionpoints,
+                   rectifier_taplimits,
+                   rectifier_xrc,
+                   rectifier_firingangle,
+                   inverter_taplimits,
+                   inverter_xrc,
+                   inverter_firingangle)
+    VSCDCLine(name, available, connectionpoints, rectifier_taplimits, rectifier_xrc,
+              rectifier_firingangle, inverter_taplimits, inverter_xrc,
+              inverter_firingangle, PowerSystemInternal())
 end
 
 VSCDCLine(; name ="init",
@@ -46,4 +77,6 @@ VSCDCLine(; name ="init",
         inverter_taplimits = (min=0.0, max=0.0),
         inverter_xrc = 0.0,
         inverter_firingangle = (min=0.0, max=0.0),
-    ) = VSCDCLine(name, available, connectionpoints,rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle)
+    ) = VSCDCLine(name, available, connectionpoints,rectifier_taplimits, rectifier_xrc,
+                  rectifier_firingangle, inverter_taplimits, inverter_xrc,
+                  inverter_firingangle)

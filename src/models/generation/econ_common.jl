@@ -11,7 +11,12 @@ Data Structure for the economical parameters of renewable generation technologie
 """
 struct EconRenewable <: TechnicalParams
     curtailpenalty::Float64 # [$/MWh]
-    variablecost::Union{Float64,Nothing} # [$/MWh]
+    variablecost::Union{Float64, Nothing} # [$/MWh]
+    internal::PowerSystemInternal
+end
+
+function EconRenewable(curtailpenalty, variablecost)
+    return EconRenewable(curtailpenalty, variablecost, PowerSystemInternal())
 end
 
 EconRenewable(; curtailcost = 0.0, variablecost = nothing) = EconRenewable(curtailcost, variablecost)
@@ -35,6 +40,12 @@ struct EconThermal <: TechnicalParams
     startupcost::Float64          # [$]
     shutdncost::Float64           # [$]
     annualcapacityfactor::Union{Float64,Nothing}  # [0-1]
+    internal::PowerSystemInternal
+end
+
+function EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor)
+    return EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost,
+                       annualcapacityfactor, PowerSystemInternal())
 end
 
 EconThermal(;   capacity = 0.0,
@@ -44,3 +55,23 @@ EconThermal(;   capacity = 0.0,
             shutdncost = 0.0,
             annualcapacityfactor = nothing
         ) = EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor)
+
+"""Enables deserialization of EconThermal. The default implementation can't figure out the
+variablecost Union.
+"""
+function JSON2.read(io::IO, ::Type{T}) where {T <: EconThermal}
+    data = JSON2.read(io)
+    if data.variablecost isa Array
+        variablecost = Vector{Tuple{Float64, Float64}}()
+        for array in data.variablecost
+            push!(variablecost, Tuple{Float64, Float64}(array))
+        end
+    else
+        @assert data.variablecost isa Tuple
+        variablecost = Tuple{Float64, Float64}(data.variablecost)
+    end
+
+    internal = convert_type(PowerSystemInternal, data.internal)
+    return EconThermal(data.capacity, variablecost, data.fixedcost, data.startupcost,
+                       data.shutdncost, data.annualcapacityfactor, internal)
+end
