@@ -5,31 +5,7 @@
 
 An internal struct that collects system components.
 
-# Constructor
-```julia
-_System(buses, generators, loads, branches, storage, basepower; kwargs...)
-_System(buses, generators, loads, branches, basepower; kwargs...)
-_System(buses, generators, loads, basepower; kwargs...)
-_System(ps_dict; kwargs...)
-_System(file, ts_folder; kwargs...)
-_System(; kwargs...)
-```
-
-# Arguments
-
-* `buses`::Vector{Bus} : an array of buses
-* `generators`::Vector{Generator} : an array of generators of (possibly) different types
-* `loads`::Vector{ElectricLoad} : an array of load specifications that includes timing of the loads
-* `branches`::Union{Nothing, Vector{Branch}} : an array of branches; may be `nothing`
-* `storage`::Union{Nothing, Vector{Storage}} : an array of storage devices; may be `nothing`
-* `basepower`::Float64 : the base power of the system (DOCTODO: is this true? what are the units of base power?)
-* `ps_dict`::Dict{String,Any} : the dictionary object containing _System data
-* `file`::String, `ts_folder`::String : the filename and foldername that contain the _System data
-
-# Keyword arguments
-
-* `runchecks`::Bool : run available checks on input fields
-DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
+# Constructors are identical to `System`
 
 """
 struct _System <: PowerSystemType
@@ -142,12 +118,12 @@ end
 """
     System
 
-    A power system defined by fields for buses, generators, loads, branches, and
-    overall system parameters.
+    A power system defined by fields for basepower, components, and forecasts.
 
     # Constructor
     ```julia
     System(buses, generators, loads, branches, storage, basepower, forecasts, services, annex; kwargs...)
+    System(buses, generators, loads, basepower; kwargs...)
     System(ps_dict; kwargs...)
     System(file, ts_folder; kwargs...)
     System(; kwargs...)
