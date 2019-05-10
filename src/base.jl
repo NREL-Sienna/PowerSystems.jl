@@ -236,6 +236,16 @@ function System(buses::Vector{Bus},
     return System(_sys)
 end
 
+"""System constructor without nothing-able arguments."""
+function System(buses::Vector{Bus},
+                generators::Vector{<:Generator},
+                loads::Vector{<:ElectricLoad},
+                basepower::Float64; kwargs...)
+
+    
+    return = System(buses, generators, loads, nothing, nothing, basepower, nothing, nothing, nothing; kwargs...)
+end
+
 """Constructs System with default values."""
 function System(; buses=[Bus()],
                 generators=[ThermalDispatch(), RenewableFix()],
