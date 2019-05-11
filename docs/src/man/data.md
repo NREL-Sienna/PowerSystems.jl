@@ -4,7 +4,7 @@ PowerSystems data can be serialized and deserialized in JSON.
 
 ```julia
 PowerSystems.to_json(system, "system.json")
-system = ConcreteSystem("system.json")
+system = System("system.json")
 ```
 
 It can be useful to view and filter the PowerSystems data in this format. There

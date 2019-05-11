@@ -51,8 +51,7 @@ end
     PowerSystems.add_forecast!(sys_rts, :DA=>rts_da)
     PowerSystems.add_forecast!(sys_rts, :RT=>rts_rt)
 
-    sys_rts_rt = System(cdm_dict)
-    sys = ConcreteSystem(sys_rts)
+    sys = System(cdm_dict)
 
     @test validate_uuids(sys)
 end

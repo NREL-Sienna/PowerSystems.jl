@@ -1,5 +1,5 @@
 
-@testset "Test functionality of ConcreteSystem" begin
+@testset "Test functionality of System" begin
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
     sys_rts = System(cdm_dict)
     rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
