@@ -33,7 +33,7 @@ Returns the item mapped to key. If the key is already stored then it will be ret
 with a dictionary lookup. If it has not been stored then iterate over the list until it is
 found.
 
-Returns nothing if key is not found.
+Throws KeyError if key is not found.
 """
 function Base.get(container::LazyDictFromIterator, key::K) where K
     if haskey(container.items, key)
@@ -49,7 +49,7 @@ function Base.get(container::LazyDictFromIterator, key::K) where K
         end
 
         if isnothing(result)
-            return nothing
+            throw(KeyError(string(key)))
         end
 
         item = result[1]
