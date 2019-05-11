@@ -23,12 +23,12 @@ end
     PowerSystems.add_forecast!(sys_rts,:RT=>rts_rt)
     @test length(sys_rts.forecasts) == 2
 
-    cs_rts = ConcreteSystem(System(cdm_dict))
-    @test cs_rts isa ConcreteSystem
+    cs_rts = System(cdm_dict)
+    @test cs_rts isa System
 
     rts_da_cs = PowerSystems.make_forecast_array(cs_rts, cdm_dict["forecasts"]["DA"])
     @test length(rts_da[1].data) == 24
-    @test length(rts_da) == 141
+    @test length(rts_da) == 141 # TODO: seems to be missing service forecasts
 
     rts_rt_cs = PowerSystems.make_forecast_array(cs_rts, cdm_dict["forecasts"]["RT"])
     @test length(rts_rt[1].data) == 288
@@ -86,40 +86,41 @@ end
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
     cdmsys = System(cdm_dict)
 
-    @test cdmsys.generators.thermal[1].tech.activepowerlimits == mpsys.generators.thermal[1].tech.activepowerlimits
-    @test cdmsys.generators.thermal[1].tech.reactivepowerlimits == mpsys.generators.thermal[1].tech.reactivepowerlimits
-    @test cdmsys.generators.thermal[1].tech.ramplimits == mpsys.generators.thermal[1].tech.ramplimits
+    cdmgen = collect(get_components(ThermalGen, cdmsys))[1]
+    mpgen = collect(get_components(ThermalGen, mpsys))[1]
+    @test cdmgen.tech.activepowerlimits == mpgen.tech.activepowerlimits
+    @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
+    @test cdmgen.tech.ramplimits == mpgen.tech.ramplimits
 
-    @test cdmsys.generators.thermal[1].econ.capacity == mpsys.generators.thermal[1].econ.capacity
-    @test [isapprox(cdmsys.generators.thermal[1].econ.variablecost[i][1], 
-                        mpsys.generators.thermal[1].econ.variablecost[i][1], atol = .1) for i in 1:4] == [true, true, true, true]
+    @test cdmgen.econ.capacity == mpgen.econ.capacity
+    @test [isapprox(cdmgen.econ.variablecost[i][1], mpgen.econ.variablecost[i][1], atol= .1) 
+                        for i in 1:4] == [true, true, true, true]
 
-    @test cdmsys.generators.hydro[1].tech.activepowerlimits == mpsys.generators.hydro[1].tech.activepowerlimits
-    @test cdmsys.generators.hydro[1].tech.reactivepowerlimits == mpsys.generators.hydro[1].tech.reactivepowerlimits
-    @test cdmsys.generators.hydro[1].tech.installedcapacity == mpsys.generators.hydro[1].tech.installedcapacity
-    @test cdmsys.generators.hydro[1].tech.ramplimits == mpsys.generators.hydro[1].tech.ramplimits # this gets adjusted in the pm2ps_dict 
+    cdmgen = collect(get_components(HydroGen, cdmsys))[1]
+    mpgen = collect(get_components(HydroGen, mpsys))[1]
+    @test cdmgen.tech.activepowerlimits == mpgen.tech.activepowerlimits
+    @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
+    @test cdmgen.tech.installedcapacity == mpgen.tech.installedcapacity
+    @test cdmgen.tech.ramplimits == mpgen.tech.ramplimits # this gets adjusted in the pm2ps_dict 
+    @test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
 
-    @test compare_values_without_uuids(cdmsys.generators.hydro[1].econ,
-                                       mpsys.generators.hydro[1].econ)
+    cdmbranches = collect(get_components(Branch,cdmsys))
+    @test cdmbranches[2].rate ==
+        [b for b in collect(get_components(Branch,mpsys)) if 
+            (b.connectionpoints.from.name == uppercase(cdmbranches[2].connectionpoints.from.name)) 
+                & (b.connectionpoints.to.name == uppercase(cdmbranches[2].connectionpoints.to.name))][1].rate
 
-    @test compare_values_without_uuids(cdmsys.generators.renewable[1].tech,
-                                       mpsys.generators.renewable[1].tech)
+    @test cdmbranches[6].rate ==
+        [b for b in collect(get_components(Branch,mpsys))  if 
+            (b.connectionpoints.from.name == uppercase(cdmbranches[6].connectionpoints.from.name)) 
+                & (b.connectionpoints.to.name == uppercase(cdmbranches[6].connectionpoints.to.name))][1].rate
 
-    @test compare_values_without_uuids(cdmsys.generators.renewable[1].econ,
-                                       mpsys.generators.renewable[1].econ)
+    @test cdmbranches[120].rate == [b for b in collect(get_components(Branch,mpsys)) if 
+            (b.connectionpoints.from.name == uppercase(cdmbranches[120].connectionpoints.from.name)) 
+                & (b.connectionpoints.to.name == uppercase(cdmbranches[120].connectionpoints.to.name))][1].rate
 
-    @test cdmsys.branches[1].rate ==
-        [b for b in mpsys.branches if 
-            (b.connectionpoints.from.name == uppercase(cdmsys.branches[1].connectionpoints.from.name)) 
-                & (b.connectionpoints.to.name == uppercase(cdmsys.branches[1].connectionpoints.to.name))][1].rate
-
-    @test cdmsys.branches[6].rate ==
-        [b for b in mpsys.branches if 
-            (b.connectionpoints.from.name == uppercase(cdmsys.branches[6].connectionpoints.from.name)) 
-                & (b.connectionpoints.to.name == uppercase(cdmsys.branches[6].connectionpoints.to.name))][1].rate
-
-    @test cdmsys.branches[120].rate == [b for b in mpsys.branches if 
-            (b.connectionpoints.from.name == uppercase(cdmsys.branches[120].connectionpoints.from.name)) 
-                & (b.connectionpoints.to.name == uppercase(cdmsys.branches[120].connectionpoints.to.name))][1].rate
-
+    cdmgen = collect(get_components(RenewableGen, cdmsys))[1]
+    mpgen = collect(get_components(RenewableGen, mpsys))[1]
+    @test compare_values_without_uuids(cdmgen.tech, mpgen.tech)
+    @test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
 end

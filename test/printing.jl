@@ -37,12 +37,14 @@ function are_type_and_fields_in_output(obj::T) where T <: PowerSystemType
     return match
 end
 
-sys5 = System(nodes5, thermal_generators5, loads5, branches5, nothing, 100.0, forecasts5,
-              nothing, nothing)
+sys5 = System(nodes5, thermal_generators5, loads5, branches5, nothing, 100.0, 
+        forecasts5, nothing, nothing)
+_sys5 = PowerSystems._System(nodes5, thermal_generators5, loads5, branches5, nothing, 100.0, 
+        forecasts5, nothing, nothing)
 @test are_type_and_fields_in_output(sys5)
-@test are_type_and_fields_in_output(sys5.buses[1])
-@test are_type_and_fields_in_output(sys5.generators)
-@test are_type_and_fields_in_output(sys5.generators.thermal[1])
-@test are_type_and_fields_in_output(sys5.branches[1])
-@test are_type_and_fields_in_output(sys5.loads[1])
+@test are_type_and_fields_in_output(collect(get_components(Bus,sys5))[1])
+@test are_type_and_fields_in_output(collect(get_components(Generator,sys5))[1])
+@test are_type_and_fields_in_output(collect(get_components(ThermalGen,sys5))[1])
+@test are_type_and_fields_in_output(collect(get_components(Branch,sys5))[1])
+@test are_type_and_fields_in_output(collect(get_components(ElectricLoad,sys5))[1])
 @test are_type_and_fields_in_output(sys5.forecasts[:DA][1])
