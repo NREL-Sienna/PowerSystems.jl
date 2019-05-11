@@ -1,5 +1,7 @@
 abstract type Branch <: Device end
 
+abstract type ACBranch <: Branch end
+
 include("./branches/lines.jl")
 include("./branches/transformers.jl")
 include("./branches/dc_lines.jl")

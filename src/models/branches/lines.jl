@@ -3,7 +3,7 @@ const From_To_Float = NamedTuple{(:from, :to),Tuple{Float64,Float64}}
 const From_To_Bus =  NamedTuple{(:from, :to),Tuple{Bus,Bus}}
 const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from),Tuple{Float64,Float64}}
 
-struct Line <: Branch
+struct Line <: ACBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
@@ -12,8 +12,15 @@ struct Line <: Branch
     b::From_To_Float # [pu]
     rate::Float64
     anglelimits::Min_Max #Degrees
+    internal::PowerSystemInternal
 end
 
+function Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
+    return Line(name, available, connectionpoints, r, x, b, rate, anglelimits,
+                PowerSystemInternal())
+end
+
+"""Accepts anglelimits as a Float64."""
 function Line(name::String,
               available::Bool,
               connectionpoints::From_To_Bus,
@@ -37,7 +44,7 @@ function Line(; name="init",
     return Line(name, available, connectionpoints, r, x, b, rate, anglelimits)
 end
 
-struct MonitoredLine <: Branch
+struct MonitoredLine <: ACBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
@@ -47,6 +54,13 @@ struct MonitoredLine <: Branch
     flowlimits::FromTo_ToFrom_Float #MW
     rate::Float64
     anglelimits::Min_Max #Degrees
+    internal::PowerSystemInternal
+end
+
+function MonitoredLine(name, available, connectionpoints, r, x, b, flowlimits, rate,
+                       anglelimits)
+    return MonitoredLine(name, available, connectionpoints, r, x, b, flowlimits, rate,
+                         anglelimits, PowerSystemInternal())
 end
 
 function MonitoredLine(; name="init",

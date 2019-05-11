@@ -151,6 +151,11 @@ struct System <: PowerSystemType
     components::Dict{DataType, Vector{<:Component}}    # Contains arrays of concrete types.
     forecasts::Union{Nothing, SystemForecasts}
     basepower::Float64                                 # [MVA]
+    internal::PowerSystemInternal
+end
+
+function System(components, forecasts, basepower)
+    return System(components, forecasts, basepower, PowerSystemInternal())
 end
 
 function System(sys::_System)
@@ -256,6 +261,75 @@ function System(file::String, ts_folder::String; kwargs...)
                   kwargs...);
 end
 
+"""Constructs a System from a JSON file."""
+function System(filename::String)
+    return from_json(System, filename)
+end
+
+"""Deserializes a System from String or IO."""
+function from_json(io::Union{IO, String}, ::Type{System})
+    components = Dict{DataType, Vector{<: Component}}()
+    raw = JSON2.read(io, NamedTuple)
+
+    names_and_types = [(x, getfield(PowerSystems, Symbol(strip_module_names(string(x)))))
+                        for x in fieldnames(typeof(raw.components))]
+
+    # Deserialize each component into the correct type.
+    # JSON versions of Service and Deterministic objects have UUIDs for components instead
+    # of actual components, so they have to be skipped on the first pass.
+    for (name, component_type) in names_and_types
+        components[component_type] = Vector{component_type}()
+        if component_type <: Service
+            continue
+        end
+
+        for component in getfield(raw.components, name)
+            obj = convert_type(component_type, component)
+            push!(components[component_type], obj)
+        end
+    end
+
+    forecasts = SystemForecasts()
+    forecast_names = fieldnames(typeof(raw.forecasts))
+    for name in forecast_names
+        forecasts[name] = Vector{Forecast}()
+        for forecast in getfield(raw.forecasts, name)
+            # Infer Deterministic structs by the presence of the field component.
+            if !(:component in fieldnames(typeof(forecast)))
+                push!(forecasts[name], convert_type(getfield(PowerSystems, name)))
+            end
+        end
+    end
+
+    sys = System(components, forecasts, float(raw.basepower))
+
+    # Service objects actually have Device instances, but Forecasts have Components. Since
+    # we are sharing the dict, use the higher-level type.
+    iter = get_components(Component, sys)
+    components = LazyDictFromIterator(Base.UUID, Component, iter, get_uuid)
+    for (name, component_type) in names_and_types
+        if component_type <: Service
+            for component in getfield(raw.components, name)
+                push!(sys.components[component_type],
+                      convert_type(component_type, component, components))
+            end
+        end
+    end
+
+    # Services have been added; reset the iterator to make sure we find them.
+    replace_iterator(components, get_components(Component, sys))
+    for name in forecast_names
+        for forecast in getfield(raw.forecasts, name)
+            if :component in fieldnames(typeof(forecast))
+                push!(sys.forecasts[name],
+                      convert_type(Deterministic, forecast, components))
+            end
+        end
+    end
+
+    return sys
+end
+
 """Adds a component to the system."""
 function add_component!(sys::System, component::T) where T <: Component
     if !isconcretetype(T)
@@ -333,4 +407,26 @@ function Base.summary(io::IO, sys::System)
 
     #df = DataFrames.DataFrame(rows)
     print(io, "This is currently broken")
+end
+
+function compare_values(x::System, y::System)::Bool
+    match = true
+    for key in keys(x.components)
+        if !compare_values(x.components[key], y.components[key])
+            @debug "System components do not match"
+            match = false
+        end
+    end
+
+    if !compare_values(x.forecasts, y.forecasts)
+        @debug "System forecasts do not match"
+        match = false
+    end
+
+    if x.basepower != y.basepower
+        @debug "basepower does not match" x.basepower y.basepower
+        match = false
+    end
+
+    return match
 end

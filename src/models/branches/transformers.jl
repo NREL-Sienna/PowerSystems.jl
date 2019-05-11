@@ -2,7 +2,7 @@
 The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer.
 The model allocates the iron losses and magnetezing suceptance to the primary side
 """
-struct Transformer2W <: Branch
+struct Transformer2W <: ACBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
@@ -10,6 +10,12 @@ struct Transformer2W <: Branch
     x::Float64 #[pu]
     primaryshunt::Float64 #[pu]
     rate::Union{Nothing,Float64} #[MVA]
+    internal::PowerSystemInternal
+end
+
+function Transformer2W(name, available, connectionpoints, r, x, primaryshunt, rate)
+    return Transformer2W(name, available, connectionpoints, r, x, primaryshunt, rate,
+                         PowerSystemInternal())
 end
 
 Transformer2W(; name = "init",
@@ -21,7 +27,7 @@ Transformer2W(; name = "init",
                 rate = nothing
             ) = Transformer2W(name, available, connectionpoints, r, x, primaryshunt, rate)
 
-struct TapTransformer <: Branch
+struct TapTransformer <: ACBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
@@ -30,6 +36,12 @@ struct TapTransformer <: Branch
     primaryshunt::Float64 #[pu]
     tap::Float64 # [0 - 2]
     rate::Union{Float64,Nothing} #[MVA]
+    internal::PowerSystemInternal
+end
+
+function TapTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, rate)
+    return TapTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, rate,
+                          PowerSystemInternal())
 end
 
 TapTransformer(; name = "init",
@@ -43,7 +55,7 @@ TapTransformer(; name = "init",
             ) = TapTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, rate)
 
 #=
-struct Transformer3W <: Branch
+struct Transformer3W <: ACBranch
     name::String
     available::Bool
     transformer::Transformer2W
@@ -57,7 +69,7 @@ Transformer3W(; name = "init",
             ) = Transformer3W(name, available, transformer, line)
 =#
 
-struct PhaseShiftingTransformer <: Branch
+struct PhaseShiftingTransformer <: ACBranch
     name::String
     available::Bool
     connectionpoints::From_To_Bus
@@ -67,6 +79,12 @@ struct PhaseShiftingTransformer <: Branch
     tap::Float64 #[0 - 2]
     α::Float64 # [radians]
     rate::Float64 #[MVA]
+    internal::PowerSystemInternal
+end
+
+function PhaseShiftingTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, α, rate)
+    PhaseShiftingTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, α,
+                             rate, PowerSystemInternal())
 end
 
 PhaseShiftingTransformer(; name = "init",

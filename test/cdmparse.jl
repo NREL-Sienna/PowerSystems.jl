@@ -45,6 +45,36 @@ end
     @test_throws ErrorException PowerSystems.csv2ps_dict(baddir, 100.0)
 end
 
+"""Allows comparison of structs that were created from different parsers which causes them
+to have different UUIDs."""
+function compare_values_without_uuids(x::T, y::T)::Bool where T <: PowerSystemType
+    match = true
+
+    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
+        if fieldname == :internal
+            continue
+        end
+
+        val1 = getfield(x, fieldname)
+        val2 = getfield(y, fieldname)
+
+        # Recurse if this is a PowerSystemType.
+        if val1 isa PowerSystemType
+            if !compare_values_without_uuids(val1, val2)
+                match = false
+            end
+            continue
+        end
+
+        if val1 != val2
+            @error "values do not match" fieldname val1 val2
+            match = false
+        end
+    end
+
+    return match
+end
+
 @testset "consistency between CDM and standardfiles" begin
     mp_dict  = parsestandardfiles(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     pm_dict = parse_file(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -72,14 +102,7 @@ end
     @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
     @test cdmgen.tech.installedcapacity == mpgen.tech.installedcapacity
     @test cdmgen.tech.ramplimits == mpgen.tech.ramplimits # this gets adjusted in the pm2ps_dict 
-
-    @test cdmgen.econ == mpgen.econ
-
-    cdmgen = collect(get_components(RenewableGen, cdmsys))[1]
-    mpgen = collect(get_components(RenewableGen, mpsys))[1]
-    @test cdmgen.tech == mpgen.tech
-
-    @test cdmgen.econ == mpgen.econ
+    @test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
 
     cdmbranches = collect(get_components(Branch,cdmsys))
     @test cdmbranches[2].rate ==
@@ -96,4 +119,8 @@ end
             (b.connectionpoints.from.name == uppercase(cdmbranches[120].connectionpoints.from.name)) 
                 & (b.connectionpoints.to.name == uppercase(cdmbranches[120].connectionpoints.to.name))][1].rate
 
+    cdmgen = collect(get_components(RenewableGen, cdmsys))[1]
+    mpgen = collect(get_components(RenewableGen, mpsys))[1]
+    @test compare_values_without_uuids(cdmgen.tech, mpgen.tech)
+    @test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
 end

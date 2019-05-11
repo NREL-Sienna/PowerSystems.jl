@@ -24,8 +24,13 @@ requirement - the required quantity of the product should be scaled by a Forecas
 """
 struct ProportionalReserve <: Reserve
     name::String
-    contributingdevices::Array{Device}
+    contributingdevices::Vector{Device}
     timeframe::Float64
+    internal::PowerSystemInternal
+end
+
+function ProportionalReserve(name, contributingdevices, timeframe)
+    return ProportionalReserve(name, contributingdevices, timeframe, PowerSystemInternal())
 end
 
 ProportionalReserve(;name = "init",
@@ -54,19 +59,23 @@ requirement - the required quantity of the product
 """
 struct StaticReserve <: Reserve
     name::String
-    contributingdevices::Array{Device}
+    contributingdevices::Vector{Device}
     timeframe::Float64
     requirement::Float64
+    internal::PowerSystemInternal
+end
 
-    function StaticReserve(name::String,
-                                contributingdevices::Array{Q},
-                                timeframe::Float64,
-                                generators::Array{G}) where {Q <: Device, G <: TechThermal}
+function StaticReserve(
+                       name,
+                       contributingdevices,
+                       timeframe,
+                       generators,
+                      )
 
-        requirement = maximum([gen.activepowerlimits[:max] for gen in generators])
+    requirement = maximum([gen.activepowerlimits[:max] for gen in generators])
 
-        new(name, contributingdevices, timeframe, requirement)
-    end
+    return StaticReserve(name, contributingdevices, timeframe, requirement,
+                         PowerSystemInternal())
 end
 
 StaticReserve(;name = "init",
