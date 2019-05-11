@@ -196,7 +196,7 @@ function ConcreteSystem(sys::System)
     end
 
     if !isnothing(concrete_sys.forecasts)
-        _convert_forecasts!(concrete_sys.forecasts, sys.forecasts)
+        add_forecasts!(concrete_sys, Iterators.flatten(values(sys.forecasts)))
     end
     return concrete_sys
 end
@@ -215,7 +215,7 @@ function from_json(io::Union{IO, String}, ::Type{ConcreteSystem})
                         for x in fieldnames(typeof(raw.components))]
 
     # Deserialize each component into the correct type.
-    # JSON versions of Service and Deterministic objects have UUIDs for components instead
+    # JSON versions of Service and Forecast objects have UUIDs for components instead
     # of actual components, so they have to be skipped on the first pass.
     for (name, component_type) in names_and_types
         components[component_type] = Vector{component_type}()
@@ -229,19 +229,7 @@ function from_json(io::Union{IO, String}, ::Type{ConcreteSystem})
         end
     end
 
-    forecasts = SystemForecasts()
-    forecast_names = fieldnames(typeof(raw.forecasts))
-    for name in forecast_names
-        forecasts[name] = Vector{Forecast}()
-        for forecast in getfield(raw.forecasts, name)
-            # Infer Deterministic structs by the presence of the field component.
-            if !(:component in fieldnames(typeof(forecast)))
-                push!(forecasts[name], convert_type(getfield(PowerSystems, name)))
-            end
-        end
-    end
-
-    sys = ConcreteSystem(components, forecasts, float(raw.basepower))
+    sys = ConcreteSystem(components, SystemForecasts(), float(raw.basepower))
 
     # Service objects actually have Device instances, but Forecasts have Components. Since
     # we are sharing the dict, use the higher-level type.
@@ -258,14 +246,7 @@ function from_json(io::Union{IO, String}, ::Type{ConcreteSystem})
 
     # Services have been added; reset the iterator to make sure we find them.
     replace_iterator(components, get_components(Component, sys))
-    for name in forecast_names
-        for forecast in getfield(raw.forecasts, name)
-            if :component in fieldnames(typeof(forecast))
-                push!(sys.forecasts[name],
-                      convert_type(Deterministic, forecast, components))
-            end
-        end
-    end
+    convert_type!(sys.forecasts, raw.forecasts, components)
 
     return sys
 end
@@ -284,45 +265,30 @@ function add_component!(sys::ConcreteSystem, component::T) where T <: Component
     return nothing
 end
 
-function _convert_forecasts!(system_forecasts::SystemForecasts,
-                             old_forecasts::SystemForecastsDeprecated)
-    for (sym, forecasts) in old_forecasts
-        for forecast in forecasts
-            add_forecast!(system_forecasts, forecast)
-        end
+"""
+    add_forecasts!(sys::ConcreteSystem, forecasts)
+
+Add forecasts to the system.
+
+# Arguments
+- `sys::ConcreteSystem`: system
+- `forecasts`: iterable (array, iterator, etc.) of Forecast values
+
+Throws DataFormatError if a component-label pair is not unique within a forecast array.
+
+"""
+function add_forecasts!(sys::ConcreteSystem, forecasts)
+    for forecast in forecasts
+        _add_forecast!(sys.forecasts, forecast)
     end
 
-    if !_validate_component_label_uniqueness(system_forecasts)
-        throw(DataFormatError("components and labels are not unique within forecast array"))
+    if !_validate_component_label_uniqueness(sys.forecasts)
+        throw(DataFormatError("components/labels are not unique within forecast array"))
     end
-    return system_forecasts
 end
 
-function _validate_component_label_uniqueness(system_forecasts::SystemForecasts)::Bool
-    match = true
-
-    for (issue_time, forecasts) in system_forecasts
-        unique_components = Set{Tuple{<:Component, String}}()
-        num_not_unique = 0
-        for forecast in forecasts
-            component_label = (forecast.component, forecast.label)
-            if component_label in unique_components
-                num_not_unique += 1
-                match = false
-                @error("not all components in forecast vector are unique", component_label,
-                       issue_time)
-            else
-                push!(unique_components, component_label)
-            end
-        end
-        @info "summary" num_not_unique length(forecasts)
-    end
-
-    return match
-end
-
-function add_forecast!(forecasts::SystemForecasts, issue_time::IssueTime,
-                       forecast::Forecast)
+function _add_forecast!(forecasts::SystemForecasts, issue_time::IssueTime,
+                        forecast::Forecast)
     if !haskey(forecasts, issue_time)
         forecasts[issue_time] = Forecasts{Forecast}()
     end
@@ -330,73 +296,140 @@ function add_forecast!(forecasts::SystemForecasts, issue_time::IssueTime,
     push!(forecasts[issue_time], forecast)
 end
 
-function add_forecast!(forecasts::SystemForecasts, forecast::Forecast)
+function _add_forecast!(forecasts::SystemForecasts, forecast::Forecast)
     issue_time = get_issue_time(forecast)
-    add_forecast!(forecasts, issue_time, forecast)
+    _add_forecast!(forecasts, issue_time, forecast)
 end
 
-"""
-Args:
-    A ConcreteSystem struct
-    A :Symbol=>Array{ <: Forecast,1} Pair denoting the forecast name and array of device forecasts
-Returns:
-    A System struct with a modified forecasts field
-"""
-function add_forecast!(sys::ConcreteSystem, fc::Pair{Symbol, Vector{Forecast}})
-    tmp = SystemForecastsDeprecated()
-    tmp[fc.first] = fc.second
-    system_forecasts = SystemForecasts()
-    _convert_forecasts!(system_forecasts, tmp)
+function _validate_component_label_uniqueness(system_forecasts::SystemForecasts)::Bool
+    match = true
 
     for (issue_time, forecasts) in system_forecasts
-        # This assumes that issue_time is the same for each forecast in the vector because
-        # that is how _convert_forecasts works above.
+        unique_components = Set{Tuple{<:Component, String}}()
         for forecast in forecasts
-            add_forecast!(sys.forecasts, issue_time, forecast)
+            component_label = (forecast.component, forecast.label)
+            if component_label in unique_components
+                match = false
+                @error("not all components in forecast vector are unique", component_label,
+                       issue_time)
+            else
+                push!(unique_components, component_label)
+            end
         end
     end
 
-    if !_validate_component_label_uniqueness(sys.forecasts)
-        throw(DataFormatError("components and labels are not unique within forecast array"))
-    end
+    return match
 end
 
-"""Returns an iterator to the forecast IssueTime values stored in the System."""
+"""
+    get_forecast_issue_times(sys::ConcreteSystem)
+
+Return an iterator to the forecast IssueTime values stored in the System.
+
+"""
 function get_forecast_issue_times(sys::ConcreteSystem)
     return keys(sys.forecasts)
 end
 
-"""Returns an iterator to the forecasts for the given IssueTime stored in the System."""
+"""
+    get_forecasts(sys::ConcreteSystem, issue_time::IssueTime)
+
+Return an iterator to the forecasts for the given IssueTime stored in the System.
+
+Throws InvalidParameter if the System does not have issue_time stored.
+
+"""
 function get_forecasts(sys::ConcreteSystem, issue_time::IssueTime)
     if !haskey(sys.forecasts, issue_time)
-        error("forecast issue_time {issue_time} does not exist")
+        throw(InvalidParameter("forecast issue_time {issue_time} does not exist"))
     end
 
     return Iterators.take(sys.forecasts[issue_time], length(sys.forecasts[issue_time]))
 end
 
-"""Returns a vector of forecasts that match the components and label."""
-function get_forecasts(sys::ConcreteSystem, issue_time::IssueTime, components_iterator,
-                       label::Union{String, Nothing}=nothing)
+"""
+    get_forecasts(
+                  sys::ConcreteSystem,
+                  issue_time::IssueTime,
+                  components_iterator,
+                  label::Union{String, Nothing}=nothing,
+                  ; throw_on_unmatched_component=false,
+                 )::Vector{Forecast}
+
+# Arguments
+- `sys::ConcreteSystem`: system
+- `issue_time::IssueTime`: time designator for the forecast; see [`get_issue_time`](@ref)
+- `components_iter`: iterable (array, iterator, etc.) of Component values
+- `label::Union{String, Nothing}`: forecast label or nothing
+- `throw_on_unmatched_component::Bool`: throw error if no forecast is found for a component
+
+Return forecasts that match the components and label.
+
+Throws InvalidParameter if `throw_on_unmatched_component`=true and no forecast is found for
+a component.
+"""
+function get_forecasts(
+                       sys::ConcreteSystem,
+                       issue_time::IssueTime,
+                       components_iterator,
+                       label::Union{String, Nothing}=nothing,
+                       ; throw_on_unmatched_component=false,
+                      )::Vector{Forecast}
     forecasts = Vector{Forecast}()
 
-    # This code caches the passed component UUIDs in a dict so that we don't have to
-    # iterate across them for each forecast.
-    components = LazyDictFromIterator(Base.UUID, Component, components_iterator, get_uuid)
+    # Cache the component UUIDs and matched component UUIDs so that we iterate over
+    # components_iterator and forecasts only once.
+    components = Set{Base.UUID}((get_uuid(x) for x in components_iterator))
+    matched_components = Set{Base.UUID}()
     for forecast in get_forecasts(sys, issue_time)
-        if !isnothing(label) && label != forecast.label 
+        if !isnothing(label) && label != forecast.label
             continue
         end
 
-        if !isnothing(get(components, get_uuid(forecast.component)))
+        component_uuid = get_uuid(forecast.component)
+        if in(component_uuid, components)
             push!(forecasts, forecast)
+            push!(matched_components, component_uuid)
+        end
+    end
+
+    if length(components) != length(matched_components)
+        unmatched_components = setdiff(components, matched_components)
+        @warn "Did not find forecasts with UUIDs" unmatched_components
+        if throw_on_unmatched_component
+            throw(InvalidParameter("did not find forecasts for one or more components"))
         end
     end
 
     return forecasts
 end
 
-# TODO: implement methods to remove components and forecasts. In order to do this we will
+"""
+    remove_forecast(sys::ConcreteSystem, forecast::Forecast)
+
+Remove the forecat from the system.
+
+Throws InvalidParameter if the forecast is not stored.
+"""
+function remove_forecast!(sys::ConcreteSystem, forecast::Forecast)
+    issue_time = get_issue_time(forecast)
+
+    if !haskey(sys.forecasts, issue_time)
+        throw(InvalidParameter("Forecast not found: $(forecast.label)"))
+    end
+
+    forecast_array = sys.forecasts[issue_time]
+    for (i, forecast_) in enumerate(forecast_array)
+        if get_uuid(forecast) == get_uuid(forecast_)
+            deleteat!(forecast_array, i)
+            return
+        end
+    end
+
+    throw(InvalidParameter("Forecast not found: $(forecast.label)"))
+end
+
+# TODO: implement methods to remove components. In order to do this we will
 # need each PowerSystemType to store a UUID.
 # GitHub issue #203
 

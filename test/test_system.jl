@@ -43,6 +43,7 @@
 
     issue_times = collect(get_forecast_issue_times(sys))
     @assert length(issue_times) > 0
+    issue_time = issue_times[1]
 
     # Get forecasts with a label and without.
     forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys),
@@ -50,5 +51,25 @@
     @test length(forecasts) > 0
 
     forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
-    @test length(forecasts) > 0
+    count = length(forecasts)
+    @test count > 0
+
+    for forecast in forecasts
+        remove_forecast!(sys, forecast)
+    end
+
+    new_forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
+    @test length(new_forecasts) == 0
+
+    @test_throws(InvalidParameter,
+                 get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys),
+                               throw_on_unmatched_component=true))
+
+    add_forecasts!(sys, forecasts)
+
+    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
+    @assert length(forecasts) == count
+
+    pop!(sys.forecasts, issue_time)
+    @test_throws(InvalidParameter, get_forecasts(sys, issue_time))
 end
