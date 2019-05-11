@@ -40,4 +40,15 @@
     end
 
     @test length(collect(get_components(ThermalGen, sys))) > 0
+
+    issue_times = collect(get_forecast_issue_times(sys))
+    @assert length(issue_times) > 0
+
+    # Get forecasts with a label and without.
+    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys),
+                              "PMax MW")
+    @test length(forecasts) > 0
+
+    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
+    @test length(forecasts) > 0
 end

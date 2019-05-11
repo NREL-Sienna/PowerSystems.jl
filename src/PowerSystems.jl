@@ -83,6 +83,8 @@ export add_component!
 export get_components
 export to_json
 export from_json
+export get_forecasts
+export get_forecast_issue_times
 
 #################################################################################
 # Imports

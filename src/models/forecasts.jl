@@ -1,7 +1,16 @@
 abstract type Forecast <: PowerSystemType end
 
-const Forecasts = Vector{ <: Forecast}
-const SystemForecasts = Dict{Symbol, Forecasts}
+const Forecasts = Vector{<:Forecast}
+# This is deprecated because only the legacy System uses it. Parsing code need to change to
+# build the new format.
+const SystemForecastsDeprecated = Dict{Symbol, Forecasts}
+const IssueTime = NamedTuple{(:resolution, :initialtime),
+                             Tuple{Dates.Period, Dates.DateTime}}
+const SystemForecasts = Dict{IssueTime, Forecasts}
+
+function get_issue_time(forecast::Forecast)
+    return IssueTime((forecast.resolution, forecast.initialtime))
+end
 
 """
     Deterministic
@@ -82,7 +91,11 @@ function convert_type(
         if fieldtype <: Component
             uuid = Base.UUID(val.value)
             component = get(components, uuid)
-            @assert isnothing(component_type)
+
+            if isnothing(component)
+                throw(DataFormatError("failed to find $uuid"))
+            end
+
             component_type = typeof(component)
             push!(values, component)
         else

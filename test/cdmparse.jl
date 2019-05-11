@@ -33,11 +33,6 @@ end
     rts_rt_cs = PowerSystems.make_forecast_array(cs_rts, cdm_dict["forecasts"]["RT"])
     @test length(rts_rt[1].data) == 288
     @test length(rts_rt) == 134
-
-    PowerSystems.add_forecast!(cs_rts,:DA=>rts_da)
-    PowerSystems.add_forecast!(cs_rts,:RT=>rts_rt)
-    @test length(cs_rts.forecasts) == 2
-    
 end
 
 @testset "CDM parsing invalid directory" begin

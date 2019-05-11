@@ -41,7 +41,7 @@ struct System <: PowerSystemType
     branches::Union{Nothing, Vector{<:Branch}}
     storage::Union{Nothing, Vector{<:Storage}}
     basepower::Float64 # [MVA]
-    forecasts::Union{Nothing, SystemForecasts}
+    forecasts::Union{Nothing, SystemForecastsDeprecated}
     services::Union{Nothing, Vector{ <: Service}}
     annex::Union{Nothing,Dict{Any,Any}}
 #=
@@ -67,7 +67,7 @@ function System(buses::Vector{Bus},
                 branches::Union{Nothing, Vector{<:Branch}},
                 storage::Union{Nothing, Vector{<:Storage}},
                 basepower::Float64,
-                forecasts::Union{Nothing, SystemForecasts},
+                forecasts::Union{Nothing, SystemForecastsDeprecated},
                 services::Union{Nothing, Vector{ <: Service}},
                 annex::Union{Nothing,Dict}; kwargs...)
 
@@ -157,7 +157,8 @@ end
 
 function ConcreteSystem(sys::System)
     components = Dict{DataType, Vector{<:Component}}()
-    concrete_sys = ConcreteSystem(components, sys.forecasts, sys.basepower)
+    forecasts = isnothing(sys.forecasts) ? nothing : SystemForecasts()
+    concrete_sys = ConcreteSystem(components, forecasts, sys.basepower)
 
     for field in (:buses, :loads)
         for obj in getfield(sys, field)
@@ -194,6 +195,9 @@ function ConcreteSystem(sys::System)
         @debug "components: $(string(key)): count=$(string(length(value)))"
     end
 
+    if !isnothing(concrete_sys.forecasts)
+        _convert_forecasts!(concrete_sys.forecasts, sys.forecasts)
+    end
     return concrete_sys
 end
 
@@ -280,6 +284,57 @@ function add_component!(sys::ConcreteSystem, component::T) where T <: Component
     return nothing
 end
 
+function _convert_forecasts!(system_forecasts::SystemForecasts,
+                             old_forecasts::SystemForecastsDeprecated)
+    for (sym, forecasts) in old_forecasts
+        for forecast in forecasts
+            add_forecast!(system_forecasts, forecast)
+        end
+    end
+
+    if !_validate_component_label_uniqueness(system_forecasts)
+        throw(DataFormatError("components and labels are not unique within forecast array"))
+    end
+    return system_forecasts
+end
+
+function _validate_component_label_uniqueness(system_forecasts::SystemForecasts)::Bool
+    match = true
+
+    for (issue_time, forecasts) in system_forecasts
+        unique_components = Set{Tuple{<:Component, String}}()
+        num_not_unique = 0
+        for forecast in forecasts
+            component_label = (forecast.component, forecast.label)
+            if component_label in unique_components
+                num_not_unique += 1
+                match = false
+                @error("not all components in forecast vector are unique", component_label,
+                       issue_time)
+            else
+                push!(unique_components, component_label)
+            end
+        end
+        @info "summary" num_not_unique length(forecasts)
+    end
+
+    return match
+end
+
+function add_forecast!(forecasts::SystemForecasts, issue_time::IssueTime,
+                       forecast::Forecast)
+    if !haskey(forecasts, issue_time)
+        forecasts[issue_time] = Forecasts{Forecast}()
+    end
+
+    push!(forecasts[issue_time], forecast)
+end
+
+function add_forecast!(forecasts::SystemForecasts, forecast::Forecast)
+    issue_time = get_issue_time(forecast)
+    add_forecast!(forecasts, issue_time, forecast)
+end
+
 """
 Args:
     A ConcreteSystem struct
@@ -287,8 +342,58 @@ Args:
 Returns:
     A System struct with a modified forecasts field
 """
-function add_forecast!(sys::ConcreteSystem,fc::Pair{Symbol,Array{Forecast,1}})
-    sys.forecasts[fc.first] = fc.second
+function add_forecast!(sys::ConcreteSystem, fc::Pair{Symbol, Vector{Forecast}})
+    tmp = SystemForecastsDeprecated()
+    tmp[fc.first] = fc.second
+    system_forecasts = SystemForecasts()
+    _convert_forecasts!(system_forecasts, tmp)
+
+    for (issue_time, forecasts) in system_forecasts
+        # This assumes that issue_time is the same for each forecast in the vector because
+        # that is how _convert_forecasts works above.
+        for forecast in forecasts
+            add_forecast!(sys.forecasts, issue_time, forecast)
+        end
+    end
+
+    if !_validate_component_label_uniqueness(sys.forecasts)
+        throw(DataFormatError("components and labels are not unique within forecast array"))
+    end
+end
+
+"""Returns an iterator to the forecast IssueTime values stored in the System."""
+function get_forecast_issue_times(sys::ConcreteSystem)
+    return keys(sys.forecasts)
+end
+
+"""Returns an iterator to the forecasts for the given IssueTime stored in the System."""
+function get_forecasts(sys::ConcreteSystem, issue_time::IssueTime)
+    if !haskey(sys.forecasts, issue_time)
+        error("forecast issue_time {issue_time} does not exist")
+    end
+
+    return Iterators.take(sys.forecasts[issue_time], length(sys.forecasts[issue_time]))
+end
+
+"""Returns a vector of forecasts that match the components and label."""
+function get_forecasts(sys::ConcreteSystem, issue_time::IssueTime, components_iterator,
+                       label::Union{String, Nothing}=nothing)
+    forecasts = Vector{Forecast}()
+
+    # This code caches the passed component UUIDs in a dict so that we don't have to
+    # iterate across them for each forecast.
+    components = LazyDictFromIterator(Base.UUID, Component, components_iterator, get_uuid)
+    for forecast in get_forecasts(sys, issue_time)
+        if !isnothing(label) && label != forecast.label 
+            continue
+        end
+
+        if !isnothing(get(components, get_uuid(forecast.component)))
+            push!(forecasts, forecast)
+        end
+    end
+
+    return forecasts
 end
 
 # TODO: implement methods to remove components and forecasts. In order to do this we will
