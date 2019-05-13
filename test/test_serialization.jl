@@ -1,5 +1,5 @@
 
-function validate_serialization(sys::ConcreteSystem)
+function validate_serialization(sys::System)
     path, io = mktemp()
     @info "Serializing to $path"
 
@@ -13,7 +13,7 @@ function validate_serialization(sys::ConcreteSystem)
     close(io)
 
     try
-        sys2 = ConcreteSystem(path)
+        sys2 = System(path)
         return PowerSystems.compare_values(sys, sys2)
     finally
         @debug "delete temp file" path
@@ -23,14 +23,13 @@ end
 
 @testset "Test JSON serialization" begin
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    sys_rts_da = System(cdm_dict)
-    sys = ConcreteSystem(sys_rts_da)
+    sys = System(cdm_dict)
     @test validate_serialization(sys)
 
     # Serialize specific components.
     for component_type in keys(sys.components)
         if component_type <: Service || component_type <: Deterministic
-            # These can only be deserialized from within ConcreteSystem.
+            # These can only be deserialized from within System.
             continue
         end
         for component in get_components(component_type, sys)

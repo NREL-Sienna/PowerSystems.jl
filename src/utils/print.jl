@@ -50,7 +50,7 @@ Base.summary(gens::GenClasses) = summaryGenClasses(gens::GenClasses)
 
 # overload Base.summary for System to be useful, e.g., in output of
 # varinfo(); also used now in printPowerSystem, JJS 11/26/18
-function summaryPowerSystem(system::System)
+function summaryPowerSystem(system::_System)
     busstr = string("buses:", length(system.buses))
     genstr = Base.summary(system.generators)
     loadstr = string("loads:", length(system.loads))
@@ -63,10 +63,10 @@ function summaryPowerSystem(system::System)
     output = string("System($busstr,$genstr,$loadstr,$branchstr,$storstr)")
     return output
 end
-Base.summary(system::System) = summaryPowerSystem(system::System)
+Base.summary(system::_System) = summaryPowerSystem(system::_System)
 
 # print function for System type
-function printPowerSystem(system::System, short = false,
+function printPowerSystem(system::_System, short = false,
                   io::IO = stdout)
     if short
         print(io, Base.summary(system))
@@ -89,7 +89,7 @@ function printPowerSystem(system::System, short = false,
         end
     end
 end
-Base.show(io::IO, system::System) = printPowerSystem(system, true, io)
-Base.show(io::IO, ::MIME"text/plain", system::System) =
+Base.show(io::IO, system::_System) = printPowerSystem(system, true, io)
+Base.show(io::IO, ::MIME"text/plain", system::_System) =
     printPowerSystem(system, false, io)
 
