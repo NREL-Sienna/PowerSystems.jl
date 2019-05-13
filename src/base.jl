@@ -250,6 +250,10 @@ function System(ps_dict::Dict{String,Any}; kwargs...)
     buses, generators, storage, branches, loads, loadZones, shunts, forecasts, services =
         ps_dict2ps_struct(ps_dict)
 
+    if !empty(forecasts)
+        # GitHub issue #234
+        error("Constructing System with a ps_dict with forecasts is not currently supported.")
+    end
     return System(buses, generators, loads, branches, storage, ps_dict["baseMVA"],
                   forecasts, services, Dict(:LoadZones=>loadZones);
                   kwargs...);
@@ -293,7 +297,7 @@ function from_json(io::Union{IO, String}, ::Type{System})
         end
     end
 
-    sys = System(components, forecasts, float(raw.basepower))
+    sys = System(components, SystemForecasts(), float(raw.basepower))
 
     # Service objects actually have Device instances, but Forecasts have Components. Since
     # we are sharing the dict, use the higher-level type.

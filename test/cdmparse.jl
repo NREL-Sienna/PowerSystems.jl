@@ -8,7 +8,7 @@ end
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
     @test cdm_dict isa Dict && haskey(cdm_dict, "loadzone")
 
-    sys_rts = System(cdm_dict)
+    sys_rts = System(PowerSystems._System(cdm_dict))
     @test sys_rts isa System
 
     rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
@@ -19,11 +19,7 @@ end
     @test length(rts_rt[1].data) == 288
     @test length(rts_rt) == 134
 
-    PowerSystems.add_forecast!(sys_rts,:DA=>rts_da)
-    PowerSystems.add_forecast!(sys_rts,:RT=>rts_rt)
-    @test length(sys_rts.forecasts) == 2
-
-    cs_rts = System(cdm_dict)
+    cs_rts = System(PowerSystems._System(cdm_dict))
     @test cs_rts isa System
 
     rts_da_cs = PowerSystems.make_forecast_array(cs_rts, cdm_dict["forecasts"]["DA"])
@@ -74,12 +70,12 @@ end
     mp_dict  = parsestandardfiles(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     pm_dict = parse_file(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     pmmp_dict = PowerSystems.pm2ps_dict(pm_dict)
-    mpmmpsys = System(pmmp_dict)
+    mpmmpsys = System(PowerSystems._System(pmmp_dict))
 
-    mpsys = System(mp_dict)
+    mpsys = System(PowerSystems._System(mp_dict))
 
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    cdmsys = System(cdm_dict)
+    cdmsys = System(PowerSystems._System(cdm_dict))
 
     cdmgen = collect(get_components(ThermalGen, cdmsys))[1]
     mpgen = collect(get_components(ThermalGen, mpsys))[1]
