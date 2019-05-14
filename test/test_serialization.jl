@@ -23,7 +23,7 @@ end
 
 @testset "Test JSON serialization" begin
     cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    sys = System(PowerSystems._System(cdm_dict))
+    sys = System(cdm_dict)
     @test validate_serialization(sys)
 
     # Serialize specific components.

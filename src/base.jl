@@ -247,26 +247,12 @@ end
 
 """Constructs System from a ps_dict."""
 function System(ps_dict::Dict{String,Any}; kwargs...)
-    buses, generators, storage, branches, loads, loadZones, shunts, forecasts, services =
-        ps_dict2ps_struct(ps_dict)
-
-    if !empty(forecasts)
-        # GitHub issue #234
-        error("Constructing System with a ps_dict with forecasts is not currently supported.")
-    end
-    return System(buses, generators, loads, branches, storage, ps_dict["baseMVA"],
-                  forecasts, services, Dict(:LoadZones=>loadZones);
-                  kwargs...);
+    return System(_System(ps_dict; kwargs...))
 end
 
 """Constructs System from a file containing Matpower, PTI, or JSON data."""
 function System(file::String, ts_folder::String; kwargs...)
-    ps_dict = parsestandardfiles(file,ts_folder; kwargs...)
-    buses, generators, storage, branches, loads, loadZones, shunts, services =
-        ps_dict2ps_struct(ps_dict)
-
-    return System(buses, generators, loads, branches, storage, ps_dict["baseMVA"];
-                  kwargs...);
+    return System(_System(file, ts_folder; kwargs...))
 end
 
 """Constructs a System from a JSON file."""

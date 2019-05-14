@@ -8,7 +8,7 @@
     PowerSystems.add_forecast!(sys_rts, :DA=>rts_da)
     PowerSystems.add_forecast!(sys_rts, :RT=>rts_rt)
 
-    sys = System(PowerSystems._System(cdm_dict))
+    sys = System(cdm_dict)
     @test length(sys_rts.branches) == length(collect(get_components(Branch, sys)))
     @test length(sys_rts.loads) == length(collect(get_components(ElectricLoad, sys)))
     @test length(sys_rts.storage) == length(collect(get_components(Storage, sys)))
