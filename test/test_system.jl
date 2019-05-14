@@ -57,12 +57,14 @@
         remove_forecast!(sys, forecast)
     end
 
-    new_forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
-    @test length(new_forecasts) == 0
-
+    # InvalidParameter is thrown if the type is concrete and there is no forecast for a
+    # component.
     @test_throws(InvalidParameter,
-                 get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys),
-                               throw_on_unmatched_component=true))
+                 get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys)))
+
+    # But not if the type is abstract.
+    new_forecasts = get_forecasts(sys, issue_time, get_components(HydroGen, sys))
+    @test length(new_forecasts) == 0
 
     add_forecasts!(sys, forecasts)
 

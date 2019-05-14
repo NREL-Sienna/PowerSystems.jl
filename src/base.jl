@@ -407,7 +407,6 @@ end
                   issue_time::IssueTime,
                   components_iterator,
                   label::Union{String, Nothing}=nothing,
-                  ; throw_on_unmatched_component=false,
                  )::Vector{Forecast}
 
 # Arguments
@@ -415,21 +414,22 @@ end
 - `issue_time::IssueTime`: time designator for the forecast; see [`get_issue_time`](@ref)
 - `components_iter`: iterable (array, iterator, etc.) of Component values
 - `label::Union{String, Nothing}`: forecast label or nothing
-- `throw_on_unmatched_component::Bool`: throw error if no forecast is found for a component
 
 Return forecasts that match the components and label.
 
-Throws InvalidParameter if `throw_on_unmatched_component`=true and no forecast is found for
-a component.
+Throws InvalidParameter if eltype(components_iterator) is a concrete type and no forecast is
+found for a component.
 """
 function get_forecasts(
                        sys::System,
                        issue_time::IssueTime,
                        components_iterator,
                        label::Union{String, Nothing}=nothing,
-                       ; throw_on_unmatched_component=false,
                       )::Vector{Forecast}
     forecasts = Vector{Forecast}()
+    elem_type = eltype(components_iterator)
+    throw_on_unmatched_component = isconcretetype(elem_type)
+    @debug "get_forecasts" issue_time label elem_type throw_on_unmatched_component
 
     # Cache the component UUIDs and matched component UUIDs so that we iterate over
     # components_iterator and forecasts only once.
