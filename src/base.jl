@@ -495,11 +495,14 @@ end
                   )::FlattenedVectorsIterator{T} where {T <: Component}
 
 Returns an iterator of components. T can be concrete or abstract.
+Call collect on the result if an array is desired.
 
 # Examples
 ```julia
-devices = PowerSystems.get_components(ThermalDispatch, sys)
-generators = PowerSystems.get_components(Generator, sys)
+iter = PowerSystems.get_components(ThermalDispatch, sys)
+iter = PowerSystems.get_components(Generator, sys)
+generators = PowerSystems.get_components(Generator, sys) |> collect
+generators = collect(PowerSystems.get_components(Generator, sys))
 ```
 """
 function get_components(
