@@ -9,13 +9,15 @@
 export parse_matlab_file, parse_matlab_string
 
 function parse_matlab_file(file_string::String; kwargs...)
-    data_string = read(open(file_string),String)
-    return parse_matlab_string(data_string; kwargs...)
+    result = open(file_string) do io
+        lines = readlines(io)
+        return parse_matlab_string(lines; kwargs...)
+    end
+
+    return result
 end
 
-function parse_matlab_string(data_string::String; extended=false)
-    data_lines = split(data_string, '\n')
-
+function parse_matlab_string(data_lines::Array{String}; extended=false)
     matlab_dict = Dict{String,Any}()
     struct_name = nothing
     function_name = nothing
@@ -47,21 +49,21 @@ function parse_matlab_string(data_string::String; extended=false)
                 if haskey(matrix_dict, "column_names") 
                     column_names[matrix_dict["name"]] = matrix_dict["column_names"]
                 end
-                index = index + matrix_dict["line_count"]-1
+                index = index + matrix_dict["line_count"]
             elseif occursin("{", line)
                 cell_dict = parse_matlab_cells(data_lines, index)
                 matlab_dict[cell_dict["name"]] = cell_dict["data"]
                 if haskey(cell_dict, "column_names")
                     column_names[cell_dict["name"]] = cell_dict["column_names"]
                 end
-                index = index + cell_dict["line_count"]-1
+                index = index + cell_dict["line_count"]
             else
                 name, value = extract_matlab_assignment(line)
                 value = type_value(value)
                 matlab_dict[name] = value
             end
         else
-            @error "Matlab parser skipping the following line:\n  $(line)"
+            @error "Matlab parser skipping line number $(index) consisting of:\n  $(line)"
         end
 
         index += 1

@@ -15,12 +15,13 @@ function timeseriescheckload(loads::Array{T}) where {T<:ElectricLoad}
     return t
 end
 
-function timeserieschecksources(generators::Array{T}, t) where {T<:Generator}
+function timeserieschecksources(generators::Array{T}, expected) where {T<:Generator}
     for g in generators
-        if t == length(g.scalingfactor)
+        actual = length(g.scalingfactor)
+        if expected == actual
             continue
         else
-            @error "Inconsistent generation scaling factor time series length for $(g.name)"
+            @error "Inconsistent generation scaling factor time series length for $(g.name)" expected actual
         end
     end
 end
@@ -33,6 +34,8 @@ function buscheck(buses::Array{Bus})
             @warn "Bus/Nodes data does not contain information to build an a network"
         end
     end
+
+    check_ascending_order([x.number for x in buses], "Bus")
 end
 
 ## Slack Bus Definition ##
@@ -150,10 +153,10 @@ function checkramp(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generat
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info "The generator $(g.name) has a nonbinding ramp up limit."
+                    @info "The generator $(g.name) has a nonbinding ramp up limit." maxlog=PS_MAX_LOG
                 end
                 if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info "The generator $(g.name) has a nonbinding ramp down limit."
+                    @info "The generator $(g.name) has a nonbinding ramp down limit." maxlog=PS_MAX_LOG
                 end
             else
                 @info "Ramp defined as nothing for $(g.name)"
@@ -170,10 +173,10 @@ function checkramp(generators::Array{T}, ts::Dates.TimePeriod) where {T<:Generat
                                             )
             if isa(g.tech.ramplimits, NamedTuple)
                 if g.tech.ramplimits.up >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info "The generator $(g.name) has a nonbinding ramp up limit."
+                    @info "The generator $(g.name) has a nonbinding ramp up limit." maxlog=PS_MAX_LOG
                 end
                 if g.tech.ramplimits.down >= (g.tech.activepowerlimits.max - g.tech.activepowerlimits.min)
-                    @info "The generator $(g.name) has a nonbinding ramp down limit."
+                    @info "The generator $(g.name) has a nonbinding ramp down limit." maxlog=PS_MAX_LOG
                 end
             else
                 @info "Ramp defined as nothing for $(g.name)"

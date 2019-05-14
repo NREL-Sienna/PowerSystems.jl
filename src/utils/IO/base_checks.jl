@@ -41,3 +41,14 @@ function getresolution(ts::TimeSeries.TimeArray)
 
     return res[1]
 end
+
+"""Throws DataFormatError if the array is not in ascending order."""
+function check_ascending_order(array::Array{Int}, name::AbstractString)
+    for (i, num) in enumerate(array)
+        if i > 1 && num < array[i - 1]
+            throw(DataFormatError("$name Numbers are not in ascending order."))
+        end
+    end
+
+    return
+end

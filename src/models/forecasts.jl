@@ -1,9 +1,7 @@
-abstract type
-    Forecast
-end
+abstract type Forecast <: Component end
 
 struct Deterministic <: Forecast
-    device::PowerSystemDevice
+    device::Device
     horizon::Int
     resolution::Dates.Period
     interval::Dates.Period

@@ -1,13 +1,5 @@
 # Global method definition needs to be at top level in .7
 
-# Is this redefinition of Base.convert still needed? Looks like this is
-# implemented correctly in 1.0, and with correct throw of InexactError (here, I
-# get `ERROR: UndefVarError: Inexacterror not defined`), JJS 1/31/19
-
-# Convert bool to int
-Base.convert(::Type{Bool}, x::Int) = x==0 ? false : x==1 ? true : throw(Inexacterror())
-#############################################
-
 """
 Takes a PowerSystems dictionary and return an array of PowerSystems struct for
 Bus, Generator, Branch and load
@@ -19,7 +11,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     branches = Array{B where {B<:Branch},1}()
     loads = Array{E where {E<:ElectricLoad},1}()
     shunts = Array{FixedAdmittance,1}()
-    loadZones = Array{D where {D<:PowerSystemDevice},1}()
+    loadZones = Array{D where {D<:Device},1}()
     services = Array{S where {S<:Service},1}()
 
     # TODO: should we raise an exception in the following?
@@ -108,7 +100,7 @@ end
 
 function _access(nesteddict::T,keylist) where T<:AbstractDict
     if !haskey(nesteddict,keylist[1])
-        @error "$(keylist[1]) not found in dict"        
+        @error "$(keylist[1]) not found in dict"
     end
     if length(keylist) > 1
         nesteddict = _access(nesteddict[keylist[1]],keylist[2:end])
@@ -203,10 +195,9 @@ function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeA
         Device dictionary with timeseries added
     """
 
-    if haskey(Device_dict,"name")
-        name = Device_dict["name"]
-    else
-        @error "input dict in wrong format"
+    name = get(Device_dict, "name", "")
+    if name == ""
+        throw(DataFormatError("input dict to add_time_series in wrong format"))
     end
 
     if maximum(values(ts_raw)) <= 1.0
@@ -268,7 +259,7 @@ function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
     end
 
     for l in [l for l in load_names if !(l in assigned_loads)]
-        @warn "No load scaling factor assigned for $l"
+        @warn "No load scaling factor assigned for $l" maxlog=PS_MAX_LOG
     end
 
     return load_dict
@@ -450,7 +441,7 @@ function load_dict_parser(dict::Dict{String,Any})
 end
 
 function loadzone_dict_parser(dict::Dict{Int64,Any})
-    LoadZs =Array{D where {D<:PowerSystemDevice},1}()
+    LoadZs =Array{D where {D<:Device},1}()
     for (lz_key,lz_dict) in dict
         push!(LoadZs,LoadZones(lz_dict["number"],
                                 string(lz_dict["name"]),
@@ -513,12 +504,12 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
     Services = Array{D where {D <: Service},1}()
 
     for (k,d) in dict
-        contributingdevices = Array{D where {D<:PowerSystems.PowerSystemDevice},1}()
+        contributingdevices = Array{D where {D<:PowerSystems.Device},1}()
         [PowerSystems._get_device(dev,generators) for dev in d["contributingdevices"]] |> (x->[push!(contributingdevices,d[1]) for d in x if length(d)==1])
         push!(Services,ProportionalReserve(d["name"],
                             contributingdevices,
                             Float64(d["timeframe"]),
-                            TimeSeries.TimeArray(Dates.today(),ones(1))  #TODO : fix requirement 
+                            TimeSeries.TimeArray(Dates.today(),ones(1))  #TODO : fix requirement
                             ))
     end
     return Services

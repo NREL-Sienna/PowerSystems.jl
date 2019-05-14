@@ -8,9 +8,9 @@
 
 The `PowerSystems.jl` package provides a rigorous data model using Julia structures to enable power systems analysis. In addition to stand-alone system analysis tools and model building, the `PowerSystems.jl` package is used as the foundational data container for the [PowerSimulations.jl](https://github.com/NREL/PowerSimulations.jl) package. `PowerSystems.jl` enables data structures for different devices and relies on a limited number of data file formats for parsing.
 
-## Version Advisory 
+## Version Advisory
 
-- The latest tagged version in PowerSystems (v0.2.1) will work with Julia v0.7+. 
+- The latest tagged version in PowerSystems (v0.3.0) will work with Julia v1.1+.
 
 ### Device data enabled in PowerSystems:
  - Generators (Thermal, Renewable, Synchronous Condensers, and Hydro)
@@ -32,7 +32,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 You can install it by typing
 
 ```julia
-julia> Pkg.add("PowerSystems")
+julia> ] add PowerSystems
 ```
 
 ## Usage
@@ -47,7 +47,6 @@ using PowerSystems
 ## Development
 
 Contributions to the development and enahancement of PowerSystems is welcome. Please see [CONTRIBUTING.md](https://github.com/NREL/PowerSystems.jl/blob/master/CONTRIBUTING.md) for code contribution guidelines.
-
 
 ## License
 

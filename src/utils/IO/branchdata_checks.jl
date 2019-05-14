@@ -1,4 +1,9 @@
 
+function check_branches!(branches::Array{<:Branch,1})
+    checkanglelimits!(branches)
+    check_ascending_order([b.connectionpoints.from.number for b in branches], "Branch")
+end
+
 # function check_angle_limits(anglelimits::(max::Float64, min::Float64))
 function checkanglelimits!(branches::Array{<:Branch,1})
     for (ix,l) in enumerate(branches)
@@ -11,7 +16,7 @@ function checkanglelimits!(branches::Array{<:Branch,1})
 
             if (l.anglelimits.max/1.57 > 3) | (-1*l.anglelimits.min/1.57 > 3)
 
-                @warn "The angle limits provided is larger than 3π/2 radians.\n PowerSystems infered the data provided in degrees and will transform it to radians"
+                @warn "The angle limits provided is larger than 3π/2 radians.\n PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog=PS_MAX_LOG
 
                 (l.anglelimits.max/1.57 >= 0.99) ? new_max = min(l.anglelimits.max*(π/180),new_max) : new_max = min(l.anglelimits.max,new_max)
 
@@ -82,7 +87,7 @@ function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
             end
 
             if (l.rate/basemva) > 20
-                @warn "Data for line rating is 20 times larger than the base MVA for the system\n. Power Systems infered the Data Provided is in MVA and will transform it using a base of $("basemva")"
+                @warn "Data for line rating is 20 times larger than the base MVA for the system\n. Power Systems inferred the Data Provided is in MVA and will transform it using a base of $("basemva")" maxlog=PS_MAX_LOG
                 (flag, rate) = (true,l.rate/basemva)
             end
 

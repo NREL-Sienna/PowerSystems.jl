@@ -15,6 +15,9 @@ function parse_file(file::String; import_all=false, validate=true)
         pm_data = parse_json(file, validate=validate)
     end
 
+    # TODO:  not sure if this relevant for all three file types, or only .m, JJS 3/7/19
+    move_genfuel_and_gentype!(pm_data)
+
     return pm_data
 end
 

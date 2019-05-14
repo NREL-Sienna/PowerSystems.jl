@@ -120,15 +120,15 @@ end
 
 ""
 function parse_matpower_file(io::IO)
-    data_string = read(io, String)
+    lines = readlines(io)
 
-    return parse_matpower_string(data_string)
+    return parse_matpower_string(lines)
 end
 
 
 ""
-function parse_matpower_string(data_string::String)
-    matlab_data, func_name, colnames = parse_matlab_string(data_string, extended=true)
+function parse_matpower_string(data_lines::Array{String})
+    matlab_data, func_name, colnames = parse_matlab_string(data_lines, extended=true)
 
     case = Dict{String,Any}()
 
