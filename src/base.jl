@@ -136,7 +136,7 @@ end
     * `loads`::Vector{ElectricLoad} : an array of load specifications that includes timing of the loads
     * `branches`::Union{Nothing, Vector{Branch}} : an array of branches; may be `nothing`
     * `storage`::Union{Nothing, Vector{Storage}} : an array of storage devices; may be `nothing`
-    * `basepower`::Float64 : the base power value for the system 
+    * `basepower`::Float64 : the base power value for the system
     * `ps_dict`::Dict{String,Any} : the dictionary object containing System data
     * `forecasts`::Union{Nothing, SystemForecasts} : dictionary of forecasts
     * `services`::Union{Nothing, Vector{ <: Service}} : an array of services; may be `nothing`
@@ -501,33 +501,40 @@ end
 # need each PowerSystemType to store a UUID.
 # GitHub issue #203
 
-# Const Definitions
 
-
-"""Defines the Iterator to contain variables of type Component.
 """
-const ComponentIterator{T} = Base.Iterators.Flatten{Vector{Vector{T}}} where {T <: Component}
+    get_components(
+                   ::Type{T},
+                   sys::System,
+                  )::FlattenedVectorsIterator{T} where {T <: Component}
 
-"""Returns a ComponentIterator{T} from the System. T can be concrete or abstract.
+Returns an iterator of components. T can be concrete or abstract.
 
 # Examples
 ```julia
-devices = PowerSystems.get_components(ThermalDispatch, system)
-generators = PowerSystems.get_components(Generator, system)
+devices = PowerSystems.get_components(ThermalDispatch, sys)
+generators = PowerSystems.get_components(Generator, sys)
 ```
 """
-function get_components(::Type{T}, sys::System)::ComponentIterator{T} where {T <: Component}
+function get_components(
+                        ::Type{T},
+                        sys::System,
+                       )::FlattenedVectorsIterator{T} where {T <: Component}
     if isconcretetype(T)
         components = get(sys.components, T, nothing)
         if isnothing(components)
-            return ComponentIterator{T}(Vector{T}())
+            iter = FlattenedVectorsIterator(Vector{Vector{T}}([]))
         else
-            return ComponentIterator{T}([components])
+            iter = FlattenedVectorsIterator(Vector{Vector{T}}([components]))
         end
     else
         types = [x for x in get_all_concrete_subtypes(T) if haskey(sys.components, x)]
-        return ComponentIterator{T}([sys.components[x] for x in types])
+        iter = FlattenedVectorsIterator(Vector{Vector{T}}([sys.components[x]
+                                                           for x in types]))
     end
+
+    @assert eltype(iter) == T
+    return iter
 end
 
 """Shows the component types and counts in a table."""

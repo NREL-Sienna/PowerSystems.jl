@@ -129,6 +129,7 @@ include("internal.jl")
 # Include utilities
 include("utils/utils.jl")
 include("utils/logging.jl")
+include("utils/flattened_vectors_iterator.jl")
 include("utils/lazy_dict_from_iterator.jl")
 include("utils/IO/base_checks.jl")
 
