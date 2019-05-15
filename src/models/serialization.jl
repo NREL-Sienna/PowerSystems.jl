@@ -65,6 +65,14 @@ function JSON2.read(io::IO, ::Type{T}) where {T <: Dates.Period}
     return getfield(Dates, Symbol(data.unit))(data.value)
 end
 
+"""Enables JSON deserialization of Dates.DateTime.
+The default implementation in JSON2's read.jl fails to convert the string to DateTime
+because of a bug - using ISODateFormat instead of ISODateTimeFormat.
+JSON2 is fixed but hasn't released a version yet.
+"""
+JSON2.read(io::IO, ::Type{Dates.DateTime},
+           format=Dates.ISODateTimeFormat) = Dates.DateTime(JSON2.read(io, String), format)
+
 """
 The next few methods fix serialization of UUIDs. The underlying type of a UUID is a UInt128.
 JSON2 tries to encode this as a number in JSON. Encoding integers greater than can
@@ -89,4 +97,24 @@ end
 
 function encode_for_json(uuid::Base.UUID)
     return (value=string(uuid),)
+end
+
+"""Return a Tuple of type and parameter types for cases where a parametric type has been
+encoded as a string. If the type is not parameterized then just return the type.
+"""
+function separate_type_and_parameter_types(name::String)
+    parameters = Vector{String}()
+    index_start_brace = findfirst("{", name)
+    if isnothing(index_start_brace)
+        type_str = name
+    else
+        type_str = name[1: index_start_brace.start - 1]
+        index_close_brace = findfirst("}", name)
+        @assert index_start_brace.start < index_close_brace.start
+        for x in split(name[index_start_brace.start + 1: index_close_brace.start - 1], ",")
+            push!(parameters, strip(x))
+        end
+    end
+
+    return (type_str, parameters)
 end

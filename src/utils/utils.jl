@@ -59,7 +59,7 @@ function strip_module_names(name::String)
 end
 
 function strip_module_names(::Type{T}) where T
-    return strip_module_names(type_to_symbol(T))
+    return strip_module_names(string(T))
 end
 
 """Converts an object deserialized from JSON into a Julia type, such as NamedTuple,
@@ -139,7 +139,7 @@ function compare_values(x::Vector{T}, y::Vector{T})::Bool where T
     return true
 end
 
-function compare_values(x::Dict{Symbol, T}, y::Dict{Symbol, T})::Bool where T
+function compare_values(x::Dict, y::Dict)::Bool
     keys_x = Set(keys(x))
     keys_y = Set(keys(y))
     if keys_x != keys_y

@@ -1,7 +1,89 @@
 abstract type Forecast <: PowerSystemType end
 
-const Forecasts = Vector{ <: Forecast}
-const SystemForecasts = Dict{Symbol, Forecasts}
+const Forecasts = Vector{<:Forecast}
+# This is deprecated because only the legacy System uses it. Parsing code need to change to
+# build the new format.
+const SystemForecastsDeprecated = Dict{Symbol, Forecasts}
+const IssueTime = NamedTuple{(:resolution, :initialtime),
+                             Tuple{Dates.Period, Dates.DateTime}}
+const SystemForecasts = Dict{IssueTime, Forecasts}
+
+# The default deserialization of SystemForecasts doesn't work for these reasons:
+# - IssueTime fails to serialize correctly.
+# - Forecasts are abstract types. We need to know what concrete type to create during
+#   deserialization.
+#
+# The code below converts the forecast data to a different format to enable deserialization.
+
+struct _SystemForecastArrayForJSON
+    resolution::Dates.Period
+    initialtime::Dates.DateTime
+    forecasts::Forecasts
+    forecast_types::Vector{String}  # Encode the exact type so that deserialization doesn't have
+                            # to infer what it is.
+end
+
+struct _SystemForecastsForJSON
+    forecasts::Vector{_SystemForecastArrayForJSON}
+end
+
+function JSON2.write(io::IO, forecasts::SystemForecasts)
+    return JSON2.write(io, encode_for_json(forecasts))
+end
+
+function JSON2.write(forecasts::SystemForecasts)
+    return JSON2.write(encode_for_json(forecasts))
+end
+
+function encode_for_json(system_forecasts::SystemForecasts)
+    forecasts_for_json = Vector{_SystemForecastArrayForJSON}()
+    for (issue_time, forecasts) in system_forecasts
+        forecast_types = [strip_module_names(typeof(x)) for x in forecasts]
+        push!(forecasts_for_json, _SystemForecastArrayForJSON(issue_time.resolution,
+                                                              issue_time.initialtime,
+                                                              forecasts,
+                                                              forecast_types))
+    end
+
+    return _SystemForecastsForJSON(forecasts_for_json)
+end
+
+"""Converts forecast JSON data to SystemForecasts. This version builds onto the passed dict
+instead of returning an object because ConcreteSystem is immutable.
+"""
+function convert_type!(
+                       forecasts::SystemForecasts,
+                       data::NamedTuple,
+                       components::LazyDictFromIterator,
+                      ) where T <: Forecast
+    for array in data.forecasts
+        issue_time = IssueTime((JSON2.read(JSON2.write(array.resolution), Dates.Period),
+                                JSON2.read(JSON2.write(array.initialtime), Dates.DateTime)))
+        forecasts[issue_time] = Vector{Forecast}()
+        for (forecast, forecast_type_str) in zip(array.forecasts, array.forecast_types)
+            type_str, params = separate_type_and_parameter_types(forecast_type_str)
+            forecast_type = getfield(PowerSystems, Symbol(type_str))
+            # Deterministic is a parametric type; deal with its parameters.
+            parameter_types = [getfield(PowerSystems, Symbol(x)) for x in params]
+            if forecast_type <: Deterministic
+                push!(forecasts[issue_time],
+                      convert_type(Deterministic, forecast, components, parameter_types))
+            else
+                push!(forecasts[issue_time], convert_type(forecast_type))
+            end
+        end
+    end
+end
+
+"""
+    get_issue_time(forecast::Forecast)
+
+Get the time designator for the forecast.
+
+"""
+function get_issue_time(forecast::Forecast)
+    return IssueTime((forecast.resolution, forecast.initialtime))
+end
 
 """
     Deterministic
@@ -72,6 +154,7 @@ function convert_type(
                       ::Type{T},
                       data::NamedTuple,
                       components::LazyDictFromIterator,
+                      parameter_types::Vector{DataType},
                      ) where T <: Deterministic
     @debug T data
     values = []
@@ -82,8 +165,14 @@ function convert_type(
         if fieldtype <: Component
             uuid = Base.UUID(val.value)
             component = get(components, uuid)
-            @assert isnothing(component_type)
+
+            if isnothing(component)
+                throw(DataFormatError("failed to find $uuid"))
+            end
+
             component_type = typeof(component)
+            @assert length(parameter_types) == 1
+            @assert component_type == parameter_types[1]
             push!(values, component)
         else
             obj = convert_type(fieldtype, val)
