@@ -86,6 +86,16 @@ function get_issue_time(forecast::Forecast)
 end
 
 """
+    get_issue_time(forecast::Forecast)
+
+Get the time designator for the forecast.
+
+"""
+function Base.length(forecast::Forecast)
+    return length(forecast.data)
+end
+
+"""
     Deterministic
         A deterministic forecast for a particular data field in a PowerSystemDevice.
 
