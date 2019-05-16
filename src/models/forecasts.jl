@@ -85,12 +85,6 @@ function get_issue_time(forecast::Forecast)
     return IssueTime((forecast.resolution, forecast.initialtime))
 end
 
-"""
-    get_issue_time(forecast::Forecast)
-
-Get the time designator for the forecast.
-
-"""
 function Base.length(forecast::Forecast)
     return length(forecast.data)
 end
