@@ -188,7 +188,7 @@ function make_hydro_gen(gen_name, d, bus)
     hydro =  Dict{String,Any}("name" => gen_name,
                             "available" => d["gen_status"], # change from staus to available
                             "bus" => make_bus(bus),
-                            "tech" => Dict{String,Any}( "installedcapacity" => float(d["pmax"]),
+                            "tech" => Dict{String,Any}( "rating" => float(d["pmax"]),
                                                         "activepower" => d["pg"],
                                                         "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                         "reactivepower" => d["qg"],
@@ -205,7 +205,7 @@ function make_ren_gen(gen_name, d, bus)
     gen_re = Dict{String,Any}("name" => gen_name,
                     "available" => d["gen_status"], # change from staus to available
                     "bus" => make_bus(bus),
-                    "tech" => Dict{String,Any}("installedcapacity" => float(d["pmax"]),
+                    "tech" => Dict{String,Any}("rating" => float(d["pmax"]),
                                                 "reactivepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                 "powerfactor" => 1),
                     "econ" => Dict{String,Any}("curtailcost" => 0.0,
@@ -259,7 +259,8 @@ function make_thermal_gen(gen_name, d, bus)
     thermal_gen = Dict{String,Any}("name" => gen_name,
                                     "available" => d["gen_status"],
                                     "bus" => make_bus(bus),
-                                    "tech" => Dict{String,Any}("activepower" => d["pg"],
+                                    "tech" => Dict{String,Any}("rating" => d["pmax"],
+                                                                "activepower" => d["pg"],
                                                                 "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                                 "reactivepower" => d["qg"],
                                                                 "reactivepowerlimits" => (min=d["qmin"], max=d["qmax"]),
