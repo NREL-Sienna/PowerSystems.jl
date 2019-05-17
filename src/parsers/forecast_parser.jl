@@ -71,7 +71,10 @@ function make_forecast_array(sys::Union{_System,Array{Component,1}},ts_dict::Dic
         if (typeof(ts)==DataFrames.DataFrame) & (size(ts,2) > 2)
             devices = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts)) if c != "DateTime"]) #retrieve devices from system that are in the timeseries data
             for d in devices
-                push!(fc,Deterministic(d,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
+                dd = isa(d,LoadZones) ? d.buses : [d]
+                for b in dd
+                    push!(fc,Deterministic(b,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)])))
+                end
             end
         else
             devices = _get_device(key,sys) #retrieve the device object
@@ -81,9 +84,12 @@ function make_forecast_array(sys::Union{_System,Array{Component,1}},ts_dict::Dic
             if length(devices) > 0 
                 devices = unique(values(devices))
                 for d in devices
-                    for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
-                        timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
-                        push!(fc,Deterministic(d,string(c),timeseries))
+                    dd = isa(d,LoadZones) ? d.buses : [d]
+                    for b in dd
+                        for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
+                            timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
+                            push!(fc,Deterministic(b,string(c),timeseries))
+                        end
                     end
                 end
             else
@@ -111,7 +117,10 @@ function make_forecast_array(sys::System,ts_dict::Dict)
         if (typeof(ts)==DataFrames.DataFrame) & (size(ts,2) > 2)
             devices = [d for d in all_devices if d.name in string.(names(ts))]
             for d in devices
-                push!(fc,Deterministic(d,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
+                dd = isa(d,LoadZones) ? d.buses : [d]
+                for b in dd
+                    push!(fc,Deterministic(b,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
+                end
             end
         else
             devices = [d for d in all_devices if d.name == key]
@@ -121,9 +130,12 @@ function make_forecast_array(sys::System,ts_dict::Dict)
         
             if length(devices) > 0 
                 for d in devices
-                    for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
-                        timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
-                        push!(fc,Deterministic(d,string(c),timeseries))
+                    dd = isa(d,LoadZones) ? d.buses : [d]
+                    for b in dd
+                        for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
+                            timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
+                            push!(fc,Deterministic(b,string(c),timeseries))
+                        end
                     end
                 end
             else
