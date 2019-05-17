@@ -188,7 +188,7 @@ function make_hydro_gen(gen_name, d, bus)
     hydro =  Dict{String,Any}("name" => gen_name,
                             "available" => d["gen_status"], # change from staus to available
                             "bus" => make_bus(bus),
-                            "tech" => Dict{String,Any}( "rating" => float(d["pmax"]),
+                            "tech" => Dict{String,Any}( "rating" => sqrt(d["pmax"]^2 + d["qmax"]^2),
                                                         "activepower" => d["pg"],
                                                         "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                         "reactivepower" => d["qg"],
@@ -259,7 +259,7 @@ function make_thermal_gen(gen_name, d, bus)
     thermal_gen = Dict{String,Any}("name" => gen_name,
                                     "available" => d["gen_status"],
                                     "bus" => make_bus(bus),
-                                    "tech" => Dict{String,Any}("rating" => d["pmax"],
+                                    "tech" => Dict{String,Any}("rating" => sqrt(d["pmax"]^2 + d["qmax"]^2),
                                                                 "activepower" => d["pg"],
                                                                 "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                                 "reactivepower" => d["qg"],
