@@ -4,7 +4,7 @@ end
 
 
 struct TechHydro <: TechnicalParams
-    installedcapacity::Float64
+    rating::Float64
     activepower::Float64 # [MW]
     activepowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
     reactivepower::Union{Float64,Nothing} # [MVAr]
@@ -14,14 +14,14 @@ struct TechHydro <: TechnicalParams
     internal::PowerSystemInternal
 end
 
-function TechHydro(installedcapacity,
+function TechHydro(rating,
                    activepower,
                    activepowerlimits,
                    reactivepower,
                    reactivepowerlimits,
                    ramplimits,
                    timelimits)
-    return TechHydro(installedcapacity,
+    return TechHydro(rating,
                      activepower,
                      PowerSystems.orderedlimits(activepowerlimits, "Real Power"),
                      reactivepower,
@@ -31,14 +31,14 @@ function TechHydro(installedcapacity,
                      PowerSystemInternal())
 end
 
-TechHydro(;installedcapacity = 0.0,
+TechHydro(;rating = 0.0,
           activepower = 0.0,
           activepowerlimits = (min = 0.0, max = 0.0),
           reactivepower = nothing,
           reactivepowerlimits = nothing,
           ramplimits = nothing,
           timelimits = nothing
-        ) = TechHydro(installedcapacity, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
+        ) = TechHydro(rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits)
 
 
 struct EconHydro <: TechnicalParams
