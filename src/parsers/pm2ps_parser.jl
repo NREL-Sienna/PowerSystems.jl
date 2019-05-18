@@ -104,14 +104,14 @@ function find_bus(Buses::Dict{Int64,Any},device_dict::Dict{String,Any})
 end
 
 function make_bus(bus_name, d, bus_types)
-    bus = Dict{String,Any}("name" => bus_name ,
+    bus = make_bus(Dict{String,Any}("name" => bus_name ,
                             "number" => MAPPING_BUSNUMBER2INDEX[d["bus_i"]],
                             "bustype" => bus_types[d["bus_type"]],
                             "angle" => 0, # NOTE: angle 0, tuple(min, max)
                             "voltage" => d["vm"],
                             "voltagelimits" => (min=d["vmin"], max=d["vmax"]),
                             "basevoltage" => d["base_kv"]
-                            )
+                            ))
     return bus
 end
 
@@ -131,9 +131,9 @@ function read_bus(data)
 end
 
 function make_load(d,bus)
-    load =Dict{String,Any}("name" => bus["name"],
+    load =Dict{String,Any}("name" => bus.name,
                             "available" => true,
-                            "bus" => make_bus(bus),
+                            "bus" => bus,
                             "maxactivepower" => d["pd"],
                             "maxreactivepower" => d["qd"]
                             )
@@ -172,7 +172,7 @@ function read_loadzones(data,Buses)
         LoadZones = Dict{Int64,Any}()
         for (d_key,d) in data["areas"]
             b_array  = [MAPPING_BUSNUMBER2INDEX[b["bus_i"]] for (b_key, b) in data["bus"] if b["area"] == d["index"] ]
-            bus_l = [make_bus(Buses[Int(b_key)]) for b_key in b_array]
+            bus_l = [Buses[Int(b_key)] for b_key in b_array]
             activepower  = [ l["pd"] for (l_key, l) in data["load"] if MAPPING_BUSNUMBER2INDEX[l["load_bus"]] in b_array ] #TODO: Fast Implementations
             reactivepower  = [ l["qd"] for (l_key, l) in data["load"] if MAPPING_BUSNUMBER2INDEX[l["load_bus"]] in b_array]
             LoadZones[d["index"]] = make_loadzones(d_key,d,bus_l,activepower, reactivepower)
@@ -187,7 +187,7 @@ function make_hydro_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
     hydro =  Dict{String,Any}("name" => gen_name,
                             "available" => d["gen_status"], # change from staus to available
-                            "bus" => make_bus(bus),
+                            "bus" => bus,
                             "tech" => Dict{String,Any}( "rating" => sqrt(d["pmax"]^2 + d["qmax"]^2),
                                                         "activepower" => d["pg"],
                                                         "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
@@ -204,7 +204,7 @@ end
 function make_ren_gen(gen_name, d, bus)
     gen_re = Dict{String,Any}("name" => gen_name,
                     "available" => d["gen_status"], # change from staus to available
-                    "bus" => make_bus(bus),
+                    "bus" => bus,
                     "tech" => Dict{String,Any}("rating" => float(d["pmax"]),
                                                 "reactivepowerlimits" => (min=d["pmin"], max=d["pmax"]),
                                                 "powerfactor" => 1),
@@ -258,7 +258,7 @@ function make_thermal_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
     thermal_gen = Dict{String,Any}("name" => gen_name,
                                     "available" => d["gen_status"],
-                                    "bus" => make_bus(bus),
+                                    "bus" => bus,
                                     "tech" => Dict{String,Any}("rating" => sqrt(d["pmax"]^2 + d["qmax"]^2),
                                                                 "activepower" => d["pg"],
                                                                 "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
@@ -352,7 +352,7 @@ end
 function make_transformer(b_name, d, bus_f, bus_t)
     trans = Dict{String,Any}("name" => b_name,
                             "available" => Bool(d["br_status"]),
-                            "connectionpoints" => (from=make_bus(bus_f),to=make_bus(bus_t)),
+                            "connectionpoints" => (from=bus_f,to=bus_t),
                             "r" => d["br_r"],
                             "x" => d["br_x"],
                             "primaryshunt" => d["b_fr"] ,  #TODO: which b ??
@@ -366,7 +366,7 @@ end
 function make_lines(b_name, d, bus_f, bus_t)
     line = Dict{String,Any}("name" => b_name,
                             "available" => Bool(d["br_status"]),
-                            "connectionpoints" => (from=make_bus(bus_f),to=make_bus(bus_t)),
+                            "connectionpoints" => (from=bus_f, to=bus_t),
                             "r" => d["br_r"],
                             "x" => d["br_x"],
                             "b" => (from=d["b_fr"],to=d["b_to"]),
@@ -400,7 +400,7 @@ end
 function make_dcline(l_name, d, bus_f, bus_t)
     dcline = Dict{String,Any}("name" => l_name,
                             "available" =>d["br_status"] ,
-                            "connectionpoints" => (from = make_bus(bus_f),to = make_bus(bus_t) ) ,
+                            "connectionpoints" => (from = bus_f, to = bus_t ) ,
                             "activepowerlimits_from" => (min= d["pminf"] , max = d["pmaxf"]) ,
                             "activepowerlimits_to" => (min= d["pmint"] , max =d["pmaxt"] ) ,
                             "reactivepowerlimits_from" =>  (min= d["qminf"], max =d["qmaxf"] ),
@@ -427,7 +427,7 @@ end
 function make_shunt(s_name, d, bus)
     shunt = Dict{String,Any}("name" => s_name,
                             "available" => d["status"],
-                            "bus" => make_bus(bus),
+                            "bus" => bus,
                             "Y" => (-d["gs"] + d["bs"]im)
                             )
     return shunt

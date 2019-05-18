@@ -262,14 +262,14 @@ function bus_csv_parser(bus_raw::DataFrames.DataFrame,colnames = nothing)
     Buses_dict = Dict{Int64,Any}()
     for i in 1:DataFrames.nrow(bus_raw)
         bus_type = bus_raw[i,colnames["Bus Type"]] == "Ref" ? "SF" : bus_raw[i,colnames["Bus Type"]]
-        Buses_dict[bus_raw[i,1]] = Dict{String,Any}("number" =>bus_raw[i,colnames["Bus ID"]] ,
+        Buses_dict[bus_raw[i,1]] = make_bus(Dict{String,Any}("number" =>bus_raw[i,colnames["Bus ID"]] ,
                                                 "name" => bus_raw[i,colnames["Bus Name"]],
                                                 "bustype" => bus_type,
                                                 "angle" => bus_raw[i,colnames["V Angle"]],
                                                 "voltage" => bus_raw[i,colnames["V Mag"]],
                                                 "voltagelimits" => (min=0.95,max=1.05),
                                                 "basevoltage" => bus_raw[i,colnames["BaseKV"]]
-                                                )
+                                                ))
     end
     return Buses_dict
 end
@@ -340,11 +340,11 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any}, b
                 var_cost[i] = (var_cost[i-1][1]+var_cost[i][1], var_cost[i][2])
             end
 
-            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,colnames["Bus ID"]]]
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i].number == gen_raw[gen,colnames["Bus ID"]]]
 
             Generators_dict["Thermal"][gen_raw[gen,colnames["GEN UID"]]] = Dict{String,Any}("name" => gen_raw[gen,colnames["GEN UID"]],
                                             "available" => true,
-                                            "bus" => make_bus(bus_id[1]),
+                                            "bus" => bus_id[1],
                                             "tech" => Dict{String,Any}("rating" => sqrt(pmax^2+ _get_value_or_nothing(gen_raw[gen, colnames["QMax MVAR"]])^2),
                                                                         "activepower" => gen_raw[gen,colnames["MW Inj"]],
                                                                         "activepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen, colnames["PMin MW"]]), max=pmax),
@@ -361,10 +361,10 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any}, b
                                             )
 
         elseif gen_raw[gen,colnames["Fuel"]] in ["Hydro"]
-            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,colnames["Bus ID"]]]
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i].number == gen_raw[gen,colnames["Bus ID"]]]
             Generators_dict["Hydro"][gen_raw[gen,colnames["GEN UID"]]] = Dict{String,Any}("name" => gen_raw[gen,colnames["GEN UID"]],
                                             "available" => true,
-                                            "bus" => make_bus(bus_id[1]),
+                                            "bus" => bus_id[1],
                                             "tech" => Dict{String,Any}( "rating" => sqrt(pmax^2+ _get_value_or_nothing(gen_raw[gen, colnames["QMax MVAR"]])^2),
                                                                         "activepower" => gen_raw[gen, colnames["MW Inj"]],
                                                                         "activepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen, colnames["PMin MW"]]), max=pmax),
@@ -377,11 +377,11 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any}, b
                                                 )
 
         elseif gen_raw[gen,colnames["Fuel"]] in ["Solar","Wind"]
-            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,colnames["Bus ID"]]]
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i].number == gen_raw[gen,colnames["Bus ID"]]]
             if gen_raw[gen,colnames["Unit Type"]] == "PV"
                 Generators_dict["Renewable"]["PV"][gen_raw[gen,colnames["GEN UID"]]] = Dict{String,Any}("name" => gen_raw[gen,colnames["GEN UID"]],
                                                 "available" => true,
-                                                "bus" => make_bus(bus_id[1]),
+                                                "bus" => bus_id[1],
                                                 "tech" => Dict{String, Any}("rating" => pmax,
                                                                             "reactivepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen, colnames["QMin MVAR"]]), max=_get_value_or_nothing(gen_raw[gen, colnames["QMax MVAR"]])),
                                                                             "powerfactor" => 1),
@@ -391,7 +391,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any}, b
             elseif gen_raw[gen,colnames["Unit Type"]] == "RTPV"
                 Generators_dict["Renewable"]["RTPV"][gen_raw[gen,colnames["GEN UID"]]] = Dict{String,Any}("name" => gen_raw[gen,colnames["GEN UID"]],
                                                 "available" => true,
-                                                "bus" => make_bus(bus_id[1]),
+                                                "bus" => bus_id[1],
                                                 "tech" => Dict{String, Any}("rating" => pmax,
                                                                             "reactivepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen, colnames["QMin MVAR"]]), max=_get_value_or_nothing(gen_raw[gen, colnames["QMax MVAR"]])),
                                                                             "powerfactor" => 1),
@@ -401,7 +401,7 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any}, b
             elseif gen_raw[gen,colnames["Unit Type"]] == "WIND"
                 Generators_dict["Renewable"]["WIND"][gen_raw[gen,colnames["GEN UID"]]] = Dict{String,Any}("name" => gen_raw[gen,colnames["GEN UID"]],
                                                 "available" => true,
-                                                "bus" => make_bus(bus_id[1]),
+                                                "bus" => bus_id[1],
                                                 "tech" => Dict{String, Any}("rating" => pmax,
                                                                             "reactivepowerlimits" => (min=_get_value_or_nothing(gen_raw[gen, colnames["QMin MVAR"]]), max=_get_value_or_nothing(gen_raw[gen, colnames["QMax MVAR"]])),
                                                                             "powerfactor" => 1),
@@ -410,10 +410,10 @@ function gen_csv_parser(gen_raw::DataFrames.DataFrame, Buses::Dict{Int64,Any}, b
                                                 )
             end
         elseif gen_raw[gen,colnames["Fuel"]] in ["Storage"]
-            bus_id =[Buses[i] for i in keys(Buses) if Buses[i]["number"] == gen_raw[gen,colnames["Bus ID"]]]
+            bus_id =[Buses[i] for i in keys(Buses) if Buses[i].number == gen_raw[gen,colnames["Bus ID"]]]
             Generators_dict["Storage"][gen_raw[gen,colnames["GEN UID"]]] = Dict{String,Any}("name" => gen_raw[gen,colnames["GEN UID"]],
                                             "available" => true,
-                                            "bus" => make_bus(bus_id[1]),
+                                            "bus" => bus_id[1],
                                             "energy" => 0.0,
                                             "capacity" => (min=_get_value_or_nothing(gen_raw[gen,colnames["PMin MW"]]),max=pmax),
                                             "rating" => pmax,
@@ -456,12 +456,12 @@ function branch_csv_parser(branch_raw::DataFrames.DataFrame, Buses::Dict, baseMV
     Branches_dict["Transformers"] = Dict{String,Any}()
     Branches_dict["Lines"] = Dict{String,Any}()
     for i in 1:DataFrames.nrow(branch_raw)
-        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == branch_raw[i,colnames["From Bus"]]]
-        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == branch_raw[i,colnames["To Bus"]]]
+        bus_f = [Buses[f] for f in keys(Buses) if Buses[f].number == branch_raw[i,colnames["From Bus"]]]
+        bus_t = [Buses[t] for t in keys(Buses) if Buses[t].number == branch_raw[i,colnames["To Bus"]]]
         if branch_raw[i,Symbol("Tr Ratio")] > 0.0
             Branches_dict["Transformers"][branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => branch_raw[i,colnames["UID"]],
                                                         "available" => true,
-                                                        "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "connectionpoints" => (from=bus_f[1],to=bus_t[1]),
                                                         "r" => branch_raw[i,colnames["R"]],
                                                         "x" => branch_raw[i,colnames["X"]],
                                                         "primaryshunt" => branch_raw[i,colnames["B"]] ,  #TODO: add field in CSV
@@ -472,11 +472,11 @@ function branch_csv_parser(branch_raw::DataFrames.DataFrame, Buses::Dict, baseMV
         else
             Branches_dict["Lines"][branch_raw[i,:UID]] = Dict{String,Any}("name" => branch_raw[i,:UID],
                                                         "available" => true,
-                                                        "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
-                                                        "r" => branch_raw[i,colnames["R"]],
-                                                        "x" => branch_raw[i,colnames["X"]],
-                                                        "b" => (from=(branch_raw[i,colnames["B"]]/2),to=(branch_raw[i,colnames["B"]]/2)),
-                                                        "rate" =>  branch_raw[i,colnames["Cont Rating"]],
+                                                        "connectionpoints" => (from=bus_f[1], to=bus_t[1]),
+                                                        "r" => branch_raw[i, colnames["R"]],
+                                                        "x" => branch_raw[i, colnames["X"]],
+                                                        "b" => (from=(branch_raw[i, colnames["B"]]/2),to=(branch_raw[i,colnames["B"]]/2)),
+                                                        "rate" =>  branch_raw[i, colnames["Cont Rating"]],
                                                         "anglelimits" => (min=-60.0,max =60.0) #TODO: add field in CSV
                                                         )
 
@@ -514,12 +514,12 @@ function dc_branch_csv_parser(dc_branch_raw::DataFrames.DataFrame, Buses::Dict, 
     DCBranches_dict["VSCDCLine"] = Dict{String,Any}()
 
     for i in 1:DataFrames.nrow(dc_branch_raw)
-        bus_f = [Buses[f] for f in keys(Buses) if Buses[f]["number"] == dc_branch_raw[i,colnames["From Bus"]]]
-        bus_t = [Buses[t] for t in keys(Buses) if Buses[t]["number"] == dc_branch_raw[i,colnames["To Bus"]]]
+        bus_f = [Buses[f] for f in keys(Buses) if Buses[f].number == dc_branch_raw[i,colnames["From Bus"]]]
+        bus_t = [Buses[t] for t in keys(Buses) if Buses[t].number == dc_branch_raw[i,colnames["To Bus"]]]
         if dc_branch_raw[i,colnames["Control Mode"]] != "Power"
             DCBranches_dict["VSCDCLine"][dc_branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => dc_branch_raw[i,colnames["UID"]],
                                                         "available" => true,
-                                                        "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "connectionpoints" => (from=bus_f[1],to=bus_t[1]),
                                                         "rectifier_taplimits" => (min=dc_branch_raw[i,colnames["From Tap Min"]],max=dc_branch_raw[i,colnames["From Tap Max"]]),
                                                         "rectifier_xrc" => dc_branch_raw[i,colnames["From X Commutating"]], #TODO: What is this?
                                                         "rectifier_firingangle" => (min=dc_branch_raw[i,colnames["From Min Firing Angle"]],max=dc_branch_raw[i,colnames["From Max Firing Angle"]]),
@@ -530,7 +530,7 @@ function dc_branch_csv_parser(dc_branch_raw::DataFrames.DataFrame, Buses::Dict, 
         else
             DCBranches_dict["HVDCLine"][dc_branch_raw[i,colnames["UID"]]] = Dict{String,Any}("name" => dc_branch_raw[i,colnames["UID"]],
                                                         "available" => true,
-                                                        "connectionpoints" => (from=make_bus(bus_f[1]),to=make_bus(bus_t[1])),
+                                                        "connectionpoints" => (from=bus_f[1],to=bus_t[1]),
                                                         "activepowerlimits_from" => (min=-1*dc_branch_raw[i,colnames["MW Load"]], max=dc_branch_raw[i,colnames["MW Load"]]), #TODO: is there a better way to calculate this?
                                                         "activepowerlimits_to" => (min=-1*dc_branch_raw[i,colnames["MW Load"]], max=dc_branch_raw[i,colnames["MW Load"]]), #TODO: is there a better way to calculate this?
                                                         "reactivepowerlimits_from" => (min=0.0, max=0.0), #TODO: is there a better way to calculate this?
@@ -586,15 +586,15 @@ function load_csv_parser(bus_raw::DataFrames.DataFrame, Buses::Dict, LoadZone::D
     for (k_b,b) in Buses
         for (k_l,l)  in LoadZone
             bus_numbers = [b.number for b in l["buses"] ]
-            if b["number"] in bus_numbers
+            if b.number in bus_numbers
                 load_zone = k_l
             end
         end
-        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:DataFrames.nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b["number"]]
-        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:DataFrames.nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b["number"]]
-        Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
+        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:DataFrames.nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b.number]
+        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:DataFrames.nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b.number]
+        Loads_dict[b.name] = Dict{String,Any}("name" => b.name,
                                             "available" => true,
-                                            "bus" => make_bus(b),
+                                            "bus" => b,
                                             "maxactivepower" => p[1],
                                             "maxreactivepower" => q[1])
     end
@@ -624,7 +624,7 @@ function load_csv_parser(bus_raw::DataFrames.DataFrame, Buses::Dict, baseMVA::Fl
         bus_colnames = Dict(zip(need_cols,[findall(tbl_cols.==c)[1] for c in need_cols]))
     end
 
-    if !isa(load_raw,nothing)
+    if !isa(load_raw,Nothing)
         load_raw = read_datetime(load_raw)
         if load_colnames isa Nothing
             need_cols = ["DateTime"]
@@ -634,14 +634,14 @@ function load_csv_parser(bus_raw::DataFrames.DataFrame, Buses::Dict, baseMVA::Fl
     end
 
     pu_cols = ["MW Load", "MVAR Load"]
-    [bus_raw[colnames[c]] = bus_raw[colnames[c]]./baseMVA for c in pu_cols] # P.U. conversion
+    [bus_raw[bus_colnames[c]] = bus_raw[bus_colnames[c]]./baseMVA for c in pu_cols] # P.U. conversion
 
     for (k_b,b) in Buses
-        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:DataFrames.nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b["number"]]
-        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:DataFrames.nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b["number"]]
-        Loads_dict[b["name"]] = Dict{String,Any}("name" => b["name"],
+        p = [bus_raw[n,bus_colnames["MW Load"]] for n in 1:DataFrames.nrow(bus_raw) if bus_raw[n,bus_colnames["Bus ID"]] == b.number]
+        q = [bus_raw[m,bus_colnames["MVAR Load"]] for m in 1:DataFrames.nrow(bus_raw) if bus_raw[m,bus_colnames["Bus ID"]] == b.number]
+        Loads_dict[b.name] = Dict{String,Any}("name" => b.name,
                                             "available" => true,
-                                            "bus" => make_bus(b),
+                                            "bus" => b,
                                             "maxactivepower" => p[1],
                                             "maxreactivepower" => q[1])
     end
@@ -671,7 +671,7 @@ function loadzone_csv_parser(bus_raw::DataFrames.DataFrame, Buses::Dict, colname
     lbs = zip(unique(bus_raw[colnames["Area"]]),[sum(bus_raw[colnames["Area"]].==a) for a in unique(bus_raw[colnames["Area"]])])
     for (zone,count) in lbs
         b_numbers = [bus_raw[b,colnames["Bus ID"]] for b in 1:DataFrames.nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone ]
-        buses = [make_bus(Buses[i]) for i in keys(Buses) if Buses[i]["number"] in  b_numbers]
+        buses = [Buses[i] for i in keys(Buses) if Buses[i].number in  b_numbers]
         activepower = [bus_raw[b,colnames["MW Load"]] for b in 1:DataFrames.nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone]
         reactivepower = [bus_raw[b,colnames["MVAR Load"]] for b in 1:DataFrames.nrow(bus_raw) if bus_raw[b,colnames["Area"]] == zone]
         LoadZone_dict[zone] = Dict{String,Any}("number" => zone,

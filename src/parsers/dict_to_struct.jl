@@ -163,7 +163,10 @@ function read_datetime(df; kwargs...)
         DataFrames.deletecols!(df, [:Year,:Month,:Day,:Period])
 
     elseif :DateTime in names(df)
-        df[:DateTime] = Dates.DateTime(df[:DateTime])
+        @warn "dataframe already has DateTime column"
+        if typeof(df[:DateTime]) != Vector{Dates.DateTime}
+            df[:DateTime] = Dates.DateTime(df[:DateTime])
+        end
     else
         if :startdatetime in keys(kwargs)
             startdatetime = kwargs[:startdatetime]
@@ -256,7 +259,14 @@ end
 
 ## - Parse Dict to Struct
 function bus_dict_parse(dict::Dict{Int,Any})
-    Buses = [Bus(b["number"],b["name"], b["bustype"],b["angle"],b["voltage"],b["voltagelimits"],b["basevoltage"]) for (k_b,b) in dict ]
+    Buses = Vector{Bus}()
+    for (k_b, b) in dict
+        if b isa Bus
+            push!(Buses, b)
+        else
+            push!(Buses, Bus(b["number"],b["name"], b["bustype"],b["angle"],b["voltage"],b["voltagelimits"],b["basevoltage"]))
+        end
+    end
     return Buses
 end
 
