@@ -14,16 +14,16 @@ function RenewableFix(name, available, bus, tech)
     return RenewableFix(name, available, bus, tech, PowerSystemInternal())
 end
 
-"""Accepts installedcapacity as a Float64 and then creates a TechRenewable."""
-function RenewableFix(name, status, bus, installedcapacity::Float64)
-    tech = TechRenewable(installedcapacity, nothing, 1.0)
+"""Accepts rating as a Float64 and then creates a TechRenewable."""
+function RenewableFix(name, status, bus, rating::Float64)
+    tech = TechRenewable(rating, nothing, 1.0)
     RenewableFix(name, status, bus, tech)
 end
 
 RenewableFix(; name="init",
         status = false,
         bus = Bus(),
-        installedcapacity = 0.0) = RenewableFix(name, status, bus, installedcapacity)
+        rating = 0.0) = RenewableFix(name, status, bus, rating)
 
 struct RenewableCurtailment <: RenewableGen
     name::String
@@ -38,17 +38,17 @@ function RenewableCurtailment(name, available, bus, tech, econ)
     return RenewableCurtailment(name, available, bus, tech, econ, PowerSystemInternal())
 end
 
-"""Accepts installedcapacity as a Float64 and then creates a TechRenewable."""
-function RenewableCurtailment(name::String, status::Bool, bus::Bus, installedcapacity::Float64, econ::Union{EconRenewable,Nothing})
-    tech = TechRenewable(installedcapacity, nothing, 1.0)
+"""Accepts rating as a Float64 and then creates a TechRenewable."""
+function RenewableCurtailment(name::String, status::Bool, bus::Bus, rating::Float64, econ::Union{EconRenewable,Nothing})
+    tech = TechRenewable(rating, nothing, 1.0)
     return RenewableCurtailment(name, status, bus, tech, econ)
 end
 
 RenewableCurtailment(; name = "init",
                 status = false,
                 bus= Bus(),
-                installedcapacity = 0.0,
-                econ = EconRenewable()) = RenewableCurtailment(name, status, bus, installedcapacity, econ)
+                rating = 0.0,
+                econ = EconRenewable()) = RenewableCurtailment(name, status, bus, rating, econ)
 
 struct RenewableFullDispatch <: RenewableGen
     name::String
@@ -66,5 +66,5 @@ end
 RenewableFullDispatch(; name = "init",
                 status = false,
                 bus= Bus(),
-                installedcapacity = 0.0,
-                econ = EconRenewable()) = RenewableCurtailment(name, status, bus, installedcapacity, econ)
+                rating = 0.0,
+                econ = EconRenewable()) = RenewableCurtailment(name, status, bus, rating, econ)

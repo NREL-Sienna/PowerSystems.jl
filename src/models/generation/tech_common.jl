@@ -1,21 +1,21 @@
 # DOCTODO  add docstring for TechRenewable
 struct TechRenewable <: TechnicalParams
-    installedcapacity::Float64 # [MW]
+    rating::Float64 # [MVA]
     reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVar]
     powerfactor::Union{Float64,Nothing} # [-1. -1]
     internal::PowerSystemInternal
 end
 
-function TechRenewable(installedcapacity, reactivepowerlimits, powerfactor)
-    return TechRenewable(installedcapacity, reactivepowerlimits, powerfactor,
+function TechRenewable(rating, reactivepowerlimits, powerfactor)
+    return TechRenewable(rating, reactivepowerlimits, powerfactor,
                          PowerSystemInternal())
 end
 
 # DOCTODO document this constructor for TechRenewable
-TechRenewable(; InstalledCapacity = 0,
+TechRenewable(; rating = 0.0,
                 reactivepowerlimits = nothing,
                 powerfactor = nothing
-              ) = TechRenewable(InstalledCapacity, reactivepowerlimits,
+              ) = TechRenewable(rating, reactivepowerlimits,
                                 powerfactor)
 
 
@@ -47,6 +47,7 @@ Data Structure for the economical parameters of thermal generation technologies.
 
 """
 struct TechThermal <: TechnicalParams
+    rating::Float64 # [MVA]
     activepower::Float64 # [MW]
     activepowerlimits::NamedTuple{(:min, :max),Tuple{Float64,Float64}} # [MW]
     reactivepower::Union{Float64,Nothing} # [MVAr]
@@ -56,13 +57,15 @@ struct TechThermal <: TechnicalParams
     internal::PowerSystemInternal
 end
 
-function TechThermal(activepower,
+function TechThermal(rating,
+                     activepower,
                      activepowerlimits,
                      reactivepower,
                      reactivepowerlimits,
                      ramplimits,
                      timelimits)
-    return TechThermal(activepower,
+    return TechThermal(rating,
+                       activepower,
                        PowerSystems.orderedlimits(activepowerlimits, "Real Power"),
                        reactivepower,
                        PowerSystems.orderedlimits(reactivepowerlimits, "Reactive Power"),
@@ -72,11 +75,12 @@ function TechThermal(activepower,
 end
 
 # DOCTODO document this constructor 
-TechThermal(; activepower = 0.0,
+TechThermal(;rating = 0.0, 
+            activepower = 0.0,
             activepowerlimits = (min = 0.0, max = 0.0),
             reactivepower = nothing,
             reactivepowerlimits = nothing,
             ramplimits = nothing,
             timelimits = nothing
-            ) = TechThermal(activepower, activepowerlimits, reactivepower,
+            ) = TechThermal(rating, activepower, activepowerlimits, reactivepower,
                             reactivepowerlimits, ramplimits, timelimits)

@@ -80,7 +80,7 @@ end
     mpgen = collect(get_components(HydroGen, mpsys))[1]
     @test cdmgen.tech.activepowerlimits == mpgen.tech.activepowerlimits
     @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
-    @test cdmgen.tech.installedcapacity == mpgen.tech.installedcapacity
+    @test cdmgen.tech.rating == mpgen.tech.rating
     @test cdmgen.tech.ramplimits == mpgen.tech.ramplimits # this gets adjusted in the pm2ps_dict 
     @test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
 
