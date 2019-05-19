@@ -15,15 +15,15 @@ function RenewableFix(name, available, bus, tech)
 end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableFix(name, status, bus, rating::Float64)
+function RenewableFix(name, available, bus, rating::Float64)
     tech = TechRenewable(rating, nothing, 1.0)
-    RenewableFix(name, status, bus, tech)
+    RenewableFix(name, available, bus, tech)
 end
 
 RenewableFix(; name="init",
         available = false,
         bus = Bus(),
-        rating = 0.0) = RenewableFix(name, status, bus, rating)
+        rating = 0.0) = RenewableFix(name, available, bus, rating)
 
 
 struct RenewableDispatch <: RenewableGen
@@ -44,11 +44,11 @@ RenewableDispatch(; name = "init",
                 bus= Bus(),
                 tech = TechRenewable(),
                 rating = 0.0,
-                econ = EconRenewable()) = RenewableDispatch(name, status, bus, rating, econ)
+                econ = EconRenewable()) = RenewableDispatch(name, available, bus, rating, econ)
 
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
 function RenewableDispatch(name::String, status::Bool, bus::Bus, rating::Float64, econ::Union{EconRenewable,Nothing})
     tech = TechRenewable(rating, nothing, 1.0)
-    return RenewableDispatch(name, status, bus, tech, econ)
+    return RenewableDispatch(name, available, bus, tech, econ)
 end
