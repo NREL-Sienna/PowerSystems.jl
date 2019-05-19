@@ -7,14 +7,14 @@ struct InterruptibleLoad <: ControllableLoad
     model::String # [Z, I, P]
     maxactivepower::Float64 # [MW]
     maxreactivepower::Float64 # [MVAr]
-    sheddingcost::Float64 # $/MWh
+    econ::EconLoad
     internal::PowerSystemInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, sheddingcost)
+function InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, econ)
     return InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower,
-                             sheddingcost, PowerSystemInternal())
+                             econ, PowerSystemInternal())
 end
 
-InterruptibleLoad(; name = "init", status = true, bus = Bus(), model = "0", maxactivepower = 0, maxreactivepower=0, 
-                sheddingcost = 999) = InterruptibleLoad(name, status, bus, model, maxactivepower, maxreactivepower, sheddingcost)
+InterruptibleLoad(; name = "init", status = true, bus = Bus(), model = "0", maxactivepower = 0, maxreactivepower=0,
+                econ = EconLoad()) = InterruptibleLoad(name, status, bus, model, maxactivepower, maxreactivepower, econ)

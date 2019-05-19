@@ -70,7 +70,7 @@ end
 
 """Constructs _System with default values."""
 function _System(; buses=[Bus()],
-                generators=[ThermalDispatch(), RenewableFix()],
+                generators=[StandardThermal(), RenewableFix()],
                 loads=[PowerLoad()],
                 branches=nothing,
                 storage=nothing,
@@ -216,7 +216,7 @@ function System(buses::Vector{Bus},
                 services::Union{Nothing, Vector{ <: Service}},
                 annex::Union{Nothing,Dict}; kwargs...)
 
-    
+
     _sys = _System(buses, generators, loads, branches, storage, basepower, forecasts, services, annex; kwargs...)
     return System(_sys)
 end
@@ -227,13 +227,13 @@ function System(buses::Vector{Bus},
                 loads::Vector{<:ElectricLoad},
                 basepower::Float64; kwargs...)
 
-    
+
     return System(buses, generators, loads, nothing, nothing, basepower, nothing, nothing, nothing; kwargs...)
 end
 
 """Constructs System with default values."""
 function System(; buses=[Bus()],
-                generators=[ThermalDispatch(), RenewableFix()],
+                generators=[StandardThermal(), RenewableFix()],
                 loads=[PowerLoad()],
                 branches=nothing,
                 storage=nothing,
@@ -499,7 +499,7 @@ Call collect on the result if an array is desired.
 
 # Examples
 ```julia
-iter = PowerSystems.get_components(ThermalDispatch, sys)
+iter = PowerSystems.get_components(StandardThermal, sys)
 iter = PowerSystems.get_components(Generator, sys)
 generators = PowerSystems.get_components(Generator, sys) |> collect
 generators = collect(PowerSystems.get_components(Generator, sys))
