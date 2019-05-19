@@ -16,5 +16,5 @@ function InterruptibleLoad(name, available, bus, model, maxactivepower, maxreact
                              econ, PowerSystemInternal())
 end
 
-InterruptibleLoad(; name = "init", status = true, bus = Bus(), model = "0", maxactivepower = 0, maxreactivepower=0,
+InterruptibleLoad(; name = "init", available = true, bus = Bus(), model = "0", maxactivepower = 0, maxreactivepower=0,
                 econ = EconLoad()) = InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, econ)
