@@ -48,7 +48,7 @@ RenewableDispatch(; name = "init",
 
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableDispatch(name::String, status::Bool, bus::Bus, rating::Float64, econ::Union{EconRenewable,Nothing})
+function RenewableDispatch(name::String, available::Bool, bus::Bus, rating::Float64, econ::Union{EconRenewable,Nothing})
     tech = TechRenewable(rating, nothing, 1.0)
     return RenewableDispatch(name, available, bus, tech, econ)
 end
