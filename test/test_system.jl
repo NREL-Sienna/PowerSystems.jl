@@ -16,7 +16,7 @@
     @test length(sys_rts.generators.renewable) == length(collect(get_components(RenewableGen, sys)))
     @test length(sys_rts.generators.hydro) == length(collect(get_components(HydroGen, sys)))
     @test length(collect(get_components(Bus, sys))) > 0
-    @test length(collect(get_components(ThermalDispatch, sys))) > 0
+    @test length(collect(get_components(StandardThermal, sys))) > 0
     summary(devnull, sys)
 
     # Negative test of missing type.
@@ -30,7 +30,7 @@
     end
 
     @test length(collect(get_components(ThermalGen, sys))) == 0
-    @test length(collect(get_components(ThermalDispatch, sys))) == 0
+    @test length(collect(get_components(StandardThermal, sys))) == 0
 
     # For the next test to work there must be at least one component to add back.
     @test length(components) > 0
