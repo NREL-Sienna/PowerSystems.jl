@@ -21,7 +21,7 @@ function RenewableFix(name, status, bus, rating::Float64)
 end
 
 RenewableFix(; name="init",
-        status = false,
+        available = false,
         bus = Bus(),
         rating = 0.0) = RenewableFix(name, status, bus, rating)
 
@@ -40,7 +40,7 @@ function RenewableDispatch(name, available, bus, tech, econ)
 end
 
 RenewableDispatch(; name = "init",
-                status = false,
+                available = false,
                 bus= Bus(),
                 tech = TechRenewable(),
                 rating = 0.0,
