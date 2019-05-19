@@ -25,7 +25,7 @@ function StandardThermal(name, available, bus, tech, econ)
 end
 
 StandardThermal(; name = "init",
-                status = false,
+                available = false,
                 bus = Bus(),
                 tech = TechThermal(),
                 econ = EconThermal()) = StandardThermal(name, status, bus, tech, econ)

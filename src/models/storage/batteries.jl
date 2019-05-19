@@ -32,7 +32,7 @@ function GenericBattery(name,
 end
 
 GenericBattery(; name = "init",
-                status = false,
+                available = false,
                 bus = Bus(),
                 energy = 0.0,
                 capacity = (min = 0.0, max = 0.0),
