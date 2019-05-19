@@ -95,7 +95,7 @@ end
 
 
 """
-Takes a nested dict, and an array of keys to navigate to specific values. Returns the value 
+Takes a nested dict, and an array of keys to navigate to specific values. Returns the value
 at the end of the navigation path.
 """
 function _access(nesteddict::T,keylist) where T<:AbstractDict
@@ -110,7 +110,7 @@ function _access(nesteddict::T,keylist) where T<:AbstractDict
 end
 
 """
-Takes a string or symbol "name" and returns a list of devices within a collection 
+Takes a string or symbol "name" and returns a list of devices within a collection
 (Dict, Array, PowerSystem) that have matching names"""
 function _get_device(name::Union{String,Symbol}, collection, devices = [])
     if isa(collection,Array) && !isempty(collection) && isassigned(collection)
@@ -278,7 +278,7 @@ function gen_dict_parser(dict::Dict{String,Any})
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
-                push!(Generators,ThermalDispatch(string(thermal_dict["name"]),
+                push!(Generators,StandardThermal(string(thermal_dict["name"]),
                                                             Bool(thermal_dict["available"]),
                                                             thermal_dict["bus"],
                                                             TechThermal(thermal_dict["tech"]["rating"],
@@ -315,7 +315,7 @@ function gen_dict_parser(dict::Dict{String,Any})
             for (ren_key,ren_dict) in  gen_type_dict
                 if ren_key == "PV"
                     for (pv_key,pv_dict) in ren_dict
-                        push!(Generators,RenewableCurtailment(string(pv_dict["name"]),
+                        push!(Generators,RenewableDispatch(string(pv_dict["name"]),
                                                                     Bool( pv_dict["available"]),
                                                                     pv_dict["bus"],
                                                                     pv_dict["tech"]["rating"],
@@ -333,7 +333,7 @@ function gen_dict_parser(dict::Dict{String,Any})
                     end
                 elseif ren_key == "WIND"
                     for (wind_key,wind_dict) in ren_dict
-                        push!(Generators,RenewableCurtailment(string(wind_dict["name"]),
+                        push!(Generators,RenewableDispatch(string(wind_dict["name"]),
                                                                     Bool(wind_dict["available"]),
                                                                     wind_dict["bus"],
                                                                     wind_dict["tech"]["rating"],
@@ -512,7 +512,7 @@ end
 
 
 function forecasts_dict_parser(dict::Dict, devices::Array{Component,1})
-    
+
     forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}()
 
     for (k,v) in dict
