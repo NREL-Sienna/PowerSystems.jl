@@ -84,7 +84,7 @@ function HydroCurtailment(name, available, bus, tech, econ)
     return HydroCurtailment(name, available, bus, tech, econ, PowerSystemInternal())
 end
 
-function HydroCurtailment(name::String, status::Bool, bus::Bus, tech::TechHydro, curtailcost::Float64)
+function HydroCurtailment(name::String, available::Bool, bus::Bus, tech::TechHydro, curtailcost::Float64)
     econ = EconHydro(curtailcost, nothing)
     return HydroCurtailment(name, available, bus, tech, econ)
 end
