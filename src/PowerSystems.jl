@@ -47,19 +47,20 @@ export RenewableGen
 export TechRenewable
 export EconRenewable
 export RenewableFix
-export RenewableCurtailment
-export RenewableFullDispatch
+export RenewableDispatch
+export RenewableDispatch
 
 export ThermalGen
 export TechThermal
 export EconThermal
-export ThermalDispatch
+export StandardThermal
 
 export ElectricLoad
 export StaticLoad
 export PowerLoad
 export PowerLoadPF
 export FixedAdmittance
+export EconLoad
 export ControllableLoad
 export InterruptibleLoad
 
