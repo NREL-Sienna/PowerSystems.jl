@@ -2,7 +2,7 @@
 struct TechRenewable <: TechnicalParams
     rating::Float64 # [MVA]
     reactivepowerlimits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing} # [MVar]
-    powerfactor::Union{Float64,Nothing} # [-1. -1]
+    powerfactor::Float64 # [-1. -1]
     internal::PowerSystemInternal
 end
 
@@ -14,7 +14,7 @@ end
 # DOCTODO document this constructor for TechRenewable
 TechRenewable(; rating = 0.0,
                 reactivepowerlimits = nothing,
-                powerfactor = nothing
+                powerfactor = 1.0
               ) = TechRenewable(rating, reactivepowerlimits,
                                 powerfactor)
 
@@ -74,8 +74,8 @@ function TechThermal(rating,
                        PowerSystemInternal())
 end
 
-# DOCTODO document this constructor 
-TechThermal(;rating = 0.0, 
+# DOCTODO document this constructor
+TechThermal(;rating = 0.0,
             activepower = 0.0,
             activepowerlimits = (min = 0.0, max = 0.0),
             reactivepower = nothing,

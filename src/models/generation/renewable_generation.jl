@@ -25,7 +25,8 @@ RenewableFix(; name="init",
         bus = Bus(),
         rating = 0.0) = RenewableFix(name, status, bus, rating)
 
-struct RenewableCurtailment <: RenewableGen
+
+struct RenewableDispatch <: RenewableGen
     name::String
     available::Bool
     bus::Bus
@@ -34,37 +35,20 @@ struct RenewableCurtailment <: RenewableGen
     internal::PowerSystemInternal
 end
 
-function RenewableCurtailment(name, available, bus, tech, econ)
-    return RenewableCurtailment(name, available, bus, tech, econ, PowerSystemInternal())
+function RenewableDispatch(name, available, bus, tech, econ)
+    return RenewableDispatch(name, available, bus, tech, econ, PowerSystemInternal())
 end
+
+RenewableDispatch(; name = "init",
+                status = false,
+                bus= Bus(),
+                tech = TechRenewable(),
+                rating = 0.0,
+                econ = EconRenewable()) = RenewableDispatch(name, status, bus, rating, econ)
+
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableCurtailment(name::String, status::Bool, bus::Bus, rating::Float64, econ::Union{EconRenewable,Nothing})
+function RenewableDispatch(name::String, status::Bool, bus::Bus, rating::Float64, econ::Union{EconRenewable,Nothing})
     tech = TechRenewable(rating, nothing, 1.0)
-    return RenewableCurtailment(name, status, bus, tech, econ)
+    return RenewableDispatch(name, status, bus, tech, econ)
 end
-
-RenewableCurtailment(; name = "init",
-                status = false,
-                bus= Bus(),
-                rating = 0.0,
-                econ = EconRenewable()) = RenewableCurtailment(name, status, bus, rating, econ)
-
-struct RenewableFullDispatch <: RenewableGen
-    name::String
-    available::Bool
-    bus::Bus
-    tech::TechRenewable
-    econ::Union{EconRenewable,Nothing}
-    internal::PowerSystemInternal
-end
-
-function RenewableFullDispatch(name, available, bus, tech, econ)
-    return RenewableFullDispatch(name, available, bus, tech, econ, PowerSystemInternal())
-end
-
-RenewableFullDispatch(; name = "init",
-                status = false,
-                bus= Bus(),
-                rating = 0.0,
-                econ = EconRenewable()) = RenewableCurtailment(name, status, bus, rating, econ)
