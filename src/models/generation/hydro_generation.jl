@@ -68,7 +68,7 @@ end
 HydroFix(; name="init",
         available = false,
         bus = Bus(),
-        tech = TechHydro()) = HydroFix(name, status, bus, tech)
+        tech = TechHydro()) = HydroFix(name, available, bus, tech)
 
 
 struct HydroCurtailment <: HydroGen
@@ -86,14 +86,14 @@ end
 
 function HydroCurtailment(name::String, status::Bool, bus::Bus, tech::TechHydro, curtailcost::Float64)
     econ = EconHydro(curtailcost, nothing)
-    return HydroCurtailment(name, status, bus, tech, econ)
+    return HydroCurtailment(name, available, bus, tech, econ)
 end
 
 HydroCurtailment(; name = "init",
                 available = false,
                 bus= Bus(),
                 tech = TechHydro(),
-                curtailcost = 0.0) = HydroCurtailment(name, status, bus, tech, curtailcost)
+                curtailcost = 0.0) = HydroCurtailment(name, available, bus, tech, curtailcost)
 
 
 struct HydroStorage <: HydroGen
@@ -116,4 +116,4 @@ HydroStorage(; name = "init",
                 bus= Bus(),
                 tech = TechHydro(),
                 econ = EconHydro(),
-                storagecapacity = 0.0) = HydroStorage(name, status, bus, tech, econ, storagecapacity)
+                storagecapacity = 0.0) = HydroStorage(name, available, bus, tech, econ, storagecapacity)

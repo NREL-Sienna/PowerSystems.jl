@@ -28,4 +28,4 @@ StandardThermal(; name = "init",
                 available = false,
                 bus = Bus(),
                 tech = TechThermal(),
-                econ = EconThermal()) = StandardThermal(name, status, bus, tech, econ)
+                econ = EconThermal()) = StandardThermal(name, available, bus, tech, econ)

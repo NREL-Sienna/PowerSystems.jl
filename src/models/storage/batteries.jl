@@ -43,5 +43,5 @@ GenericBattery(; name = "init",
                 efficiency = (in = 0.0, out = 0.0),
                 reactivepower = 0.0,
                 reactivepowerlimits = (min = 0.0, max = 0.0)
-                ) = GenericBattery(name, status, bus, energy, capacity, rating, activepower, inputactivepowerlimits,
+                ) = GenericBattery(name, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits,
                                     outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits)

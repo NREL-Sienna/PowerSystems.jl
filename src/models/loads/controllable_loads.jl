@@ -17,4 +17,4 @@ function InterruptibleLoad(name, available, bus, model, maxactivepower, maxreact
 end
 
 InterruptibleLoad(; name = "init", status = true, bus = Bus(), model = "0", maxactivepower = 0, maxreactivepower=0,
-                econ = EconLoad()) = InterruptibleLoad(name, status, bus, model, maxactivepower, maxreactivepower, econ)
+                econ = EconLoad()) = InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, econ)
