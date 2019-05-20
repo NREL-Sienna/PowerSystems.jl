@@ -34,7 +34,7 @@ function ProportionalReserve(name, contributingdevices, timeframe)
 end
 
 ProportionalReserve(;name = "init",
-        contributingdevices = [StandardThermal()],
+        contributingdevices = [ThermalStandard()],
         timeframe = 0.0) = ProportionalReserve(name, contributingdevices, timeframe)
 
 
@@ -79,6 +79,6 @@ function StaticReserve(
 end
 
 StaticReserve(;name = "init",
-        contributingdevices = [StandardThermal()],
+        contributingdevices = [ThermalStandard()],
         timeframe = 0.0,
         generators = [TechThermal()]) = StaticReserve(name, contributingdevices, timeframe, generators)

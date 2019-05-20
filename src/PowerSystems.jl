@@ -39,7 +39,7 @@ export GenClasses
 
 export HydroGen
 export HydroFix
-export HydroCurtailment
+export HydroDispatch
 export HydroStorage
 export TechHydro
 export EconHydro
@@ -49,12 +49,11 @@ export TechRenewable
 export EconRenewable
 export RenewableFix
 export RenewableDispatch
-export RenewableDispatch
 
 export ThermalGen
 export TechThermal
 export EconThermal
-export StandardThermal
+export ThermalStandard
 
 export ElectricLoad
 export StaticLoad

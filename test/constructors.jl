@@ -8,7 +8,7 @@ end
     @test tEconThermal isa PowerSystemType
     tTechThermal = TechThermal()
     @test tTechThermal isa PowerSystemType
-    tThermalGen = StandardThermal()
+    tThermalGen = ThermalStandard()
     @test tThermalGen isa PowerSystems.Component
     tTechHydro = TechHydro()
     @test tTechHydro isa PowerSystemType
@@ -16,8 +16,8 @@ end
     @test tEconHydro isa PowerSystemType
     tHydroFix = HydroFix()
     @test tHydroFix isa PowerSystems.Component
-    tHydroCurtailment = HydroCurtailment()
-    @test tHydroCurtailment isa PowerSystems.Component
+    tHydroDispatch = HydroDispatch()
+    @test tHydroDispatch isa PowerSystems.Component
     tHydroStorage = HydroStorage()
     @test tHydroStorage isa PowerSystems.Component
     tTechRenewable = TechRenewable()

@@ -278,7 +278,7 @@ function gen_dict_parser(dict::Dict{String,Any})
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
-                push!(Generators,StandardThermal(string(thermal_dict["name"]),
+                push!(Generators,ThermalStandard(string(thermal_dict["name"]),
                                                             Bool(thermal_dict["available"]),
                                                             thermal_dict["bus"],
                                                             TechThermal(thermal_dict["tech"]["rating"],
@@ -298,7 +298,7 @@ function gen_dict_parser(dict::Dict{String,Any})
             end
         elseif gen_type_key =="Hydro"
             for (hydro_key,hydro_dict) in gen_type_dict
-                push!(Generators,HydroCurtailment(string(hydro_dict["name"]),
+                push!(Generators,HydroDispatch(string(hydro_dict["name"]),
                                                             Bool(hydro_dict["available"]),
                                                             hydro_dict["bus"],
                                                             TechHydro(  hydro_dict["tech"]["rating"],

@@ -16,7 +16,7 @@
     @test length(sys_rts.generators.renewable) == length(collect(get_components(RenewableGen, sys)))
     @test length(sys_rts.generators.hydro) == length(collect(get_components(HydroGen, sys)))
     @test length(collect(get_components(Bus, sys))) > 0
-    @test length(collect(get_components(StandardThermal, sys))) > 0
+    @test length(collect(get_components(ThermalStandard, sys))) > 0
     summary(devnull, sys)
 
     # Negative test of missing type.
@@ -30,7 +30,7 @@
     end
 
     @test length(collect(get_components(ThermalGen, sys))) == 0
-    @test length(collect(get_components(StandardThermal, sys))) == 0
+    @test length(collect(get_components(ThermalStandard, sys))) == 0
 
     # For the next test to work there must be at least one component to add back.
     @test length(components) > 0
@@ -45,11 +45,11 @@
     issue_time = issue_times[1]
 
     # Get forecasts with a label and without.
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys),
+    forecasts = get_forecasts(sys, issue_time, get_components(HydroDispatch, sys),
                               "PMax MW")
     @test length(forecasts) > 0
 
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
+    forecasts = get_forecasts(sys, issue_time, get_components(HydroDispatch, sys))
     count = length(forecasts)
     @test count > 0
 
@@ -60,7 +60,7 @@
     # InvalidParameter is thrown if the type is concrete and there is no forecast for a
     # component.
     @test_throws(InvalidParameter,
-                 get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys)))
+                 get_forecasts(sys, issue_time, get_components(HydroDispatch, sys)))
 
     # But not if the type is abstract.
     new_forecasts = get_forecasts(sys, issue_time, get_components(HydroGen, sys))
@@ -68,7 +68,7 @@
 
     add_forecasts!(sys, forecasts)
 
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
+    forecasts = get_forecasts(sys, issue_time, get_components(HydroDispatch, sys))
     @assert length(forecasts) == count
 
     pop!(sys.forecasts, issue_time)
