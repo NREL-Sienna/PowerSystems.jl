@@ -70,7 +70,7 @@ end
 
 """Constructs _System with default values."""
 function _System(; buses=[Bus()],
-                generators=[StandardThermal(), RenewableFix()],
+                generators=[ThermalStandard(), RenewableFix()],
                 loads=[PowerLoad()],
                 branches=nothing,
                 storage=nothing,
@@ -227,7 +227,7 @@ end
 
 """Constructs System with default values."""
 function System(; buses=[Bus()],
-                generators=[StandardThermal(), RenewableFix()],
+                generators=[ThermalStandard(), RenewableFix()],
                 loads=[PowerLoad()],
                 branches=nothing,
                 storage=nothing,
@@ -525,7 +525,7 @@ Call collect on the result if an array is desired.
 
 # Examples
 ```julia
-iter = PowerSystems.get_components(StandardThermal, sys)
+iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
 generators = PowerSystems.get_components(Generator, sys) |> collect
 generators = collect(PowerSystems.get_components(Generator, sys))
