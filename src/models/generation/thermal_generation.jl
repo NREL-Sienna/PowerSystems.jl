@@ -11,7 +11,7 @@ Data Structure for thermal generation technologies.
     Examples
 
 """
-struct ThermalDispatch <: ThermalGen
+struct ThermalStandard <: ThermalGen
     name::String
     available::Bool
     bus::Bus
@@ -20,12 +20,12 @@ struct ThermalDispatch <: ThermalGen
     internal::PowerSystemInternal
 end
 
-function ThermalDispatch(name, available, bus, tech, econ)
-    return ThermalDispatch(name, available, bus, tech, econ, PowerSystemInternal())
+function ThermalStandard(name, available, bus, tech, econ)
+    return ThermalStandard(name, available, bus, tech, econ, PowerSystemInternal())
 end
 
-ThermalDispatch(; name = "init",
-                status = false,
+ThermalStandard(; name = "init",
+                available = false,
                 bus = Bus(),
                 tech = TechThermal(),
-                econ = EconThermal()) = ThermalDispatch(name, status, bus, tech, econ)
+                econ = EconThermal()) = ThermalStandard(name, available, bus, tech, econ)

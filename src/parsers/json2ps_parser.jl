@@ -54,7 +54,7 @@ function gen_json_parser(dict::Dict{String,Any})
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
-                push!(Generators,ThermalDispatch(thermal_dict["name"],
+                push!(Generators,ThermalStandard(thermal_dict["name"],
                                                             thermal_dict["available"],
                                                             Bus(thermal_dict["bus"]["number"],
                                                                             thermal_dict["bus"]["name"],
@@ -79,7 +79,7 @@ function gen_json_parser(dict::Dict{String,Any})
             end
         elseif gen_type_key =="Hydro"
             for (hydro_key,hydro_dict) in gen_type_dict
-                push!(Generators,HydroCurtailment(hydro_dict["name"],
+                push!(Generators,HydroDispatch(hydro_dict["name"],
                                                             hydro_dict["available"],
                                                             Bus(hydro_dict["bus"]["number"],
                                                                             hydro_dict["bus"]["name"],
@@ -103,7 +103,7 @@ function gen_json_parser(dict::Dict{String,Any})
             for (ren_key,ren_dict) in  gen_type_dict
                 if ren_key == "PV"
                     for (pv_key,pv_dict) in ren_dict
-                        push!(Generators,RenewableCurtailment(pv_dict["name"],
+                        push!(Generators,RenewableDispatch(pv_dict["name"],
                                                                     pv_dict["available"],
                                                                     Bus(pv_dict["bus"]["number"],
                                                                             pv_dict["bus"]["name"],
@@ -135,7 +135,7 @@ function gen_json_parser(dict::Dict{String,Any})
                     end
                 elseif ren_key == "WIND"
                     for (wind_key,wind_dict) in ren_dict
-                        push!(Generators,RenewableCurtailment(wind_dict["name"],
+                        push!(Generators,RenewableDispatch(wind_dict["name"],
                                                                     wind_dict["available"],
                                                                     Bus(wind_dict["bus"]["number"],
                                                                             wind_dict["bus"]["name"],

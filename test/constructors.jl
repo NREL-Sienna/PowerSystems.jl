@@ -8,7 +8,7 @@ end
     @test tEconThermal isa PowerSystemType
     tTechThermal = TechThermal()
     @test tTechThermal isa PowerSystemType
-    tThermalGen = ThermalDispatch()
+    tThermalGen = ThermalStandard()
     @test tThermalGen isa PowerSystems.Component
     tTechHydro = TechHydro()
     @test tTechHydro isa PowerSystemType
@@ -16,8 +16,8 @@ end
     @test tEconHydro isa PowerSystemType
     tHydroFix = HydroFix()
     @test tHydroFix isa PowerSystems.Component
-    tHydroCurtailment = HydroCurtailment()
-    @test tHydroCurtailment isa PowerSystems.Component
+    tHydroDispatch = HydroDispatch()
+    @test tHydroDispatch isa PowerSystems.Component
     tHydroStorage = HydroStorage()
     @test tHydroStorage isa PowerSystems.Component
     tTechRenewable = TechRenewable()
@@ -26,10 +26,10 @@ end
     @test tEconRenewable isa PowerSystemType
     tRenewableFix = RenewableFix()
     @test tRenewableFix isa PowerSystems.Component
-    tRenewableFullDispatch = RenewableFullDispatch()
-    @test tRenewableFullDispatch isa PowerSystems.Component
-    tRenewableCurtailment = RenewableCurtailment()
-    @test tRenewableCurtailment isa PowerSystems.Component
+    tRenewableDispatch = RenewableDispatch()
+    @test tRenewableDispatch isa PowerSystems.Component
+    tRenewableDispatch = RenewableDispatch()
+    @test tRenewableDispatch isa PowerSystems.Component
 end
 
 @testset "Storage Constructors" begin
@@ -48,6 +48,8 @@ end
     @test tPowerLoadPF isa PowerSystems.Component
     tLoad = InterruptibleLoad()
     @test tLoad isa PowerSystems.Component
+    tEconLoad = EconLoad()
+    @test tEconLoad isa PowerSystemType
 end
 
 @testset "Branch Constructors" begin
