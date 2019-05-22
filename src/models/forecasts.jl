@@ -22,7 +22,7 @@ function _get_forecast_initial_times(data::_Forecasts)::Vector{Dates.DateTime}
 end
 
 function _add_forecast!(data::_Forecasts, forecast::T) where T <: Forecast
-    key = _ForecastKey(forecast.initialtime, T)
+    key = _ForecastKey(forecast.initial_time, T)
     if !haskey(data, key)
         data[key] = Vector{T}()
     end
@@ -50,7 +50,7 @@ function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
 
     for forecast in Iterators.flatten(values(old_forecasts))
         if !initialized
-            initial_time = forecast.initialtime
+            initial_time = forecast.initial_time
             resolution = forecast.resolution
             horizon = length(forecast)
             initialized = true
@@ -156,30 +156,30 @@ struct Deterministic{T <: Component} <: Forecast
     component::T                        # component
     label::String                       # label of component parameter forecasted
     resolution::Dates.Period            # resolution
-    initialtime::Dates.DateTime         # forecast availability time
+    initial_time::Dates.DateTime         # forecast availability time
     data::TimeSeries.TimeArray          # TimeStamp - scalingfactor
     internal::PowerSystemInternal
 end
 
-function Deterministic(component, label, resolution, initialtime, data,)
-    return Deterministic(component, label, resolution, initialtime, data,
+function Deterministic(component, label, resolution, initial_time, data,)
+    return Deterministic(component, label, resolution, initial_time, data,
                          PowerSystemInternal())
 end
 
 function Deterministic(component::Component,
                        label::String,
                        resolution::Dates.Period,
-                       initialtime::Dates.DateTime,
+                       initial_time::Dates.DateTime,
                        time_steps::Int)
-    data = TimeSeries.TimeArray(initialtime:Dates.Hour(1):initialtime+resolution*(time_steps-1),
+    data = TimeSeries.TimeArray(initial_time:Dates.Hour(1):initial_time+resolution*(time_steps-1),
                                 ones(time_steps))
-    return Deterministic(component, label, resolution, initialtime, data)
+    return Deterministic(component, label, resolution, initial_time, data)
 end
 
 function Deterministic(component::Component, label::String, data::TimeSeries.TimeArray)
     resolution = getresolution(data)
-    initialtime = TimeSeries.timestamp(data)[1]
-    Deterministic(component, label, resolution, initialtime, data)
+    initial_time = TimeSeries.timestamp(data)[1]
+    Deterministic(component, label, resolution, initial_time, data)
 end
 
 # Refer to docstrings in services.jl.
@@ -256,14 +256,14 @@ struct Scenarios <: Forecast
     horizon::Int
     resolution::Dates.Period
     interval::Dates.Period
-    initialtime::Dates.DateTime
+    initial_time::Dates.DateTime
     scenarioquantity::Int
     data::Dict{Any,Dict{Int,TimeSeries.TimeArray}}
     internal::PowerSystemInternal
 end
 
-function Scenarios(horizon, resolution, interval, initialtime, scenarioquantity, data)
-    return Scenarios(horizon, resolution, interval, initialtime, scenarioquantity, data,
+function Scenarios(horizon, resolution, interval, initial_time, scenarioquantity, data)
+    return Scenarios(horizon, resolution, interval, initial_time, scenarioquantity, data,
                      PowerSystemInternal())
 end
 
@@ -271,14 +271,14 @@ struct Probabilistic <: Forecast
     horizon::Int
     resolution::Dates.Period
     interval::Dates.Period
-    initialtime::Dates.DateTime
+    initial_time::Dates.DateTime
     percentilequantity::Int
     data::Dict{Any,Dict{Int,TimeSeries.TimeArray}}
     internal::PowerSystemInternal
 end
 
-function Probabilistic(horizon, resolution, interval, initialtime, percentilequantity, data)
-    return Probabilistic(horizon, resolution, interval, initialtime, percentilequantity,
+function Probabilistic(horizon, resolution, interval, initial_time, percentilequantity, data)
+    return Probabilistic(horizon, resolution, interval, initial_time, percentilequantity,
                          data, PowerSystemInternal())
 end
 =#

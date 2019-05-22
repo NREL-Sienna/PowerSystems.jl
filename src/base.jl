@@ -491,7 +491,7 @@ Remove the forecat from the system.
 Throws InvalidParameter if the forecast is not stored.
 """
 function remove_forecast!(sys::System, forecast::T) where T <: Forecast
-    key = _ForecastKey(forecast.initialtime, T)
+    key = _ForecastKey(forecast.initial_time, T)
 
     if !haskey(sys.forecasts.data, key)
         throw(InvalidParameter("Forecast not found: $(forecast.label)"))
