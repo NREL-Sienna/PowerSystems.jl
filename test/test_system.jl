@@ -45,11 +45,11 @@
     initial_time = initial_times[1]
 
     # Get forecasts with a label and without.
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroDispatch, sys),
-                              "PMax MW")
+    components = get_components(HydroDispatch, sys)
+    forecasts = get_forecasts(Forecast, sys, initial_time, components, "PMax MW")
     @test length(forecasts) > 0
 
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroDispatch, sys))
+    forecasts = get_forecasts(Forecast, sys, initial_time, components)
     count = length(forecasts)
     @test count > 0
 
@@ -75,15 +75,16 @@
     # InvalidParameter is thrown if the type is concrete and there is no forecast for a
     # component.
     @test_throws(InvalidParameter,
-                 get_forecasts(sys, issue_time, get_components(HydroDispatch, sys)))
+                 get_forecasts(Forecast, sys, initial_time, components))
 
     # But not if the type is abstract.
-    new_forecasts = get_forecasts(Forecast, sys, initial_time, get_components(HydroGen, sys))
+    new_forecasts = get_forecasts(Forecast, sys, initial_time,
+                                  get_components(HydroGen, sys))
     @test length(new_forecasts) == 0
 
     add_forecasts!(sys, forecasts)
 
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroDispatch, sys))
+    forecasts = get_forecasts(Forecast, sys, initial_time, components)
     @assert length(forecasts) == count
 
     pop!(sys.forecasts.data, PowerSystems._ForecastKey(initial_time, Deterministic{Bus}))
