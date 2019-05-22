@@ -40,18 +40,33 @@
 
     @test length(collect(get_components(ThermalGen, sys))) > 0
 
-    issue_times = collect(get_forecast_issue_times(sys))
-    @assert length(issue_times) > 0
-    issue_time = issue_times[1]
+    initial_times = get_forecast_initial_times(sys)
+    @assert length(initial_times) > 0
+    initial_time = initial_times[1]
 
     # Get forecasts with a label and without.
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys),
-                              "PMax MW")
+    components = get_components(HydroCurtailment, sys)
+    forecasts = get_forecasts(Forecast, sys, initial_time, components, "PMax MW")
     @test length(forecasts) > 0
 
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
+    forecasts = get_forecasts(Forecast, sys, initial_time, components)
     count = length(forecasts)
     @test count > 0
+
+    # Verify that the two accessor functions return the same results.
+    all_components = get_components(Component, sys)
+    all_forecasts1 = get_forecasts(Forecast, sys, initial_time, all_components)
+    all_forecasts2 = get_forecasts(Forecast, sys, initial_time)
+    @test length(all_forecasts1) == length(all_forecasts2)
+
+    # Get specific forecasts. They should not match.
+    specific_forecasts = get_forecasts(Deterministic{Bus}, sys, initial_time)
+    @test length(specific_forecasts) < length(all_forecasts1)
+
+    @test get_forecasts_horizon(sys) == 24
+    @test get_forecasts_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
+    @test get_forecasts_interval(sys) == Dates.Hour(1)  # TODO
+    @test get_forecasts_resolution(sys) == Dates.Hour(1)  # TODO
 
     for forecast in forecasts
         remove_forecast!(sys, forecast)
@@ -59,18 +74,19 @@
 
     # InvalidParameter is thrown if the type is concrete and there is no forecast for a
     # component.
-    @test_throws(InvalidParameter,
-                 get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys)))
+    @test_throws(PowerSystems.InvalidParameter,
+                 get_forecasts(Forecast, sys, initial_time, components))
 
     # But not if the type is abstract.
-    new_forecasts = get_forecasts(sys, issue_time, get_components(HydroGen, sys))
+    new_forecasts = get_forecasts(Forecast, sys, initial_time, get_components(HydroGen, sys))
     @test length(new_forecasts) == 0
 
     add_forecasts!(sys, forecasts)
 
-    forecasts = get_forecasts(sys, issue_time, get_components(HydroCurtailment, sys))
+    forecasts = get_forecasts(Forecast, sys, initial_time, components)
     @assert length(forecasts) == count
 
-    pop!(sys.forecasts, issue_time)
-    @test_throws(InvalidParameter, get_forecasts(sys, issue_time))
+    pop!(sys.forecasts.data, PowerSystems._ForecastKey(initial_time, Deterministic{Bus}))
+    @test_throws(PowerSystems.InvalidParameter,
+                 get_forecasts(Deterministic{Bus}, sys, initial_time, components))
 end
