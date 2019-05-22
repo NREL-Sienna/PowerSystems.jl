@@ -597,13 +597,13 @@ function get_components(
 end
 
 """Shows the component types and counts in a table."""
-function Base.show(io::IO, sys::System)
-    Base.show(io, sys.components)
+function Base.summary(io::IO, sys::System)
+    Base.summary(io, sys.components)
     println("\n")
-    Base.show(io, sys.forecasts)
+    Base.summary(io, sys.forecasts)
 end
 
-function Base.show(io::IO, components::Components)
+function Base.summary(io::IO, components::Components)
     counts = Dict{String, Int}()
     rows = []
 

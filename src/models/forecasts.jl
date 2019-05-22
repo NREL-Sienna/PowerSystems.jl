@@ -99,7 +99,7 @@ function SystemForecasts(data::NamedTuple)
     return SystemForecasts(_Forecasts(), initial_time, resolution, horizon, interval)
 end
 
-function Base.show(io::IO, forecasts::SystemForecasts)
+function Base.summary(io::IO, forecasts::SystemForecasts)
     counts = Dict{String, Int}()
     rows = []
 
@@ -122,7 +122,7 @@ function Base.show(io::IO, forecasts::SystemForecasts)
             push!(rows, row)
         end
         println(io, "Initial Time $initial_time")
-        println(io, "---------------------------------")
+        println(io, "--------------------------------")
 
         sort!(rows, by = x -> x.ConcreteType)
 
