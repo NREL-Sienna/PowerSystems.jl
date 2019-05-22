@@ -254,6 +254,46 @@ function System(filename::String)
     return from_json(System, filename)
 end
 
+"""Iterates over all components.
+
+# Examples
+```julia
+for component in iterate_components(sys)
+    @show component
+end
+```
+
+See also: [`get_components`](@ref)
+"""
+function iterate_components(sys::System)
+    Channel() do channel
+        for component in get_components(Component, sys)
+            put!(channel, component)
+        end
+    end
+end
+
+"""Iterates over all forecasts in order of initial time.
+
+# Examples
+```julia
+for forecast in iterate_forecasts(sys)
+    @show forecast
+end
+```
+
+See also: [`get_forecasts`](@ref)
+"""
+function iterate_forecasts(sys::System)
+    Channel() do channel
+        for initial_time in get_forecast_initial_times(sys)
+            for forecast in get_forecasts(Forecast, sys, initial_time)
+                put!(channel, forecast)
+            end
+        end
+    end
+end
+
 """Deserializes a System from String or IO."""
 function from_json(io::Union{IO, String}, ::Type{System})
     components = Dict{DataType, Vector{<: Component}}()
@@ -398,6 +438,7 @@ forecasts = PowerSystems.get_forecasts(Forecast, sys, initial_time) |> collect
 forecasts = collect(PowerSystems.get_forecasts(Forecast, sys))
 ```
 
+See also: [`iterate_forecasts`](@ref)
 """
 function get_forecasts(
                        ::Type{T},
@@ -414,7 +455,8 @@ function get_forecasts(
         end
     else
         keys_ = [_ForecastKey(initial_time, x.forecast_type)
-                 for x in keys(sys.forecasts.data) if x.forecast_type <: T]
+                 for x in keys(sys.forecasts.data) if x.initial_time == initial_time &&
+                                                      x.forecast_type <: T]
         iter = FlattenedVectorsIterator(Vector{Vector{T}}([sys.forecasts.data[x]
                                                            for x in keys_]))
     end
@@ -530,6 +572,8 @@ iter = PowerSystems.get_components(Generator, sys)
 generators = PowerSystems.get_components(Generator, sys) |> collect
 generators = collect(PowerSystems.get_components(Generator, sys))
 ```
+
+See also: [`iterate_components`](@ref)
 """
 function get_components(
                         ::Type{T},
@@ -553,13 +597,13 @@ function get_components(
 end
 
 """Shows the component types and counts in a table."""
-function Base.show(io::IO, sys::System)
-    Base.show(io, sys.components)
+function Base.summary(io::IO, sys::System)
+    Base.summary(io, sys.components)
     println("\n")
-    Base.show(io, sys.forecasts)
+    Base.summary(io, sys.forecasts)
 end
 
-function Base.show(io::IO, components::Components)
+function Base.summary(io::IO, components::Components)
     counts = Dict{String, Int}()
     rows = []
 

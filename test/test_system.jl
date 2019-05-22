@@ -74,7 +74,7 @@
 
     # InvalidParameter is thrown if the type is concrete and there is no forecast for a
     # component.
-    @test_throws(InvalidParameter,
+    @test_throws(PowerSystems.InvalidParameter,
                  get_forecasts(Forecast, sys, initial_time, components))
 
     # But not if the type is abstract.
@@ -90,4 +90,37 @@
     pop!(sys.forecasts.data, PowerSystems._ForecastKey(initial_time, Deterministic{Bus}))
     @test_throws(PowerSystems.InvalidParameter,
                  get_forecasts(Deterministic{Bus}, sys, initial_time, components))
+end
+
+@testset "Test System iterators" begin
+    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
+    sys_rts = PowerSystems._System(cdm_dict)
+    rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
+    rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])
+
+    PowerSystems.add_forecast!(sys_rts, :DA=>rts_da)
+    PowerSystems.add_forecast!(sys_rts, :RT=>rts_rt)
+
+    sys = System(cdm_dict)
+
+    i = 0
+    for component in iterate_components(sys)
+        i += 1
+    end
+
+    components = get_components(Component, sys)
+    @test i == length(components)
+
+    i = 0
+    for forecast in iterate_forecasts(sys)
+        i += 1
+    end
+
+    j = 0
+    initial_times = get_forecast_initial_times(sys)
+    for initial_time in initial_times
+        j += length(get_forecasts(Forecast, sys, initial_time))
+    end
+
+    @test i == j
 end

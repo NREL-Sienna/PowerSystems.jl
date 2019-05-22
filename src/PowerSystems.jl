@@ -83,10 +83,12 @@ export get_forecasts_horizon
 export get_forecasts_initial_time
 export get_forecasts_interval
 export get_forecasts_resolution
+export iterate_forecasts
 export read_data_files
 export validate
 export add_component!
 export get_components
+export iterate_components
 export to_json
 export from_json
 
