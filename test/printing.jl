@@ -40,7 +40,6 @@ end
 _sys5 = PowerSystems._System(nodes5, thermal_generators5, loads5, branches5, nothing, 100.0,
         forecasts5, nothing, nothing)
 sys5 = System(_sys5)
-@test are_type_and_fields_in_output(sys5)
 @test are_type_and_fields_in_output(collect(get_components(Bus,sys5))[1])
 @test are_type_and_fields_in_output(collect(get_components(Generator,sys5))[1])
 @test are_type_and_fields_in_output(collect(get_components(ThermalGen,sys5))[1])
