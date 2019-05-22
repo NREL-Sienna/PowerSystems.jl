@@ -58,7 +58,7 @@ function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
             if forecast.resolution != resolution
                 # TODO parsing code currently produces multiple resolutions.
                 @error("Skipping forecast because it has a different resolution",
-                       resolution, forecast.resolution)
+                       resolution, forecast.resolution, maxlog=1)
                 #throw(DataFormatError("found multiple resolution values in forecasts"))
                 continue
             end
@@ -81,7 +81,7 @@ function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
         # TODO is this correct?
         interval = initial_times[2] - initial_times[1]
     else
-        @error "no forecasts detected" old_forecasts
+        @error "no forecasts detected" old_forecasts maxlog=1
         interval = Dates.Day(1)  # TODO
         #throw(DataFormatError("no forecasts detected"))
     end
