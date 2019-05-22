@@ -115,6 +115,8 @@ function add_forecast!(sys::_System,fc::Pair{Symbol,Array{Forecast,1}})
     sys.forecasts[fc.first] = fc.second
 end
 
+const Components = Dict{DataType, Vector{<:Component}}
+
 """
     System
 
@@ -148,7 +150,7 @@ end
     DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
 struct System <: PowerSystemType
-    components::Dict{DataType, Vector{<:Component}}    # Contains arrays of concrete types.
+    components::Components    # Contains arrays of concrete types.
     forecasts::Union{Nothing, SystemForecasts}
     basepower::Float64                                 # [MVA]
     internal::PowerSystemInternal
@@ -551,11 +553,17 @@ function get_components(
 end
 
 """Shows the component types and counts in a table."""
-function Base.summary(io::IO, sys::System)
-    counts = Dict{String, Int}()
+function Base.show(io::IO, sys::System)
+    Base.show(io, sys.components)
+    println("\n")
+    Base.show(io, sys.forecasts)
+end
 
+function Base.show(io::IO, components::Components)
+    counts = Dict{String, Int}()
     rows = []
-    for (subtype, values) in sys.components
+
+    for (subtype, values) in components
         type_str = strip_module_names(string(subtype))
         counts[type_str] = length(values)
         parents = [strip_module_names(string(x)) for x in supertypes(subtype)]
@@ -567,8 +575,10 @@ function Base.summary(io::IO, sys::System)
 
     sort!(rows, by = x -> x.ConcreteType)
 
-    #df = DataFrames.DataFrame(rows)
-    print(io, "This is currently broken")
+    df = DataFrames.DataFrame(rows)
+    println(io, "Components")
+    println(io, "==========")
+    Base.show(io, df)
 end
 
 function compare_values(x::System, y::System)::Bool
