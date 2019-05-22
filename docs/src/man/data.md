@@ -45,3 +45,12 @@ jq '.components.Device.Injection.Generator.ThermalGen.ThermalDispatch | .[] | se
 ```
 jq -r '["name", "econ.capacity"], (.components.Device.Injection.Generator.ThermalGen.ThermalDispatch | .[] | [.name, .econ.capacity]) | @tsv' system.json
 ```
+
+## View the forecast types and initial_time values.
+jq '.forecasts.data | keys' system.json
+
+## View the fields of a forecast.
+jq '.forecasts.data["PowerSystems._ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"][0] | keys'
+
+## View the value of every field in an array of forecasts.
+jq '.forecasts.data["PowerSystems._ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"] | .[].initial_time'

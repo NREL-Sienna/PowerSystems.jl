@@ -4,48 +4,132 @@ const Forecasts = Vector{<:Forecast}
 # This is deprecated because only the legacy System uses it. Parsing code need to change to
 # build the new format.
 const SystemForecastsDeprecated = Dict{Symbol, Forecasts}
-const IssueTime = NamedTuple{(:resolution, :initialtime),
-                             Tuple{Dates.Period, Dates.DateTime}}
-const SystemForecasts = Dict{IssueTime, Forecasts}
 
-# The default deserialization of SystemForecasts doesn't work for these reasons:
-# - IssueTime fails to serialize correctly.
-# - Forecasts are abstract types. We need to know what concrete type to create during
-#   deserialization.
-#
-# The code below converts the forecast data to a different format to enable deserialization.
-
-struct _SystemForecastArrayForJSON
-    resolution::Dates.Period
-    initialtime::Dates.DateTime
-    forecasts::Forecasts
-    forecast_types::Vector{String}  # Encode the exact type so that deserialization doesn't have
-                            # to infer what it is.
+struct _ForecastKey
+    initial_time::Dates.DateTime
+    forecast_type::DataType
 end
 
-struct _SystemForecastsForJSON
-    forecasts::Vector{_SystemForecastArrayForJSON}
-end
+const _Forecasts = Dict{_ForecastKey, Vector{<:Forecast}}
 
-function JSON2.write(io::IO, forecasts::SystemForecasts)
-    return JSON2.write(io, encode_for_json(forecasts))
-end
-
-function JSON2.write(forecasts::SystemForecasts)
-    return JSON2.write(encode_for_json(forecasts))
-end
-
-function encode_for_json(system_forecasts::SystemForecasts)
-    forecasts_for_json = Vector{_SystemForecastArrayForJSON}()
-    for (issue_time, forecasts) in system_forecasts
-        forecast_types = [strip_module_names(typeof(x)) for x in forecasts]
-        push!(forecasts_for_json, _SystemForecastArrayForJSON(issue_time.resolution,
-                                                              issue_time.initialtime,
-                                                              forecasts,
-                                                              forecast_types))
+function _get_forecast_initial_times(data::_Forecasts)::Vector{Dates.DateTime}
+    initial_times = Set{Dates.DateTime}()
+    for key in keys(data)
+        push!(initial_times, key.initial_time)
     end
 
-    return _SystemForecastsForJSON(forecasts_for_json)
+    return sort!(Vector{Dates.DateTime}(collect(initial_times)))
+end
+
+function _add_forecast!(data::_Forecasts, forecast::T) where T <: Forecast
+    key = _ForecastKey(forecast.initial_time, T)
+    if !haskey(data, key)
+        data[key] = Vector{T}()
+    end
+
+    push!(data[key], forecast)
+end
+
+"""Container for forecasts and their metadata. Implementation detail that is not exported.
+Functions to access the data should go through the System."""
+struct SystemForecasts
+    data::_Forecasts
+    initial_time::Dates.DateTime
+    resolution::Dates.Period
+    horizon::Int64
+    interval::Dates.Period
+end
+
+"""Constructs SystemForecasts from the previous version of the data structure."""
+function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
+    forecasts = _Forecasts()
+    initial_time = Dates.DateTime(Dates.Second(1))
+    resolution = Dates.Period(Dates.Second(1))
+    initialized = false
+    horizon::Int64 = 0
+
+    for forecast in Iterators.flatten(values(old_forecasts))
+        if !initialized
+            initial_time = forecast.initial_time
+            resolution = forecast.resolution
+            horizon = length(forecast)
+            initialized = true
+        else
+            if forecast.resolution != resolution
+                # TODO parsing code currently produces multiple resolutions.
+                @error("Skipping forecast because it has a different resolution",
+                       resolution, forecast.resolution, maxlog=1)
+                #throw(DataFormatError("found multiple resolution values in forecasts"))
+                continue
+            end
+
+            cur_horizon = length(forecast)
+            if cur_horizon != horizon
+                msg = "found multiple horizons in forecasts: $horizon, $cur_horizon"
+                throw(DataFormatError(msg))
+            end
+        end
+
+        _add_forecast!(forecasts, forecast)
+    end
+
+    initial_times = _get_forecast_initial_times(forecasts)
+    if length(initial_times) == 1
+        # TODO this needs work
+        interval = resolution
+    elseif length(initial_times) > 1
+        # TODO is this correct?
+        interval = initial_times[2] - initial_times[1]
+    else
+        @error "no forecasts detected" old_forecasts maxlog=1
+        interval = Dates.Day(1)  # TODO
+        #throw(DataFormatError("no forecasts detected"))
+    end
+
+    return SystemForecasts(forecasts, initial_time, resolution, horizon, interval)
+end
+
+"""Partially constructs SystemForecasts from JSON. Forecasts are not constructed."""
+function SystemForecasts(data::NamedTuple)
+    initial_time = Dates.DateTime(data.initial_time)
+    resolution = JSON2.read(JSON2.write(data.resolution), Dates.Period)
+    horizon = data.horizon
+    interval = JSON2.read(JSON2.write(data.interval), Dates.Period)
+
+    return SystemForecasts(_Forecasts(), initial_time, resolution, horizon, interval)
+end
+
+function Base.show(io::IO, forecasts::SystemForecasts)
+    counts = Dict{String, Int}()
+    rows = []
+
+    println(io, "Forecasts")
+    println(io, "=========")
+
+    initial_times = _get_forecast_initial_times(forecasts.data)
+    for initial_time in initial_times
+        for (key, values) in forecasts.data
+            if key.initial_time != initial_time
+                continue
+            end
+
+            type_str = strip_module_names(string(key.forecast_type))
+            counts[type_str] = length(values)
+            parents = [strip_module_names(string(x)) for x in supertypes(key.forecast_type)]
+            row = (ConcreteType=type_str,
+                   SuperTypes=join(parents, " <: "),
+                   Count=length(values))
+            push!(rows, row)
+        end
+        println(io, "Initial Time $initial_time")
+        println(io, "---------------------------------")
+
+        sort!(rows, by = x -> x.ConcreteType)
+
+        df = DataFrames.DataFrame(rows)
+        Base.show(io, df)
+        println(io, "\n")
+    end
 end
 
 """Converts forecast JSON data to SystemForecasts. This version builds onto the passed dict
@@ -56,33 +140,40 @@ function convert_type!(
                        data::NamedTuple,
                        components::LazyDictFromIterator,
                       ) where T <: Forecast
-    for array in data.forecasts
-        issue_time = IssueTime((JSON2.read(JSON2.write(array.resolution), Dates.Period),
-                                JSON2.read(JSON2.write(array.initialtime), Dates.DateTime)))
-        forecasts[issue_time] = Vector{Forecast}()
-        for (forecast, forecast_type_str) in zip(array.forecasts, array.forecast_types)
-            type_str, params = separate_type_and_parameter_types(forecast_type_str)
-            forecast_type = getfield(PowerSystems, Symbol(type_str))
-            # Deterministic is a parametric type; deal with its parameters.
-            parameter_types = [getfield(PowerSystems, Symbol(x)) for x in params]
+    for symbol in propertynames(data.data)
+        key_str = string(symbol)
+        # Looks like this:
+        # "PowerSystems._ForecastKey(2020-01-01T00:00:00, Deterministic{RenewableFix})"
+        index_start_time = findfirst("(", key_str).start + 1
+        index_end_time = findfirst(",", key_str).start - 1
+        index_start_type = index_end_time + 3
+        index_end_type = findfirst(")", key_str).start - 1
+
+        initial_time_str = key_str[index_start_time:index_end_time]
+        initial_time = Dates.DateTime(initial_time_str)
+
+        forecast_type_str = key_str[index_start_type:index_end_type]
+        type_str, params = separate_type_and_parameter_types(forecast_type_str)
+        forecast_type = getfield(PowerSystems, Symbol(type_str))
+        parameter_types = [getfield(PowerSystems, Symbol(x)) for x in params]
+        if length(parameter_types) == 1
+            forecast_type = forecast_type{parameter_types[1]}
+        elseif length(parameter_types) != 0
+            @assert false
+        end
+
+        key = _ForecastKey(initial_time, forecast_type)
+
+        forecasts.data[key] = Vector{forecast_type}()
+        for forecast in getfield(data.data, symbol)
             if forecast_type <: Deterministic
-                push!(forecasts[issue_time],
+                push!(forecasts.data[key],
                       convert_type(Deterministic, forecast, components, parameter_types))
             else
-                push!(forecasts[issue_time], convert_type(forecast_type))
+                push!(forecasts.data[issue_time], convert_type(forecast_type))
             end
         end
     end
-end
-
-"""
-    get_issue_time(forecast::Forecast)
-
-Get the time designator for the forecast.
-
-"""
-function get_issue_time(forecast::Forecast)
-    return IssueTime((forecast.resolution, forecast.initialtime))
 end
 
 function Base.length(forecast::Forecast)
@@ -98,30 +189,30 @@ struct Deterministic{T <: Component} <: Forecast
     component::T                        # component
     label::String                       # label of component parameter forecasted
     resolution::Dates.Period            # resolution
-    initialtime::Dates.DateTime         # forecast availability time
+    initial_time::Dates.DateTime         # forecast availability time
     data::TimeSeries.TimeArray          # TimeStamp - scalingfactor
     internal::PowerSystemInternal
 end
 
-function Deterministic(component, label, resolution, initialtime, data,)
-    return Deterministic(component, label, resolution, initialtime, data,
+function Deterministic(component, label, resolution, initial_time, data,)
+    return Deterministic(component, label, resolution, initial_time, data,
                          PowerSystemInternal())
 end
 
 function Deterministic(component::Component,
                        label::String,
                        resolution::Dates.Period,
-                       initialtime::Dates.DateTime,
+                       initial_time::Dates.DateTime,
                        time_steps::Int)
-    data = TimeSeries.TimeArray(initialtime:Dates.Hour(1):initialtime+resolution*(time_steps-1),
+    data = TimeSeries.TimeArray(initial_time:Dates.Hour(1):initial_time+resolution*(time_steps-1),
                                 ones(time_steps))
-    return Deterministic(component, label, resolution, initialtime, data)
+    return Deterministic(component, label, resolution, initial_time, data)
 end
 
 function Deterministic(component::Component, label::String, data::TimeSeries.TimeArray)
     resolution = getresolution(data)
-    initialtime = TimeSeries.timestamp(data)[1]
-    Deterministic(component, label, resolution, initialtime, data)
+    initial_time = TimeSeries.timestamp(data)[1]
+    Deterministic(component, label, resolution, initial_time, data)
 end
 
 # Refer to docstrings in services.jl.
@@ -193,18 +284,19 @@ function convert_type(::Type{T}, data::Any) where T <: Deterministic
     error("This form of convert_type is not supported for Deterministic")
 end
 
+#= These are currently unused and need to be fixed.
 struct Scenarios <: Forecast
     horizon::Int
     resolution::Dates.Period
     interval::Dates.Period
-    initialtime::Dates.DateTime
+    initial_time::Dates.DateTime
     scenarioquantity::Int
     data::Dict{Any,Dict{Int,TimeSeries.TimeArray}}
     internal::PowerSystemInternal
 end
 
-function Scenarios(horizon, resolution, interval, initialtime, scenarioquantity, data)
-    return Scenarios(horizon, resolution, interval, initialtime, scenarioquantity, data,
+function Scenarios(horizon, resolution, interval, initial_time, scenarioquantity, data)
+    return Scenarios(horizon, resolution, interval, initial_time, scenarioquantity, data,
                      PowerSystemInternal())
 end
 
@@ -212,13 +304,14 @@ struct Probabilistic <: Forecast
     horizon::Int
     resolution::Dates.Period
     interval::Dates.Period
-    initialtime::Dates.DateTime
+    initial_time::Dates.DateTime
     percentilequantity::Int
     data::Dict{Any,Dict{Int,TimeSeries.TimeArray}}
     internal::PowerSystemInternal
 end
 
-function Probabilistic(horizon, resolution, interval, initialtime, percentilequantity, data)
-    return Probabilistic(horizon, resolution, interval, initialtime, percentilequantity,
+function Probabilistic(horizon, resolution, interval, initial_time, percentilequantity, data)
+    return Probabilistic(horizon, resolution, interval, initial_time, percentilequantity,
                          data, PowerSystemInternal())
 end
+=#

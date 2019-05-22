@@ -115,6 +115,8 @@ function add_forecast!(sys::_System,fc::Pair{Symbol,Array{Forecast,1}})
     sys.forecasts[fc.first] = fc.second
 end
 
+const Components = Dict{DataType, Vector{<:Component}}
+
 """
     System
 
@@ -148,7 +150,7 @@ end
     DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
 struct System <: PowerSystemType
-    components::Dict{DataType, Vector{<:Component}}    # Contains arrays of concrete types.
+    components::Components    # Contains arrays of concrete types.
     forecasts::Union{Nothing, SystemForecasts}
     basepower::Float64                                 # [MVA]
     internal::PowerSystemInternal
@@ -160,7 +162,7 @@ end
 
 function System(sys::_System)
     components = Dict{DataType, Vector{<:Component}}()
-    forecasts = isnothing(sys.forecasts) ? nothing : SystemForecasts()
+    forecasts = isnothing(sys.forecasts) ? nothing : SystemForecasts(sys.forecasts)
     concrete_sys = System(components, forecasts, sys.basepower)
 
     for field in (:buses, :loads)
@@ -198,12 +200,8 @@ function System(sys::_System)
         @debug "components: $(string(key)): count=$(string(length(value)))"
     end
 
-    if !isnothing(concrete_sys.forecasts)
-        add_forecasts!(concrete_sys, Iterators.flatten(values(sys.forecasts)))
-    end
     return concrete_sys
 end
-
 
 """Primary System constructor. Funnel point for all other outer constructors."""
 function System(buses::Vector{Bus},
@@ -215,8 +213,6 @@ function System(buses::Vector{Bus},
                 forecasts::Union{Nothing, SystemForecasts},
                 services::Union{Nothing, Vector{ <: Service}},
                 annex::Union{Nothing,Dict}; kwargs...)
-
-    
     _sys = _System(buses, generators, loads, branches, storage, basepower, forecasts, services, annex; kwargs...)
     return System(_sys)
 end
@@ -226,8 +222,6 @@ function System(buses::Vector{Bus},
                 generators::Vector{<:Generator},
                 loads::Vector{<:ElectricLoad},
                 basepower::Float64; kwargs...)
-
-    
     return System(buses, generators, loads, nothing, nothing, basepower, nothing, nothing, nothing; kwargs...)
 end
 
@@ -283,7 +277,7 @@ function from_json(io::Union{IO, String}, ::Type{System})
         end
     end
 
-    sys = System(components, SystemForecasts(), float(raw.basepower))
+    sys = System(components, SystemForecasts(raw.forecasts), float(raw.basepower))
 
     # Service objects actually have Device instances, but Forecasts have Components. Since
     # we are sharing the dict, use the higher-level type.
@@ -341,31 +335,21 @@ function add_forecasts!(sys::System, forecasts)
     end
 end
 
-function _add_forecast!(forecasts::SystemForecasts, issue_time::IssueTime,
-                        forecast::Forecast)
-    if !haskey(forecasts, issue_time)
-        forecasts[issue_time] = Forecasts{Forecast}()
-    end
-
-    push!(forecasts[issue_time], forecast)
-end
-
-function _add_forecast!(forecasts::SystemForecasts, forecast::Forecast)
-    issue_time = get_issue_time(forecast)
-    _add_forecast!(forecasts, issue_time, forecast)
+function _add_forecast!(forecasts::SystemForecasts, forecast::T) where T <: Forecast
+    _add_forecast!(forecasts.data, forecast)
 end
 
 function _validate_component_label_uniqueness(system_forecasts::SystemForecasts)::Bool
     match = true
 
-    for (issue_time, forecasts) in system_forecasts
+    for (key, forecasts) in system_forecasts.data
         unique_components = Set{Tuple{<:Component, String}}()
         for forecast in forecasts
             component_label = (forecast.component, forecast.label)
             if component_label in unique_components
                 match = false
                 @error("not all components in forecast vector are unique", component_label,
-                       issue_time)
+                       key.initial_time)
             else
                 push!(unique_components, component_label)
             end
@@ -375,67 +359,110 @@ function _validate_component_label_uniqueness(system_forecasts::SystemForecasts)
     return match
 end
 
-"""
-    get_forecast_issue_times(sys::System)
+"""Return the horizon for all forecasts."""
+get_forecasts_horizon(sys::System)::Int64 = sys.forecasts.horizon
 
-Return an iterator to the forecast IssueTime values stored in the System.
+"""Return the earliest initial_time for a forecast."""
+get_forecasts_initial_time(sys::System)::Dates.DateTime = sys.forecasts.initial_time
+
+"""Return the interval for all forecasts."""
+get_forecasts_interval(sys::System)::Dates.Period = sys.forecasts.interval
+
+"""Return the resolution for all forecasts."""
+get_forecasts_resolution(sys::System)::Dates.Period = sys.forecasts.resolution
 
 """
-function get_forecast_issue_times(sys::System)
-    return keys(sys.forecasts)
+    get_forecast_initial_times(sys::System)::Vector{Dates.DateTime}
+
+Return sorted forecast initial times.
+
+"""
+function get_forecast_initial_times(sys::System)::Vector{Dates.DateTime}
+    return _get_forecast_initial_times(sys.forecasts.data)
 end
 
 """
-    get_forecasts(sys::System, issue_time::IssueTime)
+    get_forecasts(::Type{T}, sys::System, initial_time::Dates.DateTime)
 
-Return an iterator to the forecasts for the given IssueTime stored in the System.
+Return an iterator of forecasts. T can be concrete or abstract.
 
-Throws InvalidParameter if the System does not have issue_time stored.
+Call collect on the result if an array is desired.
+
+This method is fast and efficient because it returns an iterator to existing vectors.
+
+# Examples
+```julia
+iter = PowerSystems.get_forecasts(Deterministic{RenewableFix}, sys, initial_time)
+iter = PowerSystems.get_forecasts(Forecast, sys, initial_time)
+forecasts = PowerSystems.get_forecasts(Forecast, sys, initial_time) |> collect
+forecasts = collect(PowerSystems.get_forecasts(Forecast, sys))
+```
 
 """
-function get_forecasts(sys::System, issue_time::IssueTime)
-    if !haskey(sys.forecasts, issue_time)
-        throw(InvalidParameter("forecast issue_time {issue_time} does not exist"))
+function get_forecasts(
+                       ::Type{T},
+                       sys::System,
+                       initial_time::Dates.DateTime,
+                      )::FlattenedVectorsIterator{T} where T <: Forecast
+    if isconcretetype(T)
+        key = _ForecastKey(initial_time, T)
+        forecasts = get(sys.forecasts.data, key, nothing)
+        if isnothing(forecasts)
+            iter = FlattenedVectorsIterator(Vector{Vector{T}}([]))
+        else
+            iter = FlattenedVectorsIterator(Vector{Vector{T}}([forecasts]))
+        end
+    else
+        keys_ = [_ForecastKey(initial_time, x.forecast_type)
+                 for x in keys(sys.forecasts.data) if x.forecast_type <: T]
+        iter = FlattenedVectorsIterator(Vector{Vector{T}}([sys.forecasts.data[x]
+                                                           for x in keys_]))
     end
 
-    return Iterators.take(sys.forecasts[issue_time], length(sys.forecasts[issue_time]))
+    @assert eltype(iter) == T
+    return iter
 end
 
 """
     get_forecasts(
+                  ::Type{T},
                   sys::System,
-                  issue_time::IssueTime,
+                  initial_time::Dates.DateTime,
                   components_iterator,
                   label::Union{String, Nothing}=nothing,
                  )::Vector{Forecast}
 
 # Arguments
 - `sys::System`: system
-- `issue_time::IssueTime`: time designator for the forecast; see [`get_issue_time`](@ref)
+- `initial_time::Dates.DateTime`: time designator for the forecast
 - `components_iter`: iterable (array, iterator, etc.) of Component values
 - `label::Union{String, Nothing}`: forecast label or nothing
 
 Return forecasts that match the components and label.
 
+This method is slower than the first version because it has to compare components and label
+as well as build a new vector.
+
 Throws InvalidParameter if eltype(components_iterator) is a concrete type and no forecast is
 found for a component.
 """
 function get_forecasts(
+                       ::Type{T},
                        sys::System,
-                       issue_time::IssueTime,
+                       initial_time::Dates.DateTime,
                        components_iterator,
                        label::Union{String, Nothing}=nothing,
-                      )::Vector{Forecast}
-    forecasts = Vector{Forecast}()
+                      )::Vector{T} where T <: Forecast
+    forecasts = Vector{T}()
     elem_type = eltype(components_iterator)
     throw_on_unmatched_component = isconcretetype(elem_type)
-    @debug "get_forecasts" issue_time label elem_type throw_on_unmatched_component
+    @debug "get_forecasts" initial_time label elem_type throw_on_unmatched_component
 
     # Cache the component UUIDs and matched component UUIDs so that we iterate over
     # components_iterator and forecasts only once.
     components = Set{Base.UUID}((get_uuid(x) for x in components_iterator))
     matched_components = Set{Base.UUID}()
-    for forecast in get_forecasts(sys, issue_time)
+    for forecast in get_forecasts(T, sys, initial_time)
         if !isnothing(label) && label != forecast.label
             continue
         end
@@ -465,17 +492,16 @@ Remove the forecat from the system.
 
 Throws InvalidParameter if the forecast is not stored.
 """
-function remove_forecast!(sys::System, forecast::Forecast)
-    issue_time = get_issue_time(forecast)
+function remove_forecast!(sys::System, forecast::T) where T <: Forecast
+    key = _ForecastKey(forecast.initial_time, T)
 
-    if !haskey(sys.forecasts, issue_time)
+    if !haskey(sys.forecasts.data, key)
         throw(InvalidParameter("Forecast not found: $(forecast.label)"))
     end
 
-    forecast_array = sys.forecasts[issue_time]
-    for (i, forecast_) in enumerate(forecast_array)
+    for (i, forecast_) in enumerate(sys.forecasts.data[key])
         if get_uuid(forecast) == get_uuid(forecast_)
-            deleteat!(forecast_array, i)
+            deleteat!(sys.forecasts.data[key], i)
             return
         end
     end
@@ -527,11 +553,17 @@ function get_components(
 end
 
 """Shows the component types and counts in a table."""
-function Base.summary(io::IO, sys::System)
-    counts = Dict{String, Int}()
+function Base.show(io::IO, sys::System)
+    Base.show(io, sys.components)
+    println("\n")
+    Base.show(io, sys.forecasts)
+end
 
+function Base.show(io::IO, components::Components)
+    counts = Dict{String, Int}()
     rows = []
-    for (subtype, values) in sys.components
+
+    for (subtype, values) in components
         type_str = strip_module_names(string(subtype))
         counts[type_str] = length(values)
         parents = [strip_module_names(string(x)) for x in supertypes(subtype)]
@@ -543,8 +575,10 @@ function Base.summary(io::IO, sys::System)
 
     sort!(rows, by = x -> x.ConcreteType)
 
-    #df = DataFrames.DataFrame(rows)
-    print(io, "This is currently broken")
+    df = DataFrames.DataFrame(rows)
+    println(io, "Components")
+    println(io, "==========")
+    Base.show(io, df)
 end
 
 function compare_values(x::System, y::System)::Bool

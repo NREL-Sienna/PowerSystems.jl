@@ -46,10 +46,10 @@ sys5 = System(_sys5)
 @test are_type_and_fields_in_output(collect(get_components(ThermalGen,sys5))[1])
 @test are_type_and_fields_in_output(collect(get_components(Branch,sys5))[1])
 @test are_type_and_fields_in_output(collect(get_components(ElectricLoad,sys5))[1])
-for issue_time in get_forecast_issue_times(sys5)
-    for forecast in get_forecasts(sys5, issue_time)
+for initial_time in get_forecast_initial_times(sys5)
+    for forecast in get_forecasts(Forecast, sys5, initial_time)
         @test are_type_and_fields_in_output(forecast)
-        # Just test one forecast per issue_time.
+        # Just test one forecast per initial_time.
         break
     end
 end
