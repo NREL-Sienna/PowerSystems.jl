@@ -251,6 +251,7 @@ function convert_type(::Type{T}, data::Any) where T <: Deterministic
     error("This form of convert_type is not supported for Deterministic")
 end
 
+#= These are currently unused and need to be fixed.
 struct Scenarios <: Forecast
     horizon::Int
     resolution::Dates.Period
@@ -280,3 +281,4 @@ function Probabilistic(horizon, resolution, interval, initialtime, percentilequa
     return Probabilistic(horizon, resolution, interval, initialtime, percentilequantity,
                          data, PowerSystemInternal())
 end
+=#
