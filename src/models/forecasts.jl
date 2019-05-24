@@ -40,8 +40,8 @@ end
 """Constructs SystemForecasts from the flat vector of forecasts resulting from parsing."""
 function SystemForecasts(forecasts::Forecasts)
     forecasts_by_type = ForecastsByType()
-    initial_time = Dates.DateTime(Dates.Second(1))
-    resolution = Dates.Period(Dates.Second(1))
+    initial_time = Dates.DateTime(Dates.Second(0))
+    resolution = Dates.Period(Dates.Second(0))
     initialized = false
     horizon::Int64 = 0
 

@@ -706,25 +706,20 @@ function forecast_csv_parser(ps_dict::Dict, data::Dict)
         "loads" => Vector{Dict}(),
     )
 
-    # A system can only contain forecasts with one resolution. Skip any that don't
-    # match the first one found.
-    # TODO DT: probably not what we want...
-    first_resolution = nothing
-
     component_map = retrieve(ps_dict, "name")
     for key in keys(data)
         for (name, value) in data[key]
             if name == "Load"
                 continue
             end
-            # TODO DT: should we verify that the delta between each timestamp is the same?
+
             if value isa DataFrames.AbstractDataFrame
                 len = size(value)[1]
-                @assert len > 2
+                @assert len >= 2
                 resolution = value[:DateTime][2] - value[:DateTime][1]
             else
                 len = length(value)
-                @assert len > 2
+                @assert len >= 2
                 timestamps = TimeSeries.timestamp(value)
                 resolution = timestamps[2] - timestamps[1]
             end
@@ -743,18 +738,10 @@ function forecast_csv_parser(ps_dict::Dict, data::Dict)
                 "resolution" => resolution,
             )
             @info "adding $key generator forecasts"
-            if isnothing(first_resolution)
-                first_resolution = resolution
-            elseif resolution != first_resolution
-                @error("found timeseries with a different resolution", resolution,
-                       first_resolution, maxlog=3)
-                continue
-            end
             push!(forecasts["forecasts"], forecast)
         end
 
-        # TODO DT: Is this used anywhere?
-        @info "adding $key load forcasats"
+        @info "adding $key load forecasts"
         load = Dict(
             "label" => key,
             "data" => data[key]["Load"],
