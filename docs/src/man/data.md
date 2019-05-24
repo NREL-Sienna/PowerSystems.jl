@@ -50,7 +50,7 @@ jq -r '["name", "econ.capacity"], (.components.Device.Injection.Generator.Therma
 jq '.forecasts.data | keys' system.json
 
 ## View the fields of a forecast.
-jq '.forecasts.data["PowerSystems._ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"][0] | keys'
+jq '.forecasts.data["PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"][0] | keys'
 
 ## View the value of every field in an array of forecasts.
-jq '.forecasts.data["PowerSystems._ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"] | .[].initial_time'
+jq '.forecasts.data["PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"] | .[].initial_time'

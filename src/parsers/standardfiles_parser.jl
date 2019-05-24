@@ -29,8 +29,8 @@ function parsestandardfiles(file::String, ts_folder::String; kwargs...)
     
     ts_data = read_data_files(ts_folder; kwargs...)
 
-    forecast = make_forecast_array(sys,ts_data)
-    add_forecast!(sys,:default=>forecast)
+    forecasts = make_forecast_array(sys, ts_data["forecasts"]["forecasts"])
+    add_forecast!(sys, forecasts)
 
     return data
 end

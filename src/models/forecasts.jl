@@ -1,18 +1,15 @@
 abstract type Forecast <: PowerSystemType end
 
 const Forecasts = Vector{<:Forecast}
-# This is deprecated because only the legacy System uses it. Parsing code need to change to
-# build the new format.
-const SystemForecastsDeprecated = Dict{Symbol, Forecasts}
 
-struct _ForecastKey
+struct ForecastKey
     initial_time::Dates.DateTime
     forecast_type::DataType
 end
 
-const _Forecasts = Dict{_ForecastKey, Vector{<:Forecast}}
+const ForecastsByType = Dict{ForecastKey, Vector{<:Forecast}}
 
-function _get_forecast_initial_times(data::_Forecasts)::Vector{Dates.DateTime}
+function _get_forecast_initial_times(data::ForecastsByType)::Vector{Dates.DateTime}
     initial_times = Set{Dates.DateTime}()
     for key in keys(data)
         push!(initial_times, key.initial_time)
@@ -21,8 +18,8 @@ function _get_forecast_initial_times(data::_Forecasts)::Vector{Dates.DateTime}
     return sort!(Vector{Dates.DateTime}(collect(initial_times)))
 end
 
-function _add_forecast!(data::_Forecasts, forecast::T) where T <: Forecast
-    key = _ForecastKey(forecast.initial_time, T)
+function _add_forecast!(data::ForecastsByType, forecast::T) where T <: Forecast
+    key = ForecastKey(forecast.initial_time, T)
     if !haskey(data, key)
         data[key] = Vector{T}()
     end
@@ -33,22 +30,22 @@ end
 """Container for forecasts and their metadata. Implementation detail that is not exported.
 Functions to access the data should go through the System."""
 struct SystemForecasts
-    data::_Forecasts
+    data::ForecastsByType
     initial_time::Dates.DateTime
     resolution::Dates.Period
     horizon::Int64
     interval::Dates.Period
 end
 
-"""Constructs SystemForecasts from the previous version of the data structure."""
-function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
-    forecasts = _Forecasts()
+"""Constructs SystemForecasts from the flat vector of forecasts resulting from parsing."""
+function SystemForecasts(forecasts::Forecasts)
+    forecasts_by_type = ForecastsByType()
     initial_time = Dates.DateTime(Dates.Second(1))
     resolution = Dates.Period(Dates.Second(1))
     initialized = false
     horizon::Int64 = 0
 
-    for forecast in Iterators.flatten(values(old_forecasts))
+    for forecast in forecasts
         if !initialized
             initial_time = forecast.initial_time
             resolution = forecast.resolution
@@ -56,10 +53,7 @@ function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
             initialized = true
         else
             if forecast.resolution != resolution
-                # TODO parsing code currently produces multiple resolutions.
-                @error("Skipping forecast because it has a different resolution",
-                       resolution, forecast.resolution, maxlog=1)
-                #throw(DataFormatError("found multiple resolution values in forecasts"))
+                throw(DataFormatError("found multiple resolution values in forecasts"))
                 continue
             end
 
@@ -70,10 +64,10 @@ function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
             end
         end
 
-        _add_forecast!(forecasts, forecast)
+        _add_forecast!(forecasts_by_type, forecast)
     end
 
-    initial_times = _get_forecast_initial_times(forecasts)
+    initial_times = _get_forecast_initial_times(forecasts_by_type)
     if length(initial_times) == 1
         # TODO this needs work
         interval = resolution
@@ -81,12 +75,12 @@ function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
         # TODO is this correct?
         interval = initial_times[2] - initial_times[1]
     else
-        @error "no forecasts detected" old_forecasts maxlog=1
+        @error "no forecasts detected" forecasts maxlog=1
         interval = Dates.Day(1)  # TODO
         #throw(DataFormatError("no forecasts detected"))
     end
 
-    return SystemForecasts(forecasts, initial_time, resolution, horizon, interval)
+    return SystemForecasts(forecasts_by_type, initial_time, resolution, horizon, interval)
 end
 
 """Partially constructs SystemForecasts from JSON. Forecasts are not constructed."""
@@ -96,7 +90,7 @@ function SystemForecasts(data::NamedTuple)
     horizon = data.horizon
     interval = JSON2.read(JSON2.write(data.interval), Dates.Period)
 
-    return SystemForecasts(_Forecasts(), initial_time, resolution, horizon, interval)
+    return SystemForecasts(ForecastsByType(), initial_time, resolution, horizon, interval)
 end
 
 function Base.summary(io::IO, forecasts::SystemForecasts)
@@ -143,7 +137,7 @@ function convert_type!(
     for symbol in propertynames(data.data)
         key_str = string(symbol)
         # Looks like this:
-        # "PowerSystems._ForecastKey(2020-01-01T00:00:00, Deterministic{RenewableFix})"
+        # "PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic{RenewableFix})"
         index_start_time = findfirst("(", key_str).start + 1
         index_end_time = findfirst(",", key_str).start - 1
         index_start_type = index_end_time + 3
@@ -162,7 +156,7 @@ function convert_type!(
             @assert false
         end
 
-        key = _ForecastKey(initial_time, forecast_type)
+        key = ForecastKey(initial_time, forecast_type)
 
         forecasts.data[key] = Vector{forecast_type}()
         for forecast in getfield(data.data, symbol)

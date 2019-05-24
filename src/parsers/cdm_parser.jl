@@ -165,49 +165,12 @@ function csv2ps_dict(data::Dict{String,Any})
         @warn "Key error : key 'reserves' not found in PowerSystems dictionary, this will result in a ps_dict['services'] =  nothing"
         ps_dict["services"] = nothing
     end
-
-    if haskey(data,"timeseries_data")
-        gen_map = _retrieve(ps_dict["gen"],"name",Dict(),[])
-        device_map = _retrieve(ps_dict,"name",Dict(),[])
-
-        if haskey(data["timeseries_data"],"DAY_AHEAD")
-            @info "adding DAY-AHEAD generator forcasats"
-            _add_nested_dict!(ps_dict,["forecasts","DA"],_format_fcdict(data["timeseries_data"]["DAY_AHEAD"],device_map))
-
-            #_add_nested_dict!(ps_dict,["forecasts","DA","gen"],_format_fcdict(data["timeseries_data"]["DAY_AHEAD"],gen_map))
-            @info "adding DAY-AHEAD load forcasats"
-            ps_dict["forecasts"]["DA"]["load"] = data["timeseries_data"]["DAY_AHEAD"]["Load"]
-        end
-        if haskey(data["timeseries_data"],"REAL_TIME")
-            @info "adding REAL-TIME generator forcasats"
-            _add_nested_dict!(ps_dict,["forecasts","RT","gen"],_format_fcdict(data["timeseries_data"]["REAL_TIME"],gen_map))
-            @info "adding REAL-TIME load forcasats"
-            ps_dict["forecasts"]["RT"]["load"] = data["timeseries_data"]["REAL_TIME"]["Load"]
-        end
+    if haskey(data, "timeseries_data")
+        ps_dict["forecasts"] = forecast_csv_parser(ps_dict, data["timeseries_data"])
     end
 
     return ps_dict
 end
-
-function _add_nested_dict!(d,keylist,value = Dict())
-    if !haskey(d,keylist[1])
-        d[keylist[1]] = length(keylist)==1 ? value : Dict{String,Any}()
-    end
-    if length(keylist) > 1
-        _add_nested_dict!(d[keylist[1]],keylist[2:end],value)
-    end
-end
-
-function _format_fcdict(fc,obj_map)
-    paths = Dict()
-    for (k,d) in fc
-        if haskey(obj_map, k)
-            _add_nested_dict!(paths,obj_map[k],d)
-        end
-    end
-    return paths
-end
-
 
 """
 Args:
@@ -736,6 +699,71 @@ function services_csv_parser(rsv_raw::DataFrames.DataFrame,gen_raw::DataFrames.D
     return services_dict
 end
 
+"""Return a dictionary that includes a vector of parsed forecast dictionaries."""
+function forecast_csv_parser(ps_dict::Dict, data::Dict)
+    forecasts = Dict(
+        "forecasts" => Vector{Dict}(),
+        "loads" => Vector{Dict}(),
+    )
+
+    # A system can only contain forecasts with one resolution. Skip any that don't
+    # match the first one found.
+    # TODO DT: probably not what we want...
+    first_resolution = nothing
+
+    component_map = retrieve(ps_dict, "name")
+    for key in keys(data)
+        for (name, value) in data[key]
+            if name == "Load"
+                continue
+            end
+            # TODO DT: should we verify that the delta between each timestamp is the same?
+            if value isa DataFrames.AbstractDataFrame
+                len = size(value)[1]
+                @assert len > 2
+                resolution = value[:DateTime][2] - value[:DateTime][1]
+            else
+                len = length(value)
+                @assert len > 2
+                timestamps = TimeSeries.timestamp(value)
+                resolution = timestamps[2] - timestamps[1]
+            end
+
+            component = get(component_map, name, nothing)
+            if isnothing(component)
+                @error "$name is not in component_map, skipping forecast"
+                continue
+            end
+
+            forecast = Dict(
+                "component" => component,
+                "label" => key,
+                "data" => value,
+                "length" => len,
+                "resolution" => resolution,
+            )
+            @info "adding $key generator forecasts"
+            if isnothing(first_resolution)
+                first_resolution = resolution
+            elseif resolution != first_resolution
+                @error("found timeseries with a different resolution", resolution,
+                       first_resolution, maxlog=3)
+                continue
+            end
+            push!(forecasts["forecasts"], forecast)
+        end
+
+        # TODO DT: Is this used anywhere?
+        @info "adding $key load forcasats"
+        load = Dict(
+            "label" => key,
+            "data" => data[key]["Load"],
+        )
+        push!(forecasts["loads"], load)
+    end
+
+    return forecasts
+end
 
 # Remove missing values form dataframes
 #TODO : Remove "NA" Strings from the data created by CSV.read()

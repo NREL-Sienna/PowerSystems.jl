@@ -3,12 +3,10 @@
 
 ## Time Series Length ##
 
-function timeseriescheckforecast(forecasts::Dict{Symbol,Array{C,1} where C<:Forecast})
-    for (key,v) in forecasts
-        t = length(unique([length(f.data) for f in v]))
-        if t > 1
-            @error "$key forecast array contains $t different time series lengths"
-        end
+function timeseriescheckforecast(forecasts::Forecasts)
+    t = length(unique([length(f) for f in forecasts]))
+    if t > 1
+        @error "forecast array contains $t different time series lengths"
     end
 end
 

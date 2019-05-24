@@ -54,52 +54,6 @@ Returns:
     return DATA
 end
 
-
-"""
-Args:
-    A System struct
-    A dictonary of forecasts
-Returns:
-    A PowerSystems forecast stuct array
-"""
-
-function make_forecast_array(sys::Union{_System,Array{Component,1}},ts_dict::Dict)
-    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
-    fc = Array{Forecast}(undef, 0)
-    for (key,val) in ts_map
-        ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
-        if (typeof(ts)==DataFrames.DataFrame) & (size(ts,2) > 2)
-            devices = reduce(vcat,[_get_device(c,sys) for c in string.(names(ts)) if c != "DateTime"]) #retrieve devices from system that are in the timeseries data
-            for d in devices
-                dd = isa(d,LoadZones) ? d.buses : [d]
-                for b in dd
-                    push!(fc,Deterministic(b,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)])))
-                end
-            end
-        else
-            devices = _get_device(key,sys) #retrieve the device object
-            cn = isa(ts,DataFrames.DataFrame) ? names(ts) : TimeSeries.colnames(ts)
-            cn = [c for c in cn if c != :DateTime]
-        
-            if length(devices) > 0 
-                devices = unique(values(devices))
-                for d in devices
-                    dd = isa(d,LoadZones) ? d.buses : [d]
-                    for b in dd
-                        for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
-                            timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
-                            push!(fc,Deterministic(b,string(c),timeseries))
-                        end
-                    end
-                end
-            else
-                @warn("no $key entries for devices in sys")
-            end
-        end
-    end
-    return fc
- end
-
  """
 Args:
     A System struct
@@ -108,42 +62,57 @@ Returns:
     A PowerSystems forecast stuct array
 """
 
-function make_forecast_array(sys::System,ts_dict::Dict)
-    ts_map = _retrieve(ts_dict, Union{TimeSeries.TimeArray,DataFrames.DataFrame},Dict(),[]) #find key-path to timeseries data fields
-    fc = Array{Forecast}(undef, 0)
-    all_devices = collect(get_components(Component,sys))
-    for (key,val) in ts_map
-        ts = _access(ts_dict,vcat(val,key)) #retrieve timeseries data
-        if (typeof(ts)==DataFrames.DataFrame) & (size(ts,2) > 2)
-            devices = [d for d in all_devices if d.name in string.(names(ts))]
-            for d in devices
-                dd = isa(d,LoadZones) ? d.buses : [d]
+function make_forecast_array(sys::System, parsed_forecasts::Vector{Dict})
+    return make_forecast_array(get_components(Component, sys))
+end
+
+function make_forecast_array(all_components, parsed_forecasts::Vector{Dict})
+    # TODO this code could be cleaner if the incoming data was only DataFrame or TimeArray
+    forecasts = Vector{Forecast}()
+    for forecast in parsed_forecasts
+        data = forecast["data"]
+        if data isa DataFrames.DataFrame && size(data, 2) > 2
+            # TODO: I don't understand this code block
+            components = [x for x in all_components if x.name in string.(names(data))]
+            for component in components
+                dd = isa(component, LoadZones) ? component.buses : [component]
                 for b in dd
-                    push!(fc,Deterministic(b,"scalingfactor",TimeSeries.TimeArray(ts.DateTime,ts[Symbol(d.name)]))) # TODO: unhardcode scalingfactor
+                    time_array = TimeSeries.TimeArray(data.DateTime, data[Symbol(d.name)])
+                    forecast = Deterministic(b, "scalingfactor", time_array)
+                    push!(forecasts, forecast) # TODO: unhardcode scalingfactor
                 end
             end
         else
-            devices = [d for d in all_devices if d.name == key]
-
-            cn = isa(ts,DataFrames.DataFrame) ? names(ts) : TimeSeries.colnames(ts)
-            cn = [c for c in cn if c != :DateTime]
+            components = [x for x in all_components if x.name == forecast["component"]["name"]]
+            col_names = isa(data, DataFrames.DataFrame) ? names(data) :
+                                                          TimeSeries.colnames(data)
+            filter!(x -> x != :DateTime, col_names)
         
-            if length(devices) > 0 
-                for d in devices
-                    dd = isa(d,LoadZones) ? d.buses : [d]
+            if length(components) > 0 
+                for component in components
+                    dd = isa(component, LoadZones) ? component.buses : [component]
                     for b in dd
-                        for c in cn #if a TimeArray has multiple value columns, create mulitiple forecasts for different parameters in the same device
-                            timeseries = isa(ts,DataFrames.DataFrame) ? TimeSeries.TimeArray(ts.DateTime,ts[c]) : ts[c]
-                            push!(fc,Deterministic(b,string(c),timeseries))
+                        # If a TimeArray has multiple value columns, create mulitiple
+                        # forecasts for different parameters in the same device.
+                        for col in col_names
+                            values = data[col]
+                            if data isa DataFrames.DataFrame
+                                timeseries = TimeSeries.TimeArray(data.DateTime, values)
+                            else
+                                timeseries = values
+                            end
+
+                            push!(forecasts, Deterministic(b, string(component), timeseries))
                         end
                     end
                 end
             else
-                @warn("no $key entries for devices in sys")
+                @error("no $(forecast["component"]["name"]) entries for components in sys")
             end
         end
     end
-    return fc
+
+    return forecasts
  end
 
  # Write dict to Json

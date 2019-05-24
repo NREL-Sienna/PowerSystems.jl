@@ -57,10 +57,10 @@ function ps_dict2ps_struct(data::Dict{String,Any})
         @warn "key 'services' not found in PowerSystems dictionary, this will result in an empty services array"
     end
     if haskey(data,"forecasts")
-        devices = collect(vcat(buses,generators,storage,branches,loads,loadZones,shunts,branches,services))
-        forecasts = PowerSystems.forecasts_dict_parser(data["forecasts"],devices)
+        devices = vcat(buses,generators,storage,branches,loads,loadZones,shunts,branches,services)
+        forecasts = make_forecast_array(devices, data["forecasts"]["forecasts"])
     else
-        forecasts = Dict{Symbol, Vector{ <: Forecast}}()
+        forecasts = Vector{Forecast}()
     end
 
     return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts, forecasts, services
@@ -68,46 +68,53 @@ function ps_dict2ps_struct(data::Dict{String,Any})
 end
 
 """
-Finds the values matching an identifier within a dictionary and returns a dict with keyed by
-objects with values as arrays of keys to navigate to the object within the input dict
+Recurse through a nested dictionary looking for dicts with the key key_of_interest.
+Return a dictionary where keys are the value of key_of_interest and values are references
+to those dicts.
+
+Primary use is to build a mapping of component name to component within a ps_dict.
+
 """
-function _retrieve(dict::T, key_of_interest::Union{DataType,Union,String,Symbol}, output::Dict, path::Array) where T<:AbstractDict
-    iter_result = Base.iterate(dict)
-    last_element = length(path)
-    while iter_result !== nothing
-        ((key,value), state) = iter_result
-        if isa(key_of_interest,Union{DataType,Union})
-            if typeof(value) <: key_of_interest
-                output[key] = !haskey(output,key) ? path[1:end] : push!(output[key],path[1:end])
-            end
-        elseif key == key_of_interest
-            output[value] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
-        end
-        if value isa AbstractDict
-            push!(path,key)
-            _retrieve(value, key_of_interest, output, path)
-            path = path[1:last_element]
-        end
-        iter_result = Base.iterate(dict, state)
-    end
+function retrieve(dict::AbstractDict, key_of_interest)
+    output = Dict()
+    path = Vector()
+    _retrieve(dict, key_of_interest, output)
     return output
 end
 
-
-"""
-Takes a nested dict, and an array of keys to navigate to specific values. Returns the value
-at the end of the navigation path.
-"""
-function _access(nesteddict::T,keylist) where T<:AbstractDict
-    if !haskey(nesteddict,keylist[1])
-        @error "$(keylist[1]) not found in dict"
-    end
-    if length(keylist) > 1
-        nesteddict = _access(nesteddict[keylist[1]],keylist[2:end])
-    else
-        nesteddict = nesteddict[keylist[1]]
+function _retrieve(dict::AbstractDict, key_of_interest, output::Dict)
+    for (key, value) in dict
+        if value isa AbstractDict
+            if haskey(value, key_of_interest)
+                output[key] = value
+            else
+                # Recurse.
+                _retrieve(value, key_of_interest, output)
+            end
+        end
     end
 end
+
+# TODO DT: alternate implementation
+#function _retrieve(dict::AbstractDict, key_of_interest, output::Dict, path::Vector)
+#    last_element = length(path)
+#    for (key, value) in dict
+#        if key == key_of_interest
+#            if haskey(output, value)
+#                push!(output[value], path[1:end])
+#            else
+#                output[value] = path[1:end]
+#            end
+#        end
+#
+#        if value isa AbstractDict
+#            push!(path, key)
+#            _retrieve(value, key_of_interest, output, path)
+#            path = path[1:last_element]
+#        end
+#    end
+#end
+
 
 """
 Takes a string or symbol "name" and returns a list of devices within a collection
@@ -508,15 +515,4 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
                             ))
     end
     return Services
-end
-
-
-function forecasts_dict_parser(dict::Dict, devices::Array{Component,1})
-
-    forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}()
-
-    for (k,v) in dict
-        forecasts[Symbol(k)] =  make_forecast_array(devices, v)
-    end
-    return forecasts
 end

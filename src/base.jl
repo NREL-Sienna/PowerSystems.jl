@@ -16,7 +16,7 @@ struct _System <: PowerSystemType
     branches::Union{Nothing, Vector{<:Branch}}
     storage::Union{Nothing, Vector{<:Storage}}
     basepower::Float64 # [MVA]
-    forecasts::Union{Nothing, SystemForecastsDeprecated}
+    forecasts::Union{Nothing, Forecasts}
     services::Union{Nothing, Vector{ <: Service}}
     annex::Union{Nothing,Dict{Any,Any}}
 #=
@@ -42,7 +42,7 @@ function _System(buses::Vector{Bus},
                 branches::Union{Nothing, Vector{<:Branch}},
                 storage::Union{Nothing, Vector{<:Storage}},
                 basepower::Float64,
-                forecasts::Union{Nothing, SystemForecastsDeprecated},
+                forecasts::Union{Nothing, Forecasts},
                 services::Union{Nothing, Vector{ <: Service}},
                 annex::Union{Nothing,Dict}; kwargs...)
 
@@ -446,7 +446,7 @@ function get_forecasts(
                        initial_time::Dates.DateTime,
                       )::FlattenedVectorsIterator{T} where T <: Forecast
     if isconcretetype(T)
-        key = _ForecastKey(initial_time, T)
+        key = ForecastKey(initial_time, T)
         forecasts = get(sys.forecasts.data, key, nothing)
         if isnothing(forecasts)
             iter = FlattenedVectorsIterator(Vector{Vector{T}}([]))
@@ -454,7 +454,7 @@ function get_forecasts(
             iter = FlattenedVectorsIterator(Vector{Vector{T}}([forecasts]))
         end
     else
-        keys_ = [_ForecastKey(initial_time, x.forecast_type)
+        keys_ = [ForecastKey(initial_time, x.forecast_type)
                  for x in keys(sys.forecasts.data) if x.initial_time == initial_time &&
                                                       x.forecast_type <: T]
         iter = FlattenedVectorsIterator(Vector{Vector{T}}([sys.forecasts.data[x]
@@ -535,7 +535,7 @@ Remove the forecat from the system.
 Throws InvalidParameter if the forecast is not stored.
 """
 function remove_forecast!(sys::System, forecast::T) where T <: Forecast
-    key = _ForecastKey(forecast.initial_time, T)
+    key = ForecastKey(forecast.initial_time, T)
 
     if !haskey(sys.forecasts.data, key)
         throw(InvalidParameter("Forecast not found: $(forecast.label)"))
