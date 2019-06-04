@@ -226,7 +226,7 @@ Base.getindex(a::PTDF, k::PTDFKey) = a[k.I...]
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-function Base.summary(io::T, A::PTDF) where {T <: IO}
+function Base.summary(io::IO, A::PTDF)
     _summary(io, A)
     for (k,ax) in enumerate(A.axes)
         print(io, "    Dimension $k, ")
@@ -236,6 +236,10 @@ function Base.summary(io::T, A::PTDF) where {T <: IO}
     print(io, "And data, a ", size(A.data))
 end
 _summary(io::IO, A::PTDF) = println(io, "PTDF Matrix")
+
+function Base.summary(io::IOContext{Base.GenericIOBuffer{Array{UInt8,1}}}, ::PTDF)
+    println(io, "PTDF Matrix")
+end
 
 function Base.summary(A::PTDF)
     io = IOBuffer()
