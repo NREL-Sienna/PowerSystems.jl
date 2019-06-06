@@ -1,3 +1,5 @@
+
+abstract type Topological <: Device end
 """
     Bus
 
@@ -18,7 +20,7 @@ Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage)
 * `basevoltage`::Float64 : the base voltage in kV; may be `nothing`
 
 """
-struct Bus <: Injection
+struct Bus <: Topological
     # field docstrings work here! (they are not for System)
     """ number associated with the bus """
     number::Int64
@@ -57,7 +59,7 @@ Bus(;   number = 0,
             orderedlimits(voltagelimits, "Voltage"), basevoltage)
 
 # DOCTODO What are LoadZones? JJS 1/18/19
-struct LoadZones  <: Injection
+struct LoadZones  <: Topological
     number::Int
     name::String
     buses::Array{Bus,1}
