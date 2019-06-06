@@ -1,5 +1,5 @@
 
-abstract type Topological <: Device end
+abstract type Topological <: Component end
 """
     Bus
 
