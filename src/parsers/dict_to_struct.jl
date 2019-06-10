@@ -58,7 +58,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
     end
     if haskey(data,"forecasts")
         devices = vcat(buses,generators,storage,branches,loads,loadZones,shunts,branches,services)
-        forecasts = make_forecast_array(devices, data["forecasts"]["forecasts"])
+        forecasts = make_forecast_array(devices, data["forecasts"]["forecasts"])  # TODO DT broken
     else
         forecasts = Vector{Forecast}()
     end
@@ -87,84 +87,6 @@ function _get_device(name::Union{String,Symbol}, collection, devices = [])
         end
     end
     return devices
-end
-
-# TODO DT: add_time_series and add_time_series_load are unused. Delete?
-function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeArray)
-    """
-    Arg:
-        Device dictionary - Generators
-        Dict contains device Realtime/Forecast TimeSeries.TimeArray
-    Returns:
-        Device dictionary with timeseries added
-    """
-
-    name = get(Device_dict, "name", "")
-    if name == ""
-        throw(DataFormatError("input dict to add_time_series in wrong format"))
-    end
-
-    if maximum(values(ts_raw)) > 1.0
-        @warn "Time series for $name has values > 1.0, expected values in range {0.0,1.0}"
-    end
-    Device_dict["scalingfactor"] = ts_raw
-
-
-    return Device_dict
-end
-
-"""
-Arg:
-    Load dictionary
-    LoadZones dictionary
-    Dataframe contains device Realtime/Forecast TimeSeries
-Returns:
-    Device dictionary with timeseries added
-"""
-function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
-    load_dict = data["load"]
-
-    load_names = [string(l["name"]) for (k,l) in load_dict]
-    ts_names = [string(n) for n in names(df) if n != :DateTime]
-
-    write_sf_by_lz = false
-    lzkey = [k for k in ["loadzone","load_zone"] if haskey(data,k)][1]
-    if lzkey in keys(data)
-        load_zone_dict = data[lzkey]
-        z_names = [string(z["name"]) for (k,z) in load_zone_dict]
-        if length([n for n in z_names if n in ts_names]) > 0
-            write_sf_by_lz = true
-        end
-    end
-
-    assigned_loads = []
-    if write_sf_by_lz
-        @info "assigning load scaling factors by load_zone"
-        # TODO: make this faster/better
-        for (l_key,l) in load_dict
-            for (lz_key,lz) in load_zone_dict
-                if l["bus"] in lz["buses"]
-                    ts_raw = df[lz_key]/lz["maxactivepower"]
-                    load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
-                    push!(assigned_loads,l_key)
-                end
-            end
-
-        end
-    else
-        @info "assigning load scaling factors by bus"
-        for (l_key,l) in load_dict
-            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[Symbol(l["name"])])
-            push!(assigned_loads,l["name"])
-        end
-
-    end
-
-    for l in [l for l in load_names if !(l in assigned_loads)]
-        @warn "No load scaling factor assigned for $l" maxlog=PS_MAX_LOG
-    end
-
-    return load_dict
 end
 
 ## - Parse Dict to Struct

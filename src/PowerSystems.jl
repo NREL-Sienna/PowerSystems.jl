@@ -80,6 +80,7 @@ export parse_file
 export ps_dict2ps_struct
 export add_forecasts!
 export remove_forecast!
+export forecast_csv_parser!
 export get_forecast_initial_times
 export get_forecasts
 export get_forecasts_horizon

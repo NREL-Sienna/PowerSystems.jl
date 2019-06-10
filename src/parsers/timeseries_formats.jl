@@ -1,11 +1,11 @@
 
-abstract type TimeseriesFormat end
-abstract type TimeseriesFormatPeriodAsColumn <: TimeseriesFormat end
+abstract type TimeseriesFileFormat end
+abstract type TimeseriesFormatPeriodAsColumn <: TimeseriesFileFormat end
 abstract type TimeseriesFormatYMDPeriodAsColumn <: TimeseriesFormatPeriodAsColumn end
 abstract type TimeseriesFormatDateTimePeriodAsColumn <: TimeseriesFormatPeriodAsColumn end
-abstract type TimeseriesFormatPeriodAsHeader <: TimeseriesFormat end
+abstract type TimeseriesFormatPeriodAsHeader <: TimeseriesFileFormat end
 abstract type TimeseriesFormatYMDPeriodAsHeader <: TimeseriesFormatPeriodAsHeader end
-abstract type TimeseriesFormatComponentsAsColumnsNoTime <: TimeseriesFormat end
+abstract type TimeseriesFormatComponentsAsColumnsNoTime <: TimeseriesFileFormat end
 
 """Return the timeseries format used in the CSV file."""
 function get_timeseries_format(file::CSV.File)
@@ -66,7 +66,7 @@ function get_period_columns(::Type{TimeseriesFormatYMDPeriodAsHeader},
 end
 
 """Return a sorted vector of unique timestamps specified in the CSV file."""
-function get_unique_timestamps(::Type{T}, file::CSV.File) where T <: TimeseriesFormat
+function get_unique_timestamps(::Type{T}, file::CSV.File) where T <: TimeseriesFileFormat
     timestamps = Set{Dates.DateTime}()
 
     for i in 1:length(file)
@@ -181,7 +181,7 @@ function get_step_time(
                        ::Type{T},
                        file::CSV.File,
                        period::AbstractArray,
-                      ) where T <: TimeseriesFormat
+                      ) where T <: TimeseriesFileFormat
     @assert period[end] == maximum(period) == length(period)
     num_steps = period[end]
 

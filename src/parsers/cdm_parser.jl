@@ -198,7 +198,7 @@ function convert_columns_per_unit!(data::PowerSystemRaw, category::InputCategory
     # getting bad data.
     # It could be made more specific, such as by tracking the columns per category.
     modified = get(data.modified_dfs, category, false)
-    @assert(!modified, "$category dataframe has already been modified.")
+    @assert(!modified, "$category dataframe has already been converted to per-unit.")
 
     df = get_dataframe(data, category)
     for column in columns
@@ -238,6 +238,9 @@ Construct a System from PowerSystemRaw data.
   this resolution.
 
 Throws DataFormatError if forecasts with multiple resolutions are detected.
+- A component-label pair is not unique within a forecast array.
+- A forecast has a different resolution than others.
+- A forecast has a different horizon than others.
 
 """
 function System(data::PowerSystemRaw; forecast_resolution=nothing)
@@ -313,7 +316,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
         bus_from = get_bus(sys, branch.connection_points_from)
         bus_to = get_bus(sys, branch.connection_points_to)
         connection_points = (from=bus_from, to=bus_to)
-        
+
         if branch.tap <= 0.0
             b = branch.primary_shunt / 2
             anglelimits = (min=-60.0, max=60.0) #TODO: add field in CSV

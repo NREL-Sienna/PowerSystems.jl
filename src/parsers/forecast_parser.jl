@@ -123,7 +123,7 @@ function add_forecast_data!(
         file_path = joinpath(directory, data_file)
 
         if !isfile(file_path)
-            msg = "File referenced in timeseries_pointers.csv doesn't exist : $file_path"
+            msg = "Timeseries file doesn't exist : $file_path"
             throw(DataFormatError(msg))
         end
 
