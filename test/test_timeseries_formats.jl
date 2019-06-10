@@ -24,7 +24,7 @@ FILE_NO_COMPONENT =
          "data/forecasts/5bus_ts/gen/Renewable/PV/da_solar5.csv",
          nothing),
         (PowerSystems.TimeseriesFormatComponentsAsColumnsNoTime,
-         "/mnt/c/Users/dthom/Sandboxes/daniel-thom-PowerSystems.jl/data/forecasts/5bus_ts/load/da_load5.csv",
+         "data/forecasts/5bus_ts/load/da_load5.csv",
          nothing),
         # TODO: add a file that has a column name with a DateTime.
         # TODO: add a file that more than one unique timestamp so that we can fully test
