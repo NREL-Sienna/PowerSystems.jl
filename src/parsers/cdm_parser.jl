@@ -311,9 +311,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
 
     for branch in iterate_rows(data, BRANCH::InputCategory)
         bus_from = get_bus(sys, branch.connection_points_from)
-        @assert bus_from.name != "init"
         bus_to = get_bus(sys, branch.connection_points_to)
-        @assert bus_to.name != "init"
         connection_points = (from=bus_from, to=bus_to)
         
         if branch.tap <= 0.0
