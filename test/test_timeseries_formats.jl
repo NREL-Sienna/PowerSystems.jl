@@ -4,8 +4,6 @@ import TimeSeries
 
 FORECASTS_DIR = joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts")
 
-FILE_NO_COMPONENT = 
-
 @testset "Test Timeseries formats" begin
     formats = [
         (PowerSystems.TimeseriesFormatYMDPeriodAsColumn,

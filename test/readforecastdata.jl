@@ -1,3 +1,30 @@
+function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon)
+    initial_times = get_forecast_initial_times(sys)
+    if length(initial_times) != num_initial_times
+        @error "count of initial_times doesn't match" num_initial_times initial_times
+        return false
+    end
+
+    total_forecasts = 0
+    for it in initial_times
+        forecasts = get_forecasts(Forecast, sys, it)
+        for forecast in forecasts
+            if get_horizon(forecast) != horizon
+                @error "horizon doesn't match" get_horizon(forecast) horizon
+                return false
+            end
+        end
+        total_forecasts += length(forecasts)
+    end
+
+    if num_forecasts != total_forecasts
+        @error "num_forecasts doesn't match" num_forecasts total_forecasts
+        return false
+    end
+
+    return true
+end
+
 @testset "Forecast data matpower" begin
     ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "case5_re.m"))
     sys = System(ps_dict)
@@ -71,31 +98,3 @@ end
                                       REGEX_FILE=r"REAL_TIME(.*?)\.csv")
     @test verify_forecasts(sys, 1, 73, 288)
 end
-
-function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon)
-    initial_times = get_forecast_initial_times(sys)
-    if length(initial_times) != num_initial_times
-        @error "count of initial_times doesn't match" num_initial_times initial_times
-        return false
-    end
-
-    total_forecasts = 0
-    for it in initial_times
-        forecasts = get_forecasts(Forecast, sys, it)
-        for forecast in forecasts
-            if get_horizon(forecast) != horizon
-                @error "horizon doesn't match" get_horizon(forecast) horizon
-                return false
-            end
-        end
-        total_forecasts += length(forecasts)
-    end
-
-    if num_forecasts != total_forecasts
-        @error "num_forecasts doesn't match" num_forecasts total_forecasts
-        return false
-    end
-
-    return true
-end
-
