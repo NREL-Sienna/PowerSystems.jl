@@ -95,10 +95,7 @@ end
 
 """Return a TimeSeries.TimeArray representing the CSV file.
 
-This version of the function covers a special case where the timeseries data is only for
-one component and column header does not match that component's name. In other cases it
-assumes that the column headers match the names. component_name only needs to be passed in
-the first case.
+This version of the function only has component_name to match the interface. It is unused.
 """
 function read_time_array(
                          ::Type{T},
@@ -116,13 +113,6 @@ function read_time_array(
 
     value_columns = get_value_columns(T, file)
     vals = [getproperty(file, x) for x in value_columns]
-
-    if length(value_columns) == 1 && !isnothing(component_name) && string(value_columns[1]) != component_name
-        # TODO DT: Hack. Do we really want to support this?
-        # If so, can we check for a specific name?  "VALUE" is used in the examples.
-        @warn "column name doesn't match...resetting" value_columns component_name
-        value_columns[1] = Symbol(component_name)
-    end
 
     return TimeSeries.TimeArray(timestamps, hcat(vals...), value_columns)
 end
