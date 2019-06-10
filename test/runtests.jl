@@ -3,6 +3,7 @@ using Logging
 using Dates
 
 using PowerSystems
+import PowerSystems: PowerSystemRaw
 
 
 BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
@@ -21,6 +22,8 @@ LOG_LEVELS = Dict(
     "Warn" => Logging.Warn,
     "Error" => Logging.Error,
 )
+
+include("common.jl")
 
 
 """
@@ -48,7 +51,8 @@ macro includetests(testarg...)
         rootfile = @__FILE__
         if length(tests) == 0
             tests = readdir(dirname(rootfile))
-            tests = filter(f->endswith(f, ".jl") && f != basename(rootfile), tests)
+            tests = filter(f->endswith(f, ".jl") && f != basename(rootfile) &&
+                           f != "common.jl", tests)
         else
             tests = map(f->string(f, ".jl"), tests)
         end

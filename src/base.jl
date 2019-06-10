@@ -151,9 +151,15 @@ const Components = Dict{DataType, Vector{<:Component}}
 """
 struct System <: PowerSystemType
     components::Components    # Contains arrays of concrete types.
-    forecasts::Union{Nothing, SystemForecasts}
+    forecasts::SystemForecasts
     basepower::Float64                                 # [MVA]
     internal::PowerSystemInternal
+end
+
+function System(basepower)
+    components = Dict{DataType, Vector{<:Component}}()
+    forecasts = SystemForecasts()
+    return System(components, forecasts, basepower)
 end
 
 function System(components, forecasts, basepower)
@@ -162,7 +168,8 @@ end
 
 function System(sys::_System)
     components = Dict{DataType, Vector{<:Component}}()
-    forecasts = isnothing(sys.forecasts) ? nothing : SystemForecasts(sys.forecasts)
+    forecasts = isnothing(sys.forecasts) || isempty(sys.forecasts) ? SystemForecasts() :
+                SystemForecasts(sys.forecasts)
     concrete_sys = System(components, forecasts, sys.basepower)
 
     for field in (:buses, :loads)
@@ -353,6 +360,27 @@ function add_component!(sys::System, component::T) where T <: Component
     return nothing
 end
 
+function get_bus(sys::System, bus_number::Int)
+    for bus in get_components(Bus, sys)
+        if bus.number == bus_number
+            return bus
+        end
+    end
+
+    return nothing
+end
+
+function get_buses(sys::System, bus_numbers::Set{Int})
+    buses = Vector{Bus}()
+    for bus in get_components(Bus, sys)
+        if bus.number in bus_numbers
+            push!(buses, bus)
+        end
+    end
+
+    return buses
+end
+
 """
     add_forecasts!(sys::System, forecasts)
 
@@ -362,41 +390,18 @@ Add forecasts to the system.
 - `sys::System`: system
 - `forecasts`: iterable (array, iterator, etc.) of Forecast values
 
-Throws DataFormatError if a component-label pair is not unique within a forecast array.
+Throws DataFormatError if
+- A component-label pair is not unique within a forecast array.
+- A forecast has a different resolution than others.
+- A forecast has a different horizon than others.
 
 """
 function add_forecasts!(sys::System, forecasts)
-    for forecast in forecasts
-        _add_forecast!(sys.forecasts, forecast)
+    if length(forecasts) == 0
+        return
     end
 
-    if !_validate_component_label_uniqueness(sys.forecasts)
-        throw(DataFormatError("components/labels are not unique within forecast array"))
-    end
-end
-
-function _add_forecast!(forecasts::SystemForecasts, forecast::T) where T <: Forecast
-    _add_forecast!(forecasts.data, forecast)
-end
-
-function _validate_component_label_uniqueness(system_forecasts::SystemForecasts)::Bool
-    match = true
-
-    for (key, forecasts) in system_forecasts.data
-        unique_components = Set{Tuple{<:Component, String}}()
-        for forecast in forecasts
-            component_label = (forecast.component, forecast.label)
-            if component_label in unique_components
-                match = false
-                @error("not all components in forecast vector are unique", component_label,
-                       key.initial_time)
-            else
-                push!(unique_components, component_label)
-            end
-        end
-    end
-
-    return match
+    _add_forecasts!(sys.forecasts, forecasts)
 end
 
 """Return the horizon for all forecasts."""
@@ -599,7 +604,7 @@ end
 """Shows the component types and counts in a table."""
 function Base.summary(io::IO, sys::System)
     Base.summary(io, sys.components)
-    println("\n")
+    println(io, "\n")
     Base.summary(io, sys.forecasts)
 end
 

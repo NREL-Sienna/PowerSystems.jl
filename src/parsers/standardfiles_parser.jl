@@ -26,11 +26,9 @@ function parsestandardfiles(file::String, ts_folder::String; kwargs...)
     # TODO: assert a naming convention
     data = parsestandardfiles(file)
     sys = System(data)
-    
-    ts_data = read_data_files(ts_folder; kwargs...)
+    forecast_csv_parser!(sys, ts_folder; kwargs...)
 
-    forecasts = make_forecast_array(sys, ts_data["forecasts"]["forecasts"])
-    add_forecast!(sys, forecasts)
-
-    return data
+    # TODO DT: is this tested?
+    @assert false
+    return sys
 end

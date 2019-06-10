@@ -68,55 +68,6 @@ function ps_dict2ps_struct(data::Dict{String,Any})
 end
 
 """
-Recurse through a nested dictionary looking for dicts with the key key_of_interest.
-Return a dictionary where keys are the value of key_of_interest and values are references
-to those dicts.
-
-Primary use is to build a mapping of component name to component within a ps_dict.
-
-"""
-function retrieve(dict::AbstractDict, key_of_interest)
-    output = Dict()
-    path = Vector()
-    _retrieve(dict, key_of_interest, output)
-    return output
-end
-
-function _retrieve(dict::AbstractDict, key_of_interest, output::Dict)
-    for (key, value) in dict
-        if value isa AbstractDict
-            if haskey(value, key_of_interest)
-                output[key] = value
-            else
-                # Recurse.
-                _retrieve(value, key_of_interest, output)
-            end
-        end
-    end
-end
-
-# TODO DT: alternate implementation
-#function _retrieve(dict::AbstractDict, key_of_interest, output::Dict, path::Vector)
-#    last_element = length(path)
-#    for (key, value) in dict
-#        if key == key_of_interest
-#            if haskey(output, value)
-#                push!(output[value], path[1:end])
-#            else
-#                output[value] = path[1:end]
-#            end
-#        end
-#
-#        if value isa AbstractDict
-#            push!(path, key)
-#            _retrieve(value, key_of_interest, output, path)
-#            path = path[1:last_element]
-#        end
-#    end
-#end
-
-
-"""
 Takes a string or symbol "name" and returns a list of devices within a collection
 (Dict, Array, PowerSystem) that have matching names"""
 function _get_device(name::Union{String,Symbol}, collection, devices = [])
@@ -138,55 +89,7 @@ function _get_device(name::Union{String,Symbol}, collection, devices = [])
     return devices
 end
 
-
-"""
-Arg:
-    Dataframes which includes a timerseries columns of either:
-        Year, Month, Day, Period
-      or
-        DateTime
-      or
-        nothing (creates a today referenced DateTime Column)
-Returns:
-    Dataframe with a DateTime columns
-"""
-function read_datetime(df; kwargs...)
-    if [c for c in [:Year,:Month,:Day] if c in names(df)] == [:Year,:Month,:Day]
-        if !(:Period in names(df))
-            df = DataFrames.rename!(DataFrames.stack(df,[c for c in names(df) if !(c in [:Year,:Month,:Day])]),:variable=>:Period)
-            df.Period = parse.(Int,string.(df.Period))
-            if :valuecolname in keys(kwargs)
-                DataFrames.rename!(df,:value=>kwargs[:valuecolname])
-            end
-        end
-        if Dates.Hour(DataFrames.maximum(df[:Period])) <= Dates.Hour(25)
-            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Dates.Hour(1) : Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
-        elseif (Dates.Minute(5) * DataFrames.maximum(df[:Period]) >= Dates.Minute(1440))& (Dates.Minute(5) * DataFrames.maximum(df[:Period]) <= Dates.Minute(1500))
-            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Dates.Minute(5) :
-                            Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
-        else
-            @error "I don't know what the period length is, reformat timeseries"
-        end
-        DataFrames.deletecols!(df, [:Year,:Month,:Day,:Period])
-
-    elseif :DateTime in names(df)
-        @warn "dataframe already has DateTime column"
-        if typeof(df[:DateTime]) != Vector{Dates.DateTime}
-            df[:DateTime] = Dates.DateTime(df[:DateTime])
-        end
-    else
-        if :startdatetime in keys(kwargs)
-            startdatetime = kwargs[:startdatetime]
-        else
-            @warn "No reference date given, assuming today"
-            startdatetime = Dates.today()
-        end
-        df[:DateTime] = collect(Dates.DateTime(startdatetime):Dates.Hour(1):Dates.DateTime(startdatetime)+Dates.Hour(size(df)[1]-1))
-    end
-    return df
-end
-
-
+# TODO DT: add_time_series and add_time_series_load are unused. Delete?
 function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeArray)
     """
     Arg:

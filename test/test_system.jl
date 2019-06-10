@@ -1,22 +1,6 @@
 
 @testset "Test functionality of System" begin
-    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    sys_rts = PowerSystems._System(cdm_dict)
-    rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
-    rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])
-
-    PowerSystems.add_forecast!(sys_rts, :DA=>rts_da)
-    PowerSystems.add_forecast!(sys_rts, :RT=>rts_rt)
-
-    sys = System(cdm_dict)
-    @test length(sys_rts.branches) == length(collect(get_components(Branch, sys)))
-    @test length(sys_rts.loads) == length(collect(get_components(ElectricLoad, sys)))
-    @test length(sys_rts.storage) == length(collect(get_components(Storage, sys)))
-    @test length(sys_rts.generators.thermal) == length(collect(get_components(ThermalGen, sys)))
-    @test length(sys_rts.generators.renewable) == length(collect(get_components(RenewableGen, sys)))
-    @test length(sys_rts.generators.hydro) == length(collect(get_components(HydroGen, sys)))
-    @test length(collect(get_components(Bus, sys))) > 0
-    @test length(collect(get_components(ThermalStandard, sys))) > 0
+    sys = create_rts_system()
     summary(devnull, sys)
 
     # Negative test of missing type.
@@ -39,6 +23,26 @@
     end
 
     @test length(collect(get_components(ThermalGen, sys))) > 0
+
+    # Test get_bus* functionality.
+    bus_numbers = Vector{Int}()
+    for bus in get_components(Bus, sys)
+        push!(bus_numbers, bus.number)
+        if length(bus_numbers) >= 2
+            break
+        end
+    end
+
+    bus = PowerSystems.get_bus(sys, bus_numbers[1])
+    @test bus.number == bus_numbers[1]
+
+    buses = PowerSystems.get_buses(sys, Set(bus_numbers))
+    sort!(bus_numbers)
+    sort!(buses, by=x -> x.number)
+    @test length(bus_numbers) == length(buses)
+    for (bus_number, bus) in zip(bus_numbers, buses)
+        @test bus_number == bus.number
+    end
 
     initial_times = get_forecast_initial_times(sys)
     @assert length(initial_times) > 0
@@ -87,21 +91,13 @@
     forecasts = get_forecasts(Forecast, sys, initial_time, components)
     @assert length(forecasts) == count
 
-    pop!(sys.forecasts.data, PowerSystems._ForecastKey(initial_time, Deterministic{Bus}))
+    pop!(sys.forecasts.data, PowerSystems.ForecastKey(initial_time, Deterministic{Bus}))
     @test_throws(PowerSystems.InvalidParameter,
                  get_forecasts(Deterministic{Bus}, sys, initial_time, components))
 end
 
 @testset "Test System iterators" begin
-    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    sys_rts = PowerSystems._System(cdm_dict)
-    rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
-    rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])
-
-    PowerSystems.add_forecast!(sys_rts, :DA=>rts_da)
-    PowerSystems.add_forecast!(sys_rts, :RT=>rts_rt)
-
-    sys = System(cdm_dict)
+    sys = create_rts_system()
 
     i = 0
     for component in iterate_components(sys)

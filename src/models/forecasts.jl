@@ -1,6 +1,9 @@
 abstract type Forecast <: PowerSystemType end
 
 const Forecasts = Vector{<:Forecast}
+const ForecastComponentLabelPair = Tuple{<:Component, String}
+const ForecastComponentLabelPairByInitialTime = Dict{Dates.DateTime,
+                                                     Set{ForecastComponentLabelPair}}
 
 struct ForecastKey
     initial_time::Dates.DateTime
@@ -18,6 +21,28 @@ function _get_forecast_initial_times(data::ForecastsByType)::Vector{Dates.DateTi
     return sort!(Vector{Dates.DateTime}(collect(initial_times)))
 end
 
+function _verify_forecasts!(
+                            unique_components::ForecastComponentLabelPairByInitialTime,
+                            data::ForecastsByType,
+                            forecast::T,
+                           ) where T <: Forecast
+    key = ForecastKey(forecast.initial_time, T)
+    component_label = (forecast.component, forecast.label)
+
+    if !haskey(unique_components, forecast.initial_time)
+        unique_components[forecast.initial_time] = Set{ForecastComponentLabelPair}()
+    end
+
+    if haskey(data, key) && component_label in unique_components[forecast.initial_time]
+        throw(DataFormatError(
+            "forecast component-label pairs is not unique within forecasts; " *
+            "label=$component_label initial_time=$(forecast.initial_time)"
+        ))
+    end
+
+    push!(unique_components[forecast.initial_time], component_label)
+end
+
 function _add_forecast!(data::ForecastsByType, forecast::T) where T <: Forecast
     key = ForecastKey(forecast.initial_time, T)
     if !haskey(data, key)
@@ -29,7 +54,7 @@ end
 
 """Container for forecasts and their metadata. Implementation detail that is not exported.
 Functions to access the data should go through the System."""
-struct SystemForecasts
+mutable struct SystemForecasts
     data::ForecastsByType
     initial_time::Dates.DateTime
     resolution::Dates.Period
@@ -37,50 +62,86 @@ struct SystemForecasts
     interval::Dates.Period
 end
 
-"""Constructs SystemForecasts from the flat vector of forecasts resulting from parsing."""
-function SystemForecasts(forecasts::Forecasts)
+function SystemForecasts()
     forecasts_by_type = ForecastsByType()
     initial_time = Dates.DateTime(Dates.Second(0))
     resolution = Dates.Period(Dates.Second(0))
-    initialized = false
     horizon::Int64 = 0
-
-    for forecast in forecasts
-        if !initialized
-            initial_time = forecast.initial_time
-            resolution = forecast.resolution
-            horizon = length(forecast)
-            initialized = true
-        else
-            if forecast.resolution != resolution
-                throw(DataFormatError("found multiple resolution values in forecasts"))
-                continue
-            end
-
-            cur_horizon = length(forecast)
-            if cur_horizon != horizon
-                msg = "found multiple horizons in forecasts: $horizon, $cur_horizon"
-                throw(DataFormatError(msg))
-            end
-        end
-
-        _add_forecast!(forecasts_by_type, forecast)
-    end
-
-    initial_times = _get_forecast_initial_times(forecasts_by_type)
-    if length(initial_times) == 1
-        # TODO this needs work
-        interval = resolution
-    elseif length(initial_times) > 1
-        # TODO is this correct?
-        interval = initial_times[2] - initial_times[1]
-    else
-        @error "no forecasts detected" forecasts maxlog=1
-        interval = Dates.Day(1)  # TODO
-        #throw(DataFormatError("no forecasts detected"))
-    end
+    interval = Dates.Period(Dates.Second(0))
 
     return SystemForecasts(forecasts_by_type, initial_time, resolution, horizon, interval)
+end
+
+function is_uninitialized(forecasts::SystemForecasts)
+    return forecasts.horizon == 0
+end
+
+function _verify_forecasts(system_forecasts::SystemForecasts, forecasts)
+    # Collect all existing component labels.
+    unique_components = ForecastComponentLabelPairByInitialTime()
+    for (key, existing_forecasts) in system_forecasts.data
+        for forecast in existing_forecasts
+            if !haskey(unique_components, forecast.initial_time)
+                unique_components[forecast.initial_time] = Set{ForecastComponentLabelPair}()
+            end
+
+            component_label = (forecast.component, forecast.label)
+            push!(unique_components[forecast.initial_time], component_label)
+        end
+    end
+
+    for forecast in forecasts
+        if forecast.resolution != system_forecasts.resolution
+            throw(DataFormatError(
+                "Forecast resolution $(forecast.resolution) does not match system " *
+                "resolution $(system_forecasts.resolution)"
+            ))
+        end
+
+        if get_horizon(forecast) != system_forecasts.horizon
+            throw(DataFormatError(
+                "Forecast horizon $(get_horizon(forecast)) does not match system horizon " *
+                "$(system_forecasts.horizon)"
+            ))
+        end
+
+        _verify_forecasts!(unique_components, system_forecasts.data, forecast)
+    end
+end
+
+function _add_forecasts!(system_forecasts::SystemForecasts, forecasts)
+    if is_uninitialized(system_forecasts)
+        # This is the first forecast added.
+        forecast = forecasts[1]
+        system_forecasts.horizon = get_horizon(forecast)
+        system_forecasts.resolution = forecast.resolution
+        system_forecasts.initial_time = forecast.initial_time
+    end
+
+    # Adding forecasts is all-or-none. Loop once to validate and then again to add them.
+    # This will throw if something is invalid.
+    _verify_forecasts(system_forecasts, forecasts)
+
+    for forecast in forecasts
+        _add_forecast!(system_forecasts.data, forecast)
+    end
+
+    set_interval!(system_forecasts)
+end
+
+function set_interval!(system_forecasts::SystemForecasts)
+    initial_times = _get_forecast_initial_times(system_forecasts.data)
+    if length(initial_times) == 1
+        # TODO this needs work
+        system_forecasts.interval = system_forecasts.resolution
+    elseif length(initial_times) > 1
+        # TODO is this correct?
+        system_forecasts.interval = initial_times[2] - initial_times[1]
+    else
+        @error "no forecasts detected" forecasts maxlog=1
+        system_forecasts.interval = Dates.Day(1)  # TODO
+        #throw(DataFormatError("no forecasts detected"))
+    end
 end
 
 """Partially constructs SystemForecasts from JSON. Forecasts are not constructed."""
@@ -172,6 +233,10 @@ end
 
 function Base.length(forecast::Forecast)
     return length(forecast.data)
+end
+
+function get_horizon(forecast::Forecast)
+    return length(forecast)
 end
 
 """

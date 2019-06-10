@@ -11,7 +11,7 @@ Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage)
 # Arguments
 * `number`::Int64 : number associated with the bus
 * `name`::String : the name of the bus
-* `bustype`::String : type of bus, [PV, PQ, SF]; may be `nothing`
+* `bustype`::BusType : type of bus; may be `nothing`
 * `angle`::Float64 : angle of the bus in degrees; may be `nothing`
 * `voltage`::Float64 : voltage as a multiple of basevoltage; may be `nothing`
 * `voltagelimits`::NamedTuple(min::Float64, max::Float64) : limits on the voltage variation as multiples of basevoltage; may be `nothing`
@@ -24,8 +24,8 @@ struct Bus <: Injection
     number::Int64
     """ the name of the bus """
     name::String
-    """ bus type, [PV, PQ, SF] """
-    bustype::Union{String,Nothing} # [PV, PQ, SF]
+    """ bus type """
+    bustype::Union{BusType, Nothing}
     """ angle of the bus in degrees """
     angle::Union{Float64,Nothing} # [degrees]
     """ voltage as a multiple of basevoltage """
@@ -43,6 +43,12 @@ end
 function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage)
     return Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage,
                PowerSystemInternal())
+end
+
+"""Allows construction with bus type specified as a string for legacy code."""
+function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basevoltage)
+    return Bus(number, name, get_enum_value(BusType, bustype), angle, voltage,
+               voltagelimits, basevoltage, PowerSystemInternal())
 end
 
 # DOCTODO  add this constructor type to docstring for Bus

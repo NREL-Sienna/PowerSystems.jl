@@ -5,6 +5,20 @@
     POLYNOMIAL = 2
 end
 
+@enum AngleUnit begin
+    DEGREES
+    RADIANS
+end
+
+@enum BusType begin
+    REF
+    ISOLATED  # TODO DT: this was in a matpower file, verify
+    PQ
+    PV
+    SF
+    SLACK
+    UNKNOWN
+end
 
 "Thrown upon detection of user data that is not supported."
 struct DataFormatError <: Exception
@@ -16,4 +30,4 @@ struct InvalidParameter <: Exception
 end
 
 PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
-
+DEFAULT_BASE_MVA = 100.0
