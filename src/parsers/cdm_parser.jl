@@ -1,5 +1,6 @@
 
-const POWER_SYSTEM_DESCRIPTOR_FILE = "descriptors/power_system_inputs.json"
+const POWER_SYSTEM_DESCRIPTOR_FILE = joinpath("..", "descriptors",
+                                              "power_system_inputs.json")
 
 struct PowerSystemRaw
     basepower::Float64
