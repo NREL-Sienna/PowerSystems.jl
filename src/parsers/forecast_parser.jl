@@ -5,6 +5,10 @@ struct ForecastInfo
     label::String
     data::TimeSeries.TimeArray
     file_path::String
+
+    function ForecastInfo(simulation, category, component_name, label, data, file_path)
+        new(simulation, category, component_name, label, data, abspath(file_path))
+    end
 end
 
 struct ForecastInfos

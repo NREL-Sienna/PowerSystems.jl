@@ -38,13 +38,16 @@ end
         end
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        @test cdmgen.tech.rating == mpgen.tech.rating
-        @test cdmgen.tech.activepower == mpgen.tech.activepower
-        @test cdmgen.tech.activepowerlimits == mpgen.tech.activepowerlimits
-        @test cdmgen.tech.reactivepower == mpgen.tech.reactivepower
-        @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
-        @test cdmgen.tech.ramplimits == mpgen.tech.ramplimits
-        #@test cdmgen.tech.timelimits == mpgen.tech.timelimits
+        for field in (:rating, :activepower, :activepowerlimits, :reactivepower,
+                      :reactivepowerlimits, :ramplimits)  # :timelimits
+            cdmgen_val = getfield(cdmgen.tech, field)
+            mpgen_val = getfield(mpgen.tech, field)
+            if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                continue
+            end
+            @test cdmgen_val == mpgen_val
+        end
     end
 
     mp_iter = get_components(ThermalGen, mpsys)
@@ -53,16 +56,23 @@ end
         mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        @test cdmgen.tech.activepowerlimits == mpgen.tech.activepowerlimits
-        @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
-        @test cdmgen.tech.ramplimits == mpgen.tech.ramplimits
+        for field in (:activepowerlimits, :reactivepowerlimits, :ramplimits)
+            cdmgen_val = getfield(cdmgen.tech, field)
+            mpgen_val = getfield(mpgen.tech, field)
+            if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                continue
+            end
+            @test cdmgen_val == mpgen_val
+        end
         @test cdmgen.econ.capacity == mpgen.econ.capacity
 
-        # TODO: not all match
-        #@test [isapprox(cdmgen.econ.variablecost[i][1],
-        #                mpgen.econ.variablecost[i][1], atol= .1) 
-        #                for i in 1:4] == [true, true, true, true]
-        #@test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
+        if length(mpgen.econ.variablecost) == 4
+            @test [isapprox(cdmgen.econ.variablecost[i][1],
+                            mpgen.econ.variablecost[i][1], atol= .1)
+                            for i in 1:4] == [true, true, true, true]
+            #@test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
+        end
     end
 
     mp_iter = get_components(RenewableGen, mpsys)
@@ -72,9 +82,15 @@ end
         # TODO
         #@test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        @test cdmgen.tech.rating == mpgen.tech.rating
-        @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
-        @test cdmgen.tech.powerfactor == mpgen.tech.powerfactor
+        for field in (:rating, :reactivepowerlimits, :powerfactor)
+            cdmgen_val = getfield(cdmgen.tech, field)
+            mpgen_val = getfield(mpgen.tech, field)
+            if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                continue
+            end
+            @test cdmgen_val == mpgen_val
+        end
         #@test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
     end
 
@@ -82,9 +98,4 @@ end
     @test cdm_branches[2].rate == get_branch(mpsys, cdm_branches[2]).rate
     @test cdm_branches[6].rate == get_branch(mpsys, cdm_branches[6]).rate
     @test cdm_branches[120].rate == get_branch(mpsys, cdm_branches[120]).rate
-
-    cdmgen = collect(get_components(RenewableGen, cdmsys))[1]
-    mpgen = get_component_by_name(mpsys, RenewableGen, cdmgen)
-    @test compare_values_without_uuids(cdmgen.tech, mpgen.tech)
-    @test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
 end

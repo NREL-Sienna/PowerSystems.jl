@@ -57,8 +57,7 @@ function ps_dict2ps_struct(data::Dict{String,Any})
         @warn "key 'services' not found in PowerSystems dictionary, this will result in an empty services array"
     end
     if haskey(data,"forecasts")
-        devices = vcat(buses,generators,storage,branches,loads,loadZones,shunts,branches,services)
-        forecasts = make_forecast_array(devices, data["forecasts"]["forecasts"])  # TODO DT broken
+        error("Creating forecasts from a ps_dict is not currently supported")
     else
         forecasts = Vector{Forecast}()
     end

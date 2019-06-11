@@ -92,16 +92,6 @@ function _System(ps_dict::Dict{String,Any}; kwargs...)
                   kwargs...);
 end
 
-"""Constructs _System from a file containing Matpower, PTI, or JSON data."""
-function _System(file::String, ts_folder::String; kwargs...)
-    ps_dict = parsestandardfiles(file,ts_folder; kwargs...)
-    buses, generators, storage, branches, loads, loadZones, shunts, services =
-        ps_dict2ps_struct(ps_dict)
-
-    return _System(buses, generators, loads, branches, storage, ps_dict["baseMVA"];
-                  kwargs...);
-end
-
 # - Assign Forecast to _System Struct
 
 """
@@ -603,6 +593,10 @@ end
 
 """Shows the component types and counts in a table."""
 function Base.summary(io::IO, sys::System)
+    println(io, "System")
+    println(io, "======")
+    println(io, "Base Power: $(sys.basepower)\n")
+
     Base.summary(io, sys.components)
     println(io, "\n")
     Base.summary(io, sys.forecasts)

@@ -27,7 +27,7 @@ end
 function slackbuscheck(buses::Array{Bus})
     slack = -9
     for b in buses
-        if b.bustype == SF::BusType
+        if b.bustype == REF::BusType
             slack = b.number
         end
     end

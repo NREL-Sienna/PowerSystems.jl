@@ -19,16 +19,3 @@ function parsestandardfiles(file::String; kwargs...)
     return data
 
 end
-
-    
-function parsestandardfiles(file::String, ts_folder::String; kwargs...)
-
-    # TODO: assert a naming convention
-    data = parsestandardfiles(file)
-    sys = System(data)
-    forecast_csv_parser!(sys, ts_folder; kwargs...)
-
-    # TODO DT: is this tested?
-    @assert false
-    return sys
-end

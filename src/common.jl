@@ -11,13 +11,11 @@ end
 end
 
 @enum BusType begin
-    REF
-    ISOLATED  # TODO DT: this was in a matpower file, verify
+    ISOLATED
     PQ
     PV
-    SF
+    REF
     SLACK
-    UNKNOWN
 end
 
 "Thrown upon detection of user data that is not supported."

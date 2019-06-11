@@ -1,7 +1,7 @@
 """
     Bus
 
-A power-system bus. 
+A power-system bus.
 
 # Constructor
 ```julia
@@ -38,6 +38,20 @@ struct Bus <: Injection
     """
     basevoltage::Union{Float64,Nothing} # [kV]
     internal::PowerSystemInternal
+
+    function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltatge,
+                 internal)
+        if !isnothing(bustype)
+            if bustype == SLACK::BusType
+                bustype = REF::BusType
+                @debug "Changed bus type from SLACK to" bustype
+            elseif bustype == ISOLATED::BusType
+                throw(DataFormatError("isolated buses are not supported; name=$name"))
+            end
+        end
+
+        new(number, name, bustype, angle, voltage, voltagelimits, basevoltatge, internal)
+    end
 end
 
 function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage)

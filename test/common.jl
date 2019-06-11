@@ -28,7 +28,7 @@ function compare_values_without_uuids(x::T, y::T)::Bool where T <: PowerSystemTy
         end
 
         if val1 != val2
-            @error "values do not match" fieldname val1 val2
+            @error "values do not match" fieldname repr(val1) repr(val2)
             match = false
         end
     end

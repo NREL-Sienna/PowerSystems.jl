@@ -280,13 +280,7 @@ Add buses to the System from the raw data.
 """
 function bus_csv_parser!(sys::System, data::PowerSystemRaw)
     for bus in iterate_rows(data, BUS::InputCategory)
-        # TODO DT:  confirm.
-        if bus.bus_type == "Ref"
-            bus_type = SF::BusType
-        else
-            bus_type = get_enum_value(BusType, bus.bus_type)
-        end
-
+        bus_type = get_enum_value(BusType, bus.bus_type)
         number = bus.bus_id
         voltage_limits = (min=0.95, max=1.05)
         ps_bus = Bus(
@@ -703,26 +697,27 @@ function make_renewable_generator(data::PowerSystemRaw, gen, bus_id)
     available = true
     rating = gen.active_power_limits_max
 
-    # TODO DT: For these three cases the old CDM parsing code stored the Tech fields
-    # rating, reactivepowerlimits, and powerfactor, but then dict_to_struct only passed
-    # rating on. Should we create the full Tech object here?
+    tech = TechRenewable(rating,
+                         (min=gen.reactive_power_limits_min,
+                          max=gen.reactive_power_limits_max),
+                         1.0)
     unit_type = gen.unit_type
     if unit_type == "PV"
         generator = RenewableDispatch(
             gen.name,
             available,
             bus_id,
-            rating,
+            tech,
             EconRenewable(0.0, nothing),
         )
     elseif unit_type == "RTPV"
-        generator = RenewableFix(gen.name, available, bus_id, rating)
+        generator = RenewableFix(gen.name, available, bus_id, tech)
     elseif unit_type == "WIND"
         generator = RenewableDispatch(
             gen.name,
             available,
             bus_id,
-            rating,
+            tech,
             EconRenewable(0.0, nothing),
         )
     else

@@ -524,7 +524,7 @@
             "value_options": [
                 "PQ",
                 "PV",
-                "SF"
+                "REF"
             ],
             "description": "Bus control type"
         },

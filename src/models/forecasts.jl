@@ -160,7 +160,10 @@ function Base.summary(io::IO, forecasts::SystemForecasts)
 
     println(io, "Forecasts")
     println(io, "=========")
-
+    println(io, "Resolution: $(forecasts.resolution)")
+    println(io, "Horizon: $(forecasts.horizon)")
+    println(io, "Interval: $(forecasts.interval)\n")
+    println(io, "---------------------------------")
     initial_times = _get_forecast_initial_times(forecasts.data)
     for initial_time in initial_times
         for (key, values) in forecasts.data
@@ -176,8 +179,8 @@ function Base.summary(io::IO, forecasts::SystemForecasts)
                    Count=length(values))
             push!(rows, row)
         end
-        println(io, "Initial Time $initial_time")
-        println(io, "--------------------------------")
+        println(io, "Initial Time: $initial_time")
+        println(io, "---------------------------------")
 
         sort!(rows, by = x -> x.ConcreteType)
 
