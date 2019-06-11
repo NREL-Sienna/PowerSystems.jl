@@ -235,12 +235,16 @@ function Base.summary(io::IO, A::PTDF)
     end
     print(io, "And data, a ", size(A.data))
 end
-_summary(io, A::PTDF) = println(io, "PTDF Matrix")
+_summary(io::IO, A::PTDF) = println(io, "PTDF Matrix")
+
+function Base.summary(io::IOContext{Base.GenericIOBuffer{Array{UInt8,1}}}, ::PTDF)
+    println(io, "PTDF Matrix")
+end
 
 function Base.summary(A::PTDF)
     io = IOBuffer()
     Base.summary(io, A)
-    String(io)
+    String(take!(io))
 end
 
 if isdefined(Base, :print_array) # 0.7 and later
@@ -300,4 +304,3 @@ function Base.show(io::IO, array::PTDF)
     println(io, ":")
     Base.print_array(io, array)
 end
-
