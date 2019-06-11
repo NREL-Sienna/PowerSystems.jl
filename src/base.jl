@@ -87,7 +87,7 @@ function _System(ps_dict::Dict{String,Any}; kwargs...)
     buses, generators, storage, branches, loads, loadZones, shunts, forecasts, services =
         ps_dict2ps_struct(ps_dict)
 
-    return _System(buses, generators, loads, branches, storage, ps_dict["baseMVA"],
+    return _System(buses, generators, loads, branches, storage, Float64(ps_dict["baseMVA"]),
                   forecasts, services, Dict(:LoadZones=>loadZones);
                   kwargs...);
 end
