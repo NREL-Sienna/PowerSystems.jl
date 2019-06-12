@@ -103,9 +103,9 @@ function find_bus(Buses::Dict{Int64,Any},device_dict::Dict{String,Any})
     return value
 end
 
-function make_bus(bus_name, d, bus_types)
+function make_bus(bus_name, bus_number, d, bus_types)
     bus = make_bus(Dict{String,Any}("name" => bus_name ,
-                            "number" => MAPPING_BUSNUMBER2INDEX[d["bus_i"]],
+                            "number" => bus_number,
                             "bustype" => bus_types[d["bus_type"]],
                             "angle" => 0, # NOTE: angle 0, tuple(min, max)
                             "voltage" => d["vm"],
@@ -125,7 +125,7 @@ function read_bus(data)
         haskey(d,"bus_name") ? bus_name = d["bus_name"] : bus_name = string(d["bus_i"])
         bus_number = Int(d["bus_i"])
         MAPPING_BUSNUMBER2INDEX[bus_number] = i
-        Buses[MAPPING_BUSNUMBER2INDEX[bus_number]] =  make_bus(bus_name, d, bus_types)
+        Buses[MAPPING_BUSNUMBER2INDEX[bus_number]] =  make_bus(bus_name, bus_number, d, bus_types)
     end
     return Buses
 end
