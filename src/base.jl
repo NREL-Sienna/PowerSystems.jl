@@ -241,11 +241,6 @@ function System(ps_dict::Dict{String,Any}; kwargs...)
     return System(_System(ps_dict; kwargs...))
 end
 
-"""Constructs System from a file containing Matpower, PTI, or JSON data."""
-function System(file::String, ts_folder::String; kwargs...)
-    return System(_System(file, ts_folder; kwargs...))
-end
-
 """Constructs a System from a JSON file."""
 function System(filename::String)
     return from_json(System, filename)

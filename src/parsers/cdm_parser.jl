@@ -424,7 +424,7 @@ end
 """
     forecast_csv_parser!(sys::System, data::PowerSystemRaw)
 
-Add services to the System from the raw data.
+Add forecasts to the System from raw data.
 
 """
 function forecast_csv_parser!(sys::System, data::PowerSystemRaw; resolution=nothing)

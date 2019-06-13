@@ -22,22 +22,38 @@ function ForecastInfos()
 end
 
 """
-    forecast_csv_parser!(sys::System, data::PowerSystemRaw)
+    forecast_csv_parser!(sys::System,
+                         directory_or_file::AbstractString,
+                         simulation="Simulation",
+                         category::Type{<:Component}=Component,
+                         label="scalingfactor";
+                         resolution=nothing,
+                         kwargs...)
 
-Add services to the System from the raw data.
+Add forecasts to the System from CSV files.
 
+# Arguments
+- `sys::System`: system
+- `directory_or_file::AbstractString`: directory to search for files or a specific file
+- `simulation::AbstractString`: simulation name
+- `category::DataType`: category of component for the forecast; can be abstract or concrete
+- `label::AbstractString`: forecast label
+- `resolution::Dates.DateTime=nothing`: only store forecasts with this resolution
+- `REGEX_FILE::Regex`: only look at files matching this regular expression
+
+Refer to [`add_forecasts!`](@ref) for exceptions thrown.
 """
 function forecast_csv_parser!(
                               sys::System,
-                              directory::AbstractString,
+                              directory_or_file::AbstractString,
                               simulation="Simulation",
                               category::Type{<:Component}=Component,
                               label="scalingfactor",
                               ; resolution=nothing,
                               kwargs...
                              )
-    forecast_infos = parse_forecast_data_files(directory, simulation, category, label;
-                                               kwargs...)
+    forecast_infos = parse_forecast_data_files(directory_or_file, simulation, category,
+                                               label; kwargs...)
 
     return _forecast_csv_parser!(sys, forecast_infos, resolution)
 end
@@ -106,7 +122,15 @@ function parse_forecast_data_files(
                                   )
     forecast_infos = ForecastInfos()
 
-    for filename in get_forecast_files(path; kwargs...)
+    if isdir(path)
+        filenames = get_forecast_files(path; kwargs...)
+    elseif isfile(path)
+        filenames = [path]
+    else
+        throw(InvalidParameter("$path is neither a directory nor file"))
+    end
+
+    for filename in filenames
         add_forecast_data!(forecast_infos, simulation, category, nothing, label,
                            path, filename)
     end
@@ -151,13 +175,23 @@ end
 """Return a Vector of forecast data filenames."""
 function get_forecast_files(rootpath::String; kwargs...)
     filenames = Vector{String}()
-    regex = get(kwargs, :REGEX_FILE, r"(.*?)\.csv")
+    regex = get(kwargs, :REGEX_FILE, r"^[^\.](.*?)\.csv")
 
     for (root, dirs, files) in walkdir(rootpath)
         for filename in files
-            path_to_filename = joinpath(root, filename)
-            if !isnothing(match(regex, path_to_filename))
-                push!(filenames, path_to_filename)
+            if !isnothing(match(regex, filename))
+                hidden = false
+                for dir in splitdir(root)
+                    if startswith(dir, ".")
+                        hidden = true
+                        break
+                    end
+                end
+
+                if !hidden
+                    path_to_filename = joinpath(root, filename)
+                    push!(filenames, path_to_filename)
+                end
             end
         end
     end
@@ -196,8 +230,8 @@ function make_forecast_array(all_components, parsed_forecasts::Vector{Dict})
             col_names = isa(data, DataFrames.DataFrame) ? names(data) :
                                                           TimeSeries.colnames(data)
             filter!(x -> x != :DateTime, col_names)
-        
-            if length(components) > 0 
+
+            if length(components) > 0
                 for component in components
                     dd = isa(component, LoadZones) ? component.buses : [component]
                     for b in dd

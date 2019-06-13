@@ -65,15 +65,7 @@ struct StaticReserve <: Reserve
     internal::PowerSystemInternal
 end
 
-function StaticReserve(
-                       name,
-                       contributingdevices,
-                       timeframe,
-                       generators,
-                      )
-
-    requirement = maximum([gen.activepowerlimits[:max] for gen in generators])
-
+function StaticReserve(name, contributingdevices, timeframe, requirement)
     return StaticReserve(name, contributingdevices, timeframe, requirement,
                          PowerSystemInternal())
 end
@@ -81,4 +73,4 @@ end
 StaticReserve(;name = "init",
         contributingdevices = [ThermalStandard()],
         timeframe = 0.0,
-        generators = [TechThermal()]) = StaticReserve(name, contributingdevices, timeframe, generators)
+        requirement = 0.0) = StaticReserve(name, contributingdevices, timeframe, requirement)

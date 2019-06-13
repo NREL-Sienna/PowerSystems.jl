@@ -78,6 +78,15 @@ end
                                       Component;
                                       REGEX_FILE=r"rt_(.*?)\.csv")
     @test verify_forecasts(sys, 1, 5, 288)
+
+    # Test with single file.
+    sys = System(ps_dict)
+    filename = joinpath(FORECASTS_DIR, "5bus_ts", "gen", "Renewable", "PV", "da_solar5.csv")
+    PowerSystems.forecast_csv_parser!(sys,
+                                      filename,
+                                      "Simulation",
+                                      Generator)
+    @test verify_forecasts(sys, 1, 1, 24)
 end
 
 @testset "Forecast data RTS" begin
