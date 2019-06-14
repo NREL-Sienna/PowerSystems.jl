@@ -61,13 +61,13 @@ variablecost Union.
 """
 function JSON2.read(io::IO, ::Type{T}) where {T <: EconThermal}
     data = JSON2.read(io)
-    if data.variablecost isa Array
+    @assert length(data.variablecost) > 0
+    if data.variablecost[1] isa Array
         variablecost = Vector{Tuple{Float64, Float64}}()
         for array in data.variablecost
             push!(variablecost, Tuple{Float64, Float64}(array))
         end
     else
-        @assert data.variablecost isa Tuple
         variablecost = Tuple{Float64, Float64}(data.variablecost)
     end
 
