@@ -92,19 +92,6 @@ function _System(ps_dict::Dict{String,Any}; kwargs...)
                   kwargs...);
 end
 
-# - Assign Forecast to _System Struct
-
-"""
-Args:
-    A _System struct
-    A :Symbol=>Array{ <: Forecast,1} Pair denoting the forecast name and array of device forecasts
-Returns:
-    A _System struct with a modified forecasts field
-"""
-function add_forecast!(sys::_System,fc::Pair{Symbol,Array{Forecast,1}})
-    sys.forecasts[fc.first] = fc.second
-end
-
 const Components = Dict{DataType, Vector{<:Component}}
 
 """
@@ -158,8 +145,11 @@ end
 
 function System(sys::_System)
     components = Dict{DataType, Vector{<:Component}}()
-    forecasts = isnothing(sys.forecasts) || isempty(sys.forecasts) ? SystemForecasts() :
-                SystemForecasts(sys.forecasts)
+    if !isnothing(sys.forecasts) && !isempty(sys.forecasts)
+        error("Constructing a System with an array of forecasts is not supported")
+    end
+
+    forecasts = SystemForecasts()
     concrete_sys = System(components, forecasts, sys.basepower)
 
     for field in (:buses, :loads)
