@@ -131,8 +131,7 @@ function parse_forecast_data_files(
     end
 
     for filename in filenames
-        add_forecast_data!(forecast_infos, simulation, category, nothing, label,
-                           path, filename)
+        add_forecast_data!(forecast_infos, simulation, category, nothing, label, filename)
     end
 
     return forecast_infos
@@ -144,18 +143,15 @@ function add_forecast_data!(
                             category::Type{<:Component},
                             component_name::Union{AbstractString, Nothing},
                             label::AbstractString,
-                            directory::AbstractString,
                             data_file::AbstractString,
                            )
     if !haskey(infos.data_files, data_file)
-        file_path = joinpath(directory, data_file)
-
-        if !isfile(file_path)
+        if !isfile(data_file)
             msg = "Timeseries file doesn't exist : $file_path"
             throw(DataFormatError(msg))
         end
 
-        infos.data_files[data_file] = read_time_array(file_path, component_name)
+        infos.data_files[data_file] = read_time_array(data_file, component_name)
 
         @debug "Added timeseries file" data_file
     end

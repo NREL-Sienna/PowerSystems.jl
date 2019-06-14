@@ -45,7 +45,7 @@
     end
 
     initial_times = get_forecast_initial_times(sys)
-    @assert length(initial_times) > 0
+    @assert length(initial_times) == 1
     initial_time = initial_times[1]
 
     # Get forecasts with a label and without.
@@ -53,7 +53,7 @@
     forecasts = get_forecasts(Forecast, sys, initial_time, components, "PMax MW")
     @test length(forecasts) > 0
 
-    forecasts = get_forecasts(Forecast, sys, initial_time, components)
+    forecasts = collect(get_forecasts(Forecast, sys, initial_time, components))
     count = length(forecasts)
     @test count > 0
 
@@ -72,9 +72,12 @@
     @test get_forecasts_interval(sys) == Dates.Hour(1)  # TODO
     @test get_forecasts_resolution(sys) == Dates.Hour(1)  # TODO
 
-    for forecast in forecasts
+    for forecast in collect(get_forecasts(Forecast, sys, initial_time))
         remove_forecast!(sys, forecast)
     end
+
+    @test length(get_forecasts(Forecast, sys, initial_time)) == 0
+    @test PowerSystems.is_uninitialized(sys.forecasts)
 
     # InvalidParameter is thrown if the type is concrete and there is no forecast for a
     # component.
@@ -91,7 +94,6 @@
     forecasts = get_forecasts(Forecast, sys, initial_time, components)
     @assert length(forecasts) == count
 
-    pop!(sys.forecasts.data, PowerSystems.ForecastKey(initial_time, Deterministic{Bus}))
     @test_throws(PowerSystems.InvalidParameter,
                  get_forecasts(Deterministic{Bus}, sys, initial_time, components))
 end

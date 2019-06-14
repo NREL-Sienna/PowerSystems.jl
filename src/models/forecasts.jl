@@ -4,6 +4,10 @@ const Forecasts = Vector{<:Forecast}
 const ForecastComponentLabelPair = Tuple{<:Component, String}
 const ForecastComponentLabelPairByInitialTime = Dict{Dates.DateTime,
                                                      Set{ForecastComponentLabelPair}}
+const UNITIALIZED_DATETIME = Dates.DateTime(Dates.Second(0))
+const UNITIALIZED_PERIOD = Dates.Period(Dates.Second(0))
+const UNITIALIZED_HORIZON = 0
+
 
 struct ForecastKey
     initial_time::Dates.DateTime
@@ -64,16 +68,25 @@ end
 
 function SystemForecasts()
     forecasts_by_type = ForecastsByType()
-    initial_time = Dates.DateTime(Dates.Second(0))
-    resolution = Dates.Period(Dates.Second(0))
-    horizon::Int64 = 0
-    interval = Dates.Period(Dates.Second(0))
+    initial_time = UNITIALIZED_DATETIME
+    resolution = UNITIALIZED_PERIOD
+    horizon = UNITIALIZED_HORIZON
+    interval = UNITIALIZED_PERIOD
 
     return SystemForecasts(forecasts_by_type, initial_time, resolution, horizon, interval)
 end
 
+function reset_info!(forecasts::SystemForecasts)
+    forecasts.initial_time = UNITIALIZED_DATETIME
+    forecasts.resolution = UNITIALIZED_PERIOD
+    forecasts.horizon = UNITIALIZED_HORIZON
+    @info "Reset system forecast information."
+end
+
 function is_uninitialized(forecasts::SystemForecasts)
-    return forecasts.horizon == 0
+    return forecasts.initial_time == UNITIALIZED_DATETIME &&
+           forecasts.resolution == UNITIALIZED_PERIOD &&
+           forecasts.horizon == UNITIALIZED_HORIZON
 end
 
 function _verify_forecasts(system_forecasts::SystemForecasts, forecasts)

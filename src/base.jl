@@ -510,7 +510,7 @@ end
 """
     remove_forecast(sys::System, forecast::Forecast)
 
-Remove the forecat from the system.
+Remove the forecast from the system.
 
 Throws InvalidParameter if the forecast is not stored.
 """
@@ -521,14 +521,26 @@ function remove_forecast!(sys::System, forecast::T) where T <: Forecast
         throw(InvalidParameter("Forecast not found: $(forecast.label)"))
     end
 
+    found = false
     for (i, forecast_) in enumerate(sys.forecasts.data[key])
         if get_uuid(forecast) == get_uuid(forecast_)
+            found = true
             deleteat!(sys.forecasts.data[key], i)
-            return
+            @info "Deleted forecast $(get_uuid(forecast))"
+            if length(sys.forecasts.data[key]) == 0
+                pop!(sys.forecasts.data, key)
+            end
+            break
         end
     end
 
-    throw(InvalidParameter("Forecast not found: $(forecast.label)"))
+    if !found
+        throw(InvalidParameter("Forecast not found: $(forecast.label)"))
+    end
+
+    if length(sys.forecasts.data) == 0
+        reset_info!(sys.forecasts)
+    end
 end
 
 # TODO: implement methods to remove components. In order to do this we will

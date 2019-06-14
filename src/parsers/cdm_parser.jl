@@ -766,7 +766,7 @@ function parse_forecast_data_files(data::PowerSystemRaw)
         label = forecast.label
         data_file = forecast.data_file
         add_forecast_data!(forecast_data, simulation, category, component_name, label,
-                           data.directory, data_file)
+                           joinpath(data.directory, data_file))
     end
 
     return forecast_data
