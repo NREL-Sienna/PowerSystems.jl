@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for the procurement products for system simulations."""
-struct StaticReserve <: Reserve
+mutable struct StaticReserve <: Reserve
     name::String
     contributingdevices::Vector{Device}  # devices from which the product can be procured
     timeframe::Float64  # the relative saturation timeframe

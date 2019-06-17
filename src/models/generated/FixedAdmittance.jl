@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct FixedAdmittance <: ElectricLoad
+mutable struct FixedAdmittance <: ElectricLoad
     name::String
     available::Bool
     bus::Bus

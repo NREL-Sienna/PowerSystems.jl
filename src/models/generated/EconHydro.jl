@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct EconHydro <: PowerSystems.TechnicalParams
+mutable struct EconHydro <: PowerSystems.TechnicalParams
     curtailpenalty::Float64
     variablecost::Union{Nothing, Float64}
     internal::PowerSystems.PowerSystemInternal

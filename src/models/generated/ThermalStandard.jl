@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for thermal generation technologies."""
-struct ThermalStandard <: ThermalGen
+mutable struct ThermalStandard <: ThermalGen
     name::String
     available::Bool
     bus::Bus

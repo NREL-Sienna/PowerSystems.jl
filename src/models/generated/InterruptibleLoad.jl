@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct InterruptibleLoad <: ControllableLoad
+mutable struct InterruptibleLoad <: ControllableLoad
     name::String
     available::Bool
     bus::Bus

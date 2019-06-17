@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct PowerLoad <: StaticLoad
+mutable struct PowerLoad <: StaticLoad
     name::String
     available::Bool
     bus::Bus

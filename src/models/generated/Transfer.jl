@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct Transfer <: Service
+mutable struct Transfer <: Service
     name::String
     contributingdevices::Vector{Device}
     timeframe::Float64

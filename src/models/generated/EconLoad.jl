@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for the economical parameters of interruptible loads."""
-struct EconLoad <: PowerSystems.TechnicalParams
+mutable struct EconLoad <: PowerSystems.TechnicalParams
     curtailpenalty::Float64
     variablecost::Union{Nothing, Float64}
     internal::PowerSystems.PowerSystemInternal

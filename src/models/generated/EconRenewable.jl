@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for the economical parameters of renewable generation technologies."""
-struct EconRenewable <: PowerSystems.TechnicalParams
+mutable struct EconRenewable <: PowerSystems.TechnicalParams
     curtailpenalty::Float64
     variablecost::Union{Nothing, Float64}
     internal::PowerSystems.PowerSystemInternal

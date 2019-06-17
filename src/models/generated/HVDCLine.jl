@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct HVDCLine <: DCBranch
+mutable struct HVDCLine <: DCBranch
     name::String
     available::Bool
     connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}

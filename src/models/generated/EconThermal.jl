@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for the economical parameters of thermal generation technologies."""
-struct EconThermal <: PowerSystems.TechnicalParams
+mutable struct EconThermal <: PowerSystems.TechnicalParams
     capacity::Float64
     variablecost::Union{Tuple{Float64, Float64}, Array{Tuple{Float64, Float64}, N} where N}
     fixedcost::Float64

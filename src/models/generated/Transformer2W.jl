@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side."""
-struct Transformer2W <: ACBranch
+mutable struct Transformer2W <: ACBranch
     name::String
     available::Bool
     connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}

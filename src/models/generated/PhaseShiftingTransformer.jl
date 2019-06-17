@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct PhaseShiftingTransformer <: ACBranch
+mutable struct PhaseShiftingTransformer <: ACBranch
     name::String
     available::Bool
     connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}

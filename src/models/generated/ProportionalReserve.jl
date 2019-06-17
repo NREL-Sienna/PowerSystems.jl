@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for a proportional reserve product for system simulations."""
-struct ProportionalReserve <: Reserve
+mutable struct ProportionalReserve <: Reserve
     name::String
     contributingdevices::Vector{Device}  # devices from which the product can be procured
     timeframe::Float64  # the relative saturation timeframe

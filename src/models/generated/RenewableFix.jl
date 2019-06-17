@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct RenewableFix <: RenewableGen
+mutable struct RenewableFix <: RenewableGen
     name::String
     available::Bool
     bus::Bus

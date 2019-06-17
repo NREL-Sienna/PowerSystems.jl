@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct GenericBattery <: Storage
+mutable struct GenericBattery <: Storage
     name::String
     available::Bool
     bus::Bus

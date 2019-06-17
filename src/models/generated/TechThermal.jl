@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for the economical parameters of thermal generation technologies."""
-struct TechThermal <: PowerSystems.TechnicalParams
+mutable struct TechThermal <: PowerSystems.TechnicalParams
     rating::Float64
     activepower::Float64
     activepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}

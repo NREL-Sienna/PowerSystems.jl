@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct HydroFix <: HydroGen
+mutable struct HydroFix <: HydroGen
     name::String
     available::Bool
     bus::Bus

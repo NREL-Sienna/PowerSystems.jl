@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct HydroStorage <: HydroGen
+mutable struct HydroStorage <: HydroGen
     name::String
     available::Bool
     bus::Bus

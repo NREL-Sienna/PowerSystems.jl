@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct TechRenewable <: PowerSystems.TechnicalParams
+mutable struct TechRenewable <: PowerSystems.TechnicalParams
     rating::Float64
     reactivepowerlimits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
     powerfactor::Float64

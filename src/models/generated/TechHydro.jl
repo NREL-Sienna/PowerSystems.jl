@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct TechHydro <: PowerSystems.TechnicalParams
+mutable struct TechHydro <: PowerSystems.TechnicalParams
     rating::Float64
     activepower::Float64
     activepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}

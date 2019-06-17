@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 
-struct LoadZones <: Injection
+mutable struct LoadZones <: Injection
     number::Int64
     name::String
     buses::Vector{Bus}

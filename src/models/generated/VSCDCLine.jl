@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """As implemented in Milano&#39;s Book, Page 397"""
-struct VSCDCLine <: DCBranch
+mutable struct VSCDCLine <: DCBranch
     name::String
     available::Bool
     connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}
