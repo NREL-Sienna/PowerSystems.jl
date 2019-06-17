@@ -1,8 +1,6 @@
 
 abstract type Service <: Component end
-
-include("products/reserves.jl")
-include("products/transfers.jl")
+abstract type Reserve <: Service end
 
 """
 All subtypes of Service define contributingdevices::Vector{Device}. The values get populated

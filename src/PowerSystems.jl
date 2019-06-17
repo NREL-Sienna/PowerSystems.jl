@@ -157,6 +157,13 @@ include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
 
+# Include all auto-generated structs.
+include("models/generated/includes.jl")
+include("models/supplemental_constructors.jl")
+
+include("utils/ybus_calculations.jl")
+include("utils/ptdf_calculations.jl")
+
 #Data Checks
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")

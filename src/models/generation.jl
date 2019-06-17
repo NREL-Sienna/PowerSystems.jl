@@ -1,11 +1,9 @@
 abstract type Generator <: Injection end
 const Generators = Array{<: Generator, 1}
 
-include("generation/tech_common.jl")
-include("generation/econ_common.jl")
-include("generation/renewable_generation.jl")
-include("generation/thermal_generation.jl")
-include("generation/hydro_generation.jl")
+abstract type HydroGen <: Generator end
+abstract type RenewableGen <: Generator end
+abstract type ThermalGen <: Generator end
 
 struct GenClasses <: PowerSystemType
     thermal::Union{Nothing,Array{ <: ThermalGen,1}}

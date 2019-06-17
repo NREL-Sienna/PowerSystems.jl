@@ -1,9 +1,3 @@
 abstract type Branch <: Device end
-
 abstract type ACBranch <: Branch end
-
-include("./branches/lines.jl")
-include("./branches/transformers.jl")
-include("./branches/dc_lines.jl")
-include("../utils/ybus_calculations.jl")
-include("../utils/ptdf_calculations.jl")
+abstract type DCBranch <: Branch end

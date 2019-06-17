@@ -213,9 +213,9 @@ function System(buses::Vector{Bus},
 end
 
 """Constructs System with default values."""
-function System(; buses=[Bus()],
-                generators=[ThermalStandard(), RenewableFix()],
-                loads=[PowerLoad()],
+function System(; buses=[Bus(nothing)],
+                generators=[ThermalStandard(nothing), RenewableFix(nothing)],
+                loads=[PowerLoad(nothing)],
                 branches=nothing,
                 storage=nothing,
                 basepower=100.0,

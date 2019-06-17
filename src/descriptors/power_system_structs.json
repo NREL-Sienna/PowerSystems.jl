@@ -1,0 +1,1187 @@
+[
+  {
+    "struct_name": "EconHydro",
+    "fields": [
+      {
+        "name": "curtailpenalty",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "variablecost",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "PowerSystems.TechnicalParams"
+  },
+  {
+    "struct_name": "EconLoad",
+    "docstring": "Data Structure for the economical parameters of interruptible loads.",
+    "fields": [
+      {
+        "name": "curtailpenalty",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "variablecost",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "PowerSystems.TechnicalParams"
+  },
+  {
+    "struct_name": "EconRenewable",
+    "docstring": "Data Structure for the economical parameters of renewable generation technologies.",
+    "fields": [
+      {
+        "name": "curtailpenalty",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "variablecost",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "PowerSystems.TechnicalParams"
+  },
+  {
+    "struct_name": "EconThermal",
+    "docstring": "Data Structure for the economical parameters of thermal generation technologies.",
+    "fields": [
+      {
+        "name": "capacity",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "variablecost",
+        "null_value": "[(0.0, 1.0)]",
+        "data_type": "Union{Tuple{Float64, Float64}, Array{Tuple{Float64, Float64}, N} where N}"
+      },
+      {
+        "name": "fixedcost",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "startupcost",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "shutdncost",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "annualcapacityfactor",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "PowerSystems.TechnicalParams"
+  },
+  {
+    "struct_name": "TechHydro",
+    "fields": [
+      {
+        "name": "rating",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "activepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "reactivepowerlimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "ramplimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "timelimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "PowerSystems.TechnicalParams"
+  },
+  {
+    "struct_name": "TechRenewable",
+    "fields": [
+      {
+        "name": "rating",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepowerlimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "powerfactor",
+        "null_value": "1.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "PowerSystems.TechnicalParams"
+  },
+  {
+    "struct_name": "TechThermal",
+    "docstring": "Data Structure for the economical parameters of thermal generation technologies.",
+    "fields": [
+      {
+        "name": "rating",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "activepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "reactivepowerlimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "ramplimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "timelimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "PowerSystems.TechnicalParams"
+  },
+  {
+    "struct_name": "Bus",
+    "docstring": "A power-system bus.",
+    "inner_constructor_check": "CheckBusParams",
+    "fields": [
+      {
+        "name": "number",
+        "comment": "number associated with the bus",
+        "null_value": "0",
+        "data_type": "Int64"
+      },
+      {
+        "null_value": "init",
+        "name": "name",
+        "comment": "the name of the bus",
+        "data_type": "String"
+      },
+      {
+        "name": "bustype",
+        "comment": "bus type",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, BusType}"
+      },
+      {
+        "name": "angle",
+        "comment": "angle of the bus in degrees",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "voltage",
+        "comment": "voltage as a multiple of basevoltage",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "voltagelimits",
+        "comment": "limits on the voltage variation as multiples of basevoltage",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "basevoltage",
+        "comment": "the base voltage in kV",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Injection"
+  },
+  {
+    "struct_name": "Line",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "name": "connectionpoints",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64"
+      },
+      {
+        "name": "b",
+        "null_value": "(from=0.0, to=0.0)",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}"
+      },
+      {
+        "null_value": "0.0",
+        "name": "rate",
+        "data_type": "Float64"
+      },
+      {
+        "name": "anglelimits",
+        "null_value": "(min=-90.0, max=-90.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "MonitoredLine",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "name": "connectionpoints",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "(from=0.0, to=0.0)",
+        "name": "b",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "flowlimits",
+        "null_value": "(from_to=0.0, to_from=0.0)",
+        "data_type": "NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}"
+      },
+      {
+        "null_value": "0.0",
+        "name": "rate",
+        "data_type": "Float64"
+      },
+      {
+        "name": "anglelimits",
+        "null_value": "(min=-90.0, max=-90.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "PhaseShiftingTransformer",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "name": "connectionpoints",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64"
+      },
+      {
+        "name": "primaryshunt",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "tap",
+        "null_value": "1.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "α",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "0.0",
+        "name": "rate",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "TapTransformer",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "name": "connectionpoints",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64"
+      },
+      {
+        "name": "primaryshunt",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "tap",
+        "null_value": "1.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "rate",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "Transformer2W",
+    "docstring": "The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "name": "connectionpoints",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64"
+      },
+      {
+        "name": "primaryshunt",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "rate",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "HVDCLine",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "name": "connectionpoints",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+      },
+      {
+        "name": "activepowerlimits_from",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "activepowerlimits_to",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "reactivepowerlimits_from",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "reactivepowerlimits_to",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "loss",
+        "null_value": "(l0=0.0, l1=0.0)",
+        "data_type": "NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "DCBranch"
+  },
+  {
+    "struct_name": "VSCDCLine",
+    "docstring": "As implemented in Milano's Book, Page 397",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "name": "connectionpoints",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+      },
+      {
+        "name": "rectifier_taplimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "rectifier_xrc",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "rectifier_firingangle",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "inverter_taplimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "inverter_xrc",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "inverter_firingangle",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "DCBranch"
+  },
+  {
+    "struct_name": "InterruptibleLoad",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "model",
+        "comment": "[Z, I, P]",
+        "null_value": "0",
+        "data_type": "String"
+      },
+      {
+        "name": "maxactivepower",
+        "null_value": "0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "maxreactivepower",
+        "null_value": "0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "econ",
+        "null_value": "EconLoad(nothing)",
+        "data_type": "EconLoad"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "ControllableLoad"
+  },
+  {
+    "struct_name": "FixedAdmittance",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "Y",
+        "null_value": "0.0",
+        "data_type": "Complex{Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "ElectricLoad"
+  },
+  {
+    "struct_name": "PowerLoad",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "maxactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "maxreactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "StaticLoad"
+  },
+  {
+    "struct_name": "HydroDispatch",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechHydro(nothing)",
+        "data_type": "TechHydro"
+      },
+      {
+        "name": "econ",
+        "null_value": "EconHydro(nothing)",
+        "data_type": "Union{Nothing, EconHydro}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "HydroGen"
+  },
+  {
+    "struct_name": "HydroFix",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechHydro(nothing)",
+        "data_type": "TechHydro"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "HydroGen"
+  },
+  {
+    "struct_name": "HydroStorage",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechHydro(nothing)",
+        "data_type": "TechHydro"
+      },
+      {
+        "name": "econ",
+        "null_value": "EconHydro(nothing)",
+        "data_type": "Union{Nothing, EconHydro}"
+      },
+      {
+        "name": "storagecapacity",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "HydroGen"
+  },
+  {
+    "struct_name": "RenewableDispatch",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechRenewable(nothing)",
+        "data_type": "TechRenewable"
+      },
+      {
+        "name": "econ",
+        "null_value": "EconRenewable(nothing)",
+        "data_type": "Union{Nothing, EconRenewable}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "RenewableGen"
+  },
+  {
+    "struct_name": "RenewableFix",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechRenewable(nothing)",
+        "data_type": "TechRenewable"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "RenewableGen"
+  },
+  {
+    "struct_name": "ThermalStandard",
+    "docstring": "Data Structure for thermal generation technologies.",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "tech",
+        "comment": "[-1. -1]",
+        "null_value": "TechThermal(nothing)",
+        "data_type": "Union{Nothing, TechThermal}"
+      },
+      {
+        "name": "econ",
+        "null_value": "EconThermal(nothing)",
+        "data_type": "Union{Nothing, EconThermal}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "ThermalGen"
+  },
+  {
+    "struct_name": "LoadZones",
+    "fields": [
+      {
+        "name": "number",
+        "null_value": "0",
+        "data_type": "Int64"
+      },
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "name": "buses",
+        "null_value": "[Bus(nothing)]",
+        "data_type": "Vector{Bus}"
+      },
+      {
+        "name": "maxactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "maxreactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Injection"
+  },
+  {
+    "struct_name": "GenericBattery",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "energy",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "capacity",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "rating",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "inputactivepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "outputactivepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "efficiency",
+        "null_value": "(in=0.0, out=0.0)",
+        "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}"
+      },
+      {
+        "name": "reactivepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Storage"
+  },
+  {
+    "struct_name": "ProportionalReserve",
+    "docstring": "Data Structure for a proportional reserve product for system simulations.",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "name": "contributingdevices",
+        "comment": "devices from which the product can be procured",
+        "null_value": "[ThermalStandard(nothing)]",
+        "data_type": "Vector{Device}"
+      },
+      {
+        "name": "timeframe",
+        "comment": "the relative saturation timeframe",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Reserve"
+  },
+  {
+    "struct_name": "StaticReserve",
+    "docstring": "Data Structure for the procurement products for system simulations.",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "name": "contributingdevices",
+        "comment": "devices from which the product can be procured",
+        "null_value": "[ThermalStandard(nothing)]",
+        "data_type": "Vector{Device}"
+      },
+      {
+        "name": "timeframe",
+        "comment": "the relative saturation timeframe",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "requirement",
+        "comment": "the required quantity of the product should be scaled by a Forecast",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Reserve"
+  },
+  {
+    "struct_name": "Transfer",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "name": "contributingdevices",
+        "null_value": "[ThermalStandard(nothing)]",
+        "data_type": "Vector{Device}"
+      },
+      {
+        "name": "timeframe",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "requirement",
+        "null_value": "[]",
+        "data_type": "TimeSeries.TimeArray"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Service"
+  },
+  {
+    "struct_name": "Deterministic",
+    "docstring": "A deterministic forecast for a particular data field in a PowerSystemDevice.",
+    "parametric": "Component",
+    "fields": [
+      {
+        "name": "component",
+        "data_type": "T"
+      },
+      {
+        "name": "label",
+        "data_type": "String",
+        "comment": "label of component parameter forecasted"
+      },
+      {
+        "name": "resolution",
+        "data_type": "Dates.Period"
+      },
+      {
+        "name": "initial_time",
+        "data_type": "Dates.DateTime",
+        "comment": "forecast availability time"
+      },
+      {
+        "name": "data",
+        "data_type": "TimeSeries.TimeArray",
+        "comment": "TimeStamp - scalingfactor"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Forecast"
+  }
+]

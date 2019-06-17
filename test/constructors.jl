@@ -1,83 +1,90 @@
 @testset "Bus Constructors" begin
-    tBus = Bus()
-    tLoadZones = LoadZones()
+    tBus = Bus(nothing)
+    tLoadZones = LoadZones(nothing)
+
+    bus = Bus(1, "test", PowerSystems.SLACK::BusType, 0.0, 0.0, (min=0.0, max=0.0), nothing)
+    @test PowerSystems.get_bustype(bus) == PowerSystems.REF::BusType
+
+    @test_throws(PowerSystems.DataFormatError,
+                 Bus(1, "test", PowerSystems.ISOLATED::BusType, 0.0, 0.0,
+                     (min=0.0, max=0.0), nothing))
 end
 
 @testset "Generation Constructors" begin
-    tEconThermal = EconThermal()
+    tEconThermal = EconThermal(nothing)
     @test tEconThermal isa PowerSystemType
-    tTechThermal = TechThermal()
+    tTechThermal = TechThermal(nothing)
     @test tTechThermal isa PowerSystemType
-    tThermalGen = ThermalStandard()
+    tThermalGen = ThermalStandard(nothing)
     @test tThermalGen isa PowerSystems.Component
-    tTechHydro = TechHydro()
+    tTechHydro = TechHydro(nothing)
     @test tTechHydro isa PowerSystemType
-    tEconHydro = EconHydro()
+    tEconHydro = EconHydro(nothing)
     @test tEconHydro isa PowerSystemType
-    tHydroFix = HydroFix()
+    tHydroFix = HydroFix(nothing)
     @test tHydroFix isa PowerSystems.Component
-    tHydroDispatch = HydroDispatch()
+    tHydroDispatch = HydroDispatch(nothing)
     @test tHydroDispatch isa PowerSystems.Component
-    tHydroStorage = HydroStorage()
+    tHydroStorage = HydroStorage(nothing)
     @test tHydroStorage isa PowerSystems.Component
-    tTechRenewable = TechRenewable()
+    tTechRenewable = TechRenewable(nothing)
     @test tTechRenewable isa PowerSystemType
-    tEconRenewable = EconRenewable()
+    tEconRenewable = EconRenewable(nothing)
     @test tEconRenewable isa PowerSystemType
-    tRenewableFix = RenewableFix()
+    tRenewableFix = RenewableFix(nothing)
     @test tRenewableFix isa PowerSystems.Component
-    tRenewableDispatch = RenewableDispatch()
+    tRenewableDispatch = RenewableDispatch(nothing)
     @test tRenewableDispatch isa PowerSystems.Component
-    tRenewableDispatch = RenewableDispatch()
+    tRenewableDispatch = RenewableDispatch(nothing)
     @test tRenewableDispatch isa PowerSystems.Component
 end
 
 @testset "Storage Constructors" begin
-    tStorage = GenericBattery()
+    tStorage = GenericBattery(nothing)
     @test tStorage isa PowerSystems.Component
 end
 
 @testset "Load Constructors" begin
-    tPowerLoad = PowerLoad()
+    tPowerLoad = PowerLoad(nothing)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF()
+    tPowerLoadPF = PowerLoadPF(nothing)
     @test tPowerLoadPF isa PowerSystems.Component
-    tPowerLoad = PowerLoad("init", true, Bus(), 0.0, 0.0)
+    tPowerLoad = PowerLoad("init", true, Bus(nothing), 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF("init", true, Bus(), 0.0, 1.0)
+    tPowerLoadPF = PowerLoadPF("init", true, Bus(nothing), 0.0, 1.0)
     @test tPowerLoadPF isa PowerSystems.Component
-    tLoad = InterruptibleLoad()
+    tLoad = InterruptibleLoad(nothing)
     @test tLoad isa PowerSystems.Component
-    tEconLoad = EconLoad()
+    tEconLoad = EconLoad(nothing)
     @test tEconLoad isa PowerSystemType
 end
 
 @testset "Branch Constructors" begin
-    tLine = Line()
+    tLine = Line(nothing)
     @test tLine isa PowerSystems.Component
-    tMonitoredLine = MonitoredLine()
+    tMonitoredLine = MonitoredLine(nothing)
     @test tMonitoredLine isa PowerSystems.Component
-    tHVDCLine = HVDCLine()
+    tHVDCLine = HVDCLine(nothing)
     @test tHVDCLine isa PowerSystems.Component
-    tVSCDCLine = VSCDCLine()
+    tVSCDCLine = VSCDCLine(nothing)
     @test tVSCDCLine isa PowerSystems.Component
-    tTransformer2W = Transformer2W()
+    tTransformer2W = Transformer2W(nothing)
     @test tTransformer2W isa PowerSystems.Component
-    tTapTransformer = TapTransformer()
+    tTapTransformer = TapTransformer(nothing)
     @test tTapTransformer isa PowerSystems.Component
-    tPhaseShiftingTransformer = PhaseShiftingTransformer()
+    tPhaseShiftingTransformer = PhaseShiftingTransformer(nothing)
     @test tPhaseShiftingTransformer isa PowerSystems.Component
 end
 
 @testset "Service Constructors" begin
-    #tProportionalReserve = ProportionalReserve()
+    #tProportionalReserve = ProportionalReserve(nothing)
     #@test tProportionalReserve isa PowerSystems.Service
-    tStaticReserve = StaticReserve()
+    tStaticReserve = StaticReserve(nothing)
     @test tStaticReserve isa PowerSystems.Service
 end
 
 @testset "Forecast Constructors" begin
-    tg = RenewableFix()
+    tg = RenewableFix(nothing)
     tDeterministicForecast = Deterministic(tg,"scalingfactor",Hour(1),DateTime("01-01-01"),24)
     @test tDeterministicForecast isa PowerSystems.Forecast
     tDeterministicForecast = Deterministic(tg,"scalingfactor",PowerSystems.TimeSeries.TimeArray([DateTime("01-01-01"),DateTime("01-01-02")],ones(2)))
