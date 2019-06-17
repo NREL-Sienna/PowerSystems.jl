@@ -322,12 +322,13 @@ end
     end
 
 
-    Ybus5_ps = PowerSystems.build_ybus(length(Buses_ps), Branches_ps)
-    I, J, V = findnz(Ybus5_ps)
-    indices = collect(zip(I,J))
+    # Disabled per GitHub issue #256.
+    #Ybus5_ps = PowerSystems.build_ybus(length(Buses_ps), Branches_ps)
+    #I, J, V = findnz(Ybus5_ps)
+    #indices = collect(zip(I,J))
 
-    for i in indices
-        @test isapprox(Ybus5_phaseshifter[i[1], i[2]], Ybus5_ps[i[1], i[2]], atol=1e-2)
-    end
+    #for i in indices
+    #    @test isapprox(Ybus5_phaseshifter[i[1], i[2]], Ybus5_ps[i[1], i[2]], atol=1e-2)
+    #end
 
 end

@@ -1,44 +1,137 @@
-@testset "Forecast data" begin
+function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon)
+    initial_times = get_forecast_initial_times(sys)
+    if length(initial_times) != num_initial_times
+        @error "count of initial_times doesn't match" num_initial_times initial_times
+        return false
+    end
+
+    total_forecasts = 0
+    for it in initial_times
+        forecasts = get_forecasts(Forecast, sys, it)
+        for forecast in forecasts
+            if get_horizon(forecast) != horizon
+                @error "horizon doesn't match" get_horizon(forecast) horizon
+                return false
+            end
+        end
+        total_forecasts += length(forecasts)
+    end
+
+    if num_forecasts != total_forecasts
+        @error "num_forecasts doesn't match" num_forecasts total_forecasts
+        return false
+    end
+
+    return true
+end
+
+@testset "Test get_forecast_files" begin
+    path = joinpath(FORECASTS_DIR, "5bus_ts", "gen")
+    files = PowerSystems.get_forecast_files(path)
+    @test length(files) > 0
+
+    files2 = PowerSystems.get_forecast_files(path, REGEX_FILE=r"da_(.*?)\.csv")
+    @test length(files2) > 0
+    @test length(files2) < length(files)
+
+    hidden_path = joinpath(FORECASTS_DIR, "5bus_ts", "gen", ".hidden")
+    mkdir(hidden_path)
+    filename = joinpath(hidden_path, "data.csv")
+    try
+        open(filename, "w") do io
+        end
+
+        @test isfile(filename)
+        files = PowerSystems.get_forecast_files(path)
+        @test length([x for x in files if occursin(".hidden", x)]) == 0
+
+        # This is allowed if we pass the path in.
+        files = PowerSystems.get_forecast_files(hidden_path)
+        @test length(files) == 1
+    finally
+        rm(hidden_path; recursive=true)
+    end
+end
+
+@testset "Forecast data matpower" begin
     ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "case5_re.m"))
-    sys = PowerSystems._System(ps_dict)
-    da_time_series = PowerSystems.read_data_files(joinpath(FORECASTS_DIR, "5bus_ts");
-                                                  REGEX_FILE=r"da_(.*?)\.csv")
-    rt_time_series = PowerSystems.read_data_files(joinpath(FORECASTS_DIR, "5bus_ts");
-                                                  REGEX_FILE=r"rt_(.*?)\.csv")
-    da_forecasts = PowerSystems.make_forecast_array(sys,da_time_series)
-    rt_forecasts = PowerSystems.make_forecast_array(sys,rt_time_series)
+    sys = System(ps_dict)
+    PowerSystems.forecast_csv_parser!(sys,
+                                      joinpath(FORECASTS_DIR, "5bus_ts", "gen"),
+                                      "Simulation",
+                                      Generator;
+                                      REGEX_FILE=r"da_(.*?)\.csv")
+    @test verify_forecasts(sys, 1, 2, 24)
 
-    PowerSystems.add_forecast!(sys,:DA=>da_forecasts)
-    PowerSystems.add_forecast!(sys,:RT=>rt_forecasts)
+    PowerSystems.forecast_csv_parser!(sys,
+                                      joinpath(FORECASTS_DIR, "5bus_ts", "load"),
+                                      "Simulation",
+                                      Component;
+                                      REGEX_FILE=r"da_(.*?)\.csv")
+    @test verify_forecasts(sys, 1, 5, 24)
 
+    # Add the same files.
+    # This will fail because the component-label pairs will be duplicated.
+    @test_throws(PowerSystems.DataFormatError,
+                 PowerSystems.forecast_csv_parser!(
+                    sys,
+                    joinpath(FORECASTS_DIR, "5bus_ts", "gen"),
+                    "Simulation",
+                    Generator;
+                    REGEX_FILE=r"da_(.*?)\.csv")
+                )
 
-    #= default forecast creation disabled
-    forecast_gen = PowerSystems.make_forecast_dict(da_time_series["gen"],
-                                                   Dates.Day(1), 24, generators)
-    forecast_load = PowerSystems.make_forecast_dict(da_time_series, Dates.Day(1), 24, loads)
-    forecast_gen = PowerSystems.make_forecast_dict(da_time_series["gen"], Dates.Day(1), 24,
-                                                   generators)
-    forecast_load = PowerSystems.make_forecast_dict(da_time_series, Dates.Day(1), 24, loads)
-    forecast_gen = PowerSystems.make_forecast_dict(da_time_series["gen"], Dates.Day(1), 24,
-                                                   generators);
-    forecast_load = PowerSystems.make_forecast_dict(da_time_series, Dates.Day(1), 24,
-                                                    loads);=#
+    # This will fail because the resolutions are different.
+    @test_throws(PowerSystems.DataFormatError,
+                 PowerSystems.forecast_csv_parser!(
+                    sys,
+                    joinpath(FORECASTS_DIR, "5bus_ts", "load"),
+                    "Simulation",
+                    Component;
+                    REGEX_FILE=r"rt_(.*?)\.csv")
+                )
 
-    #RTS
+    # TODO: need a dataset with same resolution but different horizon.
+
+    sys = System(ps_dict)
+    PowerSystems.forecast_csv_parser!(sys,
+                                      joinpath(FORECASTS_DIR, "5bus_ts", "gen"),
+                                      "Simulation",
+                                      Generator;
+                                      REGEX_FILE=r"rt_(.*?)\.csv")
+    @test verify_forecasts(sys, 1, 2, 288)
+
+    PowerSystems.forecast_csv_parser!(sys, joinpath(FORECASTS_DIR, "5bus_ts", "load"),
+                                      "Simulation",
+                                      Component;
+                                      REGEX_FILE=r"rt_(.*?)\.csv")
+    @test verify_forecasts(sys, 1, 5, 288)
+
+    # Test with single file.
+    sys = System(ps_dict)
+    filename = joinpath(FORECASTS_DIR, "5bus_ts", "gen", "Renewable", "PV", "da_solar5.csv")
+    PowerSystems.forecast_csv_parser!(sys,
+                                      filename,
+                                      "Simulation",
+                                      Generator)
+    @test verify_forecasts(sys, 1, 1, 24)
+end
+
+@testset "Forecast data RTS" begin
     ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    da_time_series = PowerSystems.read_data_files(joinpath(FORECASTS_DIR,
-                                                           "RTS_GMLC_forecasts");
-                                                  REGEX_FILE=r"DAY_AHEAD(.*?)\.csv")
-    rt_time_series = PowerSystems.read_data_files(joinpath(FORECASTS_DIR,
-                                                           "RTS_GMLC_forecasts");
-                                                  REGEX_FILE=r"REAL_TIME(.*?)\.csv")
+    sys = System(ps_dict)
+    PowerSystems.forecast_csv_parser!(sys,
+                                      joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "gen"),
+                                      "Simulation",
+                                      Generator;
+                                      REGEX_FILE=r"DAY_AHEAD(.*?)\.csv")
+    @test verify_forecasts(sys, 1, 81, 24)
 
-    sys = PowerSystems._System(ps_dict)
-    #make forecast arrays
-    da_forecasts = PowerSystems.make_forecast_array(sys,da_time_series)
-    rt_forecasts = PowerSystems.make_forecast_array(sys,rt_time_series)
-
-    #push to sys
-    PowerSystems.add_forecast!(sys,:DA=>da_forecasts)
-    PowerSystems.add_forecast!(sys,:RT=>rt_forecasts)
+    sys = System(ps_dict)
+    PowerSystems.forecast_csv_parser!(sys,
+                                      joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "load"),
+                                      "Simulation",
+                                      LoadZones;
+                                      REGEX_FILE=r"REAL_TIME(.*?)\.csv")
+    @test verify_forecasts(sys, 1, 73, 288)
 end

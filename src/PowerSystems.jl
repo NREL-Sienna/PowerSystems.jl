@@ -74,26 +74,31 @@ export Transfer
 
 export PTDF
 export build_ybus
+export GeneratorCostModel
+export BusType
 
 export parsestandardfiles
 export parse_file
 export ps_dict2ps_struct
 export add_forecasts!
 export remove_forecast!
+export forecast_csv_parser!
 export get_forecast_initial_times
 export get_forecasts
 export get_forecasts_horizon
 export get_forecasts_initial_time
 export get_forecasts_interval
 export get_forecasts_resolution
+export get_horizon
 export iterate_forecasts
-export read_data_files
+export get_forecast_files
 export validate
 export add_component!
 export get_components
 export iterate_components
 export to_json
 export from_json
+export get_name
 
 #################################################################################
 # Imports
@@ -111,7 +116,6 @@ import JSON2
 import CSV
 import YAML
 import UUIDs
-import Base.summary
 
 #################################################################################
 # Includes
@@ -161,12 +165,14 @@ include("utils/IO/branchdata_checks.jl")
 include("base.jl")
 
 # Include Parsing files
+include("parsers/enums.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
-include("parsers/cdm_parser.jl")
+include("parsers/timeseries_formats.jl")
 include("parsers/forecast_parser.jl")
+include("parsers/cdm_parser.jl")
 include("parsers/pm2ps_parser.jl")
 
 # validation of System
@@ -181,5 +187,10 @@ include("models/serialization.jl")
 # Download test data
 include("utils/data.jl")
 import .UtilsData: TestData
+
+# TODO: delete when auto-generation is committed.
+function get_name(component::Component)
+    return component.name
+end
 
 end # module

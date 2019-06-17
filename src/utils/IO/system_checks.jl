@@ -3,12 +3,10 @@
 
 ## Time Series Length ##
 
-function timeseriescheckforecast(forecasts::Dict{Symbol,Array{C,1} where C<:Forecast})
-    for (key,v) in forecasts
-        t = length(unique([length(f.data) for f in v]))
-        if t > 1
-            @error "$key forecast array contains $t different time series lengths"
-        end
+function timeseriescheckforecast(forecasts::Forecasts)
+    t = length(unique([length(f) for f in forecasts]))
+    if t > 1
+        @error "forecast array contains $t different time series lengths"
     end
 end
 
@@ -29,7 +27,7 @@ end
 function slackbuscheck(buses::Array{Bus})
     slack = -9
     for b in buses
-        if b.bustype == "SF"
+        if b.bustype == REF::BusType
             slack = b.number
         end
     end

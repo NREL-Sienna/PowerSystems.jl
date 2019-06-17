@@ -11,19 +11,20 @@ include(joinpath(DATA_DIR,"data_14bus_pu.jl"))
     sys5b = System(nodes5, thermal_generators5, loads5, nothing, battery5,  100.0, nothing,
                    nothing, nothing)
 
-    # GitHub issue #234 - fix forecasts5 in data file
-    _sys5b = PowerSystems._System(nodes5, thermal_generators5, loads5, nothing, battery5,
-                                  100.0, forecasts5, nothing, nothing)
-    sys5b = System(_sys5b)
+    # GitHub issue #234 - fix forecasts5 in data file, use new format
+    #_sys5b = PowerSystems._System(nodes5, thermal_generators5, loads5, nothing, battery5,
+    #                              100.0, forecasts5, nothing, nothing)
+    #sys5b = System(_sys5b)
 
     sys5bh = System(nodes5, vcat(thermal_generators5, hydro_generators5), loads5, branches5,
                     battery5,  100.0, nothing, nothing, nothing)
 
     # Test Data for 14 Bus
 
-    _sys14 = PowerSystems._System(nodes14, thermal_generators14, loads14, nothing, nothing, 
-                                100.0, Dict{Symbol,Vector{<:Forecast}}(),nothing,nothing)
-    sys14 = System(_sys14)
+    # GitHub issue #234 - fix forecasts5 in data file, use new format
+    #_sys14 = PowerSystems._System(nodes14, thermal_generators14, loads14, nothing, nothing, 
+    #                            100.0, Dict{Symbol,Vector{<:Forecast}}(),nothing,nothing)
+    #sys14 = System(_sys14)
 
     _sys14b = PowerSystems._System(nodes14, thermal_generators14, loads14, nothing,
                                             battery14, 100.0, nothing, nothing, nothing)

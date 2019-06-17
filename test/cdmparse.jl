@@ -1,58 +1,23 @@
-@testset "PowerSystems dict parsing" begin
-    data_dict = PowerSystems.read_csv_data(RTS_GMLC_DIR, 100.0)
-    @test haskey(data_dict, "timeseries_pointers")
-end
+
+import PowerSystems: LazyDictFromIterator
 
 @testset "CDM parsing" begin
-    cdm_dict = nothing
-    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    @test cdm_dict isa Dict && haskey(cdm_dict, "loadzone")
+    resolutions = (
+        (resolution=Dates.Minute(5), len=288),
+        (resolution=Dates.Minute(60), len=24),
+    )
 
-    sys_rts = System(cdm_dict)
-    @test sys_rts isa System
-
-    rts_da = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["DA"])
-    @test length(rts_da[1].data) == 24
-    @test length(rts_da) == 211
-
-    rts_rt = PowerSystems.make_forecast_array(sys_rts, cdm_dict["forecasts"]["RT"])
-    @test length(rts_rt[1].data) == 288
-    @test length(rts_rt) == 204
+    for (resolution, len) in resolutions
+        sys = create_rts_system(resolution)
+        for forecast in iterate_forecasts(sys)
+            @test length(forecast) == len
+        end
+    end
 end
 
 @testset "CDM parsing invalid directory" begin
     baddir = abspath(joinpath(RTS_GMLC_DIR, "../../test"))
-    @test_throws ErrorException PowerSystems.csv2ps_dict(baddir, 100.0)
-end
-
-"""Allows comparison of structs that were created from different parsers which causes them
-to have different UUIDs."""
-function compare_values_without_uuids(x::T, y::T)::Bool where T <: PowerSystemType
-    match = true
-
-    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
-        if fieldname == :internal
-            continue
-        end
-
-        val1 = getfield(x, fieldname)
-        val2 = getfield(y, fieldname)
-
-        # Recurse if this is a PowerSystemType.
-        if val1 isa PowerSystemType
-            if !compare_values_without_uuids(val1, val2)
-                match = false
-            end
-            continue
-        end
-
-        if val1 != val2
-            @error "values do not match" fieldname val1 val2
-            match = false
-        end
-    end
-
-    return match
+    @test_throws ErrorException PowerSystemRaw(baddir, 100.0, DESCRIPTORS)
 end
 
 @testset "consistency between CDM and standardfiles" begin
@@ -62,45 +27,75 @@ end
     mpmmpsys = System(pmmp_dict)
 
     mpsys = System(mp_dict)
+    cdmsys = create_rts_system()
 
-    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    cdmsys = System(cdm_dict)
+    mp_iter = get_components(HydroGen, mpsys)
+    mp_generators = LazyDictFromIterator(String, HydroGen, mp_iter, get_name)
+    for cdmgen in get_components(HydroGen, cdmsys)
+        mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
+        if isnothing(mpgen)
+            error("did not find $cdmgen")
+        end
+        @test cdmgen.available == mpgen.available
+        @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
+        for field in (:rating, :activepower, :activepowerlimits, :reactivepower,
+                      :reactivepowerlimits, :ramplimits)  # :timelimits
+            cdmgen_val = getfield(cdmgen.tech, field)
+            mpgen_val = getfield(mpgen.tech, field)
+            if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                continue
+            end
+            @test cdmgen_val == mpgen_val
+        end
+    end
 
-    cdmgen = collect(get_components(ThermalGen, cdmsys))[1]
-    mpgen = collect(get_components(ThermalGen, mpsys))[1]
-    @test cdmgen.tech.activepowerlimits == mpgen.tech.activepowerlimits
-    @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
-    @test cdmgen.tech.ramplimits == mpgen.tech.ramplimits
+    mp_iter = get_components(ThermalGen, mpsys)
+    mp_generators = LazyDictFromIterator(String, ThermalGen, mp_iter, get_name)
+    for cdmgen in get_components(ThermalGen, cdmsys)
+        mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
+        @test cdmgen.available == mpgen.available
+        @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
+        for field in (:activepowerlimits, :reactivepowerlimits, :ramplimits)
+            cdmgen_val = getfield(cdmgen.tech, field)
+            mpgen_val = getfield(mpgen.tech, field)
+            if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                continue
+            end
+            @test cdmgen_val == mpgen_val
+        end
+        @test cdmgen.econ.capacity == mpgen.econ.capacity
 
-    @test cdmgen.econ.capacity == mpgen.econ.capacity
-    @test [isapprox(cdmgen.econ.variablecost[i][1], mpgen.econ.variablecost[i][1], atol= .1) 
-                        for i in 1:4] == [true, true, true, true]
+        if length(mpgen.econ.variablecost) == 4
+            @test [isapprox(cdmgen.econ.variablecost[i][1],
+                            mpgen.econ.variablecost[i][1], atol= .1)
+                            for i in 1:4] == [true, true, true, true]
+            #@test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
+        end
+    end
 
-    cdmgen = collect(get_components(HydroGen, cdmsys))[1]
-    mpgen = collect(get_components(HydroGen, mpsys))[1]
-    @test cdmgen.tech.activepowerlimits == mpgen.tech.activepowerlimits
-    @test cdmgen.tech.reactivepowerlimits == mpgen.tech.reactivepowerlimits
-    @test cdmgen.tech.rating == mpgen.tech.rating
-    @test cdmgen.tech.ramplimits == mpgen.tech.ramplimits # this gets adjusted in the pm2ps_dict 
-    @test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
+    mp_iter = get_components(RenewableGen, mpsys)
+    mp_generators = LazyDictFromIterator(String, RenewableGen, mp_iter, get_name)
+    for cdmgen in get_components(RenewableGen, cdmsys)
+        mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
+        # TODO
+        #@test cdmgen.available == mpgen.available
+        @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
+        for field in (:rating, :reactivepowerlimits, :powerfactor)
+            cdmgen_val = getfield(cdmgen.tech, field)
+            mpgen_val = getfield(mpgen.tech, field)
+            if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                continue
+            end
+            @test cdmgen_val == mpgen_val
+        end
+        #@test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
+    end
 
-    cdmbranches = collect(get_components(Branch,cdmsys))
-    @test cdmbranches[2].rate ==
-        [b for b in collect(get_components(Branch,mpsys)) if 
-            (b.connectionpoints.from.name == uppercase(cdmbranches[2].connectionpoints.from.name)) 
-                & (b.connectionpoints.to.name == uppercase(cdmbranches[2].connectionpoints.to.name))][1].rate
-
-    @test cdmbranches[6].rate ==
-        [b for b in collect(get_components(Branch,mpsys))  if 
-            (b.connectionpoints.from.name == uppercase(cdmbranches[6].connectionpoints.from.name)) 
-                & (b.connectionpoints.to.name == uppercase(cdmbranches[6].connectionpoints.to.name))][1].rate
-
-    @test cdmbranches[120].rate == [b for b in collect(get_components(Branch,mpsys)) if 
-            (b.connectionpoints.from.name == uppercase(cdmbranches[120].connectionpoints.from.name)) 
-                & (b.connectionpoints.to.name == uppercase(cdmbranches[120].connectionpoints.to.name))][1].rate
-
-    cdmgen = collect(get_components(RenewableGen, cdmsys))[1]
-    mpgen = collect(get_components(RenewableGen, mpsys))[1]
-    @test compare_values_without_uuids(cdmgen.tech, mpgen.tech)
-    @test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
+    cdm_branches = collect(get_components(Branch,cdmsys))
+    @test cdm_branches[2].rate == get_branch(mpsys, cdm_branches[2]).rate
+    @test cdm_branches[6].rate == get_branch(mpsys, cdm_branches[6]).rate
+    @test cdm_branches[120].rate == get_branch(mpsys, cdm_branches[120]).rate
 end

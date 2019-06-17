@@ -22,8 +22,7 @@ function validate_serialization(sys::System)
 end
 
 @testset "Test JSON serialization" begin
-    cdm_dict = PowerSystems.csv2ps_dict(RTS_GMLC_DIR, 100.0)
-    sys = System(cdm_dict)
+    sys = create_rts_system()
     @test validate_serialization(sys)
 
     # Serialize specific components.

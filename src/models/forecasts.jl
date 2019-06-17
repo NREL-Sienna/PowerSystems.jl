@@ -1,18 +1,22 @@
 abstract type Forecast <: PowerSystemType end
 
 const Forecasts = Vector{<:Forecast}
-# This is deprecated because only the legacy System uses it. Parsing code need to change to
-# build the new format.
-const SystemForecastsDeprecated = Dict{Symbol, Forecasts}
+const ForecastComponentLabelPair = Tuple{<:Component, String}
+const ForecastComponentLabelPairByInitialTime = Dict{Dates.DateTime,
+                                                     Set{ForecastComponentLabelPair}}
+const UNITIALIZED_DATETIME = Dates.DateTime(Dates.Second(0))
+const UNITIALIZED_PERIOD = Dates.Period(Dates.Second(0))
+const UNITIALIZED_HORIZON = 0
 
-struct _ForecastKey
+
+struct ForecastKey
     initial_time::Dates.DateTime
     forecast_type::DataType
 end
 
-const _Forecasts = Dict{_ForecastKey, Vector{<:Forecast}}
+const ForecastsByType = Dict{ForecastKey, Vector{<:Forecast}}
 
-function _get_forecast_initial_times(data::_Forecasts)::Vector{Dates.DateTime}
+function _get_forecast_initial_times(data::ForecastsByType)::Vector{Dates.DateTime}
     initial_times = Set{Dates.DateTime}()
     for key in keys(data)
         push!(initial_times, key.initial_time)
@@ -21,8 +25,30 @@ function _get_forecast_initial_times(data::_Forecasts)::Vector{Dates.DateTime}
     return sort!(Vector{Dates.DateTime}(collect(initial_times)))
 end
 
-function _add_forecast!(data::_Forecasts, forecast::T) where T <: Forecast
-    key = _ForecastKey(forecast.initial_time, T)
+function _verify_forecasts!(
+                            unique_components::ForecastComponentLabelPairByInitialTime,
+                            data::ForecastsByType,
+                            forecast::T,
+                           ) where T <: Forecast
+    key = ForecastKey(forecast.initial_time, T)
+    component_label = (forecast.component, forecast.label)
+
+    if !haskey(unique_components, forecast.initial_time)
+        unique_components[forecast.initial_time] = Set{ForecastComponentLabelPair}()
+    end
+
+    if haskey(data, key) && component_label in unique_components[forecast.initial_time]
+        throw(DataFormatError(
+            "forecast component-label pairs is not unique within forecasts; " *
+            "label=$component_label initial_time=$(forecast.initial_time)"
+        ))
+    end
+
+    push!(unique_components[forecast.initial_time], component_label)
+end
+
+function _add_forecast!(data::ForecastsByType, forecast::T) where T <: Forecast
+    key = ForecastKey(forecast.initial_time, T)
     if !haskey(data, key)
         data[key] = Vector{T}()
     end
@@ -32,61 +58,103 @@ end
 
 """Container for forecasts and their metadata. Implementation detail that is not exported.
 Functions to access the data should go through the System."""
-struct SystemForecasts
-    data::_Forecasts
+mutable struct SystemForecasts
+    data::ForecastsByType
     initial_time::Dates.DateTime
     resolution::Dates.Period
     horizon::Int64
     interval::Dates.Period
 end
 
-"""Constructs SystemForecasts from the previous version of the data structure."""
-function SystemForecasts(old_forecasts::SystemForecastsDeprecated)
-    forecasts = _Forecasts()
-    initial_time = Dates.DateTime(Dates.Second(1))
-    resolution = Dates.Period(Dates.Second(1))
-    initialized = false
-    horizon::Int64 = 0
+function SystemForecasts()
+    forecasts_by_type = ForecastsByType()
+    initial_time = UNITIALIZED_DATETIME
+    resolution = UNITIALIZED_PERIOD
+    horizon = UNITIALIZED_HORIZON
+    interval = UNITIALIZED_PERIOD
 
-    for forecast in Iterators.flatten(values(old_forecasts))
-        if !initialized
-            initial_time = forecast.initial_time
-            resolution = forecast.resolution
-            horizon = length(forecast)
-            initialized = true
-        else
-            if forecast.resolution != resolution
-                # TODO parsing code currently produces multiple resolutions.
-                @error("Skipping forecast because it has a different resolution",
-                       resolution, forecast.resolution, maxlog=1)
-                #throw(DataFormatError("found multiple resolution values in forecasts"))
-                continue
+    return SystemForecasts(forecasts_by_type, initial_time, resolution, horizon, interval)
+end
+
+function reset_info!(forecasts::SystemForecasts)
+    forecasts.initial_time = UNITIALIZED_DATETIME
+    forecasts.resolution = UNITIALIZED_PERIOD
+    forecasts.horizon = UNITIALIZED_HORIZON
+    @info "Reset system forecast information."
+end
+
+function is_uninitialized(forecasts::SystemForecasts)
+    return forecasts.initial_time == UNITIALIZED_DATETIME &&
+           forecasts.resolution == UNITIALIZED_PERIOD &&
+           forecasts.horizon == UNITIALIZED_HORIZON
+end
+
+function _verify_forecasts(system_forecasts::SystemForecasts, forecasts)
+    # Collect all existing component labels.
+    unique_components = ForecastComponentLabelPairByInitialTime()
+    for (key, existing_forecasts) in system_forecasts.data
+        for forecast in existing_forecasts
+            if !haskey(unique_components, forecast.initial_time)
+                unique_components[forecast.initial_time] = Set{ForecastComponentLabelPair}()
             end
 
-            cur_horizon = length(forecast)
-            if cur_horizon != horizon
-                msg = "found multiple horizons in forecasts: $horizon, $cur_horizon"
-                throw(DataFormatError(msg))
-            end
+            component_label = (forecast.component, forecast.label)
+            push!(unique_components[forecast.initial_time], component_label)
+        end
+    end
+
+    for forecast in forecasts
+        if forecast.resolution != system_forecasts.resolution
+            throw(DataFormatError(
+                "Forecast resolution $(forecast.resolution) does not match system " *
+                "resolution $(system_forecasts.resolution)"
+            ))
         end
 
-        _add_forecast!(forecasts, forecast)
+        if get_horizon(forecast) != system_forecasts.horizon
+            throw(DataFormatError(
+                "Forecast horizon $(get_horizon(forecast)) does not match system horizon " *
+                "$(system_forecasts.horizon)"
+            ))
+        end
+
+        _verify_forecasts!(unique_components, system_forecasts.data, forecast)
+    end
+end
+
+function _add_forecasts!(system_forecasts::SystemForecasts, forecasts)
+    if is_uninitialized(system_forecasts)
+        # This is the first forecast added.
+        forecast = forecasts[1]
+        system_forecasts.horizon = get_horizon(forecast)
+        system_forecasts.resolution = forecast.resolution
+        system_forecasts.initial_time = forecast.initial_time
     end
 
-    initial_times = _get_forecast_initial_times(forecasts)
+    # Adding forecasts is all-or-none. Loop once to validate and then again to add them.
+    # This will throw if something is invalid.
+    _verify_forecasts(system_forecasts, forecasts)
+
+    for forecast in forecasts
+        _add_forecast!(system_forecasts.data, forecast)
+    end
+
+    set_interval!(system_forecasts)
+end
+
+function set_interval!(system_forecasts::SystemForecasts)
+    initial_times = _get_forecast_initial_times(system_forecasts.data)
     if length(initial_times) == 1
         # TODO this needs work
-        interval = resolution
+        system_forecasts.interval = system_forecasts.resolution
     elseif length(initial_times) > 1
         # TODO is this correct?
-        interval = initial_times[2] - initial_times[1]
+        system_forecasts.interval = initial_times[2] - initial_times[1]
     else
-        @error "no forecasts detected" old_forecasts maxlog=1
-        interval = Dates.Day(1)  # TODO
+        @error "no forecasts detected" forecasts maxlog=1
+        system_forecasts.interval = Dates.Day(1)  # TODO
         #throw(DataFormatError("no forecasts detected"))
     end
-
-    return SystemForecasts(forecasts, initial_time, resolution, horizon, interval)
 end
 
 """Partially constructs SystemForecasts from JSON. Forecasts are not constructed."""
@@ -96,7 +164,7 @@ function SystemForecasts(data::NamedTuple)
     horizon = data.horizon
     interval = JSON2.read(JSON2.write(data.interval), Dates.Period)
 
-    return SystemForecasts(_Forecasts(), initial_time, resolution, horizon, interval)
+    return SystemForecasts(ForecastsByType(), initial_time, resolution, horizon, interval)
 end
 
 function Base.summary(io::IO, forecasts::SystemForecasts)
@@ -105,7 +173,10 @@ function Base.summary(io::IO, forecasts::SystemForecasts)
 
     println(io, "Forecasts")
     println(io, "=========")
-
+    println(io, "Resolution: $(forecasts.resolution)")
+    println(io, "Horizon: $(forecasts.horizon)")
+    println(io, "Interval: $(forecasts.interval)\n")
+    println(io, "---------------------------------")
     initial_times = _get_forecast_initial_times(forecasts.data)
     for initial_time in initial_times
         for (key, values) in forecasts.data
@@ -121,8 +192,8 @@ function Base.summary(io::IO, forecasts::SystemForecasts)
                    Count=length(values))
             push!(rows, row)
         end
-        println(io, "Initial Time $initial_time")
-        println(io, "--------------------------------")
+        println(io, "Initial Time: $initial_time")
+        println(io, "---------------------------------")
 
         sort!(rows, by = x -> x.ConcreteType)
 
@@ -143,7 +214,7 @@ function convert_type!(
     for symbol in propertynames(data.data)
         key_str = string(symbol)
         # Looks like this:
-        # "PowerSystems._ForecastKey(2020-01-01T00:00:00, Deterministic{RenewableFix})"
+        # "PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic{RenewableFix})"
         index_start_time = findfirst("(", key_str).start + 1
         index_end_time = findfirst(",", key_str).start - 1
         index_start_type = index_end_time + 3
@@ -162,7 +233,7 @@ function convert_type!(
             @assert false
         end
 
-        key = _ForecastKey(initial_time, forecast_type)
+        key = ForecastKey(initial_time, forecast_type)
 
         forecasts.data[key] = Vector{forecast_type}()
         for forecast in getfield(data.data, symbol)
@@ -178,6 +249,10 @@ end
 
 function Base.length(forecast::Forecast)
     return length(forecast.data)
+end
+
+function get_horizon(forecast::Forecast)
+    return length(forecast)
 end
 
 """

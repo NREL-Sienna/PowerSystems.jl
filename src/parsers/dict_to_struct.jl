@@ -57,56 +57,13 @@ function ps_dict2ps_struct(data::Dict{String,Any})
         @warn "key 'services' not found in PowerSystems dictionary, this will result in an empty services array"
     end
     if haskey(data,"forecasts")
-        devices = collect(vcat(buses,generators,storage,branches,loads,loadZones,shunts,branches,services))
-        forecasts = PowerSystems.forecasts_dict_parser(data["forecasts"],devices)
+        error("Creating forecasts from a ps_dict is not currently supported")
     else
-        forecasts = Dict{Symbol, Vector{ <: Forecast}}()
+        forecasts = Vector{Forecast}()
     end
 
     return sort!(buses, by = x -> x.number), generators, storage,  sort!(branches, by = x -> x.connectionpoints.from.number), loads, loadZones, shunts, forecasts, services
 
-end
-
-"""
-Finds the values matching an identifier within a dictionary and returns a dict with keyed by
-objects with values as arrays of keys to navigate to the object within the input dict
-"""
-function _retrieve(dict::T, key_of_interest::Union{DataType,Union,String,Symbol}, output::Dict, path::Array) where T<:AbstractDict
-    iter_result = Base.iterate(dict)
-    last_element = length(path)
-    while iter_result !== nothing
-        ((key,value), state) = iter_result
-        if isa(key_of_interest,Union{DataType,Union})
-            if typeof(value) <: key_of_interest
-                output[key] = !haskey(output,key) ? path[1:end] : push!(output[key],path[1:end])
-            end
-        elseif key == key_of_interest
-            output[value] = !haskey(output,value) ? path[1:end] : push!(output[value],path[1:end])
-        end
-        if value isa AbstractDict
-            push!(path,key)
-            _retrieve(value, key_of_interest, output, path)
-            path = path[1:last_element]
-        end
-        iter_result = Base.iterate(dict, state)
-    end
-    return output
-end
-
-
-"""
-Takes a nested dict, and an array of keys to navigate to specific values. Returns the value
-at the end of the navigation path.
-"""
-function _access(nesteddict::T,keylist) where T<:AbstractDict
-    if !haskey(nesteddict,keylist[1])
-        @error "$(keylist[1]) not found in dict"
-    end
-    if length(keylist) > 1
-        nesteddict = _access(nesteddict[keylist[1]],keylist[2:end])
-    else
-        nesteddict = nesteddict[keylist[1]]
-    end
 end
 
 """
@@ -129,132 +86,6 @@ function _get_device(name::Union{String,Symbol}, collection, devices = [])
         end
     end
     return devices
-end
-
-
-"""
-Arg:
-    Dataframes which includes a timerseries columns of either:
-        Year, Month, Day, Period
-      or
-        DateTime
-      or
-        nothing (creates a today referenced DateTime Column)
-Returns:
-    Dataframe with a DateTime columns
-"""
-function read_datetime(df; kwargs...)
-    if [c for c in [:Year,:Month,:Day] if c in names(df)] == [:Year,:Month,:Day]
-        if !(:Period in names(df))
-            df = DataFrames.rename!(DataFrames.stack(df,[c for c in names(df) if !(c in [:Year,:Month,:Day])]),:variable=>:Period)
-            df.Period = parse.(Int,string.(df.Period))
-            if :valuecolname in keys(kwargs)
-                DataFrames.rename!(df,:value=>kwargs[:valuecolname])
-            end
-        end
-        if Dates.Hour(DataFrames.maximum(df[:Period])) <= Dates.Hour(25)
-            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],(df[1,:Period]-1)) :Dates.Hour(1) : Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],(df[end,:Period]-1)))
-        elseif (Dates.Minute(5) * DataFrames.maximum(df[:Period]) >= Dates.Minute(1440))& (Dates.Minute(5) * DataFrames.maximum(df[:Period]) <= Dates.Minute(1500))
-            df[:DateTime] = collect(Dates.DateTime(df[1,:Year],df[1,:Month],df[1,:Day],floor(df[1,:Period]/12),Int(df[1,:Period])-1) :Dates.Minute(5) :
-                            Dates.DateTime(df[end,:Year],df[end,:Month],df[end,:Day],floor(df[end,:Period]/12)-1,5*(Int(df[end,:Period])-(floor(df[end,:Period]/12)-1)*12) -5))
-        else
-            @error "I don't know what the period length is, reformat timeseries"
-        end
-        DataFrames.deletecols!(df, [:Year,:Month,:Day,:Period])
-
-    elseif :DateTime in names(df)
-        @warn "dataframe already has DateTime column"
-        if typeof(df[:DateTime]) != Vector{Dates.DateTime}
-            df[:DateTime] = Dates.DateTime(df[:DateTime])
-        end
-    else
-        if :startdatetime in keys(kwargs)
-            startdatetime = kwargs[:startdatetime]
-        else
-            @warn "No reference date given, assuming today"
-            startdatetime = Dates.today()
-        end
-        df[:DateTime] = collect(Dates.DateTime(startdatetime):Dates.Hour(1):Dates.DateTime(startdatetime)+Dates.Hour(size(df)[1]-1))
-    end
-    return df
-end
-
-
-function add_time_series(Device_dict::Dict{String,Any}, ts_raw::TimeSeries.TimeArray)
-    """
-    Arg:
-        Device dictionary - Generators
-        Dict contains device Realtime/Forecast TimeSeries.TimeArray
-    Returns:
-        Device dictionary with timeseries added
-    """
-
-    name = get(Device_dict, "name", "")
-    if name == ""
-        throw(DataFormatError("input dict to add_time_series in wrong format"))
-    end
-
-    if maximum(values(ts_raw)) > 1.0
-        @warn "Time series for $name has values > 1.0, expected values in range {0.0,1.0}"
-    end
-    Device_dict["scalingfactor"] = ts_raw
-
-
-    return Device_dict
-end
-
-"""
-Arg:
-    Load dictionary
-    LoadZones dictionary
-    Dataframe contains device Realtime/Forecast TimeSeries
-Returns:
-    Device dictionary with timeseries added
-"""
-function add_time_series_load(data::Dict{String,Any}, df::DataFrames.DataFrame)
-    load_dict = data["load"]
-
-    load_names = [string(l["name"]) for (k,l) in load_dict]
-    ts_names = [string(n) for n in names(df) if n != :DateTime]
-
-    write_sf_by_lz = false
-    lzkey = [k for k in ["loadzone","load_zone"] if haskey(data,k)][1]
-    if lzkey in keys(data)
-        load_zone_dict = data[lzkey]
-        z_names = [string(z["name"]) for (k,z) in load_zone_dict]
-        if length([n for n in z_names if n in ts_names]) > 0
-            write_sf_by_lz = true
-        end
-    end
-
-    assigned_loads = []
-    if write_sf_by_lz
-        @info "assigning load scaling factors by load_zone"
-        # TODO: make this faster/better
-        for (l_key,l) in load_dict
-            for (lz_key,lz) in load_zone_dict
-                if l["bus"] in lz["buses"]
-                    ts_raw = df[lz_key]/lz["maxactivepower"]
-                    load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],ts_raw)
-                    push!(assigned_loads,l_key)
-                end
-            end
-
-        end
-    else
-        @info "assigning load scaling factors by bus"
-        for (l_key,l) in load_dict
-            load_dict[l_key]["scalingfactor"] = TimeSeries.TimeArray(df[:DateTime],df[Symbol(l["name"])])
-            push!(assigned_loads,l["name"])
-        end
-
-    end
-
-    for l in [l for l in load_names if !(l in assigned_loads)]
-        @warn "No load scaling factor assigned for $l" maxlog=PS_MAX_LOG
-    end
-
-    return load_dict
 end
 
 ## - Parse Dict to Struct
@@ -508,15 +339,4 @@ function services_dict_parser(dict::Dict{String,Any},generators::Array{Generator
                             ))
     end
     return Services
-end
-
-
-function forecasts_dict_parser(dict::Dict, devices::Array{Component,1})
-
-    forecasts = Dict{Symbol,Array{C,1} where C <: Forecast}()
-
-    for (k,v) in dict
-        forecasts[Symbol(k)] =  make_forecast_array(devices, v)
-    end
-    return forecasts
 end

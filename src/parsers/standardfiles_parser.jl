@@ -19,18 +19,3 @@ function parsestandardfiles(file::String; kwargs...)
     return data
 
 end
-
-    
-function parsestandardfiles(file::String, ts_folder::String; kwargs...)
-
-    # TODO: assert a naming convention
-    data = parsestandardfiles(file)
-    sys = System(data)
-    
-    ts_data = read_data_files(ts_folder; kwargs...)
-
-    forecast = make_forecast_array(sys,ts_data)
-    add_forecast!(sys,:default=>forecast)
-
-    return data
-end

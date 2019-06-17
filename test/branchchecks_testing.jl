@@ -14,11 +14,11 @@ end
 
 @testset "Angle limits" begin
     nodes5 = [
-        Bus(1, "nodeA", "PV", 0, 1.0, (min = 0.9, max=1.05), 230),
-        Bus(2, "nodeB", "PQ", 0, 1.0, (min = 0.9, max=1.05), 230),
-        Bus(3, "nodeC", "PV", 0, 1.0, (min = 0.9, max=1.05), 230),
-        Bus(4, "nodeD", "SF", 0, 1.0, (min = 0.9, max=1.05), 230),
-        Bus(5, "nodeE", "PV", 0, 1.0, (min = 0.9, max=1.05), 230),
+        Bus(1, "nodeA", PowerSystems.PV::BusType, 0, 1.0, (min = 0.9, max=1.05), 230),
+        Bus(2, "nodeB", PowerSystems.PQ::BusType, 0, 1.0, (min = 0.9, max=1.05), 230),
+        Bus(3, "nodeC", PowerSystems.PV::BusType, 0, 1.0, (min = 0.9, max=1.05), 230),
+        Bus(4, "nodeD", PowerSystems.REF::BusType, 0, 1.0, (min = 0.9, max=1.05), 230),
+        Bus(5, "nodeE", PowerSystems.PV::BusType, 0, 1.0, (min = 0.9, max=1.05), 230),
     ]
 
     branches_test = [
