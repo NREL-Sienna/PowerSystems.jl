@@ -243,7 +243,7 @@
       },
       {
         "name": "angle",
-        "comment": "angle of the bus in degrees",
+        "comment": "angle of the bus in radians",
         "null_value": "0.0",
         "data_type": "Union{Nothing, Float64}"
       },
