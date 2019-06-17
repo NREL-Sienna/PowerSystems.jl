@@ -174,20 +174,15 @@ function get_forecast_files(rootpath::String; kwargs...)
     regex = get(kwargs, :REGEX_FILE, r"^[^\.](.*?)\.csv")
 
     for (root, dirs, files) in walkdir(rootpath)
+        # Skip hidden directories unless the user passed it in.
+        if length([x for x in splitdir(root) if startswith(x, ".")]) > 0 && root != rootpath
+            @debug "Skip hidden directory $root"
+            continue
+        end
         for filename in files
             if !isnothing(match(regex, filename))
-                hidden = false
-                for dir in splitdir(root)
-                    if startswith(dir, ".")
-                        hidden = true
-                        break
-                    end
-                end
-
-                if !hidden
-                    path_to_filename = joinpath(root, filename)
-                    push!(filenames, path_to_filename)
-                end
+                path_to_filename = joinpath(root, filename)
+                push!(filenames, path_to_filename)
             end
         end
     end

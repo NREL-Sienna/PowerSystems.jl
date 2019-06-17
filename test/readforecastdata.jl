@@ -25,6 +25,34 @@ function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon
     return true
 end
 
+@testset "Test get_forecast_files" begin
+    path = joinpath(FORECASTS_DIR, "5bus_ts", "gen")
+    files = PowerSystems.get_forecast_files(path)
+    @test length(files) > 0
+
+    files2 = PowerSystems.get_forecast_files(path, REGEX_FILE=r"da_(.*?)\.csv")
+    @test length(files2) > 0
+    @test length(files2) < length(files)
+
+    hidden_path = joinpath(FORECASTS_DIR, "5bus_ts", "gen", ".hidden")
+    mkdir(hidden_path)
+    filename = joinpath(hidden_path, "data.csv")
+    try
+        open(filename, "w") do io
+        end
+
+        @test isfile(filename)
+        files = PowerSystems.get_forecast_files(path)
+        @test length([x for x in files if occursin(".hidden", x)]) == 0
+
+        # This is allowed if we pass the path in.
+        files = PowerSystems.get_forecast_files(hidden_path)
+        @test length(files) == 1
+    finally
+        rm(hidden_path; recursive=true)
+    end
+end
+
 @testset "Forecast data matpower" begin
     ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "case5_re.m"))
     sys = System(ps_dict)
