@@ -195,9 +195,4 @@ include("models/serialization.jl")
 include("utils/data.jl")
 import .UtilsData: TestData
 
-# TODO: delete when auto-generation is committed.
-function get_name(component::Component)
-    return component.name
-end
-
 end # module
