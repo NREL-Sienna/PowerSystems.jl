@@ -3,11 +3,27 @@
     sys = create_rts_system()
     summary(devnull, sys)
 
+    generators = collect(get_components(ThermalStandard, sys))
+    generator = get_component(ThermalStandard, sys, get_name(generators[1]))
+    @test PowerSystems.get_uuid(generator) == PowerSystems.get_uuid(generators[1])
+    @test_throws(PowerSystems.InvalidParameter, add_component!(sys, generator))
+
+    generators2 = get_components_by_name(ThermalGen, sys, get_name(generators[1]))
+    @test length(generators2) == 1
+    @test PowerSystems.get_uuid(generators2[1]) == PowerSystems.get_uuid(generators[1])
+
+    @test isnothing(get_component(ThermalStandard, sys, "not-a-name"))
+    @test isempty(get_components_by_name(ThermalGen, sys, "not-a-name"))
+    @test_throws(PowerSystems.InvalidParameter,
+                 get_component(ThermalGen, sys, "not-a-name"))
+    @test_throws(PowerSystems.InvalidParameter,
+                 get_components_by_name(ThermalStandard, sys, "not-a-name"))
+
     # Negative test of missing type.
     components = Vector{ThermalGen}()
     for subtype in PowerSystems.subtypes(ThermalGen)
         if haskey(sys.components, subtype)
-            for component in pop!(sys.components, subtype)
+            for (component_type, component) in pop!(sys.components, subtype)
                 push!(components, component)
             end
         end
@@ -96,6 +112,15 @@
 
     @test_throws(PowerSystems.InvalidParameter,
                  get_forecasts(Deterministic{Bus}, sys, initial_time, components))
+
+    f = forecasts[1]
+    forecast = Deterministic(Bus(nothing), f.label, f.resolution, f.initial_time, f.data)
+    @test_throws(PowerSystems.InvalidParameter, add_forecasts!(sys, [forecast]))
+
+    component = deepcopy(f.component)
+    component.internal = PowerSystems.PowerSystemInternal()
+    forecast = Deterministic(component, f.label, f.resolution, f.initial_time, f.data)
+    @test_throws(PowerSystems.InvalidParameter, add_forecasts!(sys, [forecast]))
 end
 
 @testset "Test System iterators" begin

@@ -554,10 +554,6 @@ function services_csv_parser!(sys::System, data::PowerSystemRaw)
     bus_id_column = get_user_field(data, BUS::InputCategory, "bus_id")
     bus_area_column = get_user_field(data, BUS::InputCategory, "area")
 
-    # Cache name-to-component by category to avoid looping through components for every
-    # service.
-    component_mappings = Dict{String, LazyDictFromIterator{String, <:Device}}()
-
     # Shortcut for data that looks like "(val1,val2,val3)"
     make_array(x) = split(strip(x, ['(', ')']), ",")
 
@@ -573,19 +569,17 @@ function services_csv_parser!(sys::System, data::PowerSystemRaw)
             if gen.category in device_subcategories && area in regions
                 for dev_category in device_categories
                     component_type = _get_component_type_from_category(dev_category)
-
-                    if !haskey(component_mappings, dev_category)
-                        iter = get_components(component_type, sys)
-                        components = LazyDictFromIterator(String, component_type, iter,
-                                                          get_name)
-                        component_mappings[dev_category] = components
-                    end
-
-                    component = get(component_mappings[dev_category], gen.name)
-                    if isnothing(component)
+                    components = get_components_by_name(component_type, sys, gen.name)
+                    if length(components) == 0
                         # There multiple categories, so we might not find a match in some.
                         continue
+                    elseif length(components) == 1
+                        component = components[1]
+                    else
+                        msg = "Found duplicate names type=$component_type name=$name"
+                        throw(DataFormatError(msg))
                     end
+
                     push!(contributing_devices, component)
                 end
             end

@@ -94,7 +94,9 @@ export iterate_forecasts
 export get_forecast_files
 export validate
 export add_component!
+export get_component
 export get_components
+export get_components_by_name
 export iterate_components
 export to_json
 export from_json
@@ -141,7 +143,7 @@ include("internal.jl")
 # Include utilities
 include("utils/utils.jl")
 include("utils/logging.jl")
-include("utils/flattened_vectors_iterator.jl")
+include("utils/flatten_iterator_wrapper.jl")
 include("utils/lazy_dict_from_iterator.jl")
 include("utils/IO/base_checks.jl")
 

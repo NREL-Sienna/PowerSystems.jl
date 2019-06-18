@@ -92,7 +92,7 @@ function _System(ps_dict::Dict{String,Any}; kwargs...)
                   kwargs...);
 end
 
-const Components = Dict{DataType, Vector{<:Component}}
+const Components = Dict{DataType, Dict{String, <:Component}}
 
 """
     System
@@ -276,10 +276,28 @@ function iterate_forecasts(sys::System)
     end
 end
 
+function JSON2.write(io::IO, components::Components)
+    return JSON2.write(io, encode_for_json(components))
+end
+
+function JSON2.write(components::Components)
+    return JSON2.write(io, encode_for_json(components))
+end
+
+function encode_for_json(components::Components)
+    # Convert each name-to-value component dictionary to arrays.
+    new_components = Dict{DataType, Vector{<:Component}}()
+    for (data_type, component_dict) in components
+        new_components[data_type] = [x for x in values(component_dict)]
+    end
+
+    return new_components
+end
+
 """Deserializes a System from String or IO."""
 function from_json(io::Union{IO, String}, ::Type{System})
-    components = Dict{DataType, Vector{<: Component}}()
     raw = JSON2.read(io, NamedTuple)
+    sys = System(float(raw.basepower))
 
     names_and_types = [(x, getfield(PowerSystems, Symbol(strip_module_names(string(x)))))
                         for x in fieldnames(typeof(raw.components))]
@@ -288,18 +306,14 @@ function from_json(io::Union{IO, String}, ::Type{System})
     # JSON versions of Service and Forecast objects have UUIDs for components instead
     # of actual components, so they have to be skipped on the first pass.
     for (name, component_type) in names_and_types
-        components[component_type] = Vector{component_type}()
         if component_type <: Service
             continue
         end
 
         for component in getfield(raw.components, name)
-            obj = convert_type(component_type, component)
-            push!(components[component_type], obj)
+            add_component!(sys, convert_type(component_type, component))
         end
     end
-
-    sys = System(components, SystemForecasts(raw.forecasts), float(raw.basepower))
 
     # Service objects actually have Device instances, but Forecasts have Components. Since
     # we are sharing the dict, use the higher-level type.
@@ -308,8 +322,7 @@ function from_json(io::Union{IO, String}, ::Type{System})
     for (name, component_type) in names_and_types
         if component_type <: Service
             for component in getfield(raw.components, name)
-                push!(sys.components[component_type],
-                      convert_type(component_type, component, components))
+                add_component!(sys, convert_type(component_type, component, components))
             end
         end
     end
@@ -321,17 +334,25 @@ function from_json(io::Union{IO, String}, ::Type{System})
     return sys
 end
 
-"""Adds a component to the system."""
+"""
+    add_component!(sys::System, component::T) where T <: Component
+
+Add a component to the system.
+
+Throws InvalidParameter if the component's name is already stored for its concrete type.
+"""
 function add_component!(sys::System, component::T) where T <: Component
     if !isconcretetype(T)
         error("add_component! only accepts concrete types")
     end
 
     if !haskey(sys.components, T)
-        sys.components[T] = Vector{T}()
+        sys.components[T] = Dict{String, T}()
+    elseif haskey(sys.components[T], component.name)
+        throw(InvalidParameter("$(component.name) is already stored for type $T"))
     end
 
-    push!(sys.components[T], component)
+    sys.components[T][component.name] = component
     return nothing
 end
 
@@ -370,10 +391,30 @@ Throws DataFormatError if
 - A forecast has a different resolution than others.
 - A forecast has a different horizon than others.
 
+Throws InvalidParameter if the forecast's component is not stored in the system.
+
 """
 function add_forecasts!(sys::System, forecasts)
     if length(forecasts) == 0
         return
+    end
+
+    # Validate that each forecast's component is stored in the system.
+    for forecast in forecasts
+        comp = forecast.component
+        ctype = typeof(comp)
+        component = get_component(ctype, sys, get_name(comp))
+        if isnothing(component)
+            throw(InvalidParameter("no $ctype with name=$(get_name(comp)) is stored"))
+        end
+
+        user_uuid = get_uuid(comp)
+        ps_uuid = get_uuid(component)
+        if user_uuid != ps_uuid
+            throw(InvalidParameter(
+                "forecast component UUID doesn't match, perhaps it was copied?; " *
+                "$ctype name=$(get_name(comp)) user=$user_uuid system=$ps_uuid"))
+        end
     end
 
     _add_forecasts!(sys.forecasts, forecasts)
@@ -424,21 +465,21 @@ function get_forecasts(
                        ::Type{T},
                        sys::System,
                        initial_time::Dates.DateTime,
-                      )::FlattenedVectorsIterator{T} where T <: Forecast
+                      )::FlattenIteratorWrapper{T} where T <: Forecast
     if isconcretetype(T)
         key = ForecastKey(initial_time, T)
         forecasts = get(sys.forecasts.data, key, nothing)
         if isnothing(forecasts)
-            iter = FlattenedVectorsIterator(Vector{Vector{T}}([]))
+            iter = FlattenIteratorWrapper(T, Vector{Vector{T}}([]))
         else
-            iter = FlattenedVectorsIterator(Vector{Vector{T}}([forecasts]))
+            iter = FlattenIteratorWrapper(T, Vector{Vector{T}}([forecasts]))
         end
     else
         keys_ = [ForecastKey(initial_time, x.forecast_type)
                  for x in keys(sys.forecasts.data) if x.initial_time == initial_time &&
                                                       x.forecast_type <: T]
-        iter = FlattenedVectorsIterator(Vector{Vector{T}}([sys.forecasts.data[x]
-                                                           for x in keys_]))
+        iter = FlattenIteratorWrapper(T, Vector{Vector{T}}([sys.forecasts.data[x]
+                                                            for x in keys_]))
     end
 
     @assert eltype(iter) == T
@@ -547,12 +588,75 @@ end
 # need each PowerSystemType to store a UUID.
 # GitHub issue #203
 
+"""
+    get_component(
+                  ::Type{T},
+                  sys::System,
+                  name::AbstractString
+                 )::Union{T, Nothing} where {T <: Component}
+
+Get the component of concrete type T with name. Returns nothing if no component matches.
+
+See [`get_components_by_name`](@ref) if the concrete type is unknown.
+
+Throws InvalidParameter if T is not a concrete type.
+"""
+function get_component(
+                       ::Type{T},
+                       sys::System,
+                       name::AbstractString
+                      )::Union{T, Nothing} where {T <: Component}
+    if !isconcretetype(T)
+        throw(InvalidParameter("get_component only supports concrete types: $T"))
+    end
+
+    if !haskey(sys.components, T)
+        @debug "components of type $T are not stored"
+        return nothing
+    end
+
+    return get(sys.components[T], name, nothing)
+end
+
+"""
+    get_components_by_name(
+                           ::Type{T},
+                           sys::System,
+                           name::AbstractString
+                          )::Vector{T} where {T <: Component}
+
+Get the components of abstract type T with name. Note that PowerSystems enforces unique
+names on each concrete type but not across concrete types.
+
+See [`get_component`](@ref) if the concrete type is known.
+
+Throws InvalidParameter if T is not an abstract type.
+"""
+function get_components_by_name(
+                                ::Type{T},
+                                sys::System,
+                                name::AbstractString
+                               )::Vector{T} where {T <: Component}
+    if !isabstracttype(T)
+        throw(InvalidParameter("get_components_by_name only supports abstract types: $T"))
+    end
+
+    components = Vector{T}()
+    for subtype in get_all_concrete_subtypes(T)
+        component = get_component(subtype, sys, name)
+        if !isnothing(component)
+            push!(components, component)
+        end
+    end
+
+    return components
+end
 
 """
     get_components(
                    ::Type{T},
                    sys::System,
-                  )::FlattenedVectorsIterator{T} where {T <: Component}
+                  )::FlattenIteratorWrapper{T} where {T <: Component}
 
 Returns an iterator of components. T can be concrete or abstract.
 Call collect on the result if an array is desired.
@@ -570,18 +674,18 @@ See also: [`iterate_components`](@ref)
 function get_components(
                         ::Type{T},
                         sys::System,
-                       )::FlattenedVectorsIterator{T} where {T <: Component}
+                       )::FlattenIteratorWrapper{T} where {T <: Component}
     if isconcretetype(T)
         components = get(sys.components, T, nothing)
         if isnothing(components)
-            iter = FlattenedVectorsIterator(Vector{Vector{T}}([]))
+            iter = FlattenIteratorWrapper(T, Vector{Base.ValueIterator}([]))
         else
-            iter = FlattenedVectorsIterator(Vector{Vector{T}}([components]))
+            iter = FlattenIteratorWrapper(T,
+                                          Vector{Base.ValueIterator}([values(components)]))
         end
     else
         types = [x for x in get_all_concrete_subtypes(T) if haskey(sys.components, x)]
-        iter = FlattenedVectorsIterator(Vector{Vector{T}}([sys.components[x]
-                                                           for x in types]))
+        iter = FlattenIteratorWrapper(T, [values(sys.components[x]) for x in types])
     end
 
     @assert eltype(iter) == T

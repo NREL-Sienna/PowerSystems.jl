@@ -66,7 +66,7 @@ end
     PowerSystems.forecast_csv_parser!(sys,
                                       joinpath(FORECASTS_DIR, "5bus_ts", "load"),
                                       "Simulation",
-                                      Component;
+                                      Bus;
                                       REGEX_FILE=r"da_(.*?)\.csv")
     @test verify_forecasts(sys, 1, 5, 24)
 
@@ -87,7 +87,7 @@ end
                     sys,
                     joinpath(FORECASTS_DIR, "5bus_ts", "load"),
                     "Simulation",
-                    Component;
+                    Bus;
                     REGEX_FILE=r"rt_(.*?)\.csv")
                 )
 
@@ -103,7 +103,7 @@ end
 
     PowerSystems.forecast_csv_parser!(sys, joinpath(FORECASTS_DIR, "5bus_ts", "load"),
                                       "Simulation",
-                                      Component;
+                                      Bus;
                                       REGEX_FILE=r"rt_(.*?)\.csv")
     @test verify_forecasts(sys, 1, 5, 288)
 

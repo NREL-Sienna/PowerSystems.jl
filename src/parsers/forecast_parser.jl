@@ -59,10 +59,6 @@ function forecast_csv_parser!(
 end
 
 function _forecast_csv_parser!(sys::System, forecast_infos::ForecastInfos, resolution)
-    # Cache name-to-component by category to avoid looping through components for every
-    # forecast.
-    component_mappings = Dict{DataType, LazyDictFromIterator{String, <:Component}}()
-
     for forecast in forecast_infos.forecasts
         len = length(forecast.data)
         @assert len >= 2
@@ -73,18 +69,22 @@ function _forecast_csv_parser!(sys::System, forecast_infos::ForecastInfos, resol
             continue
         end
 
-        component_type = forecast.category
-        if !haskey(component_mappings, forecast.category)
-            iter = get_components(component_type, sys)
-            components = LazyDictFromIterator(String, component_type, iter, get_name)
-            component_mappings[forecast.category] = components
-        end
-
-        component = get(component_mappings[forecast.category], forecast.component_name)
-        if isnothing(component)
-            @error("Did not find component for forecast", forecast.component_name,
-                   forecast.category, forecast.file_path)
-            continue
+        if isconcretetype(forecast.category)
+            component = get_component(forecast.category, sys, forecast.component_name)
+        else
+            components = get_components_by_name(forecast.category, sys,
+                                                forecast.component_name)
+            if length(components) == 0
+                @error("Did not find component for forecast", forecast.component_name,
+                       forecast.category, forecast.file_path)
+                continue
+            elseif length(components) == 1
+                component = components[1]
+            else
+                msg = "Found duplicate names type=$(forecast.category) " *
+                      "name=$(forecast.component_name)"
+                throw(DataFormatError(msg))
+            end
         end
 
         forecasts = Vector{Forecast}()
