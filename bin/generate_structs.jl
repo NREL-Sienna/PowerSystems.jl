@@ -1,3 +1,5 @@
+import Pkg
+Pkg.add(Pkg.PackageSpec(name="Mustache", version="0.5.12"))
 
 import JSON2
 import Mustache
@@ -93,7 +95,6 @@ function generate_structs(directory, data::Vector)
             push!(struct_names, item["struct_name"])
         end
         println("Wrote $filename")
-
     end
 
     filename = joinpath(directory, "includes.jl")
@@ -114,7 +115,7 @@ function namedtuple_to_dict(tuple)
     return parameters
 end
 
-function generate_structs(input_file, output_directory::AbstractString)
+function generate_structs(input_file::AbstractString, output_directory::AbstractString)
     # Include each generated file.
     if !isdir(output_directory)
         mkdir(output_directory)
