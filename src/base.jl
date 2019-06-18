@@ -281,7 +281,7 @@ function JSON2.write(io::IO, components::Components)
 end
 
 function JSON2.write(components::Components)
-    return JSON2.write(io, encode_for_json(components))
+    return JSON2.write(encode_for_json(components))
 end
 
 function encode_for_json(components::Components)
