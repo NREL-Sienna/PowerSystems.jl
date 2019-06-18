@@ -157,6 +157,13 @@ include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
 
+# Include all auto-generated structs.
+include("models/generated/includes.jl")
+include("models/supplemental_constructors.jl")
+
+include("utils/ybus_calculations.jl")
+include("utils/ptdf_calculations.jl")
+
 #Data Checks
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")
@@ -187,10 +194,5 @@ include("models/serialization.jl")
 # Download test data
 include("utils/data.jl")
 import .UtilsData: TestData
-
-# TODO: delete when auto-generation is committed.
-function get_name(component::Component)
-    return component.name
-end
 
 end # module

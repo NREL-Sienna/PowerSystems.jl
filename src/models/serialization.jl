@@ -99,6 +99,96 @@ function encode_for_json(uuid::Base.UUID)
     return (value=string(uuid),)
 end
 
+"""Enables deserialization of EconThermal. The default implementation can't figure out the
+variablecost Union.
+"""
+function JSON2.read(io::IO, ::Type{T}) where {T <: EconThermal}
+    data = JSON2.read(io)
+    @assert length(data.variablecost) > 0
+    if data.variablecost[1] isa Array
+        variablecost = Vector{Tuple{Float64, Float64}}()
+        for array in data.variablecost
+            push!(variablecost, Tuple{Float64, Float64}(array))
+        end
+    else
+        @assert data.variablecost isa Tuple
+        variablecost = Tuple{Float64, Float64}(data.variablecost)
+    end
+
+    internal = convert_type(PowerSystemInternal, data.internal)
+    return EconThermal(data.capacity, variablecost, data.fixedcost, data.startupcost,
+                       data.shutdncost, data.annualcapacityfactor, internal)
+end
+
+# Refer to docstrings in services.jl.
+
+function JSON2.write(io::IO, forecast::Deterministic)
+    return JSON2.write(io, encode_for_json(forecast))
+end
+
+function JSON2.write(forecast::Deterministic)
+    return JSON2.write(encode_for_json(forecast))
+end
+
+function encode_for_json(forecast::Deterministic)
+    fields = fieldnames(Deterministic)
+    vals = []
+
+    for name in fields
+        val = getfield(forecast, name)
+        if val isa Component
+            push!(vals, get_uuid(val))
+        else
+            push!(vals, val)
+        end
+    end
+
+    return NamedTuple{fields}(vals)
+end
+
+"""Creates a Deterministic object by decoding the data that was in JSON. This data stores
+the values for the field contributingdevices as UUIDs, so this will lookup each device in
+devices.
+"""
+function convert_type(
+                      ::Type{T},
+                      data::NamedTuple,
+                      components::LazyDictFromIterator,
+                      parameter_types::Vector{DataType},
+                     ) where T <: Deterministic
+    @debug T data
+    values = []
+    component_type = nothing
+
+    for (fieldname, fieldtype)  in zip(fieldnames(T), fieldtypes(T))
+        val = getfield(data, fieldname)
+        if fieldtype <: Component
+            uuid = Base.UUID(val.value)
+            component = get(components, uuid)
+
+            if isnothing(component)
+                throw(DataFormatError("failed to find $uuid"))
+            end
+
+            component_type = typeof(component)
+            @assert length(parameter_types) == 1
+            @assert component_type == parameter_types[1]
+            push!(values, component)
+        else
+            obj = convert_type(fieldtype, val)
+            push!(values, obj)
+        end
+    end
+
+    @assert !isnothing(component_type)
+
+    return T{component_type}(values...)
+end
+
+function convert_type(::Type{T}, data::Any) where T <: Deterministic
+    error("This form of convert_type is not supported for Deterministic")
+end
+
 """Return a Tuple of type and parameter types for cases where a parametric type has been
 encoded as a string. If the type is not parameterized then just return the type.
 """
