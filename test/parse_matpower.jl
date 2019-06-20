@@ -33,15 +33,7 @@ POWER_MODELS_KEYS = [
         PowerSystems.make_mixed_units(pm_dict)
         @info "Successfully converted $path to mixed_units"
 
-        ps_dict = PowerSystems.pm2ps_dict(pm_dict)
-        @info "Successfully parsed $path to PowerSystems dict"
-
-        Buses, Generators, Storages, Branches, Loads, LoadZones, Shunts, Services =
-            PowerSystems.ps_dict2ps_struct(ps_dict)
-        @info "Successfully parsed $path to PowerSystems devices"
-
-        sys_test = System(Buses, Generators, Loads, Branches, Storages,
-                          float(ps_dict["baseMVA"]), nothing, nothing, nothing)
+        sys = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $path to System struct"
     end
 end

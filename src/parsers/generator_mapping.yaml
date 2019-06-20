@@ -1,22 +1,27 @@
-# Default configuration file for mapping generator fuel and type strings to
-# generator categories in PowerSystems. All mapping strings should be in
-# uppercase because that is what is assumed in read_gen().
+# Parsing code ignores type=null.
 
-Hydro:
- fuel: [HYDRO]
- type: [HYDRO, HY]
+HydroDispatch:
+- {fuel: HYDRO, type: null}
 
-WIND:
- fuel: [WIND]
- type: [WIND, W2]
+RenewableDispatch:
+- {fuel: SOLAR, type: PV}
+- {fuel: SOLAR, type: UN}
+- {fuel: WIND, type: WIND}
+- {fuel: WIND, type: null}
+- {fuel: SOLAR, type: CSP}  # TODO: may need a new struct
 
-PV:
- fuel: [SOLAR, PV]
- type: [PV]
+RenewableFix:
+- {fuel: SOLAR, type: RTPV}
 
-RTPV:
- fuel: [SOLAR, PV]
- type: [RTPV]
+ThermalStandard:
+- {fuel: OIL, type: null}
+- {fuel: COAL, type: null}
+- {fuel: NG, type: null}
+- {fuel: GAS, type: null}
+- {fuel: NUCLEAR, type: null}
+- {fuel: NUC, type: null}
+- {fuel: SYNC_COND, type: SYNC_COND}
+- {fuel: GENERIC, type: GENERIC}
 
-# right now, everything else is classified as thermal, but could create
-# mappings for other types if needed/wanted
+GenericBattery:
+- {fuel: STORAGE, type: null}
