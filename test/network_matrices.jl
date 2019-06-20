@@ -3,8 +3,7 @@ include("../data/data_5bus_pu.jl")
 include("../data/data_14bus_pu.jl")
 # The 5-bus case from PowerModels data is modified to include 2 phase shifters
 pm_dict = PowerSystems.parse_file(joinpath(MATPOWER_DIR, "case5.m"));
-ps_dict = PowerSystems.pm2ps_dict(pm_dict);
-Buses_ps, Generators_ps, Storages_ps, Branches_ps, Loads_ps, Shunts_ps, Services_ps = PowerSystems.ps_dict2ps_struct(ps_dict);
+sys = PowerSystems.pm2ps_dict(pm_dict);
 
 #PTDFs obtained from Matpower
 S5_slackB4 =     [0.1939   -0.4759   -0.3490         0    0.1595;

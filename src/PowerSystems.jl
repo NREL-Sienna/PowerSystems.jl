@@ -34,7 +34,6 @@ export Scenarios
 export Probabilistic
 
 export Generator
-export GenClasses
 
 export HydroGen
 export HydroFix
@@ -77,9 +76,8 @@ export build_ybus
 export GeneratorCostModel
 export BusType
 
-export parsestandardfiles
+export parse_standard_files
 export parse_file
-export ps_dict2ps_struct
 export add_forecasts!
 export remove_forecast!
 export forecast_csv_parser!
@@ -174,10 +172,10 @@ include("utils/IO/branchdata_checks.jl")
 include("base.jl")
 
 # Include Parsing files
+include("parsers/common.jl")
 include("parsers/enums.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
-include("parsers/dict_to_struct.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/timeseries_formats.jl")
 include("parsers/forecast_parser.jl")

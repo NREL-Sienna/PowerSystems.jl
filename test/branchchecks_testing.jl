@@ -36,7 +36,7 @@ end
              (from=0.00337, to=00.00337), 240.0, (min=-1.17, max=1.17))
     ]
 
-    PowerSystems.checkanglelimits!(branches_test)
+    PowerSystems.check_angle_limits!(branches_test)
     @test branches_test[1].anglelimits == (min=-1.57, max=1.57)
     @test branches_test[2].anglelimits == (min=-1.57, max=75.0 * (π / 180))
     @test branches_test[3].anglelimits == (min=-75.0 * (π / 180), max=1.57)
@@ -50,5 +50,5 @@ end
     ]
 
     @test_throws(PowerSystems.DataFormatError,
-                 PowerSystems.checkanglelimits!(bad_angle_limits))
+                 PowerSystems.check_angle_limits!(bad_angle_limits))
 end

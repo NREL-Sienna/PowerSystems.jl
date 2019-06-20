@@ -21,12 +21,7 @@ end
 end
 
 @testset "consistency between CDM and standardfiles" begin
-    mp_dict  = parsestandardfiles(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    pm_dict = parse_file(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    pmmp_dict = PowerSystems.pm2ps_dict(pm_dict)
-    mpmmpsys = System(pmmp_dict)
-
-    mpsys = System(mp_dict)
+    mpsys  = parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     cdmsys = create_rts_system()
 
     mp_iter = get_components(HydroGen, mpsys)

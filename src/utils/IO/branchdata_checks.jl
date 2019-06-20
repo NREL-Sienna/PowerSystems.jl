@@ -1,45 +1,49 @@
 
-function check_branches!(branches::Array{<:Branch,1})
-    checkanglelimits!(branches)
-    check_ascending_order([b.connectionpoints.from.number for b in branches], "Branch")
+function check_branches!(branches)
+    check_angle_limits!(branches)
+    # TODO DT: do we need this?
+    #check_ascending_order([b.connectionpoints.from.number for b in branches], "Branch")
 end
 
-# function check_angle_limits(anglelimits::(max::Float64, min::Float64))
-function checkanglelimits!(branches::Array{<:Branch,1})
-    for (ix,l) in enumerate(branches)
-        if isa(l,Union{MonitoredLine,Line})
-            orderedlimits(l.anglelimits, "Angles")
+function check_angle_limits!(branches)
+    max_limit = 1.57
+    min_limit = -1.57
 
-            hist = (false,l.anglelimits)
-            new_max = 1.57
-            new_min = -1.57
+    for line in branches
+        if line isa Union{MonitoredLine,Line}
+            orderedlimits(line.anglelimits, "Angles")
 
-            if (l.anglelimits.max/1.57 > 3) | (-1*l.anglelimits.min/1.57 > 3)
+            if (line.anglelimits.max / max_limit > 3) ||
+               (-1 * line.anglelimits.min / max_limit > 3)
+                @warn "The angle limits provided is larger than 3π/2 radians.\n " *
+                      "PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog=PS_MAX_LOG
 
-                @warn "The angle limits provided is larger than 3π/2 radians.\n PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog=PS_MAX_LOG
+                if line.anglelimits.max / max_limit >= 0.99
+                    line.anglelimits = (min=line.anglelimits.min,
+                                        max=min(line.anglelimits.max * (π / 180), max_limit))
+                else
+                    line.anglelimits = (min=line.anglelimits.min,
+                                        max=min(line.anglelimits.max, max_limit))
+                end
 
-                (l.anglelimits.max/1.57 >= 0.99) ? new_max = min(l.anglelimits.max*(π/180),new_max) : new_max = min(l.anglelimits.max,new_max)
-
-                (-1*l.anglelimits.min/1.57 > 0.99) ? new_min = max(l.anglelimits.min*(π/180),new_min) : new_min = max(l.anglelimits.min,new_min)
-
-
-                hist = (true,(min = new_min, max = new_max))
-
+                if (-1 * line.anglelimits.min / max_limit > 0.99)
+                    line.anglelimits = (min=max(line.anglelimits.min * (π / 180), min_limit),
+                                        max=line.anglelimits.max)
+                else
+                    line.anglelimits = (min=max(line.anglelimits.min, min_limit),
+                                        max=line.anglelimits.max)
+                end
             else
 
-                (l.anglelimits.max >= 1.57 && l.anglelimits.min <= -1.57) ? hist = (true,(min = -1.57,max = 1.57)) : true
-                (l.anglelimits.max >= 1.57 && l.anglelimits.min >= -1.57) ? hist =(true, (min = l.anglelimits.min,max = 1.57)) : true
-                (l.anglelimits.max <= 1.57 && l.anglelimits.min <= -1.57) ? hist = (true,(min = -1.57,max = l.anglelimits.max)) : true
-                (l.anglelimits.max == 0.0 && l.anglelimits.min == 0.0) ? hist = (true,(min = -1.57,max = 1.57)) : true
-
-            end
-
-            if hist[1]
-
-                branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
-                                    deepcopy(l.connectionpoints),deepcopy(l.r),
-                                    deepcopy(l.x),deepcopy(l.b),deepcopy(l.rate),
-                                    hist[2])
+                if line.anglelimits.max >= max_limit && line.anglelimits.min <= min_limit
+                    line.anglelimits = (min = min_limit,max = max_limit)
+                elseif line.anglelimits.max >= max_limit && line.anglelimits.min >= min_limit
+                    line.anglelimits = (min=line.anglelimits.min, max=max_limit)
+                elseif line.anglelimits.max <= max_limit && line.anglelimits.min <= min_limit
+                    line.anglelimits = (min=min_limit, max=line.anglelimits.max)
+                elseif line.anglelimits.max == 0.0 && line.anglelimits.min == 0.0
+                    line.anglelimits = (min = min_limit,max = max_limit)
+                end
             end
         end
     end
@@ -70,32 +74,20 @@ function linerate_calculation(l::Line)
 
 end
 
-function calculatethermallimits!(branches::Array{<:Branch,1},basemva::Float64)
-    for (ix,l) in enumerate(branches)
-
-        if isa(l,Line)
-
-            flag = false
-
-            #This is the same check as implemented in PowerModels
-            if l.rate <= 0.0
-                (flag, rate) = (true,linerate_calculation(l))
-            elseif l.rate > linerate_calculation(l)
-                    (flag, rate) = (true,linerate_calculation(l))
-            else
-                rating= l.rate
+function calculate_thermal_limits!(branches, basemva::Float64)
+    for branch in branches
+        if branch isa Line
+            # This is the same check as implemented in PowerModels.
+            if branch.rate <= 0.0
+                branch.rate = linerate_calculation(branch)
+            elseif branch.rate > linerate_calculation(branch)
+                branch.rate = linerate_calculation(branch)
             end
 
-            if (l.rate/basemva) > 20
-                @warn "Data for line rating is 20 times larger than the base MVA for the system\n. Power Systems inferred the Data Provided is in MVA and will transform it using a base of $("basemva")" maxlog=PS_MAX_LOG
-                (flag, rate) = (true,l.rate/basemva)
-            end
-
-            if flag
-                branches[ix] = Line(deepcopy(l.name),deepcopy(l.available),
-                                    deepcopy(l.connectionpoints),deepcopy(l.r),
-                                    deepcopy(l.x),deepcopy(l.b),
-                                    rate,deepcopy(l.anglelimits))
+            if (branch.rate / basemva) > 20
+                @warn "Data for line rating is 20 times larger than the base MVA for the system\n. " *
+                      "Power Systems inferred the Data Provided is in MVA and will transform it using a base of $("basemva")" maxlog=PS_MAX_LOG
+                branch.rate /= basemva
             end
         end
     end

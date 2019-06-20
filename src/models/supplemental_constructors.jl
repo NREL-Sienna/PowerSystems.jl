@@ -14,7 +14,7 @@ function RenewableDispatch(name::String, available::Bool, bus::Bus, rating::Floa
 end
 
 """Accepts curtailment cost as a Float64 and then creates an EconHydro."""
-function HydroDispatch(name::String, available::Bool, bus::Bus, tech::TechHydro,
+function HydroDispatch(name::AbstractString, available::Bool, bus::Bus, tech::TechHydro,
                        curtailcost::Float64)
     econ = EconHydro(curtailcost, nothing)
     return HydroDispatch(name, available, bus, tech, econ)

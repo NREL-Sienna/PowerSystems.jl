@@ -54,8 +54,7 @@ end
 end
 
 @testset "Forecast data matpower" begin
-    ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "case5_re.m"))
-    sys = System(ps_dict)
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
     PowerSystems.forecast_csv_parser!(sys,
                                       joinpath(FORECASTS_DIR, "5bus_ts", "gen"),
                                       "Simulation",
@@ -93,7 +92,7 @@ end
 
     # TODO: need a dataset with same resolution but different horizon.
 
-    sys = System(ps_dict)
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
     PowerSystems.forecast_csv_parser!(sys,
                                       joinpath(FORECASTS_DIR, "5bus_ts", "gen"),
                                       "Simulation",
@@ -108,7 +107,7 @@ end
     @test verify_forecasts(sys, 1, 5, 288)
 
     # Test with single file.
-    sys = System(ps_dict)
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
     filename = joinpath(FORECASTS_DIR, "5bus_ts", "gen", "Renewable", "PV", "da_solar5.csv")
     PowerSystems.forecast_csv_parser!(sys,
                                       filename,
@@ -118,8 +117,7 @@ end
 end
 
 @testset "Forecast data RTS" begin
-    ps_dict = PowerSystems.parsestandardfiles(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    sys = System(ps_dict)
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     PowerSystems.forecast_csv_parser!(sys,
                                       joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "gen"),
                                       "Simulation",
@@ -127,7 +125,7 @@ end
                                       REGEX_FILE=r"DAY_AHEAD(.*?)\.csv")
     @test verify_forecasts(sys, 1, 81, 24)
 
-    sys = System(ps_dict)
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     PowerSystems.forecast_csv_parser!(sys,
                                       joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "load"),
                                       "Simulation",
