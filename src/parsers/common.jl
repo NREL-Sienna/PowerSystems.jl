@@ -1,6 +1,8 @@
 const GENERATOR_MAPPING_FILE = joinpath(dirname(pathof(PowerSystems)), "parsers",
                                         "generator_mapping.yaml")
 
+"""Return a dict where keys are a tuple of input parameters (fuel, unit_type) and values are
+generator types."""
 function get_generator_mapping(filename=nothing)
     if isnothing(filename)
         filename = GENERATOR_MAPPING_FILE
@@ -24,11 +26,13 @@ function get_generator_mapping(filename=nothing)
     return mappings
 end
 
+"""Return the PowerSystems generator type for this fuel and unit_type."""
 function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType})
     fuel = uppercase(fuel)
     unit_type = uppercase(unit_type)
     generator = nothing
 
+    # Try to match the unit_type if it's defined. If it's nothing then just match on fuel.
     for ut in (unit_type, nothing)
         key = (fuel=fuel, unit_type=ut)
         if haskey(mappings, key)

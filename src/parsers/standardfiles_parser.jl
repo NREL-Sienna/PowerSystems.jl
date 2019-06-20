@@ -1,9 +1,8 @@
-# TODO: assert a naming convention -- ??
 """
-Read in power-system parameters from a Matpower, PTI, or JSON file and do some
-data checks.
+Create a System by parsing power-system parameters from a Matpower, PTI, or JSON file and do
+some data checks.
 """
-function parse_standard_files(file::String; kwargs...)
+function parse_standard_files(file::String; kwargs...)::System
 
     # function `parse_file` is in pm_io/common.jl
     data = parse_file(file)
