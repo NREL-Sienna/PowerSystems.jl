@@ -81,7 +81,7 @@ function make_load(d, bus)
         available=true,
         bus=bus,
         maxactivepower=d["pd"],
-        maxreactivepower=d["pd"],
+        maxreactivepower=d["qd"],
     )
 end
 
