@@ -1,8 +1,6 @@
 
 function check_branches!(branches)
     check_angle_limits!(branches)
-    # TODO DT: do we need this?
-    #check_ascending_order([b.connectionpoints.from.number for b in branches], "Branch")
 end
 
 function check_angle_limits!(branches)

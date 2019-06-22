@@ -158,7 +158,6 @@ function check!(sys::System)
     end
 
     generators = get_components(Generator, sys)
-    pv_bus_check(buses, generators)
 end
 
 """Iterates over all components.

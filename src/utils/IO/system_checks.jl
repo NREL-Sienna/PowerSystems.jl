@@ -9,9 +9,6 @@ function buscheck(buses)
             @warn "Bus/Nodes data does not contain information to build an a network"
         end
     end
-
-    # TODO DT: do we need this?
-    #check_ascending_order([x.number for x in buses], "Bus")
 end
 
 ## Slack Bus Definition ##
@@ -26,25 +23,6 @@ function slack_bus_check(buses)
     end
     if slack == -9
         @error "Model doesn't contain a slack bus"
-    end
-end
-
-### PV Bus Check ###
-
-function pv_bus_check(buses, generators)
-    pv_list = -1*ones(Int64, length(generators))
-    for (ix, gen) in enumerate(generators)
-        if gen.bus.bustype == PV::BusType
-            pv_list[ix] = gen.bus.number
-        end
-    end
-
-    for b in buses
-        if b.bustype == PV::BusType
-            if !in(b.number, pv_list)
-                #@warn "The bus ", b.number, " is declared as PV without a generator connected to it"
-            end
-        end
     end
 end
 
