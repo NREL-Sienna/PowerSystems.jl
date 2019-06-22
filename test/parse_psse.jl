@@ -10,13 +10,7 @@
         @info "Successfully parsed $f to PowerModels dict"
         PowerSystems.make_mixed_units(pm_dict)
         @info "Successfully converted $f to mixed_units"
-        ps_dict = PowerSystems.pm2ps_dict(pm_dict)
-        @info "Successfully parsed $f to PowerSystems dict"
-        Buses, Generators, Storage, Branches, Loads, LoadZones, Shunts =
-            PowerSystems.ps_dict2ps_struct(ps_dict)
-        @info "Successfully parsed $f to PowerSystems devices"
-        sys_test = System(Buses, Generators, Loads, Branches, Storage,
-            float(ps_dict["baseMVA"]), nothing, nothing, nothing) # TODO: Add DClines, Shunts
+        sys = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $f to System struct"
     end
 

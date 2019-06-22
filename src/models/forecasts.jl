@@ -211,6 +211,11 @@ function convert_type!(
                        data::NamedTuple,
                        components::LazyDictFromIterator,
                       ) where T <: Forecast
+    for field in (:initial_time, :resolution, :horizon, :interval)
+        field_type = fieldtype(typeof(forecasts), field)
+        setfield!(forecasts, field, convert_type(field_type, getproperty(data, field)))
+    end
+
     for symbol in propertynames(data.data)
         key_str = string(symbol)
         # Looks like this:

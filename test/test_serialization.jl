@@ -1,3 +1,4 @@
+import JSON2
 
 function validate_serialization(sys::System)
     path, io = mktemp()
@@ -37,6 +38,9 @@ end
             @test PowerSystems.compare_values(component, component2)
         end
     end
+
+    text = JSON2.write(sys.components)
+    @test length(text) > 0
 end
 
 @testset "Test serialization utility functions" begin

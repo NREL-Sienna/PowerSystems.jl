@@ -16,6 +16,7 @@ struct PowerSystemRaw
     directory::String
     user_descriptors::Dict
     descriptors::Dict
+    generator_mapping::Dict{NamedTuple, DataType}
 end
 
 function PowerSystemRaw(
@@ -23,6 +24,7 @@ function PowerSystemRaw(
                         directory::String,
                         user_descriptors::Union{String, Dict},
                         descriptors::Union{String, Dict},
+                        generator_mapping::Union{String, Dict},
                        )
     category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
     categories = [
@@ -64,8 +66,12 @@ function PowerSystemRaw(
         descriptors = _read_config_file(descriptors)
     end
 
+    if generator_mapping isa AbstractString
+        generator_mapping = get_generator_mapping(generator_mapping)
+    end
+
     return PowerSystemRaw(basepower, dfs..., category_to_df, Dict{InputCategory, Bool}(),
-                          directory, user_descriptors, descriptors)
+                          directory, user_descriptors, descriptors, generator_mapping)
 end
 
 """
@@ -88,12 +94,14 @@ The general format for data is
 - `basepower::Float64`: base power for System
 - `user_descriptor_file::AbstractString`: customized input descriptor file
 - `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: PowerSystems descriptor file
+- `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file
 """
 function PowerSystemRaw(
                         directory::AbstractString,
                         basepower::Float64,
                         user_descriptor_file::AbstractString;
                         descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE,
+                        generator_mapping_file=GENERATOR_MAPPING_FILE,
                        )
     files = readdir(directory)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
@@ -144,7 +152,8 @@ function PowerSystemRaw(
         error("No csv files or folders in $directory")
     end
 
-    return PowerSystemRaw(data, directory, user_descriptor_file, descriptor_file)
+    return PowerSystemRaw(data, directory, user_descriptor_file, descriptor_file,
+                          generator_mapping_file)
 end
 
 """
@@ -269,6 +278,7 @@ function System(data::PowerSystemRaw; forecast_resolution=nothing)
         forecast_csv_parser!(sys, data; resolution=forecast_resolution)
     end
 
+    check!(sys)
     return sys
 end
 
@@ -312,10 +322,15 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
         bus_to = get_bus(sys, branch.connection_points_to)
         connection_points = (from=bus_from, to=bus_to)
 
-        if branch.tap <= 0.0
+        #TODO: noop math...Phase-Shifting Transformer angle
+        alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
+
+        branch_type = get_branch_type(branch.tap, alpha)
+
+        if branch_type == Line
             b = branch.primary_shunt / 2
             anglelimits = (min=-60.0, max=60.0) #TODO: add field in CSV
-            line = Line(
+            value = Line(
                 branch.name,
                 available,
                 connection_points,
@@ -325,9 +340,8 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
                 branch.rate,
                 anglelimits,
             )
-            add_component!(sys, line)
-        elseif branch.tap == 1.0
-            transformer = Transformer2W(
+        elseif branch_type == Transformer2W
+            value = Transformer2W(
                 branch.name,
                 available,
                 connection_points,
@@ -336,27 +350,25 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
                 branch.primary_shunt,
                 branch.rate,
             )
-            add_component!(sys, transformer)
+        elseif branch_type == TapTransformer
+            value = TapTransformer(
+                branch.name,
+                available,
+                connection_points,
+                branch.r,
+                branch.x,
+                branch.primary_shunt,
+                branch.tap,
+                branch.rate,
+            )
+        elseif branch_type == PhaseShiftingTransformer
+            # TODO create PhaseShiftingTransformer
+            error("Unsupported branch type $branch_type")
         else
-            #TODO: noop math...Phase-Shifting Transformer angle
-            alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
-
-            if alpha == 0.0
-                transformer = TapTransformer(
-                    branch.name,
-                    available,
-                    connection_points,
-                    branch.r,
-                    branch.x,
-                    branch.primary_shunt,
-                    branch.tap,
-                    branch.rate,
-                )
-                add_component!(sys, transformer)
-            else
-                # TODO create PhaseShiftingTransformer
-            end
+            error("Unsupported branch type $branch_type")
         end
+
+        add_component!(sys, value)
     end
 end
 
@@ -384,7 +396,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
             reactivepowerlimits_to = (min=0.0, max=0.0)
             loss = (l0=0.0, l1=dc_branch.loss) #TODO: Can we infer this from the other data?,
 
-            hvdc_line = HVDCLine(
+            value = HVDCLine(
                 dc_branch.name,
                 available,
                 connection_points,
@@ -394,7 +406,6 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
                 reactivepowerlimits_to,
                 loss
             )
-            add_component!(sys, hvdc_line)
         else
             rectifier_taplimits = (min=dc_branch.rectifier_tap_limits_min,
                                    max=dc_branch.rectifier_tap_limits_max)
@@ -405,7 +416,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
             inverter_xrc = dc_branch.inverter_xrc #TODO: What is this?
             inverter_firingangle = (min=dc_branch.inverter_firing_angle_min,
                                     max=dc_branch.inverter_firing_angle_max)
-            line = VSCDCLine(
+            value = VSCDCLine(
                 dc_branch.name,
                 available=true,
                 connection_points,
@@ -416,8 +427,9 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
                 inverter_xrc,
                 inverter_firingangle,
             )
-            add_component!(sys, vscdc_line)
         end
+
+        add_component!(sys, value)
     end
 end
 
@@ -460,12 +472,12 @@ function gen_csv_parser!(sys::System, data::PowerSystemRaw)
     cost_colnames = zip(heat_rate_fields, output_percent_fields)
 
     for gen in iterate_rows(data, GENERATOR::InputCategory)
-        bus_id = get_bus(sys, gen.bus_id)
-        if isnothing(bus_id)
-            throw(DataFormatError("could not find $bus_id"))
+        bus = get_bus(sys, gen.bus_id)
+        if isnothing(bus)
+            throw(DataFormatError("could not find $(gen.bus_id)"))
         end
 
-        generator = make_generator(data, gen, cost_colnames, bus_id)
+        generator = make_generator(data, gen, cost_colnames, bus)
         if !isnothing(generator)
             add_component!(sys, generator)
         end
@@ -554,10 +566,6 @@ function services_csv_parser!(sys::System, data::PowerSystemRaw)
     bus_id_column = get_user_field(data, BUS::InputCategory, "bus_id")
     bus_area_column = get_user_field(data, BUS::InputCategory, "area")
 
-    # Cache name-to-component by category to avoid looping through components for every
-    # service.
-    component_mappings = Dict{String, LazyDictFromIterator{String, <:Device}}()
-
     # Shortcut for data that looks like "(val1,val2,val3)"
     make_array(x) = split(strip(x, ['(', ')']), ",")
 
@@ -573,19 +581,17 @@ function services_csv_parser!(sys::System, data::PowerSystemRaw)
             if gen.category in device_subcategories && area in regions
                 for dev_category in device_categories
                     component_type = _get_component_type_from_category(dev_category)
-
-                    if !haskey(component_mappings, dev_category)
-                        iter = get_components(component_type, sys)
-                        components = LazyDictFromIterator(String, component_type, iter,
-                                                          get_name)
-                        component_mappings[dev_category] = components
-                    end
-
-                    component = get(component_mappings[dev_category], gen.name)
-                    if isnothing(component)
+                    components = get_components_by_name(component_type, sys, gen.name)
+                    if length(components) == 0
                         # There multiple categories, so we might not find a match in some.
                         continue
+                    elseif length(components) == 1
+                        component = components[1]
+                    else
+                        msg = "Found duplicate names type=$component_type name=$name"
+                        throw(DataFormatError(msg))
                     end
+
                     push!(contributing_devices, component)
                 end
             end
@@ -605,25 +611,26 @@ function services_csv_parser!(sys::System, data::PowerSystemRaw)
 end
 
 """Creates a generator of any type."""
-function make_generator(data::PowerSystemRaw, gen, cost_colnames, bus_id)
+function make_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
     generator = nothing
+    gen_type = get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
 
-    if gen.fuel in ("Oil", "Coal", "NG", "Nuclear")
-        generator = make_thermal_generator(data, gen, cost_colnames, bus_id)
-    elseif gen.fuel == "Hydro"
-        generator = make_hydro_generator(data, gen, bus_id)
-    elseif gen.fuel in ("Solar", "Wind")
-        generator = make_renewable_generator(data, gen, bus_id)
-    elseif gen.fuel == "Storage"
-        generator = make_storage(data, gen, bus_id)
+    if gen_type == ThermalStandard
+        generator = make_thermal_generator(data, gen, cost_colnames, bus)
+    elseif gen_type == HydroDispatch
+        generator = make_hydro_generator(data, gen, bus)
+    elseif gen_type <: RenewableGen
+        generator = make_renewable_generator(gen_type, data, gen, bus)
+    elseif gen_type == GenericBattery
+        generator = make_storage(data, gen, bus)
     else
-        @warn "Skipping generator" gen.fuel
+        @error "Skipping unsupported generator" gen_type
     end
 
     return generator
 end
 
-function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus_id)
+function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
     fuel_cost = gen.fuel_price / 1000
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
@@ -667,13 +674,13 @@ function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus_id
         annual_capacity_factor,
     )
 
-    return ThermalStandard(gen.name, available, bus_id, tech, econ)
+    return ThermalStandard(gen.name, available, bus, tech, econ)
 end
 
-function make_hydro_generator(data::PowerSystemRaw, gen, bus_id)
+function make_hydro_generator(data::PowerSystemRaw, gen, bus)
     available = true
 
-    rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
+    rating = calculate_rating(gen.active_power_limits_max, gen.reactive_power_limits_max)
     active_power_limits = (min=gen.active_power_limits_min,
                            max=gen.active_power_limits_max)
     reactive_power_limits = (min=gen.reactive_power_limits_min,
@@ -689,10 +696,10 @@ function make_hydro_generator(data::PowerSystemRaw, gen, bus_id)
     )
 
     curtailcost = 0.0
-    return HydroDispatch(gen.name, available, bus_id, tech, curtailcost)
+    return HydroDispatch(gen.name, available, bus, tech, curtailcost)
 end
 
-function make_renewable_generator(data::PowerSystemRaw, gen, bus_id)
+function make_renewable_generator(gen_type, data::PowerSystemRaw, gen, bus)
     generator = nothing
     available = true
     rating = gen.active_power_limits_max
@@ -701,33 +708,24 @@ function make_renewable_generator(data::PowerSystemRaw, gen, bus_id)
                          (min=gen.reactive_power_limits_min,
                           max=gen.reactive_power_limits_max),
                          1.0)
-    unit_type = gen.unit_type
-    if unit_type == "PV"
+    if gen_type == RenewableDispatch
         generator = RenewableDispatch(
             gen.name,
             available,
-            bus_id,
+            bus,
             tech,
             EconRenewable(0.0, nothing),
         )
-    elseif unit_type == "RTPV"
-        generator = RenewableFix(gen.name, available, bus_id, tech)
-    elseif unit_type == "WIND"
-        generator = RenewableDispatch(
-            gen.name,
-            available,
-            bus_id,
-            tech,
-            EconRenewable(0.0, nothing),
-        )
+    elseif gen_type == RenewableFix
+        generator = RenewableFix(gen.name, available, bus, tech)
     else
-        @debug "Skipping" unit_type
+        error("Unsupported type $gen_type")
     end
 
     return generator
 end
 
-function make_storage(data::PowerSystemRaw, gen, bus_id)
+function make_storage(data::PowerSystemRaw, gen, bus)
     available = true
     energy = 0.0
     capacity = (min=gen.active_power_limits_min,
@@ -741,7 +739,7 @@ function make_storage(data::PowerSystemRaw, gen, bus_id)
     battery=GenericBattery(
         gen.name,
         available,
-        bus_id,
+        bus,
         energy,
         capacity,
         rating,

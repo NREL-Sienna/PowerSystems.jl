@@ -1,18 +1,26 @@
 import InteractiveUtils: subtypes
 
 
+g_cached_subtypes = Dict{DataType, Vector{DataType}}()
+
 """Returns an array of all concrete subtypes of T."""
 function get_all_concrete_subtypes(::Type{T}) where T
-    sub_types = Vector{Any}()
+    if haskey(g_cached_subtypes, T)
+        return g_cached_subtypes[T]
+    end
+
+    sub_types = Vector{DataType}()
     _get_all_concrete_subtypes(T, sub_types)
+    g_cached_subtypes[T] = sub_types
     return sub_types
 end
 
 """Recursively builds a vector of subtypes."""
-function _get_all_concrete_subtypes(::Type{T}, sub_types::Vector{Any}) where T
+function _get_all_concrete_subtypes(::Type{T}, sub_types::Vector{DataType}) where T
     for sub_type in subtypes(T)
-        push!(sub_types, sub_type)
-        if isabstracttype(sub_type)
+        if isconcretetype(sub_type)
+            push!(sub_types, sub_type)
+        elseif isabstracttype(sub_type)
             _get_all_concrete_subtypes(sub_type, sub_types)
         end
     end

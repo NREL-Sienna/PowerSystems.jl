@@ -65,14 +65,6 @@ function JSON2.read(io::IO, ::Type{T}) where {T <: Dates.Period}
     return getfield(Dates, Symbol(data.unit))(data.value)
 end
 
-"""Enables JSON deserialization of Dates.DateTime.
-The default implementation in JSON2's read.jl fails to convert the string to DateTime
-because of a bug - using ISODateFormat instead of ISODateTimeFormat.
-JSON2 is fixed but hasn't released a version yet.
-"""
-#JSON2.read(io::IO, ::Type{Dates.DateTime},
-#           format=Dates.ISODateTimeFormat) = Dates.DateTime(JSON2.read(io, String), format)
-
 """
 The next few methods fix serialization of UUIDs. The underlying type of a UUID is a UInt128.
 JSON2 tries to encode this as a number in JSON. Encoding integers greater than can
