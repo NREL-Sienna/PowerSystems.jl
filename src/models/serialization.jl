@@ -103,7 +103,7 @@ function JSON2.read(io::IO, ::Type{T}) where {T <: EconThermal}
             push!(variablecost, Tuple{Float64, Float64}(array))
         end
     else
-        @assert data.variablecost isa Tuple
+        @assert data.variablecost isa Tuple || data.variablecost isa Array
         variablecost = Tuple{Float64, Float64}(data.variablecost)
     end
 

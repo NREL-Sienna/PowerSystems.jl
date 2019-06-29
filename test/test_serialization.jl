@@ -22,7 +22,7 @@ function validate_serialization(sys::System)
     end
 end
 
-@testset "Test JSON serialization" begin
+@testset "Test JSON serialization of CDM data" begin
     sys = create_rts_system()
     @test validate_serialization(sys)
 
@@ -41,6 +41,11 @@ end
 
     text = JSON2.write(sys.components)
     @test length(text) > 0
+end
+
+@testset "Test JSON serialization of matpower data" begin
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    @test validate_serialization(sys)
 end
 
 @testset "Test serialization utility functions" begin
