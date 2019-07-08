@@ -1,7 +1,7 @@
 
 @testset "Test functionality of System" begin
     sys = create_rts_system()
-    summary(devnull, sys)
+    #summary(devnull, sys)
 
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))

@@ -12,7 +12,6 @@ struct PowerSystemRaw
     load::Union{DataFrames.DataFrame, Nothing}
     services::Union{DataFrames.DataFrame, Nothing}
     category_to_df::Dict{InputCategory, DataFrames.DataFrame}
-    modified_dfs::Dict{InputCategory, Bool}
     directory::String
     user_descriptors::Dict
     descriptors::Dict
@@ -70,8 +69,8 @@ function PowerSystemRaw(
         generator_mapping = get_generator_mapping(generator_mapping)
     end
 
-    return PowerSystemRaw(basepower, dfs..., category_to_df, Dict{InputCategory, Bool}(),
-                          directory, user_descriptors, descriptors, generator_mapping)
+    return PowerSystemRaw(basepower, dfs..., category_to_df, directory, user_descriptors,
+                          descriptors, generator_mapping)
 end
 
 """
@@ -201,23 +200,6 @@ function get_dataframe(data::PowerSystemRaw, category::InputCategory)
     return data.category_to_df[category]
 end
 
-"""Convert the dataframe's columns for the category to per_unit."""
-function convert_columns_per_unit!(data::PowerSystemRaw, category::InputCategory, columns)
-    # Asserting here is appropriate for the current code. It prevents someone from
-    # accidentally running this function twice in the REPL on the same data object and
-    # getting bad data.
-    # It could be made more specific, such as by tracking the columns per category.
-    modified = get(data.modified_dfs, category, false)
-    @assert(!modified, "$category dataframe has already been converted to per-unit.")
-
-    df = get_dataframe(data, category)
-    for column in columns
-        col = get_user_field(data, category, column)
-        df[col] = df[col] ./ data.basepower
-        data.modified_dfs[category] = true
-    end
-end
-
 """
     iterate_rows(data::PowerSystemRaw, category; na_to_nothing=true)
 
@@ -314,7 +296,6 @@ Add branches to the System from the raw data.
 
 """
 function branch_csv_parser!(sys::System, data::PowerSystemRaw)
-    convert_columns_per_unit!(data, BRANCH::InputCategory, ("rate",))
     available = true
 
     for branch in iterate_rows(data, BRANCH::InputCategory)
@@ -379,7 +360,6 @@ Add DC branches to the System from raw data.
 
 """
 function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
-    convert_columns_per_unit!(data, DC_BRANCH::InputCategory, ("mw_load",))
     for dc_branch in iterate_rows(data, DC_BRANCH::InputCategory)
         available = true
         bus_from = get_bus(sys, dc_branch.connection_points_from)
@@ -452,11 +432,6 @@ Add generators to the System from the raw data.
 
 """
 function gen_csv_parser!(sys::System, data::PowerSystemRaw)
-    pu_cols = ("active_power_limits_min", "active_power_limits_max",
-               "reactive_power", "active_power", "reactive_power_limits_min",
-               "reactive_power_limits_max", "ramp_limits")
-    convert_columns_per_unit!(data, GENERATOR::InputCategory, pu_cols)
-
     output_percent_fields = Vector{Symbol}()
     heat_rate_fields = Vector{Symbol}()
     fields = get_user_fields(data, GENERATOR::InputCategory)
@@ -491,9 +466,6 @@ Add loads to the System from the raw data.
 
 """
 function load_csv_parser!(sys::System, data::PowerSystemRaw)
-    pu_cols = ("max_active_power", "max_reactive_power")
-    convert_columns_per_unit!(data, BUS::InputCategory, pu_cols)
-
     for ps_bus in get_components(Bus, sys)
         max_active_power = 0.0
         max_reactive_power = 0.0
@@ -799,6 +771,7 @@ end
 struct _FieldInfo
     name::String
     custom_name::Symbol
+    needs_per_unit_conversion::Bool
     # TODO unit, value ranges and options
 end
 
@@ -807,12 +780,25 @@ function _get_field_infos(data::PowerSystemRaw, category::InputCategory, df_name
         throw(DataFormatError("Invalid category=$category"))
     end
 
+    if !haskey(data.descriptors, category)
+        throw(DataFormatError("Invalid category=$category"))
+    end
+
+    # Cache whether PowerSystems uses a column's values as per-unit.
+    # The user's descriptor file indicates that the raw data is already per-unit or not.
+    per_unit = Dict{String, Bool}()
+    for descriptor in data.descriptors[category]
+        per_unit[descriptor["name"]] = get(descriptor, "per_unit", false)
+    end
+
     fields = Vector{_FieldInfo}()
     try
         for item in data.user_descriptors[category]
             custom_name = Symbol(item["custom_name"])
             if custom_name in df_names
-                push!(fields, _FieldInfo(item["name"], custom_name))
+                needs_pu_conversion = per_unit[item["name"]] &&
+                                      haskey(item, "per_unit") && !item["per_unit"]
+                push!(fields, _FieldInfo(item["name"], custom_name, needs_pu_conversion))
             else
                 # TODO: This should probably be a fatal error. However, the parsing code
                 # doesn't use all the descriptor fields, so skip for now.
@@ -842,6 +828,12 @@ function _read_data_row(data::PowerSystemRaw, row, field_infos; na_to_nothing=tr
         if na_to_nothing && value == "NA"
             value = nothing
         end
+
+        if field_info.needs_per_unit_conversion
+            @debug "convert to per_unit" field_info.custom_name
+            value /= data.basepower
+        end
+
         # TODO: need special handling for units
         # TODO: validate ranges and option lists
 
