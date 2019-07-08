@@ -275,7 +275,6 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         fixedcost=fixedcost,
         startupcost=startupcost,
         shutdncost=shutdncost,
-        annualcapacityfactor=nothing,
     )
 
     thermal_gen = ThermalStandard(
