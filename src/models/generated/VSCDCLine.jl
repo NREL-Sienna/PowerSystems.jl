@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct VSCDCLine <: DCBranch
     name::String
     available::Bool
-    connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}
+    connectionpoints::Arch
     rectifier_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     rectifier_xrc::Float64
     rectifier_firingangle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
@@ -30,7 +30,7 @@ function VSCDCLine(::Nothing)
     VSCDCLine(;
         name="init",
         available=false,
-        connectionpoints=From_To_Bus((from=Bus(nothing), to=Bus(nothing))),
+        connectionpoints=Arch(Bus(nothing), Bus(nothing)),
         rectifier_taplimits=(min=0.0, max=0.0),
         rectifier_xrc=0.0,
         rectifier_firingangle=(min=0.0, max=0.0),

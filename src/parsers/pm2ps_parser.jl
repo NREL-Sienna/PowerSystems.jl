@@ -56,7 +56,7 @@ function read_bus!(sys::System, data, )
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
     bus_types = ["PV", "PQ", "REF","isolated"]
-    data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))    
+    data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))
 
     if length(data) == 0
         @error "No bus data found" # TODO : need for a model without a bus
@@ -224,25 +224,25 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
     if haskey(d, "model")
         model = GeneratorCostModel(d["model"])
         if model == PIECEWISE_LINEAR::GeneratorCostModel
-            cost_component = d["cost"]		        
-            power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]		        
-            cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)] 
-            cost = [(p,c) for (p,c) in zip(cost_p,power_p)]		     
+            cost_component = d["cost"]
+            power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
+            cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]
+            cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
             fixedcost = cost[1][2]
         elseif model == POLYNOMIAL::GeneratorCostModel
-            if d["ncost"] == 0		         
-                cost = (0.0, 0.0)		           
-                fixedcost = 0.0		                
-            elseif d["ncost"] == 1		            
-                cost = (0.0, 0.0)		                 
-                fixedcost = d["cost"][1]		            
-            elseif d["ncost"] == 2		                 
-                cost = (0.0, d["cost"][1])		            
-                fixedcost = d["cost"][2]		                
-            elseif d["ncost"] == 3		            
-                cost = (d["cost"][1], d["cost"][2]) 		                 
-                fixedcost = d["cost"][3]		             
-            else		                
+            if d["ncost"] == 0
+                cost = (0.0, 0.0)
+                fixedcost = 0.0
+            elseif d["ncost"] == 1
+                cost = (0.0, 0.0)
+                fixedcost = d["cost"][1]
+            elseif d["ncost"] == 2
+                cost = (0.0, d["cost"][1])
+                fixedcost = d["cost"][2]
+            elseif d["ncost"] == 3
+                cost = (d["cost"][1], d["cost"][2])
+                fixedcost = d["cost"][3]
+            else
                 throw(DataFormatError("invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree"))
             end
         end
@@ -311,7 +311,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         else
             gen_name = name
         end
-        
+
         bus = bus_number_to_bus[pm_gen["gen_bus"]]
         fuel = get(pm_gen, "fuel", "generic")
         unit_type = get(pm_gen, "type", "generic")
@@ -370,7 +370,7 @@ function make_line(name, d, bus_f, bus_t)
     return Line(;
         name=name,
         available=Bool(d["br_status"]),
-        connectionpoints=(from=bus_f,to=bus_t),
+        connectionpoints=Arch(bus_f,bus_t),
         r=d["br_r"],
         x=d["br_x"],
         b=(from=d["b_fr"], to=d["b_to"]),
@@ -383,7 +383,7 @@ function make_transformer_2w(name, d, bus_f, bus_t)
     return Transformer2W(;
         name=name,
         available=Bool(d["br_status"]),
-        connectionpoints=(from=bus_f, to=bus_t),
+        connectionpoints=Arch(bus_f,bus_t),
         r=d["br_r"],
         x=d["br_x"],
         primaryshunt=d["b_fr"],  # TODO: which b ??
@@ -395,7 +395,7 @@ function make_tap_transformer(name, d, bus_f, bus_t)
     return TapTransformer(;
         name=name,
         available=Bool(d["br_status"]),
-        connectionpoints=(from=bus_f, to=bus_t),
+        connectionpoints=Arch(bus_f,bus_t),
         r=d["br_r"],
         x=d["br_x"],
         tap=d["tap"],
@@ -408,7 +408,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     return PhaseShiftingTransformer(;
         name=name,
         available=Bool(d["br_status"]),
-        connectionpoints=(from=bus_f, to=bus_t),
+        connectionpoints=Arch(bus_f,bus_t),
         r=d["br_r"],
         x=d["br_x"],
         tap=d["tap"],
@@ -439,7 +439,7 @@ function make_dcline(name, d, bus_f, bus_t)
     return HVDCLine(;
         name=name,
         available=Bool(d["br_status"]),
-        connectionpoints=(from=bus_f, to=bus_t),
+        connectionpoints=Arch(bus_f,bus_t),
         activepowerlimits_from=(min=d["pminf"] , max=d["pmaxf"]),
         activepowerlimits_to=(min=d["pmint"], max=d["pmaxt"]),
         reactivepowerlimits_from=(min=d["qminf"], max=d["qmaxf"]),

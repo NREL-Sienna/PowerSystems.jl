@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct Line <: ACBranch
     name::String
     available::Bool
-    connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}
+    connectionpoints::Arch
     r::Float64
     x::Float64
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
@@ -29,7 +29,7 @@ function Line(::Nothing)
     Line(;
         name="init",
         available=false,
-        connectionpoints=From_To_Bus((from=Bus(nothing), to=Bus(nothing))),
+        connectionpoints=Arch(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         b=(from=0.0, to=0.0),

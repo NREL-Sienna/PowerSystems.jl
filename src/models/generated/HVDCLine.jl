@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct HVDCLine <: DCBranch
     name::String
     available::Bool
-    connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}
+    connectionpoints::Arch
     activepowerlimits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     activepowerlimits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     reactivepowerlimits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
@@ -29,7 +29,7 @@ function HVDCLine(::Nothing)
     HVDCLine(;
         name="init",
         available=false,
-        connectionpoints=From_To_Bus((from=Bus(nothing), to=Bus(nothing))),
+        connectionpoints=Arch(Bus(nothing), Bus(nothing)),
         activepowerlimits_from=(min=0.0, max=0.0),
         activepowerlimits_to=(min=0.0, max=0.0),
         reactivepowerlimits_from=(min=0.0, max=0.0),

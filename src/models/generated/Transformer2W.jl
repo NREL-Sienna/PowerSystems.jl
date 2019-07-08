@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct Transformer2W <: ACBranch
     name::String
     available::Bool
-    connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}
+    connectionpoints::Arch
     r::Float64
     x::Float64
     primaryshunt::Float64
@@ -28,7 +28,7 @@ function Transformer2W(::Nothing)
     Transformer2W(;
         name="init",
         available=false,
-        connectionpoints=From_To_Bus((from=Bus(nothing), to=Bus(nothing))),
+        connectionpoints=Arch(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         primaryshunt=0.0,

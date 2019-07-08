@@ -10,11 +10,11 @@ module PowerSystems
 
 export System
 export Bus
+export Arch
 export LoadZones
 
 export PowerSystemType
 export Component
-export ComponentIterator
 export Device
 export Branch
 export Injection
@@ -30,8 +30,8 @@ export PhaseShiftingTransformer
 
 export Forecast
 export Deterministic
-export Scenarios
-export Probabilistic
+#export Scenarios
+#export Probabilistic
 
 export Generator
 

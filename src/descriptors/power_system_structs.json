@@ -273,6 +273,27 @@
     "supertype": "Topology"
   },
   {
+    "struct_name": "Arch",
+    "docstring": "A topological Arch.",
+    "fields": [
+      {
+        "name": "from",
+        "null_vale": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "to",
+        "null_vale": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Topology"
+  },
+  {
     "struct_name": "Line",
     "fields": [
       {
@@ -286,9 +307,9 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "connectionpoints",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+        "data_type": "Arch"
       },
       {
         "null_value": "0.0",
@@ -336,9 +357,9 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "connectionpoints",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+        "data_type": "Arch"
       },
       {
         "null_value": "0.0",
@@ -391,9 +412,9 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "connectionpoints",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+        "data_type": "Arch"
       },
       {
         "null_value": "0.0",
@@ -446,9 +467,9 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "connectionpoints",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+        "data_type": "Arch"
       },
       {
         "null_value": "0.0",
@@ -497,9 +518,9 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "connectionpoints",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+        "data_type": "Arch"
       },
       {
         "null_value": "0.0",
@@ -542,9 +563,9 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "connectionpoints",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+        "data_type": "Arch"
       },
       {
         "name": "activepowerlimits_from",
@@ -593,9 +614,9 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "From_To_Bus((from=Bus(nothing), to=Bus(nothing)))",
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "connectionpoints",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Bus, Bus}}"
+        "data_type": "Arch"
       },
       {
         "name": "rectifier_taplimits",
@@ -985,7 +1006,7 @@
         "data_type": "PowerSystems.PowerSystemInternal"
       }
     ],
-    "supertype": "Injection"
+    "supertype": "Topology"
   },
   {
     "struct_name": "GenericBattery",
