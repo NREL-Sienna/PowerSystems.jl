@@ -784,21 +784,27 @@ function _get_field_infos(data::PowerSystemRaw, category::InputCategory, df_name
         throw(DataFormatError("Invalid category=$category"))
     end
 
-    # Cache whether PowerSystems uses a column's values as per-unit.
-    # The user's descriptor file indicates that the raw data is already per-unit or not.
+    # Cache whether PowerSystems uses a column's values as system-per-unit.
+    # The user's descriptors indicate that the raw data is already system-per-unit or not.
     per_unit = Dict{String, Bool}()
     for descriptor in data.descriptors[category]
-        per_unit[descriptor["name"]] = get(descriptor, "per_unit", false)
+        per_unit[descriptor["name"]] = get(descriptor, "system_per_unit", false)
     end
 
     fields = Vector{_FieldInfo}()
     try
         for item in data.user_descriptors[category]
             custom_name = Symbol(item["custom_name"])
+            name = item["name"]
             if custom_name in df_names
-                needs_pu_conversion = per_unit[item["name"]] &&
-                                      haskey(item, "per_unit") && !item["per_unit"]
-                push!(fields, _FieldInfo(item["name"], custom_name, needs_pu_conversion))
+                if !per_unit[name] && get(item, "system_per_unit", false)
+                    throw(DataFormatError("$name cannot be defined as system_per_unit"))
+                end
+
+                needs_pu_conversion = per_unit[name] &&
+                                      haskey(item, "system_per_unit") &&
+                                      !item["system_per_unit"]
+                push!(fields, _FieldInfo(name, custom_name, needs_pu_conversion))
             else
                 # TODO: This should probably be a fatal error. However, the parsing code
                 # doesn't use all the descriptor fields, so skip for now.
@@ -830,7 +836,7 @@ function _read_data_row(data::PowerSystemRaw, row, field_infos; na_to_nothing=tr
         end
 
         if field_info.needs_per_unit_conversion
-            @debug "convert to per_unit" field_info.custom_name
+            @debug "convert to system_per_unit" field_info.custom_name
             value /= data.basepower
         end
 
