@@ -21,8 +21,8 @@ end
 
 function TwoPartCost(::Nothing)
     TwoPartCost(;
-        variable_op_cost=[(0.0, 1.0)],
-        fixed_op_cost=0.0,
+        variable_cost=[(0.0, 1.0)],
+        fixed_cost=0.0,
     )
 end
 

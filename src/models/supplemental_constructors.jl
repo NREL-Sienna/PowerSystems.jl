@@ -1,4 +1,9 @@
 """Accepts rating as a Float64 and then creates a TechRenewable."""
+function TwoPartCost(variable_cost::Float64, fixed_cost::Float64,)
+    return TwoPartCost((0.0, variable_cost), fixed_cost)
+end
+
+"""Accepts rating as a Float64 and then creates a TechRenewable."""
 function RenewableFix(name, available, bus, rating::Float64)
     tech = TechRenewable(rating, nothing, 1.0)
     RenewableFix(name, available, bus, tech)
@@ -6,16 +11,16 @@ end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
 function RenewableDispatch(name::String, available::Bool, bus::Bus, rating::Float64,
-                           cost::TwoPartCost)
+                           op_cost::TwoPartCost)
     tech = TechRenewable(rating, nothing, 1.0)
-    return RenewableDispatch(name, available, bus, tech, cost)
+    return RenewableDispatch(name, available, bus, tech, op_cost)
 end
 
 """Accepts curtailment cost as a Float64 and then creates an EconHydro."""
 function HydroDispatch(name::AbstractString, available::Bool, bus::Bus, tech::TechHydro,
                        curtailcost::Float64)
-    econ = TwoPartCost(0.0, curtailcost)
-    return HydroDispatch(name, available, bus, tech, econ)
+    op_cost = TwoPartCost(0.0, curtailcost)
+    return HydroDispatch(name, available, bus, tech, op_cost)
 end
 
 """Constructs Deterministic from a Component, label, and TimeArray."""

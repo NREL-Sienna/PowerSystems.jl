@@ -8,16 +8,16 @@ mutable struct HydroDispatch <: HydroGen
     available::Bool
     bus::Bus
     tech::TechHydro
-    cost::TwoPartCost
+    op_cost::TwoPartCost
     internal::PowerSystems.PowerSystemInternal
 end
 
-function HydroDispatch(name, available, bus, tech, cost, )
-    HydroDispatch(name, available, bus, tech, cost, PowerSystemInternal())
+function HydroDispatch(name, available, bus, tech, op_cost, )
+    HydroDispatch(name, available, bus, tech, op_cost, PowerSystemInternal())
 end
 
-function HydroDispatch(; name, available, bus, tech, cost, )
-    HydroDispatch(name, available, bus, tech, cost, )
+function HydroDispatch(; name, available, bus, tech, op_cost, )
+    HydroDispatch(name, available, bus, tech, op_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -40,7 +40,7 @@ get_available(value::HydroDispatch) = value.available
 get_bus(value::HydroDispatch) = value.bus
 """Get HydroDispatch tech."""
 get_tech(value::HydroDispatch) = value.tech
-"""Get HydroDispatch cost."""
-get_cost(value::HydroDispatch) = value.cost
+"""Get HydroDispatch op_cost."""
+get_op_cost(value::HydroDispatch) = value.op_cost
 """Get HydroDispatch internal."""
 get_internal(value::HydroDispatch) = value.internal

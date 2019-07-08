@@ -38,12 +38,12 @@ jq '.components.Device.Injection.Generator.ThermalGen.ThermalStandard[0]' system
 ## Filter on a parameter.
 ```
 jq '.components.Device.Injection.Generator.ThermalGen.ThermalStandard | .[] | select(.name == "107_CC_1")' system.json
-jq '.components.Device.Injection.Generator.ThermalGen.ThermalStandard | .[] | select(.econ.capacity > 3)' system.json
+jq '.components.Device.Injection.Generator.ThermalGen.ThermalStandard | .[] | select(.op_cost.capacity > 3)' system.json
 ```
 
 ## Output a table with select fields.
 ```
-jq -r '["name", "econ.capacity"], (.components.Device.Injection.Generator.ThermalGen.ThermalStandard | .[] | [.name, .econ.capacity]) | @tsv' system.json
+jq -r '["name", "econ.capacity"], (.components.Device.Injection.Generator.ThermalGen.ThermalStandard | .[] | [.name, .op_cost.capacity]) | @tsv' system.json
 ```
 
 ## View the forecast types and initial_time values.

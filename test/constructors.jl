@@ -53,8 +53,6 @@ end
     @test tPowerLoadPF isa PowerSystems.Component
     tLoad = InterruptibleLoad(nothing)
     @test tLoad isa PowerSystems.Component
-    tEconLoad = EconLoad(nothing)
-    @test tEconLoad isa PowerSystemType
 end
 
 @testset "Branch Constructors" begin

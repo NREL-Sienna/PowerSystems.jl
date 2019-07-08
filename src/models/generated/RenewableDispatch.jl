@@ -8,16 +8,16 @@ mutable struct RenewableDispatch <: RenewableGen
     available::Bool
     bus::Bus
     tech::TechRenewable
-    cost::TwoPartCost
+    op_cost::TwoPartCost
     internal::PowerSystems.PowerSystemInternal
 end
 
-function RenewableDispatch(name, available, bus, tech, cost, )
-    RenewableDispatch(name, available, bus, tech, cost, PowerSystemInternal())
+function RenewableDispatch(name, available, bus, tech, op_cost, )
+    RenewableDispatch(name, available, bus, tech, op_cost, PowerSystemInternal())
 end
 
-function RenewableDispatch(; name, available, bus, tech, cost, )
-    RenewableDispatch(name, available, bus, tech, cost, )
+function RenewableDispatch(; name, available, bus, tech, op_cost, )
+    RenewableDispatch(name, available, bus, tech, op_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -40,7 +40,7 @@ get_available(value::RenewableDispatch) = value.available
 get_bus(value::RenewableDispatch) = value.bus
 """Get RenewableDispatch tech."""
 get_tech(value::RenewableDispatch) = value.tech
-"""Get RenewableDispatch cost."""
-get_cost(value::RenewableDispatch) = value.cost
+"""Get RenewableDispatch op_cost."""
+get_op_cost(value::RenewableDispatch) = value.op_cost
 """Get RenewableDispatch internal."""
 get_internal(value::RenewableDispatch) = value.internal

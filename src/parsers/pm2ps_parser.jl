@@ -162,6 +162,7 @@ end
 function make_tech_renewable(d)
     tech = TechRenewable(;
         rating=float(d["pmax"]),
+        reactivepower=d["qg"],
         reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
         powerfactor=1,
     )
@@ -269,7 +270,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         ramplimits=(up=ramp_agc / d["mbase"], down=ramp_agc / d["mbase"]),
         timelimits=nothing,
     )
-    econ = ThreePartCost(;
+    op_cost = ThreePartCost(;
         variable=cost,
         fixed=fixed,
         startup=startup,
@@ -281,7 +282,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         available=Bool(d["gen_status"]),
         bus=bus,
         tech=tech,
-        op_op_cost=op_cost  ,
+        op_cost=op_cost,
     )
 
     return thermal_gen

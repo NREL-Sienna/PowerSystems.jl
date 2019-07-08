@@ -60,13 +60,12 @@ end
             end
             @test cdmgen_val == mpgen_val
         end
-        @test cdmgen.econ.capacity == mpgen.econ.capacity
 
-        if length(mpgen.econ.variable) == 4
-            @test [isapprox(cdmgen.econ.variable[i][1],
-                            mpgen.econ.variable[i][1], atol= .1)
+        if length(mpgen.op_cost.variable) == 4
+            @test [isapprox(cdmgen.op_cost.variable[i][1],
+                            mpgen.op_cost.variable[i][1], atol= .1)
                             for i in 1:4] == [true, true, true, true]
-            #@test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
+            #@test compare_values_without_uuids(cdmgen.op_cost, mpgen.op_cost)
         end
     end
 
@@ -86,7 +85,7 @@ end
             end
             @test cdmgen_val == mpgen_val
         end
-        #@test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
+        #@test compare_values_without_uuids(cdmgen.op_cost, mpgen.op_cost)
     end
 
     cdm_branches = collect(get_components(Branch,cdmsys))
