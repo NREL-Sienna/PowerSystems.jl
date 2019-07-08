@@ -11,16 +11,16 @@
 end
 
 @testset "Generation Constructors" begin
-    tEconThermal = EconThermal(nothing)
-    @test tEconThermal isa PowerSystemType
+    tThreePartCost = ThreePartCost(nothing)
+    @test tThreePartCost isa PowerSystemType
+    tTwoPartCost = TwoPartCost(nothing)
+    @test tTwoPartCost isa PowerSystemType
     tTechThermal = TechThermal(nothing)
     @test tTechThermal isa PowerSystemType
     tThermalGen = ThermalStandard(nothing)
     @test tThermalGen isa PowerSystems.Component
     tTechHydro = TechHydro(nothing)
     @test tTechHydro isa PowerSystemType
-    tEconHydro = EconHydro(nothing)
-    @test tEconHydro isa PowerSystemType
     tHydroFix = HydroFix(nothing)
     @test tHydroFix isa PowerSystems.Component
     tHydroDispatch = HydroDispatch(nothing)
@@ -29,8 +29,6 @@ end
     @test tHydroStorage isa PowerSystems.Component
     tTechRenewable = TechRenewable(nothing)
     @test tTechRenewable isa PowerSystemType
-    tEconRenewable = EconRenewable(nothing)
-    @test tEconRenewable isa PowerSystemType
     tRenewableFix = RenewableFix(nothing)
     @test tRenewableFix isa PowerSystems.Component
     tRenewableDispatch = RenewableDispatch(nothing)

@@ -69,11 +69,10 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                         (min =thermal_dict["tech"]["reactivepowerlimits"]["min"],max =thermal_dict["tech"]["reactivepowerlimits"]["min"]),
                                                                         (up=thermal_dict["tech"]["ramplimits"]["up"],down=thermal_dict["tech"]["ramplimits"]["down"]),
                                                                         (up=thermal_dict["tech"]["timelimits"]["up"],down=thermal_dict["tech"]["timelimits"]["down"])),
-                                                            EconThermal(thermal_dict["econ"]["capacity"],
-                                                                        json_var_cost(thermal_dict["econ"]["variablecost"]),
-                                                                        thermal_dict["econ"]["fixedcost"],
-                                                                        thermal_dict["econ"]["startupcost"],
-                                                                        thermal_dict["econ"]["shutdncost"])
+                                                            ThreePartCost(json_var_cost(thermal_dict["econ"]["variable"]),
+                                                                          thermal_dict["econ"]["fixedcost"],
+                                                                          thermal_dict["econ"]["startup"],
+                                                                          thermal_dict["econ"]["shutdn"])
                             ))
             end
         elseif gen_type_key =="Hydro"
@@ -112,7 +111,7 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                             (min =pv_dict["bus"]["voltagelimits"]["min"],max=pv_dict["bus"]["voltagelimits"]["max"]),
                                                                             pv_dict["bus"]["basevoltage"] ),
                                                                     pv_dict["tech"]["rating"],
-                                                                    EconRenewable(pv_dict["econ"]["curtailcost"],
+                                                                    TwoPartCost(pv_dict["econ"]["curtailcost"],
                                                                                 pv_dict["econ"]["interruptioncost"]),
                                                                     dict_to_timearray(pv_dict["scalingfactor"])
                                     ))
@@ -144,7 +143,7 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                             (min =wind_dict["bus"]["voltagelimits"]["min"],max=wind_dict["bus"]["voltagelimits"]["max"]),
                                                                             wind_dict["bus"]["basevoltage"] ),
                                                                     wind_dict["tech"]["rating"],
-                                                                    EconRenewable(wind_dict["econ"]["curtailcost"],
+                                                                    TwoPartCost(wind_dict["econ"]["curtailcost"],
                                                                                 wind_dict["econ"]["interruptioncost"]),
                                                                     dict_to_timearray(wind_dict["scalingfactor"])
                                     ))

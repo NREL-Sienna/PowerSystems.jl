@@ -1,5 +1,3 @@
-const From_To_Bus =  NamedTuple{(:from, :to),Tuple{Bus,Bus}}
-
 """Accepts rating as a Float64 and then creates a TechRenewable."""
 function RenewableFix(name, available, bus, rating::Float64)
     tech = TechRenewable(rating, nothing, 1.0)
@@ -8,15 +6,15 @@ end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
 function RenewableDispatch(name::String, available::Bool, bus::Bus, rating::Float64,
-                           econ::Union{EconRenewable,Nothing})
+                           cost::TwoPartCost)
     tech = TechRenewable(rating, nothing, 1.0)
-    return RenewableDispatch(name, available, bus, tech, econ)
+    return RenewableDispatch(name, available, bus, tech, cost)
 end
 
 """Accepts curtailment cost as a Float64 and then creates an EconHydro."""
 function HydroDispatch(name::AbstractString, available::Bool, bus::Bus, tech::TechHydro,
                        curtailcost::Float64)
-    econ = EconHydro(curtailcost, nothing)
+    econ = TwoPartCost(0.0, curtailcost)
     return HydroDispatch(name, available, bus, tech, econ)
 end
 

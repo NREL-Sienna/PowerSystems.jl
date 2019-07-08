@@ -1,92 +1,15 @@
 [
   {
-    "struct_name": "EconHydro",
+    "struct_name": "TwoPartCost",
+    "docstring": "Data Structure Operational Cost Data in two parts fixed and variable cost.",
     "fields": [
       {
-        "name": "curtailpenalty",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "variablecost",
-        "null_value": "0.0",
-        "data_type": "Union{Nothing, Float64}"
-      },
-      {
-        "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
-      }
-    ],
-    "supertype": "PowerSystems.TechnicalParams"
-  },
-  {
-    "struct_name": "EconLoad",
-    "docstring": "Data Structure for the economical parameters of interruptible loads.",
-    "fields": [
-      {
-        "name": "curtailpenalty",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "variablecost",
-        "null_value": "0.0",
-        "data_type": "Union{Nothing, Float64}"
-      },
-      {
-        "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
-      }
-    ],
-    "supertype": "PowerSystems.TechnicalParams"
-  },
-  {
-    "struct_name": "EconRenewable",
-    "docstring": "Data Structure for the economical parameters of renewable generation technologies.",
-    "fields": [
-      {
-        "name": "curtailpenalty",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "variablecost",
-        "null_value": "0.0",
-        "data_type": "Union{Nothing, Float64}"
-      },
-      {
-        "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
-      }
-    ],
-    "supertype": "PowerSystems.TechnicalParams"
-  },
-  {
-    "struct_name": "EconThermal",
-    "docstring": "Data Structure for the economical parameters of thermal generation technologies.",
-    "fields": [
-      {
-        "name": "capacity",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "variablecost",
+        "name": "variable_cost",
         "null_value": "[(0.0, 1.0)]",
         "data_type": "Union{Tuple{Float64, Float64}, Array{Tuple{Float64, Float64}, N} where N}"
       },
       {
-        "name": "fixedcost",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "startupcost",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "shutdncost",
+        "name": "fixed_cost",
         "null_value": "0.0",
         "data_type": "Float64"
       },
@@ -95,13 +18,45 @@
         "data_type": "PowerSystems.PowerSystemInternal"
       }
     ],
-    "supertype": "PowerSystems.TechnicalParams"
+    "supertype": "OperationalCost"
+  },
+  {
+    "struct_name": "ThreePartCost",
+    "docstring": "Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.",
+    "fields": [
+      {
+        "name": "variable",
+        "null_value": "[(0.0, 1.0)]",
+        "data_type": "Union{Tuple{Float64, Float64}, Array{Tuple{Float64, Float64}, N} where N}"
+      },
+      {
+        "name": "fixed",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "startup",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "shutdn",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "OperationalCost"
   },
   {
     "struct_name": "TechHydro",
     "fields": [
       {
         "name": "rating",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
         "null_value": "0.0",
         "data_type": "Float64"
       },
@@ -117,8 +72,8 @@
       },
       {
         "name": "reactivepower",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, Float64}"
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "name": "reactivepowerlimits",
@@ -147,6 +102,12 @@
     "fields": [
       {
         "name": "rating",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
         "null_value": "0.0",
         "data_type": "Float64"
       },
@@ -169,10 +130,11 @@
   },
   {
     "struct_name": "TechThermal",
-    "docstring": "Data Structure for the economical parameters of thermal generation technologies.",
+    "docstring": "Data Structure for the technical parameters of thermal generation technologies.",
     "fields": [
       {
         "name": "rating",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
         "null_value": "0.0",
         "data_type": "Float64"
       },
@@ -188,8 +150,8 @@
       },
       {
         "name": "reactivepower",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, Float64}"
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "name": "reactivepowerlimits",
@@ -685,9 +647,9 @@
         "data_type": "Float64"
       },
       {
-        "name": "econ",
-        "null_value": "EconLoad(nothing)",
-        "data_type": "EconLoad"
+        "name": "op_cost",
+        "null_value": "TwoPartCost(nothing)",
+        "data_type": "TwoPartCost"
       },
       {
         "name": "internal",
@@ -785,9 +747,9 @@
         "data_type": "TechHydro"
       },
       {
-        "name": "econ",
-        "null_value": "EconHydro(nothing)",
-        "data_type": "Union{Nothing, EconHydro}"
+        "name": "op_cost",
+        "null_value": "TwoPartCost(nothing)",
+        "data_type": "TwoPartCost"
       },
       {
         "name": "internal",
@@ -850,9 +812,9 @@
         "data_type": "TechHydro"
       },
       {
-        "name": "econ",
-        "null_value": "EconHydro(nothing)",
-        "data_type": "Union{Nothing, EconHydro}"
+        "name": "op_cost",
+        "null_value": "TwoPartCost(nothing)",
+        "data_type": "TwoPartCost"
       },
       {
         "name": "storagecapacity",
@@ -890,9 +852,9 @@
         "data_type": "TechRenewable"
       },
       {
-        "name": "econ",
-        "null_value": "EconRenewable(nothing)",
-        "data_type": "Union{Nothing, EconRenewable}"
+        "name": "op_cost",
+        "null_value": "TwoPartCost(nothing)",
+        "data_type": "TwoPartCost"
       },
       {
         "name": "internal",
@@ -957,9 +919,9 @@
         "data_type": "Union{Nothing, TechThermal}"
       },
       {
-        "name": "econ",
-        "null_value": "EconThermal(nothing)",
-        "data_type": "Union{Nothing, EconThermal}"
+        "name": "op_cost",
+        "null_value": "ThreePartCost(nothing)",
+        "data_type": "ThreePartCost"
       },
       {
         "name": "internal",

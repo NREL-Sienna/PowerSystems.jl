@@ -8,17 +8,17 @@ mutable struct HydroStorage <: HydroGen
     available::Bool
     bus::Bus
     tech::TechHydro
-    econ::Union{Nothing, EconHydro}
+    cost::TwoPartCost
     storagecapacity::Float64
     internal::PowerSystems.PowerSystemInternal
 end
 
-function HydroStorage(name, available, bus, tech, econ, storagecapacity, )
-    HydroStorage(name, available, bus, tech, econ, storagecapacity, PowerSystemInternal())
+function HydroStorage(name, available, bus, tech, cost, storagecapacity, )
+    HydroStorage(name, available, bus, tech, cost, storagecapacity, PowerSystemInternal())
 end
 
-function HydroStorage(; name, available, bus, tech, econ, storagecapacity, )
-    HydroStorage(name, available, bus, tech, econ, storagecapacity, )
+function HydroStorage(; name, available, bus, tech, cost, storagecapacity, )
+    HydroStorage(name, available, bus, tech, cost, storagecapacity, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -29,7 +29,7 @@ function HydroStorage(::Nothing)
         available=false,
         bus=Bus(nothing),
         tech=TechHydro(nothing),
-        econ=EconHydro(nothing),
+        op_cost=TwoPartCost(nothing),
         storagecapacity=0.0,
     )
 end
@@ -42,8 +42,8 @@ get_available(value::HydroStorage) = value.available
 get_bus(value::HydroStorage) = value.bus
 """Get HydroStorage tech."""
 get_tech(value::HydroStorage) = value.tech
-"""Get HydroStorage econ."""
-get_econ(value::HydroStorage) = value.econ
+"""Get HydroStorage cost."""
+get_cost(value::HydroStorage) = value.cost
 """Get HydroStorage storagecapacity."""
 get_storagecapacity(value::HydroStorage) = value.storagecapacity
 """Get HydroStorage internal."""

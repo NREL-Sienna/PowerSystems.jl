@@ -62,9 +62,9 @@ end
         end
         @test cdmgen.econ.capacity == mpgen.econ.capacity
 
-        if length(mpgen.econ.variablecost) == 4
-            @test [isapprox(cdmgen.econ.variablecost[i][1],
-                            mpgen.econ.variablecost[i][1], atol= .1)
+        if length(mpgen.econ.variable) == 4
+            @test [isapprox(cdmgen.econ.variable[i][1],
+                            mpgen.econ.variable[i][1], atol= .1)
                             for i in 1:4] == [true, true, true, true]
             #@test compare_values_without_uuids(cdmgen.econ, mpgen.econ)
         end
