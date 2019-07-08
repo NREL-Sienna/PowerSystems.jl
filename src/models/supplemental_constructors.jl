@@ -52,8 +52,8 @@ function PowerLoadPF(::Nothing)
 end
 
 """Accepts anglelimits as a Float64."""
-function Line(name, available, connectionpoints, r, x, b, rate, anglelimits::Float64)
-    return Line(name, available, connectionpoints, r, x, b, rate,
+function Line(name, available, arch::Arch, r, x, b, rate, anglelimits::Float64)
+    return Line(name, available, arch::Arch, r, x, b, rate,
                 (min=-anglelimits, max=anglelimits))
 end
 

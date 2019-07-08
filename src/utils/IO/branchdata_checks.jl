@@ -52,13 +52,13 @@ function linerate_calculation(l::Line)
     g =  l.r / (l.r^2 + l.x^2)
     b = -l.x / (l.r^2 + l.x^2)
     y_mag = sqrt(g^2 + b^2)
-    fr_vmax = l.connectionpoints.from.voltagelimits.max
-    to_vmax =  l.connectionpoints.to.voltagelimits.max
+    fr_vmax = l.arch.from.voltagelimits.max
+    to_vmax =  l.arch.to.voltagelimits.max
 
     if isa(fr_vmax,Nothing) || isa(to_vmax,Nothing)
         fr_vmax = 1.0
         to_vmax = 0.9
-        diff_angle = abs(l.connectionpoints.from.angle -l.connectionpoints.to.angle)
+        diff_angle = abs(l.arch.from.angle -l.arch.to.angle)
         new_rate = y_mag*fr_vmax*to_vmax*cos(theta_max)
     else
 

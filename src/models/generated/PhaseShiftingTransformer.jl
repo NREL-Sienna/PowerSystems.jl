@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct PhaseShiftingTransformer <: ACBranch
     name::String
     available::Bool
-    connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}
+    arch::Arch
     r::Float64
     x::Float64
     primaryshunt::Float64
@@ -16,12 +16,12 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     internal::PowerSystems.PowerSystemInternal
 end
 
-function PhaseShiftingTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, α, rate, )
-    PhaseShiftingTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, α, rate, PowerSystemInternal())
+function PhaseShiftingTransformer(name, available, arch, r, x, primaryshunt, tap, α, rate, )
+    PhaseShiftingTransformer(name, available, arch, r, x, primaryshunt, tap, α, rate, PowerSystemInternal())
 end
 
-function PhaseShiftingTransformer(; name, available, connectionpoints, r, x, primaryshunt, tap, α, rate, )
-    PhaseShiftingTransformer(name, available, connectionpoints, r, x, primaryshunt, tap, α, rate, )
+function PhaseShiftingTransformer(; name, available, arch, r, x, primaryshunt, tap, α, rate, )
+    PhaseShiftingTransformer(name, available, arch, r, x, primaryshunt, tap, α, rate, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -30,7 +30,7 @@ function PhaseShiftingTransformer(::Nothing)
     PhaseShiftingTransformer(;
         name="init",
         available=false,
-        connectionpoints=From_To_Bus((from=Bus(nothing), to=Bus(nothing))),
+        arch=Arch(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         primaryshunt=0.0,
@@ -44,8 +44,8 @@ end
 get_name(value::PhaseShiftingTransformer) = value.name
 """Get PhaseShiftingTransformer available."""
 get_available(value::PhaseShiftingTransformer) = value.available
-"""Get PhaseShiftingTransformer connectionpoints."""
-get_connectionpoints(value::PhaseShiftingTransformer) = value.connectionpoints
+"""Get PhaseShiftingTransformer arch."""
+get_arch(value::PhaseShiftingTransformer) = value.arch
 """Get PhaseShiftingTransformer r."""
 get_r(value::PhaseShiftingTransformer) = value.r
 """Get PhaseShiftingTransformer x."""

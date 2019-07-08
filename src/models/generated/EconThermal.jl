@@ -9,16 +9,15 @@ mutable struct EconThermal <: PowerSystems.TechnicalParams
     fixedcost::Float64
     startupcost::Float64
     shutdncost::Float64
-    annualcapacityfactor::Union{Nothing, Float64}
     internal::PowerSystems.PowerSystemInternal
 end
 
-function EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor, )
-    EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor, PowerSystemInternal())
+function EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, )
+    EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, PowerSystemInternal())
 end
 
-function EconThermal(; capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor, )
-    EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, annualcapacityfactor, )
+function EconThermal(; capacity, variablecost, fixedcost, startupcost, shutdncost, )
+    EconThermal(capacity, variablecost, fixedcost, startupcost, shutdncost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -30,7 +29,6 @@ function EconThermal(::Nothing)
         fixedcost=0.0,
         startupcost=0.0,
         shutdncost=0.0,
-        annualcapacityfactor=nothing,
     )
 end
 
@@ -44,7 +42,5 @@ get_fixedcost(value::EconThermal) = value.fixedcost
 get_startupcost(value::EconThermal) = value.startupcost
 """Get EconThermal shutdncost."""
 get_shutdncost(value::EconThermal) = value.shutdncost
-"""Get EconThermal annualcapacityfactor."""
-get_annualcapacityfactor(value::EconThermal) = value.annualcapacityfactor
 """Get EconThermal internal."""
 get_internal(value::EconThermal) = value.internal

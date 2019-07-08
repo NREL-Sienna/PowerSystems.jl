@@ -21,9 +21,9 @@ function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Flo
             continue
         end
 
-        A[num_bus[b.connectionpoints.from.number], ix] =  1;
+        A[num_bus[b.arch.from.number], ix] =  1;
 
-        A[num_bus[b.connectionpoints.to.number], ix] = -1;
+        A[num_bus[b.arch.to.number], ix] = -1;
 
         if isa(b,Transformer2W)
             inv_X[ix,ix] = 1/b.x;

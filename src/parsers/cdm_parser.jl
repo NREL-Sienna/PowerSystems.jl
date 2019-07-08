@@ -320,7 +320,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
     for branch in iterate_rows(data, BRANCH::InputCategory)
         bus_from = get_bus(sys, branch.connection_points_from)
         bus_to = get_bus(sys, branch.connection_points_to)
-        connection_points = (from=bus_from, to=bus_to)
+        connection_points = Arch(bus_from, bus_to)
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
@@ -384,7 +384,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
         available = true
         bus_from = get_bus(sys, dc_branch.connection_points_from)
         bus_to = get_bus(sys, dc_branch.connection_points_to)
-        connection_points = (from=bus_from, to=bus_to)
+        connection_points = Arch(bus_from, bus_to)
 
         if dc_branch.control_mode == "Power"
             mw_load = dc_branch.mw_load
@@ -664,14 +664,12 @@ function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
     fixedcost = 0.0
     startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
     shutdown_cost = 0.0
-    annual_capacity_factor = nothing
     econ = EconThermal(
         capacity,
         var_cost,
         fixedcost,
         startup_cost,
-        shutdown_cost,
-        annual_capacity_factor,
+        shutdown_cost
     )
 
     return ThermalStandard(gen.name, available, bus, tech, econ)

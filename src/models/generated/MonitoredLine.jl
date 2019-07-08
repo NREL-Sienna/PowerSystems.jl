@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct MonitoredLine <: ACBranch
     name::String
     available::Bool
-    connectionpoints::NamedTuple{(:from, :to), Tuple{Bus, Bus}}
+    arch::Arch
     r::Float64
     x::Float64
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
@@ -16,12 +16,12 @@ mutable struct MonitoredLine <: ACBranch
     internal::PowerSystems.PowerSystemInternal
 end
 
-function MonitoredLine(name, available, connectionpoints, r, x, b, flowlimits, rate, anglelimits, )
-    MonitoredLine(name, available, connectionpoints, r, x, b, flowlimits, rate, anglelimits, PowerSystemInternal())
+function MonitoredLine(name, available, arch, r, x, b, flowlimits, rate, anglelimits, )
+    MonitoredLine(name, available, arch, r, x, b, flowlimits, rate, anglelimits, PowerSystemInternal())
 end
 
-function MonitoredLine(; name, available, connectionpoints, r, x, b, flowlimits, rate, anglelimits, )
-    MonitoredLine(name, available, connectionpoints, r, x, b, flowlimits, rate, anglelimits, )
+function MonitoredLine(; name, available, arch, r, x, b, flowlimits, rate, anglelimits, )
+    MonitoredLine(name, available, arch, r, x, b, flowlimits, rate, anglelimits, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -30,7 +30,7 @@ function MonitoredLine(::Nothing)
     MonitoredLine(;
         name="init",
         available=false,
-        connectionpoints=From_To_Bus((from=Bus(nothing), to=Bus(nothing))),
+        arch=Arch(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         b=(from=0.0, to=0.0),
@@ -44,8 +44,8 @@ end
 get_name(value::MonitoredLine) = value.name
 """Get MonitoredLine available."""
 get_available(value::MonitoredLine) = value.available
-"""Get MonitoredLine connectionpoints."""
-get_connectionpoints(value::MonitoredLine) = value.connectionpoints
+"""Get MonitoredLine arch."""
+get_arch(value::MonitoredLine) = value.arch
 """Get MonitoredLine r."""
 get_r(value::MonitoredLine) = value.r
 """Get MonitoredLine x."""

@@ -109,7 +109,7 @@ function JSON2.read(io::IO, ::Type{T}) where {T <: EconThermal}
 
     internal = convert_type(PowerSystemInternal, data.internal)
     return EconThermal(data.capacity, variablecost, data.fixedcost, data.startupcost,
-                       data.shutdncost, data.annualcapacityfactor, internal)
+                       data.shutdncost, internal)
 end
 
 # Refer to docstrings in services.jl.

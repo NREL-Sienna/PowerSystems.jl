@@ -1,3 +1,5 @@
+abstract type Topology <: Component end
+
 function CheckBusParams(number, name, bustype, angle, voltage, voltagelimits, basevoltatge,
                         internal)
     if !isnothing(bustype)
