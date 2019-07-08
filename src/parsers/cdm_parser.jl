@@ -664,14 +664,12 @@ function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
     fixedcost = 0.0
     startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
     shutdown_cost = 0.0
-    annual_capacity_factor = nothing
     econ = EconThermal(
         capacity,
         var_cost,
         fixedcost,
         startup_cost,
-        shutdown_cost,
-        annual_capacity_factor,
+        shutdown_cost
     )
 
     return ThermalStandard(gen.name, available, bus, tech, econ)

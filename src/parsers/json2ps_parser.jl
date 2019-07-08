@@ -73,8 +73,7 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                         json_var_cost(thermal_dict["econ"]["variablecost"]),
                                                                         thermal_dict["econ"]["fixedcost"],
                                                                         thermal_dict["econ"]["startupcost"],
-                                                                        thermal_dict["econ"]["shutdncost"],
-                                                                        thermal_dict["econ"]["annualcapacityfactor"])
+                                                                        thermal_dict["econ"]["shutdncost"])
                             ))
             end
         elseif gen_type_key =="Hydro"
