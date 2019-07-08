@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """A power-system bus."""
-mutable struct Bus <: Injection
+mutable struct Bus <: Topology
     number::Int64  # number associated with the bus
     name::String  # the name of the bus
     bustype::Union{Nothing, BusType}  # bus type

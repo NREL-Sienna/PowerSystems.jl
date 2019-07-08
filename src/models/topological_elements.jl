@@ -1,3 +1,13 @@
+abstract type Topology <: Component end
+
+
+
+struct Arch <: Topology
+    from::Bus
+    to::Bus
+    internal::PowerSystems.PowerSystemInternal
+end
+
 function CheckBusParams(number, name, bustype, angle, voltage, voltagelimits, basevoltatge,
                         internal)
     if !isnothing(bustype)

@@ -270,7 +270,7 @@
         "data_type": "PowerSystems.PowerSystemInternal"
       }
     ],
-    "supertype": "Injection"
+    "supertype": "Topology"
   },
   {
     "struct_name": "Line",
