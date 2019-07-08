@@ -87,8 +87,15 @@ function _forecast_csv_parser!(sys::System, forecast_infos::ForecastInfos, resol
             end
         end
 
+        if component isa LoadZones
+            uuids = Set([get_uuid(x) for x in component.buses])
+            forecast_components = [load for load in get_components(ElectricLoad, sys)
+                                   if get_bus(load) |> get_uuid in uuids]
+        else
+            forecast_components = [component]
+        end
+
         forecasts = Vector{Forecast}()
-        forecast_components = component isa LoadZones ? component.buses : [component]
         for component_ in forecast_components
             timeseries = forecast.data[Symbol(forecast.component_name)]
             forecast_ = Deterministic(component_, forecast.label, timeseries)

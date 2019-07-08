@@ -131,5 +131,5 @@ end
                                       "Simulation",
                                       LoadZones;
                                       REGEX_FILE=r"REAL_TIME(.*?)\.csv")
-    @test verify_forecasts(sys, 1, 73, 288)
+    @test verify_forecasts(sys, 1, 54, 288)
 end
