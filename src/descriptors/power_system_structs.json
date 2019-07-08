@@ -91,11 +91,6 @@
         "data_type": "Float64"
       },
       {
-        "name": "annualcapacityfactor",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, Float64}"
-      },
-      {
         "name": "internal",
         "data_type": "PowerSystems.PowerSystemInternal"
       }
