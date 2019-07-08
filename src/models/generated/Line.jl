@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct Line <: ACBranch
     name::String
     available::Bool
-    connectionpoints::Arch
+    arch::Arch
     r::Float64
     x::Float64
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
@@ -15,12 +15,12 @@ mutable struct Line <: ACBranch
     internal::PowerSystems.PowerSystemInternal
 end
 
-function Line(name, available, connectionpoints, r, x, b, rate, anglelimits, )
-    Line(name, available, connectionpoints, r, x, b, rate, anglelimits, PowerSystemInternal())
+function Line(name, available, arch, r, x, b, rate, anglelimits, )
+    Line(name, available, arch, r, x, b, rate, anglelimits, PowerSystemInternal())
 end
 
-function Line(; name, available, connectionpoints, r, x, b, rate, anglelimits, )
-    Line(name, available, connectionpoints, r, x, b, rate, anglelimits, )
+function Line(; name, available, arch, r, x, b, rate, anglelimits, )
+    Line(name, available, arch, r, x, b, rate, anglelimits, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -29,7 +29,7 @@ function Line(::Nothing)
     Line(;
         name="init",
         available=false,
-        connectionpoints=Arch(Bus(nothing), Bus(nothing)),
+        arch=Arch(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         b=(from=0.0, to=0.0),
@@ -42,8 +42,8 @@ end
 get_name(value::Line) = value.name
 """Get Line available."""
 get_available(value::Line) = value.available
-"""Get Line connectionpoints."""
-get_connectionpoints(value::Line) = value.connectionpoints
+"""Get Line arch."""
+get_arch(value::Line) = value.arch
 """Get Line r."""
 get_r(value::Line) = value.r
 """Get Line x."""

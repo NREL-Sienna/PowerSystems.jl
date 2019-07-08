@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct VSCDCLine <: DCBranch
     name::String
     available::Bool
-    connectionpoints::Arch
+    arch::Arch
     rectifier_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     rectifier_xrc::Float64
     rectifier_firingangle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
@@ -16,12 +16,12 @@ mutable struct VSCDCLine <: DCBranch
     internal::PowerSystems.PowerSystemInternal
 end
 
-function VSCDCLine(name, available, connectionpoints, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
-    VSCDCLine(name, available, connectionpoints, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, PowerSystemInternal())
+function VSCDCLine(name, available, arch, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
+    VSCDCLine(name, available, arch, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, PowerSystemInternal())
 end
 
-function VSCDCLine(; name, available, connectionpoints, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
-    VSCDCLine(name, available, connectionpoints, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
+function VSCDCLine(; name, available, arch, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
+    VSCDCLine(name, available, arch, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -30,7 +30,7 @@ function VSCDCLine(::Nothing)
     VSCDCLine(;
         name="init",
         available=false,
-        connectionpoints=Arch(Bus(nothing), Bus(nothing)),
+        arch=Arch(Bus(nothing), Bus(nothing)),
         rectifier_taplimits=(min=0.0, max=0.0),
         rectifier_xrc=0.0,
         rectifier_firingangle=(min=0.0, max=0.0),
@@ -44,8 +44,8 @@ end
 get_name(value::VSCDCLine) = value.name
 """Get VSCDCLine available."""
 get_available(value::VSCDCLine) = value.available
-"""Get VSCDCLine connectionpoints."""
-get_connectionpoints(value::VSCDCLine) = value.connectionpoints
+"""Get VSCDCLine arch."""
+get_arch(value::VSCDCLine) = value.arch
 """Get VSCDCLine rectifier_taplimits."""
 get_rectifier_taplimits(value::VSCDCLine) = value.rectifier_taplimits
 """Get VSCDCLine rectifier_xrc."""

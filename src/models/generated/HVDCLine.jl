@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct HVDCLine <: DCBranch
     name::String
     available::Bool
-    connectionpoints::Arch
+    arch::Arch
     activepowerlimits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     activepowerlimits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     reactivepowerlimits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
@@ -15,12 +15,12 @@ mutable struct HVDCLine <: DCBranch
     internal::PowerSystems.PowerSystemInternal
 end
 
-function HVDCLine(name, available, connectionpoints, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, )
-    HVDCLine(name, available, connectionpoints, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, PowerSystemInternal())
+function HVDCLine(name, available, arch, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, )
+    HVDCLine(name, available, arch, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, PowerSystemInternal())
 end
 
-function HVDCLine(; name, available, connectionpoints, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, )
-    HVDCLine(name, available, connectionpoints, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, )
+function HVDCLine(; name, available, arch, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, )
+    HVDCLine(name, available, arch, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -29,7 +29,7 @@ function HVDCLine(::Nothing)
     HVDCLine(;
         name="init",
         available=false,
-        connectionpoints=Arch(Bus(nothing), Bus(nothing)),
+        arch=Arch(Bus(nothing), Bus(nothing)),
         activepowerlimits_from=(min=0.0, max=0.0),
         activepowerlimits_to=(min=0.0, max=0.0),
         reactivepowerlimits_from=(min=0.0, max=0.0),
@@ -42,8 +42,8 @@ end
 get_name(value::HVDCLine) = value.name
 """Get HVDCLine available."""
 get_available(value::HVDCLine) = value.available
-"""Get HVDCLine connectionpoints."""
-get_connectionpoints(value::HVDCLine) = value.connectionpoints
+"""Get HVDCLine arch."""
+get_arch(value::HVDCLine) = value.arch
 """Get HVDCLine activepowerlimits_from."""
 get_activepowerlimits_from(value::HVDCLine) = value.activepowerlimits_from
 """Get HVDCLine activepowerlimits_to."""

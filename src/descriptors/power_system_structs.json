@@ -308,7 +308,7 @@
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "connectionpoints",
+        "name": "arch",
         "data_type": "Arch"
       },
       {
@@ -358,7 +358,7 @@
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "connectionpoints",
+        "name": "arch",
         "data_type": "Arch"
       },
       {
@@ -413,7 +413,7 @@
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "connectionpoints",
+        "name": "arch",
         "data_type": "Arch"
       },
       {
@@ -468,7 +468,7 @@
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "connectionpoints",
+        "name": "arch",
         "data_type": "Arch"
       },
       {
@@ -519,7 +519,7 @@
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "connectionpoints",
+        "name": "arch",
         "data_type": "Arch"
       },
       {
@@ -564,7 +564,7 @@
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "connectionpoints",
+        "name": "arch",
         "data_type": "Arch"
       },
       {
@@ -615,7 +615,7 @@
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "connectionpoints",
+        "name": "arch",
         "data_type": "Arch"
       },
       {
