@@ -61,7 +61,7 @@ function calc_theta_delta_bounds(data::Dict{String,Any})
     end
 
     if haskey(data, "conductors")
-        @error("Multiconductor Not Supported in PowerSystems")
+        error("Multiconductor Not Supported in PowerSystems")
         #amin = MultiConductorVector(angle_min)
         #amax = MultiConductorVector(angle_max)
         #return amin, amax
@@ -611,7 +611,7 @@ function check_thermal_limits(data::Dict{String,Any})
     for branch in branches
         if !haskey(branch, "rate_a")
             if haskey(data, "conductors")
-                @error("Multiconductor Not Supported in PowerSystems")
+                error("Multiconductor Not Supported in PowerSystems")
                 #branch["rate_a"] = MultiConductorVector(0.0, data["conductors"])
             else
                 branch["rate_a"] = 0.0
@@ -678,7 +678,7 @@ function check_current_limits(data::Dict{String,Any})
 
         if !haskey(branch, "c_rating_a")
             if haskey(data, "conductors")
-                @error("Multiconductor Not Supported in PowerSystems")
+                error("Multiconductor Not Supported in PowerSystems")
                 #branch["c_rating_a"] = MultiConductorVector(0.0, data["conductors"])
             else
                 branch["c_rating_a"] = 0.0
@@ -853,7 +853,7 @@ function check_transformer_parameters(data::Dict{String,Any})
         if !haskey(branch, "tap")
             @info("branch found without tap value, setting a tap to 1.0")
             if haskey(data, "conductors")
-                @error("Multiconductor Not Supported in PowerSystems")
+                error("Multiconductor Not Supported in PowerSystems")
                 #branch["tap"] = MultiConductorVector{Float64}(ones(data["conductors"]))
             else
                 branch["tap"] = 1.0
@@ -876,7 +876,7 @@ function check_transformer_parameters(data::Dict{String,Any})
         if !haskey(branch, "shift")
             @info("branch found without shift value, setting a shift to 0.0")
             if haskey(data, "conductors")
-                @error("Multiconductor Not Supported in PowerSystems")
+                error("Multiconductor Not Supported in PowerSystems")
                 #branch["shift"] = MultiConductorVector{Float64}(zeros(data["conductors"]))
             else
                 branch["shift"] = 0.0
@@ -1771,7 +1771,7 @@ conductor_matrix = Set(["br_r", "br_x"])
 ""
 function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
     if haskey(data, "conductors")
-        @error("Multiconductor Not Supported in PowerSystems")
+        error("Multiconductor Not Supported in PowerSystems")
         return
     end
 #=
