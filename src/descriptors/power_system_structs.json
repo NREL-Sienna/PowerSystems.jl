@@ -4,9 +4,9 @@
     "docstring": "Data Structure Operational Cost Data in two parts fixed and variable cost.",
     "fields": [
       {
-        "name": "variable_cost",
-        "null_value": "[(0.0, 1.0)]",
-        "data_type": "Union{Tuple{Float64, Float64}, Array{Tuple{Float64, Float64}, N} where N}"
+        "name": "variable",
+        "null_value": "VariableCost((0.0, 0.0))",
+        "data_type": "VariableCost"
       },
       {
         "name": "fixed_cost",
@@ -26,8 +26,8 @@
     "fields": [
       {
         "name": "variable",
-        "null_value": "[(0.0, 1.0)]",
-        "data_type": "Union{Tuple{Float64, Float64}, Array{Tuple{Float64, Float64}, N} where N}"
+        "null_value": "VariableCost((0.0, 0.0))",
+        "data_type": "VariableCost"
       },
       {
         "name": "fixed",

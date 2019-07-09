@@ -1,6 +1,11 @@
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function TwoPartCost(variable_cost::Float64, fixed_cost::Float64,)
-    return TwoPartCost((0.0, variable_cost), fixed_cost)
+function TwoPartCost(variable_cost::T, args...) where {T <: var_cost_args}
+    return TwoPartCost(VariableCost(variable_cost), args...)
+end
+
+"""Accepts rating as a Float64 and then creates a TechRenewable."""
+function ThreePartCost(variable_cost::T, args...) where {T <: var_cost_args}
+    return ThreePartCost(VariableCost(variable_cost), args...)
 end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""

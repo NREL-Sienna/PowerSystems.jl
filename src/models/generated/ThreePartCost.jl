@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 
 """Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs."""
 mutable struct ThreePartCost <: OperationalCost
-    variable::Union{Tuple{Float64, Float64}, Array{Tuple{Float64, Float64}, N} where N}
+    variable::VariableCost
     fixed::Float64
     startup::Float64
     shutdn::Float64
@@ -23,7 +23,7 @@ end
 
 function ThreePartCost(::Nothing)
     ThreePartCost(;
-        variable=[(0.0, 1.0)],
+        variable=VariableCost((0.0, 0.0)),
         fixed=0.0,
         startup=0.0,
         shutdn=0.0,
