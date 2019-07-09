@@ -254,7 +254,7 @@ function make_forecast_array(all_components, parsed_forecasts::Vector{Dict})
 function write_to_json(filename,Forecasts_dict)
     for (type_key,type_fc) in Forecasts_dict
         for (device_key,device_dicts) in type_fc
-            stringdata =JSON2.json(device_dicts, 3)
+            stringdata =JSON2.write(device_dicts, 3)
             open("$filename/$device_key.json", "w") do f
                 write(f, stringdata)
              end
