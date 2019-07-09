@@ -92,7 +92,7 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 
 end
 
-function _buildybus(branches::Array{T}, nodes::Array{Bus}) where {T<:ACBranch}
+function _buildybus(branches, nodes)
 
     buscount = length(nodes)
     num_bus = Dict{Int32,Int32}()
@@ -117,7 +117,7 @@ function _buildybus(branches::Array{T}, nodes::Array{Bus}) where {T<:ACBranch}
 
 end
 
-function Ybus(branches::Array{T}, nodes::Array{Bus}) where {T<:ACBranch}
+function Ybus(branches, nodes)
 
     #Get axis names
     bus_ax = [get_number(bus) for bus in nodes]
@@ -131,9 +131,9 @@ function Ybus(branches::Array{T}, nodes::Array{Bus}) where {T<:ACBranch}
 end
 
 function Ybus(sys::System)
-    branches = get_components(ACBranch, sys) |> collect
-    nodes = get_components(Bus, sys) |> collect
+    branches = get_components(ACBranch, sys)
+    nodes = get_components(Bus, sys)
 
     return Ybus(branches, nodes)
-    
+
 end

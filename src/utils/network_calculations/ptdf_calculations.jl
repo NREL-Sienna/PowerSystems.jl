@@ -5,7 +5,7 @@ struct PTDF <: PowerNetworkMatrix
     lookup::NTuple{2,Dict}
 end
 
-function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:ACBranch}
+function _buildptdf(branches, nodes, dist_slack::Array{Float64}=[0.1])
 
     buscount = length(nodes)
     linecount = length(branches)
@@ -74,11 +74,11 @@ function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Flo
 
 end
 
-function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:ACBranch}
+function PTDF(branches, nodes, dist_slack::Array{Float64}=[0.1])
 
     #Get axis names
-    line_ax = [branch.name for branch in branches]
-    bus_ax = [bus.number for bus in nodes]
+    line_ax = [get_name(branch) for branch in branches]
+    bus_ax = [get_number(bus) for bus in nodes]
     S, A = _buildptdf(branches, nodes, dist_slack)
 
     axes = (line_ax, bus_ax)
@@ -89,8 +89,8 @@ function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=
 end
 
 function PTDF(sys::System, dist_slack::Array{Float64}=[0.1])
-    branches = get_components(ACBranch, sys) |> collect
-    nodes = get_components(Bus, sys) |> collect
+    branches = get_components(ACBranch, sys)
+    nodes = get_components(Bus, sys)
 
     return PTDF(branches, nodes, dist_slack)
 
