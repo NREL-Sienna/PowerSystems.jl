@@ -1,6 +1,6 @@
 """Generate structs from the descriptor file and verify that they match what's in the repo."""
 
-script = joinpath(@__DIR__, "..", "bin", "generate_structs.jl")
+script = joinpath(@__DIR__, "..", "generate_structs.jl")
 descriptor_file = joinpath(@__DIR__, "..", "src", "descriptors", "power_system_structs.json")
 existing_dir = joinpath(@__DIR__, "..", "src", "models", "generated")
 output_dir = "tmp"
