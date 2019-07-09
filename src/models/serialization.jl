@@ -91,7 +91,7 @@ function encode_for_json(uuid::Base.UUID)
     return (value=string(uuid),)
 end
 
-"""Enables deserialization of ThreePartCost. The default implementation can't figure out the
+"""Enables deserialization of VariableCost. The default implementation can't figure out the
 variable Union.
 """
 function JSON2.read(io::IO, ::Type{VariableCost})
