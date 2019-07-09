@@ -287,6 +287,8 @@ Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
     P14 = PowerSystems.PTDF(branches14, nodes14);
     @test maximum(P14.data - S14_slackB1) <= 1e-3
 
+    P5NS = PowerSystems.PTDF(sys);
+    @test getindex(P5NS,"7",4) == 0.0
 end
 
 @time @testset "LODF matrices" begin
@@ -320,7 +322,7 @@ end
         @test isapprox(Ybus14[i[1], i[2]], Ybus14_matpower[i[1], i[2]], atol=1e-2)
     end
     
-    Ybus5nonsequential = Ybus(get_components(ACBranch, sys) |> collect, get_components(Bus, sys) |> collect)
+    Ybus5nonsequential = Ybus(sys)
 
     I, J, V = findnz(Ybus5nonsequential.data)
     indices = collect(zip(I,J))

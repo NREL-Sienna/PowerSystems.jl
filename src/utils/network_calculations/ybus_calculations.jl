@@ -5,7 +5,7 @@ struct Ybus <: PowerNetworkMatrix
     lookup::NTuple{2,Dict}
 end
 
-function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
+function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
                 b::Line,
                 num_bus::Dict{Int32,Int32})
 
@@ -28,7 +28,7 @@ function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 
 end
 
-function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
+function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
                 b::Transformer2W,
                 num_bus::Dict{Int32,Int32})
 
@@ -46,7 +46,7 @@ function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 
 end
 
-function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
+function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
                 b::TapTransformer,
                 num_bus::Dict{Int32,Int32})
 
@@ -69,7 +69,7 @@ function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 end
 
 # TODO: Add testing for Ybus of a system with a PS Transformer
-function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
+function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
                 b::PhaseShiftingTransformer,
                 num_bus::Dict{Int32,Int32})
 
@@ -92,79 +92,15 @@ function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 
 end
 
-#=
-function ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}, b::Transformer3W)
-
-    @warn "Data contains a 3W transformer"
-
-    Y11 = (1 / (b.line.r + b.line.x * 1im) + (1im * b.line.b) / 2);
-    ybus[b.line.connectionpoints.from.number,
-        b.line.connectionpoints.from.number] += Y11;
-    Y12 = (-1 ./ (b.line.r + b.line.x * 1im));
-    ybus[b.line.connectionpoints.from.number,
-        b.line.connectionpoints.to.number] += Y12;
-    #Y21 = Y12
-    ybus[b.line.connectionpoints.to.number,
-        b.line.onnectionpoints[1].number] += Y12;
-    #Y22 = Y11;
-    ybus[b.line.connectionpoints.to.number,
-        b.line.connectionpoints.to.number] += Y11;
-
-    y = 1 / (b.transformer.r + b.transformer.x * 1im)
-    y_a = y / (b.transformer.tap * exp(b.transformer.α * 1im * (π / 180)))
-    c = 1 / b.transformer.tap
-
-    Y11 = (y_a + y * c * (c - 1) + (b.transformer.zb));
-    ybus[b.transformer.connectionpoints.from.number,
-        b.transformer.connectionpoints.from.number] += Y11;
-    Y12 = (-y_a) ;
-    ybus[b.transformer.connectionpoints.from.number,
-        b.transformer.connectionpoints.to.number] += Y12;
-    #Y21 = Y12
-    ybus[b.transformer.connectionpoints.to.number,
-        b.transformer.connectionpoints.from.number] += Y12;
-    Y22 = (y_a + y * (1 - c)) ;
-    ybus[b.transformer.connectionpoints.to.number,
-        b.transformer.connectionpoints.to.number] += Y22;
-
-end
-=#
-
-# Old Ybus creation
-#=
-function build_ybus(buscount::Int64, branches::Array{T}) where {T <: Branch}
-
-    ybus = SparseArrays.spzeros(Complex{Float64}, buscount, buscount)
-
-    num_bus = Dict{Int32,Int32}(zip(1:buscount,1:buscount))
-
-    for b in branches
-
-        if b.name == "init"
-            @error "The data in Branch is incomplete" # TODO: raise error here?
-        end
-
-        ybus!(ybus, b, num_bus)
-
-    end
-
-    return ybus
-
-end
-=#
-
-
-function _buildybus(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
+function _buildybus(branches::Array{T}, nodes::Array{Bus}) where {T<:ACBranch}
 
     buscount = length(nodes)
-    linecount = length(branches)
     num_bus = Dict{Int32,Int32}()
 
     for (ix,b) in enumerate(nodes)
         num_bus[get_number(b)] = ix
     end
 
-    A = zeros(Float64,buscount,linecount);
     ybus = SparseArrays.spzeros(Complex{Float64}, buscount, buscount);
 
     for (ix,b) in enumerate(branches)
@@ -173,16 +109,11 @@ function _buildybus(branches::Array{T}, nodes::Array{Bus}) where {T<:Branch}
             @error "The data in Branch is incomplete" # TODO: raise error here?
         end
 
-        A[num_bus[get_connectionpoints(b).from |> get_number], ix] =  1;
-
-        A[num_bus[get_connectionpoints(b).to |> get_number], ix] = -1;
-
-        ybus!(ybus, b, num_bus)
-
+        _ybus!(ybus, b, num_bus)
 
     end
 
-    return  ybus, A
+    return  ybus
 
 end
 
@@ -193,8 +124,16 @@ function Ybus(branches::Array{T}, nodes::Array{Bus}) where {T<:ACBranch}
     axes = (bus_ax, bus_ax)
     look_up = (_make_ax_ref(bus_ax),_make_ax_ref(bus_ax))
 
-    ybus, A = _buildybus(branches, nodes)
+    ybus = _buildybus(branches, nodes)
 
     return Ybus(ybus, axes, look_up)
 
+end
+
+function Ybus(sys::System)
+    branches = get_components(ACBranch, sys) |> collect
+    nodes = get_components(Bus, sys) |> collect
+
+    return Ybus(branches, nodes)
+    
 end

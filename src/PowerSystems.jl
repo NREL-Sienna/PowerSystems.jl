@@ -161,18 +161,18 @@ include("models/services.jl")
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
 
-include("utils/network_calculations/common.jl")
-include("utils/network_calculations/ybus_calculations.jl")
-include("utils/network_calculations/ptdf_calculations.jl")
-include("utils/network_calculations/lodf_calculations.jl")
-
-
 #Data Checks
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+
+# network calculations
+include("utils/network_calculations/common.jl")
+include("utils/network_calculations/ybus_calculations.jl")
+include("utils/network_calculations/ptdf_calculations.jl")
+include("utils/network_calculations/lodf_calculations.jl")
 
 # Include Parsing files
 include("parsers/common.jl")

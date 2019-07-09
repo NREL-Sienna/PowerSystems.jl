@@ -87,3 +87,11 @@ function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=
     return PTDF(S, axes, look_up)
 
 end
+
+function PTDF(sys::System, dist_slack::Array{Float64}=[0.1])
+    branches = get_components(ACBranch, sys) |> collect
+    nodes = get_components(Bus, sys) |> collect
+
+    return PTDF(branches, nodes, dist_slack)
+
+end
