@@ -1,74 +1,8 @@
-function _buildptdf(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:ACBranch}
 
-    buscount = length(nodes)
-    linecount = length(branches)
-    num_bus = Dict{Int,Int}()
-
-    for (ix,b) in enumerate(nodes)
-        num_bus[b.number] = ix
-    end
-
-    A = zeros(Float64,buscount,linecount);
-    inv_X = zeros(Float64,linecount,linecount);
-
-   #build incidence matrix
-   #incidence_matrix = A
-
-    for (ix,b) in enumerate(branches)
-
-        if isa(b,DCBranch)
-            @warn("PTDF construction ignores DC-Lines")
-            continue
-        end
-
-        A[num_bus[b.connectionpoints.from.number], ix] =  1;
-
-        A[num_bus[b.connectionpoints.to.number], ix] = -1;
-
-        if isa(b,Transformer2W)
-            inv_X[ix,ix] = 1/b.x;
-
-        elseif isa(b,TapTransformer)
-            inv_X[ix,ix] = 1/(b.x*b.tap);
-
-        elseif isa(b, Line)
-            inv_X[ix,ix] = 1/b.x;
-
-        elseif isa(b,PhaseShiftingTransformer)
-            y = 1 / (b.r + b.x * 1im)
-            y_a = y / (b.tap * exp(b.α * 1im * (π / 180)))
-            inv_X[ix,ix] = 1/imag(y_a)
-        end
-
-    end
-    slacks = [num_bus[n.number] for n in nodes if n.bustype == REF::BusType]
-    slack_position = slacks[1]
-    B = gemm('N','T', gemm('N','N',A[setdiff(1:end, slack_position),1:end] ,inv_X), A[setdiff(1:end, slack_position),1:end])
-    if dist_slack[1] == 0.1 && length(dist_slack) ==1
-        (B, bipiv, binfo) = getrf!(B)
-        S_ = gemm('N','N', gemm('N','T', inv_X, A[setdiff(1:end, slack_position), :]), getri!(B, bipiv) )
-        S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
-
-    elseif dist_slack[1] != 0.1 && length(dist_slack)  == buscount
-        @info "Distributed bus"
-        (B, bipiv, binfo) = getrf!(B)
-        S_ = gemm('N','N', gemm('N','T', inv_X, A[setdiff(1:end, slack_position), :]), getri!(B, bipiv) )
-        S = hcat(S_[:,1:slack_position-1],zeros(linecount,),S_[:,slack_position:end])
-        slack_array =dist_slack/sum(dist_slack)
-        slack_array = reshape(slack_array,buscount,1)
-        S = S - gemm('N','N',gemm('N','N',S,slack_array),ones(1,buscount))
-
-    elseif length(slack_position) == 0
-        @warn("Slack bus not identified in the Bus/Nodes list, can't build PTDF")
-        S = Array{Float64,2}(undef,linecount,buscount)
-    end
-
-    return  S, A
-
-end
+abstract type PowerNetworkMatrix <: AbstractArray{Float64,2} end
 
 
-#  The container code for PTDF is based in JuMP's PTDFContainer in order to
+#  The container code for PowerNetworkMatrix is based in JuMP's Container in order to
 #  remove the limitations of AxisArrays and the doubts about long term maintenance
 #  https://github.com/JuliaOpt/JuMP.jl/blob/master/src/Containers/DenseAxisArray.jl
 #  JuMP'sCopyright 2017, Iain Dunning, Joey Huchette, Miles Lubin, and contributors
@@ -86,39 +20,19 @@ function _make_ax_ref(ax::Vector)
     return ref
 end
 
-
-struct PTDF <: AbstractArray{Float64,2}
-    data::Array{Float64,2}
-    axes::NTuple{2,Array}
-    lookup::NTuple{2,Dict}
-end
-
-function PTDF(branches::Array{T}, nodes::Array{Bus}, dist_slack::Array{Float64}=[0.1]) where {T<:ACBranch}
-
-    #Get axis names
-    line_ax = [branch.name for branch in branches]
-    bus_ax = [bus.number for bus in nodes]
-    S, A = _buildptdf(branches, nodes, dist_slack)
-
-    axes = (line_ax, bus_ax)
-    look_up = (_make_ax_ref(line_ax),_make_ax_ref(bus_ax))
-
-    return PTDF(S, axes, look_up)
-
-end
-
 # AbstractArray interface
-Base.isempty(A::PTDF) = isempty(A.data)
-Base.size(A::PTDF) = size(A.data)
-Base.LinearIndices(A::PTDF) = error("PTDF does not support this operation.")
-Base.axes(A::PTDF) = A.axes
-Base.CartesianIndices(a::PTDF) = error("PTDF does not support this operation.")
+Base.isempty(A::PowerNetworkMatrix) = isempty(A.data)
+Base.size(A::PowerNetworkMatrix) = size(A.data)
+Base.LinearIndices(A::PowerNetworkMatrix) = error("PowerSystems PowerNetworkMatrix does not support this operation.")
+Base.axes(A::PowerNetworkMatrix) = A.axes
+Base.CartesianIndices(a::PowerNetworkMatrix) = error("PowerSystems PowerNetworkMatrix does not support this operation.")
+
 
 ############
 # Indexing #
 ############
 
-Base.eachindex(A::PTDF) = CartesianIndices(size(A.data))
+Base.eachindex(A::PowerNetworkMatrix) = CartesianIndices(size(A.data))
 
 lookup_index(i, lookup::Dict) = isa(i, Colon) ? Colon() : lookup[i]
 
@@ -147,7 +61,7 @@ _to_index_tuple(idx::NTuple{0}, lookup::Tuple) = ()
 # Resolve ambiguity with the above two base cases
 _to_index_tuple(idx::NTuple{0}, lookup::NTuple{0}) = ()
 
-to_index(A::PTDF, idx...) = _to_index_tuple(idx, A.lookup)
+to_index(A::PowerNetworkMatrix, idx...) = _to_index_tuple(idx, A.lookup)
 
 # Doing `Colon() in idx` is relatively slow because it involves
 # a non-unrolled loop through the `idx` tuple which may be of
@@ -157,7 +71,7 @@ has_colon(idx::Tuple) = isa(first(idx), Colon) || has_colon(Base.tail(idx))
 
 # TODO: better error (or just handle correctly) when user tries to index with a range like a:b
 # The only kind of slicing we support is dropping a dimension with colons
-function Base.getindex(A::PTDF, idx...)
+function Base.getindex(A::PowerNetworkMatrix, idx...)
     #=
     if has_colon(idx)
         PTDF(A.data[to_index(A,idx...)...], (ax for (i,ax) in enumerate(A.axes) if idx[i] == Colon())...)
@@ -167,48 +81,48 @@ function Base.getindex(A::PTDF, idx...)
     =#
     return A.data[to_index(A,idx...)...]
 end
-Base.getindex(A::PTDF, idx::CartesianIndex) = A.data[idx]
-Base.setindex!(A::PTDF, v, idx...) = A.data[to_index(A,idx...)...] = v
-Base.setindex!(A::PTDF, v, idx::CartesianIndex) = A.data[idx] = v
+Base.getindex(A::PowerNetworkMatrix, idx::CartesianIndex) = A.data[idx]
+Base.setindex!(A::PowerNetworkMatrix, v, idx...) = A.data[to_index(A,idx...)...] = v
+Base.setindex!(A::PowerNetworkMatrix, v, idx::CartesianIndex) = A.data[idx] = v
 
-Base.IndexStyle(::Type{PTDF}) = IndexAnyCartesian()
+Base.IndexStyle(::Type{PowerNetworkMatrix}) = IndexAnyCartesian()
 
 
 ########
 # Keys #
 ########
 
-struct PTDFKey{T<:Tuple}
+struct PowerNetworkMatrixKey{T<:Tuple}
     I::T
 end
-Base.getindex(k::PTDFKey, args...) = getindex(k.I, args...)
+Base.getindex(k::PowerNetworkMatrixKey, args...) = getindex(k.I, args...)
 
-struct PTDFKeys{T<:Tuple}
+struct PowerNetworkMatrixKeys{T<:Tuple}
     product_iter::Base.Iterators.ProductIterator{T}
 end
-Base.length(iter::PTDFKeys) = length(iter.product_iter)
-function Base.eltype(iter::PTDFKeys)
-    return PTDFKey{eltype(iter.product_iter)}
+Base.length(iter::PowerNetworkMatrixKeys) = length(iter.product_iter)
+function Base.eltype(iter::PowerNetworkMatrixKeys)
+    return PowerNetworkMatrixKey{eltype(iter.product_iter)}
 end
-function Base.iterate(iter::PTDFKeys)
+function Base.iterate(iter::PowerNetworkMatrixKeys)
     next = iterate(iter.product_iter)
-    return next == nothing ? nothing : (PTDFKey(next[1]), next[2])
+    return next == nothing ? nothing : (PowerNetworkMatrixKey(next[1]), next[2])
 end
-function Base.iterate(iter::PTDFKeys, state)
+function Base.iterate(iter::PowerNetworkMatrixKeys, state)
     next = iterate(iter.product_iter, state)
-    return next == nothing ? nothing : (PTDFKey(next[1]), next[2])
+    return next == nothing ? nothing : (PowerNetworkMatrixKey(next[1]), next[2])
 end
-function Base.keys(a::PTDF)
-    return PTDFKeys(Base.Iterators.product(a.axes...))
+function Base.keys(a::PowerNetworkMatrix)
+    return PowerNetworkMatrixKeys(Base.Iterators.product(a.axes...))
 end
-Base.getindex(a::PTDF, k::PTDFKey) = a[k.I...]
+Base.getindex(a::PowerNetworkMatrix, k::PowerNetworkMatrixKey) = a[k.I...]
 
 ########
 # Show #
 ########
 
 # Adapted printing from JuMP's implementation of the Julia's show.jl
-# used in PTDFs
+# used in PowerNetworkMatrixs
 
 # Copyright (c) 2009-2016: Jeff Bezanson, Stefan Karpinski, Viral B. Shah,
 # and other contributors:
@@ -226,7 +140,7 @@ Base.getindex(a::PTDF, k::PTDFKey) = a[k.I...]
 # The above copyright notice and this permission notice shall be
 # included in all copies or substantial portions of the Software.
 
-function Base.summary(io::IO, A::PTDF)
+function Base.summary(io::IO, A::PowerNetworkMatrix)
     _summary(io, A)
     for (k,ax) in enumerate(A.axes)
         print(io, "    Dimension $k, ")
@@ -235,24 +149,24 @@ function Base.summary(io::IO, A::PTDF)
     end
     print(io, "And data, a ", size(A.data))
 end
-_summary(io::IO, A::PTDF) = println(io, "PTDF Matrix")
+_summary(io::IO, A::PowerNetworkMatrix) = println(io, "PowerNetworkMatrix")
 
-function Base.summary(io::IOContext{Base.GenericIOBuffer{Array{UInt8,1}}}, ::PTDF)
-    println(io, "PTDF Matrix")
+function Base.summary(io::IOContext{Base.GenericIOBuffer{Array{UInt8,1}}}, ::PowerNetworkMatrix)
+    println(io, "PowerNetworkMatrix")
 end
 
-function Base.summary(A::PTDF)
+function Base.summary(A::PowerNetworkMatrix)
     io = IOBuffer()
     Base.summary(io, A)
     String(take!(io))
 end
 
 if isdefined(Base, :print_array) # 0.7 and later
-    Base.print_array(io::IO, X::PTDF) = Base.print_matrix(io, X.data)
+    Base.print_array(io::IO, X::PowerNetworkMatrix) = Base.print_matrix(io, X.data)
 end
 
 # n-dimensional arrays
-function Base.show_nd(io::IO, a::PTDF, print_matrix::Function, label_slices::Bool)
+function Base.show_nd(io::IO, a::PowerNetworkMatrix, print_matrix::Function, label_slices::Bool)
     limit::Bool = get(io, :limit, false)
     if isempty(a)
         return
@@ -298,7 +212,7 @@ function Base.show_nd(io::IO, a::PTDF, print_matrix::Function, label_slices::Boo
     end
 end
 
-function Base.show(io::IO, array::PTDF)
+function Base.show(io::IO, array::PowerNetworkMatrix)
     summary(io, array)
     isempty(array) && return
     println(io, ":")

@@ -302,9 +302,9 @@ end
 
 
 @time @testset "Ybus Matrix" begin
-    Ybus5 = PowerSystems.build_ybus(length(nodes5), branches5)
+    Ybus5 = PowerSystems.Ybus(branches5, nodes5)
 
-    I, J, V = findnz(Ybus5)
+    I, J, V = findnz(Ybus5.data)
     indices = collect(zip(I,J))
 
     for i in indices
@@ -312,14 +312,17 @@ end
     end
 
 
-    Ybus14 = PowerSystems.build_ybus(length(nodes14), branches14);
-    I, J, V = findnz(Ybus14)
+    Ybus14 = PowerSystems.Ybus(branches14, nodes14);
+    I, J, V = findnz(Ybus14.data)
     indices = collect(zip(I,J))
 
     for i in indices
         @test isapprox(Ybus14[i[1], i[2]], Ybus14_matpower[i[1], i[2]], atol=1e-2)
     end
-
+    
+    RTS = create_rts_system()
+    YbusRTS = Ybus(get_components(ACBranch, RTS) |> collect, get_components(Bus, RTS) |> collect)
+    # TODO: create a Ybus for the RTS and compare
 
     # Disabled per GitHub issue #256.
     #Ybus5_ps = PowerSystems.build_ybus(length(Buses_ps), Branches_ps)
