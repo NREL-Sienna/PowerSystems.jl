@@ -4,6 +4,11 @@ include("../data/data_14bus_pu.jl")
 # The 5-bus case from PowerModels data is modified to include 2 phase shifters
 pm_dict = PowerSystems.parse_file(joinpath(MATPOWER_DIR, "case5.m"));
 sys = PowerSystems.pm2ps_dict(pm_dict);
+RTS = create_rts_system();
+
+# mixed up ids for data_5bus_pu
+Br5NS_ids = [2,3,5,1,4,6]
+Bu5NS_ids = [1,3,4,5,2]
 
 #PTDFs obtained from Matpower
 S5_slackB4 =     [0.1939   -0.4759   -0.3490         0    0.1595;
@@ -157,6 +162,8 @@ SRTS_GMLC = [
    -2.8435579e-02  -2.7568386e-02  -5.5683888e-02  -2.5101872e-02  -2.2723873e-02  -1.9404357e-02   3.0561834e-02   9.0914720e-03  -2.3082049e-02  -1.6810577e-02  -2.5757010e-02  -1.1893921e-02   0.0000000e+00  -5.4000028e-02  -1.1101393e-01  -9.3674745e-02  -1.2117562e-01  -1.3398468e-01  -6.1354558e-02  -3.3250048e-02  -1.4587881e-01  -1.3616889e-01  -1.7792568e-02  -9.0052529e-02   1.1748184e-01   1.1844298e-01   8.7229511e-02   1.2115534e-01   1.2383328e-01   1.2752382e-01   1.2689268e-01   1.2689268e-01   1.2337649e-01   1.3040888e-01   1.2807752e-01   1.4496048e-01   1.4648826e-01   1.1310173e-01   7.4168001e-02   9.2064302e-02   6.6560211e-02   6.8485409e-02   1.3063723e-01   1.6417890e-01   7.0273092e-02   6.8813694e-02   1.8262682e-01   7.9116263e-02   5.3778758e-01   5.3837378e-01   5.1933680e-01   5.4002804e-01   5.4166130e-01   5.4391215e-01   5.4352722e-01   5.4352722e-01   5.4138271e-01   5.4567174e-01   5.4053779e-01   5.5825876e-01   5.5842746e-01   5.2194514e-01   4.8190543e-01   4.9582689e-01   4.5970852e-01   4.4062817e-01   5.3643100e-01   5.7173892e-01   4.5516089e-01   4.5694839e-01   5.9115827e-01   4.9608604e-01  -3.8651469e-01
 ]
 
+RTS_branchnames = ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "A11", "AB1", "A12-1", "A13-2", "A14", "A15", "A16", "A17", "A18", "A19", "A20", "A21", "A22", "AB2", "A23", "A24", "A25-1", "A25-2", "A26", "A27", "A28", "A29", "A30", "A31-1", "A31-2", "A32-1", "A32-2", "A33-1", "A33-2", "A34", "AB3", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10", "B11", "B12-1", "B13-2", "B14", "B15", "B16", "B17", "B18", "B19", "B20", "B21", "B22", "B23", "B24", "B25-1", "B25-2", "B26", "B27", "B28", "B29", "B30", "B31-1", "B31-2", "B32-1", "B32-2", "B33-1", "B33-2", "B34", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10", "C11", "C12-1", "C13-2", "C14", "C15", "C16", "C17", "C18", "C19", "C20", "C21", "C22", "C23", "C24", "C25-1", "C25-2", "C26", "C27", "C28", "C29", "C30", "C31-1", "C31-2", "C32-1", "C32-2", "C33-1", "C33-2", "C34", "CA-1", "CB-1", "C35"]
+
 Lodf_5 = [-1.0000 0.3448 0.3071 -1.0000 -1.0000 -0.3071;
         0.5429 -1.0000 0.6929 0.5429 0.5429 -0.6929;
         0.4571 0.6552 -1.0000 0.4571 0.4571 1.0000;
@@ -287,24 +294,40 @@ Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
     P14 = PowerSystems.PTDF(branches14, nodes14);
     @test maximum(P14.data - S14_slackB1) <= 1e-3
 
+    P5NS = PTDF([branches5[b] for b in Br5NS_ids], [nodes5[b] for b in Bu5NS_ids]);
+    for br in Br5NS_ids, b in Bu5NS_ids
+        @test getindex(P5NS,string(br),b) - S5_slackB4[br,b] <= 1e-3
+    end
+
+    PRTS = PTDF(RTS);
+    bnums = sort([PowerSystems.get_number(b) for b in get_components(Bus,RTS)])
+    for (ibr,br) in enumerate(RTS_branchnames), (ib,b) in enumerate(bnums)
+        @test getindex(PRTS,br,b) - SRTS_GMLC[ibr,ib] <= 1e-3
+    end
 end
 
 @time @testset "LODF matrices" begin
-    L5 = PowerSystems.buildlodf(branches5,nodes5)
-    @test maximum(L5 - Lodf_5) <= 1e-3
+    L5 = PowerSystems.LODF(branches5,nodes5)
+    @test maximum(L5.data - Lodf_5) <= 1e-3
 
-    L14 = PowerSystems.buildlodf(branches14,nodes14)
-    @test maximum(L14 - Lodf_14) <= 1e-3
+    L14 = PowerSystems.LODF(branches14,nodes14)
+    @test maximum(L14.data - Lodf_14) <= 1e-3
 
-    #PRTS = PowerSystems.buildptdf(branches_gmlc, nodes_gmlc)
-    #@test maximum(PTRS - SRTS_GMLC) <= 1e-6
+    L5NS = PowerSystems.LODF(sys)
+    @test getindex(L5NS,"5","4") - 0.0003413469090 <= 1e-4
+
+    L5NS = LODF([branches5[b] for b in Br5NS_ids], [nodes5[b] for b in Bu5NS_ids]);
+    for brf in Br5NS_ids, brt in Br5NS_ids
+        @test getindex(L5NS,string(brf),string(brt)) - Lodf_5[brf,brt] <= 1e-3
+    end
+
 end
 
 
 @time @testset "Ybus Matrix" begin
-    Ybus5 = PowerSystems.build_ybus(length(nodes5), branches5)
+    Ybus5 = PowerSystems.Ybus(branches5, nodes5)
 
-    I, J, V = findnz(Ybus5)
+    I, J, V = findnz(Ybus5.data)
     indices = collect(zip(I,J))
 
     for i in indices
@@ -312,13 +335,23 @@ end
     end
 
 
-    Ybus14 = PowerSystems.build_ybus(length(nodes14), branches14);
-    I, J, V = findnz(Ybus14)
+    Ybus14 = PowerSystems.Ybus(branches14, nodes14);
+    I, J, V = findnz(Ybus14.data)
     indices = collect(zip(I,J))
 
     for i in indices
         @test isapprox(Ybus14[i[1], i[2]], Ybus14_matpower[i[1], i[2]], atol=1e-2)
     end
+    
+    Y5NS = Ybus(sys)
+    @test isapprox(getindex(Y5NS, 10, 4), -3.3336667 + 33.336667im, atol= 1e-4)
+
+    Y5NS = Ybus([branches5[b] for b in Br5NS_ids], [nodes5[b] for b in Bu5NS_ids]);
+    for buf in Bu5NS_ids, but in Bu5NS_ids
+        @test isapprox(getindex(Y5NS,buf,but), Ybus5_matpower[buf,but], atol=1e-3)
+    end
+
+
 
 
     # Disabled per GitHub issue #256.

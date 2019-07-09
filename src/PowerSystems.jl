@@ -68,7 +68,8 @@ export StaticReserve
 export Transfer
 
 export PTDF
-export build_ybus
+export Ybus
+export LODF
 export GeneratorCostModel
 export BusType
 
@@ -158,15 +159,18 @@ include("models/services.jl")
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
 
-include("utils/ybus_calculations.jl")
-include("utils/ptdf_calculations.jl")
-
 #Data Checks
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+
+# network calculations
+include("utils/network_calculations/common.jl")
+include("utils/network_calculations/ybus_calculations.jl")
+include("utils/network_calculations/ptdf_calculations.jl")
+include("utils/network_calculations/lodf_calculations.jl")
 
 # Include Parsing files
 include("parsers/common.jl")
@@ -184,7 +188,6 @@ include("validation/powersystem.jl")
 
 # Better printing
 include("utils/print.jl")
-include("utils/lodf_calculations.jl")
 
 include("models/serialization.jl")
 
