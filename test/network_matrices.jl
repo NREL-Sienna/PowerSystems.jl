@@ -320,9 +320,15 @@ end
         @test isapprox(Ybus14[i[1], i[2]], Ybus14_matpower[i[1], i[2]], atol=1e-2)
     end
     
-    RTS = create_rts_system()
-    YbusRTS = Ybus(get_components(ACBranch, RTS) |> collect, get_components(Bus, RTS) |> collect)
+    Ybus5nonsequential = Ybus(get_components(ACBranch, sys) |> collect, get_components(Bus, sys) |> collect)
+
+    I, J, V = findnz(Ybus5nonsequential.data)
+    indices = collect(zip(I,J))
+
     # TODO: create a Ybus for the RTS and compare
+    #for i in indices
+    #    @test isapprox(Ybus5nonsequential[i[1], i[2]], Ybus5nonsequential_matpower[i[1], i[2]], atol=1e-2)
+    #end
 
     # Disabled per GitHub issue #256.
     #Ybus5_ps = PowerSystems.build_ybus(length(Buses_ps), Branches_ps)
