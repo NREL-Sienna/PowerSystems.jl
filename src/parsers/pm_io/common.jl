@@ -34,7 +34,7 @@ end
 ""
 function parse_json(io::IO; validate=true)
     data_string = read(io, String)
-    pm_data = JSON.parse(data_string)
+    pm_data = JSON2.parse(data_string)
     if validate
         check_network_data(pm_data)
     end

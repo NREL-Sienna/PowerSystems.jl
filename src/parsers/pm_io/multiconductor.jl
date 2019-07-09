@@ -191,7 +191,7 @@ Base.deg2rad(a::MultiConductorMatrix) = MultiConductorMatrix(map(deg2rad, a.valu
 
 
 
-JSON.lower(mcv::MultiConductorValue) = mcv.values
+#JSON2.lower(mcv::MultiConductorValue) = mcv.values
 
 
 "converts a MultiConductorValue value to a string in summary"
