@@ -273,7 +273,7 @@ function parse_json(filename,device_names)
             open("$filename/x$name.json", "r") do f
             global temp
             dicttxt = readstring(f)  # file information to string
-            temp=JSON2.parse(dicttxt)  # parse and transform data
+            temp=JSON2.read(dicttxt,Dict{Any,Array{Dict}})  # parse and transform data
             Devices[name] = temp
             end
         end

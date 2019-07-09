@@ -286,7 +286,7 @@ function json_parser(filename)
         open("../data/CDM/RTS/JSON/RTS-GMLC_Test_Case.json", "r") do f
         global temp
         dicttxt = readstring(f)  # file information to string
-        temp = JSON2.parse(dicttxt)  # parse and transform data
+        temp = JSON2.read(dicttxt, Dict{Any,Array{Dict}})  # parse and transform data
         data = temp
         end
     else
