@@ -292,14 +292,14 @@ Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
 end
 
 @time @testset "LODF matrices" begin
-    L5 = PowerSystems.buildlodf(branches5,nodes5)
-    @test maximum(L5 - Lodf_5) <= 1e-3
+    L5 = PowerSystems.LODF(branches5,nodes5)
+    @test maximum(L5.data - Lodf_5) <= 1e-3
 
-    L14 = PowerSystems.buildlodf(branches14,nodes14)
-    @test maximum(L14 - Lodf_14) <= 1e-3
+    L14 = PowerSystems.LODF(branches14,nodes14)
+    @test maximum(L14.data - Lodf_14) <= 1e-3
 
-    #PRTS = PowerSystems.buildptdf(branches_gmlc, nodes_gmlc)
-    #@test maximum(PTRS - SRTS_GMLC) <= 1e-6
+    L5NS = PowerSystems.LODF(sys)
+    @test getindex(L5NS,"5",4) - 0.0003413469090 <= 1e-4
 end
 
 
@@ -322,15 +322,9 @@ end
         @test isapprox(Ybus14[i[1], i[2]], Ybus14_matpower[i[1], i[2]], atol=1e-2)
     end
     
-    Ybus5nonsequential = Ybus(sys)
+    Y5NS = Ybus(sys)
+    @test isapprox(getindex(Y5NS, 10, 4), -3.3336667 + 33.336667im, atol= 1e-4)
 
-    I, J, V = findnz(Ybus5nonsequential.data)
-    indices = collect(zip(I,J))
-
-    # TODO: create a Ybus for the RTS and compare
-    #for i in indices
-    #    @test isapprox(Ybus5nonsequential[i[1], i[2]], Ybus5nonsequential_matpower[i[1], i[2]], atol=1e-2)
-    #end
 
     # Disabled per GitHub issue #256.
     #Ybus5_ps = PowerSystems.build_ybus(length(Buses_ps), Branches_ps)
