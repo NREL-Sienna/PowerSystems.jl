@@ -1028,7 +1028,7 @@
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Union{Nothing, Float64}"
+        "data_type": "Float64"
       },
       {
         "name": "reactivepowerlimits",

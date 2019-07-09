@@ -14,7 +14,7 @@ mutable struct GenericBattery <: Storage
     inputactivepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     outputactivepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
-    reactivepower::Union{Nothing, Float64}
+    reactivepower::Float64
     reactivepowerlimits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
     internal::PowerSystems.PowerSystemInternal
 end
