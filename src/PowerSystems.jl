@@ -31,23 +31,23 @@ export PhaseShiftingTransformer
 export Forecast
 export Deterministic
 
+export ThreePartCost
+export TwoPartCost
+
 export Generator
 export HydroGen
 export HydroFix
 export HydroDispatch
 export HydroStorage
 export TechHydro
-export EconHydro
 
 export RenewableGen
 export TechRenewable
-export EconRenewable
 export RenewableFix
 export RenewableDispatch
 
 export ThermalGen
 export TechThermal
-export EconThermal
 export ThermalStandard
 
 export ElectricLoad
@@ -55,7 +55,6 @@ export StaticLoad
 export PowerLoad
 export PowerLoadPF
 export FixedAdmittance
-export EconLoad
 export ControllableLoad
 export InterruptibleLoad
 
@@ -146,6 +145,7 @@ include("utils/IO/base_checks.jl")
 include("models/topological_elements.jl")
 include("models/forecasts.jl")
 include("models/branches.jl")
+include("models/operational_cost.jl")
 #include("models/network.jl")
 
 # Static types

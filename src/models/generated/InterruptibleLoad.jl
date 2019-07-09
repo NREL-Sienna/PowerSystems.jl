@@ -10,16 +10,16 @@ mutable struct InterruptibleLoad <: ControllableLoad
     model::String  # [Z, I, P]
     maxactivepower::Float64
     maxreactivepower::Float64
-    econ::EconLoad
+    op_cost::TwoPartCost
     internal::PowerSystems.PowerSystemInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, econ, )
-    InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, econ, PowerSystemInternal())
+function InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
 end
 
-function InterruptibleLoad(; name, available, bus, model, maxactivepower, maxreactivepower, econ, )
-    InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, econ, )
+function InterruptibleLoad(; name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -32,7 +32,7 @@ function InterruptibleLoad(::Nothing)
         model="0",
         maxactivepower=0,
         maxreactivepower=0,
-        econ=EconLoad(nothing),
+        op_cost=TwoPartCost(nothing),
     )
 end
 
@@ -48,7 +48,7 @@ get_model(value::InterruptibleLoad) = value.model
 get_maxactivepower(value::InterruptibleLoad) = value.maxactivepower
 """Get InterruptibleLoad maxreactivepower."""
 get_maxreactivepower(value::InterruptibleLoad) = value.maxreactivepower
-"""Get InterruptibleLoad econ."""
-get_econ(value::InterruptibleLoad) = value.econ
+"""Get InterruptibleLoad op_cost."""
+get_op_cost(value::InterruptibleLoad) = value.op_cost
 """Get InterruptibleLoad internal."""
 get_internal(value::InterruptibleLoad) = value.internal

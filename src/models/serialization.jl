@@ -91,25 +91,24 @@ function encode_for_json(uuid::Base.UUID)
     return (value=string(uuid),)
 end
 
-"""Enables deserialization of EconThermal. The default implementation can't figure out the
-variablecost Union.
+"""Enables deserialization of VariableCost. The default implementation can't figure out the
+variable Union.
 """
-function JSON2.read(io::IO, ::Type{T}) where {T <: EconThermal}
+function JSON2.read(io::IO, ::Type{VariableCost})
     data = JSON2.read(io)
-    @assert length(data.variablecost) > 0
-    if data.variablecost[1] isa Array
-        variablecost = Vector{Tuple{Float64, Float64}}()
-        for array in data.variablecost
-            push!(variablecost, Tuple{Float64, Float64}(array))
+    if data.cost isa Real
+        return VariableCost(Float64(data.cost))
+    elseif data.cost[1] isa Array
+        variable = Vector{Tuple{Float64, Float64}}()
+        for array in data.cost
+            push!(variable, Tuple{Float64, Float64}(array))
         end
     else
-        @assert data.variablecost isa Tuple || data.variablecost isa Array
-        variablecost = Tuple{Float64, Float64}(data.variablecost)
+        @assert data.cost isa Tuple || data.cost isa Array
+        variable = Tuple{Float64, Float64}(data.cost)
     end
 
-    internal = convert_type(PowerSystemInternal, data.internal)
-    return EconThermal(data.capacity, variablecost, data.fixedcost, data.startupcost,
-                       data.shutdncost, internal)
+    return VariableCost(variable)
 end
 
 # Refer to docstrings in services.jl.

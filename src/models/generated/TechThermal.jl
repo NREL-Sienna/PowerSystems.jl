@@ -2,12 +2,12 @@
 This file is auto-generated. Do not edit.
 =#
 
-"""Data Structure for the economical parameters of thermal generation technologies."""
+"""Data Structure for the technical parameters of thermal generation technologies."""
 mutable struct TechThermal <: PowerSystems.TechnicalParams
-    rating::Float64
+    rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
     activepower::Float64
     activepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    reactivepower::Union{Nothing, Float64}
+    reactivepower::Float64
     reactivepowerlimits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
@@ -29,7 +29,7 @@ function TechThermal(::Nothing)
         rating=0.0,
         activepower=0.0,
         activepowerlimits=(min=0.0, max=0.0),
-        reactivepower=nothing,
+        reactivepower=0.0,
         reactivepowerlimits=nothing,
         ramplimits=nothing,
         timelimits=nothing,

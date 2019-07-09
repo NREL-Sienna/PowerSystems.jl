@@ -1,4 +1,12 @@
-const From_To_Bus =  NamedTuple{(:from, :to),Tuple{Bus,Bus}}
+"""Accepts rating as a Float64 and then creates a TechRenewable."""
+function TwoPartCost(variable_cost::T, args...) where {T <: VarCostArgs}
+    return TwoPartCost(VariableCost(variable_cost), args...)
+end
+
+"""Accepts rating as a Float64 and then creates a TechRenewable."""
+function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
+    return ThreePartCost(VariableCost(variable_cost), args...)
+end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
 function RenewableFix(name, available, bus, rating::Float64)
@@ -8,16 +16,16 @@ end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
 function RenewableDispatch(name::String, available::Bool, bus::Bus, rating::Float64,
-                           econ::Union{EconRenewable,Nothing})
-    tech = TechRenewable(rating, nothing, 1.0)
-    return RenewableDispatch(name, available, bus, tech, econ)
+                           op_cost::TwoPartCost)
+    tech = TechRenewable(rating, 0.0, nothing, 1.0)
+    return RenewableDispatch(name, available, bus, tech, op_cost)
 end
 
 """Accepts curtailment cost as a Float64 and then creates an EconHydro."""
 function HydroDispatch(name::AbstractString, available::Bool, bus::Bus, tech::TechHydro,
                        curtailcost::Float64)
-    econ = EconHydro(curtailcost, nothing)
-    return HydroDispatch(name, available, bus, tech, econ)
+    op_cost = TwoPartCost(0.0, curtailcost)
+    return HydroDispatch(name, available, bus, tech, op_cost)
 end
 
 """Constructs Deterministic from a Component, label, and TimeArray."""

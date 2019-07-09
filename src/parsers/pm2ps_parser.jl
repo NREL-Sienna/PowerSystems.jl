@@ -162,6 +162,7 @@ end
 function make_tech_renewable(d)
     tech = TechRenewable(;
         rating=float(d["pmax"]),
+        reactivepower=d["qg"],
         reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
         powerfactor=1,
     )
@@ -171,13 +172,13 @@ end
 
 function make_renewable_dispatch(gen_name, d, bus)
     tech = make_tech_renewable(d)
-    econ = EconRenewable(0.0, nothing)
+    cost = TwoPartCost(0.0, 0.0)
     generator = RenewableDispatch(;
         name=gen_name,
         available=Bool(d["gen_status"]),
         bus=bus,
         tech=tech,
-        econ=econ,
+        op_cost=cost,
     )
 
     return generator
@@ -228,33 +229,33 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
             power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
             cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]
             cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
-            fixedcost = cost[1][2]
+            fixed = cost[1][2]
         elseif model == POLYNOMIAL::GeneratorCostModel
             if d["ncost"] == 0
                 cost = (0.0, 0.0)
-                fixedcost = 0.0
+                fixed = 0.0
             elseif d["ncost"] == 1
                 cost = (0.0, 0.0)
-                fixedcost = d["cost"][1]
+                fixed = d["cost"][1]
             elseif d["ncost"] == 2
                 cost = (0.0, d["cost"][1])
-                fixedcost = d["cost"][2]
+                fixed = d["cost"][2]
             elseif d["ncost"] == 3
                 cost = (d["cost"][1], d["cost"][2])
-                fixedcost = d["cost"][3]
+                fixed = d["cost"][3]
             else
                 throw(DataFormatError("invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree"))
             end
         end
-        startupcost = d["startup"]
-        shutdncost = d["shutdown"]
+        startup = d["startup"]
+        shutdn = d["shutdown"]
     else
         @warn "Generator cost data not included for Generator: $gen_name"
-        tmpcost = EconThermal(nothing)
-        cost = tmpcost.variablecost
-        fixedcost = tmpcost.fixedcost
-        startupcost = tmpcost.startupcost
-        shutdncost = tmpcost.shutdncost
+        tmpcost = ThreePartCost(nothing)
+        cost = tmpcost.variable
+        fixed = tmpcost.fixed
+        startup = tmpcost.startup
+        shutdn = tmpcost.shutdn
     end
 
     # TODO GitHub #148: ramp_agc isn't always present. This value may not be correct.
@@ -269,12 +270,11 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         ramplimits=(up=ramp_agc / d["mbase"], down=ramp_agc / d["mbase"]),
         timelimits=nothing,
     )
-    econ = EconThermal(;
-        capacity=d["pmax"],
-        variablecost=cost,
-        fixedcost=fixedcost,
-        startupcost=startupcost,
-        shutdncost=shutdncost,
+    op_cost = ThreePartCost(;
+        variable=cost,
+        fixed=fixed,
+        startup=startup,
+        shutdn=shutdn,
     )
 
     thermal_gen = ThermalStandard(
@@ -282,7 +282,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         available=Bool(d["gen_status"]),
         bus=bus,
         tech=tech,
-        econ=econ,
+        op_cost=op_cost,
     )
 
     return thermal_gen

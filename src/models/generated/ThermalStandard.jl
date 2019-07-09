@@ -8,16 +8,16 @@ mutable struct ThermalStandard <: ThermalGen
     available::Bool
     bus::Bus
     tech::Union{Nothing, TechThermal}  # [-1. -1]
-    econ::Union{Nothing, EconThermal}
+    op_cost::ThreePartCost
     internal::PowerSystems.PowerSystemInternal
 end
 
-function ThermalStandard(name, available, bus, tech, econ, )
-    ThermalStandard(name, available, bus, tech, econ, PowerSystemInternal())
+function ThermalStandard(name, available, bus, tech, op_cost, )
+    ThermalStandard(name, available, bus, tech, op_cost, PowerSystemInternal())
 end
 
-function ThermalStandard(; name, available, bus, tech, econ, )
-    ThermalStandard(name, available, bus, tech, econ, )
+function ThermalStandard(; name, available, bus, tech, op_cost, )
+    ThermalStandard(name, available, bus, tech, op_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -28,7 +28,7 @@ function ThermalStandard(::Nothing)
         available=false,
         bus=Bus(nothing),
         tech=TechThermal(nothing),
-        econ=EconThermal(nothing),
+        op_cost=ThreePartCost(nothing),
     )
 end
 
@@ -40,7 +40,7 @@ get_available(value::ThermalStandard) = value.available
 get_bus(value::ThermalStandard) = value.bus
 """Get ThermalStandard tech."""
 get_tech(value::ThermalStandard) = value.tech
-"""Get ThermalStandard econ."""
-get_econ(value::ThermalStandard) = value.econ
+"""Get ThermalStandard op_cost."""
+get_op_cost(value::ThermalStandard) = value.op_cost
 """Get ThermalStandard internal."""
 get_internal(value::ThermalStandard) = value.internal

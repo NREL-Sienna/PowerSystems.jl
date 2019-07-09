@@ -661,18 +661,17 @@ function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
     )
 
     capacity = gen.active_power_limits_max
-    fixedcost = 0.0
+    fixed = 0.0
     startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
     shutdown_cost = 0.0
-    econ = EconThermal(
-        capacity,
+    op_cost = ThreePartCost(
         var_cost,
-        fixedcost,
+        fixed,
         startup_cost,
         shutdown_cost
     )
 
-    return ThermalStandard(gen.name, available, bus, tech, econ)
+    return ThermalStandard(gen.name, available, bus, tech, op_cost)
 end
 
 function make_hydro_generator(data::PowerSystemRaw, gen, bus)
@@ -703,6 +702,7 @@ function make_renewable_generator(gen_type, data::PowerSystemRaw, gen, bus)
     rating = gen.active_power_limits_max
 
     tech = TechRenewable(rating,
+                         gen.reactive_power,
                          (min=gen.reactive_power_limits_min,
                           max=gen.reactive_power_limits_max),
                          1.0)
@@ -712,7 +712,7 @@ function make_renewable_generator(gen_type, data::PowerSystemRaw, gen, bus)
             available,
             bus,
             tech,
-            EconRenewable(0.0, nothing),
+            TwoPartCost(0.0, 0.0),
         )
     elseif gen_type == RenewableFix
         generator = RenewableFix(gen.name, available, bus, tech)
