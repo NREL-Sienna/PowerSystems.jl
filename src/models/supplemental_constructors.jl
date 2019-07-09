@@ -12,7 +12,7 @@ end
 """Accepts rating as a Float64 and then creates a TechRenewable."""
 function RenewableDispatch(name::String, available::Bool, bus::Bus, rating::Float64,
                            op_cost::TwoPartCost)
-    tech = TechRenewable(rating, nothing, 1.0)
+    tech = TechRenewable(rating, 0.0, nothing, 1.0)
     return RenewableDispatch(name, available, bus, tech, op_cost)
 end
 
