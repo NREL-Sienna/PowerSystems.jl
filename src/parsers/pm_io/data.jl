@@ -127,7 +127,7 @@ function check_keys(data, keys)
     end
 end
 
-
+#=
 "prints the text summary for a data file or dictionary to stdout"
 function print_summary(obj::Union{String, Dict{String,Any}}; kwargs...)
     summary(stdout, obj; kwargs...)
@@ -140,7 +140,7 @@ function summary(io::IO, file::String; kwargs...)
     _summary(io, data; kwargs...)
     return data
 end
-
+=#
 
 pm_component_types_order = Dict(
     "bus" => 1.0, "load" => 2.0, "shunt" => 3.0, "gen" => 4.0, "storage" => 5.0,
@@ -183,7 +183,7 @@ pm_component_parameter_order = Dict(
 
 pm_component_status_parameters = Set(["status", "gen_status", "br_status"])
 
-
+#=
 "prints the text summary for a data dictionary to IO"
 function _summary(io::IO, data::Dict{String,Any}; kwargs...)
     summary(io, data;
@@ -192,7 +192,7 @@ function _summary(io::IO, data::Dict{String,Any}; kwargs...)
         component_status_parameters = pm_component_status_parameters,
         kwargs...)
 end
-
+=#
 
 component_table(data::Dict{String,Any}, component::String, args...) = component_table(data, component, args...)
 

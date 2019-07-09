@@ -113,7 +113,7 @@ function _component_table(data::Dict{String,Any}, component::String, fields::Vec
     return reshape(items, length(comps), length(fields)+1)
 end
 
-
+#=
 "prints the text summary for a data dictionary to stdout"
 function print_summary(obj::Dict{String,Any}; kwargs...)
     summary(stdout, obj; kwargs...)
@@ -266,6 +266,7 @@ function summary(io::IO, data::Dict{String,Any};
     end
 
 end
+=#
 
 "Attempts to determine if the given data is a component dictionary"
 function _iscomponentdict(data::Dict)
