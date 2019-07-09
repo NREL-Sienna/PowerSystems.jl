@@ -94,22 +94,21 @@ end
 """Enables deserialization of ThreePartCost. The default implementation can't figure out the
 variable Union.
 """
-function JSON2.read(io::IO, ::Type{ThreePartCost})
+function JSON2.read(io::IO, ::Type{VariableCost})
     data = JSON2.read(io)
-    @assert length(data.variable) > 0
-    if data.variable[1] isa Array
+    if data.cost isa Real
+        return VariableCost(Float64(data.cost))
+    elseif data.cost[1] isa Array
         variable = Vector{Tuple{Float64, Float64}}()
-        for array in data.variable
+        for array in data.cost
             push!(variable, Tuple{Float64, Float64}(array))
         end
     else
-        @assert data.variable isa Tuple || data.variable isa Array
-        variable = Tuple{Float64, Float64}(data.variable)
+        @assert data.cost isa Tuple || data.cost isa Array
+        variable = Tuple{Float64, Float64}(data.cost)
     end
 
-    internal = convert_type(PowerSystemInternal, data.internal)
-    return ThreePartCost(variable, data.fixed, data.startup,
-                       data.shutdn, internal)
+    return VariableCost(variable)
 end
 
 # Refer to docstrings in services.jl.
