@@ -10,15 +10,16 @@ mutable struct HydroStorage <: HydroGen
     tech::TechHydro
     op_cost::TwoPartCost
     storagecapacity::Float64
+    initial_storage::Float64
     internal::PowerSystems.PowerSystemInternal
 end
 
-function HydroStorage(name, available, bus, tech, op_cost, storagecapacity, )
-    HydroStorage(name, available, bus, tech, op_cost, storagecapacity, PowerSystemInternal())
+function HydroStorage(name, available, bus, tech, op_cost, storagecapacity, initial_storage, )
+    HydroStorage(name, available, bus, tech, op_cost, storagecapacity, initial_storage, PowerSystemInternal())
 end
 
-function HydroStorage(; name, available, bus, tech, op_cost, storagecapacity, )
-    HydroStorage(name, available, bus, tech, op_cost, storagecapacity, )
+function HydroStorage(; name, available, bus, tech, op_cost, storagecapacity, initial_storage, )
+    HydroStorage(name, available, bus, tech, op_cost, storagecapacity, initial_storage, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -31,6 +32,7 @@ function HydroStorage(::Nothing)
         tech=TechHydro(nothing),
         op_cost=TwoPartCost(nothing),
         storagecapacity=0.0,
+        initial_storage=0.0,
     )
 end
 
@@ -46,5 +48,7 @@ get_tech(value::HydroStorage) = value.tech
 get_op_cost(value::HydroStorage) = value.op_cost
 """Get HydroStorage storagecapacity."""
 get_storagecapacity(value::HydroStorage) = value.storagecapacity
+"""Get HydroStorage initial_storage."""
+get_initial_storage(value::HydroStorage) = value.initial_storage
 """Get HydroStorage internal."""
 get_internal(value::HydroStorage) = value.internal

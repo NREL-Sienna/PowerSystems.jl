@@ -7,8 +7,8 @@ mutable struct GenericBattery <: Storage
     name::String
     available::Bool
     bus::Bus
-    energy::Float64
-    capacity::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    energy::Float64  # State of Charge of the Battery p.u.-hr
+    capacity::NamedTuple{(:min, :max), Tuple{Float64, Float64}}  # Maximum and Minimum storage capacity in p.u.-hr
     rating::Float64
     activepower::Float64
     inputactivepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}

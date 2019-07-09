@@ -822,6 +822,11 @@
         "data_type": "Float64"
       },
       {
+        "name": "initial_storage",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "internal",
         "data_type": "PowerSystems.PowerSystemInternal"
       }
@@ -986,11 +991,13 @@
       {
         "name": "energy",
         "null_value": "0.0",
+        "comment": "State of Charge of the Battery p.u.-hr",
         "data_type": "Float64"
       },
       {
         "name": "capacity",
         "null_value": "(min=0.0, max=0.0)",
+        "comment": "Maximum and Minimum storage capacity in p.u.-hr",
         "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
       },
       {
