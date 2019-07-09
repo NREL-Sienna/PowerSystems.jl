@@ -272,7 +272,7 @@ end
 
 # Write dict to json file
 function dict_to_json(dict,filename)
-    stringdata =JSON2.write(dict, 3)
+    stringdata =JSON2.write(dict)
     open("$filename.json", "w") do f
         write(f, stringdata)
     end
