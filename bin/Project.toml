@@ -1,0 +1,6 @@
+name = "psy_bin"
+authors = ["Jose Daniel Lara <jdlara@berkeley.edu>"]
+
+[deps]
+JSON2 = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
+Mustache = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"

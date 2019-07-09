@@ -1,6 +1,3 @@
-import Pkg
-Pkg.add(Pkg.PackageSpec(name="Mustache", version="0.5.12"))
-
 import JSON2
 import Mustache
 

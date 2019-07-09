@@ -26,8 +26,13 @@ matrix:
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
 ## uncomment the following lines to override the default test script
+before_script:
+  - cd bin
+  - julia --project --color=yes -e "import Pkg; Pkg.instantiate();"
+  - julia --project .continuous-integration/check_generated_structs.jl
+  - cd ..
+
 script:
-  - julia .continuous-integration/check_generated_structs.jl
   - julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();"
   - julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);"
 
