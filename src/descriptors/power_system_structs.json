@@ -9,7 +9,7 @@
         "data_type": "VariableCost"
       },
       {
-        "name": "fixed_cost",
+        "name": "fixed",
         "null_value": "0.0",
         "data_type": "Float64"
       },
