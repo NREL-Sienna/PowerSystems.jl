@@ -28,7 +28,7 @@ matrix:
 ## uncomment the following lines to override the default test script
 before_script:
   - cd bin
-  - julia --project --color=yes -e "import Pkg; Pkg.instantiate(); include("../.continuous-integration/check_generated_structs.jl")"
+  - julia --project --color=yes -e "import Pkg; Pkg.instantiate(); include("joinpath("..",".continuous-integration","check_generated_structs.jl")"
   - cd ..
 
 script:
