@@ -16,4 +16,4 @@ data
 *.bak
 *~
 *.vscode
-bin/.continuous-integration/tmp/
+.continuous-integration/tmp/
