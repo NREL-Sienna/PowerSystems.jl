@@ -420,7 +420,7 @@ Add forecasts to the System from raw data.
 
 """
 function forecast_csv_parser!(sys::System, data::PowerSystemRaw; resolution=nothing)
-    forecast_data = parse_forecast_data_files(data)
+    forecast_data = parse_forecast_data_files(sys, data)
 
     return _forecast_csv_parser!(sys, forecast_data, resolution)
 end
@@ -724,30 +724,90 @@ function make_storage(data::PowerSystemRaw, gen, bus)
     return battery
 end
 
-function parse_forecast_data_files(data::PowerSystemRaw)
+function parse_forecast_data_files(sys::System, data::PowerSystemRaw)
     forecast_data = ForecastInfos()
+    label_cache = Dict()
 
     for forecast in iterate_rows(data, TIMESERIES_POINTERS::InputCategory)
         simulation = forecast.simulation
         category = _get_component_type_from_category(forecast.category)
-        component_name = forecast.component_name
-        label = forecast.label
+        component = get_forecast_component(sys, category, forecast.component_name)
+        label, per_unit = _get_label_info!(label_cache, data, typeof(component), forecast)
         data_file = forecast.data_file
-        add_forecast_data!(forecast_data, simulation, category, component_name, label,
+        add_forecast_data!(forecast_data, simulation, component, label, per_unit,
                            joinpath(data.directory, data_file))
     end
 
     return forecast_data
 end
 
-const CATEGORY_TO_TYPE = Dict{String, DataType}(
+"""Return the forecast label and whether to convert to per_unit from the descriptor."""
+function _get_label_info!(label_cache::Dict, data::PowerSystemRaw, component_type, forecast)
+    if forecast.label_source == "Category"
+        if component_type <: Generator
+            category = GENERATOR::InputCategory
+        elseif component_type <: Service
+            category = RESERVES::InputCategory
+        elseif component_type <: Bus
+            category = BUS::InputCategory
+        elseif component_type <: ElectricLoad
+            category = LOAD::InputCategory
+        else
+            error("unsupported $component_type")
+        end
+    else
+        category = COMPONENT_TO_CATEGORY[CATEGORY_STR_TO_COMPONENT[forecast.label_source]]
+    end
+
+    key = (category, forecast.label)
+    if haskey(label_cache, key)
+        return label_cache[key]
+    end
+
+    for descriptor in data.user_descriptors[category]
+        if descriptor["custom_name"] == forecast.label
+            sys_descr = _get_system_descriptor(data, category, descriptor["name"])
+            is_label_per_unit = get(sys_descr, "system_per_unit", false)
+            needs_pu_conversion = is_label_per_unit &&
+                                  haskey(descriptor, "system_per_unit") &&
+                                  !descriptor["system_per_unit"]
+            val = (forecast.label, needs_pu_conversion)
+            label_cache[key] = val
+            return val
+        end
+    end
+
+    error("Failed to find category=$category label=$(forecast.label)")
+end
+
+function _get_system_descriptor(data::PowerSystemRaw, category, name)
+    for descriptor in data.descriptors[category]
+        if descriptor["name"] == name
+            return descriptor
+        end
+    end
+
+    error("Failed to find system descriptor category=$category name=$name")
+end
+
+const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
+    "Bus" => Bus,
     "Generator" => Generator,
     "Reserve" => Service,
     "LoadZone" => LoadZones,
+    "Load" => ElectricLoad,
+)
+
+const COMPONENT_TO_CATEGORY = Dict(
+    Generator => GENERATOR::InputCategory,
+    Bus => BUS::InputCategory,
+    ElectricLoad => LOAD::InputCategory,
+    LoadZones => LOAD::InputCategory,
+    Service => RESERVES::InputCategory,
 )
 
 function _get_component_type_from_category(category::AbstractString)
-    component_type = get(CATEGORY_TO_TYPE, category, nothing)
+    component_type = get(CATEGORY_STR_TO_COMPONENT, category, nothing)
     if isnothing(component_type)
         throw(DataFormatError("unsupported category=$category"))
     end

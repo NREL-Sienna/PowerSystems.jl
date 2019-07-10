@@ -133,3 +133,31 @@ end
                                       REGEX_FILE=r"REAL_TIME(.*?)\.csv")
     @test verify_forecasts(sys, 1, 54, 288)
 end
+
+@testset "Verify per-unit conversion of forecasts" begin
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    PowerSystems.forecast_csv_parser!(sys,
+                                      joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "gen"),
+                                      "Simulation",
+                                      Generator;
+                                      REGEX_FILE=r"DAY_AHEAD(.*?)\.csv",
+                                      per_unit=false)
+    @test verify_forecasts(sys, 1, 81, 24)
+
+    data_no_per_unit = vcat([x.data for x in iterate_forecasts(sys)])
+
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    PowerSystems.forecast_csv_parser!(sys,
+                                      joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "gen"),
+                                      "Simulation",
+                                      Generator;
+                                      REGEX_FILE=r"DAY_AHEAD(.*?)\.csv",
+                                      per_unit=true)
+    @test verify_forecasts(sys, 1, 81, 24)
+    data_per_unit = vcat([x.data for x in iterate_forecasts(sys)])
+
+    for i in range(1, length=length(data_no_per_unit))
+        @test TimeSeries.values(data_per_unit[i]) == 
+              TimeSeries.values(data_no_per_unit[i]) / sys.basepower
+    end
+end
