@@ -362,9 +362,9 @@ function compare_dict(d1, d2)
     return true
 end
 
-function Base.isapprox(a::Any, b::Any; kwargs...)
-    return a == b
-end
+#function Base.isapprox(a::Any, b::Any; kwargs...)
+#    return a == b
+#end
 
 "tests if two numbers are equal, up to floating point precision"
 function compare_numbers(v1, v2)
