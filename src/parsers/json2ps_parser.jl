@@ -272,7 +272,7 @@ end
 
 # Write dict to json file
 function dict_to_json(dict,filename)
-    stringdata =JSON.json(dict, 3)
+    stringdata =JSON2.write(dict)
     open("$filename.json", "w") do f
         write(f, stringdata)
     end
@@ -286,7 +286,7 @@ function json_parser(filename)
         open("../data/CDM/RTS/JSON/RTS-GMLC_Test_Case.json", "r") do f
         global temp
         dicttxt = readstring(f)  # file information to string
-        temp = JSON.parse(dicttxt)  # parse and transform data
+        temp = JSON2.read(dicttxt, Dict{Any,Array{Dict}})  # parse and transform data
         data = temp
         end
     else

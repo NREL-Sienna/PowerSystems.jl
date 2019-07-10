@@ -61,9 +61,10 @@ function calc_theta_delta_bounds(data::Dict{String,Any})
     end
 
     if haskey(data, "conductors")
-        amin = MultiConductorVector(angle_min)
-        amax = MultiConductorVector(angle_max)
-        return amin, amax
+        error("Multiconductor Not Supported in PowerSystems")
+        #amin = MultiConductorVector(angle_min)
+        #amax = MultiConductorVector(angle_max)
+        #return amin, amax
     else
         return angle_min[1], angle_max[1]
     end
@@ -126,7 +127,7 @@ function check_keys(data, keys)
     end
 end
 
-
+#=
 "prints the text summary for a data file or dictionary to stdout"
 function print_summary(obj::Union{String, Dict{String,Any}}; kwargs...)
     summary(stdout, obj; kwargs...)
@@ -139,7 +140,7 @@ function summary(io::IO, file::String; kwargs...)
     _summary(io, data; kwargs...)
     return data
 end
-
+=#
 
 pm_component_types_order = Dict(
     "bus" => 1.0, "load" => 2.0, "shunt" => 3.0, "gen" => 4.0, "storage" => 5.0,
@@ -182,16 +183,16 @@ pm_component_parameter_order = Dict(
 
 pm_component_status_parameters = Set(["status", "gen_status", "br_status"])
 
-
+#=
 "prints the text summary for a data dictionary to IO"
 function _summary(io::IO, data::Dict{String,Any}; kwargs...)
-    summary(io, data; 
+    summary(io, data;
         component_types_order = pm_component_types_order,
         component_parameter_order = pm_component_parameter_order,
         component_status_parameters = pm_component_status_parameters,
         kwargs...)
 end
-
+=#
 
 component_table(data::Dict{String,Any}, component::String, args...) = component_table(data, component, args...)
 
@@ -221,11 +222,11 @@ end
 ""
 function apply_func(data::Dict{String,Any}, key::String, func)
     if haskey(data, key)
-        if isa(data[key], MultiConductorVector)
-            data[key] = MultiConductorVector([func(v) for v in data[key]])
-        else
+        #if isa(data[key], MultiConductorVector)
+        #    data[key] = MultiConductorVector([func(v) for v in data[key]])
+        #else
             data[key] = func(data[key])
-        end
+        #end
     end
 end
 
@@ -235,7 +236,7 @@ function make_per_unit(data::Dict{String,Any})
     if !haskey(data, "per_unit") || data["per_unit"] == false
         data["per_unit"] = true
         mva_base = data["baseMVA"]
-        if ismultinetwork(data) 
+        if ismultinetwork(data)
             for (i,nw_data) in data["nw"]
                 _make_per_unit(nw_data, mva_base)
             end
@@ -610,7 +611,8 @@ function check_thermal_limits(data::Dict{String,Any})
     for branch in branches
         if !haskey(branch, "rate_a")
             if haskey(data, "conductors")
-                branch["rate_a"] = MultiConductorVector(0.0, data["conductors"])
+                error("Multiconductor Not Supported in PowerSystems")
+                #branch["rate_a"] = MultiConductorVector(0.0, data["conductors"])
             else
                 branch["rate_a"] = 0.0
             end
@@ -676,7 +678,8 @@ function check_current_limits(data::Dict{String,Any})
 
         if !haskey(branch, "c_rating_a")
             if haskey(data, "conductors")
-                branch["c_rating_a"] = MultiConductorVector(0.0, data["conductors"])
+                error("Multiconductor Not Supported in PowerSystems")
+                #branch["c_rating_a"] = MultiConductorVector(0.0, data["conductors"])
             else
                 branch["c_rating_a"] = 0.0
             end
@@ -850,7 +853,8 @@ function check_transformer_parameters(data::Dict{String,Any})
         if !haskey(branch, "tap")
             @info("branch found without tap value, setting a tap to 1.0")
             if haskey(data, "conductors")
-                branch["tap"] = MultiConductorVector{Float64}(ones(data["conductors"]))
+                error("Multiconductor Not Supported in PowerSystems")
+                #branch["tap"] = MultiConductorVector{Float64}(ones(data["conductors"]))
             else
                 branch["tap"] = 1.0
             end
@@ -872,7 +876,8 @@ function check_transformer_parameters(data::Dict{String,Any})
         if !haskey(branch, "shift")
             @info("branch found without shift value, setting a shift to 0.0")
             if haskey(data, "conductors")
-                branch["shift"] = MultiConductorVector{Float64}(zeros(data["conductors"]))
+                error("Multiconductor Not Supported in PowerSystems")
+                #branch["shift"] = MultiConductorVector{Float64}(zeros(data["conductors"]))
             else
                 branch["shift"] = 0.0
             end
@@ -1766,10 +1771,10 @@ conductor_matrix = Set(["br_r", "br_x"])
 ""
 function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
     if haskey(data, "conductors")
-        @info("skipping network that is already multiconductor")
+        error("Multiconductor Not Supported in PowerSystems")
         return
     end
-
+#=
     data["conductors"] = conductors
 
     for (key, item) in data
@@ -1795,6 +1800,7 @@ function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
             #root non-dict items
         end
     end
+    =#
 end
 
 
@@ -1803,7 +1809,7 @@ Move gentype and genfuel fields to be subfields of gen
 """
 function move_genfuel_and_gentype!(data::Dict{String,Any})
     ngen = length(data["gen"])
-    
+
     toplevkeys = ("genfuel", "gentype")
     sublevkeys = ("fuel", "type")
     for i in range(1, stop=length(toplevkeys))
@@ -1817,8 +1823,8 @@ function move_genfuel_and_gentype!(data::Dict{String,Any})
             for (key,val) in data[toplevkeys[i]]
                 data["gen"][key][sublevkeys[i]] = val["col_1"]
             end
-            delete!(data, toplevkeys[i])        
+            delete!(data, toplevkeys[i])
         end
     end
-    
+
 end
