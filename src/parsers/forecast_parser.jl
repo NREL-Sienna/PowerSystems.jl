@@ -78,20 +78,22 @@ function _forecast_csv_parser!(sys::System, forecast_infos::ForecastInfos, resol
             forecast_components = [forecast.component]
         end
 
-        per_unit_conversions = Set()
+        per_unit_conversions = Dict{Symbol, TimeSeries.TimeArray}()
         forecasts = Vector{Forecast}()
         for component in forecast_components
             sym = Symbol(get_name(forecast.component))
             timeseries = forecast.data[sym]
-            if sym in per_unit_conversions
+            if haskey(per_unit_conversions, sym)
                 @assert forecast.per_unit
+                timeseries = per_unit_conversions[sym]
             elseif forecast.per_unit
                 # PERF
                 # TimeSeries.TimeArray is immutable; forced to copy.
                 timeseries = timeseries ./ sys.basepower
                 @debug "Converted timeseries to per_unit" component
-                push!(per_unit_conversions, sym)
+                per_unit_conversions[sym] = timeseries
             end
+
             forecast_ = Deterministic(component, forecast.label, timeseries)
             push!(forecasts, forecast_)
         end
