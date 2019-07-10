@@ -6,11 +6,11 @@ descriptor_file = joinpath(@__DIR__, "..", "src", "descriptors", "power_system_s
 @assert ispath(descriptor_file)
 existing_dir = joinpath(@__DIR__, "..", "src", "models", "generated")
 @assert ispath(existing_dir)
-output_dir = "tmp"
+output_dir = joinpath(@__DIR__,"tmp")
 mkdir(output_dir)
 
 # Call read to avoid printing to stdout.
-read(`julia $script $descriptor_file $output_dir`)
+read(Cmd(`julia $script $descriptor_file $output_dir`))
 try
     run(`diff $output_dir $existing_dir`)
 catch(err)
