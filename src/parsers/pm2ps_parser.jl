@@ -219,7 +219,7 @@ end
 """
 The polynomial term follows the convention that for an n-degree polynomial, at least n + 1 components are needed.
     c(p) = c_n*p^n+...+c_1p+c_0
-    c_o is stored in the fixed field in of the Econ Struct
+    c_o is stored in the  field in of the Econ Struct
 """
 function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
     if haskey(d, "model")
