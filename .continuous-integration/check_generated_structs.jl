@@ -9,9 +9,9 @@ existing_dir = joinpath(@__DIR__, "..", "src", "models", "generated")
 output_dir = joinpath(@__DIR__,"tmp")
 mkdir(output_dir)
 
-# Call read to avoid printing to stdout.
-read(Cmd(`julia $script $descriptor_file $output_dir`))
 try
+    # Call read to avoid printing to stdout.
+    read(Cmd(`julia $script $descriptor_file $output_dir`))
     run(`diff $output_dir $existing_dir`)
 catch(err)
     error("Generated structs do not match the descriptor file.")
