@@ -1,14 +1,13 @@
 """Generate structs from the descriptor file and verify that they match what's in the repo."""
 
-script = joinpath(@__DIR__, "..", "generate_structs.jl")
+script = joinpath(@__DIR__, "..", "bin", "generate_structs.jl")
 @assert ispath(script)
-descriptor_file = joinpath(@__DIR__,"../..", "src", "descriptors", "power_system_structs.json")
+descriptor_file = joinpath(@__DIR__, "..", "src", "descriptors", "power_system_structs.json")
 @assert ispath(descriptor_file)
-existing_dir = joinpath(@__DIR__, "../..", "src", "models", "generated")
+existing_dir = joinpath(@__DIR__, "..", "src", "models", "generated")
 @assert ispath(existing_dir)
-output_dir = joinpath(@__DIR__,"tmp")
+output_dir = "tmp"
 mkdir(output_dir)
-@assert isdir(output_dir)
 
 # Call read to avoid printing to stdout.
 read(`julia $script $descriptor_file $output_dir`)
