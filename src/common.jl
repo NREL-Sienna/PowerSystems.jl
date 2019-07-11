@@ -24,20 +24,28 @@ end
 
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 @enum PrimeMovers begin
-    ST	#Steam Turbine, including nuclear, geothermal and solar steam (does not include combined cycle)
-    BT  #Turbines Used in a Binary Cycle (geothermal)
-    GT	#Combustion (Gas) Turbine (includes jet engine design)
-    IC	#Internal Combustion (diesel, piston) Engine
-    CT	#Combined Cycle Combustion – Turbine Part
-    CA	#Combined Cycle – Steam Part
-    CS	#Combined Cycle Single Shaft (combustion turbine and steam turbine share a single generator)
-    HY	#Hydraulic Turbine (includes turbines associated with delivery of water by pipeline)
-    PS	#Hydraulic Turbine – Reversible (pumped storage)
-    PV	#Photovoltaic
-    WT	#Wind Turbine
-    CE	#Compressed Air Energy Storage
-    FC	#Fuel Cell
-    OT	#Other
+    BA #Energy Storage, Battery
+    BT #Turbines Used in a Binary Cycle (including those used for geothermal applications)
+    CA #Combined-Cycle – Steam Part
+    CE #Energy Storage, Compressed Air
+    CP #Energy Storage, Concentrated Solar Power
+    CS #Combined-Cycle Single-Shaft Combustion turbine and steam turbine share a single generator
+    CT #Combined-Cycle Combustion Turbine Part
+    ES #Energy Storage, Other (Specify on Schedule 9, Comments)
+    FC #Fuel Cell
+    FW #Energy Storage, Flywheel
+    GT #Combustion (Gas) Turbine (including jet engine design)
+    HA #Hydrokinetic, Axial Flow Turbine
+    HB #Hydrokinetic, Wave Buoy
+    HK #Hydrokinetic, Other
+    HY #Hydraulic Turbine (including turbines associated with delivery of water by pipeline)
+    IC #Internal Combustion (diesel, piston, reciprocating) Engine
+    PS #Energy Storage, Reversible Hydraulic Turbine (Pumped Storage)
+    OT #Other – Specify on SCHEDULE 9.
+    ST #Steam Turbine (including nuclear, geothermal and solar steam; does not include combined-cycle turbine)
+    PVe #Photovoltaic
+    WT #Wind Turbine, Onshore
+    WS #Wind Turbine, Offshore
 end
 
 "Thrown upon detection of user data that is not supported."
