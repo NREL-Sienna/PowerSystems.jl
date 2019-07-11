@@ -22,6 +22,24 @@ end
     SLACK
 end
 
+"From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
+@enum PrimeMovers begin
+    ST	#Steam Turbine, including nuclear, geothermal and solar steam (does not include combined cycle)
+    BT  #Turbines Used in a Binary Cycle (geothermal)
+    GT	#Combustion (Gas) Turbine (includes jet engine design)
+    IC	#Internal Combustion (diesel, piston) Engine
+    CT	#Combined Cycle Combustion – Turbine Part
+    CA	#Combined Cycle – Steam Part
+    CS	#Combined Cycle Single Shaft (combustion turbine and steam turbine share a single generator)
+    HY	#Hydraulic Turbine (includes turbines associated with delivery of water by pipeline)
+    PS	#Hydraulic Turbine – Reversible (pumped storage)
+    PV	#Photovoltaic
+    WT	#Wind Turbine
+    CE	#Compressed Air Energy Storage
+    FC	#Fuel Cell
+    OT	#Other
+end
+
 "Thrown upon detection of user data that is not supported."
 struct DataFormatError <: Exception
     msg::String
