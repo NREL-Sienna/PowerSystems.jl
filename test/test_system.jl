@@ -147,3 +147,19 @@ end
 
     @test i == j
 end
+
+@testset "Test remove_component" begin
+    sys = create_rts_system()
+    generators = get_components(ThermalStandard, sys)
+    initial_length = length(generators)
+    @assert initial_length > 0
+    gen = collect(generators)[1]
+
+    remove_component!(sys, gen)
+
+    @test isnothing(get_component(ThermalStandard, sys, get_name(gen)))
+    generators = get_components(ThermalStandard, sys)
+    @test length(generators) == initial_length - 1
+
+    @test_throws(PowerSystems.InvalidParameter, remove_component!(sys, gen))
+end

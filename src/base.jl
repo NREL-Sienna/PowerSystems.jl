@@ -280,6 +280,27 @@ function add_component!(sys::System, component::T) where T <: Component
     return nothing
 end
 
+"""
+    remove_component!(sys::System, component::T) where T <: Component
+
+Remove a component from the system.
+
+Throws InvalidParameter if the component is not stored.
+"""
+function remove_component!(sys::System, component::T) where T <: Component
+    if !haskey(sys.components, T)
+        throw(InvalidParameter("component $T is not stored"))
+    end
+
+    name = get_name(component)
+    if !haskey(sys.components[T], name)
+        throw(InvalidParameter("component $T name=$name is not stored"))
+    end
+
+    pop!(sys.components[T], name)
+    @debug "Removed $T $name"
+end
+
 function get_bus(sys::System, bus_number::Int)
     for bus in get_components(Bus, sys)
         if bus.number == bus_number
@@ -507,10 +528,6 @@ function remove_forecast!(sys::System, forecast::T) where T <: Forecast
         reset_info!(sys.forecasts)
     end
 end
-
-# TODO: implement methods to remove components. In order to do this we will
-# need each PowerSystemType to store a UUID.
-# GitHub issue #203
 
 """
     get_component(
