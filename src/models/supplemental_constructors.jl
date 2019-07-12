@@ -32,7 +32,7 @@ end
 function Deterministic(component::Component, label::String, data::TimeSeries.TimeArray)
     resolution = getresolution(data)
     initial_time = TimeSeries.timestamp(data)[1]
-    Deterministic(component, label, resolution, initial_time, data)
+    Deterministic(component, label, Dates.Minute(resolution), initial_time, data)
 end
 
 """Constructs Deterministic after constructing a TimeArray from initial_time and time_steps.
@@ -46,24 +46,6 @@ function Deterministic(component::Component,
         initial_time : Dates.Hour(1) : initial_time + resolution * (time_steps-1),
         ones(time_steps)
     )
-    return Deterministic(component, label, resolution, initial_time, data)
-end
-
-"""Constructs Probabilistic Forecast after constructing a TimeArray from initial_time and time_steps.
-"""
-function Deterministic(component::Component,
-                       label::String,
-                       data::TimeSeries.TimeArray)
-
-    initial_time = TimeSeries.timestamp(data)[1]
-    stamp = TimeSeries.timestamp(data)
-    resolution = stamp[end] - stamp[end-1]
-
-    for ix in length(stamp):2
-        period = stamp[ix] - stamp[ix-1]
-        error("Time Series has variable periods. This is not supported in PowerSystems")
-    end
-
     return Deterministic(component, label, Dates.Minute(resolution), initial_time, data)
 end
 
@@ -91,16 +73,12 @@ function Probabilistic(component::Component,
                        quantiles::Vector{Float64},  # Quantiles for the probabilistic forecast
                        data::TimeSeries.TimeArray)
 
-    initial_time = TimeSeries.timestamp(data)[1]
-    stamp = TimeSeries.timestamp(data)
-    resolution = stamp[end] - stamp[end-1]
-
-    for ix in length(stamp):2
-        period = stamp[ix] - stamp[ix-1]
-        error("Time Series has variable periods. This is not supported in PowerSystems")
+    if !(length(TimeSeries.colnames(data)) == length(quantiles))
+        error("The size of the provided quantiles and data columns is incosistent")
     end
+    initial_time = TimeSeries.timestamp(data)[1]
+    resolution = getresolution(data)
 
-    @assert length(TimeSeries.colnames(data)) == length(quantiles)
     return Probabilistic(component, label, Dates.Minute(resolution), initial_time, quantiles, data)
 end
 
