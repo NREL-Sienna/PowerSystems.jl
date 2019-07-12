@@ -30,6 +30,7 @@ export PhaseShiftingTransformer
 
 export Forecast
 export Deterministic
+export Probabilistic
 
 export ThreePartCost
 export TwoPartCost
