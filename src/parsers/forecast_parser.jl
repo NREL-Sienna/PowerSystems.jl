@@ -5,11 +5,9 @@ struct ForecastInfo
     per_unit::Bool  # Whether per_unit conversion is needed.
     data::TimeSeries.TimeArray
     file_path::String
-    normalize::Bool
 
-    function ForecastInfo(simulation, component, label, per_unit, data, file_path,
-                          normalize=false)
-        new(simulation, component, label, per_unit, data, abspath(file_path), normalize)
+    function ForecastInfo(simulation, component, label, per_unit, data, file_path)
+        new(simulation, component, label, per_unit, data, abspath(file_path))
     end
 end
 
@@ -87,17 +85,9 @@ function _forecast_csv_parser!(sys::System, forecast_infos::ForecastInfos, resol
             timeseries = timeseries ./ sys.basepower
             @debug "Converted timeseries to per_unit" forecast
         end
-        if forecast.normalize
-            timeseries = timeseries ./ maximum(TimeSeries.values(timeseries))
-            @debug "Normalized timeseries" forecast
-        end
 
-        forecasts = Vector{Forecast}()
-        for component in forecast_components
-            forecast_ = Deterministic(component, forecast.label, timeseries)
-            push!(forecasts, forecast_)
-        end
-
+        forecasts = [Deterministic(x, forecast.label, timeseries)
+                     for x in forecast_components]
         add_forecasts!(sys, forecasts)
     end
 end
@@ -176,11 +166,7 @@ function add_forecast_data!(
                             data_file::AbstractString,
                            )
     timeseries = _add_forecast_data!(infos, data_file, get_name(component))
-
-    normalize = component isa LoadZones ? true : false
-
-    forecast = ForecastInfo(simulation, component, label, per_unit, timeseries, data_file,
-                            normalize)
+    forecast = ForecastInfo(simulation, component, label, per_unit, timeseries, data_file)
     push!(infos.forecasts, forecast)
     @debug "Added ForecastInfo" forecast
 end
