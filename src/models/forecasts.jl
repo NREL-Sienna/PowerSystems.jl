@@ -4,8 +4,8 @@ const Forecasts = Vector{<:Forecast}
 const ForecastComponentLabelPair = Tuple{<:Component, String}
 const ForecastComponentLabelPairByInitialTime = Dict{Dates.DateTime,
                                                      Set{ForecastComponentLabelPair}}
-const UNITIALIZED_DATETIME = Dates.DateTime(Dates.Second(0))
-const UNITIALIZED_PERIOD = Dates.Period(Dates.Second(0))
+const UNITIALIZED_DATETIME = Dates.DateTime(Dates.Minute(0))
+const UNITIALIZED_PERIOD = Dates.Period(Dates.Minute(0))
 const UNITIALIZED_HORIZON = 0
 
 
