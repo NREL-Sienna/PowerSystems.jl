@@ -344,6 +344,39 @@ function add_forecasts!(sys::System, forecasts)
     _add_forecasts!(sys.forecasts, forecasts)
 end
 
+"""
+    add_forecast!(sys::System, forecasts)
+
+Add forecasts to the system.
+
+# Arguments
+- `sys::System`: system
+- `forecast`: Any object of subtype forecast
+
+Throws InvalidParameter if the forecast's component is not stored in the system.
+
+"""
+function add_forecast!(sys::System, forecast::T) where T <: Forecast
+    # Validate that each forecast's component is stored in the system.
+    comp = forecast.component
+    ctype = typeof(comp)
+    component = get_component(ctype, sys, get_name(comp))
+    if isnothing(component)
+        throw(InvalidParameter("no $ctype with name=$(get_name(comp)) is stored"))
+    end
+
+    user_uuid = get_uuid(comp)
+    ps_uuid = get_uuid(component)
+    if user_uuid != ps_uuid
+        throw(InvalidParameter(
+            "forecast component UUID doesn't match, perhaps it was copied?; " *
+            "$ctype name=$(get_name(comp)) user=$user_uuid system=$ps_uuid"))
+    end
+
+    _add_forecasts!(sys.forecasts, [forecast])
+
+end
+
 """Return the horizon for all forecasts."""
 get_forecasts_horizon(sys::System)::Int64 = sys.forecasts.horizon
 
