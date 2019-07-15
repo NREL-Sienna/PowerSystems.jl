@@ -1160,7 +1160,7 @@
       {
         "name": "data",
         "data_type": "TimeSeries.TimeArray",
-        "comment": "TimeStamp - scalingfactor"
+        "comment": "timestamp - scalingfactor"
       },
       {
         "name": "internal",
@@ -1200,7 +1200,7 @@
       {
         "name": "data",
         "data_type": "TimeSeries.TimeArray",
-        "comment": "TimeStamp - scalingfactor"
+        "comment": "timestamp - scalingfactor"
       },
       {
         "name": "internal",
