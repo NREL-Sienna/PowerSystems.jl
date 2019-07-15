@@ -77,6 +77,7 @@ export BusType
 export parse_standard_files
 export parse_file
 export add_forecasts!
+export add_forecast!
 export remove_forecast!
 export forecast_csv_parser!
 export get_forecast_initial_times
