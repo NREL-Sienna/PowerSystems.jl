@@ -89,7 +89,7 @@ end
     @test tDeterministicForecast isa PowerSystems.Forecast
     #Probabilistic Tests
     tProbabilisticForecast = Probabilistic(tg,"scalingfactor",Hour(1), DateTime("01-01-01"),[0.5, 0.5], 24)
-    @test tDeterministicForecast isa PowerSystems.Forecast
+    @test  tProbabilisticForecast isa PowerSystems.Forecast
     tProbabilisticForecast = Probabilistic(tg,"scalingfactor",[1.0], forecast_data)
-    @test tDeterministicForecast isa PowerSystems.Forecast
+    @test  tProbabilisticForecast isa PowerSystems.Forecast
 end
