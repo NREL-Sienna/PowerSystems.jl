@@ -153,8 +153,8 @@ function check!(sys::System)
 
     branches = get_components(Branch, sys)
     if length(branches) > 0
-        calculate_thermal_limits!(branches, sys.basepower)
         check_branches!(branches)
+        calculate_thermal_limits!(branches, sys.basepower)
     end
 
     generators = get_components(Generator, sys)
