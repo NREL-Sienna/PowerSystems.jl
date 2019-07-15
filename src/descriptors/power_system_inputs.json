@@ -5,6 +5,15 @@
             "description": "Simulation name"
         },
         {
+            "name": "category",
+            "description": "Category of component",
+            "value_options": [
+                "Generator",
+                "Reserve",
+                "LoadZone"
+            ]
+        },
+        {
             "name": "component_name",
             "description": "Unique component name: Concatenated from Bus ID_Unit Type_Gen ID, or other object ID/name"
         },
@@ -13,13 +22,8 @@
             "description": "Forecast label"
         },
         {
-            "name": "category",
-            "description": "Category of component",
-            "value_options": [
-                "Generator",
-                "Reserve",
-                "LoadZone"
-            ]
+            "name": "label_source",
+            "description": "Forecast label source"
         },
         {
             "name": "data_file",
@@ -41,8 +45,8 @@
         },
         {
             "name": "mw_load",
-            "unit": "per unit",
-            "description": "Power demand (MW)"
+            "description": "Power demand (MW)",
+            "system_per_unit": true
         },
         {
             "name": "rectifier_firing_angle_max",
@@ -181,7 +185,8 @@
         {
             "unit": "MW",
             "name": "rate",
-            "description": "Continuous MW flow limit"
+            "description": "Continuous MW flow limit",
+            "system_per_unit": true
         },
         {
             "unit": "degree",
@@ -228,32 +233,38 @@
         {
             "unit": "MW",
             "name": "active_power",
-            "description": "Real power injection setpoint"
+            "description": "Real power injection setpoint",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "reactive_power",
-            "description": "Reactive power injection setpoint"
+            "description": "Reactive power injection setpoint",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "active_power_limits_max",
-            "description": "Maximum real power injection (Unit Capacity)"
+            "description": "Maximum real power injection (Unit Capacity)",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "active_power_limits_min",
-            "description": "Minimum real power injection (Unit minimum stable level)"
+            "description": "Minimum real power injection (Unit minimum stable level)",
+            "system_per_unit": true
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_max",
-            "description": "Maximum reactive power injection"
+            "description": "Maximum reactive power injection",
+            "system_per_unit": true
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_min",
-            "description": "Minimum reactive power injection"
+            "description": "Minimum reactive power injection",
+            "system_per_unit": true
         },
         {
             "unit": "hours",
@@ -268,7 +279,8 @@
         {
             "unit": "MW/Min",
             "name": "ramp_limits",
-            "description": "Maximum ramp up and ramp down rate"
+            "description": "Maximum ramp up and ramp down rate",
+            "system_per_unit": true
         },
         {
             "unit": "MMBTU",
@@ -453,47 +465,56 @@
         {
             "unit": "MW",
             "name": "active_power",
-            "description": "Real power injection setpoint"
+            "description": "Real power injection setpoint",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "reactive_power",
-            "description": "Reactive power injection setpoint"
+            "description": "Reactive power injection setpoint",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "input_power_limits_max",
-            "description": "Maximum real power limit on charging"
+            "description": "Maximum real power limit on charging",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "input_power_limits_min",
-            "description": "Minimum real power limit on charging"
+            "description": "Minimum real power limit on charging",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "output_active_power_limits_max",
-            "description": "Maximum real power injection"
+            "description": "Maximum real power injection",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "output_active_power_limits_min",
-            "description": "Minimum real power injection"
+            "description": "Minimum real power injection",
+            "system_per_unit": true
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_max",
-            "description": "Maximum reactive power injection"
+            "description": "Maximum reactive power injection",
+            "system_per_unit": true
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_min",
-            "description": "Minimum reactive power injection"
+            "description": "Minimum reactive power injection",
+            "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "rating",
-            "description": "Continuous MW flow limit"
+            "description": "Continuous MW flow limit",
+            "system_per_unit": true
         },
         {
             "unit": "%",
@@ -560,11 +581,13 @@
         },
         {
             "name": "max_active_power",
-            "description": "Maximum Active Power"
+            "description": "Maximum Active Power",
+            "system_per_unit": true
         },
         {
             "name": "max_reactive_power",
-            "description": "Maximum Rective Power"
+            "description": "Maximum Rective Power",
+            "system_per_unit": true
         }
     ]
 }

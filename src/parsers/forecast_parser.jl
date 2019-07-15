@@ -1,13 +1,13 @@
 struct ForecastInfo
     simulation::String
-    category::Type{<:Component}
-    component_name::String
-    label::String
+    component::Component
+    label::String  # Component field on which timeseries data is based.
+    per_unit::Bool  # Whether per_unit conversion is needed.
     data::TimeSeries.TimeArray
     file_path::String
 
-    function ForecastInfo(simulation, category, component_name, label, data, file_path)
-        new(simulation, category, component_name, label, data, abspath(file_path))
+    function ForecastInfo(simulation, component, label, per_unit, data, file_path)
+        new(simulation, component, label, per_unit, data, abspath(file_path))
     end
 end
 
@@ -39,6 +39,7 @@ Add forecasts to the System from CSV files.
 - `category::DataType`: category of component for the forecast; can be abstract or concrete
 - `label::AbstractString`: forecast label
 - `resolution::Dates.DateTime=nothing`: only store forecasts with this resolution
+- `per_unit::Bool=false`: convert to per_unit
 - `REGEX_FILE::Regex`: only look at files matching this regular expression
 
 Refer to [`add_forecasts!`](@ref) for exceptions thrown.
@@ -48,11 +49,11 @@ function forecast_csv_parser!(
                               directory_or_file::AbstractString,
                               simulation="Simulation",
                               category::Type{<:Component}=Component,
-                              label="scalingfactor",
+                              label="init",
                               ; resolution=nothing,
                               kwargs...
                              )
-    forecast_infos = parse_forecast_data_files(directory_or_file, simulation, category,
+    forecast_infos = parse_forecast_data_files(sys, directory_or_file, simulation, category,
                                                label; kwargs...)
 
     return _forecast_csv_parser!(sys, forecast_infos, resolution)
@@ -69,34 +70,45 @@ function _forecast_csv_parser!(sys::System, forecast_infos::ForecastInfos, resol
             continue
         end
 
-        if isconcretetype(forecast.category)
-            component = get_component(forecast.category, sys, forecast.component_name)
+        if forecast.component isa LoadZones
+            uuids = Set([get_uuid(x) for x in forecast.component.buses])
+            forecast_components = [load for load in get_components(ElectricLoad, sys)
+                                   if get_bus(load) |> get_uuid in uuids]
         else
-            components = get_components_by_name(forecast.category, sys,
-                                                forecast.component_name)
-            if length(components) == 0
-                @error("Did not find component for forecast", forecast.component_name,
-                       forecast.category, forecast.file_path)
-                continue
-            elseif length(components) == 1
-                component = components[1]
-            else
-                msg = "Found duplicate names type=$(forecast.category) " *
-                      "name=$(forecast.component_name)"
-                throw(DataFormatError(msg))
-            end
+            forecast_components = [forecast.component]
         end
 
-        forecasts = Vector{Forecast}()
-        forecast_components = component isa LoadZones ? component.buses : [component]
-        for component_ in forecast_components
-            timeseries = forecast.data[Symbol(forecast.component_name)]
-            forecast_ = Deterministic(component_, forecast.label, timeseries)
-            push!(forecasts, forecast_)
+        timeseries = forecast.data[Symbol(get_name(forecast.component))]
+        if forecast.per_unit
+            # PERF
+            # TimeSeries.TimeArray is immutable; forced to copy.
+            timeseries = timeseries ./ sys.basepower
+            @debug "Converted timeseries to per_unit" forecast
         end
 
+        forecasts = [Deterministic(x, forecast.label, timeseries)
+                     for x in forecast_components]
         add_forecasts!(sys, forecasts)
     end
+end
+
+function get_forecast_component(sys::System, category, name)
+    if isconcretetype(category)
+        component = get_component(category, sys, name)
+    else
+        components = get_components_by_name(category, sys, name)
+        if length(components) == 0
+            throw(DataFormatError(
+                "Did not find component for forecast category=$category name=$name"))
+        elseif length(components) == 1
+            component = components[1]
+        else
+            msg = "Found duplicate names type=$(category) name=$(name)"
+            throw(DataFormatError(msg))
+        end
+    end
+
+    return component
 end
 
 """
@@ -107,6 +119,11 @@ Return a TimeArray from a CSV file.
 Pass component_name when the file does not have the component name in a column header.
 """
 function read_time_array(file_path::AbstractString, component_name=nothing; kwargs...)
+    if !isfile(file_path)
+        msg = "Timeseries file doesn't exist : $file_path"
+        throw(DataFormatError(msg))
+    end
+
     file = CSV.File(file_path)
     @debug "Read CSV data from $file_path."
 
@@ -114,6 +131,7 @@ function read_time_array(file_path::AbstractString, component_name=nothing; kwar
 end
 
 function parse_forecast_data_files(
+                                   sys::System,
                                    path::AbstractString,
                                    simulation::AbstractString,
                                    category::Type{<:Component},
@@ -130,8 +148,10 @@ function parse_forecast_data_files(
         throw(InvalidParameter("$path is neither a directory nor file"))
     end
 
+    per_unit = get(kwargs, :per_unit, false)
     for filename in filenames
-        add_forecast_data!(forecast_infos, simulation, category, nothing, label, filename)
+        add_forecast_data!(sys, forecast_infos, simulation, category, label, per_unit,
+                           filename)
     end
 
     return forecast_infos
@@ -140,32 +160,45 @@ end
 function add_forecast_data!(
                             infos::ForecastInfos,
                             simulation::AbstractString,
-                            category::Type{<:Component},
-                            component_name::Union{AbstractString, Nothing},
+                            component::Component,
                             label::AbstractString,
+                            per_unit::Bool,
                             data_file::AbstractString,
                            )
-    if !haskey(infos.data_files, data_file)
-        if !isfile(data_file)
-            msg = "Timeseries file doesn't exist : $file_path"
-            throw(DataFormatError(msg))
-        end
+    timeseries = _add_forecast_data!(infos, data_file, get_name(component))
+    forecast = ForecastInfo(simulation, component, label, per_unit, timeseries, data_file)
+    push!(infos.forecasts, forecast)
+    @debug "Added ForecastInfo" forecast
+end
 
-        infos.data_files[data_file] = read_time_array(data_file, component_name)
+function add_forecast_data!(
+                            sys::System,
+                            infos::ForecastInfos,
+                            simulation::AbstractString,
+                            category::Type{<:Component},
+                            label::AbstractString,
+                            per_unit::Bool,
+                            data_file::AbstractString,
+                           )
+    timeseries = _add_forecast_data!(infos, data_file, nothing)
 
-        @debug "Added timeseries file" data_file
-    end
-
-    timeseries = infos.data_files[data_file]
-    component_names = isnothing(component_name) ?
-                          [string(x) for x in TimeSeries.colnames(timeseries)] :
-                          [component_name]
-
-    for name in component_names
-        forecast = ForecastInfo(simulation, category, name, label, timeseries, data_file)
+    for component_name in TimeSeries.colnames(timeseries)
+        component = get_forecast_component(sys, category, string(component_name))
+        forecast = ForecastInfo(simulation, component, label, per_unit, timeseries,
+                                data_file)
         push!(infos.forecasts, forecast)
         @debug "Added ForecastInfo" forecast
     end
+end
+
+function _add_forecast_data!(infos::ForecastInfos, data_file::AbstractString,
+                             component_name::Union{Nothing, String})
+    if !haskey(infos.data_files, data_file)
+        infos.data_files[data_file] = read_time_array(data_file, component_name)
+        @debug "Added timeseries file" data_file
+    end
+
+    return infos.data_files[data_file]
 end
 
 """Return a Vector of forecast data filenames."""
@@ -188,78 +221,6 @@ function get_forecast_files(rootpath::String; kwargs...)
     end
 
     return filenames
-end
-
- """
-Args:
-    A System struct
-    A dictonary of forecasts
-Returns:
-    A PowerSystems forecast stuct array
-"""
-
-function make_forecast_array(sys::System, parsed_forecasts::Vector{Dict})
-    return make_forecast_array(get_components(Component, sys), parsed_forecasts)
-end
-
-function make_forecast_array(all_components, parsed_forecasts::Vector{Dict})
-    forecasts = Vector{Forecast}()
-    for forecast in parsed_forecasts
-        data = forecast["data"]
-        if data isa DataFrames.DataFrame && size(data, 2) > 2
-            components = [x for x in all_components if x.name in string.(names(data))]
-            for component in components
-                dd = isa(component, LoadZones) ? component.buses : [component]
-                for b in dd
-                    time_array = TimeSeries.TimeArray(data.DateTime, data[Symbol(d.name)])
-                    forecast = Deterministic(b, "scalingfactor", time_array)
-                    push!(forecasts, forecast) # TODO: unhardcode scalingfactor
-                end
-            end
-        else
-            components = [x for x in all_components if x.name == forecast["component"]["name"]]
-            col_names = isa(data, DataFrames.DataFrame) ? names(data) :
-                                                          TimeSeries.colnames(data)
-            filter!(x -> x != :DateTime, col_names)
-
-            if length(components) > 0
-                for component in components
-                    dd = isa(component, LoadZones) ? component.buses : [component]
-                    for b in dd
-                        # If a TimeArray has multiple value columns, create mulitiple
-                        # forecasts for different parameters in the same device.
-                        for col in col_names
-                            values = data[col]
-                            if data isa DataFrames.DataFrame
-                                timeseries = TimeSeries.TimeArray(data.DateTime, values)
-                            else
-                                timeseries = values
-                            end
-
-                            push!(forecasts, Deterministic(b, string(component), timeseries))
-                        end
-                    end
-                end
-            else
-                @error("no $(forecast["component"]["name"]) entries for components in sys")
-            end
-        end
-    end
-
-    return forecasts
- end
-
- # Write dict to Json
-
-function write_to_json(filename,Forecasts_dict)
-    for (type_key,type_fc) in Forecasts_dict
-        for (device_key,device_dicts) in type_fc
-            stringdata =JSON2.write(device_dicts)
-            open("$filename/$device_key.json", "w") do f
-                write(f, stringdata)
-             end
-        end
-    end
 end
 
 #=
