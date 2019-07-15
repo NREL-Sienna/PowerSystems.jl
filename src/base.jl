@@ -301,6 +301,25 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     return buses
 end
 
+""" Checks that the component exists in the systems and the UUID's match"""
+function _validate_forecast(sys::System, forecast::T) where T <: Forecast
+        # Validate that each forecast's component is stored in the system.
+        comp = forecast.component
+        ctype = typeof(comp)
+        component = get_component(ctype, sys, get_name(comp))
+        if isnothing(component)
+            throw(InvalidParameter("no $ctype with name=$(get_name(comp)) is stored"))
+        end
+
+        user_uuid = get_uuid(comp)
+        ps_uuid = get_uuid(component)
+        if user_uuid != ps_uuid
+            throw(InvalidParameter(
+                "forecast component UUID doesn't match, perhaps it was copied?; " *
+                "$ctype name=$(get_name(comp)) user=$user_uuid system=$ps_uuid"))
+        end
+end
+
 """
     add_forecasts!(sys::System, forecasts)
 
@@ -323,22 +342,8 @@ function add_forecasts!(sys::System, forecasts)
         return
     end
 
-    # Validate that each forecast's component is stored in the system.
     for forecast in forecasts
-        comp = forecast.component
-        ctype = typeof(comp)
-        component = get_component(ctype, sys, get_name(comp))
-        if isnothing(component)
-            throw(InvalidParameter("no $ctype with name=$(get_name(comp)) is stored"))
-        end
-
-        user_uuid = get_uuid(comp)
-        ps_uuid = get_uuid(component)
-        if user_uuid != ps_uuid
-            throw(InvalidParameter(
-                "forecast component UUID doesn't match, perhaps it was copied?; " *
-                "$ctype name=$(get_name(comp)) user=$user_uuid system=$ps_uuid"))
-        end
+        _validate_forecast(sys,forecast)
     end
 
     _add_forecasts!(sys.forecasts, forecasts)
@@ -357,24 +362,8 @@ Throws InvalidParameter if the forecast's component is not stored in the system.
 
 """
 function add_forecast!(sys::System, forecast::T) where T <: Forecast
-    # Validate that each forecast's component is stored in the system.
-    comp = forecast.component
-    ctype = typeof(comp)
-    component = get_component(ctype, sys, get_name(comp))
-    if isnothing(component)
-        throw(InvalidParameter("no $ctype with name=$(get_name(comp)) is stored"))
-    end
-
-    user_uuid = get_uuid(comp)
-    ps_uuid = get_uuid(component)
-    if user_uuid != ps_uuid
-        throw(InvalidParameter(
-            "forecast component UUID doesn't match, perhaps it was copied?; " *
-            "$ctype name=$(get_name(comp)) user=$user_uuid system=$ps_uuid"))
-    end
-
+    _validate_forecast(sys,forecast)
     _add_forecasts!(sys.forecasts, [forecast])
-
 end
 
 """Return the horizon for all forecasts."""
