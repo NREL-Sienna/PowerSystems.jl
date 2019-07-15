@@ -8,7 +8,7 @@ mutable struct Deterministic{T <: Component} <: Forecast
     label::String  # label of component parameter forecasted
     resolution::Dates.Period
     initial_time::Dates.DateTime  # forecast availability time
-    data::TimeSeries.TimeArray  # TimeStamp - scalingfactor
+    data::TimeSeries.TimeArray  # timestamp - scalingfactor
     internal::PowerSystems.PowerSystemInternal
 end
 
