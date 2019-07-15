@@ -362,7 +362,7 @@ Throws InvalidParameter if the forecast's component is not stored in the system.
 
 """
 function add_forecast!(sys::System, forecast::T) where T <: Forecast
-    _validate_forecast(sys,forecast)
+    _validate_forecast(sys, forecast)
     _add_forecasts!(sys.forecasts, [forecast])
 end
 
