@@ -37,10 +37,22 @@ Deserialization can't determine the actual concrete type.
 function JSON2.read(io::IO, ::Type{T}) where {T <: TimeSeries.TimeArray}
     data = JSON2.read(io)
     timestamp = [Dates.DateTime(x) for x in data.timestamp]
-    values = [Float64(x) for x in data.values]
     colnames = [Symbol(x) for x in data.colnames]
+    dim2 = length(colnames)
+    dim1 = Int(length(data.values) / dim2)
     meta = data.meta
-    return TimeSeries.TimeArray(timestamp, values, colnames, meta)
+
+    for i in eachindex(data.values)
+        data.values[i] = Float64(data.values[i])
+    end
+
+    if length(colnames) > 1
+        vals = reshape(data.values, dim1, dim2)
+    else
+        vals = data.values
+    end
+
+    return TimeSeries.TimeArray(timestamp, vals, colnames, meta)
 end
 
 """Enables JSON deserialization of Dates.Period.
@@ -132,16 +144,16 @@ end
 
 # Refer to docstrings in services.jl.
 
-function JSON2.write(io::IO, forecast::Deterministic)
+function JSON2.write(io::IO, forecast::Forecast)
     return JSON2.write(io, encode_for_json(forecast))
 end
 
-function JSON2.write(forecast::Deterministic)
+function JSON2.write(forecast::Forecast)
     return JSON2.write(encode_for_json(forecast))
 end
 
-function encode_for_json(forecast::Deterministic)
-    fields = fieldnames(Deterministic)
+function encode_for_json(forecast::T) where T <: Forecast
+    fields = fieldnames(T)
     vals = []
 
     for name in fields
@@ -156,7 +168,7 @@ function encode_for_json(forecast::Deterministic)
     return NamedTuple{fields}(vals)
 end
 
-"""Creates a Deterministic object by decoding the data that was in JSON. This data stores
+"""Creates a Forecast object by decoding the data that was in JSON. This data stores
 the values for the field contributingdevices as UUIDs, so this will lookup each device in
 devices.
 """
@@ -165,7 +177,7 @@ function convert_type(
                       data::NamedTuple,
                       components::LazyDictFromIterator,
                       parameter_types::Vector{DataType},
-                     ) where T <: Deterministic
+                     ) where T <: Forecast
     @debug T data
     values = []
     component_type = nothing
@@ -195,8 +207,8 @@ function convert_type(
     return T{component_type}(values...)
 end
 
-function convert_type(::Type{T}, data::Any) where T <: Deterministic
-    error("This form of convert_type is not supported for Deterministic")
+function convert_type(::Type{T}, data::Any) where T <: Forecast
+    error("This form of convert_type is not supported for Forecast")
 end
 
 """Return a Tuple of type and parameter types for cases where a parametric type has been

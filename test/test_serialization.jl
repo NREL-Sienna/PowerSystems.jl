@@ -45,6 +45,14 @@ end
 
 @testset "Test JSON serialization of matpower data" begin
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+
+    # Add a Probabilistic forecast to get coverage serializing it.
+    tg = RenewableFix(nothing)
+    tProbabilisticForecast = Probabilistic(tg, "scalingfactor", Hour(1),
+                                           DateTime("01-01-01"), [0.5, 0.5], 24)
+    add_component!(sys, tg)
+    add_forecast!(sys, tProbabilisticForecast)
+
     @test validate_serialization(sys)
 end
 

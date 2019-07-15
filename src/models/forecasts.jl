@@ -230,11 +230,13 @@ function convert_type!(
 
         forecast_type_str = key_str[index_start_type:index_end_type]
         type_str, params = separate_type_and_parameter_types(forecast_type_str)
-        forecast_type = getfield(PowerSystems, Symbol(type_str))
+        forecast_base_type = getfield(PowerSystems, Symbol(type_str))
         parameter_types = [getfield(PowerSystems, Symbol(x)) for x in params]
         if length(parameter_types) == 1
-            forecast_type = forecast_type{parameter_types[1]}
-        elseif length(parameter_types) != 0
+            forecast_type = forecast_base_type{parameter_types[1]}
+        elseif length(parameter_types) == 0
+            forecast_type = forecast_base_type
+        else
             @assert false
         end
 
@@ -242,12 +244,8 @@ function convert_type!(
 
         forecasts.data[key] = Vector{forecast_type}()
         for forecast in getfield(data.data, symbol)
-            if forecast_type <: Deterministic
-                push!(forecasts.data[key],
-                      convert_type(Deterministic, forecast, components, parameter_types))
-            else
-                push!(forecasts.data[issue_time], convert_type(forecast_type))
-            end
+            push!(forecasts.data[key],
+                  convert_type(forecast_base_type, forecast, components, parameter_types))
         end
     end
 end
