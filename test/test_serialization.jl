@@ -51,7 +51,7 @@ end
 @testset "Test JSON serialization of ACTIVSg2000 data" begin
     sys = PowerSystems.parse_standard_files(joinpath(DATA_DIR, "ACTIVSg2000",
                                                      "ACTIVSg2000.m"))
-    @test validate_serialization(sys)
+    validate_serialization(sys)
 end
 
 @testset "Test serialization utility functions" begin
