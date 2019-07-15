@@ -93,6 +93,8 @@ export add_component!
 export get_component
 export get_components
 export get_components_by_name
+export remove_components!
+export remove_component!
 export iterate_components
 export to_json
 export from_json

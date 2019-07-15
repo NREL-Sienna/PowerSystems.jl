@@ -280,6 +280,69 @@ function add_component!(sys::System, component::T) where T <: Component
     return nothing
 end
 
+"""
+    remove_components!(::Type{T}, sys::System) where T <: Component
+
+Remove all components of type T from the system.
+
+Throws InvalidParameter if the type is not stored.
+"""
+function remove_components!(::Type{T}, sys::System) where T <: Component
+    if !haskey(sys.components, T)
+        throw(InvalidParameter("component $T is not stored"))
+    end
+
+    pop!(sys.components, T)
+    @debug "Removed all components of type" T
+end
+
+"""
+    remove_component!(sys::System, component::T) where T <: Component
+
+Remove a component from the system by its value.
+
+Throws InvalidParameter if the component is not stored.
+"""
+function remove_component!(sys::System, component::T) where T <: Component
+    _remove_component!(T, sys, get_name(component))
+end
+
+"""
+    remove_component!(
+                      ::Type{T},
+                      sys::System,
+                      name::AbstractString,
+                      ) where T <: Component
+
+Remove a component from the system by its name.
+
+Throws InvalidParameter if the component is not stored.
+"""
+function remove_component!(
+                           ::Type{T},
+                           sys::System,
+                           name::AbstractString,
+                          ) where T <: Component
+    _remove_component!(T, sys, name)
+end
+
+function _remove_component!(
+                            ::Type{T},
+                            sys::System,
+                            name::AbstractString,
+                           ) where T <: Component
+    if !haskey(sys.components, T)
+        throw(InvalidParameter("component $T is not stored"))
+    end
+
+    if !haskey(sys.components[T], name)
+        throw(InvalidParameter("component $T name=$name is not stored"))
+    end
+
+    pop!(sys.components[T], name)
+    @debug "Removed component" T name
+end
+
 function get_bus(sys::System, bus_number::Int)
     for bus in get_components(Bus, sys)
         if bus.number == bus_number
@@ -529,10 +592,6 @@ function remove_forecast!(sys::System, forecast::T) where T <: Forecast
         reset_info!(sys.forecasts)
     end
 end
-
-# TODO: implement methods to remove components. In order to do this we will
-# need each PowerSystemType to store a UUID.
-# GitHub issue #203
 
 """
     get_component(
