@@ -91,6 +91,25 @@ function encode_for_json(uuid::Base.UUID)
     return (value=string(uuid),)
 end
 
+"""The next set of methods fix serialization for Complex numbers."""
+
+function JSON2.write(value::Complex)
+    return JSON2.write(encode_for_json(value))
+end
+
+function JSON2.write(io::IO, value::Complex)
+    return JSON2.write(io, encode_for_json(value))
+end
+
+function JSON2.read(io::IO, ::Type{Complex})
+    data = JSON2.read(io)
+    return Complex(data.real, data.imag)
+end
+
+function encode_for_json(value::Complex)
+    return (real=real(value), imag=imag(value))
+end
+
 """Enables deserialization of VariableCost. The default implementation can't figure out the
 variable Union.
 """
