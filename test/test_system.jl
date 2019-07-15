@@ -157,9 +157,17 @@ end
 
     remove_component!(sys, gen)
 
-    @test isnothing(get_component(ThermalStandard, sys, get_name(gen)))
-    generators = get_components(ThermalStandard, sys)
+    @test isnothing(get_component(typeof(gen), sys, get_name(gen)))
+    generators = get_components(typeof(gen), sys)
     @test length(generators) == initial_length - 1
 
     @test_throws(PowerSystems.InvalidParameter, remove_component!(sys, gen))
+
+    add_component!(sys, gen)
+    remove_component!(typeof(gen), sys, get_name(gen))
+    @test isnothing(get_component(typeof(gen), sys, get_name(gen)))
+
+    @assert length(get_components(typeof(gen), sys)) > 0
+    remove_components!(typeof(gen), sys)
+    @test_throws(PowerSystems.InvalidParameter, remove_components!(typeof(gen), sys))
 end
