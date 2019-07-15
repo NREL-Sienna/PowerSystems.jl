@@ -32,7 +32,7 @@ end
 function Deterministic(component::Component, label::String, data::TimeSeries.TimeArray)
     resolution = getresolution(data)
     initial_time = TimeSeries.timestamp(data)[1]
-    Deterministic(component, label, resolution, initial_time, data)
+    Deterministic(component, label, Dates.Minute(resolution), initial_time, data)
 end
 
 """Constructs Deterministic after constructing a TimeArray from initial_time and time_steps.
@@ -46,7 +46,41 @@ function Deterministic(component::Component,
         initial_time : Dates.Hour(1) : initial_time + resolution * (time_steps-1),
         ones(time_steps)
     )
-    return Deterministic(component, label, resolution, initial_time, data)
+    return Deterministic(component, label, Dates.Minute(resolution), initial_time, data)
+end
+
+"""Constructs Deterministic after constructing a TimeArray from initial_time and time_steps.
+"""
+function Probabilistic(component::Component,
+                       label::String,
+                       resolution::Dates.Period,
+                       initial_time::Dates.DateTime,
+                       quantiles::Vector{Float64},
+                       time_steps::Int)
+
+    data = TimeSeries.TimeArray(
+        initial_time : Dates.Hour(1) : initial_time + resolution * (time_steps-1),
+        ones(time_steps, length(quantiles))
+    )
+
+    return Probabilistic(component, label, Dates.Minute(resolution), initial_time, quantiles, data)
+end
+
+"""Constructs Probabilistic Forecast after constructing a TimeArray from initial_time and time_steps.
+"""
+function Probabilistic(component::Component,
+                       label::String,
+                       quantiles::Vector{Float64},  # Quantiles for the probabilistic forecast
+                       data::TimeSeries.TimeArray)
+
+    if !(length(TimeSeries.colnames(data)) == length(quantiles))
+        throw(DataFormatError(
+            "The size of the provided quantiles and data columns is incosistent"))
+    end
+    initial_time = TimeSeries.timestamp(data)[1]
+    resolution = getresolution(data)
+
+    return Probabilistic(component, label, Dates.Minute(resolution), initial_time, quantiles, data)
 end
 
 function PowerLoadPF(name::String, available::Bool, bus::Bus, maxactivepower::Float64,

@@ -1160,7 +1160,47 @@
       {
         "name": "data",
         "data_type": "TimeSeries.TimeArray",
-        "comment": "TimeStamp - scalingfactor"
+        "comment": "timestamp - scalingfactor"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystems.PowerSystemInternal"
+      }
+    ],
+    "supertype": "Forecast"
+  },
+  {
+    "struct_name": "Probabilistic",
+    "docstring": "A Probabilistic forecast for a particular data field in a PowerSystemDevice.",
+    "parametric": "Component",
+    "fields": [
+      {
+        "name": "component",
+        "data_type": "T"
+      },
+      {
+        "name": "label",
+        "data_type": "String",
+        "comment": "label of component parameter forecasted"
+      },
+      {
+        "name": "resolution",
+        "data_type": "Dates.Period"
+      },
+      {
+        "name": "initial_time",
+        "data_type": "Dates.DateTime",
+        "comment": "forecast availability time"
+      },
+      {
+        "name": "quantiles",
+        "data_type": "Vector{Float64}",
+        "comment": "Quantiles for the probabilistic forecast"
+      },
+      {
+        "name": "data",
+        "data_type": "TimeSeries.TimeArray",
+        "comment": "timestamp - scalingfactor"
       },
       {
         "name": "internal",
