@@ -74,7 +74,8 @@ function Probabilistic(component::Component,
                        data::TimeSeries.TimeArray)
 
     if !(length(TimeSeries.colnames(data)) == length(quantiles))
-        error("The size of the provided quantiles and data columns is incosistent")
+        throw(DataFormatError(
+            "The size of the provided quantiles and data columns is incosistent"))
     end
     initial_time = TimeSeries.timestamp(data)[1]
     resolution = getresolution(data)
