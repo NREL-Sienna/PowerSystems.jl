@@ -1193,7 +1193,7 @@
         "comment": "forecast availability time"
       },
       {
-        "name": "quantiles",
+        "name": "probabilities",
         "data_type": "Vector{Float64}",
         "comment": "Quantiles for the probabilistic forecast"
       },

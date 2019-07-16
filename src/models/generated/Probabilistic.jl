@@ -8,17 +8,17 @@ mutable struct Probabilistic{T <: Component} <: Forecast
     label::String  # label of component parameter forecasted
     resolution::Dates.Period
     initial_time::Dates.DateTime  # forecast availability time
-    quantiles::Vector{Float64}  # Quantiles for the probabilistic forecast
+    probabilities::Vector{Float64}  # Quantiles for the probabilistic forecast
     data::TimeSeries.TimeArray  # timestamp - scalingfactor
     internal::PowerSystems.PowerSystemInternal
 end
 
-function Probabilistic(component, label, resolution, initial_time, quantiles, data, )
-    Probabilistic(component, label, resolution, initial_time, quantiles, data, PowerSystemInternal())
+function Probabilistic(component, label, resolution, initial_time, probabilities, data, )
+    Probabilistic(component, label, resolution, initial_time, probabilities, data, PowerSystemInternal())
 end
 
-function Probabilistic(; component, label, resolution, initial_time, quantiles, data, )
-    Probabilistic(component, label, resolution, initial_time, quantiles, data, )
+function Probabilistic(; component, label, resolution, initial_time, probabilities, data, )
+    Probabilistic(component, label, resolution, initial_time, probabilities, data, )
 end
 
 
@@ -30,8 +30,8 @@ get_label(value::Probabilistic) = value.label
 get_resolution(value::Probabilistic) = value.resolution
 """Get Probabilistic initial_time."""
 get_initial_time(value::Probabilistic) = value.initial_time
-"""Get Probabilistic quantiles."""
-get_quantiles(value::Probabilistic) = value.quantiles
+"""Get Probabilistic probabilities."""
+get_probabilities(value::Probabilistic) = value.probabilities
 """Get Probabilistic data."""
 get_data(value::Probabilistic) = value.data
 """Get Probabilistic internal."""
