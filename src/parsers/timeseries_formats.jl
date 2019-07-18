@@ -65,15 +65,30 @@ function get_period_columns(::Type{TimeseriesFormatYMDPeriodAsHeader},
     return [x for x in propertynames(file) if !in(x, (:Year, :Month, :Day))]
 end
 
-"""Return a sorted vector of unique timestamps specified in the CSV file."""
+"""Return a vector of dicts of unique timestamps and their counts."""
 function get_unique_timestamps(::Type{T}, file::CSV.File) where T <: TimeseriesFileFormat
-    timestamps = Set{Dates.DateTime}()
+    timestamps = Vector{Dict{String, Any}}()
+    new_timestamp = x -> Dict("timestamp" => x, "count" => 1)
 
     for i in 1:length(file)
-        push!(timestamps, get_timestamp(T, file, i))
+        timestamp = get_timestamp(T, file, i)
+        if i == 1
+            push!(timestamps, new_timestamp(timestamp))
+        else
+            if timestamp == timestamps[end]["timestamp"]
+                timestamps[end]["count"] += 1
+            else
+                push!(timestamps, new_timestamp(timestamp))
+            end
+        end
     end
 
-    return sort!(collect(timestamps))
+    @assert length(timestamps) > 0
+    for timestamp in timestamps[2:end]
+        @assert timestamp["count"] == timestamps[1]["count"]
+    end
+
+    return timestamps
 end
 
 """Return a Dates.DateTime for the row in the CSV file."""
@@ -106,8 +121,13 @@ function read_time_array(
     timestamps = Vector{Dates.DateTime}()
     step = get_step_time(T, file, file.Period)
 
-    for i in 1:length(file)
-        timestamp = get_timestamp(T, file, i) + step * (i - 1)
+    # All timestamps must be sequential by step, so we can ignore the timestamps in the
+    # file after the first one.
+    # They were validated in get_step_time.
+    first = get_timestamp(T, file, 1)
+    push!(timestamps, first)
+    for i in 2:length(file)
+        timestamp = first + step * (i - 1)
         push!(timestamps, timestamp)
     end
 
@@ -182,20 +202,18 @@ function get_step_time(
                        file::CSV.File,
                        period::AbstractArray,
                       ) where T <: TimeseriesFileFormat
-    @assert period[end] == maximum(period) == length(period)
-    num_steps = period[end]
-
     timestamps = get_unique_timestamps(T, file)
+    num_steps = timestamps[1]["count"]
     if length(timestamps) == 1
         # TODO: Not sure how to handle this. We could make specific functions for each type.
         # For any YMD format the lowest resolution is Day.
         # What is it for DateTime? We can't infer from one value.
         resolution = Dates.Day(1)
     else
-        resolution = timestamps[2] - timestamps[1]
+        resolution = timestamps[2]["timestamp"] - timestamps[1]["timestamp"]
         if length(timestamps) > 2
             for i in 3:length(timestamps)
-                diff = timestamps[i] - timestamps[i - 1]
+                diff = timestamps[i]["timestamp"] - timestamps[i - 1]["timestamp"]
                 if diff != resolution
                     msg = "conflicting resolution=$resolution i=$i diff=$diff"
                     throw(DataFormatError(msg))
