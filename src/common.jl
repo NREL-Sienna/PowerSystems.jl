@@ -48,6 +48,24 @@ end
     WS #Wind Turbine, Offshore
 end
 
+"AER Aggregated Fuel Code From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
+@enum ThermalFuels begin
+    COL	#Anthracite Coal and Bituminous Coal
+    WOC	#Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)
+    DFO	#Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4
+    WOO	#Waste Oil Kerosene and JetFuel Butane, Propane,
+    PC  #Petroleum Coke
+    RFO	#Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil)
+    NG	#Natural Gas
+    OOG	#Other Gas and blast furnace gas
+    NUC	#Nuclear Fission (Uranium, Plutonium, Thorium)
+    ORW	#Agricultural Crop Byproducts/Straw/Energy Crops
+    MLG	#Municipal Solid Waste – Biogenic component
+    WWW #Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)
+    GEO #Geothermal
+    OTH #Other
+end
+
 "Thrown upon detection of user data that is not supported."
 struct DataFormatError <: Exception
     msg::String
