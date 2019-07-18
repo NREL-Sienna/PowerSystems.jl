@@ -7,6 +7,8 @@ julia:
   - 1.1
   - nightly
 
+codecov: true
+
 notifications:
   email: false
 
@@ -30,9 +32,6 @@ script:
   - julia .continuous-integration/check_generated_structs.jl
   - julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();"
   - julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);"
-
-after_success:
-  - julia -e 'using Pkg; cd(Pkg.dir("PowerSystems")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 
 jobs:
   include:
