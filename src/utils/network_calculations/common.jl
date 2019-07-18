@@ -34,7 +34,13 @@ Base.CartesianIndices(a::PowerNetworkMatrix) = error("PowerSystems PowerNetworkM
 
 Base.eachindex(A::PowerNetworkMatrix) = CartesianIndices(size(A.data))
 
-lookup_index(i, lookup::Dict) = isa(i, Colon) ? Colon() : lookup[i]
+function lookup_index(i, lookup::Dict)
+    return isa(i, Colon) ? Colon() : lookup[i]
+end
+
+function lookup_index(i::Component, lookup::Dict)
+    return isa(i, Colon) ? Colon() : lookup[Base.to_index(i)]
+end
 
 # Lisp-y tuple recursion trick to handle indexing in a nice type-
 # stable way. The idea here is that `_to_index_tuple(idx, lookup)`
@@ -60,7 +66,6 @@ _to_index_tuple(idx::NTuple{0}, lookup::Tuple) = ()
 
 # Resolve ambiguity with the above two base cases
 _to_index_tuple(idx::NTuple{0}, lookup::NTuple{0}) = ()
-
 to_index(A::PowerNetworkMatrix, idx...) = _to_index_tuple(idx, A.lookup)
 
 # Doing `Colon() in idx` is relatively slow because it involves
@@ -218,3 +223,7 @@ function Base.show(io::IO, array::PowerNetworkMatrix)
     println(io, ":")
     Base.print_array(io, array)
 end
+
+Base.to_index(b::Bus) = get_number(b)
+Base.to_index(b::T) where T <: ACBranch = get_name(b)
+Base.to_index(ix::Component...) = to_index.(ix)
