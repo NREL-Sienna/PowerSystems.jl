@@ -146,23 +146,36 @@ function read_time_array(
                          component_name::AbstractString;
                          kwargs...
                         ) where T <: TimeseriesFormatPeriodAsHeader
-    if length(file) != 1
-        msg = "$T must have only one row. file=$file.name"
-        throw(DataFormatError(msg))
-    end
-
     timestamps = Vector{Dates.DateTime}()
 
     period_cols_as_symbols = get_period_columns(T, file)
     period = [parse(Int, string(x)) for x in period_cols_as_symbols]
     step = get_step_time(T, file, period)
 
-    for i in 1:length(period)
-        timestamp = get_timestamp(T, file, 1) + step * (i - 1)
-        push!(timestamps, timestamp)
+    # All timestamps must be sequential by step, so we can ignore the timestamps in the
+    # file after the first one.
+    # They were validated in get_step_time.
+
+    first = Dates.DateTime(Dates.today())
+    count = 0
+    for i in 1:length(file)
+        if i == 1
+            first = get_timestamp(T, file, 1)
+        end
+        for j in 1:length(period)
+            timestamp = first + step * count
+            count += 1
+            push!(timestamps, timestamp)
+        end
     end
 
-    vals = [getproperty(file, x)[1] for x in period_cols_as_symbols]
+    vals = Vector{Float64}()
+    for i in 1:length(file)
+        for period in period_cols_as_symbols
+            val = getproperty(file, period)[i]
+            push!(vals, val)
+        end
+    end
 
     return TimeSeries.TimeArray(timestamps, vals, Symbol.([component_name]))
 end
@@ -203,7 +216,15 @@ function get_step_time(
                        period::AbstractArray,
                       ) where T <: TimeseriesFileFormat
     timestamps = get_unique_timestamps(T, file)
-    num_steps = timestamps[1]["count"]
+    if T <: TimeseriesFormatPeriodAsColumn
+        num_steps = timestamps[1]["count"]
+    elseif T <: TimeseriesFormatPeriodAsHeader
+        num_steps = period[end]
+    else
+        error("unsupported $T")
+    end
+
+    @debug timestamps, num_steps
     if length(timestamps) == 1
         # TODO: Not sure how to handle this. We could make specific functions for each type.
         # For any YMD format the lowest resolution is Day.
@@ -237,6 +258,6 @@ end
 function calculate_step_time(resolution::Dates.Period, num_steps::Int)
     # Seconds should be the lowest possible resolution.
     step = Dates.Second(resolution) / num_steps
-    @debug "file has step time of $step"
+    @debug "file has step time of $step" resolution num_steps
     return step
 end
