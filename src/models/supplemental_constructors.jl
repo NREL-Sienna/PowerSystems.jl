@@ -9,23 +9,19 @@ function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
 end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableFix(name, available, bus, rating::Float64)
-    tech = TechRenewable(rating, nothing, 1.0)
-    RenewableFix(name, available, bus, tech)
+function RenewableFix(name::String, available::Bool, bus::Bus,
+                        activepower::Float64, reactivepower::Float64,
+                        prime_mover::PrimeMovers, rating::Float64)
+    tech = TechRenewable(rating, prime_mover, nothing, 1.0)
+    RenewableFix(name, available, bus, activepower, reactivepower, tech)
 end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableDispatch(name::String, available::Bool, bus::Bus, rating::Float64,
-                           op_cost::TwoPartCost)
-    tech = TechRenewable(rating, 0.0, nothing, 1.0)
-    return RenewableDispatch(name, available, bus, tech, op_cost)
-end
-
-"""Accepts curtailment cost as a Float64 and then creates an EconHydro."""
-function HydroDispatch(name::AbstractString, available::Bool, bus::Bus, tech::TechHydro,
-                       curtailcost::Float64)
-    op_cost = TwoPartCost(0.0, curtailcost)
-    return HydroDispatch(name, available, bus, tech, op_cost)
+function RenewableDispatch(name::String, available::Bool, bus::Bus,
+                           activepower::Float64, reactivepower::Float64,
+                           prime_mover::PrimeMovers, rating::Float64, op_cost::TwoPartCost)
+    tech = TechRenewable(rating, prime_mover, nothing, 1.0)
+    return RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost)
 end
 
 """Constructs Deterministic from a Component, label, and TimeArray."""
