@@ -61,24 +61,20 @@
         "data_type": "Float64"
       },
       {
-        "name": "activepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing,PrimeMovers}"
       },
       {
         "name": "activepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
-      },
-      {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Min_Max"
       },
       {
         "name": "reactivepowerlimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "ramplimits",
@@ -107,14 +103,15 @@
         "data_type": "Float64"
       },
       {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing,PrimeMovers}"
       },
       {
         "name": "reactivepowerlimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "powerfactor",
@@ -139,24 +136,26 @@
         "data_type": "Float64"
       },
       {
-        "name": "activepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing,PrimeMovers}"
+      },
+      {
+        "name": "fuel",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing,ThermalFuels}"
       },
       {
         "name": "activepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
-      },
-      {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Min_Max"
       },
       {
         "name": "reactivepowerlimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "ramplimits",
@@ -214,7 +213,7 @@
         "name": "voltagelimits",
         "comment": "limits on the voltage variation as multiples of basevoltage",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "basevoltage",
@@ -264,6 +263,16 @@
         "data_type": "Bool"
       },
       {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "arch",
         "data_type": "Arch"
@@ -291,7 +300,7 @@
       {
         "name": "anglelimits",
         "null_value": "(min=-90.0, max=-90.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "internal",
@@ -312,6 +321,16 @@
         "null_value": "false",
         "name": "available",
         "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
@@ -346,7 +365,7 @@
       {
         "name": "anglelimits",
         "null_value": "(min=-90.0, max=-90.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "internal",
@@ -367,6 +386,16 @@
         "null_value": "false",
         "name": "available",
         "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
@@ -424,6 +453,16 @@
         "data_type": "Bool"
       },
       {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "arch",
         "data_type": "Arch"
@@ -473,6 +512,16 @@
         "null_value": "false",
         "name": "available",
         "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
@@ -525,24 +574,29 @@
         "data_type": "Arch"
       },
       {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "activepowerlimits_from",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "activepowerlimits_to",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "reactivepowerlimits_from",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "reactivepowerlimits_to",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "loss",
@@ -571,6 +625,11 @@
         "data_type": "Bool"
       },
       {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "null_value": "Arch(Bus(nothing), Bus(nothing))",
         "name": "arch",
         "data_type": "Arch"
@@ -578,7 +637,7 @@
       {
         "name": "rectifier_taplimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "rectifier_xrc",
@@ -586,14 +645,14 @@
         "data_type": "Float64"
       },
       {
-        "name": "rectifier_firingangle",
+        "name": "rectifier_firing_angle",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "inverter_taplimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "inverter_xrc",
@@ -601,9 +660,9 @@
         "data_type": "Float64"
       },
       {
-        "name": "inverter_firingangle",
+        "name": "inverter_firing_angle",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "internal",
@@ -624,6 +683,16 @@
         "null_value": "false",
         "name": "available",
         "data_type": "Bool"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "name": "bus",
@@ -707,6 +776,16 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "maxactivepower",
         "null_value": "0.0",
         "data_type": "Float64"
@@ -740,6 +819,16 @@
         "name": "bus",
         "null_value": "Bus(nothing)",
         "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "name": "tech",
@@ -777,6 +866,16 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "tech",
         "null_value": "TechHydro(nothing)",
         "data_type": "TechHydro"
@@ -805,6 +904,16 @@
         "name": "bus",
         "null_value": "Bus(nothing)",
         "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "name": "tech",
@@ -852,6 +961,16 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "tech",
         "null_value": "TechRenewable(nothing)",
         "data_type": "TechRenewable"
@@ -887,6 +1006,16 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "tech",
         "null_value": "TechRenewable(nothing)",
         "data_type": "TechRenewable"
@@ -916,6 +1045,16 @@
         "name": "bus",
         "null_value": "Bus(nothing)",
         "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "name": "tech",
@@ -979,6 +1118,12 @@
         "data_type": "String"
       },
       {
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing,PrimeMovers}"
+      },
+      {
         "null_value": "false",
         "name": "available",
         "data_type": "Bool"
@@ -998,7 +1143,7 @@
         "name": "capacity",
         "null_value": "(min=0.0, max=0.0)",
         "comment": "Maximum and Minimum storage capacity in p.u.-hr",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "rating",
@@ -1013,12 +1158,12 @@
       {
         "name": "inputactivepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "outputactivepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "efficiency",
@@ -1033,7 +1178,7 @@
       {
         "name": "reactivepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "internal",
