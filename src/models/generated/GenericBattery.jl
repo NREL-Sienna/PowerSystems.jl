@@ -5,6 +5,7 @@ This file is auto-generated. Do not edit.
 
 mutable struct GenericBattery <: Storage
     name::String
+    primemover::Union{Nothing,PrimeMovers}  # PrimeMover Technology according to EIA 923
     available::Bool
     bus::Bus
     primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
@@ -33,6 +34,7 @@ end
 function GenericBattery(::Nothing)
     GenericBattery(;
         name="init",
+        primemover=nothing,
         available=false,
         bus=Bus(nothing),
         primemover=BA::PrimeMovers,
@@ -50,6 +52,8 @@ end
 
 """Get GenericBattery name."""
 get_name(value::GenericBattery) = value.name
+"""Get GenericBattery primemover."""
+get_primemover(value::GenericBattery) = value.primemover
 """Get GenericBattery available."""
 get_available(value::GenericBattery) = value.available
 """Get GenericBattery bus."""
