@@ -584,6 +584,11 @@
         "data_type": "Float64"
       },
       {
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
+        "name": "arch",
+        "data_type": "Arch"
+      },
+      {
         "name": "activepowerlimits_from",
         "null_value": "(min=0.0, max=0.0)",
         "data_type": "Min_Max"
