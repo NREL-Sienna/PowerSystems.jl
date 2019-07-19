@@ -6,6 +6,8 @@ This file is auto-generated. Do not edit.
 mutable struct TapTransformer <: ACBranch
     name::String
     available::Bool
+    activepower_flow::Float64
+    reactivepower_flow::Float64
     arch::Arch
     r::Float64  # System per-unit value
     x::Float64  # System per-unit value
@@ -15,12 +17,12 @@ mutable struct TapTransformer <: ACBranch
     internal::PowerSystems.PowerSystemInternal
 end
 
-function TapTransformer(name, available, arch, r, x, primaryshunt, tap, rate, )
-    TapTransformer(name, available, arch, r, x, primaryshunt, tap, rate, PowerSystemInternal())
+function TapTransformer(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, tap, rate, )
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, tap, rate, PowerSystemInternal())
 end
 
-function TapTransformer(; name, available, arch, r, x, primaryshunt, tap, rate, )
-    TapTransformer(name, available, arch, r, x, primaryshunt, tap, rate, )
+function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, tap, rate, )
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, tap, rate, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -29,6 +31,8 @@ function TapTransformer(::Nothing)
     TapTransformer(;
         name="init",
         available=false,
+        activepower_flow=0.0,
+        reactivepower_flow=0.0,
         arch=Arch(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
@@ -42,6 +46,10 @@ end
 get_name(value::TapTransformer) = value.name
 """Get TapTransformer available."""
 get_available(value::TapTransformer) = value.available
+"""Get TapTransformer activepower_flow."""
+get_activepower_flow(value::TapTransformer) = value.activepower_flow
+"""Get TapTransformer reactivepower_flow."""
+get_reactivepower_flow(value::TapTransformer) = value.reactivepower_flow
 """Get TapTransformer arch."""
 get_arch(value::TapTransformer) = value.arch
 """Get TapTransformer r."""

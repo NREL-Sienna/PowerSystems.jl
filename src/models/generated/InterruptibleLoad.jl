@@ -6,6 +6,8 @@ This file is auto-generated. Do not edit.
 mutable struct InterruptibleLoad <: ControllableLoad
     name::String
     available::Bool
+    activepower::Float64
+    reactivepower::Float64
     bus::Bus
     model::String  # [Z, I, P]
     maxactivepower::Float64
@@ -14,12 +16,12 @@ mutable struct InterruptibleLoad <: ControllableLoad
     internal::PowerSystems.PowerSystemInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
+function InterruptibleLoad(name, available, activepower, reactivepower, bus, model, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, activepower, reactivepower, bus, model, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
 end
 
-function InterruptibleLoad(; name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
+function InterruptibleLoad(; name, available, activepower, reactivepower, bus, model, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, activepower, reactivepower, bus, model, maxactivepower, maxreactivepower, op_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -28,6 +30,8 @@ function InterruptibleLoad(::Nothing)
     InterruptibleLoad(;
         name="init",
         available=false,
+        activepower=0.0,
+        reactivepower=0.0,
         bus=Bus(nothing),
         model="0",
         maxactivepower=0,
@@ -40,6 +44,10 @@ end
 get_name(value::InterruptibleLoad) = value.name
 """Get InterruptibleLoad available."""
 get_available(value::InterruptibleLoad) = value.available
+"""Get InterruptibleLoad activepower."""
+get_activepower(value::InterruptibleLoad) = value.activepower
+"""Get InterruptibleLoad reactivepower."""
+get_reactivepower(value::InterruptibleLoad) = value.reactivepower
 """Get InterruptibleLoad bus."""
 get_bus(value::InterruptibleLoad) = value.bus
 """Get InterruptibleLoad model."""
