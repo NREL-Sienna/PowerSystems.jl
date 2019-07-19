@@ -50,20 +50,20 @@ end
 
 "AER Aggregated Fuel Code From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 @enum ThermalFuels begin
-    COL	#Anthracite Coal and Bituminous Coal
-    WOC	#Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)
-    DFO	#Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4
-    WOO	#Waste Oil Kerosene and JetFuel Butane, Propane,
-    PC  #Petroleum Coke
-    RFO	#Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil)
-    NG	#Natural Gas
-    OOG	#Other Gas and blast furnace gas
-    NUC	#Nuclear Fission (Uranium, Plutonium, Thorium)
-    ORW	#Agricultural Crop Byproducts/Straw/Energy Crops
-    MLG	#Municipal Solid Waste – Biogenic component
-    WWW #Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)
-    GEO #Geothermal
-    OTH #Other
+    COAL #COL	#Anthracite Coal and Bituminous Coal
+    WASTE_COAL #WOC	#Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)
+    Distillate_Fuel_Oil #DFO #Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4
+    WASTE_OIL #WOO	#Waste Oil Kerosene and JetFuel Butane, Propane,
+    PETROLEUM_COKE #PC  #Petroleum Coke
+    RESIDUAL_FUEL_OIL	#RFO #Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil)
+    NATURAL_GAS #NG	#Natural Gas
+    OTHER_GAS #OOG	#Other Gas and blast furnace gas
+    NUCLEAR #NUC #Nuclear Fission (Uranium, Plutonium, Thorium)
+    AG_BIPRODUCT #ORW	#Agricultural Crop Byproducts/Straw/Energy Crops
+    MUNICIPAL_WASTE #MLG	#Municipal Solid Waste – Biogenic component
+    WOOD_WASTE #WWW #Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)
+    GEOTHERMAL #GEO #Geothermal
+    OTHER #OTH #Other
 end
 
 "Thrown upon detection of user data that is not supported."
