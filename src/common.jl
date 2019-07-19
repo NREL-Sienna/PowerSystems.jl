@@ -1,4 +1,3 @@
-
 const Min_Max = NamedTuple{(:min, :max),Tuple{Float64,Float64}}
 const From_To_Float = NamedTuple{(:from, :to),Tuple{Float64,Float64}}
 const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from),Tuple{Float64,Float64}}
