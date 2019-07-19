@@ -52,7 +52,7 @@ end
 @enum ThermalFuels begin
     COAL #COL	#Anthracite Coal and Bituminous Coal
     WASTE_COAL #WOC	#Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)
-    Distillate_Fuel_Oil #DFO #Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4
+    DISTILLATE_FUEL_OIL #DFO #Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4
     WASTE_OIL #WOO	#Waste Oil Kerosene and JetFuel Butane, Propane,
     PETROLEUM_COKE #PC  #Petroleum Coke
     RESIDUAL_FUEL_OIL	#RFO #Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil)
