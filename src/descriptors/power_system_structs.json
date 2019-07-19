@@ -569,14 +569,14 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
-      },
-      {
         "name": "activepower_flow",
         "null_value": "0.0",
         "data_type": "Float64"
+      },
+      {
+        "null_value": "Arch(Bus(nothing), Bus(nothing))",
+        "name": "arch",
+        "data_type": "Arch"
       },
       {
         "name": "activepowerlimits_from",
