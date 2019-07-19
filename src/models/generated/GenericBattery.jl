@@ -5,26 +5,27 @@ This file is auto-generated. Do not edit.
 
 mutable struct GenericBattery <: Storage
     name::String
+    primemover::Union{Nothing,PrimeMovers}  # PrimeMover Technology according to EIA 923
     available::Bool
     bus::Bus
     energy::Float64  # State of Charge of the Battery p.u.-hr
-    capacity::NamedTuple{(:min, :max), Tuple{Float64, Float64}}  # Maximum and Minimum storage capacity in p.u.-hr
+    capacity::Min_Max  # Maximum and Minimum storage capacity in p.u.-hr
     rating::Float64
     activepower::Float64
-    inputactivepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    outputactivepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    inputactivepowerlimits::Min_Max
+    outputactivepowerlimits::Min_Max
     efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
     reactivepower::Float64
-    reactivepowerlimits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
+    reactivepowerlimits::Union{Nothing, Min_Max}
     internal::PowerSystems.PowerSystemInternal
 end
 
-function GenericBattery(name, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, )
-    GenericBattery(name, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, PowerSystemInternal())
+function GenericBattery(name, primemover, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, )
+    GenericBattery(name, primemover, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, PowerSystemInternal())
 end
 
-function GenericBattery(; name, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, )
-    GenericBattery(name, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, )
+function GenericBattery(; name, primemover, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, )
+    GenericBattery(name, primemover, available, bus, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -32,6 +33,7 @@ end
 function GenericBattery(::Nothing)
     GenericBattery(;
         name="init",
+        primemover=nothing,
         available=false,
         bus=Bus(nothing),
         energy=0.0,
@@ -48,6 +50,8 @@ end
 
 """Get GenericBattery name."""
 get_name(value::GenericBattery) = value.name
+"""Get GenericBattery primemover."""
+get_primemover(value::GenericBattery) = value.primemover
 """Get GenericBattery available."""
 get_available(value::GenericBattery) = value.available
 """Get GenericBattery bus."""
