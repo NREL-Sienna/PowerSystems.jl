@@ -10,19 +10,19 @@ mutable struct VSCDCLine <: DCBranch
     arch::Arch
     rectifier_taplimits::Min_Max
     rectifier_xrc::Float64
-    rectifier_firingangle::Min_Max
+    rectifier_firing_angle::Min_Max
     inverter_taplimits::Min_Max
     inverter_xrc::Float64
-    inverter_firingangle::Min_Max
+    inverter_firing_angle::Min_Max
     internal::PowerSystems.PowerSystemInternal
 end
 
-function VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
-    VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, PowerSystemInternal())
+function VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
+    VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, PowerSystemInternal())
 end
 
-function VSCDCLine(; name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
-    VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firingangle, inverter_taplimits, inverter_xrc, inverter_firingangle, )
+function VSCDCLine(; name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
+    VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -35,10 +35,10 @@ function VSCDCLine(::Nothing)
         arch=Arch(Bus(nothing), Bus(nothing)),
         rectifier_taplimits=(min=0.0, max=0.0),
         rectifier_xrc=0.0,
-        rectifier_firingangle=(min=0.0, max=0.0),
+        rectifier_firing_angle=(min=0.0, max=0.0),
         inverter_taplimits=(min=0.0, max=0.0),
         inverter_xrc=0.0,
-        inverter_firingangle=(min=0.0, max=0.0),
+        inverter_firing_angle=(min=0.0, max=0.0),
     )
 end
 
@@ -54,13 +54,13 @@ get_arch(value::VSCDCLine) = value.arch
 get_rectifier_taplimits(value::VSCDCLine) = value.rectifier_taplimits
 """Get VSCDCLine rectifier_xrc."""
 get_rectifier_xrc(value::VSCDCLine) = value.rectifier_xrc
-"""Get VSCDCLine rectifier_firingangle."""
-get_rectifier_firingangle(value::VSCDCLine) = value.rectifier_firingangle
+"""Get VSCDCLine rectifier_firing_angle."""
+get_rectifier_firing_angle(value::VSCDCLine) = value.rectifier_firing_angle
 """Get VSCDCLine inverter_taplimits."""
 get_inverter_taplimits(value::VSCDCLine) = value.inverter_taplimits
 """Get VSCDCLine inverter_xrc."""
 get_inverter_xrc(value::VSCDCLine) = value.inverter_xrc
-"""Get VSCDCLine inverter_firingangle."""
-get_inverter_firingangle(value::VSCDCLine) = value.inverter_firingangle
+"""Get VSCDCLine inverter_firing_angle."""
+get_inverter_firing_angle(value::VSCDCLine) = value.inverter_firing_angle
 """Get VSCDCLine internal."""
 get_internal(value::VSCDCLine) = value.internal
