@@ -118,6 +118,7 @@ The demand if charging takes place as early as possible.
     - The battery level at the last time.
 """
 function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
+    resolution = 1 / 60 / 60 / 100 # Resolve to the nearest millisecond.
     eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.power)
@@ -138,7 +139,7 @@ function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{
         tcrit = net > 0 ? (demand.capacity.max - b) / net : Inf
         push!(zt, tnow)
         push!(zv, eff(charging1))
-        if 0 < tcrit < tnext
+        if resolution < tcrit < tnext
             b = b + tcrit * net
             tnow = addhours(tnow, tcrit)
         else
@@ -184,6 +185,7 @@ The demand if charging takes place as late as possible.
     - The battery level at the first time.
 """
 function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
+    resolution = 1 / 60 / 60 / 100 # Resolve to the nearest millisecond.
     eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.power)
@@ -204,7 +206,7 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
         charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
         tcrit = net > 0 ? (demand.capacity.max - b) / net : Inf
-        if 0 < tcrit < tnext
+        if resolution < tcrit < tnext
             b = b + tcrit * net
             tnow = addhours(tnow, - tcrit)
         else
@@ -215,6 +217,8 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
         push!(zt, tnow)
         push!(zv, eff(charging1))
     end
+    zt = reverse(zt)
+    zv = reverse(zv)
     (
         aligntimes(map(v -> v[1], demand.locations), TimeArray(zt, zv)),
         b

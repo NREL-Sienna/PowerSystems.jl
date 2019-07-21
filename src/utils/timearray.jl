@@ -72,8 +72,12 @@ Compute the time difference corresponding to a fractional number of hours.
 """
 function fractionalhours(delta) :: Nanosecond
     onehour = Time(1) - Time(0)
-    resolution = 3600
-    onehour * floor(Int64, resolution * delta) / resolution
+    if false # Old implementation.
+        resolution = 60 * 60 * 1000 # Resolve to the nearest millisecond.
+        onehour * trunc(Int64, resolution * delta) / resolution
+    else # New implementation.
+        typeof(onehour)(trunc(Int64, delta * convert(Float64, onehour.value)))
+    end
 end
 
 
