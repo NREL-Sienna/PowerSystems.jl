@@ -96,7 +96,10 @@ function make_load(d, bus)
     return PowerLoad(;
         name=bus.name,
         available=true,
+        model = PowerSystems.ConstantPower::LoadModel,
         bus=bus,
+        activepower=d["pd"],
+        reactivepower=d["qd"],
         maxactivepower=d["pd"],
         maxreactivepower=d["qd"],
     )
@@ -181,7 +184,7 @@ function make_tech_renewable(d)
         rating=float(d["pmax"]),
         reactivepower=d["qg"],
         reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
-        powerfactor=1,
+        powerfactor=1.0,
     )
 
     return tech
