@@ -117,8 +117,9 @@ function PowerLoadPF(::Nothing)
 end
 
 """Accepts anglelimits as a Float64."""
-function Line(name, available, arch::Arch, r, x, b, rate, anglelimits::Float64)
-    return Line(name, available, arch::Arch, r, x, b, rate,
+function Line(name, available::Bool, activepower_flow::Float64,
+    reactivepower_flow::Float64, arch::Arch, r, x, b, rate, anglelimits::Float64)
+    return Line(name, available, activepower_flow, reactivepower_flow, arch::Arch, r, x, b, rate,
                 (min=-anglelimits, max=anglelimits))
 end
 
