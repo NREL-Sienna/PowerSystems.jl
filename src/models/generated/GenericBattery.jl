@@ -7,7 +7,7 @@ mutable struct GenericBattery <: Storage
     name::String
     available::Bool
     bus::Bus
-    primemover::Union{Nothing,PrimeMovers}  # PrimeMover Technology according to EIA 923
+    primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
     energy::Float64  # State of Charge of the Battery p.u.-hr
     capacity::Min_Max  # Maximum and Minimum storage capacity in p.u.-hr
     rating::Float64
@@ -35,7 +35,7 @@ function GenericBattery(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        primemover=nothing,
+        primemover=PowerSystems.BA::PrimeMovers,
         energy=0.0,
         capacity=(min=0.0, max=0.0),
         rating=0.0,
