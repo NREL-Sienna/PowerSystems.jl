@@ -268,7 +268,7 @@ Ybus14_matpower[9,14] = -1.42400548701993 +   3.0290504569306im
 Ybus14_matpower[13,14]=  -1.13699415780633 +  2.31496347510535im
 Ybus14_matpower[14,14]=   2.56099964482626 -  5.34401393203596im;
 
-Ybus5_phaseshifter = Matrix{Complex{Float64}}(undef,5,5)   
+Ybus5_phaseshifter = Matrix{Complex{Float64}}(undef,5,5)
 Ybus5_phaseshifter[1,1]=  22.2506856885351 - 222.484376885351im
 Ybus5_phaseshifter[2,1]= -3.52348402099997 + 35.2348402099996im
 Ybus5_phaseshifter[4,1]=  -3.2569046378322 +  32.569046378322im
@@ -290,6 +290,7 @@ Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
 @time @testset "PTDF matrices" begin
     P5 = PowerSystems.PTDF(branches5, nodes5);
     @test maximum(P5.data - S5_slackB4) <= 1e-3
+    @test P5[branches5[1],nodes5[1]] == 0.1939166051164976
 
     P14 = PowerSystems.PTDF(branches14, nodes14);
     @test maximum(P14.data - S14_slackB1) <= 1e-3
@@ -309,6 +310,7 @@ end
 @time @testset "LODF matrices" begin
     L5 = PowerSystems.LODF(branches5,nodes5)
     @test maximum(L5.data - Lodf_5) <= 1e-3
+    @test L5[branches5[1],branches5[2]] == 0.3447946513849091
 
     L14 = PowerSystems.LODF(branches14,nodes14)
     @test maximum(L14.data - Lodf_14) <= 1e-3
@@ -322,7 +324,6 @@ end
     end
 
 end
-
 
 @time @testset "Ybus Matrix" begin
     Ybus5 = PowerSystems.Ybus(branches5, nodes5)
@@ -342,7 +343,7 @@ end
     for i in indices
         @test isapprox(Ybus14[i[1], i[2]], Ybus14_matpower[i[1], i[2]], atol=1e-2)
     end
-    
+
     Y5NS = Ybus(sys)
     @test isapprox(getindex(Y5NS, 10, 4), -3.3336667 + 33.336667im, atol= 1e-4)
 
@@ -351,16 +352,6 @@ end
         @test isapprox(getindex(Y5NS,buf,but), Ybus5_matpower[buf,but], atol=1e-3)
     end
 
-
-
-
-    # Disabled per GitHub issue #256.
-    #Ybus5_ps = PowerSystems.build_ybus(length(Buses_ps), Branches_ps)
-    #I, J, V = findnz(Ybus5_ps)
-    #indices = collect(zip(I,J))
-
-    #for i in indices
-    #    @test isapprox(Ybus5_phaseshifter[i[1], i[2]], Ybus5_ps[i[1], i[2]], atol=1e-2)
-    #end
+    @test Ybus5[nodes5[1],nodes5[2]] == (-3.5234840209999647 + 35.234840209999646im)
 
 end

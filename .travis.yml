@@ -7,6 +7,8 @@ julia:
   - 1.1
   - nightly
 
+codecov: true
+
 notifications:
   email: false
 
@@ -26,13 +28,8 @@ matrix:
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
 ## uncomment the following lines to override the default test script
-script:
+before_script:
   - julia .continuous-integration/check_generated_structs.jl
-  - julia --project --color=yes -e "import Pkg; Pkg.instantiate(); Pkg.build();"
-  - julia --check-bounds=yes --depwarn=no --color=yes --project -e "import Pkg; Pkg.test(coverage=true);"
-
-after_success:
-  - julia -e 'using Pkg; cd(Pkg.dir("PowerSystems")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
 
 jobs:
   include:
