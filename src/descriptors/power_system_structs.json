@@ -63,7 +63,7 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "PrimeMover.HY::PrimeMovers",
+        "null_value": "PowerSystems.HY::PrimeMovers",
         "data_type": "PrimeMovers"
       },
       {
@@ -105,7 +105,7 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "PrimeMovers.OT::PrimeMovers",
+        "null_value": "PowerSystems.OT::PrimeMovers",
         "data_type": "PrimeMovers"
       },
       {
@@ -138,13 +138,13 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "PrimeMovers.OT::PrimeMovers",
+        "null_value": "PowerSystems.OT::PrimeMovers",
         "data_type": "PrimeMovers"
       },
       {
         "name": "fuel",
-        "comment": "PrimeMover Fuelaccording to EIA 923",
-        "null_value": "ThermalFuels.OTHER::ThermalFuels",
+        "comment": "PrimeMover Fuel according to EIA 923",
+        "null_value": "PowerSystems.OTHER::ThermalFuels",
         "data_type": "ThermalFuels"
       },
       {
