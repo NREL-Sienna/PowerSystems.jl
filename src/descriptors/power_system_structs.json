@@ -812,7 +812,7 @@
         "name": "model",
         "comment": "[Z, I, P]",
         "null_value": "nothing",
-        "data_type": "Union{Nothing,LoadModel}"
+        "data_type": "Union{Nothing, LoadModel}"
       },
       {
         "name": "activepower",
