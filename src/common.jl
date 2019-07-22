@@ -21,6 +21,12 @@ end
     SLACK
 end
 
+@enum LoadModel begin
+    ConstantImpedance #Z
+    ConstantCurrent   #I
+    ConstantPower     #P
+end
+
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 @enum PrimeMovers begin
     BA #Energy Storage, Battery
