@@ -701,8 +701,8 @@
       },
       {
         "name": "model",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, LoadModel}"
+        "null_value": "PowerSystems.ConstantPower::LoadModel",
+        "data_type": "LoadModel"
       },
       {
         "name": "activepower",
