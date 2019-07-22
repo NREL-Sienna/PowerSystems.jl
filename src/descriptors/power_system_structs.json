@@ -64,7 +64,7 @@
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
         "null_value": "nothing",
-        "data_type": "Union{Nothing,PrimeMovers}"
+        "data_type": "Union{Nothing, PrimeMovers}"
       },
       {
         "name": "activepowerlimits",
@@ -106,7 +106,7 @@
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
         "null_value": "nothing",
-        "data_type": "Union{Nothing,PrimeMovers}"
+        "data_type": "Union{Nothing, PrimeMovers}"
       },
       {
         "name": "reactivepowerlimits",
@@ -139,13 +139,13 @@
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
         "null_value": "nothing",
-        "data_type": "Union{Nothing,PrimeMovers}"
+        "data_type": "Union{Nothing, PrimeMovers}"
       },
       {
         "name": "fuel",
         "comment": "PrimeMover Technology according to EIA 923",
         "null_value": "nothing",
-        "data_type": "Union{Nothing,ThermalFuels}"
+        "data_type": "Union{Nothing, ThermalFuels}"
       },
       {
         "name": "activepowerlimits",
@@ -693,7 +693,7 @@
         "name": "model",
         "comment": "[Z, I, P]",
         "null_value": "nothing",
-        "data_type": "Union{Nothing,LoadModel}"
+        "data_type": "Union{Nothing, LoadModel}"
       },
       {
         "name": "activepower",
@@ -779,7 +779,7 @@
         "name": "model",
         "comment": "[Z, I, P]",
         "null_value": "nothing",
-        "data_type": "Union{Nothing,LoadModel}"
+        "data_type": "Union{Nothing, LoadModel}"
       },
       {
         "name": "activepower",
@@ -1137,7 +1137,7 @@
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
         "null_value": "nothing",
-        "data_type": "Union{Nothing,PrimeMovers}"
+        "data_type": "Union{Nothing, PrimeMovers}"
       },
       {
         "name": "energy",
