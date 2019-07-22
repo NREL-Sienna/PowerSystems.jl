@@ -24,7 +24,7 @@ end
 function TechRenewable(::Nothing)
     TechRenewable(;
         rating=0.0,
-        primemover=PrimeMovers.OT::PrimeMovers,
+        primemover=PowerSystems.OT::PrimeMovers,
         reactivepowerlimits=nothing,
         powerfactor=1.0,
     )
