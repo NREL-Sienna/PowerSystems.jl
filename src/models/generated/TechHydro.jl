@@ -26,7 +26,7 @@ end
 function TechHydro(::Nothing)
     TechHydro(;
         rating=0.0,
-        primemover=PrimeMover.HY::PrimeMovers,
+        primemover=PowerSystems.HY::PrimeMovers,
         activepowerlimits=(min=0.0, max=0.0),
         reactivepowerlimits=nothing,
         ramplimits=nothing,
