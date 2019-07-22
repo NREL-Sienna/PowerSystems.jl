@@ -6,6 +6,8 @@ This file is auto-generated. Do not edit.
 mutable struct InterruptibleLoad <: ControllableLoad
     name::String
     available::Bool
+    bus::Bus
+    model::Union{Nothing,LoadModel}  # [Z, I, P]
     activepower::Float64
     reactivepower::Float64
     bus::Bus
@@ -36,6 +38,8 @@ function InterruptibleLoad(::Nothing)
     InterruptibleLoad(;
         name="init",
         available=false,
+        bus=Bus(nothing),
+        model=nothing,
         activepower=0.0,
         reactivepower=0.0,
         bus=Bus(nothing),
@@ -56,10 +60,6 @@ end
 get_name(value::InterruptibleLoad) = value.name
 """Get InterruptibleLoad available."""
 get_available(value::InterruptibleLoad) = value.available
-"""Get InterruptibleLoad activepower."""
-get_activepower(value::InterruptibleLoad) = value.activepower
-"""Get InterruptibleLoad reactivepower."""
-get_reactivepower(value::InterruptibleLoad) = value.reactivepower
 """Get InterruptibleLoad bus."""
 get_bus(value::InterruptibleLoad) = value.bus
 """Get InterruptibleLoad model."""

@@ -790,36 +790,6 @@
         "data_type": "Bool"
       },
       {
-        "name": "activepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "bus",
-        "null_value": "Bus(nothing)",
-        "data_type": "Bus"
-      },
-      {
-        "name": "model",
-        "null_value": "ConstantPower::LoadModel",
-        "data_type": "LoadModel"
-      },
-      {
-        "name": "activepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
         "name": "bus",
         "null_value": "Bus(nothing)",
         "data_type": "Bus"
@@ -1256,12 +1226,6 @@
         "null_value": "init",
         "name": "name",
         "data_type": "String"
-      },
-      {
-        "name": "primemover",
-        "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing,PrimeMovers}"
       },
       {
         "null_value": "false",
