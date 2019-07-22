@@ -7,7 +7,7 @@ mutable struct InterruptibleLoad <: ControllableLoad
     name::String
     available::Bool
     bus::Bus
-    model::Union{Nothing,LoadModel}  # [Z, I, P]
+    model::LoadModel
     activepower::Float64
     reactivepower::Float64
     bus::Bus
@@ -35,7 +35,7 @@ function InterruptibleLoad(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        model=nothing,
+        model=PowerSystems.ConstantPower::LoadModel,
         activepower=0.0,
         reactivepower=0.0,
         bus=Bus(nothing),
