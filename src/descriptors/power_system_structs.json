@@ -794,6 +794,17 @@
         "data_type": "Bool"
       },
       {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "model",
+        "comment": "[Z, I, P]",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing,LoadModel}"
+      },
+      {
         "name": "activepower",
         "null_value": "0.0",
         "data_type": "Float64"
@@ -802,17 +813,6 @@
         "name": "reactivepower",
         "null_value": "0.0",
         "data_type": "Float64"
-      },
-      {
-        "name": "bus",
-        "null_value": "Bus(nothing)",
-        "data_type": "Bus"
-      },
-      {
-        "name": "model",
-        "comment": "[Z, I, P]",
-        "null_value": "0",
-        "data_type": "String"
       },
       {
         "name": "maxactivepower",
@@ -883,6 +883,12 @@
         "name": "bus",
         "null_value": "Bus(nothing)",
         "data_type": "Bus"
+      },
+      {
+        "name": "model",
+        "comment": "[Z, I, P]",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing,LoadModel}"
       },
       {
         "name": "activepower",
@@ -1234,12 +1240,6 @@
         "data_type": "String"
       },
       {
-        "name": "primemover",
-        "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing,PrimeMovers}"
-      },
-      {
         "null_value": "false",
         "name": "available",
         "data_type": "Bool"
@@ -1248,6 +1248,12 @@
         "name": "bus",
         "null_value": "Bus(nothing)",
         "data_type": "Bus"
+      },
+      {
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing,PrimeMovers}"
       },
       {
         "name": "energy",
