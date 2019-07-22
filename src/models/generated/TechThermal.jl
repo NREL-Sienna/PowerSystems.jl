@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 mutable struct TechThermal <: PowerSystems.TechnicalParams
     rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
     primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
-    fuel::ThermalFuels  # PrimeMover Fuelaccording to EIA 923
+    fuel::ThermalFuels  # PrimeMover Fuel according to EIA 923
     activepowerlimits::Min_Max
     reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
@@ -27,8 +27,8 @@ end
 function TechThermal(::Nothing)
     TechThermal(;
         rating=0.0,
-        primemover=PrimeMovers.OT::PrimeMovers,
-        fuel=ThermalFuels.OTHER::ThermalFuels,
+        primemover=PowerSystems.OT::PrimeMovers,
+        fuel=PowerSystems.OTHER::ThermalFuels,
         activepowerlimits=(min=0.0, max=0.0),
         reactivepowerlimits=nothing,
         ramplimits=nothing,
