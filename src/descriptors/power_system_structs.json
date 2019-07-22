@@ -63,8 +63,8 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, PrimeMovers}"
+        "null_value": "PrimeMover.HY::PrimeMovers",
+        "data_type": "PrimeMovers"
       },
       {
         "name": "activepowerlimits",
@@ -105,8 +105,8 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, PrimeMovers}"
+        "null_value": "PrimeMovers.OT::PrimeMovers",
+        "data_type": "PrimeMovers"
       },
       {
         "name": "reactivepowerlimits",
@@ -138,14 +138,14 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, PrimeMovers}"
+        "null_value": "PrimeMovers.OT::PrimeMovers",
+        "data_type": "PrimeMovers"
       },
       {
         "name": "fuel",
-        "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, ThermalFuels}"
+        "comment": "PrimeMover Fuelaccording to EIA 923",
+        "null_value": "ThermalFuels.OTHER::ThermalFuels",
+        "data_type": "ThermalFuels"
       },
       {
         "name": "activepowerlimits",
@@ -691,8 +691,8 @@
       },
       {
         "name": "model",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, LoadModel}"
+        "null_value": "PowerSystems.ConstantPower::LoadModel",
+        "data_type": "LoadModel"
       },
       {
         "name": "activepower",
@@ -1135,8 +1135,8 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "nothing",
-        "data_type": "Union{Nothing, PrimeMovers}"
+        "null_value": "PowerSystems.BA::PrimeMovers",
+        "data_type": "PrimeMovers"
       },
       {
         "name": "energy",
