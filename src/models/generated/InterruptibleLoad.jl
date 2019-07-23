@@ -35,7 +35,7 @@ function InterruptibleLoad(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        model=PowerSystems.ConstantPower::LoadModel,
+        model=ConstantPower::LoadModel,
         activepower=0.0,
         reactivepower=0.0,
         bus=Bus(nothing),
