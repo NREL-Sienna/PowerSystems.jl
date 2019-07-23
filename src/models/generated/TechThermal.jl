@@ -27,8 +27,8 @@ end
 function TechThermal(::Nothing)
     TechThermal(;
         rating=0.0,
-        primemover=PowerSystems.OT::PrimeMovers,
-        fuel=PowerSystems.OTHER::ThermalFuels,
+        primemover=OT::PrimeMovers,
+        fuel=OTHER::ThermalFuels,
         activepowerlimits=(min=0.0, max=0.0),
         reactivepowerlimits=nothing,
         ramplimits=nothing,
