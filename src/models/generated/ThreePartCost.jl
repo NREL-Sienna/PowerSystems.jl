@@ -8,7 +8,7 @@ mutable struct ThreePartCost <: OperationalCost
     fixed::Float64
     startup::Float64
     shutdn::Float64
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function ThreePartCost(variable, fixed, startup, shutdn, )

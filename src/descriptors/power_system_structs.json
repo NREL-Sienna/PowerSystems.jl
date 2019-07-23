@@ -15,7 +15,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "OperationalCost"
@@ -46,7 +46,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "OperationalCost"
@@ -63,7 +63,7 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "PowerSystems.HY::PrimeMovers",
+        "null_value": "HY::PrimeMovers",
         "data_type": "PrimeMovers"
       },
       {
@@ -88,10 +88,10 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
-    "supertype": "PowerSystems.TechnicalParams"
+    "supertype": "TechnicalParams"
   },
   {
     "struct_name": "TechRenewable",
@@ -105,7 +105,7 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "PowerSystems.OT::PrimeMovers",
+        "null_value": "OT::PrimeMovers",
         "data_type": "PrimeMovers"
       },
       {
@@ -120,10 +120,10 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
-    "supertype": "PowerSystems.TechnicalParams"
+    "supertype": "TechnicalParams"
   },
   {
     "struct_name": "TechThermal",
@@ -138,13 +138,13 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "PowerSystems.OT::PrimeMovers",
+        "null_value": "OT::PrimeMovers",
         "data_type": "PrimeMovers"
       },
       {
         "name": "fuel",
         "comment": "PrimeMover Fuel according to EIA 923",
-        "null_value": "PowerSystems.OTHER::ThermalFuels",
+        "null_value": "OTHER::ThermalFuels",
         "data_type": "ThermalFuels"
       },
       {
@@ -169,10 +169,10 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
-    "supertype": "PowerSystems.TechnicalParams"
+    "supertype": "TechnicalParams"
   },
   {
     "struct_name": "Bus",
@@ -223,14 +223,14 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Topology"
   },
   {
-    "struct_name": "Arch",
-    "docstring": "A topological Arch.",
+    "struct_name": "Arc",
+    "docstring": "A topological Arc.",
     "fields": [
       {
         "name": "from",
@@ -244,7 +244,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Topology"
@@ -273,9 +273,9 @@
         "data_type": "Float64"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -304,7 +304,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -333,9 +333,9 @@
         "data_type": "Float64"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -369,7 +369,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -398,9 +398,9 @@
         "data_type": "Float64"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -434,7 +434,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -463,9 +463,9 @@
         "data_type": "Float64"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -494,7 +494,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -524,9 +524,9 @@
         "data_type": "Float64"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -550,7 +550,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -574,9 +574,9 @@
         "data_type": "Float64"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "name": "activepowerlimits_from",
@@ -605,7 +605,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "DCBranch"
@@ -630,9 +630,9 @@
         "data_type": "Float64"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "name": "rectifier_taplimits",
@@ -666,7 +666,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "DCBranch"
@@ -691,7 +691,7 @@
       },
       {
         "name": "model",
-        "null_value": "PowerSystems.ConstantPower::LoadModel",
+        "null_value": "ConstantPower::LoadModel",
         "data_type": "LoadModel"
       },
       {
@@ -721,7 +721,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ControllableLoad"
@@ -751,7 +751,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ElectricLoad"
@@ -802,7 +802,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "StaticLoad"
@@ -847,7 +847,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -887,7 +887,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -942,7 +942,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -987,7 +987,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "RenewableGen"
@@ -1027,7 +1027,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "RenewableGen"
@@ -1074,7 +1074,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ThermalGen"
@@ -1109,7 +1109,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Topology"
@@ -1135,7 +1135,7 @@
       {
         "name": "primemover",
         "comment": "PrimeMover Technology according to EIA 923",
-        "null_value": "PowerSystems.BA::PrimeMovers",
+        "null_value": "BA::PrimeMovers",
         "data_type": "PrimeMovers"
       },
       {
@@ -1187,7 +1187,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Storage"
@@ -1215,7 +1215,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Reserve"
@@ -1249,7 +1249,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Reserve"
@@ -1279,7 +1279,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Service"
@@ -1324,7 +1324,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Forecast"
@@ -1374,7 +1374,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Forecast"

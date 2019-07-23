@@ -389,7 +389,7 @@ function make_line(name, d, bus_f, bus_t)
     return Line(;
         name=name,
         available=Bool(d["br_status"]),
-        arch=Arch(bus_f, bus_t),
+        arc=Arc(bus_f, bus_t),
         r=d["br_r"],
         x=d["br_x"],
         b=(from=d["b_fr"], to=d["b_to"]),
@@ -402,7 +402,7 @@ function make_transformer_2w(name, d, bus_f, bus_t)
     return Transformer2W(;
         name=name,
         available=Bool(d["br_status"]),
-        arch=Arch(bus_f, bus_t),
+        arc=Arc(bus_f, bus_t),
         r=d["br_r"],
         x=d["br_x"],
         primaryshunt=d["b_fr"],  # TODO: which b ??
@@ -414,7 +414,7 @@ function make_tap_transformer(name, d, bus_f, bus_t)
     return TapTransformer(;
         name=name,
         available=Bool(d["br_status"]),
-        arch=Arch(bus_f, bus_t),
+        arc=Arc(bus_f, bus_t),
         r=d["br_r"],
         x=d["br_x"],
         tap=d["tap"],
@@ -427,7 +427,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     return PhaseShiftingTransformer(;
         name=name,
         available=Bool(d["br_status"]),
-        arch=Arch(bus_f, bus_t),
+        arc=Arc(bus_f, bus_t),
         r=d["br_r"],
         x=d["br_x"],
         tap=d["tap"],
@@ -458,7 +458,7 @@ function make_dcline(name, d, bus_f, bus_t)
     return HVDCLine(;
         name=name,
         available=Bool(d["br_status"]),
-        arch=Arch(bus_f, bus_t),
+        arc=Arc(bus_f, bus_t),
         activepowerlimits_from=(min=d["pminf"] , max=d["pmaxf"]),
         activepowerlimits_to=(min=d["pmint"], max=d["pmaxt"]),
         reactivepowerlimits_from=(min=d["qminf"], max=d["qmaxf"]),

@@ -8,21 +8,21 @@ mutable struct Line <: ACBranch
     available::Bool
     activepower_flow::Float64
     reactivepower_flow::Float64
-    arch::Arch
+    arc::Arc
     r::Float64
     x::Float64
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
     rate::Float64
     anglelimits::Min_Max
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function Line(name, available, activepower_flow, reactivepower_flow, arch, r, x, b, rate, anglelimits, )
-    Line(name, available, activepower_flow, reactivepower_flow, arch, r, x, b, rate, anglelimits, PowerSystemInternal())
+function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, )
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, PowerSystemInternal())
 end
 
-function Line(; name, available, activepower_flow, reactivepower_flow, arch, r, x, b, rate, anglelimits, )
-    Line(name, available, activepower_flow, reactivepower_flow, arch, r, x, b, rate, anglelimits, )
+function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, )
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -33,7 +33,7 @@ function Line(::Nothing)
         available=false,
         activepower_flow=0.0,
         reactivepower_flow=0.0,
-        arch=Arch(Bus(nothing), Bus(nothing)),
+        arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         b=(from=0.0, to=0.0),
@@ -50,8 +50,8 @@ get_available(value::Line) = value.available
 get_activepower_flow(value::Line) = value.activepower_flow
 """Get Line reactivepower_flow."""
 get_reactivepower_flow(value::Line) = value.reactivepower_flow
-"""Get Line arch."""
-get_arch(value::Line) = value.arch
+"""Get Line arc."""
+get_arc(value::Line) = value.arc
 """Get Line r."""
 get_r(value::Line) = value.r
 """Get Line x."""

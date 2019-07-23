@@ -8,20 +8,20 @@ mutable struct Transformer2W <: ACBranch
     available::Bool
     activepower_flow::Float64
     reactivepower_flow::Float64
-    arch::Arch
+    arc::Arc
     r::Float64
     x::Float64
     primaryshunt::Float64
     rate::Union{Nothing, Float64}
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function Transformer2W(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, rate, )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, rate, PowerSystemInternal())
+function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, PowerSystemInternal())
 end
 
-function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, rate, )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, rate, )
+function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -32,7 +32,7 @@ function Transformer2W(::Nothing)
         available=false,
         activepower_flow=0.0,
         reactivepower_flow=0.0,
-        arch=Arch(Bus(nothing), Bus(nothing)),
+        arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         primaryshunt=0.0,
@@ -48,8 +48,8 @@ get_available(value::Transformer2W) = value.available
 get_activepower_flow(value::Transformer2W) = value.activepower_flow
 """Get Transformer2W reactivepower_flow."""
 get_reactivepower_flow(value::Transformer2W) = value.reactivepower_flow
-"""Get Transformer2W arch."""
-get_arch(value::Transformer2W) = value.arch
+"""Get Transformer2W arc."""
+get_arc(value::Transformer2W) = value.arc
 """Get Transformer2W r."""
 get_r(value::Transformer2W) = value.r
 """Get Transformer2W x."""

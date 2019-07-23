@@ -8,22 +8,22 @@ mutable struct MonitoredLine <: ACBranch
     available::Bool
     activepower_flow::Float64
     reactivepower_flow::Float64
-    arch::Arch
+    arc::Arc
     r::Float64
     x::Float64
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
     flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
     rate::Float64
     anglelimits::Min_Max
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arch, r, x, b, flowlimits, rate, anglelimits, )
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arch, r, x, b, flowlimits, rate, anglelimits, PowerSystemInternal())
+function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, )
+    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, PowerSystemInternal())
 end
 
-function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, arch, r, x, b, flowlimits, rate, anglelimits, )
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arch, r, x, b, flowlimits, rate, anglelimits, )
+function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, )
+    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -34,7 +34,7 @@ function MonitoredLine(::Nothing)
         available=false,
         activepower_flow=0.0,
         reactivepower_flow=0.0,
-        arch=Arch(Bus(nothing), Bus(nothing)),
+        arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         b=(from=0.0, to=0.0),
@@ -52,8 +52,8 @@ get_available(value::MonitoredLine) = value.available
 get_activepower_flow(value::MonitoredLine) = value.activepower_flow
 """Get MonitoredLine reactivepower_flow."""
 get_reactivepower_flow(value::MonitoredLine) = value.reactivepower_flow
-"""Get MonitoredLine arch."""
-get_arch(value::MonitoredLine) = value.arch
+"""Get MonitoredLine arc."""
+get_arc(value::MonitoredLine) = value.arc
 """Get MonitoredLine r."""
 get_r(value::MonitoredLine) = value.r
 """Get MonitoredLine x."""

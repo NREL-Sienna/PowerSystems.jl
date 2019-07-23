@@ -10,7 +10,7 @@ module PowerSystems
 
 export System
 export Bus
-export Arch
+export Arc
 export LoadZones
 
 export PowerSystemType

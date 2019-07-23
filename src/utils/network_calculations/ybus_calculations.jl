@@ -12,19 +12,19 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
     Y_l = (1 / (get_r(b) + get_x(b) * 1im))
 
     Y11 = Y_l + (1im * get_b(b).from);
-    ybus[num_bus[get_arch(b) |> get_from |> get_number],
-        num_bus[get_arch(b) |> get_from |> get_number]] += Y11;
+    ybus[num_bus[get_arc(b) |> get_from |> get_number],
+        num_bus[get_arc(b) |> get_from |> get_number]] += Y11;
 
     Y12 = -Y_l;
-    ybus[num_bus[get_arch(b) |> get_from |> get_number],
-        num_bus[get_arch(b) |> get_to |> get_number]] += Y12;
+    ybus[num_bus[get_arc(b) |> get_from |> get_number],
+        num_bus[get_arc(b) |> get_to |> get_number]] += Y12;
     #Y21 = Y12
-    ybus[num_bus[get_arch(b) |> get_to |> get_number],
-        num_bus[get_arch(b) |> get_from |> get_number]] += Y12;
+    ybus[num_bus[get_arc(b) |> get_to |> get_number],
+        num_bus[get_arc(b) |> get_from |> get_number]] += Y12;
 
     Y22 = Y_l + (1im * get_b(b).to);
-    ybus[num_bus[get_arch(b) |> get_to |> get_number],
-        num_bus[get_arch(b) |> get_to |> get_number]] += Y22;
+    ybus[num_bus[get_arc(b) |> get_to |> get_number],
+        num_bus[get_arc(b) |> get_to |> get_number]] += Y22;
 
 end
 
@@ -35,14 +35,14 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
 
     Y11 = Y_t
-    ybus[num_bus[get_arch(b) |> get_from |> get_number],
-        num_bus[get_arch(b) |> get_from |> get_number]] += Y11;
-    ybus[num_bus[get_arch(b) |> get_from |> get_number],
-        num_bus[get_arch(b) |> get_to |> get_number]] += -Y_t;
-    ybus[num_bus[get_arch(b) |> get_to |> get_number],
-        num_bus[get_arch(b) |> get_from |> get_number]] += -Y_t;
-    ybus[num_bus[get_arch(b) |> get_to |> get_number],
-        num_bus[get_arch(b) |> get_to |> get_number]] += Y_t + (1im * get_primaryshunt(b));
+    ybus[num_bus[get_arc(b) |> get_from |> get_number],
+        num_bus[get_arc(b) |> get_from |> get_number]] += Y11;
+    ybus[num_bus[get_arc(b) |> get_from |> get_number],
+        num_bus[get_arc(b) |> get_to |> get_number]] += -Y_t;
+    ybus[num_bus[get_arc(b) |> get_to |> get_number],
+        num_bus[get_arc(b) |> get_from |> get_number]] += -Y_t;
+    ybus[num_bus[get_arc(b) |> get_to |> get_number],
+        num_bus[get_arc(b) |> get_to |> get_number]] += Y_t + (1im * get_primaryshunt(b));
 
 end
 
@@ -54,17 +54,17 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
     c = 1 / get_tap(b)
 
     Y11 = (Y_t * c^2);
-    ybus[num_bus[get_arch(b) |> get_from |> get_number],
-        num_bus[get_arch(b) |> get_from |> get_number]] += Y11;
+    ybus[num_bus[get_arc(b) |> get_from |> get_number],
+        num_bus[get_arc(b) |> get_from |> get_number]] += Y11;
     Y12 = (-Y_t*c) ;
-    ybus[num_bus[get_arch(b) |> get_from |> get_number],
-        num_bus[get_arch(b) |> get_to |> get_number]] += Y12;
+    ybus[num_bus[get_arc(b) |> get_from |> get_number],
+        num_bus[get_arc(b) |> get_to |> get_number]] += Y12;
     #Y21 = Y12
-    ybus[num_bus[get_arch(b) |> get_to |> get_number],
-        num_bus[get_arch(b) |> get_from |> get_number]] += Y12;
+    ybus[num_bus[get_arc(b) |> get_to |> get_number],
+        num_bus[get_arc(b) |> get_from |> get_number]] += Y12;
     Y22 = Y_t;
-    ybus[num_bus[get_arch(b) |> get_to |> get_number],
-        num_bus[get_arch(b) |> get_to |> get_number]] += Y22 + (1im * get_primaryshunt(b));
+    ybus[num_bus[get_arc(b) |> get_to |> get_number],
+        num_bus[get_arc(b) |> get_to |> get_number]] += Y22 + (1im * get_primaryshunt(b));
 
 end
 
@@ -78,17 +78,17 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
     c_tap =  (get_tap(b) * exp(-1*get_α(b) * 1im))
 
     Y11 = (Y_t/abs(tap)^2);
-    ybus[num_bus[get_arch(b) |> get_from |> get_number],
-        num_bus[get_arch(b) |> get_from |> get_number]] += Y11;
+    ybus[num_bus[get_arc(b) |> get_from |> get_number],
+        num_bus[get_arc(b) |> get_from |> get_number]] += Y11;
     Y12 = (-Y_t/c_tap);
-    ybus[num_bus[get_arch(b) |> get_from |> get_number],
-        num_bus[get_arch(b) |> get_to |> get_number]] += Y12;
+    ybus[num_bus[get_arc(b) |> get_from |> get_number],
+        num_bus[get_arc(b) |> get_to |> get_number]] += Y12;
     Y21 = (-Y_t/tap);
-    ybus[num_bus[get_arch(b) |> get_to |> get_number],
-        num_bus[get_arch(b) |> get_from |> get_number]] += Y21;
+    ybus[num_bus[get_arc(b) |> get_to |> get_number],
+        num_bus[get_arc(b) |> get_from |> get_number]] += Y21;
     Y22 = Y_t;
-    ybus[num_bus[get_arch(b) |> get_to |> get_number],
-        num_bus[get_arch(b) |> get_to |> get_number]] += Y22 + (1im * get_primaryshunt(b));
+    ybus[num_bus[get_arc(b) |> get_to |> get_number],
+        num_bus[get_arc(b) |> get_to |> get_number]] += Y22 + (1im * get_primaryshunt(b));
 
 end
 
