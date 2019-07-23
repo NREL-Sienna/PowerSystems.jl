@@ -34,7 +34,7 @@ Add forecasts to the System from CSV files.
 
 # Arguments
 - `sys::System`: system
-- `directory_or_file::AbstractString`: directory to searc for files or a specific file
+- `directory_or_file::AbstractString`: directory to search for files or a specific file
 - `simulation::AbstractString`: simulation name
 - `category::DataType`: category of component for the forecast; can be abstract or concrete
 - `label::AbstractString`: forecast label
