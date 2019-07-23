@@ -39,9 +39,9 @@ function Base.download(::Type{TestData}
                       )
 
     if Sys.iswindows()
-        POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/arcive/$branch.zip"
+        POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.zip"
     else
-        POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/arcive/$branch.tar.gz"
+        POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.tar.gz"
     end
     directory = folder |> normpath |> abspath
     data = joinpath(directory, "data")
