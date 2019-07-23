@@ -11,7 +11,7 @@ mutable struct RenewableDispatch <: RenewableGen
     reactivepower::Float64
     tech::TechRenewable
     op_cost::TwoPartCost
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, )

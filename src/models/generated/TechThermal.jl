@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for the technical parameters of thermal generation technologies."""
-mutable struct TechThermal <: PowerSystems.TechnicalParams
+mutable struct TechThermal <: TechnicalParams
     rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
     primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
     fuel::ThermalFuels  # PrimeMover Fuel according to EIA 923
@@ -11,7 +11,7 @@ mutable struct TechThermal <: PowerSystems.TechnicalParams
     reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
@@ -27,8 +27,8 @@ end
 function TechThermal(::Nothing)
     TechThermal(;
         rating=0.0,
-        primemover=PowerSystems.OT::PrimeMovers,
-        fuel=PowerSystems.OTHER::ThermalFuels,
+        primemover=OT::PrimeMovers,
+        fuel=OTHER::ThermalFuels,
         activepowerlimits=(min=0.0, max=0.0),
         reactivepowerlimits=nothing,
         ramplimits=nothing,

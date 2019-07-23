@@ -7,7 +7,7 @@ mutable struct ProportionalReserve <: Reserve
     name::String
     contributingdevices::Vector{Device}  # devices from which the product can be procured
     timeframe::Float64  # the relative saturation timeframe
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function ProportionalReserve(name, contributingdevices, timeframe, )

@@ -18,12 +18,12 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     internal::PowerSystems.PowerSystemInternal
 end
 
-function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, tap, α, rate, )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, tap, α, rate, PowerSystemInternal())
+function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, )
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, PowerSystemInternal())
 end
 
-function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, tap, α, rate, )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arch, r, x, primaryshunt, tap, α, rate, )
+function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, )
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -34,7 +34,7 @@ function PhaseShiftingTransformer(::Nothing)
         available=false,
         activepower_flow=0.0,
         reactivepower_flow=0.0,
-        arch=Arch(Bus(nothing), Bus(nothing)),
+        arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         primaryshunt=0.0,
@@ -52,8 +52,8 @@ get_available(value::PhaseShiftingTransformer) = value.available
 get_activepower_flow(value::PhaseShiftingTransformer) = value.activepower_flow
 """Get PhaseShiftingTransformer reactivepower_flow."""
 get_reactivepower_flow(value::PhaseShiftingTransformer) = value.reactivepower_flow
-"""Get PhaseShiftingTransformer arch."""
-get_arch(value::PhaseShiftingTransformer) = value.arch
+"""Get PhaseShiftingTransformer arc."""
+get_arc(value::PhaseShiftingTransformer) = value.arc
 """Get PhaseShiftingTransformer r."""
 get_r(value::PhaseShiftingTransformer) = value.r
 """Get PhaseShiftingTransformer x."""

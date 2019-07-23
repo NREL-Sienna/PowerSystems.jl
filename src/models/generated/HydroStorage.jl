@@ -13,7 +13,7 @@ mutable struct HydroStorage <: HydroGen
     op_cost::TwoPartCost
     storagecapacity::Float64
     initial_storage::Float64
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, )

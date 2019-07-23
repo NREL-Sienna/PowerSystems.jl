@@ -9,7 +9,7 @@ mutable struct ThermalStandard <: ThermalGen
     bus::Bus
     tech::Union{Nothing, TechThermal}
     op_cost::ThreePartCost
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, )
