@@ -10,7 +10,7 @@ mutable struct Probabilistic{T <: Component} <: Forecast
     initial_time::Dates.DateTime  # forecast availability time
     probabilities::Vector{Float64}  # Quantiles for the probabilistic forecast
     data::TimeSeries.TimeArray  # timestamp - scalingfactor
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function Probabilistic(component, label, resolution, initial_time, probabilities, data, )

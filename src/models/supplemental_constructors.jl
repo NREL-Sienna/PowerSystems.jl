@@ -91,8 +91,8 @@ end
 
 """Accepts anglelimits as a Float64."""
 function Line(name, available::Bool, activepower_flow::Float64,
-    reactivepower_flow::Float64, arch::Arch, r, x, b, rate, anglelimits::Float64)
-    return Line(name, available, activepower_flow, reactivepower_flow, arch::Arch, r, x, b, rate,
+    reactivepower_flow::Float64, arc::Arc, r, x, b, rate, anglelimits::Float64)
+    return Line(name, available, activepower_flow, reactivepower_flow, arc::Arc, r, x, b, rate,
                 (min=-anglelimits, max=anglelimits))
 end
 

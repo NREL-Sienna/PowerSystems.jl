@@ -182,20 +182,20 @@ function branch_json_parser(dict)
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
-                bus_f =Bus(trans_dict["arch"]["from"]["number"],
-                                        trans_dict["arch"]["from"]["name"],
-                                        trans_dict["arch"]["from"]["bustype"],
-                                        trans_dict["arch"]["from"]["angle"],
-                                        trans_dict["arch"]["from"]["voltage"],
-                                        (min =trans_dict["arch"]["from"]["voltagelimits"]["min"],max=trans_dict["arch"]["from"]["voltagelimits"]["max"]),
-                                        trans_dict["arch"]["from"]["basevoltage"] )
-                bus_t =Bus(trans_dict["arch"]["to"]["number"],
-                                        trans_dict["arch"]["to"]["name"],
-                                        trans_dict["arch"]["to"]["bustype"],
-                                        trans_dict["arch"]["to"]["angle"],
-                                        trans_dict["arch"]["to"]["voltage"],
-                                        (min =trans_dict["arch"]["to"]["voltagelimits"]["min"],max=trans_dict["arch"]["to"]["voltagelimits"]["max"]),
-                                        trans_dict["arch"]["to"]["basevoltage"] )
+                bus_f =Bus(trans_dict["arc"]["from"]["number"],
+                                        trans_dict["arc"]["from"]["name"],
+                                        trans_dict["arc"]["from"]["bustype"],
+                                        trans_dict["arc"]["from"]["angle"],
+                                        trans_dict["arc"]["from"]["voltage"],
+                                        (min =trans_dict["arc"]["from"]["voltagelimits"]["min"],max=trans_dict["arc"]["from"]["voltagelimits"]["max"]),
+                                        trans_dict["arc"]["from"]["basevoltage"] )
+                bus_t =Bus(trans_dict["arc"]["to"]["number"],
+                                        trans_dict["arc"]["to"]["name"],
+                                        trans_dict["arc"]["to"]["bustype"],
+                                        trans_dict["arc"]["to"]["angle"],
+                                        trans_dict["arc"]["to"]["voltage"],
+                                        (min =trans_dict["arc"]["to"]["voltagelimits"]["min"],max=trans_dict["arc"]["to"]["voltagelimits"]["max"]),
+                                        trans_dict["arc"]["to"]["basevoltage"] )
                 if trans_dict["tap"] ==1.0
                     push!(Branches,Transformer2W(trans_dict["name"],
                                                 trans_dict["available"],
@@ -219,20 +219,20 @@ function branch_json_parser(dict)
             end
         elseif branch_key == "Lines"
             for (line_key,line_dict) in branch_dict
-                bus_t =Bus(line_dict["arch"]["to"]["number"],
-                                        line_dict["arch"]["to"]["name"],
-                                        line_dict["arch"]["to"]["bustype"],
-                                        line_dict["arch"]["to"]["angle"],
-                                        line_dict["arch"]["to"]["voltage"],
-                                        (min =line_dict["arch"]["to"]["voltagelimits"]["min"],max=line_dict["arch"]["to"]["voltagelimits"]["max"]),
-                                        line_dict["arch"]["to"]["basevoltage"] )
-                bus_f =Bus(line_dict["arch"]["from"]["number"],
-                                        line_dict["arch"]["from"]["name"],
-                                        line_dict["arch"]["from"]["bustype"],
-                                        line_dict["arch"]["from"]["angle"],
-                                        line_dict["arch"]["from"]["voltage"],
-                                        (min =line_dict["arch"]["from"]["voltagelimits"]["min"],max=line_dict["arch"]["from"]["voltagelimits"]["max"]),
-                                        line_dict["arch"]["from"]["basevoltage"] )
+                bus_t =Bus(line_dict["arc"]["to"]["number"],
+                                        line_dict["arc"]["to"]["name"],
+                                        line_dict["arc"]["to"]["bustype"],
+                                        line_dict["arc"]["to"]["angle"],
+                                        line_dict["arc"]["to"]["voltage"],
+                                        (min =line_dict["arc"]["to"]["voltagelimits"]["min"],max=line_dict["arc"]["to"]["voltagelimits"]["max"]),
+                                        line_dict["arc"]["to"]["basevoltage"] )
+                bus_f =Bus(line_dict["arc"]["from"]["number"],
+                                        line_dict["arc"]["from"]["name"],
+                                        line_dict["arc"]["from"]["bustype"],
+                                        line_dict["arc"]["from"]["angle"],
+                                        line_dict["arc"]["from"]["voltage"],
+                                        (min =line_dict["arc"]["from"]["voltagelimits"]["min"],max=line_dict["arc"]["from"]["voltagelimits"]["max"]),
+                                        line_dict["arc"]["from"]["basevoltage"] )
                 push!(Branches,Line(line_dict["name"],
                                     line_dict["available"],
                                     (from = bus_f, to = bus_t),

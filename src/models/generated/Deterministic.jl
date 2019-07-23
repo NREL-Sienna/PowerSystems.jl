@@ -9,7 +9,7 @@ mutable struct Deterministic{T <: Component} <: Forecast
     resolution::Dates.Period
     initial_time::Dates.DateTime  # forecast availability time
     data::TimeSeries.TimeArray  # timestamp - scalingfactor
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function Deterministic(component, label, resolution, initial_time, data, )

@@ -10,7 +10,7 @@ mutable struct HydroFix <: HydroGen
     activepower::Float64
     reactivepower::Float64
     tech::TechHydro
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function HydroFix(name, available, bus, activepower, reactivepower, tech, )

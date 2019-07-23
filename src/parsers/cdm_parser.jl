@@ -301,7 +301,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
     for branch in iterate_rows(data, BRANCH::InputCategory)
         bus_from = get_bus(sys, branch.connection_points_from)
         bus_to = get_bus(sys, branch.connection_points_to)
-        connection_points = Arch(bus_from, bus_to)
+        connection_points = Arc(bus_from, bus_to)
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
@@ -364,7 +364,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
         available = true
         bus_from = get_bus(sys, dc_branch.connection_points_from)
         bus_to = get_bus(sys, dc_branch.connection_points_to)
-        connection_points = Arch(bus_from, bus_to)
+        connection_points = Arc(bus_from, bus_to)
 
         if dc_branch.control_mode == "Power"
             mw_load = dc_branch.mw_load

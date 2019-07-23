@@ -11,7 +11,7 @@ mutable struct HydroDispatch <: HydroGen
     reactivepower::Float64
     tech::TechHydro
     op_cost::TwoPartCost
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, )
