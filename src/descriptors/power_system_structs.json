@@ -305,11 +305,6 @@
         "data_type": "Float64"
       },
       {
-        "name": "reactivepower_flow",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
         "null_value": "Arc(Bus(nothing), Bus(nothing))",
         "name": "arc",
         "data_type": "Arc"
@@ -372,11 +367,6 @@
       },
       {
         "name": "activepower_flow",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "reactivepower_flow",
         "null_value": "0.0",
         "data_type": "Float64"
       },
