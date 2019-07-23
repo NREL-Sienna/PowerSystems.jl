@@ -96,7 +96,7 @@ function make_load(d, bus)
     return PowerLoad(;
         name=bus.name,
         available=true,
-        model = PowerSystems.ConstantPower::LoadModel,
+        model = ConstantPower::LoadModel,
         bus=bus,
         activepower=d["pd"],
         reactivepower=d["qd"],
