@@ -21,7 +21,7 @@ features. The rest of this document provides example commands.
 jq . system.json
 ```
 
-## View the PowerSystems component hierarcy.
+## View the PowerSystems component hierarchy.
 ```
 jq '.components | keys' system.json
 jq '.components.Devices | keys' system.json
