@@ -13,7 +13,7 @@ mutable struct InterruptibleLoad <: ControllableLoad
     maxactivepower::Float64
     maxreactivepower::Float64
     op_cost::TwoPartCost
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
@@ -31,7 +31,7 @@ function InterruptibleLoad(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        model=PowerSystems.ConstantPower::LoadModel,
+        model=ConstantPower::LoadModel,
         activepower=0.0,
         reactivepower=0.0,
         maxactivepower=0,

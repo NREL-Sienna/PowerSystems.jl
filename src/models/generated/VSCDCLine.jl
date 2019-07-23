@@ -7,22 +7,22 @@ mutable struct VSCDCLine <: DCBranch
     name::String
     available::Bool
     activepower_flow::Float64
-    arch::Arch
+    arc::Arc
     rectifier_taplimits::Min_Max
     rectifier_xrc::Float64
     rectifier_firing_angle::Min_Max
     inverter_taplimits::Min_Max
     inverter_xrc::Float64
     inverter_firing_angle::Min_Max
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
-    VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, PowerSystemInternal())
+function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
+    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, PowerSystemInternal())
 end
 
-function VSCDCLine(; name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
-    VSCDCLine(name, available, activepower_flow, arch, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
+function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
+    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -32,7 +32,7 @@ function VSCDCLine(::Nothing)
         name="init",
         available=false,
         activepower_flow=0.0,
-        arch=Arch(Bus(nothing), Bus(nothing)),
+        arc=Arc(Bus(nothing), Bus(nothing)),
         rectifier_taplimits=(min=0.0, max=0.0),
         rectifier_xrc=0.0,
         rectifier_firing_angle=(min=0.0, max=0.0),
@@ -48,8 +48,8 @@ get_name(value::VSCDCLine) = value.name
 get_available(value::VSCDCLine) = value.available
 """Get VSCDCLine activepower_flow."""
 get_activepower_flow(value::VSCDCLine) = value.activepower_flow
-"""Get VSCDCLine arch."""
-get_arch(value::VSCDCLine) = value.arch
+"""Get VSCDCLine arc."""
+get_arc(value::VSCDCLine) = value.arc
 """Get VSCDCLine rectifier_taplimits."""
 get_rectifier_taplimits(value::VSCDCLine) = value.rectifier_taplimits
 """Get VSCDCLine rectifier_xrc."""

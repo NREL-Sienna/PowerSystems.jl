@@ -47,17 +47,17 @@ function get_component_by_name(sys::System, component_type, other::Component)
     error("Did not find component $component")
 end
 
-"""Return the Branch in the system that matches another by case-insensitive arch
+"""Return the Branch in the system that matches another by case-insensitive arc
 names."""
 function get_branch(sys::System, other::Branch)
     for branch in get_components(Branch, sys)
-        if lowercase(other.arch.from.name) == lowercase(branch.arch.from.name) &&
-            lowercase(other.arch.to.name) == lowercase(branch.arch.to.name)
+        if lowercase(other.arc.from.name) == lowercase(branch.arc.from.name) &&
+            lowercase(other.arc.to.name) == lowercase(branch.arc.to.name)
             return branch
         end
     end
 
-    error("Did not find branch with buses $(other.arch.from.name) ",
-          "$(other.arch.to.name)")
+    error("Did not find branch with buses $(other.arc.from.name) ",
+          "$(other.arc.to.name)")
 end
 
