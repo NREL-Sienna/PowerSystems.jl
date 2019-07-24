@@ -181,7 +181,7 @@ function read_time_array(
 end
 
 """This version of the function only has component_name to match the interface.
-It is unused and shouldn't be passed.
+It is unused.
 
 Set start_datetime as a keyword argument for the starting timestamp, otherwise the current
 day is used.
@@ -192,8 +192,6 @@ function read_time_array(
                          component_name=nothing;
                          kwargs...
                         ) where T <: TimeseriesFormatComponentsAsColumnsNoTime
-    @assert isnothing(component_name)
-
     timestamps = Vector{Dates.DateTime}()
     step = get_step_time(T, file)
 

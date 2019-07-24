@@ -31,6 +31,7 @@ export PhaseShiftingTransformer
 export Forecast
 export Deterministic
 export Probabilistic
+export TimeseriesMetadata
 
 export ThreePartCost
 export TwoPartCost

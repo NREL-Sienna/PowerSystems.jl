@@ -1,35 +1,4 @@
 {
-    "timeseries_pointers": [
-        {
-            "name": "simulation",
-            "description": "Simulation name"
-        },
-        {
-            "name": "category",
-            "description": "Category of component",
-            "value_options": [
-                "Generator",
-                "Reserve",
-                "LoadZone"
-            ]
-        },
-        {
-            "name": "component_name",
-            "description": "Unique component name: Concatenated from Bus ID_Unit Type_Gen ID, or other object ID/name"
-        },
-        {
-            "name": "label",
-            "description": "Forecast label"
-        },
-        {
-            "name": "label_source",
-            "description": "Forecast label source"
-        },
-        {
-            "name": "data_file",
-            "description": "pointer to datafile with timeseries values (must be consistent with simulation resolution)"
-        }
-    ],
     "dc_branch": [
         {
             "name": "name",
