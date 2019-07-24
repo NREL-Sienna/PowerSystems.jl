@@ -31,6 +31,7 @@ export PhaseShiftingTransformer
 export Forecast
 export Deterministic
 export Probabilistic
+export TimeseriesFileMetadata
 
 export ThreePartCost
 export TwoPartCost
@@ -79,16 +80,18 @@ export parse_file
 export add_forecasts!
 export add_forecast!
 export remove_forecast!
-export forecast_csv_parser!
 export get_forecast_initial_times
 export get_forecasts
 export get_forecasts_horizon
 export get_forecasts_initial_time
 export get_forecasts_interval
 export get_forecasts_resolution
+export get_forecast_component_name
+export get_forecast_value
 export get_horizon
+export get_timeseries
 export iterate_forecasts
-export get_forecast_files
+export make_forecasts
 export validate
 export add_component!
 export get_component
@@ -162,6 +165,7 @@ include("models/services.jl")
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
+include("models/supplemental_accesors.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")
