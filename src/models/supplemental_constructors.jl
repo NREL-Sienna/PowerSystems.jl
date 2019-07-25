@@ -29,10 +29,12 @@ function HydroDispatch(name::AbstractString, available::Bool, bus::Bus, tech::Te
 end
 
 """Constructs Deterministic from a Component, label, and TimeArray."""
-function Deterministic(component::Component, label::String, data::TimeSeries.TimeArray)
+function Deterministic(component::Component, label::String, data::TimeSeries.TimeArray,
+                       start_index::Int)
     resolution = getresolution(data)
     initial_time = TimeSeries.timestamp(data)[1]
-    Deterministic(component, label, Dates.Minute(resolution), initial_time, data)
+    Deterministic(component, label, Dates.Minute(resolution), initial_time, data,
+                  start_index)
 end
 
 """Constructs Deterministic after constructing a TimeArray from initial_time and time_steps.
@@ -46,10 +48,10 @@ function Deterministic(component::Component,
         initial_time : Dates.Hour(1) : initial_time + resolution * (time_steps-1),
         ones(time_steps)
     )
-    return Deterministic(component, label, Dates.Minute(resolution), initial_time, data)
+    return Deterministic(component, label, Dates.Minute(resolution), initial_time, data, 1)
 end
 
-"""Constructs Deterministic after constructing a TimeArray from initial_time and time_steps.
+"""Constructs Probabilistic after constructing a TimeArray from initial_time and time_steps.
 """
 function Probabilistic(component::Component,
                        label::String,
@@ -63,7 +65,8 @@ function Probabilistic(component::Component,
         ones(time_steps, length(quantiles))
     )
 
-    return Probabilistic(component, label, Dates.Minute(resolution), initial_time, quantiles, data)
+    return Probabilistic(component, label, Dates.Minute(resolution), initial_time,
+                         quantiles, data, 1)
 end
 
 """Constructs Probabilistic Forecast after constructing a TimeArray from initial_time and time_steps.
@@ -71,7 +74,9 @@ end
 function Probabilistic(component::Component,
                        label::String,
                        quantiles::Vector{Float64},  # Quantiles for the probabilistic forecast
-                       data::TimeSeries.TimeArray)
+                       data::TimeSeries.TimeArray,
+                       start_index::Int,
+                      )
 
     if !(length(TimeSeries.colnames(data)) == length(quantiles))
         throw(DataFormatError(
@@ -80,7 +85,8 @@ function Probabilistic(component::Component,
     initial_time = TimeSeries.timestamp(data)[1]
     resolution = getresolution(data)
 
-    return Probabilistic(component, label, Dates.Minute(resolution), initial_time, quantiles, data)
+    return Probabilistic(component, label, Dates.Minute(resolution), initial_time,
+                         quantiles, data, start_index)
 end
 
 function PowerLoadPF(name::String, available::Bool, bus::Bus, maxactivepower::Float64,

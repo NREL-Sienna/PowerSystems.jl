@@ -10,7 +10,8 @@ const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
 """Describes how to construct forecasts from raw timeseries data files."""
 mutable struct TimeseriesMetadata
     simulation::String  # User description of simulation
-    category::String  # String version of PowerSystems type for forecast component
+    category::String  # String version of PowerSystems abstract type for forecast component.
+                      # Refer to CATEGORY_STR_TO_COMPONENT.
     component_name::String  # Name of forecast component
     label::String  # Raw data column for source of timeseries
     scaling_factor::Union{String, Float64}  # Controls normalization of timeseries.
@@ -110,11 +111,13 @@ Add a forecast to a system from a CSV file.
 See [`TimeseriesMetadata`](@ref) for description of scaling_factor.
 """
 function add_forecast!(sys::System, filename::AbstractString, component::Component,
-                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
+                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0;
+                       start_index=1,
+                      )
     component_name = get_name(component)
     data = read_time_array(filename, component_name)
     timeseries = data[Symbol(component_name)]
-    _add_forecast!(sys, component, label, timeseries, scaling_factor)
+    _add_forecast!(sys, component, label, timeseries, start_index, scaling_factor)
 end
 
 """
@@ -126,9 +129,11 @@ Add a forecast to a system from a TimeSeries.TimeArray.
 See [`TimeseriesMetadata`](@ref) for description of scaling_factor.
 """
 function add_forecast!(sys::System, data::TimeSeries.TimeArray, component::Component,
-                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
+                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0;
+                       start_index=1,
+                      )
     timeseries = data[Symbol(get_name(component))]
-    _add_forecast!(sys, component, label, timeseries, scaling_factor)
+    _add_forecast!(sys, component, label, timeseries, start_index, scaling_factor)
 end
 
 """
@@ -147,9 +152,9 @@ function add_forecast!(sys::System, df::DataFrames.DataFrame, component::Compone
 end
 
 function _add_forecast!(sys::System, component::Component, label::AbstractString,
-                        timeseries::TimeSeries.TimeArray, scaling_factor)
+                        timeseries::TimeSeries.TimeArray, start_index, scaling_factor)
     timeseries = _handle_scaling_factor(timeseries, scaling_factor)
-    forecast = Deterministic(component, label, timeseries)
+    forecast = Deterministic(component, label, timeseries, start_index)
     add_forecast!(sys, forecast)
 end
 
@@ -194,7 +199,7 @@ function _add_forecasts!(sys::System, forecast_infos::ForecastInfos, resolution)
 
         timeseries = forecast.data[Symbol(get_name(forecast.component))]
         timeseries = _handle_scaling_factor(timeseries, forecast.scaling_factor)
-        forecasts = [Deterministic(x, forecast.label, timeseries)
+        forecasts = [Deterministic(x, forecast.label, timeseries, 1)
                      for x in forecast_components]
         add_forecasts!(sys, forecasts)
     end
