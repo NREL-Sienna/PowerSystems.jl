@@ -1,7 +1,8 @@
 import DataFrames
+import Dates
 import TimeSeries
 
-const PS = PowerSystems
+const PSY = PowerSystems
 
 function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon)
     initial_times = get_forecast_initial_times(sys)
@@ -31,7 +32,7 @@ function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon
 end
 
 @testset "Test read_timeseries_metadata" begin
-    forecasts = PS.read_timeseries_metadata(joinpath(RTS_GMLC_DIR,
+    forecasts = PSY.read_timeseries_metadata(joinpath(RTS_GMLC_DIR,
                                                      "timeseries_pointers.json"))
     @test length(forecasts) == 282
 
@@ -44,10 +45,10 @@ end
     component_name = "122_HYDRO_1"
     timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
                                "DAY_AHEAD_hydro.csv")
-    timeseries = PS.read_timeseries(timeseries_file)[Symbol(component_name)]
+    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
     max_value = maximum(TimeSeries.values(timeseries))
 
-    metadata = PS.TimeseriesMetadata(
+    metadata = PSY.TimeseriesFileMetadata(
         "DAY_AHEAD",
         "Generator",
         "122_HYDRO_1",
@@ -60,7 +61,7 @@ end
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     add_forecasts!(sys, [metadata])
     verify_forecasts(sys, 1, 1, 24)
-    forecast = collect(PS.iterate_forecasts(sys))[1]
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
 
     # Test code path where timeseries is normalized by dividing by the max value.
@@ -68,7 +69,7 @@ end
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     add_forecasts!(sys, [metadata])
     verify_forecasts(sys, 1, 1, 24)
-    forecast = collect(PS.iterate_forecasts(sys))[1]
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries ./ max_value)
 
     # Test code path where timeseries is normalized by dividing by a custom value.
@@ -77,7 +78,7 @@ end
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     add_forecasts!(sys, [metadata])
     verify_forecasts(sys, 1, 1, 24)
-    forecast = collect(PS.iterate_forecasts(sys))[1]
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries ./ sf)
 end
 
@@ -85,25 +86,25 @@ end
     component_name = "122_HYDRO_1"
     timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
                                "DAY_AHEAD_hydro.csv")
-    timeseries = PS.read_timeseries(timeseries_file)[Symbol(component_name)]
+    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
 
     # Test with a filename.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     component = get_component(HydroDispatch, sys, component_name)
     add_forecast!(sys, timeseries_file, component, "PMax MW", 1.0)
     verify_forecasts(sys, 1, 1, 24)
-    forecast = collect(PS.iterate_forecasts(sys))[1]
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
-    @test PS.get_timeseries(forecast) == timeseries
+    @test PSY.get_timeseries(forecast) == timeseries
 
     # Test with TimeSeries.TimeArray.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     component = get_component(HydroDispatch, sys, component_name)
     add_forecast!(sys, timeseries, component, "PMax MW", 1.0)
     verify_forecasts(sys, 1, 1, 24)
-    forecast = collect(PS.iterate_forecasts(sys))[1]
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
-    @test PS.get_timeseries(forecast) == timeseries
+    @test PSY.get_timeseries(forecast) == timeseries
 
     # Test with DataFrames.DataFrame.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -111,7 +112,7 @@ end
     df = DataFrames.DataFrame(timeseries)
     add_forecast!(sys, df, component, "PMax MW", 1.0)
     verify_forecasts(sys, 1, 1, 24)
-    forecast = collect(PS.iterate_forecasts(sys))[1]
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
 end
 
 @testset "Forecast data matpower" begin
@@ -136,3 +137,44 @@ end
     add_forecasts!(sys, forecasts_metadata)
     @test verify_forecasts(sys, 1, 5, 288)
 end
+
+@testset "Test forecast splitting" begin
+    component_name = "122_HYDRO_1"
+    timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
+                               "DAY_AHEAD_hydro.csv")
+    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
+
+    # Test with a filename.
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    component = get_component(HydroDispatch, sys, component_name)
+    add_forecast!(sys, timeseries_file, component, "PMax MW", 1.0)
+    verify_forecasts(sys, 1, 1, 24)
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
+    @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
+    @test PSY.get_timeseries(forecast) == timeseries
+    @test PSY.get_resolution(forecast) == Dates.Hour(1)
+
+    interval = Dates.Hour(1)
+    horizon = 12
+    forecasts = PSY.make_forecasts(forecast, interval, horizon)
+    @test length(forecasts) == 13
+    compare_initial_time = PSY.get_initial_time(forecast)
+    for forecast_ in forecasts
+        @test PSY.get_horizon(forecast_) == horizon
+        @test PSY.get_initial_time(forecast_) == compare_initial_time
+        compare_initial_time += interval
+    end
+
+    # Interval is smaller than resolution.
+    @test_throws(PSY.InvalidParameter,
+                 PSY.make_forecasts(forecast, Dates.Minute(1), horizon))
+    # Interval is not multiple of resolution.
+    @test_throws(PSY.InvalidParameter,
+                 PSY.make_forecasts(forecast, Dates.Minute(13), horizon))
+    # Horizon is larger than forecast horizon.
+    @test_throws(PSY.InvalidParameter,
+                 PSY.make_forecasts(forecast, interval, 25))
+
+    # TODO: need to cover serialization.
+end
+

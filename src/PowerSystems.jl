@@ -31,7 +31,7 @@ export PhaseShiftingTransformer
 export Forecast
 export Deterministic
 export Probabilistic
-export TimeseriesMetadata
+export TimeseriesFileMetadata
 
 export ThreePartCost
 export TwoPartCost
@@ -90,7 +90,7 @@ export get_forecasts_resolution
 export get_horizon
 export get_timeseries
 export iterate_forecasts
-export get_forecast_files
+export make_forecasts
 export validate
 export add_component!
 export get_component

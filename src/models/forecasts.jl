@@ -341,3 +341,73 @@ function get_timeseries(forecast::Forecast)
     end_index = start_index + get_horizon(forecast) - 1
     return full_ts[start_index:end_index]
 end
+
+"""
+    make_forecasts(forecast::Forecast, interval::Dates.Period, horizon::Int)
+
+Make a vector of forecasts by incrementing through a forecast by interval and horizon.
+"""
+function make_forecasts(forecast::Forecast, interval::Dates.Period, horizon::Int)
+    # TODO: need more test coverage of corner cases.
+    resolution = get_resolution(forecast)
+
+    if forecast isa Probabilistic
+        # TODO
+        throw(InvalidParameter("this function doesn't support Probabilistic yet"))
+    end
+
+    if interval < resolution
+        throw(InvalidParameter("interval=$interval is smaller than resolution=$resolution"))
+    end
+
+    if Dates.Second(interval) % Dates.Second(resolution) != Dates.Second(0)
+        throw(InvalidParameter(
+            "interval=$interval is not a multiple of resolution=$resolution"))
+    end
+
+    if horizon > get_horizon(forecast)
+        throw(InvalidParameter(
+            "horizon=$horizon is larger than forecast horizon=$(get_horizon(forecast))"))
+    end
+
+    interval_as_num = Int(Dates.Second(interval) / Dates.Second(resolution))
+    forecasts = Vector{Deterministic}()
+
+    # Index into the TimeArray that backs the master forecast.
+    master_forecast_start = get_start_index(forecast)
+    master_forecast_end = get_start_index(forecast) + get_horizon(forecast) - 1
+    @debug "master indices" master_forecast_start master_forecast_end
+    for index in range(master_forecast_start,
+                       step=interval_as_num,
+                       stop=master_forecast_end)
+        start_index = index
+        end_index = start_index + horizon - 1
+        @debug "new forecast indices" start_index end_index
+        if end_index > master_forecast_end
+            break
+        end
+
+        initial_time = TimeSeries.timestamp(get_data(forecast))[start_index]
+        component = get_component(forecast)
+        forecast_ = Deterministic(component,
+                                 get_label(forecast),
+                                 resolution,
+                                 initial_time,
+                                 get_data(forecast),
+                                 start_index,
+                                 horizon)
+        @info "Created forecast with" initial_time horizon component
+        push!(forecasts, forecast_)
+    end
+
+    @assert length(forecasts) > 0
+
+    master_end_ts = TimeSeries.timestamp(get_timeseries(forecast))[end]
+    last_end_ts = TimeSeries.timestamp(get_timeseries(forecasts[end]))[end]
+    if last_end_ts != master_end_ts
+        throw(InvalidParameter(
+            "insufficient data for forecast splitting $master_end_ts $last_end_ts"))
+    end
+
+    return forecasts
+end
