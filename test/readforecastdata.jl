@@ -1,4 +1,8 @@
+import DataFrames
+import Dates
 import TimeSeries
+
+const PSY = PowerSystems
 
 function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon)
     initial_times = get_forecast_initial_times(sys)
@@ -27,139 +31,150 @@ function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon
     return true
 end
 
-@testset "Test get_forecast_files" begin
-    path = joinpath(FORECASTS_DIR, "5bus_ts", "gen")
-    files = PowerSystems.get_forecast_files(path)
-    @test length(files) > 0
+@testset "Test read_timeseries_metadata" begin
+    forecasts = PSY.read_timeseries_metadata(joinpath(RTS_GMLC_DIR,
+                                                     "timeseries_pointers.json"))
+    @test length(forecasts) == 282
 
-    files2 = PowerSystems.get_forecast_files(path, REGEX_FILE=r"da_(.*?)\.csv")
-    @test length(files2) > 0
-    @test length(files2) < length(files)
-
-    hidden_path = joinpath(FORECASTS_DIR, "5bus_ts", "gen", ".hidden")
-    mkdir(hidden_path)
-    filename = joinpath(hidden_path, "data.csv")
-    try
-        open(filename, "w") do io
-        end
-
-        @test isfile(filename)
-        files = PowerSystems.get_forecast_files(path)
-        @test length([x for x in files if occursin(".hidden", x)]) == 0
-
-        # This is allowed if we pass the path in.
-        files = PowerSystems.get_forecast_files(hidden_path)
-        @test length(files) == 1
-    finally
-        rm(hidden_path; recursive=true)
+    for forecast in forecasts
+        @test isfile(forecast.data_file)
     end
+end
+
+@testset "Test forecast normalization" begin
+    component_name = "122_HYDRO_1"
+    timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
+                               "DAY_AHEAD_hydro.csv")
+    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
+    max_value = maximum(TimeSeries.values(timeseries))
+
+    metadata = PSY.TimeseriesFileMetadata(
+        "DAY_AHEAD",
+        "Generator",
+        "122_HYDRO_1",
+        "PMax MW",
+        1.0,
+        timeseries_file,
+    )
+
+    # Test code path where no normalization occurs.
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    add_forecasts!(sys, [metadata])
+    verify_forecasts(sys, 1, 1, 24)
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
+    @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
+
+    # Test code path where timeseries is normalized by dividing by the max value.
+    metadata.scaling_factor = "Max"
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    add_forecasts!(sys, [metadata])
+    verify_forecasts(sys, 1, 1, 24)
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
+    @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries ./ max_value)
+
+    # Test code path where timeseries is normalized by dividing by a custom value.
+    sf = 95.0
+    metadata.scaling_factor = sf
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    add_forecasts!(sys, [metadata])
+    verify_forecasts(sys, 1, 1, 24)
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
+    @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries ./ sf)
+end
+
+@testset "Test single forecast addition" begin
+    component_name = "122_HYDRO_1"
+    timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
+                               "DAY_AHEAD_hydro.csv")
+    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
+
+    # Test with a filename.
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    component = get_component(HydroDispatch, sys, component_name)
+    add_forecast!(sys, timeseries_file, component, "PMax MW", 1.0)
+    verify_forecasts(sys, 1, 1, 24)
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
+    @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
+    @test PSY.get_timeseries(forecast) == timeseries
+
+    # Test with TimeSeries.TimeArray.
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    component = get_component(HydroDispatch, sys, component_name)
+    add_forecast!(sys, timeseries, component, "PMax MW", 1.0)
+    verify_forecasts(sys, 1, 1, 24)
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
+    @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
+    @test PSY.get_timeseries(forecast) == timeseries
+
+    # Test with DataFrames.DataFrame.
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    component = get_component(HydroDispatch, sys, component_name)
+    df = DataFrames.DataFrame(timeseries)
+    add_forecast!(sys, df, component, "PMax MW", 1.0)
+    verify_forecasts(sys, 1, 1, 24)
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
 end
 
 @testset "Forecast data matpower" begin
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
-    PowerSystems.forecast_csv_parser!(sys,
-                                      joinpath(FORECASTS_DIR, "5bus_ts", "gen"),
-                                      "Simulation",
-                                      Generator;
-                                      REGEX_FILE=r"da_(.*?)\.csv")
-    @test verify_forecasts(sys, 1, 2, 24)
-
-    PowerSystems.forecast_csv_parser!(sys,
-                                      joinpath(FORECASTS_DIR, "5bus_ts", "load"),
-                                      "Simulation",
-                                      Bus;
-                                      REGEX_FILE=r"da_(.*?)\.csv")
+    forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_da.json")
+    add_forecasts!(sys, forecasts_metadata)
     @test verify_forecasts(sys, 1, 5, 24)
+
 
     # Add the same files.
     # This will fail because the component-label pairs will be duplicated.
-    @test_throws(PowerSystems.DataFormatError,
-                 PowerSystems.forecast_csv_parser!(
-                    sys,
-                    joinpath(FORECASTS_DIR, "5bus_ts", "gen"),
-                    "Simulation",
-                    Generator;
-                    REGEX_FILE=r"da_(.*?)\.csv")
-                )
+    @test_throws PowerSystems.DataFormatError add_forecasts!(sys, forecasts_metadata)
 
-    # This will fail because the resolutions are different.
-    @test_throws(PowerSystems.DataFormatError,
-                 PowerSystems.forecast_csv_parser!(
-                    sys,
-                    joinpath(FORECASTS_DIR, "5bus_ts", "load"),
-                    "Simulation",
-                    Bus;
-                    REGEX_FILE=r"rt_(.*?)\.csv")
-                )
+    forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_rt.json")
 
-    # TODO: need a dataset with same resolution but different horizon.
+    ## This will fail because the resolutions are different.
+    @test_throws PowerSystems.DataFormatError add_forecasts!(sys, forecasts_metadata)
+
+    ## TODO: need a dataset with same resolution but different horizon.
 
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
-    PowerSystems.forecast_csv_parser!(sys,
-                                      joinpath(FORECASTS_DIR, "5bus_ts", "gen"),
-                                      "Simulation",
-                                      Generator;
-                                      REGEX_FILE=r"rt_(.*?)\.csv")
-    @test verify_forecasts(sys, 1, 2, 288)
-
-    PowerSystems.forecast_csv_parser!(sys, joinpath(FORECASTS_DIR, "5bus_ts", "load"),
-                                      "Simulation",
-                                      Bus;
-                                      REGEX_FILE=r"rt_(.*?)\.csv")
+    add_forecasts!(sys, forecasts_metadata)
     @test verify_forecasts(sys, 1, 5, 288)
-
-    # Test with single file.
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
-    filename = joinpath(FORECASTS_DIR, "5bus_ts", "gen", "Renewable", "PV", "da_solar5.csv")
-    PowerSystems.forecast_csv_parser!(sys,
-                                      filename,
-                                      "Simulation",
-                                      Generator)
-    @test verify_forecasts(sys, 1, 1, 24)
 end
 
-@testset "Forecast data RTS" begin
+@testset "Test forecast splitting" begin
+    component_name = "122_HYDRO_1"
+    timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
+                               "DAY_AHEAD_hydro.csv")
+    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
+
+    # Test with a filename.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    PowerSystems.forecast_csv_parser!(sys,
-                                      joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "gen"),
-                                      "Simulation",
-                                      Generator;
-                                      REGEX_FILE=r"DAY_AHEAD(.*?)\.csv")
-    @test verify_forecasts(sys, 1, 81, 24)
+    component = get_component(HydroDispatch, sys, component_name)
+    add_forecast!(sys, timeseries_file, component, "PMax MW", 1.0)
+    verify_forecasts(sys, 1, 1, 24)
+    forecast = collect(PSY.iterate_forecasts(sys))[1]
+    @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
+    @test PSY.get_timeseries(forecast) == timeseries
+    @test PSY.get_resolution(forecast) == Dates.Hour(1)
 
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    PowerSystems.forecast_csv_parser!(sys,
-                                      joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "load"),
-                                      "Simulation",
-                                      LoadZones;
-                                      REGEX_FILE=r"REAL_TIME(.*?)\.csv")
-    @test verify_forecasts(sys, 1, 54, 288)
-end
-
-@testset "Verify per-unit conversion of forecasts" begin
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    PowerSystems.forecast_csv_parser!(sys,
-                                      joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "gen"),
-                                      "Simulation",
-                                      Generator;
-                                      REGEX_FILE=r"DAY_AHEAD(.*?)\.csv",
-                                      per_unit=false)
-    @test verify_forecasts(sys, 1, 81, 24)
-
-    data_no_per_unit = vcat([x.data for x in iterate_forecasts(sys)])
-
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    PowerSystems.forecast_csv_parser!(sys,
-                                      joinpath(FORECASTS_DIR, "RTS_GMLC_forecasts", "gen"),
-                                      "Simulation",
-                                      Generator;
-                                      REGEX_FILE=r"DAY_AHEAD(.*?)\.csv",
-                                      per_unit=true)
-    @test verify_forecasts(sys, 1, 81, 24)
-    data_per_unit = vcat([x.data for x in iterate_forecasts(sys)])
-
-    for i in range(1, length=length(data_no_per_unit))
-        @test TimeSeries.values(data_per_unit[i]) == 
-              TimeSeries.values(data_no_per_unit[i]) / sys.basepower
+    interval = Dates.Hour(1)
+    horizon = 12
+    forecasts = PSY.make_forecasts(forecast, interval, horizon)
+    @test length(forecasts) == 13
+    compare_initial_time = PSY.get_initial_time(forecast)
+    for forecast_ in forecasts
+        @test PSY.get_horizon(forecast_) == horizon
+        @test PSY.get_initial_time(forecast_) == compare_initial_time
+        compare_initial_time += interval
     end
+
+    # Interval is smaller than resolution.
+    @test_throws(PSY.InvalidParameter,
+                 PSY.make_forecasts(forecast, Dates.Minute(1), horizon))
+    # Interval is not multiple of resolution.
+    @test_throws(PSY.InvalidParameter,
+                 PSY.make_forecasts(forecast, Dates.Minute(13), horizon))
+    # Horizon is larger than forecast horizon.
+    @test_throws(PSY.InvalidParameter,
+                 PSY.make_forecasts(forecast, interval, 25))
+
+    # TODO: need to cover serialization.
 end
+
