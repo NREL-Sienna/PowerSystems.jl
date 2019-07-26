@@ -374,7 +374,7 @@ function make_line(name, d, bus_f, bus_t)
         x=d["br_x"],
         b=(from=d["b_fr"], to=d["b_to"]),
         rate=d["rate_a"],
-        anglelimits=(min=rad2deg(d["angmin"]), max=rad2deg(d["angmax"])),
+        anglelimits=(min=d["angmin"], max=d["angmax"]),
     )
 end
 
