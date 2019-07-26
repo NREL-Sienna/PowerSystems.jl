@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Generates a validation configuration file for parsing power system raw data."""
+"""Generates a validation configuration file from JSON struct data"""
 
 # Note:  This is written in Python instead of Julia because the Julia YAML
 # package does not support writing (only reading).
@@ -34,7 +34,7 @@ def read_json_data(filename):
 
 
 def generate_config(input_file):
-    """Generate user descriptors from the PowerSystems descriptor file."""
+    """Generate validation descriptors from the PowerSystems struct data file."""
     config = {}
     data = read_json_data(input_file)
     items=[]
@@ -58,7 +58,7 @@ def generate_config(input_file):
     return items
 
 def generate_file(output_file, input_file=POWER_SYSTEM_DESCRIPTOR_FILE):
-    """Generate user file from the PowerSystems descriptor file."""
+    """Generate validation descriptors from the PowerSystems struct data file."""
     config = generate_config(input_file)
     with open(output_file, "w") as fp_out:
         yaml.dump(config, fp_out, default_flow_style=False)
