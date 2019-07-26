@@ -111,13 +111,11 @@ Add a forecast to a system from a CSV file.
 See [`TimeseriesMetadata`](@ref) for description of scaling_factor.
 """
 function add_forecast!(sys::System, filename::AbstractString, component::Component,
-                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0;
-                       start_index=1,
-                      )
+                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
     component_name = get_name(component)
     data = read_timeseries(filename, component_name)
     timeseries = data[Symbol(component_name)]
-    _add_forecast!(sys, component, label, timeseries, start_index, scaling_factor)
+    _add_forecast!(sys, component, label, timeseries, scaling_factor)
 end
 
 """
@@ -129,11 +127,9 @@ Add a forecast to a system from a TimeSeries.TimeArray.
 See [`TimeseriesMetadata`](@ref) for description of scaling_factor.
 """
 function add_forecast!(sys::System, data::TimeSeries.TimeArray, component::Component,
-                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0;
-                       start_index=1,
-                      )
+                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
     timeseries = data[Symbol(get_name(component))]
-    _add_forecast!(sys, component, label, timeseries, start_index, scaling_factor)
+    _add_forecast!(sys, component, label, timeseries, scaling_factor)
 end
 
 """
@@ -152,9 +148,9 @@ function add_forecast!(sys::System, df::DataFrames.DataFrame, component::Compone
 end
 
 function _add_forecast!(sys::System, component::Component, label::AbstractString,
-                        timeseries::TimeSeries.TimeArray, start_index, scaling_factor)
+                        timeseries::TimeSeries.TimeArray, scaling_factor)
     timeseries = _handle_scaling_factor(timeseries, scaling_factor)
-    forecast = Deterministic(component, label, timeseries) #, start_index)
+    forecast = Deterministic(component, label, timeseries)
     add_forecast!(sys, forecast)
 end
 

@@ -103,8 +103,7 @@ function Probabilistic(component::Component,
                        resolution::Dates.Period,
                        initial_time::Dates.DateTime,
                        quantiles::Vector{Float64},  # Quantiles for the probabilistic forecast
-                       data::TimeSeries.TimeArray,
-                      )
+                       data::TimeSeries.TimeArray)
     start_index = 1
     horizon = length(data)
     return Probabilistic(component, label, resolution, initial_time, quantiles, data,
