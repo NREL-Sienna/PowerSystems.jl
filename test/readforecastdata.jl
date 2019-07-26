@@ -44,7 +44,7 @@ end
     component_name = "122_HYDRO_1"
     timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
                                "DAY_AHEAD_hydro.csv")
-    timeseries = PS.read_time_array(timeseries_file)[Symbol(component_name)]
+    timeseries = PS.read_timeseries(timeseries_file)[Symbol(component_name)]
     max_value = maximum(TimeSeries.values(timeseries))
 
     metadata = PS.TimeseriesMetadata(
@@ -85,7 +85,7 @@ end
     component_name = "122_HYDRO_1"
     timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
                                "DAY_AHEAD_hydro.csv")
-    timeseries = PS.read_time_array(timeseries_file)[Symbol(component_name)]
+    timeseries = PS.read_timeseries(timeseries_file)[Symbol(component_name)]
 
     # Test with a filename.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))

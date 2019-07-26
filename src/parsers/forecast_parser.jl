@@ -115,7 +115,7 @@ function add_forecast!(sys::System, filename::AbstractString, component::Compone
                        start_index=1,
                       )
     component_name = get_name(component)
-    data = read_time_array(filename, component_name)
+    data = read_timeseries(filename, component_name)
     timeseries = data[Symbol(component_name)]
     _add_forecast!(sys, component, label, timeseries, start_index, scaling_factor)
 end
@@ -229,13 +229,13 @@ function _get_forecast_component(sys::System, category, name)
 end
 
 """
-    read_time_array(file_path::AbstractString, component_name=nothing)
+    read_timeseries(file_path::AbstractString, component_name=nothing)
 
 Return a TimeArray from a CSV file.
 
 Pass component_name when the file does not have the component name in a column header.
 """
-function read_time_array(file_path::AbstractString, component_name=nothing; kwargs...)
+function read_timeseries(file_path::AbstractString, component_name=nothing; kwargs...)
     if !isfile(file_path)
         msg = "Timeseries file doesn't exist : $file_path"
         throw(DataFormatError(msg))
@@ -244,7 +244,7 @@ function read_time_array(file_path::AbstractString, component_name=nothing; kwar
     file = CSV.File(file_path)
     @debug "Read CSV data from $file_path."
 
-    return read_time_array(get_timeseries_format(file), file, component_name; kwargs...)
+    return read_timeseries(get_timeseries_format(file), file, component_name; kwargs...)
 end
 
 function add_forecast_info!(infos::ForecastInfos, sys::System, metadata::TimeseriesMetadata)
@@ -270,7 +270,7 @@ end
 function _add_forecast_info!(infos::ForecastInfos, data_file::AbstractString,
                              component_name::Union{Nothing, String})
     if !haskey(infos.data_files, data_file)
-        infos.data_files[data_file] = read_time_array(data_file, component_name)
+        infos.data_files[data_file] = read_timeseries(data_file, component_name)
         @debug "Added timeseries file" data_file
     end
 
