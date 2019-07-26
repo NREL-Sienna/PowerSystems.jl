@@ -154,7 +154,7 @@ end
 function _add_forecast!(sys::System, component::Component, label::AbstractString,
                         timeseries::TimeSeries.TimeArray, start_index, scaling_factor)
     timeseries = _handle_scaling_factor(timeseries, scaling_factor)
-    forecast = Deterministic(component, label, timeseries, start_index)
+    forecast = Deterministic(component, label, timeseries) #, start_index)
     add_forecast!(sys, forecast)
 end
 
@@ -199,7 +199,7 @@ function _add_forecasts!(sys::System, forecast_infos::ForecastInfos, resolution)
 
         timeseries = forecast.data[Symbol(get_name(forecast.component))]
         timeseries = _handle_scaling_factor(timeseries, forecast.scaling_factor)
-        forecasts = [Deterministic(x, forecast.label, timeseries, 1)
+        forecasts = [Deterministic(x, forecast.label, timeseries)
                      for x in forecast_components]
         add_forecasts!(sys, forecasts)
     end

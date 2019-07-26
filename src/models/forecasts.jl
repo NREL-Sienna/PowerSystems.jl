@@ -243,7 +243,7 @@ function encode_for_json(system_forecasts::SystemForecasts)
     # all covered in case someone adds a field later.
     fields = (:data, :initial_time, :resolution, :horizon, :interval)
     @assert fields == fieldnames(SystemForecasts)
-    
+
     data = Dict()
     for field in fields
         data[string(field)] = getfield(system_forecasts, field)
@@ -323,9 +323,5 @@ function convert_type!(
 end
 
 function Base.length(forecast::Forecast)
-    return length(forecast.data)
-end
-
-function get_horizon(forecast::Forecast)
-    return length(forecast)
+    return get_horizon(forecast)
 end

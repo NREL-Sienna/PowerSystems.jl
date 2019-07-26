@@ -11,15 +11,16 @@ mutable struct Probabilistic{T <: Component} <: Forecast
     probabilities::Vector{Float64}  # Quantiles for the probabilistic forecast
     data::TimeSeries.TimeArray  # timestamp - scalingfactor
     start_index::Int  # starting index of data for this forecast
+    horizon::Int  # length of this forecast
     internal::PowerSystems.PowerSystemInternal
 end
 
-function Probabilistic(component, label, resolution, initial_time, probabilities, data, start_index, )
-    Probabilistic(component, label, resolution, initial_time, probabilities, data, start_index, PowerSystemInternal())
+function Probabilistic(component, label, resolution, initial_time, probabilities, data, start_index, horizon, )
+    Probabilistic(component, label, resolution, initial_time, probabilities, data, start_index, horizon, PowerSystemInternal())
 end
 
-function Probabilistic(; component, label, resolution, initial_time, probabilities, data, start_index, )
-    Probabilistic(component, label, resolution, initial_time, probabilities, data, start_index, )
+function Probabilistic(; component, label, resolution, initial_time, probabilities, data, start_index, horizon, )
+    Probabilistic(component, label, resolution, initial_time, probabilities, data, start_index, horizon, )
 end
 
 
@@ -37,5 +38,7 @@ get_probabilities(value::Probabilistic) = value.probabilities
 get_data(value::Probabilistic) = value.data
 """Get Probabilistic start_index."""
 get_start_index(value::Probabilistic) = value.start_index
+"""Get Probabilistic horizon."""
+get_horizon(value::Probabilistic) = value.horizon
 """Get Probabilistic internal."""
 get_internal(value::Probabilistic) = value.internal

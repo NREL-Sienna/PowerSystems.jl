@@ -114,12 +114,12 @@
                  get_forecasts(Deterministic{Bus}, sys, initial_time, components))
 
     f = forecasts[1]
-    forecast = Deterministic(Bus(nothing), f.label, f.resolution, f.initial_time, f.data, 1)
+    forecast = Deterministic(Bus(nothing), f.label, f.resolution, f.initial_time, f.data)
     @test_throws(PowerSystems.InvalidParameter, add_forecasts!(sys, [forecast]))
 
     component = deepcopy(f.component)
     component.internal = PowerSystems.PowerSystemInternal()
-    forecast = Deterministic(component, f.label, f.resolution, f.initial_time, f.data, 1)
+    forecast = Deterministic(component, f.label, f.resolution, f.initial_time, f.data)
     @test_throws(PowerSystems.InvalidParameter, add_forecasts!(sys, [forecast]))
 end
 
