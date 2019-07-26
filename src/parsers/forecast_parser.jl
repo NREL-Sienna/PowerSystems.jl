@@ -8,7 +8,7 @@ const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
 )
 
 """Describes how to construct forecasts from raw timeseries data files."""
-mutable struct TimeseriesMetadata
+mutable struct TimeseriesFileMetadata
     simulation::String  # User description of simulation
     category::String  # String version of PowerSystems abstract type for forecast component.
                       # Refer to CATEGORY_STR_TO_COMPONENT.
@@ -23,9 +23,9 @@ mutable struct TimeseriesMetadata
 end
 
 """Reads forecast metadata and fixes relative paths to the data files."""
-function read_timeseries_metadata(file_path::AbstractString)::Vector{TimeseriesMetadata}
+function read_timeseries_metadata(file_path::AbstractString)::Vector{TimeseriesFileMetadata}
     metadata = open(file_path) do io
-        JSON2.read(io, Vector{TimeseriesMetadata})
+        JSON2.read(io, Vector{TimeseriesFileMetadata})
     end
 
     directory = dirname(file_path)
@@ -49,7 +49,7 @@ struct ForecastInfo
     end
 end
 
-function ForecastInfo(metadata::TimeseriesMetadata, component::Component,
+function ForecastInfo(metadata::TimeseriesFileMetadata, component::Component,
                       timeseries::TimeSeries.TimeArray)
     return ForecastInfo(metadata.simulation, component, metadata.label,
                         metadata.scaling_factor, timeseries, metadata.data_file)
@@ -75,24 +75,24 @@ Add forecasts to a system from a metadata file.
 - `metadata_file::AbstractString`: path to metadata file
 - `resolution::{Nothing, Dates.Period}`: skip any forecasts that don't match this resolution
 
-See [`TimeseriesMetadata`](@ref) for description of what the metadata file should contain.
+See [`TimeseriesFileMetadata`](@ref) for description of what the file should contain.
 """
 function add_forecasts!(sys::System, metadata_file::AbstractString; resolution=nothing)
     add_forecasts!(sys, read_timeseries_metadata(metadata_file); resolution=resolution)
 end
 
 """
-    add_forecasts!(sys::System, timeseries_metadata::Vector{TimeseriesMetadata};
+    add_forecasts!(sys::System, timeseries_metadata::Vector{TimeseriesFileMetadata};
                    resolution=nothing)
 
-Add forecasts to a system from a vector of TimeseriesMetadata values.
+Add forecasts to a system from a vector of TimeseriesFileMetadata values.
 #
 # Arguments
 - `sys::System`: system
-- `timeseries_metadata::Vector{TimeseriesMetadata}`: metadata values
+- `timeseries_metadata::Vector{TimeseriesFileMetadata}`: metadata values
 - `resolution::{Nothing, Dates.Period}`: skip any forecasts that don't match this resolution
 """
-function add_forecasts!(sys::System, timeseries_metadata::Vector{TimeseriesMetadata};
+function add_forecasts!(sys::System, timeseries_metadata::Vector{TimeseriesFileMetadata};
                         resolution=nothing)
     forecast_infos = ForecastInfos()
     for ts_metadata in timeseries_metadata
@@ -108,7 +108,7 @@ end
 
 Add a forecast to a system from a CSV file.
 
-See [`TimeseriesMetadata`](@ref) for description of scaling_factor.
+See [`TimeseriesFileMetadata`](@ref) for description of scaling_factor.
 """
 function add_forecast!(sys::System, filename::AbstractString, component::Component,
                        label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
@@ -124,7 +124,7 @@ end
 
 Add a forecast to a system from a TimeSeries.TimeArray.
 
-See [`TimeseriesMetadata`](@ref) for description of scaling_factor.
+See [`TimeseriesFileMetadata`](@ref) for description of scaling_factor.
 """
 function add_forecast!(sys::System, data::TimeSeries.TimeArray, component::Component,
                        label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
@@ -138,7 +138,7 @@ end
 
 Add a forecast to a system from a DataFrames.DataFrame.
 
-See [`TimeseriesMetadata`](@ref) for description of scaling_factor.
+See [`TimeseriesFileMetadata`](@ref) for description of scaling_factor.
 """
 function add_forecast!(sys::System, df::DataFrames.DataFrame, component::Component,
                        label::AbstractString, scaling_factor::Union{String, Float64}=1.0;
@@ -243,7 +243,8 @@ function read_timeseries(file_path::AbstractString, component_name=nothing; kwar
     return read_timeseries(get_timeseries_format(file), file, component_name; kwargs...)
 end
 
-function add_forecast_info!(infos::ForecastInfos, sys::System, metadata::TimeseriesMetadata)
+function add_forecast_info!(infos::ForecastInfos, sys::System,
+                            metadata::TimeseriesFileMetadata)
     timeseries = _add_forecast_info!(infos, metadata.data_file, metadata.component_name)
 
     category = _get_category(metadata)
@@ -253,7 +254,7 @@ function add_forecast_info!(infos::ForecastInfos, sys::System, metadata::Timeser
     @debug "Added ForecastInfo" metadata
 end
 
-function _get_category(metadata::TimeseriesMetadata)
+function _get_category(metadata::TimeseriesFileMetadata)
     if !haskey(CATEGORY_STR_TO_COMPONENT, metadata.category)
         throw(DataFormatError("category=$(metadata.category) is invalid"))
     end
