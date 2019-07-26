@@ -88,6 +88,7 @@ export get_forecasts_initial_time
 export get_forecasts_interval
 export get_forecasts_resolution
 export get_horizon
+export get_timeseries
 export iterate_forecasts
 export get_forecast_files
 export validate

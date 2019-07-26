@@ -94,6 +94,7 @@ end
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PS.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
+    @test PS.get_timeseries(forecast) == timeseries
 
     # Test with TimeSeries.TimeArray.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -102,6 +103,7 @@ end
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PS.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
+    @test PS.get_timeseries(forecast) == timeseries
 
     # Test with DataFrames.DataFrame.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -110,7 +112,6 @@ end
     add_forecast!(sys, df, component, "PMax MW", 1.0)
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PS.iterate_forecasts(sys))[1]
-    @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
 end
 
 @testset "Forecast data matpower" begin

@@ -325,3 +325,19 @@ end
 function Base.length(forecast::Forecast)
     return get_horizon(forecast)
 end
+
+"""
+    get_timeseries(forecast::Forecast)
+
+Return the timeseries for the forecast.
+
+Note: timeseries data is stored in TimeSeries.TimeArray objects. TimeArray does not
+currently support Base.view, so calling this function results in a memory allocation and
+copy. Tracked in https://github.com/JuliaStats/TimeSeries.jl/issues/419.
+"""
+function get_timeseries(forecast::Forecast)
+    full_ts = get_data(forecast)
+    start_index = get_start_index(forecast)
+    end_index = start_index + get_horizon(forecast) - 1
+    return full_ts[start_index:end_index]
+end
