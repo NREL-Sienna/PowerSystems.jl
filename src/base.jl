@@ -1,5 +1,7 @@
 
 const Components = Dict{DataType, Dict{String, <:Component}}
+const VALID_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
+                                            "descriptors", "validation_config.yml")
 
 """
     System
@@ -31,6 +33,7 @@ const Components = Dict{DataType, Dict{String, <:Component}}
     # Keyword arguments
 
     * `runchecks`::Bool : run available checks on input fields
+    * `configpath`::String : specify path to validation config file
     DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
 struct System <: PowerSystemType
@@ -38,6 +41,19 @@ struct System <: PowerSystemType
     forecasts::SystemForecasts
     basepower::Float64             # [MVA]
     internal::PowerSystemInternal
+    validation_descriptor::Vector
+
+    function System(components, forecasts, basepower, internal; kwargs...)
+        configpath = get(kwargs, :configpath, VALID_CONFIG_FILE)
+        runchecks = get(kwargs, :runchecks, true)
+        if runchecks
+            validation_descriptor = read_validation_descriptor(configpath)
+            sys = new(components, forecasts, basepower, internal, validation_descriptor)
+        else
+            sys = new(components, forecasts, basepower, internal, Vector())
+        end
+    end
+
 end
 
 """Construct an empty System. Useful for building a System while parsing raw data."""
@@ -47,8 +63,8 @@ function System(basepower)
     return System(components, forecasts, basepower)
 end
 
-function System(components, forecasts, basepower)
-    return System(components, forecasts, basepower, PowerSystemInternal())
+function System(components, forecasts, basepower; kwargs...)
+    return System(components, forecasts, basepower, PowerSystemInternal(); kwargs...)
 end
 
 """System constructor when components are constructed externally."""
@@ -67,7 +83,8 @@ function System(buses::Vector{Bus},
     if isnothing(forecasts)
         forecasts = SystemForecasts()
     end
-    sys = System(components, forecasts, basepower)
+
+    sys = System(components, forecasts, basepower; kwargs...)
 
     arrays = [buses, generators, loads]
     if !isnothing(branches)
@@ -80,14 +97,20 @@ function System(buses::Vector{Bus},
         push!(arrays, services)
     end
 
+    error_detected = false
+
     for component in Iterators.flatten(arrays)
-        add_component!(sys, component)
+        if add_component!(sys, component)
+            error_detected = true
+        end
     end
 
     load_zones = isnothing(annex) ? nothing : get(annex, :LoadZones, nothing)
     if !isnothing(load_zones)
         for lz in load_zones
-            add_component!(sys, lz)
+            if add_component!(sys, lz)
+                error_detected = true
+            end
         end
     end
 
@@ -95,7 +118,14 @@ function System(buses::Vector{Bus},
         @debug "components: $(string(key)): count=$(string(length(value)))"
     end
 
+    configpath = get(kwargs, :configpath, VALID_CONFIG_FILE)
+
     runchecks = get(kwargs, :runchecks, true)
+
+    if error_detected
+        error("Invalid range detected")
+    end
+
     if runchecks
         check!(sys)
     end
@@ -156,8 +186,6 @@ function check!(sys::System)
         check_branches!(branches)
         calculate_thermal_limits!(branches, sys.basepower)
     end
-
-    generators = get_components(Generator, sys)
 end
 
 """Iterates over all components.
@@ -276,8 +304,14 @@ function add_component!(sys::System, component::T) where T <: Component
         throw(InvalidParameter("$(component.name) is already stored for type $T"))
     end
 
+    error_detected = false
+
+    if !isempty(sys.validation_descriptor)
+        error_detected = validate_fields(sys, component)
+    end
+
     sys.components[T][component.name] = component
-    return nothing
+    return error_detected
 end
 
 """
@@ -750,4 +784,18 @@ function compare_values(x::System, y::System)::Bool
     end
 
     return match
+end
+
+function read_validation_descriptor(filename::AbstractString)
+    if !occursin(r"(\.yaml)|(\.yml)"i, filename)
+        error("Must enter a path to YAML file for configpath kwarg in System struct")
+    end
+    data = open(filename) do file
+        YAML.load(file)
+    end
+
+    if !isa(data, Array)
+        error("YAML file format must exactly match example in $VALID_CONFIG_FILE")
+    end
+    return data
 end

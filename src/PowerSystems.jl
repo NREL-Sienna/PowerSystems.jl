@@ -189,6 +189,7 @@ include("parsers/pm2ps_parser.jl")
 
 # validation of System
 include("validation/powersystem.jl")
+include("validation_functions.jl")
 
 # Better printing
 include("utils/print.jl")
