@@ -203,6 +203,62 @@ function Base.summary(io::IO, forecasts::SystemForecasts)
     end
 end
 
+function JSON2.write(io::IO, system_forecasts::SystemForecasts)
+    return JSON2.write(io, encode_for_json(system_forecasts))
+end
+
+function JSON2.write(system_forecasts::SystemForecasts)
+    return JSON2.write(encode_for_json(system_forecasts))
+end
+
+function encode_for_json(system_forecasts::SystemForecasts)
+    # Many forecasts could have references to the same timeseries data, so we want to
+    # avoid writing out duplicates.  Here's the flow:
+    # 1. Identify duplicates by creating a hash of each.
+    # 2. Create one UUID for each unique timeseries.
+    # 3. Identify all forecast UUIDs that share each timeseries.
+    # 4. Write out a vector of TimeseriesSerializationInfo items.
+    # 5. Deserializion can re-create everything from this info.
+
+    hash_to_uuid = Dict{UInt64, Base.UUID}()
+    uuid_to_timeseries = Dict{Base.UUID, TimeseriesSerializationInfo}()
+
+    for forecasts in values(system_forecasts.data)
+        for forecast in forecasts
+            hash_value = hash(forecast.data)
+            if !haskey(hash_to_uuid, hash_value)
+                uuid = UUIDs.uuid4()
+                hash_to_uuid[hash_value] = uuid
+                uuid_to_timeseries[uuid] = TimeseriesSerializationInfo(uuid,
+                                                                       forecast.data,
+                                                                       [get_uuid(forecast)])
+            else
+                uuid = hash_to_uuid[hash_value]
+                push!(uuid_to_timeseries[uuid].forecasts, get_uuid(forecast))
+            end
+        end
+    end
+
+    # This procedure forces us to handle all fields manually, so assert that we have them
+    # all covered in case someone adds a field later.
+    fields = (:data, :initial_time, :resolution, :horizon, :interval)
+    @assert fields == fieldnames(SystemForecasts)
+
+    data = Dict()
+    for field in fields
+        data[string(field)] = getfield(system_forecasts, field)
+    end
+
+    data["timeseries_infos"] = collect(values(uuid_to_timeseries))
+    return data
+end
+
+struct TimeseriesSerializationInfo
+    timeseries_uuid::Base.UUID
+    timeseries::TimeSeries.TimeArray
+    forecasts::Vector{Base.UUID}
+end
+
 """Converts forecast JSON data to SystemForecasts. This version builds onto the passed dict
 instead of returning an object because ConcreteSystem is immutable.
 """
@@ -214,6 +270,16 @@ function convert_type!(
     for field in (:initial_time, :resolution, :horizon, :interval)
         field_type = fieldtype(typeof(forecasts), field)
         setfield!(forecasts, field, convert_type(field_type, getproperty(data, field)))
+    end
+
+    forecast_uuid_to_timeseries = Dict{Base.UUID, TimeSeries.TimeArray}()
+
+    for val in data.timeseries_infos
+        timeseries_info = convert_type(TimeseriesSerializationInfo, val)
+        for forecast_uuid in timeseries_info.forecasts
+            @assert !haskey(forecast_uuid_to_timeseries, forecast_uuid)
+            forecast_uuid_to_timeseries[forecast_uuid] = timeseries_info.timeseries
+        end
     end
 
     for symbol in propertynames(data.data)
@@ -244,16 +310,104 @@ function convert_type!(
 
         forecasts.data[key] = Vector{forecast_type}()
         for forecast in getfield(data.data, symbol)
+            uuid = Base.UUID(forecast.internal.uuid.value)
+            if !haskey(forecast_uuid_to_timeseries, uuid)
+                throw(DataFormatError("unmatched timeseries UUID: $uuid $forecast"))
+            end
+            timeseries = forecast_uuid_to_timeseries[uuid]
             push!(forecasts.data[key],
-                  convert_type(forecast_base_type, forecast, components, parameter_types))
+                  convert_type(forecast_base_type, forecast, components, parameter_types,
+                               timeseries))
         end
     end
 end
 
 function Base.length(forecast::Forecast)
-    return length(forecast.data)
+    return get_horizon(forecast)
 end
 
-function get_horizon(forecast::Forecast)
-    return length(forecast)
+"""
+    get_timeseries(forecast::Forecast)
+
+Return the timeseries for the forecast.
+
+Note: timeseries data is stored in TimeSeries.TimeArray objects. TimeArray does not
+currently support Base.view, so calling this function results in a memory allocation and
+copy. Tracked in https://github.com/JuliaStats/TimeSeries.jl/issues/419.
+"""
+function get_timeseries(forecast::Forecast)
+    full_ts = get_data(forecast)
+    start_index = get_start_index(forecast)
+    end_index = start_index + get_horizon(forecast) - 1
+    return full_ts[start_index:end_index]
+end
+
+"""
+    make_forecasts(forecast::Forecast, interval::Dates.Period, horizon::Int)
+
+Make a vector of forecasts by incrementing through a forecast by interval and horizon.
+"""
+function make_forecasts(forecast::Forecast, interval::Dates.Period, horizon::Int)
+    # TODO: need more test coverage of corner cases.
+    resolution = get_resolution(forecast)
+
+    if forecast isa Probabilistic
+        # TODO
+        throw(InvalidParameter("this function doesn't support Probabilistic yet"))
+    end
+
+    if interval < resolution
+        throw(InvalidParameter("interval=$interval is smaller than resolution=$resolution"))
+    end
+
+    if Dates.Second(interval) % Dates.Second(resolution) != Dates.Second(0)
+        throw(InvalidParameter(
+            "interval=$interval is not a multiple of resolution=$resolution"))
+    end
+
+    if horizon > get_horizon(forecast)
+        throw(InvalidParameter(
+            "horizon=$horizon is larger than forecast horizon=$(get_horizon(forecast))"))
+    end
+
+    interval_as_num = Int(Dates.Second(interval) / Dates.Second(resolution))
+    forecasts = Vector{Deterministic}()
+
+    # Index into the TimeArray that backs the master forecast.
+    master_forecast_start = get_start_index(forecast)
+    master_forecast_end = get_start_index(forecast) + get_horizon(forecast) - 1
+    @debug "master indices" master_forecast_start master_forecast_end
+    for index in range(master_forecast_start,
+                       step=interval_as_num,
+                       stop=master_forecast_end)
+        start_index = index
+        end_index = start_index + horizon - 1
+        @debug "new forecast indices" start_index end_index
+        if end_index > master_forecast_end
+            break
+        end
+
+        initial_time = TimeSeries.timestamp(get_data(forecast))[start_index]
+        component = get_component(forecast)
+        forecast_ = Deterministic(component,
+                                 get_label(forecast),
+                                 resolution,
+                                 initial_time,
+                                 get_data(forecast),
+                                 start_index,
+                                 horizon)
+        @info "Created forecast with" initial_time horizon component
+        push!(forecasts, forecast_)
+    end
+
+    @assert length(forecasts) > 0
+
+    master_end_ts = TimeSeries.timestamp(get_timeseries(forecast))[end]
+    last_end_ts = TimeSeries.timestamp(get_timeseries(forecasts[end]))[end]
+    if last_end_ts != master_end_ts
+        throw(InvalidParameter(
+            "insufficient data for forecast splitting $master_end_ts $last_end_ts"))
+    end
+
+    return forecasts
 end
