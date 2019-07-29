@@ -7,11 +7,11 @@ mutable struct MonitoredLine <: ACBranch
     name::String
     available::Bool
     arch::Arch
-    r::Float64
-    x::Float64
-    b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
-    flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
-    rate::Float64
+    r::Float64  # Per unit value
+    x::Float64  # Per unit value
+    b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}  # Per unit value
+    flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}  # TODO: throw warning above max SIL
+    rate::Float64  # TODO: compare to SIL (warn) (theoretical limit)
     anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     internal::PowerSystems.PowerSystemInternal
 end
@@ -36,7 +36,7 @@ function MonitoredLine(::Nothing)
         b=(from=0.0, to=0.0),
         flowlimits=(from_to=0.0, to_from=0.0),
         rate=0.0,
-        anglelimits=(min=-90.0, max=-90.0),
+        anglelimits=(min=-3.142, max=3.142),
     )
 end
 

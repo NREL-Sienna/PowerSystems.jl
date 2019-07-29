@@ -7,9 +7,9 @@ mutable struct Line <: ACBranch
     name::String
     available::Bool
     arch::Arch
-    r::Float64
-    x::Float64
-    b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
+    r::Float64  # Per unit value
+    x::Float64  # Per unit value
+    b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}  # Per unit value
     rate::Float64
     anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     internal::PowerSystems.PowerSystemInternal
@@ -34,7 +34,7 @@ function Line(::Nothing)
         x=0.0,
         b=(from=0.0, to=0.0),
         rate=0.0,
-        anglelimits=(min=-90.0, max=-90.0),
+        anglelimits=(min=-3.142, max=3.142),
     )
 end
 

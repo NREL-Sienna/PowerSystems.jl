@@ -7,7 +7,7 @@ mutable struct ThermalStandard <: ThermalGen
     name::String
     available::Bool
     bus::Bus
-    tech::Union{Nothing, TechThermal}  # [-1. -1]
+    tech::Union{Nothing, TechThermal}
     op_cost::ThreePartCost
     internal::PowerSystems.PowerSystemInternal
 end

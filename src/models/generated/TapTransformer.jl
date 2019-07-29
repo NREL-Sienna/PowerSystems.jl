@@ -7,9 +7,9 @@ mutable struct TapTransformer <: ACBranch
     name::String
     available::Bool
     arch::Arch
-    r::Float64
-    x::Float64
-    primaryshunt::Float64
+    r::Float64  # Per unit value
+    x::Float64  # Per unit value
+    primaryshunt::Float64  # Per unit value
     tap::Float64
     rate::Union{Nothing, Float64}
     internal::PowerSystems.PowerSystemInternal
