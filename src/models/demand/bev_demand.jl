@@ -82,7 +82,7 @@ Apply efficiency factors to relate energy at the vehicle to energy at the charge
 function applyefficiencies(demand :: BevDemand{T,L}) where L where T <: TimeType
     function f(x)
         if x == 0
-            0
+            0.
         elseif x > 0
             x / demand.efficiency.in
         else
@@ -105,7 +105,7 @@ Apply efficiency factors to relate energy at the vehicle to energy at the charge
 function applyefficienciesinverse(demand :: BevDemand{T,L}) where L where T <: TimeType
     function f(x)
         if x == 0
-            0
+            0.
         elseif x > 0
             x * demand.efficiency.in
         else
