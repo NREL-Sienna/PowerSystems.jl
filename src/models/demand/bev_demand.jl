@@ -118,7 +118,7 @@ The demand if charging takes place as early as possible.
 - The battery level at the last time.
 """
 function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
-    resolution = 0 * 1 / 60 / 60 / 100 # Works fine at highest resolution.
+    resolution = 1 / 60 / 60 / 1000 # Resolve to the nearest millisecond.
     eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.power)
@@ -137,15 +137,19 @@ function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{
         charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
         tcrit = net > 0 ? (demand.capacity.max - b) / net : Inf
-        push!(zt, tnow)
-        push!(zv, eff(charging1))
-        if resolution < tcrit < tnext
-            b = b + tcrit * net
-            tnow = addhours(tnow, tcrit)
+        if tcrit < resolution
+            b = demand.capacity.max
         else
-            b = b + tnext * net
-            tnow = xt[ix]
-            ix = ix + 1
+            push!(zt, tnow)
+            push!(zv, eff(charging1))
+            if tcrit < tnext
+                b = b + tcrit * net
+                tnow = addhours(tnow, tcrit)
+            else
+                b = b + tnext * net
+                tnow = xt[ix]
+                ix = ix + 1
+            end
         end
     end
     push!(zt, tnow)
@@ -185,7 +189,7 @@ The demand if charging takes place as late as possible.
 - The battery level at the first time.
 """
 function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
-    resolution = 1 / 60 / 60 / 100 # Resolve to the nearest millisecond.
+    resolution = 1 / 60 / 60 / 1000 # Resolve to the nearest millisecond.
     eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.power)
@@ -206,16 +210,20 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
         charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
         tcrit = net > 0 ? (b - demand.capacity.min) / net : Inf
-        if resolution < tcrit < tnext
-            b = b - tcrit * net
-            tnow = addhours(tnow, - tcrit)
+        if tcrit < resolution
+            b = demand.capacity.min
         else
-            b = b - tnext * net
-            tnow = xt[ix]
-            ix = ix - 1
+            if tcrit < tnext
+                b = b - tcrit * net
+                tnow = addhours(tnow, - tcrit)
+            else
+                b = b - tnext * net
+                tnow = xt[ix]
+                ix = ix - 1
+            end
+            push!(zt, tnow)
+            push!(zv, eff(charging1))
         end
-        push!(zt, tnow)
-        push!(zv, eff(charging1))
     end
     zt = reverse(zt)
     zv = reverse(zv)

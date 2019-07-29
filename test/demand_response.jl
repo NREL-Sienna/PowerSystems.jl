@@ -24,14 +24,14 @@ function checkcharging(f)
             charging = f(bev)
             delta = shortfall(bev, charging)
             deltamax = max(deltamax, abs(delta))
-            result = abs(delta) <= 1
+            result = abs(delta) <= 1e-5
             if !result
                 @warn string("BEV ", i, " in '", EVIPRO_DATA, "' has charging shortfall of ", delta, " kWh.")
             end
             result
         end
     end
-    @info string("Maximum charging discrepancy: ", deltamax, " kWh.")
+    @debug string("Maximum charging discrepancy: ", deltamax, " kWh.")
 end
 
 @testset "Earliest demands on EVIpro dataset" begin
