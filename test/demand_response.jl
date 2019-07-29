@@ -33,7 +33,7 @@ function checkcharging(f)
                 @warn string("BEV ", i, " in '", EVIPRO_DATA, "' violates charging limits.")
             end
             batteryresult = verifybattery(bev, charging)
-            batteryresult |= bev.capacity.max < 30. # FIXME: We are suppressing the reporting of battery limit violations for PHEVs.
+            batteryresult |= bev.capacity.max < 30. # FIXME: Exclude vehicles with small batteries.
             if !batteryresult
                 @warn string("BEV ", i, " in '", EVIPRO_DATA, "' violates battery limits.")
             end
