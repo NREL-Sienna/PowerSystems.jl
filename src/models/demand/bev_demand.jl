@@ -123,7 +123,7 @@ The demand if charging takes place as early as possible.
 - `demand :: BevDemand{T,L}`: the demand
 
 # Returns
-The demand over time.
+the demand over time
 """
 function earliestdemands(demand :: BevDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     if demand.timeboundary == nothing
@@ -143,8 +143,8 @@ The demand if charging takes place as early as possible.
 - `initial :: Float64`       : the battery level at the first time
 
 # Returns
-- The demand over time.
-- The battery level at the last time.
+- the demand over time
+- the battery level at the last time
 """
 function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
     resolution = 1 / 60 / 60 / 1000 # Resolve to the nearest millisecond.
@@ -195,6 +195,9 @@ The demand if charging takes place as late as possible.
 
 # Arguments
 - `demand :: BevDemand{T,L}`: the demand
+
+# Returns
+- the demand over time
 """
 function latestdemands(demand :: BevDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     if demand.timeboundary == nothing
@@ -214,8 +217,8 @@ The demand if charging takes place as late as possible.
 - `final  :: Float64`       : the battery level at the last time
 
 # Returns
-- The demand over time.
-- The battery level at the first time.
+- the demand over time
+- the battery level at the first time
 """
 function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
     resolution = 1 / 60 / 60 / 1000 # Resolve to the nearest millisecond.
@@ -271,7 +274,7 @@ Compute the discrepancy between the BEV constraints and the charging plan.
 - `charging :: LocatedDemand{T,L}` : the charging plan
 
 # Returns
-- The shortfall of the charging plan's meeting of the demand demand.
+- the shortfall of the charging plan's meeting of the demand demand
 """
 function shortfall(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}) :: Float64 where L where T <: TimeType
     onehour = Time(1) - Time(0)
@@ -302,7 +305,7 @@ Verify charging limits.
 - `tolerance :: Float64`            : tolerance for testing limits
 
 # Returns
-- Whether the charging limits are satisfied.
+- whether the charging limits are satisfied
 """
 function verifylimits(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}; tolerance :: Float64 = 1e-5) :: Bool where L where T <: TimeType
     onehour = Time(1) - Time(0)
@@ -323,7 +326,7 @@ Compute battery levels.
 - `charging  :: LocatedDemand{T,L}` : the charging plan
 
 # Returns
-- The battery levels.
+- the battery levels
 """
 function chargelevels(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}) :: TemporalDemand{T} where L where T <: TimeType
     onehour = Time(1) - Time(0)
@@ -333,7 +336,7 @@ function chargelevels(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}) 
     durations = (xt[2:end] - xt[1:end-1]) ./ onehour
     xv = values(x[1:end-1])
     nets = (eff.(map(v -> v[2][2], xv)) .- map(v -> v[1], xv)) .* durations
-    nets = prepend!([0.], nets)
+    nets = prepend!(nets, [0.])
     nets = cumsum(nets)
     nets = nets .- minimum(nets) .+ demand.capacity.min
     TimeArray(xt, nets)
@@ -349,11 +352,18 @@ Verify battery levels.
 - `tolerance :: Float64`            : tolerance for testing limits
 
 # Returns
-- Whether the battery levels constraints are satisfied.
+- whether the battery level constraints are satisfied
 """
 function verifybattery(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}; tolerance :: Float64 = 1e-5) :: Bool where L where T <: TimeType
     levels = values(chargelevels(demand, charging))
-    maximum(levels) <= demand.capacity.max + tolerance
+    maxokay = maximum(levels) <= demand.capacity.max + tolerance
+    if isnothing(demand.timeboundary)
+        boundaryokay = abs(levels[1] - levels[end]) <= tolerance
+    else
+        boundaryokay  = demand.timeboundary[1] - tolerance <= levels[1  ] <= demand.timeboundary[2] + tolerance
+        boundaryokay &= demand.timeboundary[1] - tolerance <= levels[end] <= demand.timeboundary[2] + tolerance
+    end
+    maxokay && boundaryokay
 end
 
 
