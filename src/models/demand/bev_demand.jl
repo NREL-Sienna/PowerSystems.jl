@@ -302,17 +302,58 @@ Verify charging limits.
 - `tolerance :: Float64`            : tolerance for testing limits
 
 # Returns
-- The shortfall of the charging plan's meeting of the demand demand.
+- Whether the charging limits are satisfied.
 """
 function verifylimits(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}; tolerance :: Float64 = 1e-5) :: Bool where L where T <: TimeType
     onehour = Time(1) - Time(0)
     eff = applyefficienciesinverse(demand)
     x = aligntimes(demand.locations, charging)
-    xt = timestamp(x)
     xv = values(x[1:end-1])
     powers = eff.(map(v -> v[2][2], xv))
     limits = map(v -> max(min(v[1][2].ac, demand.rate.ac.max), min(v[1][2].dc, demand.rate.dc.max)), xv)
     all(powers .<= limits .+ tolerance)
+end
+
+
+"""
+Compute battery levels.
+
+# Arguments
+- `demand    :: BevDemand{T,L}`     : the BEV demand demand
+- `charging  :: LocatedDemand{T,L}` : the charging plan
+
+# Returns
+- The battery levels.
+"""
+function chargelevels(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}) :: TemporalDemand{T} where L where T <: TimeType
+    onehour = Time(1) - Time(0)
+    eff = applyefficienciesinverse(demand)
+    x = aligntimes(demand.power, charging)
+    xt = timestamp(x)
+    durations = (xt[2:end] - xt[1:end-1]) ./ onehour
+    xv = values(x[1:end-1])
+    nets = (eff.(map(v -> v[2][2], xv)) .- map(v -> v[1], xv)) .* durations
+    nets = prepend!([0.], nets)
+    nets = cumsum(nets)
+    nets = nets .- minimum(nets) .+ demand.capacity.min
+    TimeArray(xt, nets)
+end
+
+
+"""
+Verify battery levels.
+
+# Arguments
+- `demand    :: BevDemand{T,L}`     : the BEV demand demand
+- `charging  :: LocatedDemand{T,L}` : the charging plan
+- `tolerance :: Float64`            : tolerance for testing limits
+
+# Returns
+- Whether the battery levels constraints are satisfied.
+"""
+function verifybattery(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}; tolerance :: Float64 = 1e-5) :: Bool where L where T <: TimeType
+    levels = values(chargelevels(demand, charging))
+    maximum(levels) <= demand.capacity.max + tolerance
 end
 
 

@@ -90,6 +90,8 @@ export envelope
 export latestdemands
 export shortfall
 export verifylimits
+export chargelevels
+export verifybattery
 export populate_BEV_demand
 
 export parsestandardfiles
