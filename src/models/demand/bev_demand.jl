@@ -90,11 +90,11 @@ end
 """
 The demand if charging takes place as early as possible.
 
-    # Arguments
-    - `demand :: BevDemand{T,L}`: the demand
+# Arguments
+- `demand :: BevDemand{T,L}`: the demand
 
-    # Returns
-    The demand over time.
+# Returns
+The demand over time.
 """
 function earliestdemands(demand :: BevDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     if demand.timeboundary == nothing
@@ -109,13 +109,13 @@ end
 """
 The demand if charging takes place as early as possible.
 
-    # Arguments
-    - `demand  :: BevDemand{T,L}`: the demand
-    - `initial :: Float64`       : the battery level at the start
+# Arguments
+- `demand  :: BevDemand{T,L}`: the demand
+- `initial :: Float64`       : the battery level at the start
 
-    # Returns
-    - The demand over time.
-    - The battery level at the last time.
+# Returns
+- The demand over time.
+- The battery level at the last time.
 """
 function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
     resolution = 1 / 60 / 60 / 100 # Resolve to the nearest millisecond.
@@ -160,8 +160,8 @@ end
 """
 The demand if charging takes place as late as possible.
 
-    # Arguments
-    - `demand :: BevDemand{T,L}`: the demand
+# Arguments
+- `demand :: BevDemand{T,L}`: the demand
 """
 function latestdemands(demand :: BevDemand{T,L}) :: LocatedDemand{T,L} where L where T <: TimeType
     if demand.timeboundary == nothing
@@ -176,13 +176,13 @@ end
 """
 The demand if charging takes place as late as possible.
 
-    # Arguments
-    - `demand :: BevDemand{T,L}`: the demand
-    - `final  :: Float64`       : the battery level at the start
+# Arguments
+- `demand :: BevDemand{T,L}`: the demand
+- `final  :: Float64`       : the battery level at the start
 
-    # Returns
-    - The demand over time.
-    - The battery level at the first time.
+# Returns
+- The demand over time.
+- The battery level at the first time.
 """
 function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
     resolution = 1 / 60 / 60 / 100 # Resolve to the nearest millisecond.
@@ -224,6 +224,37 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
         b
     )
 end
+
+
+"""
+Compute the discrepancy between the BEV constraints and the charging plan.
+
+# Arguments
+- `demand   :: BevDemand{T,L}`     : the BEV demand demand
+- `charging :: LocatedDemand{T,L}` : the charging plan
+
+# Returns
+- The shortfall of the charging plan's meeting of the demand demand.
+"""
+function shortfall(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}) :: Float64 where L where T <: TimeType
+    onehour = Time(1) - Time(0)
+    function durations(x)
+        xt = timestamp(x)
+        (xt[2:end] - xt[1:end-1]) / onehour
+    end
+    function rates(x)
+        xv = map(y -> y[end], values(x))
+        xv[1:end-1]
+    end
+    function levels(x)
+        durations(x) .* rates(x)
+    end
+    function total(x)
+        sum(levels(x))
+    end
+    total(demand.power) / demand.efficiency.in - total(charging)
+end
+
 
 """
 Function to populate an array of BevDemand structs. Receives location of ".mat" file as string input.

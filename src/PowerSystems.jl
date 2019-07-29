@@ -88,6 +88,7 @@ export demands
 export earliestdemands
 export envelope
 export latestdemands
+export shortfall
 export populate_BEV_demand
 
 export parsestandardfiles
