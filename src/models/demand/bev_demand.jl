@@ -297,22 +297,22 @@ end
 Verify charging limits.
 
 # Arguments
-- `demand   :: BevDemand{T,L}`     : the BEV demand demand
-- `charging :: LocatedDemand{T,L}` : the charging plan
+- `demand    :: BevDemand{T,L}`     : the BEV demand demand
+- `charging  :: LocatedDemand{T,L}` : the charging plan
+- `tolerance :: Float64`            : tolerance for testing limits
 
 # Returns
 - The shortfall of the charging plan's meeting of the demand demand.
 """
-function verifylimits(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}) :: Bool where L where T <: TimeType
+function verifylimits(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}; tolerance :: Float64 = 1e-5) :: Bool where L where T <: TimeType
     onehour = Time(1) - Time(0)
     eff = applyefficienciesinverse(demand)
     x = aligntimes(demand.locations, charging)
     xt = timestamp(x)
     xv = values(x[1:end-1])
-    durations = (xt[2:end] - xt[1:end-1]) / onehour
     powers = eff.(map(v -> v[2][2], xv))
     limits = map(v -> max(min(v[1][2].ac, demand.rate.ac.max), min(v[1][2].dc, demand.rate.dc.max)), xv)
-    all(powers .<= limits)
+    all(powers .<= limits .+ tolerance)
 end
 
 
