@@ -28,7 +28,7 @@ import TimeSeries
         file = CSV.File(filename)
         @test format == PowerSystems.get_timeseries_format(file)
 
-        data = PowerSystems.read_timeseries(filename, component_name)
+        data = PowerSystems.read_time_array(filename, component_name)
         @test data isa TimeSeries.TimeArray
     end
 end

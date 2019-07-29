@@ -112,7 +112,7 @@ end
 
 This version of the function only has component_name to match the interface. It is unused.
 """
-function read_timeseries(
+function read_time_array(
                          ::Type{T},
                          file::CSV.File,
                          component_name=nothing;
@@ -140,7 +140,7 @@ end
 """This version of the function supports the format where there is no column header for
 a component, so the component_name must be passed in.
 """
-function read_timeseries(
+function read_time_array(
                          ::Type{T},
                          file::CSV.File,
                          component_name::AbstractString;
@@ -181,17 +181,19 @@ function read_timeseries(
 end
 
 """This version of the function only has component_name to match the interface.
-It is unused.
+It is unused and shouldn't be passed.
 
 Set start_datetime as a keyword argument for the starting timestamp, otherwise the current
 day is used.
 """
-function read_timeseries(
+function read_time_array(
                          ::Type{T},
                          file::CSV.File,
                          component_name=nothing;
                          kwargs...
                         ) where T <: TimeseriesFormatComponentsAsColumnsNoTime
+    @assert isnothing(component_name)
+
     timestamps = Vector{Dates.DateTime}()
     step = get_step_time(T, file)
 

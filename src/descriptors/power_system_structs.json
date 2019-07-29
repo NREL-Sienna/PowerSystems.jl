@@ -1282,16 +1282,6 @@
         "comment": "timestamp - scalingfactor"
       },
       {
-        "name": "start_index",
-        "data_type": "Int",
-        "comment": "starting index of data for this forecast"
-      },
-      {
-        "name": "horizon",
-        "data_type": "Int",
-        "comment": "length of this forecast"
-      },
-      {
         "name": "internal",
         "data_type": "PowerSystems.PowerSystemInternal"
       }
@@ -1330,16 +1320,6 @@
         "name": "data",
         "data_type": "TimeSeries.TimeArray",
         "comment": "timestamp - scalingfactor"
-      },
-      {
-        "name": "start_index",
-        "data_type": "Int",
-        "comment": "starting index of data for this forecast"
-      },
-      {
-        "name": "horizon",
-        "data_type": "Int",
-        "comment": "length of this forecast"
       },
       {
         "name": "internal",
