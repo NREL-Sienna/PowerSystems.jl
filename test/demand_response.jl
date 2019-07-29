@@ -16,19 +16,22 @@ end
 
 function checkcharging(f)
     bevs = populate_BEV_demand(EVIPRO_DATA)
+    deltamax = 0
     i = 0
     for bev in bevs
         i += 1
         @test begin
             charging = f(bev)
             delta = shortfall(bev, charging)
+            deltamax = max(deltamax, abs(delta))
             result = abs(delta) <= 1
             if !result
-                @warn string("BEV ", i, " in '", EVIPRO_DATA, "' has charging discrepancy of ", delta, " kWh.")
+                @warn string("BEV ", i, " in '", EVIPRO_DATA, "' has charging shortfall of ", delta, " kWh.")
             end
             result
         end
     end
+    @info string("Maximum charging discrepancy: ", deltamax, " kWh.")
 end
 
 @testset "Earliest demands on EVIpro dataset" begin

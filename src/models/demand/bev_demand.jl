@@ -111,7 +111,7 @@ The demand if charging takes place as early as possible.
 
 # Arguments
 - `demand  :: BevDemand{T,L}`: the demand
-- `initial :: Float64`       : the battery level at the start
+- `initial :: Float64`       : the battery level at the first time
 
 # Returns
 - The demand over time.
@@ -132,8 +132,8 @@ function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{
     while ix <= length(x)
         tnext = (xt[ix] - tnow) / onehour
         ((_, (chargingac, chargingdc)), consumption) = xv[ix-1]
-        chargingac1 = min(b >= demand.capacity.max ? 0 : chargingac, demand.rate.ac.max)
-        chargingdc1 = min(b >= demand.capacity.max ? 0 : chargingdc, demand.rate.dc.max)
+        chargingac1 = min(b < demand.capacity.max ? chargingac : 0, demand.rate.ac.max)
+        chargingdc1 = min(b < demand.capacity.max ? chargingdc : 0, demand.rate.dc.max)
         charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
         tcrit = net > 0 ? (demand.capacity.max - b) / net : Inf
@@ -178,7 +178,7 @@ The demand if charging takes place as late as possible.
 
 # Arguments
 - `demand :: BevDemand{T,L}`: the demand
-- `final  :: Float64`       : the battery level at the start
+- `final  :: Float64`       : the battery level at the last time
 
 # Returns
 - The demand over time.
@@ -201,16 +201,16 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
     while ix >= 1
         tnext = (tnow - xt[ix]) / onehour
         ((_, (chargingac, chargingdc)), consumption) = xv[ix]
-        chargingac1 = min(b >= demand.capacity.max ? min(chargingac, consumption) : chargingac, demand.rate.ac.max)
-        chargingdc1 = min(b >= demand.capacity.max ? min(chargingdc, consumption) : chargingdc, demand.rate.dc.max)
+        chargingac1 = min(b > demand.capacity.min ? chargingac : 0, demand.rate.ac.max)
+        chargingdc1 = min(b > demand.capacity.min ? chargingdc : 0, demand.rate.dc.max)
         charging1 = max(chargingac1, chargingdc1)
         net = charging1 - consumption
-        tcrit = net > 0 ? (demand.capacity.max - b) / net : Inf
+        tcrit = net > 0 ? (b - demand.capacity.min) / net : Inf
         if resolution < tcrit < tnext
-            b = b + tcrit * net
+            b = b - tcrit * net
             tnow = addhours(tnow, - tcrit)
         else
-            b = b + tnext * net
+            b = b - tnext * net
             tnow = xt[ix]
             ix = ix - 1
         end
