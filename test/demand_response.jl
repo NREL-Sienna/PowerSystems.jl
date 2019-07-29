@@ -24,11 +24,15 @@ function checkcharging(f)
             charging = f(bev)
             delta = shortfall(bev, charging)
             deltamax = max(deltamax, abs(delta))
-            result = abs(delta) <= 1e-5
-            if !result
+            energyresult = abs(delta) <= 1e-5
+            if !energyresult
                 @warn string("BEV ", i, " in '", EVIPRO_DATA, "' has charging shortfall of ", delta, " kWh.")
             end
-            result
+            limitresult = verifylimits(bev, charging)
+            if !limitresult
+                @warn string("BEV ", i, " in '", EVIPRO_DATA, "' violates charging limits.")
+            end
+            energyresult && limitresult
         end
     end
     @debug string("Maximum charging discrepancy: ", deltamax, " kWh.")

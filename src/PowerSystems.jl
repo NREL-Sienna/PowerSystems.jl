@@ -89,6 +89,7 @@ export earliestdemands
 export envelope
 export latestdemands
 export shortfall
+export verifylimits
 export populate_BEV_demand
 
 export parsestandardfiles

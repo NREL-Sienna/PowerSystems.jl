@@ -81,7 +81,36 @@ Apply efficiency factors to relate energy at the vehicle to energy at the charge
 """
 function applyefficiencies(demand :: BevDemand{T,L}) where L where T <: TimeType
     function f(x)
-        x > 0 ? x / demand.efficiency.in : x * demand.efficiency.out
+        if x == 0
+            0
+        elseif x > 0
+            x / demand.efficiency.in
+        else
+            x * demand.efficiency.out
+        end
+    end
+    f
+end
+
+
+"""
+Apply efficiency factors to relate energy at the vehicle to energy at the charger.
+
+# Arguments
+- `demand :: BevDemand{T,L}`: the demand
+
+# Returns
+- a function that converts energy at the charger to energy at the vehicle
+"""
+function applyefficienciesinverse(demand :: BevDemand{T,L}) where L where T <: TimeType
+    function f(x)
+        if x == 0
+            0
+        elseif x > 0
+            x * demand.efficiency.in
+        else
+            x / demand.efficiency.out
+        end
     end
     f
 end
@@ -261,6 +290,29 @@ function shortfall(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}) :: 
         sum(levels(x))
     end
     total(demand.power) / demand.efficiency.in - total(charging)
+end
+
+
+"""
+Verify charging limits.
+
+# Arguments
+- `demand   :: BevDemand{T,L}`     : the BEV demand demand
+- `charging :: LocatedDemand{T,L}` : the charging plan
+
+# Returns
+- The shortfall of the charging plan's meeting of the demand demand.
+"""
+function verifylimits(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}) :: Bool where L where T <: TimeType
+    onehour = Time(1) - Time(0)
+    eff = applyefficienciesinverse(demand)
+    x = aligntimes(demand.locations, charging)
+    xt = timestamp(x)
+    xv = values(x[1:end-1])
+    durations = (xt[2:end] - xt[1:end-1]) / onehour
+    powers = eff.(map(v -> v[2][2], xv))
+    limits = map(v -> max(min(v[1][2].ac, demand.rate.ac.max), min(v[1][2].dc, demand.rate.dc.max)), xv)
+    all(powers .<= limits)
 end
 
 
