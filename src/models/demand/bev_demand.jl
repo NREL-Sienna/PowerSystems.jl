@@ -118,7 +118,7 @@ The demand if charging takes place as early as possible.
 - The battery level at the last time.
 """
 function earliestdemands(demand :: BevDemand{T,L}, initial :: Float64) :: Tuple{LocatedDemand{T,L},Float64} where L where T <: TimeType
-    resolution = 1 / 60 / 60 / 100 # Resolve to the nearest millisecond.
+    resolution = 0 * 1 / 60 / 60 / 100 # Works fine at highest resolution.
     eff = applyefficiencies(demand)
     onehour = Time(1) - Time(0)
     x = aligntimes(demand.locations, demand.power)
