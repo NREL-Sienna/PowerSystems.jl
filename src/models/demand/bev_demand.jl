@@ -423,7 +423,7 @@ function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,St
     workaround1 = true
     workaround2 = true
 
-    for i in range(1,num_el)
+    for i in range(1,stop=num_el)
         # Populating locations
         dim = size(full_data["locations"][i]["bus_id"])
         num = max(dim[1],dim[2])
@@ -433,7 +433,7 @@ function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,St
 
         loc_tuples = Array{Tuple{String,NamedTuple{(:ac, :dc),Tuple{Float64,Float64}}}}(undef,num)
         if workaround2
-            for j in range(1,num)
+            for j in range(1,stop=num)
                 loc = string("bus id #",full_data["locations"][i]["bus_id"][j])
                 a_ch = parse(Float64, string(full_data["locations"][i]["max_ac_charging_rate"][j]))
                 d_ch = parse(Float64, string(full_data["locations"][i]["max_dc_charging_rate"][j]))
@@ -450,16 +450,16 @@ function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,St
         num = max(dim[1],dim[2])
 
         temp_time_loc = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in
-                range(1,num)]
-        time_stamp_loc = [Time(temp_time_loc[j][1],temp_time_loc[j][2]) for j in range(1,num)]
+                range(1,stop=num)]
+        time_stamp_loc = [Time(temp_time_loc[j][1],temp_time_loc[j][2]) for j in range(1,stop=num)]
         locations = TimeArray(time_stamp_loc, loc_tuples)
         
         #Processing the data for consumption
         dim = size(full_data["consumptions"][1]["time_stamp"])
         num = max(dim[1],dim[2])
         temp_time = [fldmod(Int(ceil(full_data["consumptions"][i]["time_stamp"][j]*24*60)),60) for j in
-                range(1,num)]
-        time_stamp = [Time(temp_time[j][1],temp_time[j][2]) for j in range(1,num)]
+                range(1,stop=num)]
+        time_stamp = [Time(temp_time[j][1],temp_time[j][2]) for j in range(1,stop=num)]
         cons_val = [full_data["consumptions"][i]["consumptions_rates"][k] for k in (1:num)]
         consumptions = TimeArray(time_stamp,cons_val)
         
