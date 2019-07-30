@@ -267,6 +267,43 @@ end
 
 
 """
+Check the validity of a charging plan.
+
+# Arguments
+- `demand    :: BevDemand{T,L}`        : the BEV demand demand
+- `charging  :: LocatedDemand{T,L}`    : the charging plan
+- `tolerance :: Float64`               : tolerance for testing limits
+- `message   :: Union{String,Nothing}` : the prefix of the warning messages, or `nothing` if no messages are to be logged
+
+# Returns
+- whether charging does not differ from consumption
+- whether charging rates do not exceed limits
+- whether battery levels do not exceed limits
+"""
+function verify(demand :: BevDemand{T,L}, charging :: LocatedDemand{T,L}; tolerance :: Float64 = 1e-5, message :: Union{String,Nothing} = nothing) :: NamedTuple{(:balance, :rates, :battery),Tuple{Bool,Bool,Bool}} where L where T <: TimeType
+    verbose = !isnothing(message)
+    the_shortfall = shortfall(demand, charging)
+    check_shortfall = abs(the_shortfall) <= tolerance
+    if verbose && !check_shortfall
+        @warn string(message, " has charging shortfall of ", the_shortfall, " kWh.")
+    end
+    check_rates     = verifylimits(demand, charging, tolerance=tolerance)
+    if verbose && !check_rates
+        @warn string(message, " violates charging limits.")
+    end
+    check_battery   = verifybattery(demand, charging, tolerance=tolerance)
+    if verbose && !check_battery
+        @warn string(message, " violates battery limits.")
+    end
+    (
+        balance = check_shortfall,
+        rates   = check_rates    ,
+        battery = check_battery  ,
+    )
+end
+
+
+"""
 Compute the discrepancy between the BEV constraints and the charging plan.
 
 # Arguments

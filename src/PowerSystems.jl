@@ -88,6 +88,7 @@ export demands
 export earliestdemands
 export envelope
 export latestdemands
+export verify
 export shortfall
 export verifylimits
 export chargelevels
