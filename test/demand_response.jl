@@ -7,11 +7,21 @@ using TimeSeries
 
 const EVIPRO_DATA = abspath(joinpath(dirname(Base.find_package("PowerSystems")), "..", "data", "evi-pro", "FlexibleDemand_1000.mat"))
 
+macro trytotest(f)
+    if isfile(EVIPRO_DATA)
+        f
+    else
+        @warn string("Demand-response tests not run because file '", EVIPRO_DATA, "' is missing.")
+    end
+end
+
 
 @testset "Reading EVIpro dataset" begin
-    @test begin
-       bevs = populate_BEV_demand(EVIPRO_DATA)
-       length(bevs) == 1000
+    @trytotest begin
+        @test begin
+           bevs = populate_BEV_demand(EVIPRO_DATA)
+           length(bevs) == 1000
+        end
     end
 end
 
@@ -25,39 +35,28 @@ end
 
 function checkcharging(f)
     bevs = populate_BEV_demand(EVIPRO_DATA)
-    deltamax = 0
     i = 0
     for bev in bevs
         i += 1
         bev = augment(bev)
         @test begin
             charging = f(bev)
-            delta = shortfall(bev, charging)
-            deltamax = max(deltamax, abs(delta))
-            energyresult = abs(delta) <= 1e-5
-            if !energyresult
-                @warn string("BEV ", i, " in '", EVIPRO_DATA, "' has charging shortfall of ", delta, " kWh.")
-            end
-            limitresult = verifylimits(bev, charging)
-            if !limitresult
-                @warn string("BEV ", i, " in '", EVIPRO_DATA, "' violates charging limits.")
-            end
-            batteryresult = verifybattery(bev, charging)
-            batteryresult |= bev.capacity.max < 30. # FIXME: Exclude vehicles with small batteries.
-            if !batteryresult
-                @warn string("BEV ", i, " in '", EVIPRO_DATA, "' violates battery limits.")
-            end
-            energyresult && limitresult && batteryresult
+            (balance, rates, battery) = verify(bev, charging, message=string("BEV ", i, " in '", EVIPRO_DATA, "'"))
+            battery |= bev.capacity.max < 30. # FIXME: Exclude vehicles with small batteries.
+            balance && rates && battery
         end
     end
-    @debug string("Maximum charging discrepancy: ", deltamax, " kWh.")
 end
 
 
 @testset "Earliest demands on EVIpro dataset" begin
-    checkcharging(earliestdemands)
+    @trytotest begin
+        checkcharging(earliestdemands)
+    end
 end
 
 @testset "Latest demands on EVIpro dataset" begin
-    checkcharging(latestdemands)
+    @trytotest begin
+        checkcharging(latestdemands)
+    end
 end
