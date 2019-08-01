@@ -76,7 +76,7 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
     tap =  (get_tap(b) * exp(get_α(b) * 1im))
     c_tap =  (get_tap(b) * exp(-1*get_α(b) * 1im))
-    
+
     Y11 = (Y_t/abs(tap)^2);
     ybus[num_bus[get_arch(b) |> get_from |> get_number],
         num_bus[get_arch(b) |> get_from |> get_number]] += Y11;
@@ -113,7 +113,7 @@ function _buildybus(branches, nodes)
 
     end
 
-    return  ybus
+    return ybus
 
 end
 
@@ -132,7 +132,7 @@ end
 
 function Ybus(sys::System)
     branches = get_components(ACBranch, sys)
-    nodes = get_components(Bus, sys)
+    nodes = sort(collect(get_components(Bus, sys)); by = x -> x.number)
 
     return Ybus(branches, nodes)
 
