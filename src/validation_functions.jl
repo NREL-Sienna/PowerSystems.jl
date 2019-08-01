@@ -6,7 +6,7 @@ struct ValidationInfo
     limits::NamedTuple{(:min, :max), Tuple{Union{Nothing, Float64}, Union{Nothing, Float64}}}
 end
 
-#Get validation info for one struct
+#Get validation info for one struct.
 function get_config_descriptor(config::Vector, name::AbstractString)
     for item in config
         if item["struct_name"] == name
@@ -16,7 +16,7 @@ function get_config_descriptor(config::Vector, name::AbstractString)
     error("PowerSystems struct $name does not exist in validation configuration file")
 end
 
-#Get validation info for one field of one struct
+#Get validation info for one field of one struct.
 function get_field_descriptor(struct_descriptor::Dict, fieldname::AbstractString)
     for field in struct_descriptor["fields"]
         if field["name"] == fieldname
@@ -32,7 +32,7 @@ function validate_fields(sys::System, ps_struct::T) where T <: PowerSystemType
 
     for (name,fieldtype) in zip(fieldnames(T), fieldtypes(T))
         field_value = getfield(ps_struct, name)
-        if isnothing(field_value) #many structs are of type Union{Nothing, xxx}
+        if isnothing(field_value) #Many structs are of type Union{Nothing, xxx}.
             ;
         elseif fieldtype <: Union{Nothing, PowerSystemType} && !(fieldtype <: Component)
             # Recurse. Components are validated separately and do not need to be validated twice.
@@ -57,21 +57,19 @@ function validate_fields(sys::System, ps_struct::T) where T <: PowerSystemType
 end
 
 function get_limits(valid_range::String, ps_struct::PowerSystemType)
+    #Gets min and max values from activepowerlimits for activepower, etc.
     limits = getfield(ps_struct, Symbol(valid_range))
     return limits
 end
 
 function get_limits(valid_range::Dict, unused::PowerSystemType)
+    #Gets min and max value defined for a field, e.g. "valid_range": {"min":-1.571, "max":1.571}.
     limits = (min = valid_range["min"], max = valid_range["max"])
     return limits
 end
 
-function validate_range(::Dict, valid_info::ValidationInfo, field_value)
-    return check_limits(valid_info.field_type, valid_info, field_value)
-end
-
 function validate_range(::String, valid_info::ValidationInfo, field_value)
-    #validates activepower against activepowerlimits, etc.
+    #Validates activepower against activepowerlimits, etc.
     is_valid = true
     if !isnothing(valid_info.limits)
         is_valid = check_limits_impl(valid_info, field_value)
@@ -79,13 +77,17 @@ function validate_range(::String, valid_info::ValidationInfo, field_value)
     return is_valid
 end
 
+function validate_range(::Dict, valid_info::ValidationInfo, field_value)
+    return check_limits(valid_info.field_type, valid_info, field_value)
+end
+
 function check_limits(::Type{T}, valid_info::ValidationInfo, field_value) where T <: Union{Nothing, Float64}
-    #validates numbers
+    #Validates numbers.
     return check_limits_impl(valid_info, field_value)
 end
 
 function check_limits(::Type{T}, valid_info::ValidationInfo, field_value) where T <: Union{Nothing, NamedTuple}
-    #validates up/down, min/max, from/to named tuples
+    #Validates up/down, min/max, from/to named tuples.
     @assert length(field_value) == 2
     result1 = check_limits_impl(valid_info, field_value[1])
     result2 = check_limits_impl(valid_info, field_value[2])
@@ -128,7 +130,7 @@ function validation_error!(valid_info::ValidationInfo, field_value)
     return false
 end
 
-#could be called from PowerSimulations
+#Could be called from PowerSimulations.
 function validate_system(sys::System)
     error_detected = false
     for component in iterate_components(sys)
