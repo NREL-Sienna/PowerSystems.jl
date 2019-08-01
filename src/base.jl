@@ -95,7 +95,9 @@ function System(buses::Vector{Bus},
     error_detected = false
 
     for component in Iterators.flatten(arrays)
-        if add_component!(sys, component)
+        try
+            add_component!(sys, component)
+        catch
             error_detected = true
         end
     end
@@ -103,7 +105,9 @@ function System(buses::Vector{Bus},
     load_zones = isnothing(annex) ? nothing : get(annex, :LoadZones, nothing)
     if !isnothing(load_zones)
         for lz in load_zones
-            if add_component!(sys, lz)
+            try
+                add_component!(sys, lz)
+            catch
                 error_detected = true
             end
         end
@@ -299,14 +303,13 @@ function add_component!(sys::System, component::T) where T <: Component
         throw(InvalidParameter("$(component.name) is already stored for type $T"))
     end
 
-    error_detected = false
-
     if !isempty(sys.validation_descriptor)
-        error_detected = validate_fields(sys, component)
+        if !validate_fields(sys, component)
+            error("Invalid value")
+        end
     end
 
     sys.components[T][component.name] = component
-    return error_detected
 end
 
 """
