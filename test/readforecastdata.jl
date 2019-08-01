@@ -175,6 +175,22 @@ end
     @test_throws(PSY.InvalidParameter,
                  PSY.make_forecasts(forecast, interval, 25))
 
+    forecasts = get_forecasts(Deterministic, sys, compare_initial_time)
+    forecasts_ = make_forecasts(forecasts, Hour(12), 12)
+    @test length(forecasts_) == 424
+
+    remove_all_forecasts!(sys, Deterministic)
+    forecasts = get_forecasts(Deterministic, sys, compare_initial_time)
+    @test length(forecasts) == 0
+
+    add_forecasts!(sys, forecasts_)
+    forecasts = get_forecasts(Deterministic, sys, compare_initial_time)
+    @test length(forecasts) == 212
+
+    split_forecasts!(sys, forecasts, Hour(6), 12)
+    forecasts = get_forecasts(Deterministic, sys, compare_initial_time)
+    @test length(forecasts) == 212
+
     # TODO: need to cover serialization.
 end
 
