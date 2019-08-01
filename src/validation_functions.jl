@@ -1,11 +1,9 @@
-mutable struct validation_info
-    field_descriptor::Union{Nothing, Dict}
+struct ValidationInfo
+    field_descriptor::Dict
     struct_name::AbstractString
-    validation_action::Union{Nothing, Bool}
-    component::PowerSystemType
+    ps_struct::PowerSystemType
     field_type::Any
-    valid_min::Union{Nothing, Float64}
-    valid_max::Union{Nothing, Float64}
+    limits::NamedTuple{(:min, :max), Tuple{Union{Nothing, Float64}, Union{Nothing, Float64}}}
 end
 
 #Get validation info for one struct
@@ -28,69 +26,80 @@ function get_field_descriptor(struct_descriptor::Dict, fieldname::AbstractString
     error("field $fieldname does not exist in $(struct_descriptor["name"])")
 end
 
-function validate_fields(sys::System, component::T) where T <: PowerSystemType
+function validate_fields(sys::System, ps_struct::T) where T <: PowerSystemType
     struct_descriptor = get_config_descriptor(sys.validation_descriptor, repr(T))
-    valid_info = validation_info(nothing, struct_descriptor["struct_name"], false,
-                                           component, nothing, nothing, nothing)
-    for (name,fieldtype) in zip(fieldnames(T), fieldtypes(T))
-        field_value = getfield(component, name)
-        valid_info.field_type = fieldtype
+    is_valid = true
 
-        if field_value == nothing
-            continue
-        end
-        if fieldtype <: Union{Nothing, PowerSystemType} && !(fieldtype <: Component)
-            error_detected = validate_fields(sys, getfield(component, name))
-            if error_detected
-                valid_info.validation_action = true
+    for (name,fieldtype) in zip(fieldnames(T), fieldtypes(T))
+        field_value = getfield(ps_struct, name)
+        if isnothing(field_value) #many structs are of type Union{Nothing, xxx}
+            ;
+        elseif fieldtype <: Union{Nothing, PowerSystemType} && !(fieldtype <: Component)
+            # Recurse. Components are validated separately and do not need to be validated twice.
+            if !validate_fields(sys, getfield(ps_struct, name))
+                is_valid = false
             end
         else
             field_descriptor = get_field_descriptor(struct_descriptor, string(name))
-            valid_info.field_descriptor = field_descriptor
-            validate_num_value(valid_info, field_value)
+            if !haskey(field_descriptor, "valid_range")
+                continue
+            end
+            valid_range = field_descriptor["valid_range"]
+            limits = get_limits(valid_range, ps_struct)
+            valid_info = ValidationInfo(field_descriptor, struct_descriptor["struct_name"],
+                                                              ps_struct, fieldtype, limits)
+            if !validate_range(valid_range, valid_info, field_value)
+                is_valid = false
+            end
         end
     end
-    return valid_info.validation_action
+    return is_valid
 end
 
-function validate_num_value(valid_info::validation_info, field_value)
-    if haskey(valid_info.field_descriptor, "valid_range")
-        if valid_info.field_descriptor["valid_range"] isa String
-            validate_custom_range!(valid_info, field_value)
-        else
-            validate_standard_range!(valid_info, field_value)
-        end
+function get_limits(valid_range::String, ps_struct::PowerSystemType)
+    limits = getfield(ps_struct, Symbol(valid_range))
+    return limits
+end
+
+function get_limits(valid_range::Dict, unused::PowerSystemType)
+    limits = (min = valid_range["min"], max = valid_range["max"])
+    return limits
+end
+
+function validate_range(::Dict, valid_info::ValidationInfo, field_value)
+    return check_limits(valid_info.field_type, valid_info, field_value)
+end
+
+function validate_range(::String, valid_info::ValidationInfo, field_value)
+    #validates activepower against activepowerlimits, etc.
+    is_valid = true
+    if !isnothing(valid_info.limits)
+        is_valid = check_limits_impl(valid_info, field_value)
     end
+    return is_valid
 end
 
-#validates activepower against activepowerlimits, etc.
-function validate_custom_range!(valid_info::validation_info, field_value)
-    limits = getfield(valid_info.component, Symbol(valid_info.field_descriptor["valid_range"]))
-    if !isnothing(limits)
-        valid_info.valid_min = limits.min
-        valid_info.valid_max = limits.max
-        check_limits(valid_info, field_value)
-    end
+function check_limits(::Type{T}, valid_info::ValidationInfo, field_value) where T <: Union{Nothing, Float64}
+    #validates numbers
+    return check_limits_impl(valid_info, field_value)
 end
 
-function validate_standard_range!(valid_info::validation_info, field_value)
-    valid_info.valid_min = valid_info.field_descriptor["valid_range"]["min"]
-    valid_info.valid_max = valid_info.field_descriptor["valid_range"]["max"]
-    if valid_info.field_type <: Union{Nothing, NamedTuple}
-        check_limits(valid_info, field_value[1])
-        check_limits(valid_info, field_value[2])
-    else
-        check_limits(valid_info, field_value)
-    end
+function check_limits(::Type{T}, valid_info::ValidationInfo, field_value) where T <: Union{Nothing, NamedTuple}
+    #validates up/down, min/max, from/to named tuples
+    @assert length(field_value) == 2
+    result1 = check_limits_impl(valid_info, field_value[1])
+    result2 = check_limits_impl(valid_info, field_value[2])
+    return result1 && result2
 end
 
-function check_limits(valid_info::validation_info, field_value)
+function check_limits_impl(valid_info::ValidationInfo, field_value)
+    is_valid = true
     action_function = get_validation_action(valid_info.field_descriptor)
-    if !isnothing(valid_info.valid_min) && field_value < valid_info.valid_min
-        action_function(valid_info, field_value)
-    elseif !isnothing(valid_info.valid_max) && field_value > valid_info.valid_max
-        action_function(valid_info, field_value)
+    if !isnothing(valid_info.limits.min) && field_value < valid_info.limits.min ||
+        !isnothing(valid_info.limits.max) && field_value > valid_info.limits.max
+        is_valid = action_function(valid_info, field_value)
     end
+    return is_valid
 end
 
 function get_validation_action(field_descriptor::Dict)
@@ -105,17 +114,18 @@ function get_validation_action(field_descriptor::Dict)
     return action_function
 end
 
-function validation_warning(valid_info::validation_info, field_value)
+function validation_warning(valid_info::ValidationInfo, field_value)
     valid_range = valid_info.field_descriptor["valid_range"]
     field_name = valid_info.field_descriptor["name"]
     @warn "Invalid range" valid_info.struct_name field_name field_value valid_range
+    return true
 end
 
-function validation_error!(valid_info::validation_info, field_value)
+function validation_error!(valid_info::ValidationInfo, field_value)
     valid_range = valid_info.field_descriptor["valid_range"]
     field_name = valid_info.field_descriptor["name"]
     @error "Invalid range" valid_info.struct_name field_name field_value valid_range
-    valid_info.validation_action = true
+    return false
 end
 
 #could be called from PowerSimulations
