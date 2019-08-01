@@ -10,7 +10,7 @@ include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
 @testset "Test reading in YAML data" begin
     data = PowerSystems.read_validation_descriptor(VALID_CONFIG_FILE)
     @test data isa Vector
-    @test isempty(data) == false
+    @test !isempty(data)
     function find_struct()
         for item in data
             if item["struct_name"] == "TechThermal"
@@ -33,14 +33,16 @@ end
 end
 
 @testset "Test extracting struct info from validation_descriptor vector" begin
-    data =  [Dict("fields"=>Dict{Any,Any}[Dict("name"=>"curtailpenalty","valid_range"=>
-            Dict{Any,Any}("max"=>nothing,"min"=>0.0)), Dict("name"=>"variablecost",
-            "valid_range"=>Dict{Any,Any}("max"=>nothing,"min"=>0.0)),
-            Dict("name"=>"internal")],"struct_name"=>"EconHydro"),
-            Dict("fields"=>Dict{Any,Any}[Dict("name"=>"curtailpenalty","valid_range"=>
-            Dict{Any,Any}("max"=>nothing,"min"=>0.0)), Dict("name"=>"variablecost",
-            "valid_range"=>Dict{Any,Any}("max"=>nothing,"min"=>0.0)),
-            Dict("name"=>"internal")],"struct_name"=>"EconLoad")]
+    data = [Dict("fields"=>Dict{Any,Any}
+           [Dict("name"=>"curtailpenalty","valid_range"=>Dict{Any,Any}("max"=>nothing,"min"=>0.0)),
+           Dict("name"=>"variablecost","valid_range"=>Dict{Any,Any}("max"=>nothing,"min"=>0.0)),
+           Dict("name"=>"internal")],
+           "struct_name"=>"EconHydro"),
+           Dict("fields"=>Dict{Any,Any}
+           [Dict("name"=>"curtailpenalty","valid_range"=>Dict{Any,Any}("max"=>nothing,"min"=>0.0)),
+           Dict("name"=>"variablecost",valid_range"=>Dict{Any,Any}("max"=>nothing,"min"=>0.0)),
+           Dict("name"=>"internal")],
+           "struct_name"=>"EconLoad")]
     struct_name = "EconHydro"
     descriptor = PowerSystems.get_config_descriptor(data, struct_name)
     @test descriptor isa Dict{String,Any}

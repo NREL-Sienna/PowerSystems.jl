@@ -15,7 +15,7 @@ function get_config_descriptor(config::Vector, name::AbstractString)
             return item
         end
     end
-    error("component $name does not exist in validation configuration file")
+    error("PowerSystems struct $name does not exist in validation configuration file")
 end
 
 #Get validation info for one field of one struct

@@ -46,14 +46,9 @@ struct System <: PowerSystemType
     function System(components, forecasts, basepower, internal; kwargs...)
         configpath = get(kwargs, :configpath, VALID_CONFIG_FILE)
         runchecks = get(kwargs, :runchecks, true)
-        if runchecks
-            validation_descriptor = read_validation_descriptor(configpath)
-            sys = new(components, forecasts, basepower, internal, validation_descriptor)
-        else
-            sys = new(components, forecasts, basepower, internal, Vector())
-        end
+        validation_descriptor = runchecks ? read_validation_descriptor(configpath) : Vector()
+        sys = new(components, forecasts, basepower, internal, validation_descriptor)
     end
-
 end
 
 """Construct an empty System. Useful for building a System while parsing raw data."""
@@ -123,7 +118,7 @@ function System(buses::Vector{Bus},
     runchecks = get(kwargs, :runchecks, true)
 
     if error_detected
-        error("Invalid range detected")
+        error("Invalid value(s) detected")
     end
 
     if runchecks
@@ -788,7 +783,7 @@ end
 
 function read_validation_descriptor(filename::AbstractString)
     if !occursin(r"(\.yaml)|(\.yml)"i, filename)
-        error("Must enter a path to YAML file for configpath kwarg in System struct")
+        error("Filename is not a YAML file.")
     end
     data = open(filename) do file
         YAML.load(file)
