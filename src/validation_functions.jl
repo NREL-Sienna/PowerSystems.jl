@@ -117,14 +117,14 @@ end
 function validation_warning(valid_info::ValidationInfo, field_value)
     valid_range = valid_info.field_descriptor["valid_range"]
     field_name = valid_info.field_descriptor["name"]
-    @warn "Invalid range" valid_info.struct_name field_name field_value valid_range
+    @warn "Invalid range" valid_info.struct_name field_name field_value valid_range valid_info.ps_struct
     return true
 end
 
 function validation_error!(valid_info::ValidationInfo, field_value)
     valid_range = valid_info.field_descriptor["valid_range"]
     field_name = valid_info.field_descriptor["name"]
-    @error "Invalid range" valid_info.struct_name field_name field_value valid_range
+    @error "Invalid range" valid_info.struct_name field_name field_value valid_range valid_info.ps_struct
     return false
 end
 
