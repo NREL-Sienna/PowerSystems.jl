@@ -293,3 +293,42 @@ function parse_json(filename,device_names)
     return Devices
 end
 =#
+
+"""
+    remove_all_forecasts(sys::System, T::Type{T})::Vector{T} where T <: Forecast
+
+Remove all forecast objects of concrete type T from a System
+"""
+function remove_all_forecasts!(sys::System, ForecastType::Type{T})where T <: Forecast
+
+    ts = get_forecast_initial_times(sys)
+
+    for t in ts
+        f = get_forecasts(ForecastType, sys, t)
+        foreach(x -> remove_forecast!(sys,x),f)
+    end
+
+end
+
+"""
+    split_forecasts!(sys::System, 
+                    forecast::FlattenIteratorWrapper{T}, 
+                    interval::Dates.Period, 
+                    horizon::Int) where T <: Forecast
+
+Replaces system forecasts with ke a vector of forecasts by incrementing through a forecast 
+by interval and horizon.
+
+"""
+function split_forecasts!(sys::System, 
+                            forecast::FlattenIteratorWrapper{T}, 
+                            interval::Dates.Period, 
+                            horizon::Int) where T <: Forecast
+
+    forecasts = make_forecasts(forecast, interval, horizon)
+
+    remove_all_forecasts!(sys, T)
+
+    add_forecasts!(sys,forecasts)
+
+end
