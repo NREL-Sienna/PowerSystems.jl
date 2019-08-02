@@ -97,8 +97,12 @@ function System(buses::Vector{Bus},
     for component in Iterators.flatten(arrays)
         try
             add_component!(sys, component)
-        catch
-            error_detected = true
+        catch e
+            if isa(e, ErrorException)
+                error_detected = true
+            else
+                rethrow()
+            end
         end
     end
 
@@ -107,8 +111,12 @@ function System(buses::Vector{Bus},
         for lz in load_zones
             try
                 add_component!(sys, lz)
-            catch
-                error_detected = true
+            catch e
+                if isa(e, ErrorException)
+                    error_detected = true
+                else
+                    rethrow()
+                end
             end
         end
     end
