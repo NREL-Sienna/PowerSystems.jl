@@ -297,6 +297,8 @@ end
 Add a component to the system.
 
 Throws InvalidParameter if the component's name is already stored for its concrete type.
+
+Throws InvalidRange if any of the component's field values are outside of defined valid range.
 """
 function add_component!(sys::System, component::T) where T <: Component
     if !isconcretetype(T)
