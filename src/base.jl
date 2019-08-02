@@ -125,8 +125,6 @@ function System(buses::Vector{Bus},
         @debug "components: $(string(key)): count=$(string(length(value)))"
     end
 
-    configpath = get(kwargs, :configpath, VALID_CONFIG_FILE)
-
     runchecks = get(kwargs, :runchecks, true)
 
     if error_detected
