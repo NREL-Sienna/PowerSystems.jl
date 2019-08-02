@@ -7,8 +7,8 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     name::String
     available::Bool
     arch::Arch
-    r::Float64  # Per unit value
-    x::Float64  # Per unit value
+    r::Float64  # System per-unit value
+    x::Float64  # System per-unit value
     primaryshunt::Float64
     tap::Float64
     α::Float64

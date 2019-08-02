@@ -7,9 +7,9 @@ mutable struct Transformer2W <: ACBranch
     name::String
     available::Bool
     arch::Arch
-    r::Float64  # Per unit value
-    x::Float64  # Per unit value
-    primaryshunt::Float64  # Per unit value
+    r::Float64  # System per-unit value
+    x::Float64  # System per-unit value
+    primaryshunt::Float64  # System per-unit value
     rate::Union{Nothing, Float64}
     internal::PowerSystems.PowerSystemInternal
 end

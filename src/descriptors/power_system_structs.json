@@ -309,7 +309,7 @@
         "null_value": "0.0",
         "name": "r",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -317,7 +317,7 @@
         "null_value": "0.0",
         "name": "x",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -325,7 +325,7 @@
         "name": "b",
         "null_value": "(from=0.0, to=0.0)",
         "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -370,7 +370,7 @@
         "null_value": "0.0",
         "name": "r",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -378,7 +378,7 @@
         "null_value": "0.0",
         "name": "x",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -386,7 +386,7 @@
         "null_value": "(from=0.0, to=0.0)",
         "name": "b",
         "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -438,7 +438,7 @@
         "null_value": "0.0",
         "name": "r",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -446,7 +446,7 @@
         "null_value": "0.0",
         "name": "x",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -454,7 +454,7 @@
         "name": "primaryshunt",
         "null_value": "0.0",
         "data_type": "Float64",
-        "Comment": "Per unit value",
+        "Comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -508,7 +508,7 @@
         "null_value": "0.0",
         "name": "r",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -516,7 +516,7 @@
         "null_value": "0.0",
         "name": "x",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -524,7 +524,7 @@
         "name": "primaryshunt",
         "null_value": "0.0",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -572,7 +572,7 @@
         "null_value": "0.0",
         "name": "r",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -580,7 +580,7 @@
         "null_value": "0.0",
         "name": "x",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
@@ -588,7 +588,7 @@
         "name": "primaryshunt",
         "null_value": "0.0",
         "data_type": "Float64",
-        "comment": "Per unit value",
+        "comment": "System per-unit value",
         "valid_range": {"min":0.0, "max":2.0},
         "validation_action": "error"
       },
