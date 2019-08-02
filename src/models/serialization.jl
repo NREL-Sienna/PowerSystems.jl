@@ -40,7 +40,6 @@ function JSON2.read(io::IO, ::Type{T}) where {T <: TimeSeries.TimeArray}
     colnames = [Symbol(x) for x in data.colnames]
     dim2 = length(colnames)
     dim1 = Int(length(data.values) / dim2)
-    meta = data.meta
 
     for i in eachindex(data.values)
         data.values[i] = Float64(data.values[i])
@@ -52,7 +51,7 @@ function JSON2.read(io::IO, ::Type{T}) where {T <: TimeSeries.TimeArray}
         vals = data.values
     end
 
-    return TimeSeries.TimeArray(timestamp, vals, colnames, meta)
+    return TimeSeries.TimeArray(timestamp, vals, colnames)
 end
 
 """Enables JSON deserialization of Dates.Period.
@@ -153,10 +152,14 @@ function JSON2.write(forecast::Forecast)
 end
 
 function encode_for_json(forecast::T) where T <: Forecast
-    fields = fieldnames(T)
+    fields = Tuple(x for x in fieldnames(T) if x != :data)
     vals = []
 
     for name in fields
+        if name == :data
+            # The timeseries is stored within SystemForecasts.
+            continue
+        end
         val = getfield(forecast, name)
         if val isa Component
             push!(vals, get_uuid(val))
@@ -177,12 +180,19 @@ function convert_type(
                       data::NamedTuple,
                       components::LazyDictFromIterator,
                       parameter_types::Vector{DataType},
+                      timeseries::TimeSeries.TimeArray,
                      ) where T <: Forecast
     @debug T data
     values = []
     component_type = nothing
 
     for (fieldname, fieldtype)  in zip(fieldnames(T), fieldtypes(T))
+        if fieldname == :data
+            # Timeseries data was recorded in SystemForecasts and not here.
+            push!(values, timeseries)
+            continue
+        end
+
         val = getfield(data, fieldname)
         if fieldtype <: Component
             uuid = Base.UUID(val.value)
