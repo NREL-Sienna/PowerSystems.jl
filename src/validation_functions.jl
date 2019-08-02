@@ -133,7 +133,11 @@ function validation_error(valid_info::ValidationInfo, field_value)
     return false
 end
 
-#Could be called from PowerSimulations.
+"""
+    validate_system(sys::System)
+
+Iterates over all components and throws InvalidRange if any of the component's field values are outside of defined valid range.
+"""
 function validate_system(sys::System)
     error_detected = false
     for component in iterate_components(sys)
