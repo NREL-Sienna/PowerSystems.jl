@@ -109,7 +109,7 @@ function get_validation_action(field_descriptor::Dict)
     if action == "warn"
         action_function = validation_warning
     elseif action == "error"
-        action_function = validation_error!
+        action_function = validation_error
     else
         error("Invalid validation action $action")
     end
@@ -123,7 +123,7 @@ function validation_warning(valid_info::ValidationInfo, field_value)
     return true
 end
 
-function validation_error!(valid_info::ValidationInfo, field_value)
+function validation_error(valid_info::ValidationInfo, field_value)
     valid_range = valid_info.field_descriptor["valid_range"]
     field_name = valid_info.field_descriptor["name"]
     @error "Invalid range" valid_info.struct_name field_name field_value valid_range valid_info.ps_struct

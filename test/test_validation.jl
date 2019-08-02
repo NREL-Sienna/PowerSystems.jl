@@ -79,7 +79,7 @@ end
                         "valid_range"=>Dict{Any,Any}("max"=>5,"min"=>0),
                         "validation_action"=>"asdfasdfsd")
     @test PowerSystems.get_validation_action(warn_descriptor) == PowerSystems.validation_warning
-    @test PowerSystems.get_validation_action(error_descriptor) == PowerSystems.validation_error!
+    @test PowerSystems.get_validation_action(error_descriptor) == PowerSystems.validation_error
     @test_throws(ErrorException, PowerSystems.get_validation_action(typo_descriptor))
 end
 
