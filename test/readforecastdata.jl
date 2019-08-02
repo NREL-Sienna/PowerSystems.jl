@@ -174,22 +174,29 @@ end
     # Horizon is larger than forecast horizon.
     @test_throws(PSY.InvalidParameter,
                  PSY.make_forecasts(forecast, interval, 25))
+    
+    # making a series of forecasts from a list of forecasts
+    forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
+    forecasts_ = make_forecasts(forecasts, Hour(1), 2)
+    @test length(forecasts_) == 23
 
-    forecasts = get_forecasts(Deterministic, sys, compare_initial_time)
-    forecasts_ = make_forecasts(forecasts, Hour(12), 12)
-    @test length(forecasts_) == 424
-
+    # removal of all forecasts
     remove_all_forecasts!(sys, Deterministic)
-    forecasts = get_forecasts(Deterministic, sys, compare_initial_time)
+    forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
     @test length(forecasts) == 0
 
+    # adding series of forecasts
     add_forecasts!(sys, forecasts_)
-    forecasts = get_forecasts(Deterministic, sys, compare_initial_time)
-    @test length(forecasts) == 212
+    ts = get_forecast_initial_times(sys)
+    @test length(ts) == 23
 
+    # replace a long forecast with a series of forecasts
+    remove_all_forecasts!(sys, Deterministic)
+    add_forecast!(sys, forecast)
+    forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
     split_forecasts!(sys, forecasts, Hour(6), 12)
-    forecasts = get_forecasts(Deterministic, sys, compare_initial_time)
-    @test length(forecasts) == 212
+    ts = get_forecast_initial_times(sys)
+    @test length(ts) == 3
 
     # TODO: need to cover serialization.
 end
