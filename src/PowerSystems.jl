@@ -80,7 +80,7 @@ export parse_file
 export add_forecasts!
 export add_forecast!
 export remove_forecast!
-export remove_all_forecasts!
+export clear_forecasts!
 export get_forecast_initial_times
 export get_forecasts
 export get_forecasts_horizon

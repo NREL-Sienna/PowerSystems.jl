@@ -424,5 +424,5 @@ function make_forecasts(forecast::FlattenIteratorWrapper{T},
 
     forecasts = [make_forecasts(f, interval, horizon) for f in forecast]
 
-    return vcat(forecasts...)
+    return vcat(forecasts...) # FlattenIteratorWrapper(T, forecasts) TODO: Revert to FlattenIteratorWrapper when #297 is addressed
 end

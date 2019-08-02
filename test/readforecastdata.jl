@@ -181,7 +181,7 @@ end
     @test length(forecasts_) == 23
 
     # removal of all forecasts
-    remove_all_forecasts!(sys, Deterministic)
+    clear_forecasts!(sys)
     forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
     @test length(forecasts) == 0
 
@@ -191,7 +191,7 @@ end
     @test length(ts) == 23
 
     # replace a long forecast with a series of forecasts
-    remove_all_forecasts!(sys, Deterministic)
+    clear_forecasts!(sys)
     add_forecast!(sys, forecast)
     forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
     split_forecasts!(sys, forecasts, Hour(6), 12)

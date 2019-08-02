@@ -295,40 +295,38 @@ end
 =#
 
 """
-    remove_all_forecasts(sys::System, T::Type{T})::Vector{T} where T <: Forecast
+    clear_forecasts!(sys::System)
 
-Remove all forecast objects of concrete type T from a System
+Remove all forecast objects from a System
 """
-function remove_all_forecasts!(sys::System, ForecastType::Type{T})where T <: Forecast
+function clear_forecasts!(sys::System)
 
-    ts = get_forecast_initial_times(sys)
+    empty!(sys.forecasts.data)
+    reset_info!(sys.forecasts)
 
-    for t in ts
-        f = get_forecasts(ForecastType, sys, t)
-        foreach(x -> remove_forecast!(sys,x),f)
-    end
-
+    return
 end
 
 """
     split_forecasts!(sys::System, 
-                    forecast::FlattenIteratorWrapper{T}, 
+                    forecasts, 
                     interval::Dates.Period, 
                     horizon::Int) where T <: Forecast
 
-Replaces system forecasts with ke a vector of forecasts by incrementing through a forecast 
-by interval and horizon.
+Replaces system forecasts with a set of forecasts by incrementing through an iterable 
+set of forecasts by interval and horizon.
 
 """
-function split_forecasts!(sys::System, 
-                            forecast::FlattenIteratorWrapper{T}, 
-                            interval::Dates.Period, 
-                            horizon::Int) where T <: Forecast
+function split_forecasts!(sys::System,
+                         forecasts, # must be an iterable
+                         interval::Dates.Period,
+                         horizon::Int) where T <: Forecast
 
-    forecasts = make_forecasts(forecast, interval, horizon)
+    split_forecasts = make_forecasts(forecasts, interval, horizon)
 
-    remove_all_forecasts!(sys, T)
+    clear_forecasts!(sys)
 
-    add_forecasts!(sys,forecasts)
+    add_forecasts!(sys, split_forecasts)
 
+    return
 end
