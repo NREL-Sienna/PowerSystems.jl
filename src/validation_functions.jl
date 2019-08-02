@@ -59,6 +59,9 @@ end
 function get_limits(valid_range::String, ps_struct::PowerSystemType)
     #Gets min and max values from activepowerlimits for activepower, etc.
     limits = getfield(ps_struct, Symbol(valid_range))
+    if isnothing(limits)
+        limits = (min=nothing, max=nothing)
+    end
     return limits
 end
 
