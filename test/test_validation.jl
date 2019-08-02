@@ -17,8 +17,9 @@ include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
                 return true
             end
         end
+        return false
     end
-    @test find_struct() == true
+    @test find_struct()
     @test_throws(ErrorException, PowerSystems.read_validation_descriptor("badfile.json"))
 end
 
