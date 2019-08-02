@@ -142,6 +142,6 @@ function validate_system(sys::System)
         end
     end
     if error_detected
-        error("Invalid range detected")
+        throw(InvalidRange("Invalid range detected"))
     end
 end
