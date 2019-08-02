@@ -97,8 +97,8 @@ end
 function check_limits_impl(valid_info::ValidationInfo, field_value)
     is_valid = true
     action_function = get_validation_action(valid_info.field_descriptor)
-    if !isnothing(valid_info.limits.min) && field_value < valid_info.limits.min ||
-        !isnothing(valid_info.limits.max) && field_value > valid_info.limits.max
+    if (!isnothing(valid_info.limits.min) && field_value < valid_info.limits.min) ||
+        (!isnothing(valid_info.limits.max) && field_value > valid_info.limits.max)
         is_valid = action_function(valid_info, field_value)
     end
     return is_valid
