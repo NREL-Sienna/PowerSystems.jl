@@ -32,7 +32,7 @@ const VALID_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
 
     # Keyword arguments
 
-    * `runchecks`::Bool : run available checks on input fields. If an error is found in a field, that component will not be added to the system.
+    * `runchecks`::Bool : run available checks on input fields. If an error is found in a field, that component will not be added to the system and InvalidRange is thrown.
     * `configpath`::String : specify path to validation config file
     DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
