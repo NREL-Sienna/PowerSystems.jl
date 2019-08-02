@@ -558,6 +558,41 @@ function get_forecasts(
 end
 
 """
+    get_forecasts(
+                  sys::System,
+                  initial_time::Dates.DateTime,
+                  components_iterator,
+                  label::Union{String, Nothing}=nothing,
+                 )
+
+# Arguments
+- `sys::System`: system
+- `initial_time::Dates.DateTime`: time designator for the forecast
+- `components_iter`: iterable (array, iterator, etc.) of Component values
+- `label::Union{String, Nothing}`: forecast label or nothing
+
+Return forecasts of any type <: Forecast that match the components and label.
+
+This method is slower than the first version because it has to compare components and label
+as well as build a new vector.
+
+Throws InvalidParameter if eltype(components_iterator) is a concrete type and no forecast is
+found for a component.
+"""
+function get_forecasts(sys::System,
+                       initial_time::Dates.DateTime,
+                       components_iterator,
+                       label::Union{String, Nothing}=nothing,
+                      )
+
+    return get_forecasts(Forecast,
+                        sys,
+                        initial_time,
+                        components_iterator,
+                        label)
+end
+
+"""
     remove_forecast(sys::System, forecast::Forecast)
 
 Remove the forecast from the system.
