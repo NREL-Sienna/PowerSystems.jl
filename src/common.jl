@@ -75,5 +75,9 @@ struct InvalidParameter <: Exception
     msg::String
 end
 
+struct InvalidRange <: Exception
+    msg::String
+end
+
 PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
 DEFAULT_BASE_MVA = 100.0

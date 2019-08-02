@@ -98,7 +98,7 @@ function System(buses::Vector{Bus},
         try
             add_component!(sys, component)
         catch e
-            if isa(e, ErrorException)
+            if isa(e, InvalidRange)
                 error_detected = true
             else
                 rethrow()
@@ -112,7 +112,7 @@ function System(buses::Vector{Bus},
             try
                 add_component!(sys, lz)
             catch e
-                if isa(e, ErrorException)
+                if isa(e, InvalidRange)
                     error_detected = true
                 else
                     rethrow()
@@ -130,7 +130,7 @@ function System(buses::Vector{Bus},
     runchecks = get(kwargs, :runchecks, true)
 
     if error_detected
-        error("Invalid value(s) detected")
+        throw(InvalidRange("Invalid value(s) detected"))
     end
 
     if runchecks
@@ -313,7 +313,7 @@ function add_component!(sys::System, component::T) where T <: Component
 
     if !isempty(sys.validation_descriptor)
         if !validate_fields(sys, component)
-            error("Invalid value")
+            throw(InvalidRange("Invalid value"))
         end
     end
 
