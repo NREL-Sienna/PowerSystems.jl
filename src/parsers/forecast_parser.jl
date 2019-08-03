@@ -293,3 +293,40 @@ function parse_json(filename,device_names)
     return Devices
 end
 =#
+
+"""
+    clear_forecasts!(sys::System)
+
+Remove all forecast objects from a System
+"""
+function clear_forecasts!(sys::System)
+
+    empty!(sys.forecasts.data)
+    reset_info!(sys.forecasts)
+
+    return
+end
+
+"""
+    split_forecasts!(sys::System, 
+                    forecasts, 
+                    interval::Dates.Period, 
+                    horizon::Int) where T <: Forecast
+
+Replaces system forecasts with a set of forecasts by incrementing through an iterable 
+set of forecasts by interval and horizon.
+
+"""
+function split_forecasts!(sys::System,
+                         forecasts, # must be an iterable
+                         interval::Dates.Period,
+                         horizon::Int) where T <: Forecast
+
+    split_forecasts = make_forecasts(forecasts, interval, horizon)
+
+    clear_forecasts!(sys)
+
+    add_forecasts!(sys, split_forecasts)
+
+    return
+end
