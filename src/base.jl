@@ -593,6 +593,37 @@ function get_forecasts(sys::System,
 end
 
 """
+    get_component_forecasts(::Type{T}, sys::System, initial_time::Dates.DateTime)
+
+Return an generator of forecasts for the component <: T can be concrete or abstract.
+
+Call collect on the result if an array is desired.
+
+This method is fast and efficient because it returns an iterator to existing vectors.
+
+# Examples
+```julia
+iter = PowerSystems.get_forecasts(RenewableFix, sys, initial_time)
+forecasts = PowerSystems.get_forecasts(RenewableFix, sys, initial_time) |> collect
+forecasts = collect(PowerSystems.get_forecasts(RenewableFix, sys))
+```
+
+See also: [`iterate_forecasts`](@ref)
+"""
+function get_component_forecasts(
+                                ::Type{T},
+                                sys::System,
+                                initial_time::Dates.DateTime,
+                                )::FlattenIteratorWrapper{T} where T <: Component
+
+    keys_ = [ForecastKey(initial_time, x.forecast_type)
+                for x in keys(sys.forecasts.data) if x.initial_time == initial_time]
+    iter = FlattenIteratorWrapper(T, Vector{Vector{T}}([sys.forecasts.data[x] for x in keys_]))
+
+    return (f for f in iter if isa(f.component, T))
+end
+
+"""
     remove_forecast(sys::System, forecast::Forecast)
 
 Remove the forecast from the system.
@@ -672,24 +703,19 @@ See [`get_component`](@ref) if the concrete type is known.
 
 Throws InvalidParameter if T is not an abstract type.
 """
-function get_components_by_name(
+function get_component_forecasts(
                                 ::Type{T},
                                 sys::System,
-                                name::AbstractString
-                               )::Vector{T} where {T <: Component}
-    if !isabstracttype(T)
-        throw(InvalidParameter("get_components_by_name only supports abstract types: $T"))
-    end
+                                initial_time::Dates.DateTime,
+                                ) where T <: Component
 
-    components = Vector{T}()
-    for subtype in get_all_concrete_subtypes(T)
-        component = get_component(subtype, sys, name)
-        if !isnothing(component)
-            push!(components, component)
-        end
-    end
+    keys_ = [ForecastKey(initial_time, k.forecast_type)
+            for (k,v) in sys.forecasts.data
+            if k.initial_time == initial_time && eltype(v).parameters[1] == T]
+    isempty(keys_) && return FlattenIteratorWrapper(Forecast, Vector{Vector{Forecast}}())
+    array = [sys.forecasts.data[x] for x in keys_]
 
-    return components
+    return FlattenIteratorWrapper(eltype(eltype(array)), array)
 end
 
 """
