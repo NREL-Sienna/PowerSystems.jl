@@ -703,11 +703,47 @@ See [`get_component`](@ref) if the concrete type is known.
 
 Throws InvalidParameter if T is not an abstract type.
 """
-function get_component_forecasts(
+function get_components_by_name(
+                                ::Type{T},
+                                sys::System,
+                                name::AbstractString
+                               )::Vector{T} where {T <: Component}
+    if !isabstracttype(T)
+        throw(InvalidParameter("get_components_by_name only supports abstract types: $T"))
+    end
+
+    components = Vector{T}()
+    for subtype in get_all_concrete_subtypes(T)
+        component = get_component(subtype, sys, name)
+        if !isnothing(component)
+            push!(components, component)
+        end
+    end
+
+    return components
+end
+
+"""
+    get_components_forecasts(
+                            ::Type{T},
+                            sys::System,
+                            initial_time::Dates.DateTime,
+                            ) where T <: Component
+
+Get the forecasts of a component of type T with initial_time.
+
+Throws InvalidParameter if T is not an abstract type.
+"""
+
+function get_components_forecasts(
                                 ::Type{T},
                                 sys::System,
                                 initial_time::Dates.DateTime,
                                 ) where T <: Component
+
+    if !isabstracttype(T)
+        throw(InvalidParameter("get_components_by_name only supports abstract types: $T"))
+    end
 
     keys_ = [ForecastKey(initial_time, k.forecast_type)
             for (k,v) in sys.forecasts.data
