@@ -734,7 +734,6 @@ Get the forecasts of a component of type T with initial_time.
 
 Throws InvalidParameter if T is not an abstract type.
 """
-
 function get_components_forecasts(
                                 ::Type{T},
                                 sys::System,
