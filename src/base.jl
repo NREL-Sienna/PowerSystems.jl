@@ -709,8 +709,8 @@ function get_component_forecasts(
                                  initial_time::Dates.DateTime,
                                 ) where T <: Component
 
-    if !isabstracttype(T)
-        throw(InvalidParameter("get_components_by_name only supports abstract types: $T"))
+    if !isconcretetype(T)
+        throw(InvalidParameter("get_component only supports concrete types: $T"))
     end
 
     return (f for k in keys(sys.forecasts.data) if k.initial_time == initial_time
