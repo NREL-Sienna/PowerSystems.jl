@@ -699,7 +699,7 @@ end
                             initial_time::Dates.DateTime,
                             ) where T <: Component
 
-Get the forecasts of a component of type T with initial_time.
+Get the forecasts of a component of type T with initial_time. The resulting FlattenIteratorWrapper can contain Forecasts of dissimilar types.
 
 Throws InvalidParameter if T is not an abstract type.
 """
