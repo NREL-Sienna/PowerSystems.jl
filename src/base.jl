@@ -693,7 +693,7 @@ function get_components_by_name(
 end
 
 """
-    get_components_forecasts(
+    get_component_forecasts(
                             ::Type{T},
                             sys::System,
                             initial_time::Dates.DateTime,
@@ -708,6 +708,11 @@ function get_component_forecasts(
                                  sys::System,
                                  initial_time::Dates.DateTime,
                                 ) where T <: Component
+
+    if !isabstracttype(T)
+        throw(InvalidParameter("get_components_by_name only supports abstract types: $T"))
+    end
+
     return (f for k in keys(sys.forecasts.data) if k.initial_time == initial_time
               for f in sys.forecasts.data[k] if isa(get_component(f), T))
 end
