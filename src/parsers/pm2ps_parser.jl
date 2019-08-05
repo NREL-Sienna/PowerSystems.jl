@@ -37,6 +37,7 @@ function make_bus(bus_dict::Dict{String,Any})
                      bus_dict["voltagelimits"],
                      bus_dict["basevoltage"]
                      )
+    #TODO: should angle here be converted to radians? 
      return bus
  end
 
@@ -374,7 +375,7 @@ function make_line(name, d, bus_f, bus_t)
         x=d["br_x"],
         b=(from=d["b_fr"], to=d["b_to"]),
         rate=d["rate_a"],
-        anglelimits=(min=d["angmin"], max=d["angmax"]),
+        anglelimits=(min=deg2rad(d["angmin"]), max=deg2rad(d["angmax"])),
     )
 end
 
