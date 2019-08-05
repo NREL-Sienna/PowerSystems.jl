@@ -699,9 +699,12 @@ end
                             initial_time::Dates.DateTime,
                             ) where T <: Component
 
-Get the forecasts of a component of type T with initial_time. The resulting FlattenIteratorWrapper can contain Forecasts of dissimilar types.
+Get the forecasts of a component of type T with initial_time.
+    The resulting container can contain Forecasts of dissimilar types.
 
-Throws InvalidParameter if T is not an abstract type.
+Throws InvalidParameter if T is not a concrete type.
+
+See also: [`get_component`](@ref)
 """
 function get_component_forecasts(
                                  ::Type{T},
@@ -710,7 +713,7 @@ function get_component_forecasts(
                                 ) where T <: Component
 
     if !isconcretetype(T)
-        throw(InvalidParameter("get_component only supports concrete types: $T"))
+        throw(InvalidParameter("get_component_forecasts only supports concrete types: $T"))
     end
 
     return (f for k in keys(sys.forecasts.data) if k.initial_time == initial_time
