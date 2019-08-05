@@ -67,3 +67,16 @@ end
 function calculate_rating(active_power_max::Float64, reactive_power_max::Float64)
     return sqrt(active_power_max^2 + reactive_power_max^2)
 end
+
+function convert_units!(value::Float64, 
+                        unit_conversion::NamedTuple{(:From,:To),Tuple{String,String}})
+    
+    if unit_conversion.From == "degree" && unit_conversion.To == "radian"
+        value = deg2rad(value)
+    elseif unit_conversion.From == "radian" && unit_conversion.To == "degree"
+        value = rad2deg(value)
+    else
+        throw(DataFormatError("Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported"))
+    end
+    return value
+end

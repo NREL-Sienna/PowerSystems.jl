@@ -314,7 +314,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
 
         if branch_type == Line
             b = branch.primary_shunt / 2
-            anglelimits = (min=-60.0, max=60.0) #TODO: add field in CSV
+            anglelimits = (min=-π/2, max=π/2) #TODO: add field in CSV
             value = Line(
                 branch.name,
                 available,
@@ -742,6 +742,7 @@ struct _FieldInfo
     name::String
     custom_name::Symbol
     needs_per_unit_conversion::Bool
+    unit_conversion::Union{NamedTuple{(:From,:To),Tuple{String,String}},Nothing}
     # TODO unit, value ranges and options
 end
 
@@ -757,8 +758,10 @@ function _get_field_infos(data::PowerSystemRaw, category::InputCategory, df_name
     # Cache whether PowerSystems uses a column's values as system-per-unit.
     # The user's descriptors indicate that the raw data is already system-per-unit or not.
     per_unit = Dict{String, Bool}()
+    unit = Dict{String,Union{String,Nothing}}()
     for descriptor in data.descriptors[category]
         per_unit[descriptor["name"]] = get(descriptor, "system_per_unit", false)
+        unit[descriptor["name"]] = get(descriptor, "unit", nothing)
     end
 
     fields = Vector{_FieldInfo}()
@@ -774,7 +777,15 @@ function _get_field_infos(data::PowerSystemRaw, category::InputCategory, df_name
                 needs_pu_conversion = per_unit[name] &&
                                       haskey(item, "system_per_unit") &&
                                       !item["system_per_unit"]
-                push!(fields, _FieldInfo(name, custom_name, needs_pu_conversion))
+                
+                custom_unit = get(item, "unit", nothing)
+                if !isnothing(unit[name]) && !isnothing(custom_unit) && custom_unit != unit[name]
+                    unit_conversion = (From=custom_unit, To=unit[name])
+                else
+                    unit_conversion = nothing
+                end
+
+                push!(fields, _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion))
             else
                 # TODO: This should probably be a fatal error. However, the parsing code
                 # doesn't use all the descriptor fields, so skip for now.
@@ -811,6 +822,10 @@ function _read_data_row(data::PowerSystemRaw, row, field_infos; na_to_nothing=tr
         end
 
         # TODO: need special handling for units
+        if !isnothing(field_info.unit_conversion)
+            @debug "convert units" field_info.custom_name
+            value = convert_units!(value, field_info.unit_conversion)
+        end
         # TODO: validate ranges and option lists
 
         push!(fields, field_info.name)
