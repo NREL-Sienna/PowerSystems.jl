@@ -80,6 +80,8 @@ export parse_file
 export add_forecasts!
 export add_forecast!
 export remove_forecast!
+export clear_forecasts!
+export get_component_forecasts
 export get_forecast_initial_times
 export get_forecasts
 export get_forecasts_horizon
@@ -92,6 +94,7 @@ export get_horizon
 export get_timeseries
 export iterate_forecasts
 export make_forecasts
+export split_forecasts!
 export validate
 export add_component!
 export get_component

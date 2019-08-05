@@ -598,6 +598,41 @@ function get_forecasts(
 end
 
 """
+    get_forecasts(
+                  sys::System,
+                  initial_time::Dates.DateTime,
+                  components_iterator,
+                  label::Union{String, Nothing}=nothing,
+                 )
+
+# Arguments
+- `sys::System`: system
+- `initial_time::Dates.DateTime`: time designator for the forecast
+- `components_iter`: iterable (array, iterator, etc.) of Component values
+- `label::Union{String, Nothing}`: forecast label or nothing
+
+Return forecasts of any type <: Forecast that match the components and label.
+
+This method is slower than the first version because it has to compare components and label
+as well as build a new vector.
+
+Throws InvalidParameter if eltype(components_iterator) is a concrete type and no forecast is
+found for a component.
+"""
+function get_forecasts(sys::System,
+                       initial_time::Dates.DateTime,
+                       components_iterator,
+                       label::Union{String, Nothing}=nothing,
+                      )
+
+    return get_forecasts(Forecast,
+                        sys,
+                        initial_time,
+                        components_iterator,
+                        label)
+end
+
+"""
     remove_forecast(sys::System, forecast::Forecast)
 
 Remove the forecast from the system.
@@ -695,6 +730,34 @@ function get_components_by_name(
     end
 
     return components
+end
+
+"""
+    get_component_forecasts(
+                            ::Type{T},
+                            sys::System,
+                            initial_time::Dates.DateTime,
+                            ) where T <: Component
+
+Get the forecasts of a component of type T with initial_time.
+    The resulting container can contain Forecasts of dissimilar types.
+
+Throws InvalidParameter if T is not a concrete type.
+
+See also: [`get_component`](@ref)
+"""
+function get_component_forecasts(
+                                 ::Type{T},
+                                 sys::System,
+                                 initial_time::Dates.DateTime,
+                                ) where T <: Component
+
+    if !isconcretetype(T)
+        throw(InvalidParameter("get_component_forecasts only supports concrete types: $T"))
+    end
+
+    return (f for k in keys(sys.forecasts.data) if k.initial_time == initial_time
+              for f in sys.forecasts.data[k] if isa(get_component(f), T))
 end
 
 """
