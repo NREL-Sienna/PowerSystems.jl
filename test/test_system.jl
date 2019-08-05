@@ -113,6 +113,15 @@
     @test_throws(PowerSystems.InvalidParameter,
                  get_forecasts(Deterministic{Bus}, sys, initial_time, components))
 
+    #Get forecast by type
+    res = get_component_forecasts(RenewableDispatch, sys, initial_time)
+    for i in res
+        @test isa(i,Deterministic{RenewableDispatch})
+    end
+
+    @test_throws(PowerSystems.InvalidParameter,
+                 get_component_forecasts(RenewableGen, sys, initial_time))
+
     f = forecasts[1]
     forecast = Deterministic(Bus(nothing), f.label, f.resolution, f.initial_time, f.data)
     @test_throws(PowerSystems.InvalidParameter, add_forecasts!(sys, [forecast]))
