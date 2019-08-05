@@ -106,6 +106,7 @@ export iterate_components
 export to_json
 export from_json
 export get_name
+export validate_system
 
 #################################################################################
 # Imports
