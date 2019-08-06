@@ -346,13 +346,13 @@
     - name: r
       data_type: Float64
       valid_range:
-        max: 2.0
+        max: 2.5
         min: -2.0
       validation_action: error
     - name: x
       data_type: Float64
       valid_range:
-        max: 2.0
+        max: 2.5
         min: -2.0
       validation_action: error
     - name: primaryshunt
