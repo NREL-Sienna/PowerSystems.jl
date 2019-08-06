@@ -305,13 +305,13 @@
       data_type: Float64
       valid_range:
         max: 2.0
-        min: 0.0
+        min: -2.0
       validation_action: error
     - name: x
       data_type: Float64
       valid_range:
         max: 2.0
-        min: 0.0
+        min: -2.0
       validation_action: error
     - name: primaryshunt
       data_type: Float64
@@ -347,7 +347,7 @@
       data_type: Float64
       valid_range:
         max: 2.0
-        min: 0.0
+        min: -2.0
       validation_action: error
     - name: x
       data_type: Float64
