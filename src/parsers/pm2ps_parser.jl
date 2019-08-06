@@ -32,7 +32,7 @@ function make_bus(bus_dict::Dict{String,Any})
     bus = Bus(bus_dict["number"],
                      bus_dict["name"],
                      bus_dict["bustype"],
-                     bus_dict["angle"],
+                     deg2rad(bus_dict["angle"]),
                      bus_dict["voltage"],
                      bus_dict["voltagelimits"],
                      bus_dict["basevoltage"]
