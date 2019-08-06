@@ -326,7 +326,7 @@
         "null_value": "(from=0.0, to=0.0)",
         "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}",
         "comment": "System per-unit value",
-        "valid_range": {"min":0.0, "max":2.0},
+        "valid_range": {"min":0.0, "max":100.0},
         "validation_action": "error"
       },
       {
