@@ -581,7 +581,7 @@
         "name": "x",
         "data_type": "Float64",
         "comment": "System per-unit value",
-        "valid_range": {"min":0.0, "max":2.0},
+        "valid_range": {"min":-2.0, "max":2.0},
         "validation_action": "error"
       },
       {
