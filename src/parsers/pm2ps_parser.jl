@@ -55,7 +55,7 @@ end
 function read_bus!(sys::System, data, )
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
-    bus_types = ["PV", "PQ", "REF","isolated"]
+    bus_types = ["PQ", "PV", "REF","isolated"]
     data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))
 
     if length(data) == 0
