@@ -10,8 +10,7 @@ import os
 import sys
 from collections import OrderedDict
 
-
-import yaml
+import pyaml
 
 
 POWER_SYSTEM_DESCRIPTOR_FILE = os.path.join(
@@ -53,7 +52,7 @@ def generate_file(output_file, input_file=POWER_SYSTEM_DESCRIPTOR_FILE):
     """Generate validation descriptors from the PowerSystems struct data file."""
     config = generate_config(input_file)
     with open(output_file, "w") as fp_out:
-        yaml.dump(config, fp_out, default_flow_style=False)
+        pyaml.dump(config, fp_out, vspacing=True)
 
     print("Generated {} from {}".format(output_file, input_file))
 
@@ -66,11 +65,5 @@ def main():
 
     generate_file(sys.argv[1])
 
-def setup_yaml():
-  """ https://stackoverflow.com/a/8661021 """
-  represent_dict_order = lambda self, data:  self.represent_mapping('tag:yaml.org,2002:map', data.items())
-  yaml.add_representer(OrderedDict, represent_dict_order)
-
 if __name__ == "__main__":
-    setup_yaml()
     main()

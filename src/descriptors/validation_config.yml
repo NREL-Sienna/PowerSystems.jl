@@ -1,664 +1,731 @@
 - struct_name: TwoPartCost
+
   fields:
-  - name: variable
-    data_type: VariableCost
-  - name: fixed
-    data_type: Float64
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: variable
+      data_type: VariableCost
+    - name: fixed
+      data_type: Float64
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: ThreePartCost
+
   fields:
-  - name: variable
-    data_type: VariableCost
-  - name: fixed
-    data_type: Float64
-  - name: startup
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: warn
-  - name: shutdn
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: warn
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: variable
+      data_type: VariableCost
+    - name: fixed
+      data_type: Float64
+    - name: startup
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: warn
+    - name: shutdn
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: warn
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: TechHydro
+
   fields:
-  - name: rating
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: activepower
-    data_type: Float64
-    valid_range: activepowerlimits
-    validation_action: warn
-  - name: activepowerlimits
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: reactivepower
-    data_type: Float64
-    valid_range: reactivepowerlimits
-    validation_action: warn
-  - name: reactivepowerlimits
-    data_type: Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
-  - name: ramplimits
-    data_type: Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: timelimits
-    data_type: Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: rating
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: activepower
+      data_type: Float64
+      valid_range: activepowerlimits
+      validation_action: warn
+    - name: activepowerlimits
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: reactivepower
+      data_type: Float64
+      valid_range: reactivepowerlimits
+      validation_action: warn
+    - name: reactivepowerlimits
+      data_type: 'Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}'
+    - name: ramplimits
+      data_type: 'Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: timelimits
+      data_type: 'Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: TechRenewable
+
   fields:
-  - name: rating
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: reactivepower
-    data_type: Float64
-    valid_range: reactivepowerlimits
-    validation_action: warn
-  - name: reactivepowerlimits
-    data_type: Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
-  - name: powerfactor
-    data_type: Float64
-    valid_range:
-      max: 1.0
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: rating
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: reactivepower
+      data_type: Float64
+      valid_range: reactivepowerlimits
+      validation_action: warn
+    - name: reactivepowerlimits
+      data_type: 'Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}'
+    - name: powerfactor
+      data_type: Float64
+      valid_range:
+        max: 1.0
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: TechThermal
+
   fields:
-  - name: rating
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: activepower
-    data_type: Float64
-    valid_range: activepowerlimits
-    validation_action: warn
-  - name: activepowerlimits
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: reactivepower
-    data_type: Float64
-    valid_range: reactivepowerlimits
-    validation_action: warn
-  - name: reactivepowerlimits
-    data_type: Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
-  - name: ramplimits
-    data_type: Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: timelimits
-    data_type: Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: rating
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: activepower
+      data_type: Float64
+      valid_range: activepowerlimits
+      validation_action: warn
+    - name: activepowerlimits
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: reactivepower
+      data_type: Float64
+      valid_range: reactivepowerlimits
+      validation_action: warn
+    - name: reactivepowerlimits
+      data_type: 'Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}'
+    - name: ramplimits
+      data_type: 'Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: timelimits
+      data_type: 'Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: Bus
+
   fields:
-  - name: number
-    data_type: Int64
-  - name: name
-    data_type: String
-  - name: bustype
-    data_type: Union{Nothing, BusType}
-  - name: angle
-    data_type: Union{Nothing, Float64}
-    valid_range:
-      max: 1.571
-      min: -1.571
-    validation_action: error
-  - name: voltage
-    data_type: Union{Nothing, Float64}
-    valid_range: voltagelimits
-    validation_action: warn
-  - name: voltagelimits
-    data_type: Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
-  - name: basevoltage
-    data_type: Union{Nothing, Float64}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: number
+      data_type: Int64
+    - name: name
+      data_type: String
+    - name: bustype
+      data_type: 'Union{Nothing, BusType}'
+    - name: angle
+      data_type: 'Union{Nothing, Float64}'
+      valid_range:
+        max: 1.571
+        min: -1.571
+      validation_action: error
+    - name: voltage
+      data_type: 'Union{Nothing, Float64}'
+      valid_range: voltagelimits
+      validation_action: warn
+    - name: voltagelimits
+      data_type: 'Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}'
+    - name: basevoltage
+      data_type: 'Union{Nothing, Float64}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: Arch
+
   fields:
-  - name: from
-    data_type: Bus
-  - name: to
-    data_type: Bus
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: from
+      data_type: Bus
+    - name: to
+      data_type: Bus
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: Line
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: arch
-    data_type: Arch
-  - name: r
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: x
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: b
-    data_type: NamedTuple{(:from, :to), Tuple{Float64, Float64}}
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: rate
-    data_type: Float64
-  - name: anglelimits
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    valid_range:
-      max: 3.142
-      min: -3.142
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: arch
+      data_type: Arch
+    - name: r
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: x
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: b
+      data_type: 'NamedTuple{(:from, :to), Tuple{Float64, Float64}}'
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: rate
+      data_type: Float64
+    - name: anglelimits
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+      valid_range:
+        max: 3.142
+        min: -3.142
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: MonitoredLine
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: arch
-    data_type: Arch
-  - name: r
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: x
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: b
-    data_type: NamedTuple{(:from, :to), Tuple{Float64, Float64}}
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: flowlimits
-    data_type: NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
-  - name: rate
-    data_type: Float64
-  - name: anglelimits
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    valid_range:
-      max: 3.142
-      min: -3.142
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: arch
+      data_type: Arch
+    - name: r
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: x
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: b
+      data_type: 'NamedTuple{(:from, :to), Tuple{Float64, Float64}}'
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: flowlimits
+      data_type: 'NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}'
+    - name: rate
+      data_type: Float64
+    - name: anglelimits
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+      valid_range:
+        max: 3.142
+        min: -3.142
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: PhaseShiftingTransformer
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: arch
-    data_type: Arch
-  - name: r
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: x
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: primaryshunt
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: tap
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: "\u03B1"
-    data_type: Float64
-    valid_range:
-      max: 3.142
-      min: -3.142
-    validation_action: warn
-  - name: rate
-    data_type: Union{Nothing, Float64}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: arch
+      data_type: Arch
+    - name: r
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: x
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: primaryshunt
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: tap
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: α
+      data_type: Float64
+      valid_range:
+        max: 3.142
+        min: -3.142
+      validation_action: warn
+    - name: rate
+      data_type: 'Union{Nothing, Float64}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: TapTransformer
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: arch
-    data_type: Arch
-  - name: r
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: x
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: primaryshunt
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: tap
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: rate
-    data_type: Union{Nothing, Float64}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: arch
+      data_type: Arch
+    - name: r
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: x
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: primaryshunt
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: tap
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: rate
+      data_type: 'Union{Nothing, Float64}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: Transformer2W
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: arch
-    data_type: Arch
-  - name: r
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: x
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: primaryshunt
-    data_type: Float64
-    valid_range:
-      max: 2.0
-      min: 0.0
-    validation_action: error
-  - name: rate
-    data_type: Union{Nothing, Float64}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: arch
+      data_type: Arch
+    - name: r
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: x
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: primaryshunt
+      data_type: Float64
+      valid_range:
+        max: 2.0
+        min: 0.0
+      validation_action: error
+    - name: rate
+      data_type: 'Union{Nothing, Float64}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: HVDCLine
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: arch
-    data_type: Arch
-  - name: activepowerlimits_from
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: activepowerlimits_to
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: reactivepowerlimits_from
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: reactivepowerlimits_to
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: loss
-    data_type: NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: arch
+      data_type: Arch
+    - name: activepowerlimits_from
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: activepowerlimits_to
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: reactivepowerlimits_from
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: reactivepowerlimits_to
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: loss
+      data_type: 'NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}'
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: VSCDCLine
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: arch
-    data_type: Arch
-  - name: rectifier_taplimits
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: rectifier_xrc
-    data_type: Float64
-  - name: rectifier_firingangle
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: inverter_taplimits
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: inverter_xrc
-    data_type: Float64
-  - name: inverter_firingangle
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: arch
+      data_type: Arch
+    - name: rectifier_taplimits
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: rectifier_xrc
+      data_type: Float64
+    - name: rectifier_firingangle
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: inverter_taplimits
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: inverter_xrc
+      data_type: Float64
+    - name: inverter_firingangle
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: InterruptibleLoad
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: model
-    data_type: String
-  - name: maxactivepower
-    data_type: Float64
-  - name: maxreactivepower
-    data_type: Float64
-  - name: op_cost
-    data_type: TwoPartCost
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: model
+      data_type: String
+    - name: maxactivepower
+      data_type: Float64
+    - name: maxreactivepower
+      data_type: Float64
+    - name: op_cost
+      data_type: TwoPartCost
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: FixedAdmittance
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: Y
-    data_type: Complex{Float64}
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: Y
+      data_type: Complex{Float64}
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: PowerLoad
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: maxactivepower
-    data_type: Float64
-  - name: maxreactivepower
-    data_type: Float64
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: maxactivepower
+      data_type: Float64
+    - name: maxreactivepower
+      data_type: Float64
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: HydroDispatch
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: tech
-    data_type: TechHydro
-  - name: op_cost
-    data_type: TwoPartCost
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: tech
+      data_type: TechHydro
+    - name: op_cost
+      data_type: TwoPartCost
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: HydroFix
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: tech
-    data_type: TechHydro
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: tech
+      data_type: TechHydro
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: HydroStorage
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: tech
-    data_type: TechHydro
-  - name: op_cost
-    data_type: TwoPartCost
-  - name: storagecapacity
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: initial_storage
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: tech
+      data_type: TechHydro
+    - name: op_cost
+      data_type: TwoPartCost
+    - name: storagecapacity
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: initial_storage
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: RenewableDispatch
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: tech
-    data_type: TechRenewable
-  - name: op_cost
-    data_type: TwoPartCost
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: tech
+      data_type: TechRenewable
+    - name: op_cost
+      data_type: TwoPartCost
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: RenewableFix
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: tech
-    data_type: TechRenewable
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: tech
+      data_type: TechRenewable
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: ThermalStandard
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: tech
-    data_type: Union{Nothing, TechThermal}
-  - name: op_cost
-    data_type: ThreePartCost
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: tech
+      data_type: 'Union{Nothing, TechThermal}'
+    - name: op_cost
+      data_type: ThreePartCost
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: LoadZones
+
   fields:
-  - name: number
-    data_type: Int64
-  - name: name
-    data_type: String
-  - name: buses
-    data_type: Vector{Bus}
-  - name: maxactivepower
-    data_type: Float64
-  - name: maxreactivepower
-    data_type: Float64
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: number
+      data_type: Int64
+    - name: name
+      data_type: String
+    - name: buses
+      data_type: Vector{Bus}
+    - name: maxactivepower
+      data_type: Float64
+    - name: maxreactivepower
+      data_type: Float64
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: GenericBattery
+
   fields:
-  - name: name
-    data_type: String
-  - name: available
-    data_type: Bool
-  - name: bus
-    data_type: Bus
-  - name: energy
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: capacity
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: rating
-    data_type: Float64
-  - name: activepower
-    data_type: Float64
-  - name: inputactivepowerlimits
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: outputactivepowerlimits
-    data_type: NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: efficiency
-    data_type: NamedTuple{(:in, :out), Tuple{Float64, Float64}}
-    valid_range:
-      max: 1.0
-      min: 0.0
-    validation_action: warn
-  - name: reactivepower
-    data_type: Float64
-  - name: reactivepowerlimits
-    data_type: Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: available
+      data_type: Bool
+    - name: bus
+      data_type: Bus
+    - name: energy
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: capacity
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: rating
+      data_type: Float64
+    - name: activepower
+      data_type: Float64
+    - name: inputactivepowerlimits
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: outputactivepowerlimits
+      data_type: 'NamedTuple{(:min, :max), Tuple{Float64, Float64}}'
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: efficiency
+      data_type: 'NamedTuple{(:in, :out), Tuple{Float64, Float64}}'
+      valid_range:
+        max: 1.0
+        min: 0.0
+      validation_action: warn
+    - name: reactivepower
+      data_type: Float64
+    - name: reactivepowerlimits
+      data_type: 'Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}'
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: ProportionalReserve
+
   fields:
-  - name: name
-    data_type: String
-  - name: contributingdevices
-    data_type: Vector{Device}
-  - name: timeframe
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: contributingdevices
+      data_type: Vector{Device}
+    - name: timeframe
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: StaticReserve
+
   fields:
-  - name: name
-    data_type: String
-  - name: contributingdevices
-    data_type: Vector{Device}
-  - name: timeframe
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: requirement
-    data_type: Float64
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: contributingdevices
+      data_type: Vector{Device}
+    - name: timeframe
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: requirement
+      data_type: Float64
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: Transfer
+
   fields:
-  - name: name
-    data_type: String
-  - name: contributingdevices
-    data_type: Vector{Device}
-  - name: timeframe
-    data_type: Float64
-    valid_range:
-      max: null
-      min: 0.0
-    validation_action: error
-  - name: requirement
-    data_type: TimeSeries.TimeArray
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: name
+      data_type: String
+    - name: contributingdevices
+      data_type: Vector{Device}
+    - name: timeframe
+      data_type: Float64
+      valid_range:
+        max:
+        min: 0.0
+      validation_action: error
+    - name: requirement
+      data_type: TimeSeries.TimeArray
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: Deterministic
+
   fields:
-  - name: component
-    data_type: T
-  - name: label
-    data_type: String
-  - name: resolution
-    data_type: Dates.Period
-  - name: initial_time
-    data_type: Dates.DateTime
-  - name: data
-    data_type: TimeSeries.TimeArray
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: component
+      data_type: T
+    - name: label
+      data_type: String
+    - name: resolution
+      data_type: Dates.Period
+    - name: initial_time
+      data_type: Dates.DateTime
+    - name: data
+      data_type: TimeSeries.TimeArray
+    - name: start_index
+      data_type: Int
+    - name: horizon
+      data_type: Int
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
+
 - struct_name: Probabilistic
+
   fields:
-  - name: component
-    data_type: T
-  - name: label
-    data_type: String
-  - name: resolution
-    data_type: Dates.Period
-  - name: initial_time
-    data_type: Dates.DateTime
-  - name: probabilities
-    data_type: Vector{Float64}
-  - name: data
-    data_type: TimeSeries.TimeArray
-  - name: internal
-    data_type: PowerSystems.PowerSystemInternal
+    - name: component
+      data_type: T
+    - name: label
+      data_type: String
+    - name: resolution
+      data_type: Dates.Period
+    - name: initial_time
+      data_type: Dates.DateTime
+    - name: probabilities
+      data_type: Vector{Float64}
+    - name: data
+      data_type: TimeSeries.TimeArray
+    - name: start_index
+      data_type: Int
+    - name: horizon
+      data_type: Int
+    - name: internal
+      data_type: PowerSystems.PowerSystemInternal
