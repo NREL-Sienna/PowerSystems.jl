@@ -300,7 +300,7 @@ Throws InvalidParameter if the component's name is already stored for its concre
 
 Throws InvalidRange if any of the component's field values are outside of defined valid range.
 """
-function add_component!(sys::System, component::T) where T <: Component
+function add_component!(sys::System, component::T; skip_validation=false) where T <: Component
     if !isconcretetype(T)
         error("add_component! only accepts concrete types")
     end
@@ -311,7 +311,7 @@ function add_component!(sys::System, component::T) where T <: Component
         throw(InvalidParameter("$(component.name) is already stored for type $T"))
     end
 
-    if !isempty(sys.validation_descriptor)
+    if !isempty(sys.validation_descriptor) && !skip_validation
         if !validate_fields(sys, component)
             throw(InvalidRange("Invalid value"))
         end
