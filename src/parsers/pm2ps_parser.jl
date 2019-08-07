@@ -44,7 +44,7 @@ function make_bus(bus_name, bus_number, d, bus_types)
     bus = make_bus(Dict{String,Any}("name" => bus_name ,
                             "number" => bus_number,
                             "bustype" => bus_types[d["bus_type"]],
-                            "angle" => 0, # NOTE: angle 0, tuple(min, max)
+                            "angle" => d["va"],
                             "voltage" => d["vm"],
                             "voltagelimits" => (min=d["vmin"], max=d["vmax"]),
                             "basevoltage" => d["base_kv"]
@@ -52,10 +52,7 @@ function make_bus(bus_name, bus_number, d, bus_types)
     return bus
 end
 
-function read_bus!(sys::System, data, )
-    @info "Reading bus data"
-    bus_number_to_bus = Dict{Int, Bus}()
-"From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
+# "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
 @enum MatpowerBusType begin
     MATPOWER_PQ = 1
     MATPOWER_PV = 2
@@ -63,7 +60,19 @@ function read_bus!(sys::System, data, )
     MATPOWER_ISOLATED = 4
 end
 
-bus_types = instances(MatpowerBusType)
+function Base.convert(::Type{BusType}, x::MatpowerBusType)
+    map = Dict(MATPOWER_ISOLATED => ISOLATED,
+               MATPOWER_PQ => PQ,
+               MATPOWER_PV => PV,
+               MATPOWER_REF => REF)
+    return map[x]
+end
+
+function read_bus!(sys::System, data)
+    @info "Reading bus data"
+    bus_number_to_bus = Dict{Int, Bus}()
+
+    bus_types = instances(MatpowerBusType)
     data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))
 
     if length(data) == 0
