@@ -55,7 +55,15 @@ end
 function read_bus!(sys::System, data, )
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
-    bus_types = ["PQ", "PV", "REF","isolated"]
+"From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
+@enum MatpowerBusType begin
+    MATPOWER_PQ = 1
+    MATPOWER_PV = 2
+    MATPOWER_REF = 3
+    MATPOWER_ISOLATED = 4
+end
+
+bus_types = instances(MatpowerBusType)
     data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))
 
     if length(data) == 0
