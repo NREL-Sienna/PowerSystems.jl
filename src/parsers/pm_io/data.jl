@@ -330,8 +330,8 @@ function _make_per_unit(data::Dict{String,Any}, mva_base::Real)
         apply_func(branch, "c_rating_c", rescale_ampere)
 
         apply_func(branch, "shift", deg2rad)
-        apply_func(branch, "angmax", deg2rad)
-        apply_func(branch, "angmin", deg2rad)
+        # apply_func(branch, "angmax", deg2rad)
+        # apply_func(branch, "angmin", deg2rad)
 
         apply_func(branch, "pf", rescale)
         apply_func(branch, "pt", rescale)
