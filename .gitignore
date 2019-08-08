@@ -16,3 +16,4 @@ data
 *.bak
 *~
 *.vscode
+src/descriptors/validation_config.yml

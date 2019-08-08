@@ -12,12 +12,7 @@ from collections import OrderedDict
 
 import pyaml
 
-
-POWER_SYSTEM_DESCRIPTOR_FILE = os.path.join(
-    "src",
-    "descriptors",
-    "power_system_structs.json"
-)
+POWER_SYSTEM_DESCRIPTOR_FILE = sys.argv[2]
 
 def read_json_data(filename):
     """Return the JSON data from a file."""
@@ -59,7 +54,7 @@ def generate_file(output_file, input_file=POWER_SYSTEM_DESCRIPTOR_FILE):
 
 def main():
     """Controls execution."""
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Usage: {} output_file".format(os.path.basename(__file__)))
         sys.exit(1)
 
