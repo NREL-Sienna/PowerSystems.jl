@@ -1,5 +1,7 @@
 using Documenter, PowerSystems
 
+include("src/generate_validation_table.jl")
+
 makedocs(
     modules = [PowerSystems],
     format = :html,

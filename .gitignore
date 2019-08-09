@@ -17,3 +17,4 @@ data
 *~
 *.vscode
 src/descriptors/validation_config.yml
+docs/src/man/data_requirements_table.md

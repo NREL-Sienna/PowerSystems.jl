@@ -31,4 +31,8 @@ function generate_validation_table(filepath::AbstractString)
     end
 end
 
+<<<<<<< HEAD
 generate_validation_table("src/man/data_requirements_table.md")
+=======
+generate_validation_table("src/data_requirements_table.md")
+>>>>>>> 418f16d114321991a9394b8ba7f27c786a615504
