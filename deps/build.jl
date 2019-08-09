@@ -6,6 +6,8 @@ download(TestData; branch = "improve-timeseries")
 
 @show abspath(".")
 
+read(`python3 -m pip install pyaml`)
+
 script_name = joinpath(@__DIR__, "../bin", "generate_valid_config_file.py")
 
 config_name = joinpath(@__DIR__, "../src", "descriptors", "validation_config.yml")
