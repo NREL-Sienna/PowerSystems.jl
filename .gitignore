@@ -16,5 +16,5 @@ data
 *.bak
 *~
 *.vscode
-src/descriptors/validation_config.yml
+src/descriptors/validation_config.*
 docs/src/man/data_requirements_table.md

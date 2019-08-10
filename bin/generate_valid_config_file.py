@@ -10,7 +10,7 @@ import os
 import sys
 from collections import OrderedDict
 
-import pyaml
+#import yaml
 
 POWER_SYSTEM_DESCRIPTOR_FILE = sys.argv[2]
 
@@ -47,7 +47,8 @@ def generate_file(output_file, input_file=POWER_SYSTEM_DESCRIPTOR_FILE):
     """Generate validation descriptors from the PowerSystems struct data file."""
     config = generate_config(input_file)
     with open(output_file, "w") as fp_out:
-        pyaml.dump(config, fp_out, vspacing=True)
+        #yaml.dump(config, fp_out, vspacing=True)
+        json.dump(config, fp_out, indent=4)
 
     print("Generated {} from {}".format(output_file, input_file))
 

@@ -1,7 +1,7 @@
 
 const Components = Dict{DataType, Dict{String, <:Component}}
 const VALID_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
-                                            "descriptors", "validation_config.yml")
+                                            "descriptors", "validation_config.json")
 
 """
     System
@@ -856,15 +856,20 @@ function compare_values(x::System, y::System)::Bool
 end
 
 function read_validation_descriptor(filename::AbstractString)
-    if !occursin(r"(\.yaml)|(\.yml)"i, filename)
-        error("Filename is not a YAML file.")
-    end
-    data = open(filename) do file
-        YAML.load(file)
+    if occursin(r"(\.yaml)|(\.yml)"i, filename)
+        data = open(filename) do file
+            YAML.load(file)
+        end
+    elseif occursin(r"(\.json)"i, filename)
+        str = String(read(filename))
+        data = JSON2.read(str, Array{Dict{Any,Any}})
+    else
+        error("Filename is not a YAML or JSON file.")
     end
 
     if !isa(data, Array)
-        error("YAML file format must exactly match example in $VALID_CONFIG_FILE")
+        error("YAML or JSON file format must exactly match example in $VALID_CONFIG_FILE")
     end
+
     return data
 end

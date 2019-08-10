@@ -8,7 +8,7 @@ download(TestData; branch = "improve-timeseries")
 
 script_name = joinpath(@__DIR__, "../bin", "generate_valid_config_file.py")
 
-config_name = joinpath(@__DIR__, "../src", "descriptors", "validation_config.yml")
+config_name = joinpath(@__DIR__, "../src", "descriptors", "validation_config.json")
 
 descriptor_name = joinpath(@__DIR__, "../src", "descriptors", "power_system_structs.json")
 
