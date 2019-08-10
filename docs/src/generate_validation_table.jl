@@ -1,5 +1,7 @@
 function generate_validation_table(filepath::AbstractString)
-    descriptor = PowerSystems.read_validation_descriptor("../src/descriptors/validation_config.yml")
+    ps_path = dirname(pathof(PowerSystems))
+    descriptor = PowerSystems.read_validation_descriptor(joinpath(ps_path,
+                                                "descriptors/validation_config.json"))
     open(filepath, "w") do io
         write(io, "# Data Requirements\n\n")
         write(io, "|  Struct Name  |  Field Name  |  DataType  |  Min  |  Max  |  Action  |\n")
@@ -31,4 +33,4 @@ function generate_validation_table(filepath::AbstractString)
     end
 end
 
-generate_validation_table("src/man/data_requirements_table.md")
+generate_validation_table(joinpath(ps_path, "../docs/src/man/data_requirements_table.md"))
