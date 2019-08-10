@@ -12,4 +12,4 @@ config_name = joinpath(@__DIR__, "../src", "descriptors", "validation_config.jso
 
 descriptor_name = joinpath(@__DIR__, "../src", "descriptors", "power_system_structs.json")
 
-#read(`python3 $script_name $config_name $descriptor_name`)
+read(`python3 $script_name $config_name $descriptor_name`)

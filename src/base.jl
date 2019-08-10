@@ -862,7 +862,8 @@ function read_validation_descriptor(filename::AbstractString)
         end
     elseif occursin(r"(\.json)"i, filename)
         str = String(read(filename))
-        data = JSON2.read(str, Array{Dict{Any,Any}})
+        #data = JSON2.read(str, Array{Dict{Any,Any}})
+        data = JSON2.read(str,Vector{Dict{Any,Union{String,Vector{Dict{Any,Any}}}}})
     else
         error("Filename is not a YAML or JSON file.")
     end

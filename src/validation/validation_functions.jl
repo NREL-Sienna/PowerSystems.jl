@@ -71,6 +71,12 @@ function get_limits(valid_range::Dict, unused::PowerSystemType)
     return limits
 end
 
+function get_limits(valid_range::NamedTuple{(:min, :max)}, unused::PowerSystemType)
+    #Gets min and max value defined for a field, e.g. "valid_range": {"min":-1.571, "max":1.571}.
+    limits = (min = valid_range.min, max = valid_range.max)
+    return limits
+end
+
 function validate_range(::String, valid_info::ValidationInfo, field_value)
     #Validates activepower against activepowerlimits, etc.
     is_valid = true
@@ -80,7 +86,7 @@ function validate_range(::String, valid_info::ValidationInfo, field_value)
     return is_valid
 end
 
-function validate_range(::Dict, valid_info::ValidationInfo, field_value)
+function validate_range(::Union{Dict,NamedTuple{(:min,:max)}}, valid_info::ValidationInfo, field_value)
     return check_limits(valid_info.field_type, valid_info, field_value)
 end
 

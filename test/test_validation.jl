@@ -20,7 +20,7 @@ include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
         return false
     end
     @test find_struct()
-    @test_throws(ErrorException, PowerSystems.read_validation_descriptor("badfile.json"))
+    @test_throws(ErrorException, PowerSystems.read_validation_descriptor("badfile.toml"))
 end
 
 @testset "Test adding custom validation YAML file to System" begin
