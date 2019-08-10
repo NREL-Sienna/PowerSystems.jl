@@ -292,7 +292,7 @@ function convert_type!(
         index_end_type = findfirst(")", key_str).start - 1
 
         initial_time_str = key_str[index_start_time:index_end_time]
-        initial_time = Dates.DateTime(initial_time_str)
+        initial_time = Dates.DateTime(initial_time_str, "yyyy-mm-ddTHH:MM:SS")
 
         forecast_type_str = key_str[index_start_type:index_end_type]
         type_str, params = separate_type_and_parameter_types(forecast_type_str)
