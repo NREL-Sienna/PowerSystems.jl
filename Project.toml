@@ -1,6 +1,6 @@
 name = "PowerSystems"
 uuid = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
-authors = ["Jose Daniel Lara", "Dheepak Krishnamurthy", "Clayton Barrows"]
+authors = ["Jose Daniel Lara", "Dheepak Krishnamurthy", "Clayton Barrows", "Daniel Thom"]
 version = "0.4.0"
 
 [deps]
@@ -25,7 +25,5 @@ YAML = ">= 0.3.2"
 julia = ">= 1.1.0"
 
 [extras]
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-test = ["Test"]
