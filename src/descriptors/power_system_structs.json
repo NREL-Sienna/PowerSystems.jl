@@ -705,33 +705,13 @@
         "data_type": "Float64"
       },
       {
-        "name": "bus",
-        "null_value": "Bus(nothing)",
-        "data_type": "Bus"
-      },
-      {
-        "name": "model",
-        "null_value": "ConstantPower::LoadModel",
-        "data_type": "LoadModel"
-      },
-      {
-        "name": "activepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64"
-      },
-      {
         "name": "maxactivepower",
-        "null_value": "0",
+        "null_value": "0.0",
         "data_type": "Float64"
       },
       {
         "name": "maxreactivepower",
-        "null_value": "0",
+        "null_value": "0.0",
         "data_type": "Float64"
       },
       {

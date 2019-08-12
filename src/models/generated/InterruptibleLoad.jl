@@ -10,22 +10,18 @@ mutable struct InterruptibleLoad <: ControllableLoad
     model::LoadModel
     activepower::Float64
     reactivepower::Float64
-    bus::Bus
-    model::LoadModel
-    activepower::Float64
-    reactivepower::Float64
     maxactivepower::Float64
     maxreactivepower::Float64
     op_cost::TwoPartCost
     internal::PowerSystemInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
+function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
 end
 
-function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -38,12 +34,8 @@ function InterruptibleLoad(::Nothing)
         model=ConstantPower::LoadModel,
         activepower=0.0,
         reactivepower=0.0,
-        bus=Bus(nothing),
-        model=ConstantPower::LoadModel,
-        activepower=0.0,
-        reactivepower=0.0,
-        maxactivepower=0,
-        maxreactivepower=0,
+        maxactivepower=0.0,
+        maxreactivepower=0.0,
         op_cost=TwoPartCost(nothing),
     )
 end
@@ -52,14 +44,6 @@ end
 get_name(value::InterruptibleLoad) = value.name
 """Get InterruptibleLoad available."""
 get_available(value::InterruptibleLoad) = value.available
-"""Get InterruptibleLoad bus."""
-get_bus(value::InterruptibleLoad) = value.bus
-"""Get InterruptibleLoad model."""
-get_model(value::InterruptibleLoad) = value.model
-"""Get InterruptibleLoad activepower."""
-get_activepower(value::InterruptibleLoad) = value.activepower
-"""Get InterruptibleLoad reactivepower."""
-get_reactivepower(value::InterruptibleLoad) = value.reactivepower
 """Get InterruptibleLoad bus."""
 get_bus(value::InterruptibleLoad) = value.bus
 """Get InterruptibleLoad model."""
