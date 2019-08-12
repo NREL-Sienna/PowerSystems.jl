@@ -152,7 +152,7 @@ function JSON2.write(forecast::Forecast)
 end
 
 function encode_for_json(forecast::T) where T <: Forecast
-    fields = Tuple(x for x in fieldnames(T) if x != :data)
+    fields = [x for x in fieldnames(T) if x != :data]
     vals = []
 
     for name in fields
@@ -168,7 +168,9 @@ function encode_for_json(forecast::T) where T <: Forecast
         end
     end
 
-    return NamedTuple{fields}(vals)
+    push!(fields, :type)
+    push!(vals, string(T.name))
+    return NamedTuple{Tuple(fields)}(vals)
 end
 
 """Creates a Forecast object by decoding the data that was in JSON. This data stores
@@ -179,7 +181,6 @@ function convert_type(
                       ::Type{T},
                       data::NamedTuple,
                       components::LazyDictFromIterator,
-                      parameter_types::Vector{DataType},
                       timeseries::TimeSeries.TimeArray,
                      ) where T <: Forecast
     @debug T data
@@ -203,8 +204,6 @@ function convert_type(
             end
 
             component_type = typeof(component)
-            @assert length(parameter_types) == 1
-            @assert component_type == parameter_types[1]
             push!(values, component)
         else
             obj = convert_type(fieldtype, val)
