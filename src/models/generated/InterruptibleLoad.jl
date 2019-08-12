@@ -28,12 +28,12 @@ mutable struct InterruptibleLoad <: ControllableLoad
     internal::PowerSystemInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
+function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
 end
 
-function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -68,14 +68,6 @@ end
 get_name(value::InterruptibleLoad) = value.name
 """Get InterruptibleLoad available."""
 get_available(value::InterruptibleLoad) = value.available
-"""Get InterruptibleLoad bus."""
-get_bus(value::InterruptibleLoad) = value.bus
-"""Get InterruptibleLoad model."""
-get_model(value::InterruptibleLoad) = value.model
-"""Get InterruptibleLoad activepower."""
-get_activepower(value::InterruptibleLoad) = value.activepower
-"""Get InterruptibleLoad reactivepower."""
-get_reactivepower(value::InterruptibleLoad) = value.reactivepower
 """Get InterruptibleLoad bus."""
 get_bus(value::InterruptibleLoad) = value.bus
 """Get InterruptibleLoad model."""

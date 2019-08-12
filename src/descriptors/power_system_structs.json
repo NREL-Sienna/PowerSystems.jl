@@ -797,12 +797,12 @@
       },
       {
         "name": "maxactivepower",
-        "null_value": "0",
+        "null_value": "0.0",
         "data_type": "Float64"
       },
       {
         "name": "maxreactivepower",
-        "null_value": "0",
+        "null_value": "0.0",
         "data_type": "Float64"
       },
       {
