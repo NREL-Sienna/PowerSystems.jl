@@ -5,9 +5,9 @@ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[CSV]]
 deps = ["CategoricalArrays", "DataFrames", "Dates", "Mmap", "Parsers", "PooledArrays", "Profile", "Tables", "Unicode", "WeakRefStrings"]
-git-tree-sha1 = "a7df9250dff3aba96436580dd6ac00d712364cab"
+git-tree-sha1 = "35205137ee2f5a9c1f358407e9ed0f1a17878919"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.5.9"
+version = "0.5.11"
 
 [[CategoricalArrays]]
 deps = ["Compat", "DataAPI", "Future", "JSON", "Missings", "Printf", "Reexport"]
@@ -28,15 +28,15 @@ uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
 version = "2.1.0"
 
 [[DataAPI]]
-git-tree-sha1 = "891a09f4f90361a28d0391c104a65c0202e22624"
+git-tree-sha1 = "8903f0219d3472543fc4b2f5ebaf675a07f817c0"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
-version = "1.0.0"
+version = "1.0.1"
 
 [[DataFrames]]
 deps = ["CategoricalArrays", "Compat", "DataAPI", "InvertedIndices", "IteratorInterfaceExtensions", "Missings", "PooledArrays", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "12a96f70fc126f8a308eadd4eda843dfa630bbd4"
+git-tree-sha1 = "48ef38bd7cf0e8fd598bda981409eb6ef4b96cbd"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "0.19.1"
+version = "0.19.2"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
@@ -201,9 +201,9 @@ version = "1.0.0"
 
 [[Tables]]
 deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "LinearAlgebra", "TableTraits", "Test"]
-git-tree-sha1 = "951b5be359e92703f886881b175ecfe924d8bd91"
+git-tree-sha1 = "aaed7b3b00248ff6a794375ad6adf30f30ca5591"
 uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
-version = "0.2.10"
+version = "0.2.11"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]
