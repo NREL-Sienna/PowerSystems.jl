@@ -120,9 +120,9 @@ function ScenarioBased(component::Component,
         initial_time : Dates.Hour(1) : initial_time + resolution * (time_steps-1),
         ones(time_steps, scenario_count)
     )
+    
 
-    return ScenarioBased(component, label, Dates.Minute(resolution), initial_time,
-                        scenario_count, data)
+    return ScenarioBased(component, label, Dates.Minute(resolution), initial_time, data)
 end
 
 """Constructs ScenarioBased Forecast after constructing a TimeArray from initial_time and time_steps.
@@ -132,12 +132,11 @@ function ScenarioBased(component::Component,
                        data::TimeSeries.TimeArray,
                       )
 
-    scenario_count = length(TimeSeries.colnames(data))
     initial_time = TimeSeries.timestamp(data)[1]
     resolution = getresolution(data)
 
     return ScenarioBased(component, label, Dates.Minute(resolution), initial_time,
-                         scenario_count, data)
+                         data)
 end
 
 function ScenarioBased(component::Component,
@@ -148,8 +147,8 @@ function ScenarioBased(component::Component,
     start_index = 1
     scenario_count = length(TimeSeries.colnames(data))
     horizon = length(data)
-    return ScenarioBased(component, label, resolution, initial_time, scenario_count, data,
-                         start_index, horizon, PowerSystemInternal())
+    return ScenarioBased(component, label, resolution, initial_time, scenario_count, data, 
+                            start_index, horizon, PowerSystemInternal())
 end
 
 function PowerLoadPF(name::String, available::Bool, bus::Bus, maxactivepower::Float64,
