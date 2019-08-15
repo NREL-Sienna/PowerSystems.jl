@@ -1,4 +1,5 @@
 using SparseArrays
+using Test
 include("../data/data_5bus_pu.jl")
 include("../data/data_14bus_pu.jl")
 # The 5-bus case from PowerModels data is modified to include 2 phase shifters
@@ -287,7 +288,7 @@ Ybus5_phaseshifter[1,5]=  -15.470297029703 +  154.70297029703im
 Ybus5_phaseshifter[4,5]= -3.33366670000333 + 33.3366670000333im
 Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
 
-@time @testset "PTDF matrices" begin
+@testset "PTDF matrices" begin
     P5 = PowerSystems.PTDF(branches5, nodes5);
     @test maximum(P5.data - S5_slackB4) <= 1e-3
     @test P5[branches5[1],nodes5[1]] == 0.1939166051164976
@@ -307,7 +308,7 @@ Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
     end
 end
 
-@time @testset "LODF matrices" begin
+@testset "LODF matrices" begin
     L5 = PowerSystems.LODF(branches5,nodes5)
     @test maximum(L5.data - Lodf_5) <= 1e-3
     @test L5[branches5[1],branches5[2]] == 0.3447946513849091
@@ -325,8 +326,9 @@ end
 
 end
 
-@time @testset "Ybus Matrix" begin
-    Ybus5 = PowerSystems.Ybus(branches5, nodes5)
+@testset "Ybus Matrix" begin
+
+    Ybus5 = Ybus(branches5, nodes5)
 
     I, J, V = findnz(Ybus5.data)
     indices = collect(zip(I,J))
@@ -336,7 +338,7 @@ end
     end
 
 
-    Ybus14 = PowerSystems.Ybus(branches14, nodes14);
+    Ybus14 = Ybus(branches14, nodes14);
     I, J, V = findnz(Ybus14.data)
     indices = collect(zip(I,J))
 
