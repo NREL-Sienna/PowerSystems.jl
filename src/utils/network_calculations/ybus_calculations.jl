@@ -1,12 +1,12 @@
 struct Ybus <: PowerNetworkMatrix
-    data::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64}
+    data::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64}
     axes::NTuple{2,Array}
     lookup::NTuple{2,Dict}
 end
 
-function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
+function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
                 b::Line,
-                num_bus::Dict{Int32,Int32})
+                num_bus::Dict{Int64, Int64})
 
     
     arc = get_arc(b)
@@ -28,9 +28,9 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 
 end
 
-function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
+function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
                 b::Transformer2W,
-                num_bus::Dict{Int32,Int32})
+                num_bus::Dict{Int64, Int64})
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -49,9 +49,9 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 
 end
 
-function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
+function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
                 b::TapTransformer,
-                num_bus::Dict{Int32,Int32})
+                num_bus::Dict{Int64, Int64})
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -76,7 +76,7 @@ end
 
 function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
                 b::PhaseShiftingTransformer,
-                num_bus::Dict{Int32,Int32})
+                num_bus::Dict{Int64,Int64})
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -102,7 +102,7 @@ end
 
 function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
                 fa::FixedAdmittance,
-                num_bus::Dict{Int32,Int32})
+                num_bus::Dict{Int64,Int64})
 
     bus = get_bus(fa)
     bus_no = num_bus[get_number(bus)]
@@ -127,9 +127,7 @@ function _buildybus(branches, nodes, fixed_admittances)
     for (ix,b) in enumerate(branches)
 
         if get_name(b) == "init"
-            throw(DataFormatError(
-                "The data in Branch is invalid"
-            ))
+            throw(DataFormatError("The data in Branch is invalid"))
         end
 
         _ybus!(ybus, b, num_bus)
@@ -149,7 +147,7 @@ function Ybus(branches, nodes, fixed_admittances)
     #Get axis names
     bus_ax = [get_number(bus) for bus in nodes]
     axes = (bus_ax, bus_ax)
-    look_up = (_make_ax_ref(bus_ax),_make_ax_ref(bus_ax))
+    look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
 
     ybus = _buildybus(branches, nodes, fixed_admittances)
 
@@ -162,7 +160,7 @@ function Ybus(branches, nodes)
     #Get axis names
     bus_ax = [get_number(bus) for bus in nodes]
     axes = (bus_ax, bus_ax)
-    look_up = (_make_ax_ref(bus_ax),_make_ax_ref(bus_ax))
+    look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
 
     ybus = _buildybus(branches, nodes, Vector{FixedAdmittance}())
 
@@ -172,7 +170,7 @@ end
 
 function Ybus(sys::System)
     branches = get_components(ACBranch, sys)
-    nodes = sort(collect(get_components(Bus, sys)) by = x -> x.number)
+    nodes = sort(collect(get_components(Bus, sys)), by = x -> x.number)
     fixed_admittances = get_components(FixedAdmittance, sys)
 
     return Ybus(branches, nodes)
