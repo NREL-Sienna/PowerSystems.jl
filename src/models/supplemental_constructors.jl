@@ -106,6 +106,52 @@ function Probabilistic(component::Component,
                          start_index, horizon, PowerSystemInternal())
 end
 
+
+"""Constructs ScenarioBased Forecast after constructing a TimeArray from initial_time and time_steps.
+"""
+function ScenarioBased(component::Component,
+                       label::String,
+                       resolution::Dates.Period,
+                       initial_time::Dates.DateTime,
+                       scenario_count::Int64,
+                       time_steps::Int)
+
+    data = TimeSeries.TimeArray(
+        initial_time : Dates.Hour(1) : initial_time + resolution * (time_steps-1),
+        ones(time_steps, scenario_count)
+    )
+
+    return ScenarioBased(component, label, Dates.Minute(resolution), initial_time,
+                        scenario_count, data)
+end
+
+"""Constructs ScenarioBased Forecast after constructing a TimeArray from initial_time and time_steps.
+"""
+function ScenarioBased(component::Component,
+                       label::String,
+                       data::TimeSeries.TimeArray,
+                      )
+
+    scenario_count = length(TimeSeries.colnames(data))
+    initial_time = TimeSeries.timestamp(data)[1]
+    resolution = getresolution(data)
+
+    return ScenarioBased(component, label, Dates.Minute(resolution), initial_time,
+                         scenario_count, data)
+end
+
+function ScenarioBased(component::Component,
+                       label::String,
+                       resolution::Dates.Period,
+                       initial_time::Dates.DateTime,
+                       data::TimeSeries.TimeArray)
+    start_index = 1
+    scenario_count = length(TimeSeries.colnames(data))
+    horizon = length(data)
+    return ScenarioBased(component, label, resolution, initial_time, scenario_count, data,
+                         start_index, horizon, PowerSystemInternal())
+end
+
 function PowerLoadPF(name::String, available::Bool, bus::Bus, maxactivepower::Float64,
                      power_factor::Float64)
     maxreactivepower = maxactivepower * sin(acos(power_factor))
