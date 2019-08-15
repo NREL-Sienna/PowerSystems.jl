@@ -2,6 +2,15 @@ struct Ybus <: PowerNetworkMatrix
     data::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64}
     axes::NTuple{2,Array}
     lookup::NTuple{2,Dict}
+
+        function Ybus(data::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
+                      axes::NTuple{2,Array},
+                     lookup::NTuple{2,Dict})
+
+            new(data,
+                axes,
+                lookup)
+        end
 end
 
 function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
@@ -173,6 +182,6 @@ function Ybus(sys::System)
     nodes = sort(collect(get_components(Bus, sys)), by = x -> x.number)
     fixed_admittances = get_components(FixedAdmittance, sys)
 
-    return Ybus(branches, nodes)
+    return Ybus(branches, nodes, fixed_admittances)
 
 end
