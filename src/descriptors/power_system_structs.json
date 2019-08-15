@@ -1148,12 +1148,12 @@
         "data_type": "Bus"
       },
       {
-        "name": "reactivepower",
+        "name": "activepower",
         "null_value": "0.0",
         "data_type": "Float64"
       },
       {
-        "name": "activepower",
+        "name": "reactivepower",
         "null_value": "0.0",
         "data_type": "Float64"
       },
