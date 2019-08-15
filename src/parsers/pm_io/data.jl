@@ -194,9 +194,9 @@ function _summary(io::IO, data::Dict{String,Any}; kwargs...)
 end
 =#
 
-component_table(data::Dict{String,Any}, component::String, args...) = component_table(data, component, args...)
+#component_table(data::Dict{String,Any}, component::String, args...) = component_table(data, component, args...)
 
-
+#=
 "recursively applies new_data to data, overwriting information"
 function update_data(data::Dict{String,Any}, new_data::Dict{String,Any})
     if haskey(data, "conductors") && haskey(new_data, "conductors")
@@ -210,7 +210,7 @@ function update_data(data::Dict{String,Any}, new_data::Dict{String,Any})
     end
     update_data!(data, new_data)
 end
-
+=#
 
 "calls the replicate function with PowerModels' global keys"
 function replicate(sn_data::Dict{String,Any}, count::Int; global_keys::Set{String}=Set{String}())
@@ -1745,7 +1745,7 @@ function _dfs(i, neighbors, component_lookup, touched)
     end
 end
 
-
+#=
 "Transforms single-conductor network data into multi-conductor data"
 function make_multiconductor(data::Dict{String,Any}, conductors::Int)
     if ismultinetwork(data)
@@ -1774,7 +1774,7 @@ function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
         error("Multiconductor Not Supported in PowerSystems")
         return
     end
-#=
+
     data["conductors"] = conductors
 
     for (key, item) in data
@@ -1800,9 +1800,9 @@ function _make_multiconductor(data::Dict{String,Any}, conductors::Real)
             #root non-dict items
         end
     end
-    =#
+   
 end
-
+ =#
 
 """
 Move gentype and genfuel fields to be subfields of gen

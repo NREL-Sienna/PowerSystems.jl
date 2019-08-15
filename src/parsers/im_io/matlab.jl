@@ -303,6 +303,3 @@ function check_type(typ, value)
         end
     end
 end
-
-
-
