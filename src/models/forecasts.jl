@@ -123,6 +123,10 @@ function _verify_forecasts(system_forecasts::SystemForecasts, forecasts)
 end
 
 function _add_forecasts!(system_forecasts::SystemForecasts, forecasts)
+    if length(forecasts) == 0
+        return
+    end
+
     if is_uninitialized(system_forecasts)
         # This is the first forecast added.
         forecast = forecasts[1]
@@ -246,8 +250,13 @@ function encode_for_json(system_forecasts::SystemForecasts)
 
     data = Dict()
     for field in fields
+        field == :data && continue
         data[string(field)] = getfield(system_forecasts, field)
     end
+
+    # Make a flat array of forecasts regardless of ForecastKey.
+    # Deserialization can re-create the existing structure.
+    data["forecasts"] = [x for (k, v) in system_forecasts.data for x in v]
 
     data["timeseries_infos"] = collect(values(uuid_to_timeseries))
     return data
@@ -259,17 +268,16 @@ struct TimeseriesSerializationInfo
     forecasts::Vector{Base.UUID}
 end
 
-"""Converts forecast JSON data to SystemForecasts. This version builds onto the passed dict
-instead of returning an object because ConcreteSystem is immutable.
-"""
+"""Converts forecast JSON data to SystemForecasts."""
 function convert_type!(
-                       forecasts::SystemForecasts,
+                       system_forecasts::SystemForecasts,
                        data::NamedTuple,
                        components::LazyDictFromIterator,
                       ) where T <: Forecast
     for field in (:initial_time, :resolution, :horizon, :interval)
-        field_type = fieldtype(typeof(forecasts), field)
-        setfield!(forecasts, field, convert_type(field_type, getproperty(data, field)))
+        field_type = fieldtype(typeof(system_forecasts), field)
+        setfield!(system_forecasts, field, convert_type(field_type,
+                                                        getproperty(data, field)))
     end
 
     forecast_uuid_to_timeseries = Dict{Base.UUID, TimeSeries.TimeArray}()
@@ -282,44 +290,18 @@ function convert_type!(
         end
     end
 
-    for symbol in propertynames(data.data)
-        key_str = string(symbol)
-        # Looks like this:
-        # "PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic{RenewableFix})"
-        index_start_time = findfirst("(", key_str).start + 1
-        index_end_time = findfirst(",", key_str).start - 1
-        index_start_type = index_end_time + 3
-        index_end_type = findfirst(")", key_str).start - 1
-
-        initial_time_str = key_str[index_start_time:index_end_time]
-        initial_time = Dates.DateTime(initial_time_str, "yyyy-mm-ddTHH:MM:SS")
-
-        forecast_type_str = key_str[index_start_type:index_end_type]
-        type_str, params = separate_type_and_parameter_types(forecast_type_str)
-        forecast_base_type = getfield(PowerSystems, Symbol(type_str))
-        parameter_types = [getfield(PowerSystems, Symbol(x)) for x in params]
-        if length(parameter_types) == 1
-            forecast_type = forecast_base_type{parameter_types[1]}
-        elseif length(parameter_types) == 0
-            forecast_type = forecast_base_type
-        else
-            @assert false
+    forecasts = Vector{Forecast}()
+    for forecast in data.forecasts
+        uuid = Base.UUID(forecast.internal.uuid.value)
+        if !haskey(forecast_uuid_to_timeseries, uuid)
+            throw(DataFormatError("unmatched timeseries UUID: $uuid $forecast"))
         end
-
-        key = ForecastKey(initial_time, forecast_type)
-
-        forecasts.data[key] = Vector{forecast_type}()
-        for forecast in getfield(data.data, symbol)
-            uuid = Base.UUID(forecast.internal.uuid.value)
-            if !haskey(forecast_uuid_to_timeseries, uuid)
-                throw(DataFormatError("unmatched timeseries UUID: $uuid $forecast"))
-            end
-            timeseries = forecast_uuid_to_timeseries[uuid]
-            push!(forecasts.data[key],
-                  convert_type(forecast_base_type, forecast, components, parameter_types,
-                               timeseries))
-        end
+        timeseries = forecast_uuid_to_timeseries[uuid]
+        forecast_base_type = getfield(PowerSystems, Symbol(forecast.type))
+        push!(forecasts, convert_type(forecast_base_type, forecast, components, timeseries))
     end
+
+    _add_forecasts!(system_forecasts, forecasts)
 end
 
 function Base.length(forecast::Forecast)
