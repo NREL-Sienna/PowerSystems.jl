@@ -10,18 +10,6 @@ mutable struct InterruptibleLoad <: ControllableLoad
     model::LoadModel
     activepower::Float64
     reactivepower::Float64
-    bus::Bus
-    model::LoadModel
-    activepower::Float64
-    reactivepower::Float64
-    bus::Bus
-    model::LoadModel
-    activepower::Float64
-    reactivepower::Float64
-    bus::Bus
-    model::LoadModel
-    activepower::Float64
-    reactivepower::Float64
     maxactivepower::Float64
     maxreactivepower::Float64
     op_cost::TwoPartCost
@@ -46,20 +34,8 @@ function InterruptibleLoad(::Nothing)
         model=ConstantPower::LoadModel,
         activepower=0.0,
         reactivepower=0.0,
-        bus=Bus(nothing),
-        model=ConstantPower::LoadModel,
-        activepower=0.0,
-        reactivepower=0.0,
-        bus=Bus(nothing),
-        model=ConstantPower::LoadModel,
-        activepower=0.0,
-        reactivepower=0.0,
-        bus=Bus(nothing),
-        model=ConstantPower::LoadModel,
-        activepower=0.0,
-        reactivepower=0.0,
-        maxactivepower=0,
-        maxreactivepower=0,
+        maxactivepower=0.0,
+        maxreactivepower=0.0,
         op_cost=TwoPartCost(nothing),
     )
 end

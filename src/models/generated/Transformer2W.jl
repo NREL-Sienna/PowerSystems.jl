@@ -8,7 +8,7 @@ mutable struct Transformer2W <: ACBranch
     available::Bool
     activepower_flow::Float64
     reactivepower_flow::Float64
-    arch::Arch
+    arc::Arc
     r::Float64  # System per-unit value
     x::Float64  # System per-unit value
     primaryshunt::Float64  # System per-unit value

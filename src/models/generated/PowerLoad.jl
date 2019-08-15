@@ -7,7 +7,7 @@ mutable struct PowerLoad <: StaticLoad
     name::String
     available::Bool
     bus::Bus
-    model::Union{Nothing, LoadModel}  # [Z, I, P]
+    model::Union{Nothing, LoadModel}
     activepower::Float64
     reactivepower::Float64
     maxactivepower::Float64

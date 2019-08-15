@@ -8,14 +8,14 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     available::Bool
     activepower_flow::Float64
     reactivepower_flow::Float64
-    arch::Arch
+    arc::Arc
     r::Float64  # System per-unit value
     x::Float64  # System per-unit value
     primaryshunt::Float64
     tap::Float64
     α::Float64
     rate::Union{Nothing, Float64}
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, )

@@ -8,12 +8,12 @@ mutable struct Line <: ACBranch
     available::Bool
     activepower_flow::Float64
     reactivepower_flow::Float64
-    arch::Arch
+    arc::Arc
     r::Float64  # System per-unit value
     x::Float64  # System per-unit value
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}  # System per-unit value
     rate::Float64
-    anglelimits::Min_Max
+    anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     internal::PowerSystemInternal
 end
 
