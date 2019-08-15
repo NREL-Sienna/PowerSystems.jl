@@ -37,12 +37,16 @@
       {
         "name": "startup",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "warn"
       },
       {
         "name": "shutdn",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "warn"
       },
       {
         "name": "internal",
@@ -58,12 +62,16 @@
         "name": "rating",
         "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "activepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "activepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "activepowerlimits",
@@ -73,7 +81,9 @@
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "reactivepowerlimits",
@@ -83,12 +93,16 @@
       {
         "name": "ramplimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+        "valid_range": {"min":0.0, "max": null},
+        "validation_action": "error"
       },
       {
         "name": "timelimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -104,12 +118,16 @@
         "name": "rating",
         "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "reactivepowerlimits",
@@ -119,7 +137,9 @@
       {
         "name": "powerfactor",
         "null_value": "1.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":1.0},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -136,12 +156,16 @@
         "name": "rating",
         "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "activepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "activepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "activepowerlimits",
@@ -151,7 +175,9 @@
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range" : "reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "reactivepowerlimits",
@@ -161,12 +187,16 @@
       {
         "name": "ramplimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "timelimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -202,13 +232,17 @@
         "name": "angle",
         "comment": "angle of the bus in radians",
         "null_value": "0.0",
-        "data_type": "Union{Nothing, Float64}"
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":-1.571, "max":1.571},
+        "validation_action": "error"
       },
       {
         "name": "voltage",
         "comment": "voltage as a multiple of basevoltage",
         "null_value": "0.0",
-        "data_type": "Union{Nothing, Float64}"
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": "voltagelimits",
+        "validation_action": "warn"
       },
       {
         "name": "voltagelimits",
@@ -220,7 +254,10 @@
         "name": "basevoltage",
         "comment": "the base voltage in kV",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, Float64}"
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+
       },
       {
         "name": "internal",
@@ -271,17 +308,26 @@
       {
         "null_value": "0.0",
         "name": "r",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "null_value": "0.0",
         "name": "x",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "name": "b",
         "null_value": "(from=0.0, to=0.0)",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}"
+        "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":100.0},
+        "validation_action": "error"
       },
       {
         "null_value": "0.0",
@@ -290,8 +336,10 @@
       },
       {
         "name": "anglelimits",
-        "null_value": "(min=-90.0, max=-90.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "null_value": "(min=-3.142, max=3.142)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "valid_range": {"min":-3.142, "max":3.142},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -321,32 +369,45 @@
       {
         "null_value": "0.0",
         "name": "r",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "null_value": "0.0",
         "name": "x",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "null_value": "(from=0.0, to=0.0)",
         "name": "b",
-        "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}"
+        "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "name": "flowlimits",
         "null_value": "(from_to=0.0, to_from=0.0)",
+        "comment": "TODO: throw warning above max SIL",
         "data_type": "NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}"
       },
       {
         "null_value": "0.0",
         "name": "rate",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "TODO: compare to SIL (warn) (theoretical limit)"
       },
       {
         "name": "anglelimits",
-        "null_value": "(min=-90.0, max=-90.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "null_value": "(min=-3.142, max=3.142)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "valid_range": {"min":-3.142, "max":3.142},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -376,32 +437,47 @@
       {
         "null_value": "0.0",
         "name": "r",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "null_value": "0.0",
         "name": "x",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "name": "primaryshunt",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "Comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "name": "tap",
         "null_value": "1.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
-        "name": "α",
+        "name": "\u03B1",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":-3.142, "max":3.142},
+        "validation_action": "warn"
       },
       {
         "null_value": "0.0",
         "name": "rate",
-        "data_type": "Float64"
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -431,27 +507,40 @@
       {
         "null_value": "0.0",
         "name": "r",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":-2.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "null_value": "0.0",
         "name": "x",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":-2.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "name": "primaryshunt",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "name": "tap",
         "null_value": "1.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "name": "rate",
         "null_value": "0.0",
-        "data_type": "Union{Nothing, Float64}"
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -482,22 +571,33 @@
       {
         "null_value": "0.0",
         "name": "r",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":-2.0, "max":2.5},
+        "validation_action": "error"
       },
       {
         "null_value": "0.0",
         "name": "x",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":-2.0, "max":2.5},
+        "validation_action": "error"
       },
       {
         "name": "primaryshunt",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
       },
       {
         "name": "rate",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, Float64}"
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -819,12 +919,16 @@
       {
         "name": "storagecapacity",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "initial_storage",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -919,7 +1023,6 @@
       },
       {
         "name": "tech",
-        "comment": "[-1. -1]",
         "null_value": "TechThermal(nothing)",
         "data_type": "Union{Nothing, TechThermal}"
       },
@@ -992,13 +1095,17 @@
         "name": "energy",
         "null_value": "0.0",
         "comment": "State of Charge of the Battery p.u.-hr",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "capacity",
         "null_value": "(min=0.0, max=0.0)",
         "comment": "Maximum and Minimum storage capacity in p.u.-hr",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "rating",
@@ -1013,17 +1120,23 @@
       {
         "name": "inputactivepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "outputactivepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "efficiency",
         "null_value": "(in=0.0, out=0.0)",
-        "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}"
+        "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}",
+        "valid_range": {"min":0.0, "max":1.0},
+        "validation_action": "warn"
       },
       {
         "name": "reactivepower",
@@ -1061,7 +1174,9 @@
         "name": "timeframe",
         "comment": "the relative saturation timeframe",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -1089,7 +1204,9 @@
         "name": "timeframe",
         "comment": "the relative saturation timeframe",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "requirement",
@@ -1120,7 +1237,9 @@
       {
         "name": "timeframe",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "requirement",

@@ -106,6 +106,7 @@ export iterate_components
 export to_json
 export from_json
 export get_name
+export validate_system
 
 #################################################################################
 # Imports
@@ -195,7 +196,7 @@ include("parsers/cdm_parser.jl")
 include("parsers/pm2ps_parser.jl")
 
 # validation of System
-include("validation/powersystem.jl")
+include("validation/validation_functions.jl")
 
 # Better printing
 include("utils/print.jl")

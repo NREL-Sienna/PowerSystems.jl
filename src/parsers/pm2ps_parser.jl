@@ -32,7 +32,7 @@ function make_bus(bus_dict::Dict{String,Any})
     bus = Bus(bus_dict["number"],
                      bus_dict["name"],
                      bus_dict["bustype"],
-                     bus_dict["angle"],
+                     deg2rad(bus_dict["angle"]),
                      bus_dict["voltage"],
                      bus_dict["voltagelimits"],
                      bus_dict["basevoltage"]
@@ -86,7 +86,7 @@ function read_bus!(sys::System, data)
         bus_number = Int(d["bus_i"])
         bus = make_bus(bus_name, bus_number, d, bus_types)
         bus_number_to_bus[bus.number] = bus
-        add_component!(sys, bus)
+        add_component!(sys, bus; skip_validation=true)
     end
 
     return bus_number_to_bus
@@ -114,7 +114,7 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
             bus = bus_number_to_bus[d["load_bus"]]
             load = make_load(d, bus)
 
-            add_component!(sys, load)
+            add_component!(sys, load; skip_validation=true)
         end
     end
 end
@@ -155,7 +155,7 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
         end
 
         load_zones = make_loadzones(d_key, d, buses, active_power, reactive_power)
-        add_component!(sys, load_zones)
+        add_component!(sys, load_zones; skip_validation=true)
     end
 end
 
@@ -352,7 +352,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
             continue
         end
 
-        add_component!(sys, generator)
+        add_component!(sys, generator; skip_validation=true)
     end
 end
 
@@ -391,7 +391,7 @@ function make_line(name, d, bus_f, bus_t)
         x=d["br_x"],
         b=(from=d["b_fr"], to=d["b_to"]),
         rate=d["rate_a"],
-        anglelimits=(min=rad2deg(d["angmin"]), max=rad2deg(d["angmax"])),
+        anglelimits=(min=deg2rad(d["angmin"]), max=deg2rad(d["angmax"])),
     )
 end
 
@@ -447,7 +447,7 @@ function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
         bus_t = bus_number_to_bus[d["t_bus"]]
         value = make_branch(name, d, bus_f, bus_t)
 
-        add_component!(sys, value)
+        add_component!(sys, value; skip_validation=true)
     end
 end
 
@@ -477,7 +477,7 @@ function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
         bus_t = bus_number_to_bus[d["t_bus"]]
 
         dcline = make_dcline(name, d, bus_f, bus_t)
-        add_component!(sys, dcline)
+        add_component!(sys, dcline, skip_validation=true)
     end
 end
 
@@ -502,6 +502,6 @@ function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
         bus = bus_number_to_bus[d["shunt_bus"]]
         shunt = make_shunt(name, d, bus)
 
-        add_component!(sys, shunt)
+        add_component!(sys, shunt; skip_validation=true)
     end
 end

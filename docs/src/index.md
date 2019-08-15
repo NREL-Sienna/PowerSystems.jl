@@ -23,3 +23,14 @@ Once installed, the `PowerSystems` package can by used by typing
 ```julia
 using PowerSystems
 ```
+
+## Contents
+```@contents
+Pages = [
+  "man/data_requirements_table.md",
+  "man/data.md",
+  "man/guide.md",
+  "man/logging.md",
+  "man/tests.md"
+]
+```

@@ -5,6 +5,10 @@ include(joinpath(DATA_DIR,"data_14bus_pu.jl"))
 @testset "Test System constructors from .jl files" begin
     tPowerSystem = System(nothing)
 
+    for i in nodes5
+          nodes5[i].angle = deg2rad(nodes5[i].angle)
+    end
+
     sys5 = System(nodes5, thermal_generators5, loads5, nothing, nothing,  100.0, nothing,
                   nothing, nothing)
 
@@ -32,13 +36,17 @@ include(joinpath(DATA_DIR,"data_14bus_pu.jl"))
     # Test Data for 14 Bus
 
     # GitHub issue #234 - fix forecasts5 in data file, use new format
-    #_sys14 = PowerSystems._System(nodes14, thermal_generators14, loads14, nothing, nothing, 
+    #_sys14 = PowerSystems._System(nodes14, thermal_generators14, loads14, nothing, nothing,
     #                            100.0, Dict{Symbol,Vector{<:Forecast}}(),nothing,nothing)
     #sys14 = System(_sys14)
 
+    for i in nodes14
+          nodes14[i].angle = deg2rad(nodes14[i].angle)
+    end
+
     sys14b = PowerSystems.System(nodes14, thermal_generators14, loads14, nothing,
                                  battery14, 100.0, nothing, nothing, nothing)
-    sys14b = PowerSystems.System(nodes14, thermal_generators14, loads14, branches14, 
+    sys14b = PowerSystems.System(nodes14, thermal_generators14, loads14, branches14,
                                  battery14, 100.0, nothing, nothing, nothing)
 end
 

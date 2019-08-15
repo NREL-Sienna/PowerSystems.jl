@@ -158,12 +158,12 @@
             "system_per_unit": true
         },
         {
-            "unit": "degree",
+            "unit": "radian",
             "name": "min_angle_limits",
             "description": "Minimum Angle Limits"
         },
         {
-            "unit": "degree",
+            "unit": "radian",
             "name": "max_angle_limits",
             "description": "Continuous MW flow limit"
         },
@@ -524,7 +524,7 @@
             "description": "voltage magnitude setpoint"
         },
         {
-            "unit": "degrees",
+            "unit": "radian",
             "name": "angle",
             "description": "voltage angle setpoint"
         },

@@ -1,5 +1,7 @@
 
 const Components = Dict{DataType, Dict{String, <:Component}}
+const VALID_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
+                                            "descriptors", "validation_config.json")
 
 """
     System
@@ -30,7 +32,8 @@ const Components = Dict{DataType, Dict{String, <:Component}}
 
     # Keyword arguments
 
-    * `runchecks`::Bool : run available checks on input fields
+    * `runchecks`::Bool : run available checks on input fields. If an error is found in a field, that component will not be added to the system and InvalidRange is thrown.
+    * `configpath`::String : specify path to validation config file
     DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
 struct System <: PowerSystemType
@@ -38,6 +41,14 @@ struct System <: PowerSystemType
     forecasts::SystemForecasts
     basepower::Float64             # [MVA]
     internal::PowerSystemInternal
+    validation_descriptor::Vector
+
+    function System(components, forecasts, basepower, internal; kwargs...)
+        configpath = get(kwargs, :configpath, VALID_CONFIG_FILE)
+        runchecks = get(kwargs, :runchecks, true)
+        validation_descriptor = runchecks ? read_validation_descriptor(configpath) : Vector()
+        sys = new(components, forecasts, basepower, internal, validation_descriptor)
+    end
 end
 
 """Construct an empty System. Useful for building a System while parsing raw data."""
@@ -47,8 +58,8 @@ function System(basepower)
     return System(components, forecasts, basepower)
 end
 
-function System(components, forecasts, basepower)
-    return System(components, forecasts, basepower, PowerSystemInternal())
+function System(components, forecasts, basepower; kwargs...)
+    return System(components, forecasts, basepower, PowerSystemInternal(); kwargs...)
 end
 
 """System constructor when components are constructed externally."""
@@ -67,7 +78,8 @@ function System(buses::Vector{Bus},
     if isnothing(forecasts)
         forecasts = SystemForecasts()
     end
-    sys = System(components, forecasts, basepower)
+
+    sys = System(components, forecasts, basepower; kwargs...)
 
     arrays = [buses, generators, loads]
     if !isnothing(branches)
@@ -80,14 +92,32 @@ function System(buses::Vector{Bus},
         push!(arrays, services)
     end
 
+    error_detected = false
+
     for component in Iterators.flatten(arrays)
-        add_component!(sys, component)
+        try
+            add_component!(sys, component)
+        catch e
+            if isa(e, InvalidRange)
+                error_detected = true
+            else
+                rethrow()
+            end
+        end
     end
 
     load_zones = isnothing(annex) ? nothing : get(annex, :LoadZones, nothing)
     if !isnothing(load_zones)
         for lz in load_zones
-            add_component!(sys, lz)
+            try
+                add_component!(sys, lz)
+            catch e
+                if isa(e, InvalidRange)
+                    error_detected = true
+                else
+                    rethrow()
+                end
+            end
         end
     end
 
@@ -96,6 +126,11 @@ function System(buses::Vector{Bus},
     end
 
     runchecks = get(kwargs, :runchecks, true)
+
+    if error_detected
+        throw(InvalidRange("Invalid value(s) detected"))
+    end
+
     if runchecks
         check!(sys)
     end
@@ -156,8 +191,6 @@ function check!(sys::System)
         check_branches!(branches)
         calculate_thermal_limits!(branches, sys.basepower)
     end
-
-    generators = get_components(Generator, sys)
 end
 
 """Iterates over all components.
@@ -264,8 +297,10 @@ end
 Add a component to the system.
 
 Throws InvalidParameter if the component's name is already stored for its concrete type.
+
+Throws InvalidRange if any of the component's field values are outside of defined valid range.
 """
-function add_component!(sys::System, component::T) where T <: Component
+function add_component!(sys::System, component::T; skip_validation=false) where T <: Component
     if !isconcretetype(T)
         error("add_component! only accepts concrete types")
     end
@@ -276,8 +311,13 @@ function add_component!(sys::System, component::T) where T <: Component
         throw(InvalidParameter("$(component.name) is already stored for type $T"))
     end
 
+    if !isempty(sys.validation_descriptor) && !skip_validation
+        if !validate_fields(sys, component)
+            throw(InvalidRange("Invalid value"))
+        end
+    end
+
     sys.components[T][component.name] = component
-    return nothing
 end
 
 """
@@ -813,4 +853,24 @@ function compare_values(x::System, y::System)::Bool
     end
 
     return match
+end
+
+function read_validation_descriptor(filename::AbstractString)
+    if occursin(r"(\.yaml)|(\.yml)"i, filename)
+        data = open(filename) do file
+            YAML.load(file)
+        end
+    elseif occursin(r"(\.json)"i, filename)
+        str = String(read(filename))
+        #data = JSON2.read(str, Array{Dict{Any,Any}})
+        data = JSON2.read(str,Vector{Dict{Any,Union{String,Vector{Dict{Any,Any}}}}})
+    else
+        error("Filename is not a YAML or JSON file.")
+    end
+
+    if !isa(data, Array)
+        error("YAML or JSON file format must exactly match example in $VALID_CONFIG_FILE")
+    end
+
+    return data
 end

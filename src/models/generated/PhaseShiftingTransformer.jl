@@ -7,12 +7,12 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     name::String
     available::Bool
     arch::Arch
-    r::Float64
-    x::Float64
+    r::Float64  # System per-unit value
+    x::Float64  # System per-unit value
     primaryshunt::Float64
     tap::Float64
     α::Float64
-    rate::Float64
+    rate::Union{Nothing, Float64}
     internal::PowerSystems.PowerSystemInternal
 end
 
