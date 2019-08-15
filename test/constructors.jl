@@ -98,4 +98,3 @@ end
     tScenarioForecast = ScenarioBased(tg,"scalingfactor",forecast_data)
     @test  tScenarioForecast isa PowerSystems.Forecast
 end
-
