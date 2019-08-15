@@ -11,7 +11,9 @@
       {
         "name": "fixed",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "warn"
       },
       {
         "name": "internal",
@@ -1146,10 +1148,17 @@
         "data_type": "Bus"
       },
       {
-        "name": "activepower",
+        "name": "reactivepower",
         "null_value": "0.0",
         "data_type": "Float64",
         "valid_range": "reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "activepowerlimits",
         "validation_action": "warn"
       },
       {
