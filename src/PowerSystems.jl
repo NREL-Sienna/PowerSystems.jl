@@ -74,7 +74,7 @@ export Transfer
 
 export BevDemand
 export ChargingSegment
-export CharginePlan
+export ChargingPlan
 export Demand
 export Envelope
 export FlexibleDemand
@@ -95,6 +95,7 @@ export envelope
 export greedydemands
 export latestdemands
 export locateddemand
+export locations
 export verify
 export shortfall
 export verifylimits

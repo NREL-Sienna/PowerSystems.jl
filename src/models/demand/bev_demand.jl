@@ -25,6 +25,14 @@ const ChargingPlan{T <: TimeType, L} = TimeArray{ChargingSegment{L},1,T,Vector{C
 
 
 """
+Extract the locations from a charging plan.
+"""
+function locations(plan :: ChargingPlan{T,L}) :: TimeArray{L,1,T,Vector{L}} where T where L
+    map(x -> x.location, plan)
+end
+
+
+"""
 Extract the located demand from a charging plan.
 """
 function locateddemand(plan :: ChargingPlan{T,L}) :: LocatedDemand{T,L} where T where L
