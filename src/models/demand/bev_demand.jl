@@ -6,6 +6,57 @@ using Dates, MAT, TimeSeries
 
 
 """
+Segment of a charging plan for a BEV.
+
+# Type parameters
+- `L`            : network location
+"""
+const ChargingSegment{L} = NamedTuple{(:location, :chargerate, :chargeamount, :batterylevel), Tuple{L, Float64, Float64, Float64}}
+
+
+"""
+Charging plan for a BEV.
+
+# Type parameters
+- `T <: TimeType`: timestamp
+- `L`            : network location
+"""
+const ChargingPlan{T <: TimeType, L} = TimeArray{ChargingSegment{L},1,T,Vector{ChargingSegment{L}}}
+
+
+"""
+Extract the located demand from a charging plan.
+"""
+function locateddemand(plan :: ChargingPlan{T,L}) :: LocatedDemand{T,L} where T where L
+    map(x -> (x.location, x.chargerate), plan)
+end
+
+
+"""
+Extract the charge rate from a charging plan.
+"""
+function chargerate(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.chargerate, plan)
+end
+
+
+"""
+Extract the charge amount from a charging plan.
+"""
+function chargeamount(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.chargeamount, plan)
+end
+
+
+"""
+Extract the battery level from a charging plan.
+"""
+function batterylevel(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.batterylevel, plan)
+end
+
+
+"""
 Detailed representation of a flexible, mobile demand.  Typically, this may represent single or multiple battery-electric vehicles.
 
 This records the location of the demand and its consumption of its stored energy (i.e., its battery) as a function of time, along with physical parameters and constraints: storage capacity, charge/discharge effiency, maximum charge/discharge rate, and temporal boundary conditions.  Charging represents grid-to-vehicle transfer of energy and discharging represents vehicle-to-grid transfer.
@@ -263,6 +314,193 @@ function latestdemands(demand :: BevDemand{T,L}, final :: Float64) :: Tuple{Loca
         aligntimes(map(v -> v[1], demand.locations), TimeArray(zt, zv)),
         b
     )
+end
+
+
+"""
+Procedural approach for BEV Greedy charging scenario, maximizing the BEV's battery level.
+
+# Arguments
+- `demand :: BevDemand{T,L}`: the BEV demand
+- `prices :: TimeArray{T}`  : the electricity prices
+
+# Returns
+- `result() :: ChargingPlan{T,L}` : a function that results the located demand,
+                                    but which can only be called after the model
+                                    has been solved
+
+"""
+function greedydemands(demand :: BevDemand{T,L}, prices :: TimeArray{Float64,1,T,Vector{Float64}}) :: ChargingPlan{T,L} where L where T <: TimeType
+    @warn "`PowerSystems.greedydemands` fails some tests."
+    eff = applyefficiencies(demand)
+
+    onehour = Time(1) - Time(0)
+    eff = applyefficiencies(demand)
+    x = aligntimes(aligntimes(demand.locations, demand.power), prices)
+    xt = timestamp(x)
+    xv = values(x)
+
+    NT = length(x)
+    NP = NT - 1
+
+    hour = map(t -> t.instant / onehour, xt)
+    location = map(v -> v[1][1][1], xv)
+    duration = (xt[2:NT] - xt[1:NP]) / onehour
+    chargemin = duration .* map(v -> min(v[1][1][2].ac, demand.rate.ac.min), xv[1:NP])
+    chargemax = duration .* map(v -> min(v[1][1][2].ac, demand.rate.ac.max), xv[1:NP])
+    consumption = duration .* map(v -> v[1][2], xv[1:NP])
+
+    #Find value of greatest consumption in back-to-back time interval
+    consumpMax = [0.0]
+    consumpCompare = [0.0]
+    for i in 1:NP
+        if i == 1
+            if consumption[1] > 0
+                consumpCompare[1] += consumption[1]
+            end
+        else
+            if consumption[i] > 0 && consumption[i-1] == 0
+                consumpCompare[1] += consumption[i]
+            elseif consumption[i] > 0 && consumption[i-1] > 0
+                consumpCompare[1] += consumption[i]
+            elseif consumption[i] == 0
+                consumpMax[1] = max(consumpMax[1], consumpCompare[1])
+                consumpCompare[1] = 0
+            end
+        end
+    end
+
+    ##Attempt greedy charging procedure with inital battery level at maximum capacity
+
+    #Initialize battery levels
+    battery = [demand.capacity.max] #Initial and final battery values?
+    charge = []
+
+    for i in 1:NP
+        if (battery[i] < demand.capacity.max) && (chargemax[i] > 0)
+            if (battery[i] + chargemax[i]) > demand.capacity.max
+                append!(battery, demand.capacity.max)
+                append!(charge, (demand.capacity.max - battery[i]))
+            else
+                append!(battery, battery[i] + chargemax[i])
+                append!(charge, chargemax[i])
+            end
+        elseif (battery[i] == demand.capacity.max) && (consumption[i] == 0)
+            append!(battery, battery[i])
+            append!(charge, 0.0)
+        elseif (chargemax[i] == 0.0) && (consumption[i] == 0)
+            append!(battery, battery[i])
+            append!(charge, 0.0)
+        elseif consumption[i] > 0
+            append!(battery, battery[i] - consumption[i])
+            append!(charge, 0.0)
+        end
+    end
+
+    if length(battery[battery .< 0]) > 0
+        battery = []
+        for i in 1:NT
+            append!(battery, NaN)
+        end
+
+        charge = []
+        for i in 1:NP
+            append!(charge, NaN)
+        end
+
+    elseif (sum(consumption) > sum(chargemax)) && (length(battery[battery .< 0]) == 0)
+        battery = []
+        for i in 1:NT
+            append!(battery, NaN)
+        end
+
+        charge = []
+        for i in 1:NP
+            append!(charge, NaN)
+        end
+
+#   elseif (battery[96] < demand.capacity.max) && length(battery[battery .< 0]) == 0 && sum(consumption) <= sum(chargemax)
+    elseif (battery[NT] < demand.capacity.max) && length(battery[battery .< 0]) == 0 && sum(consumption) <= sum(chargemax)
+        #Create curve ignoring maximum battery capacity
+        battery = [demand.capacity.max]
+        charge = []
+        for i in 1:NP
+            if chargemax[i] > 0
+                append!(battery, battery[i] + chargemax[i])
+                append!(charge, chargemax[i])
+            elseif consumption[i] > 0
+                append!(battery, battery[i] - consumption[i])
+                append!(charge, 0.0)
+            elseif (chargemax[i] == 0.0) && (consumption[i] == 0)
+                append!(battery, battery[i])
+                append!(charge, 0.0)
+            end
+        end
+
+        #Check if there is a starting charge value for which the ending charge value can be equal.
+        if consumpMax[1] > (demand.capacity.max - demand.capacity.min)
+            battery = []
+            for i in 1:NT
+                append!(battery, NaN)
+            end
+
+            charge = []
+            for i in 1:NP
+                append!(charge, NaN)
+            end
+
+        elseif battery[NT] >= battery[1] && consumpMax[1] <= (demand.capacity.max - demand.capacity.min)
+            #Shift data down such that the maximum battery level lies along the
+            #maximum battery capacity line.
+            shift1 = minimum(battery) - demand.capacity.min
+            for i in 1:NT
+                battery[i] -= shift1
+            end
+            if(maximum(battery) > demand.capacity.max)
+                shift = maximum(battery) - demand.capacity.max
+            else
+                shift = 0
+            end
+            battery = [battery[NT] - shift]
+            charge = []
+
+
+            #Apply greedy charging procedure with new inital battery level
+            for i in 1:NP
+                if (battery[i] < demand.capacity.max) && (chargemax[i] > 0)
+                    if (battery[i] + chargemax[i]) > demand.capacity.max
+                        append!(battery, demand.capacity.max)
+                        append!(charge, (demand.capacity.max - battery[i]))
+                    else
+                        append!(battery, battery[i] + chargemax[i])
+                        append!(charge, chargemax[i])
+                    end
+                elseif (battery[i] == demand.capacity.max) && (consumption[i] == 0)
+                    append!(battery, battery[i])
+                    append!(charge, 0.0)
+                elseif (chargemax[i] == 0.0) && (consumption[i] == 0)
+                    append!(battery, battery[i])
+                    append!(charge, 0.0)
+                elseif consumption[i] > 0
+                    append!(battery, battery[i] - consumption[i])
+                    append!(charge, 0.0)
+                end
+            end
+        end
+    end
+
+    convert(Array{Float64}, battery)
+    convert(Array{Float64}, charge)
+    #Contains optimization charging results with charging rate from charger during each time interval
+
+    TimeArray(
+        xt,
+        vcat(
+            [(location=location[i] , chargerate=eff(charge[i] / duration[i]), chargeamount=charge[i], batterylevel=battery[i] ) for i in 1:NP],
+             (location=location[NT], chargerate=NaN                         , chargeamount=NaN      , batterylevel=battery[NT])
+        )
+    )
+
 end
 
 

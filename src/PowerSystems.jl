@@ -73,6 +73,8 @@ export StaticReserve
 export Transfer
 
 export BevDemand
+export ChargingSegment
+export CharginePlan
 export Demand
 export Envelope
 export FlexibleDemand
@@ -84,10 +86,15 @@ export MobileDemand
 export StationaryInflexibleDemand
 export TemporalDemand
 export aligntimes
+export batterylevel
+export chargeamount
+export chargerate
 export demands
 export earliestdemands
 export envelope
+export greedydemands
 export latestdemands
+export locateddemand
 export verify
 export shortfall
 export verifylimits
