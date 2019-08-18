@@ -51,7 +51,7 @@ end
 
 
 """
-The "envelope" of minimum and maximum allowable demands at each time pont, with a location for the demand.
+The "envelope" of minimum and maximum allowable demands at each time point, with a location for the demand.
 
 # Arguments
 - `demand :: BevDemand{T,L}`: the demand
