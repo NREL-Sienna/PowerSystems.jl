@@ -54,7 +54,11 @@ function make_pf(system)
                 generator = gen
             end
         end        
-        isnothing(generator) ? total_gen = (0.0, 0.0) : total_gen = (generator.activepower, generator.reactivepower)
+        if isnothing(generator) 
+            total_gen = (0.0, 0.0)  
+        else
+            total_gen = (generator.activepower, generator.reactivepower)
+        end
         # get load data
         total_load = [(sum(l.activepower), sum(l.reactivepower)) for l in get_components(ElectricLoad, system) if l.bus == b]
         isempty(total_load) ? total_load = (0.0,0.0) : total_load = total_load[1]
