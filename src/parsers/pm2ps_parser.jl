@@ -166,28 +166,28 @@ function make_hydro_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
     tech = TechHydro(;
         rating=calculate_rating(d["pmax"], d["qmax"]),
-        primemover=convert(FuelTypes, d["type"]),
+        primemover=convert(PrimeMovers, d["type"]),
         activepowerlimits=(min=d["pmin"], max=d["pmax"]),
         reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
         ramplimits=(up=ramp_agc / d["mbase"], down=ramp_agc / d["mbase"]),
         timelimits=nothing,
     )
 
-    curtailcost = 0.0
+    curtailcost = TwoPartCost(0.0, 0.0)
 
-    return HydroDispatch(gen_name,
-                         Bool(d["gen_status"]),
-                         bus,
+    return HydroDispatch(name = gen_name,
+                         available = Bool(d["gen_status"]),
+                         bus = bus,
                          activepower = d["pg"],
                          reactivepower = d["qg"],
-                         tech,
-                         curtailcost)
+                         tech = tech,
+                         op_cost = curtailcost)
 end
 
 function make_tech_renewable(d)
     tech = TechRenewable(;
         rating=float(d["pmax"]),
-        primemover=convert(FuelTypes, d["type"]),
+        primemover=convert(PrimeMovers, d["type"]),
         reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
         powerfactor=1.0,
     )

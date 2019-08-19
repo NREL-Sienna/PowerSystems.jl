@@ -81,22 +81,40 @@ function convert_units!(value::Float64,
     return value
 end
 
-function Base.convert(::Type{ThermalFuels}, fuel::String)
+function Base.convert(::Type{ThermalFuels}, fuel::AbstractString)
     map = ((string(e),e) for e in instances(ThermalFuels)) |> Dict
-    return map[fuel]
+    extras = Dict("NG" => NATURAL_GAS::ThermalFuels,
+                  "NUC" => NUCLEAR::ThermalFuels,
+                  "GAS" => NATURAL_GAS::ThermalFuels,
+                  "OIL" => DISTILLATE_FUEL_OIL::ThermalFuels,
+                  "SYNC_COND" => OTHER::ThermalFuels)
+
+    [push!(map, e) for e in extras]
+    return map[uppercase(fuel)]
 end
 
 function Base.convert(::Type{ThermalFuels}, fuel::Symbol)
-    map = ((Symbol(e),e) for e in instances(ThermalFuels)) |> Dict
-    return map[fuel]
+    return convert(string(fuel))
 end
 
-function Base.convert(::Type{PrimeMovers}, primemover::String)
+function Base.convert(::Type{PrimeMovers}, primemover::AbstractString)
     map = ((string(e),e) for e in instances(PrimeMovers)) |> Dict
-    return map[primemover]
+    extras = Dict("W2" => WT::PrimeMovers,
+                  "WIND" => WT::PrimeMovers,
+                  "PV" => PVe::PrimeMovers,
+                  "RTPV" => PVe::PrimeMovers,
+                  "NB" => ST::PrimeMovers,
+                  "STEAM" => ST::PrimeMovers,
+                  "HYDRO" => HY::PrimeMovers,
+                  "NUCLEAR" => ST::PrimeMovers,
+                  "SYNC_COND" => OT::PrimeMovers,
+                  "CSP" => CP::PrimeMovers,
+                  "UN" => OT::PrimeMovers)
+
+    [push!(map, e) for e in extras]
+    return map[uppercase(primemover)]
 end
 
 function Base.convert(::Type{PrimeMovers}, primemover::Symbol)
-    map = ((Symbol(e),e) for e in instances(PrimeMovers)) |> Dict
-    return map[primemover]
+    return convert(string(primemover))
 end
