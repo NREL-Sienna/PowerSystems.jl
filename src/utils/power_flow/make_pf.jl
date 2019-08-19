@@ -42,21 +42,25 @@ function make_pf(system)
     end
 
     var_count = 1
-	res_dict = Dict{String, Vector{Tuple{Symbol, Int}}}() 
-	x0 = Array{Float64}(undef, bus_count*2)	
-    
-	for (ix, b) in enumerate(buses)
-         #Gets relevant data about the system, changes with the system that goes in.
-		 generators = [g for g in get_components(Generator, system) if g.bus == b]
-		 if length(generators) > 1
-            throw(DataFormatError("There is more than one generator connected to Bus $b.name"))
-		 end
-         isempty(generators) ? total_gen = (0.0, 0.0) : total_gen = (sum(generators[1].activepower), sum(generators[1].reactivepower))
-         total_load = [(sum(l.activepower), sum(l.reactivepower)) for l in get_components(ElectricLoad, system) if l.bus == b]
-         isempty(total_load) ? total_load = (0.0,0.0) : total_load = total_load[1]
-         #Make symbols for the variables names w.r.t bus names
-         Vm_name = Symbol("Vm_",b.number)
-         ang_name = Symbol("θ_",b.number)
+    res_dict = Dict{String, Vector{Tuple{Symbol, Int}}}() 
+    x0 = Array{Float64}(undef, bus_count*2)	
+
+    for (ix, b) in enumerate(buses)
+        #Gets relevant data about the generators
+        generator = nothing
+        for gen in get_components(Generator, system)
+            if gen.bus == b
+                !isnothing(generator) && throw(DataFormatError("There is more than one generator connected to Bus $b.name"))
+                generator = gen
+            end
+        end        
+        isnothing(generator) ? total_gen = (0.0, 0.0) : total_gen = (generator.activepower, generator.reactivepower)
+        # get load data
+        total_load = [(sum(l.activepower), sum(l.reactivepower)) for l in get_components(ElectricLoad, system) if l.bus == b]
+        isempty(total_load) ? total_load = (0.0,0.0) : total_load = total_load[1]
+        #Make symbols for the variables names w.r.t bus names
+        Vm_name = Symbol("Vm_",b.number)
+        ang_name = Symbol("θ_",b.number)
         if b.bustype == REF::BusType
             P_name = Symbol("P_",b.number)
             Q_name = Symbol("Q_",b.number)
