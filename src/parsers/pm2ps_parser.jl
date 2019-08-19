@@ -166,9 +166,8 @@ function make_hydro_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
     tech = TechHydro(;
         rating=calculate_rating(d["pmax"], d["qmax"]),
-        activepower=d["pg"],
+        primemover=convert(FuelTypes, d["type"]),
         activepowerlimits=(min=d["pmin"], max=d["pmax"]),
-        reactivepower=d["qg"],
         reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
         ramplimits=(up=ramp_agc / d["mbase"], down=ramp_agc / d["mbase"]),
         timelimits=nothing,
@@ -176,13 +175,19 @@ function make_hydro_gen(gen_name, d, bus)
 
     curtailcost = 0.0
 
-    return HydroDispatch(gen_name, Bool(d["gen_status"]), bus, tech, curtailcost)
+    return HydroDispatch(gen_name,
+                         Bool(d["gen_status"]),
+                         bus,
+                         activepower = d["pg"],
+                         reactivepower = d["qg"],
+                         tech,
+                         curtailcost)
 end
 
 function make_tech_renewable(d)
     tech = TechRenewable(;
         rating=float(d["pmax"]),
-        reactivepower=d["qg"],
+        primemover=convert(FuelTypes, d["type"]),
         reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
         powerfactor=1.0,
     )
@@ -197,6 +202,8 @@ function make_renewable_dispatch(gen_name, d, bus)
         name=gen_name,
         available=Bool(d["gen_status"]),
         bus=bus,
+        activepower = d["pg"],
+        reactivepower = d["qg"],
         tech=tech,
         op_cost=cost,
     )
@@ -210,6 +217,8 @@ function make_renewable_fix(gen_name, d, bus)
         name=gen_name,
         available=Bool(d["gen_status"]),
         bus=bus,
+        activepower = d["pg"],
+        reactivepower = d["qg"],
         tech=tech,
     )
 
@@ -282,13 +291,13 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
 
     tech = TechThermal(;
-        rating=sqrt(d["pmax"]^2 + d["qmax"]^2),
-        activepower=d["pg"],
-        activepowerlimits=(min=d["pmin"], max=d["pmax"]),
-        reactivepower=d["qg"],
-        reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
-        ramplimits=(up=ramp_agc / d["mbase"], down=ramp_agc / d["mbase"]),
-        timelimits=nothing,
+        rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
+        primemover = convert(PrimeMovers, d["type"]),
+        fuel = convert(ThermalFuels, d["fuel"]),
+        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
+        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
+        ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
+        timelimits = nothing,
     )
     op_cost = ThreePartCost(;
         variable=cost,
@@ -301,6 +310,8 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         name=gen_name,
         available=Bool(d["gen_status"]),
         bus=bus,
+        activepower = d["pg"],
+        reactivepower = d["qg"],
         tech=tech,
         op_cost=op_cost,
     )
@@ -332,11 +343,11 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         end
 
         bus = bus_number_to_bus[pm_gen["gen_bus"]]
-        fuel = get(pm_gen, "fuel", "generic")
-        unit_type = get(pm_gen, "type", "generic")
-        @debug "Found generator" gen_name bus fuel unit_type
+        pm_gen["fuel"] = get(pm_gen, "fuel", "OTHER")
+        pm_gen["type"] = get(pm_gen, "type", "OT")
+        @debug "Found generator" gen_name bus pm_gen["fuel"] pm_gen["type"]
 
-        gen_type = get_generator_type(fuel, unit_type, genmap)
+        gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], genmap)
         if gen_type == ThermalStandard
             generator = make_thermal_gen(gen_name, pm_gen, bus)
         elseif gen_type == HydroDispatch
@@ -386,9 +397,14 @@ function make_branch(name, d, bus_f, bus_t)
 end
 
 function make_line(name, d, bus_f, bus_t)
+    pf = get(d,"pf", 0.0)
+    qf = get(d,"qf", 0.0)
+
     return Line(;
         name=name,
         available=Bool(d["br_status"]),
+        activepower_flow = pf,
+        reactivepower_flow = qf,
         arc=Arc(bus_f, bus_t),
         r=d["br_r"],
         x=d["br_x"],
@@ -399,9 +415,13 @@ function make_line(name, d, bus_f, bus_t)
 end
 
 function make_transformer_2w(name, d, bus_f, bus_t)
+    pf = get(d,"pf", 0.0)
+    qf = get(d,"qf", 0.0)
     return Transformer2W(;
         name=name,
         available=Bool(d["br_status"]),
+        activepower_flow = pf,
+        reactivepower_flow = qf,
         arc=Arc(bus_f, bus_t),
         r=d["br_r"],
         x=d["br_x"],
@@ -411,9 +431,13 @@ function make_transformer_2w(name, d, bus_f, bus_t)
 end
 
 function make_tap_transformer(name, d, bus_f, bus_t)
+    pf = get(d,"pf", 0.0)
+    qf = get(d,"qf", 0.0)
     return TapTransformer(;
         name=name,
         available=Bool(d["br_status"]),
+        activepower_flow = pf,
+        reactivepower_flow = qf,
         arc=Arc(bus_f, bus_t),
         r=d["br_r"],
         x=d["br_x"],
@@ -424,9 +448,13 @@ function make_tap_transformer(name, d, bus_f, bus_t)
 end
 
 function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
+    pf = get(d,"pf", 0.0)
+    qf = get(d,"qf", 0.0)
     return PhaseShiftingTransformer(;
         name=name,
         available=Bool(d["br_status"]),
+        activepower_flow = pf,
+        reactivepower_flow = qf,
         arc=Arc(bus_f, bus_t),
         r=d["br_r"],
         x=d["br_x"],
@@ -458,6 +486,7 @@ function make_dcline(name, d, bus_f, bus_t)
     return HVDCLine(;
         name=name,
         available=Bool(d["br_status"]),
+        activepower_flow = get(d,"pf", 0.0),
         arc=Arc(bus_f, bus_t),
         activepowerlimits_from=(min=d["pminf"] , max=d["pmaxf"]),
         activepowerlimits_to=(min=d["pmint"], max=d["pmaxt"]),
