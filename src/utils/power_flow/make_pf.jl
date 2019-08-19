@@ -57,7 +57,7 @@ function make_pf(system)
          #Make symbols for the variables names w.r.t bus names
          Vm_name = Symbol("Vm_",b.number)
          ang_name = Symbol("θ_",b.number)
-        if Int(b.bustype) == 3
+        if b.bustype == REF::BusType
             P_name = Symbol("P_",b.number)
             Q_name = Symbol("Q_",b.number)
             net_p_load = :(-$(total_load[1]))
@@ -76,7 +76,7 @@ function make_pf(system)
             push!(internal.args, :(Vc[$ix] = conj(V[$ix])))
 			# Reference for the results Dict
 			res_dict[b.name] = [var_ref1, var_ref2]			
-        elseif Int(b.bustype) == 2			
+        elseif b.bustype == PV::BusType			
             Q_name = Symbol("Q_",b.number)
             net_p_load = :($(total_gen[1]) - $(total_load[1]))
             net_q_load = :(-$(total_load[2]))
@@ -93,7 +93,7 @@ function make_pf(system)
             push!(internal.args, :(Vc[$ix] = conj(V[$ix])))
 			# Reference for the results Dict
 			res_dict[b.name] = [var_ref1, var_ref2]
-        elseif Int(b.bustype) == 1
+        elseif b.bustype == PQ::BusType
             net_p_load = :($(total_gen[1]) - $(total_load[1]))
             net_q_load = :($(total_gen[2]) - $(total_load[2]))
 			var_ref1 = (:voltage, var_count)
