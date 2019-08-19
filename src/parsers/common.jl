@@ -80,3 +80,23 @@ function convert_units!(value::Float64,
     end
     return value
 end
+
+function Base.convert(::Type{ThermalFuels}, fuel::String)
+    map = ((string(e),e) for e in instances(ThermalFuels)) |> Dict
+    return map[fuel]
+end
+
+function Base.convert(::Type{ThermalFuels}, fuel::Symbol)
+    map = ((Symbol(e),e) for e in instances(ThermalFuels)) |> Dict
+    return map[fuel]
+end
+
+function Base.convert(::Type{PrimeMovers}, primemover::String)
+    map = ((string(e),e) for e in instances(PrimeMovers)) |> Dict
+    return map[primemover]
+end
+
+function Base.convert(::Type{PrimeMovers}, primemover::Symbol)
+    map = ((Symbol(e),e) for e in instances(PrimeMovers)) |> Dict
+    return map[primemover]
+end
