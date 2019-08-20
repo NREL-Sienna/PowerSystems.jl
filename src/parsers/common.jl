@@ -94,7 +94,7 @@ function Base.convert(::Type{ThermalFuels}, fuel::AbstractString)
 end
 
 function Base.convert(::Type{ThermalFuels}, fuel::Symbol)
-    return convert(string(fuel))
+    return convert(ThermalFuels, string(fuel))
 end
 
 function Base.convert(::Type{PrimeMovers}, primemover::AbstractString)
@@ -116,5 +116,5 @@ function Base.convert(::Type{PrimeMovers}, primemover::AbstractString)
 end
 
 function Base.convert(::Type{PrimeMovers}, primemover::Symbol)
-    return convert(string(primemover))
+    return convert(PrimeMovers, string(primemover))
 end
