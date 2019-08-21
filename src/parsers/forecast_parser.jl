@@ -72,32 +72,109 @@ Add forecasts to a system from a metadata file.
 
 # Arguments
 - `sys::System`: system
-- `directory_or_file::AbstractString`: directory to search for files or a specific file
-- `simulation::AbstractString`: simulation name
-- `category::DataType`: category of component for the forecast; can be abstract or concrete
-- `label::AbstractString`: forecast label
-- `resolution::Dates.DateTime=nothing`: only store forecasts with this resolution
-- `per_unit::Bool=false`: convert to per_unit
-- `REGEX_FILE::Regex`: only look at files matching this regular expression
+- `metadata_file::AbstractString`: path to metadata file
+- `resolution::{Nothing, Dates.Period}`: skip any forecasts that don't match this resolution
 
-Refer to [`add_forecasts!`](@ref) for exceptions thrown.
+See [`TimeseriesFileMetadata`](@ref) for description of what the file should contain.
 """
-function forecast_csv_parser!(
-                              sys::System,
-                              directory_or_file::AbstractString,
-                              simulation="Simulation",
-                              category::Type{<:Component}=Component,
-                              label="init",
-                              ; resolution=nothing,
-                              kwargs...
-                             )
-    forecast_infos = parse_forecast_data_files(sys, directory_or_file, simulation, category,
-                                               label; kwargs...)
-
-    return _forecast_csv_parser!(sys, forecast_infos, resolution)
+function add_forecasts!(sys::System, metadata_file::AbstractString; resolution=nothing)
+    add_forecasts!(sys, read_timeseries_metadata(metadata_file); resolution=resolution)
 end
 
-function _forecast_csv_parser!(sys::System, forecast_infos::ForecastInfos, resolution)
+"""
+    add_forecasts!(sys::System, timeseries_metadata::Vector{TimeseriesFileMetadata};
+                   resolution=nothing)
+
+Add forecasts to a system from a vector of TimeseriesFileMetadata values.
+#
+# Arguments
+- `sys::System`: system
+- `timeseries_metadata::Vector{TimeseriesFileMetadata}`: metadata values
+- `resolution::{Nothing, Dates.Period}`: skip any forecasts that don't match this resolution
+"""
+function add_forecasts!(sys::System, timeseries_metadata::Vector{TimeseriesFileMetadata};
+                        resolution=nothing)
+    forecast_infos = ForecastInfos()
+    for ts_metadata in timeseries_metadata
+        add_forecast_info!(forecast_infos, sys, ts_metadata)
+    end
+
+    _add_forecasts!(sys, forecast_infos, resolution)
+end
+
+"""
+    add_forecast!(sys::System, filename::AbstractString, component::Component,
+                  label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
+
+Add a forecast to a system from a CSV file.
+
+See [`TimeseriesFileMetadata`](@ref) for description of scaling_factor.
+"""
+function add_forecast!(sys::System, filename::AbstractString, component::Component,
+                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
+    component_name = get_name(component)
+    data = read_timeseries(filename, component_name)
+    timeseries = data[Symbol(component_name)]
+    _add_forecast!(sys, component, label, timeseries, scaling_factor)
+end
+
+"""
+    add_forecast!(sys::System, data::TimeSeries.TimeArray, component::Component,
+                  label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
+
+Add a forecast to a system from a TimeSeries.TimeArray.
+
+See [`TimeseriesFileMetadata`](@ref) for description of scaling_factor.
+"""
+function add_forecast!(sys::System, data::TimeSeries.TimeArray, component::Component,
+                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
+    timeseries = data[Symbol(get_name(component))]
+    _add_forecast!(sys, component, label, timeseries, scaling_factor)
+end
+
+"""
+    add_forecast!(sys::System, df::DataFrames.DataFrame, component::Component,
+                  label::AbstractString, scaling_factor::Union{String, Float64}=1.0)
+
+Add a forecast to a system from a DataFrames.DataFrame.
+
+See [`TimeseriesFileMetadata`](@ref) for description of scaling_factor.
+"""
+function add_forecast!(sys::System, df::DataFrames.DataFrame, component::Component,
+                       label::AbstractString, scaling_factor::Union{String, Float64}=1.0;
+                       timestamp=:timestamp)
+    timeseries = TimeSeries.TimeArray(df; timestamp=timestamp)
+    add_forecast!(sys, timeseries, component, label, scaling_factor)
+end
+
+function _add_forecast!(sys::System, component::Component, label::AbstractString,
+                        timeseries::TimeSeries.TimeArray, scaling_factor)
+    timeseries = _handle_scaling_factor(timeseries, scaling_factor)
+    forecast = Deterministic(component, label, timeseries)
+    add_forecast!(sys, forecast)
+end
+
+function _handle_scaling_factor(timeseries::TimeSeries.TimeArray,
+                                scaling_factor::Union{String, Float64})
+    if scaling_factor isa String
+        if lowercase(scaling_factor) == "max"
+            max_value = maximum(TimeSeries.values(timeseries))
+            timeseries = timeseries ./ max_value
+            @debug "Normalize by max value" max_value
+        else
+            throw(DataFormatError("invalid scaling_factor=scaling_factor"))
+        end
+    elseif scaling_factor != 1.0
+        timeseries = timeseries ./ scaling_factor
+        @debug "Normalize by custom scaling factor" scaling_factor
+    else
+        @debug "forecast is already normalized"
+    end
+
+    return timeseries
+end
+
+function _add_forecasts!(sys::System, forecast_infos::ForecastInfos, resolution)
     for forecast in forecast_infos.forecasts
         len = length(forecast.data)
         @assert len >= 2
