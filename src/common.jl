@@ -32,7 +32,7 @@ end
     BA #Energy Storage, Battery
     BT #Turbines Used in a Binary Cycle (including those used for geothermal applications)
     CA #Combined-Cycle – Steam Part
-    CC #Combined-Cycle - Aggregated Plant *extension of EIA
+    CC #Combined-Cycle - Aggregated Plant *augmentation of EIA
     CE #Energy Storage, Compressed Air
     CP #Energy Storage, Concentrated Solar Power
     CS #Combined-Cycle Single-Shaft Combustion turbine and steam turbine share a single generator
@@ -49,7 +49,7 @@ end
     PS #Energy Storage, Reversible Hydraulic Turbine (Pumped Storage)
     OT #Other – Specify on SCHEDULE 9.
     ST #Steam Turbine (including nuclear, geothermal and solar steam; does not include combined-cycle turbine)
-    PVe #Photovoltaic
+    PVe #Photovoltaic *renaming from EIA PV to PVe to avoid conflict with BusType::PV
     WT #Wind Turbine, Onshore
     WS #Wind Turbine, Offshore
 end

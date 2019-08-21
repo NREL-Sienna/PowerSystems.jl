@@ -23,7 +23,8 @@ function get_field_descriptor(struct_descriptor::Dict, fieldname::AbstractString
             return field
         end
     end
-    error("field $fieldname does not exist in $(struct_descriptor["name"])")
+    @show fieldname
+    error("field $fieldname does not exist in $(struct_descriptor["struct_name"]) validation config")
 end
 
 function validate_fields(sys::System, ps_struct::T) where T <: PowerSystemType

@@ -13,6 +13,11 @@
             "description": "To Bus ID"
         },
         {
+            "name": "activepower_flow",
+            "unit": "MW",
+            "description": "Active power flow"
+        },
+        {
             "name": "mw_load",
             "description": "Power demand (MW)",
             "system_per_unit": true
@@ -166,6 +171,18 @@
             "unit": "radian",
             "name": "max_angle_limits",
             "description": "Continuous MW flow limit"
+        },
+        {
+            "name": "activepower_flow",
+            "unit": "MW",
+            "description": "Active power flow",
+            "system_per_unit": true
+        },
+        {
+            "name": "reactivepower_flow",
+            "unit": "MVAr",
+            "description": "Reactive power flow",
+            "system_per_unit": true
         },
         {
             "name": "tap",
@@ -348,7 +365,7 @@
         },
         {
             "name": "unit_type",
-            "description": "Unit Type"
+            "description": "Unit Prime Mover Type"
         },
         {
             "name": "category",

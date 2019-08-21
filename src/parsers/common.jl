@@ -109,7 +109,9 @@ function Base.convert(::Type{PrimeMovers}, primemover::AbstractString)
                   "NUCLEAR" => ST::PrimeMovers,
                   "SYNC_COND" => OT::PrimeMovers,
                   "CSP" => CP::PrimeMovers,
-                  "UN" => OT::PrimeMovers)
+                  "UN" => OT::PrimeMovers,
+                  "STORAGE" => BA::PrimeMovers,
+                )
 
     [push!(map, e) for e in extras]
     return map[uppercase(primemover)]

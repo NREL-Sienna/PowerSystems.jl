@@ -306,6 +306,8 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
         bus_from = get_bus(sys, branch.connection_points_from)
         bus_to = get_bus(sys, branch.connection_points_to)
         connection_points = Arc(bus_from, bus_to)
+        pf = get(branch, :pf, 0.0)
+        qf = get(branch, :qf, 0.0)
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
@@ -316,35 +318,41 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
             b = branch.primary_shunt / 2
             anglelimits = (min=-π/2, max=π/2) #TODO: add field in CSV
             value = Line(
-                branch.name,
-                available,
-                connection_points,
-                branch.r,
-                branch.x,
-                (from=b, to=b),
-                branch.rate,
-                anglelimits,
+                name = branch.name,
+                available = available,
+                activepower_flow = pf,
+                reactivepower_flow = qf,
+                arc = connection_points,
+                r = branch.r,
+                x = branch.x,
+                b = (from=b, to=b),
+                rate = branch.rate,
+                anglelimits = anglelimits
             )
         elseif branch_type == Transformer2W
             value = Transformer2W(
-                branch.name,
-                available,
-                connection_points,
-                branch.r,
-                branch.x,
-                branch.primary_shunt,
-                branch.rate,
+                name = branch.name,
+                available = available,
+                activepower_flow = pf,
+                reactivepower_flow = qf,
+                arc = connection_points,
+                r = branch.r,
+                x = branch.x,
+                primaryshunt = branch.primary_shunt,
+                rate = branch.rate,
             )
         elseif branch_type == TapTransformer
             value = TapTransformer(
-                branch.name,
-                available,
-                connection_points,
-                branch.r,
-                branch.x,
-                branch.primary_shunt,
-                branch.tap,
-                branch.rate,
+                name = branch.name,
+                available = available,
+                activepower_flow = pf,
+                reactivepower_flow = qf,
+                arc = connection_points,
+                r = branch.r,
+                x = branch.x,
+                primaryshunt = branch.primary_shunt,
+                tap = branch.tap,
+                rate = branch.rate,
             )
         elseif branch_type == PhaseShiftingTransformer
             # TODO create PhaseShiftingTransformer
@@ -369,6 +377,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
         bus_from = get_bus(sys, dc_branch.connection_points_from)
         bus_to = get_bus(sys, dc_branch.connection_points_to)
         connection_points = Arc(bus_from, bus_to)
+        pf = get(dc_branch, :pf, 0.0)
 
         if dc_branch.control_mode == "Power"
             mw_load = dc_branch.mw_load
@@ -381,14 +390,15 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
             loss = (l0=0.0, l1=dc_branch.loss) #TODO: Can we infer this from the other data?,
 
             value = HVDCLine(
-                dc_branch.name,
-                available,
-                connection_points,
-                activepowerlimits_from,
-                activepowerlimits_to,
-                reactivepowerlimits_from,
-                reactivepowerlimits_to,
-                loss
+                name = dc_branch.name,
+                available = available,
+                activepower_flow = pf,
+                arc = connection_points,
+                activepowerlimits_from = activepowerlimits_from,
+                activepowerlimits_to = activepowerlimits_to,
+                reactivepowerlimits_from = reactivepowerlimits_from,
+                reactivepowerlimits_to = reactivepowerlimits_to,
+                loss = loss
             )
         else
             rectifier_taplimits = (min=dc_branch.rectifier_tap_limits_min,
@@ -401,15 +411,16 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
             inverter_firingangle = (min=dc_branch.inverter_firing_angle_min,
                                     max=dc_branch.inverter_firing_angle_max)
             value = VSCDCLine(
-                dc_branch.name,
+                name = dc_branch.name,
                 available=true,
-                connection_points,
-                rectifier_taplimits,
-                rectifier_xrc,
-                rectifier_firingangle,
-                inverter_taplimits,
-                inverter_xrc,
-                inverter_firingangle,
+                activepower_flow = pf,
+                arc = connection_points,
+                rectifier_taplimits = rectifier_taplimits,
+                rectifier_xrc = rectifier_xrc,
+                rectifier_firingangle = rectifier_firingangle,
+                inverter_taplimits = inverter_taplimits,
+                inverter_xrc = inverter_xrc,
+                inverter_firingangle = inverter_firingangle,
             )
         end
 
@@ -461,11 +472,15 @@ function load_csv_parser!(sys::System, data::PowerSystemRaw)
     for ps_bus in get_components(Bus, sys)
         max_active_power = 0.0
         max_reactive_power = 0.0
+        active_power = 0.0
+        reactive_power = 0.0
         found = false
         for bus in iterate_rows(data, BUS::InputCategory)
             if bus.bus_id == ps_bus.number
                 max_active_power = bus.max_active_power
                 max_reactive_power = bus.max_reactive_power
+                active_power = get(bus, :active_power, max_active_power)
+                reactive_power = get(bus, :reactive_power, max_reactive_power)
                 found = true
                 break
             end
@@ -475,7 +490,16 @@ function load_csv_parser!(sys::System, data::PowerSystemRaw)
             throw(DataFormatError("Did not find bus index in Load data $(ps_bus.name)"))
         end
 
-        load = PowerLoad(ps_bus.name, true, ps_bus, max_active_power, max_reactive_power)
+
+        load = PowerLoad(
+                         name = ps_bus.name,
+                         available = true,
+                         bus = ps_bus,
+                         model = ConstantPower::LoadModel,
+                         activepower = active_power,
+                         reactivepower = reactive_power,
+                         maxactivepower = max_active_power,
+                         maxreactivepower = max_reactive_power)
         add_component!(sys, load)
     end
 end
@@ -615,13 +639,13 @@ function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
     reactive_power_limits = (min=gen.reactive_power_limits_min,
                              max=gen.reactive_power_limits_max)
     tech = TechThermal(
-        rating,
-        gen.active_power,
-        active_power_limits,
-        gen.reactive_power,
-        reactive_power_limits,
-        (up=gen.ramp_limits, down=gen.ramp_limits),
-        (up=gen.min_up_time, down=gen.min_down_time),
+        rating = rating,
+        primemover = convert(PrimeMovers, gen.unit_type),
+        fuel = convert(ThermalFuels, gen.fuel),
+        activepowerlimits = active_power_limits,
+        reactivepowerlimits = reactive_power_limits,
+        ramplimits = (up=gen.ramp_limits, down=gen.ramp_limits),
+        timelimits = (up=gen.min_up_time, down=gen.min_down_time),
     )
 
     capacity = gen.active_power_limits_max
@@ -635,7 +659,13 @@ function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
         shutdown_cost
     )
 
-    return ThermalStandard(gen.name, available, bus, tech, op_cost)
+    return ThermalStandard(gen.name, 
+                           available, 
+                           bus, 
+                           gen.active_power, 
+                           gen.reactive_power,
+                           tech, 
+                           op_cost)
 end
 
 function make_hydro_generator(data::PowerSystemRaw, gen, bus)
@@ -648,16 +678,21 @@ function make_hydro_generator(data::PowerSystemRaw, gen, bus)
                              max=gen.reactive_power_limits_max)
     tech = TechHydro(
         rating,
-        gen.active_power,
+        convert(PrimeMovers, gen.unit_type),
         active_power_limits,
-        gen.reactive_power,
         reactive_power_limits,
         (up=gen.ramp_limits, down=gen.ramp_limits),
         (up=gen.min_down_time, down=gen.min_down_time),
     )
 
     curtailcost = 0.0
-    return HydroDispatch(gen.name, available, bus, tech, curtailcost)
+    return HydroDispatch(name = gen.name,
+                         available = available,
+                         bus = bus,
+                         activepower = gen.active_power,
+                         reactivepower = gen.reactive_power,
+                         tech = tech,
+                         op_cost = TwoPartCost(curtailcost, 0.0))
 end
 
 function make_renewable_generator(gen_type, data::PowerSystemRaw, gen, bus)
@@ -666,20 +701,28 @@ function make_renewable_generator(gen_type, data::PowerSystemRaw, gen, bus)
     rating = gen.active_power_limits_max
 
     tech = TechRenewable(rating,
-                         gen.reactive_power,
-                         (min=gen.reactive_power_limits_min,
-                          max=gen.reactive_power_limits_max),
-                         1.0)
+                convert(PrimeMovers, gen.unit_type),
+                (min=gen.reactive_power_limits_min,
+                max=gen.reactive_power_limits_max),
+                1.0)
     if gen_type == RenewableDispatch
         generator = RenewableDispatch(
             gen.name,
             available,
             bus,
+            gen.active_power,
+            gen.reactive_power,
             tech,
             TwoPartCost(0.0, 0.0),
         )
     elseif gen_type == RenewableFix
-        generator = RenewableFix(gen.name, available, bus, tech)
+        generator = RenewableFix(
+            gen.name,
+            available,
+            bus,
+            gen.active_power,
+            gen.reactive_power,
+            tech)
     else
         error("Unsupported type $gen_type")
     end
@@ -699,18 +742,19 @@ function make_storage(data::PowerSystemRaw, gen, bus)
     reactive_power_limits = (min=0.0, max=0.0)
 
     battery=GenericBattery(
-        gen.name,
-        available,
-        bus,
-        energy,
-        capacity,
-        rating,
-        gen.active_power,
-        input_active_power_limits,
-        output_active_power_limits,
-        efficiency,
-        gen.reactive_power,
-        reactive_power_limits,
+        name = gen.name,
+        available = available,
+        bus = bus,
+        primemover = convert(PrimeMovers, gen.unit_type),
+        energy = energy,
+        capacity = capacity,
+        rating = rating,
+        activepower = gen.active_power,
+        inputactivepowerlimits = input_active_power_limits,
+        outputactivepowerlimits = output_active_power_limits,
+        efficiency = efficiency,
+        reactivepower = gen.reactive_power,
+        reactivepowerlimits = reactive_power_limits
     )
 
     return battery
