@@ -33,16 +33,25 @@ end
         end
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        for field in (:rating, :activepower, :activepowerlimits, :reactivepower,
-                      :reactivepowerlimits, :ramplimits)  # :timelimits
-            cdmgen_val = getfield(cdmgen.tech, field)
-            mpgen_val = getfield(mpgen.tech, field)
-            if isnothing(cdmgen_val) || isnothing(mpgen_val)
-                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
-                continue
+        tech_dat = (structname = :tech, 
+                    fields= (:rating, :activepowerlimits, :reactivepowerlimits, :ramplimits))
+        gen_dat = (structname = nothing,
+                    fields= (:activepower, :reactivepower))
+        function check_fields(chk_dat)
+            for field in chk_dat.fields
+                n = get(chk_dat, :structname, nothing)
+                (cdmd, mpd) = isnothing(n) ? (cdmgen, mpgen) : (getfield(cdmgen,n), getfield(mpgen,n))
+                cdmgen_val = getfield(cdmd, field)
+                mpgen_val = getfield(mpd, field)
+                if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                    @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                    continue
+                end
+                @test cdmgen_val == mpgen_val
             end
-            @test cdmgen_val == mpgen_val
         end
+        check_fields(gen_dat)
+        check_fields(tech_dat)
     end
 
     mp_iter = get_components(ThermalGen, mpsys)
