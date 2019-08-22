@@ -29,6 +29,7 @@ result = [2.32551,
 1.02131, 
 -0.280381]
 
+include(joinpath(BASE_DIR,"data/data_14bus_pu.jl"))
 c_sys14 = System(nodes14, thermal_generators14, loads14, branches14, nothing, 100.0, nothing, nothing, nothing);
 
 import NLsolve
@@ -43,4 +44,3 @@ import NLsolve
     @test_throws PowerSystems.DataFormatError @solve_powerflow!(c_sys5_re)
     
 end
-
