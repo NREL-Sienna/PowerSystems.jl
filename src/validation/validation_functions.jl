@@ -173,7 +173,7 @@ function validate_system(sys::System)
     error_detected = false
     for component in iterate_components(sys)
         if validate_fields(sys, component)
-            @show error_detected = true
+            error_detected = true
         end
     end
     if error_detected
