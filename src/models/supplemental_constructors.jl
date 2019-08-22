@@ -151,14 +151,23 @@ function ScenarioBased(component::Component,
                             start_index, horizon, PowerSystemInternal())
 end
 
-function PowerLoadPF(name::String, available::Bool, bus::Bus, maxactivepower::Float64,
-                     power_factor::Float64)
+function PowerLoadPF(name::String, available::Bool, bus::Bus, 
+                     model::Union{Nothing, LoadModel}, activepower::Float64,
+                     maxactivepower::Float64, power_factor::Float64)
     maxreactivepower = maxactivepower * sin(acos(power_factor))
-    return PowerLoad(name, available, bus, maxactivepower, maxreactivepower)
+    reactivepower = activepower * sin(acos(power_factor))
+    return PowerLoad(name, 
+                     available,
+                     bus,
+                     model,
+                     activepower,
+                     reactivepower,
+                     maxactivepower,
+                     maxreactivepower)
 end
 
 function PowerLoadPF(::Nothing)
-    return PowerLoadPF("init", true, Bus(nothing), 0.0, 1.0)
+    return PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0)
 end
 
 """Accepts anglelimits as a Float64."""

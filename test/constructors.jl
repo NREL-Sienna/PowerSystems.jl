@@ -47,9 +47,9 @@ end
     @test tPowerLoad isa PowerSystems.Component
     tPowerLoadPF = PowerLoadPF(nothing)
     @test tPowerLoadPF isa PowerSystems.Component
-    tPowerLoad = PowerLoad("init", true, Bus(nothing), 0.0, 0.0)
+    tPowerLoad = PowerLoad("init", true, Bus(nothing), nothing, 0.0, 0.0, 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF("init", true, Bus(nothing), 0.0, 1.0)
+    tPowerLoadPF = PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0)
     @test tPowerLoadPF isa PowerSystems.Component
     tLoad = InterruptibleLoad(nothing)
     @test tLoad isa PowerSystems.Component

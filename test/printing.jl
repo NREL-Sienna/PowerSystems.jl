@@ -39,7 +39,7 @@ end
 
 # TODO: forecasts are in old format, and so are disabled for now.
 sys5 = PowerSystems.System(nodes5, thermal_generators5, loads5, branches5, nothing, 100.0,
-        nothing, nothing, nothing)
+        nothing, nothing, nothing; runchecks = false)
         #forecasts5, nothing, nothing)
 @test are_type_and_fields_in_output(collect(get_components(Bus,sys5))[1])
 @test are_type_and_fields_in_output(collect(get_components(Generator,sys5))[1])

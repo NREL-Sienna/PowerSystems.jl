@@ -80,3 +80,42 @@ function convert_units!(value::Float64,
     end
     return value
 end
+
+const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels))
+merge!(STRING2FUEL, Dict("NG" => NATURAL_GAS::ThermalFuels,
+              "NUC" => NUCLEAR::ThermalFuels,
+              "GAS" => NATURAL_GAS::ThermalFuels,
+              "OIL" => DISTILLATE_FUEL_OIL::ThermalFuels,
+              "SYNC_COND" => OTHER::ThermalFuels,
+              ))
+
+function Base.convert(::Type{ThermalFuels}, fuel::AbstractString)
+    return STRING2FUEL[uppercase(fuel)]
+end
+
+function Base.convert(::Type{ThermalFuels}, fuel::Symbol)
+    return convert(ThermalFuels, string(fuel))
+end
+
+const STRING2PRIMEMOVER = Dict((string(e) => e) for e in instances(PrimeMovers))
+merge!(STRING2PRIMEMOVER, Dict("W2" => WT::PrimeMovers,
+              "WIND" => WT::PrimeMovers,
+              "PV" => PVe::PrimeMovers,
+              "RTPV" => PVe::PrimeMovers,
+              "NB" => ST::PrimeMovers,
+              "STEAM" => ST::PrimeMovers,
+              "HYDRO" => HY::PrimeMovers,
+              "NUCLEAR" => ST::PrimeMovers,
+              "SYNC_COND" => OT::PrimeMovers,
+              "CSP" => CP::PrimeMovers,
+              "UN" => OT::PrimeMovers,
+              "STORAGE" => BA::PrimeMovers,
+            ))
+
+function Base.convert(::Type{PrimeMovers}, primemover::AbstractString)
+    return STRING2PRIMEMOVER[uppercase(primemover)]
+end
+
+function Base.convert(::Type{PrimeMovers}, primemover::Symbol)
+    return convert(PrimeMovers, string(primemover))
+end

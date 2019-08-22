@@ -1150,12 +1150,16 @@
       {
         "name": "activepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "tech.activepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "tech.activepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "tech",

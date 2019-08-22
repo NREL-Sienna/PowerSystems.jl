@@ -93,7 +93,7 @@ end
 
     #test custom range (activepower and activepowerlimits)
     bad_therm_gen_act_power = deepcopy(thermal_generators5)
-    bad_therm_gen_act_power[1].tech.activepower = 10
+    bad_therm_gen_act_power[1].activepower = 10
     @test_logs (:warn, r"Invalid range") System(nodes5, bad_therm_gen_act_power, loads5,
             nothing, nothing, 100.0, nothing, nothing, nothing; runchecks=true)
 

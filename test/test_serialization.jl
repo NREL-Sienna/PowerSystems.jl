@@ -12,7 +12,7 @@ function validate_serialization(sys::System)
         rethrow()
     end
     close(io)
-
+    
     try
         sys2 = System(path)
         return PowerSystems.compare_values(sys, sys2)
