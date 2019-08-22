@@ -24,7 +24,7 @@ function get_field_descriptor(struct_descriptor::Dict, fieldname::AbstractString
         end
     end
 
-    error("field $fieldname does not exist in $(struct_descriptor["struct_name"]) validation config")
+    throw(DataFormatError("field $fieldname does not exist in $(struct_descriptor["struct_name"]) validation config"))
 end
 
 function validate_fields(sys::System, ps_struct::T) where T <: PowerSystemType
@@ -123,7 +123,7 @@ function check_limits(::Type{T}, valid_info::ValidationInfo, field_value) where 
     @assert length(field_value) == 2
     result1 = check_limits_impl(valid_info, field_value[1])
     result2 = check_limits_impl(valid_info, field_value[2])
-    return  result1 && result2
+    return result1 && result2
 end
 
 function check_limits_impl(valid_info::ValidationInfo, field_value)
