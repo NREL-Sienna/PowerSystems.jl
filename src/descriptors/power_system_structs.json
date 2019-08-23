@@ -925,7 +925,9 @@
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "tech",
@@ -970,7 +972,9 @@
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "tech",
@@ -1010,7 +1014,9 @@
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "tech",
@@ -1158,7 +1164,7 @@
         "name": "reactivepower",
         "null_value": "0.0",
         "data_type": "Float64",
-        "valid_range": "tech.activepowerlimits",
+        "valid_range": "tech.reactivepowerlimits",
         "validation_action": "warn"
       },
       {
@@ -1287,7 +1293,9 @@
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "reactivepowerlimits",
