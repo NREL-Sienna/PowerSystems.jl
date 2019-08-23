@@ -2,7 +2,7 @@
 const Components = Dict{DataType, Dict{String, <:Component}}
 const VALID_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
                                             "descriptors", "validation_config.json")
-const SKIP_PM_VALIDATION = true
+const SKIP_PM_VALIDATION = false
 
 """
     System
