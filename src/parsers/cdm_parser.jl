@@ -23,7 +23,9 @@ function PowerSystemRaw(
                         directory::String,
                         user_descriptors::Union{String, Dict},
                         descriptors::Union{String, Dict},
-                        generator_mapping::Union{String, Dict},
+                        generator_mapping::Union{String, Dict};
+                        timeseries_metadata_file = joinpath(directory, 
+                                                            "timeseries_pointers.json")
                        )
     category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
     categories = [
@@ -56,7 +58,6 @@ function PowerSystemRaw(
         push!(dfs, val)
     end
 
-    timeseries_metadata_file = joinpath(directory, "timeseries_pointers.json")
     if !isfile(timeseries_metadata_file)
         timeseries_metadata_file = nothing
     end
@@ -105,6 +106,8 @@ function PowerSystemRaw(
                         user_descriptor_file::AbstractString;
                         descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE,
                         generator_mapping_file=GENERATOR_MAPPING_FILE,
+                        timeseries_metadata_file = joinpath(directory, 
+                                                            "timeseries_pointers.json")
                        )
     files = readdir(directory)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
@@ -156,7 +159,7 @@ function PowerSystemRaw(
     end
 
     return PowerSystemRaw(data, directory, user_descriptor_file, descriptor_file,
-                          generator_mapping_file)
+                          generator_mapping_file, timeseries_metadata_file = timeseries_metadata_file)
 end
 
 """
