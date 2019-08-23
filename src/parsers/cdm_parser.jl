@@ -24,6 +24,8 @@ function PowerSystemRaw(
                         user_descriptors::Union{String, Dict},
                         descriptors::Union{String, Dict},
                         generator_mapping::Union{String, Dict},
+                        timeseries_metadata_file = joinpath(directory, 
+                                                            "timeseries_pointers.json")
                        )
     category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
     categories = [
@@ -56,7 +58,6 @@ function PowerSystemRaw(
         push!(dfs, val)
     end
 
-    timeseries_metadata_file = joinpath(directory, "timeseries_pointers.json")
     if !isfile(timeseries_metadata_file)
         timeseries_metadata_file = nothing
     end
