@@ -36,7 +36,7 @@ function read_timeseries_metadata(file_path::AbstractString)::Vector{TimeseriesF
                                                  r.Category,
                                                  r.Object,
                                                  r.Parameter,
-                                                 1.0,#r[Symbol("Scaling Factor")],
+                                                 r[Symbol("Scaling Factor")],
                                                  r[Symbol("Data File")]
                                                  ))
         end
