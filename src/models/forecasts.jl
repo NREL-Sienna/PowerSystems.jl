@@ -395,13 +395,13 @@ function make_forecasts(forecast::Forecast, interval::Dates.Period, horizon::Int
 end
 
 """
-    make_forecasts(forecast::FlattenIteratorWrapper{T}, 
+    make_forecasts(forecast::FlattenIteratorWrapper{T},
                     interval::Dates.Period, horizon::Int) where T <: Forecast
-                    
-Make a vector of forecasts by incrementing through a vector of forecasts 
+
+Make a vector of forecasts by incrementing through a vector of forecasts
 by interval and horizon.
 """
-function make_forecasts(forecast::FlattenIteratorWrapper{T}, 
+function make_forecasts(forecast::FlattenIteratorWrapper{T},
                         interval::Dates.Period, horizon::Int) where T <: Forecast
 
     forecasts = [make_forecasts(f, interval, horizon) for f in forecast]

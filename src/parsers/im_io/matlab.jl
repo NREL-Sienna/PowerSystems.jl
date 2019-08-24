@@ -46,7 +46,7 @@ function parse_matlab_string(data_lines::Array{String}; extended=false)
             if occursin("[", line)
                 matrix_dict = parse_matlab_matrix(data_lines, index)
                 matlab_dict[matrix_dict["name"]] = matrix_dict["data"]
-                if haskey(matrix_dict, "column_names") 
+                if haskey(matrix_dict, "column_names")
                     column_names[matrix_dict["name"]] = matrix_dict["column_names"]
                 end
                 index = index + matrix_dict["line_count"]

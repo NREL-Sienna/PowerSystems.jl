@@ -174,7 +174,7 @@ end
     # Horizon is larger than forecast horizon.
     @test_throws(PSY.InvalidParameter,
                  PSY.make_forecasts(forecast, interval, 25))
-    
+
     # making a series of forecasts from a list of forecasts
     forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
     forecasts_ = make_forecasts(forecasts, Hour(1), 2)

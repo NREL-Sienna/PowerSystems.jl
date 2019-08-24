@@ -17,14 +17,14 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
                 b::Line,
                 num_bus::Dict{Int64, Int64})
 
-    
+
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
-    bus_to_no = num_bus[arc.to.number]      
+    bus_to_no = num_bus[arc.to.number]
 
     Y_l = (1 / (get_r(b) + get_x(b) * 1im))
     Y11 = Y_l + (1im * get_b(b).from)
-    
+
     ybus[bus_from_no, bus_from_no] += Y11
     Y12 = -Y_l
     ybus[bus_from_no, bus_to_no] += Y12
@@ -33,7 +33,7 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
     Y22 = Y_l + (1im * get_b(b).to)
     ybus[bus_to_no, bus_to_no] += Y22
 
-    return 
+    return
 
 end
 
@@ -43,7 +43,7 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
-    bus_to_no = num_bus[arc.to.number]     
+    bus_to_no = num_bus[arc.to.number]
 
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
     Y11 = Y_t
@@ -54,7 +54,7 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
     ybus[bus_to_no, bus_from_no] += -Y_t
     ybus[bus_to_no, bus_to_no] += Y_t + (1im * b)
 
-    return 
+    return
 
 end
 
@@ -64,7 +64,7 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
-    bus_to_no = num_bus[arc.to.number]     
+    bus_to_no = num_bus[arc.to.number]
 
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
     c = 1 / get_tap(b)
@@ -72,7 +72,7 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64}, Int64},
 
     Y11 = (Y_t * c^2)
     ybus[bus_from_no, bus_from_no] += Y11
-    Y12 = (-Y_t*c) 
+    Y12 = (-Y_t*c)
     ybus[bus_from_no, bus_to_no] += Y12
     #Y21 = Y12
     ybus[bus_to_no, bus_from_no] += Y12
@@ -89,8 +89,8 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
-    bus_to_no = num_bus[arc.to.number]  
-                    
+    bus_to_no = num_bus[arc.to.number]
+
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
     tap =  (get_tap(b) * exp(get_α(b) * 1im))
     c_tap =  (get_tap(b) * exp(-1*get_α(b) * 1im))
@@ -115,9 +115,9 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{Complex{Float64},Int64},
 
     bus = get_bus(fa)
     bus_no = num_bus[get_number(bus)]
-    
+
     ybus[bus_no, bus_no] += fa.Y
-    
+
     return
 
 end
@@ -142,7 +142,7 @@ function _buildybus(branches, nodes, fixed_admittances)
         _ybus!(ybus, b, num_bus)
 
     end
-    
+
     for fa in fixed_admittances
         _ybus!(ybus, fa, num_bus)
     end

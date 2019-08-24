@@ -24,7 +24,7 @@ function PowerSystemRaw(
                         user_descriptors::Union{String, Dict},
                         descriptors::Union{String, Dict},
                         generator_mapping::Union{String, Dict};
-                        timeseries_metadata_file = joinpath(directory, 
+                        timeseries_metadata_file = joinpath(directory,
                                                             "timeseries_pointers")
                        )
     category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
@@ -57,9 +57,9 @@ function PowerSystemRaw(
 
         push!(dfs, val)
     end
-    
+
     if !isfile(timeseries_metadata_file)
-        if isfile(string(timeseries_metadata_file,".json")) 
+        if isfile(string(timeseries_metadata_file,".json"))
             timeseries_metadata_file = string(timeseries_metadata_file,".json")
         elseif isfile(string(timeseries_metadata_file,".csv"))
             timeseries_metadata_file = string(timeseries_metadata_file,".csv")
@@ -112,7 +112,7 @@ function PowerSystemRaw(
                         user_descriptor_file::AbstractString;
                         descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE,
                         generator_mapping_file=GENERATOR_MAPPING_FILE,
-                        timeseries_metadata_file = joinpath(directory, 
+                        timeseries_metadata_file = joinpath(directory,
                                                             "timeseries_pointers")
                        )
     files = readdir(directory)
@@ -668,12 +668,12 @@ function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
         shutdown_cost
     )
 
-    return ThermalStandard(gen.name, 
-                           available, 
-                           bus, 
-                           gen.active_power, 
+    return ThermalStandard(gen.name,
+                           available,
+                           bus,
+                           gen.active_power,
                            gen.reactive_power,
-                           tech, 
+                           tech,
                            op_cost)
 end
 
@@ -830,7 +830,7 @@ function _get_field_infos(data::PowerSystemRaw, category::InputCategory, df_name
                 needs_pu_conversion = per_unit[name] &&
                                       haskey(item, "system_per_unit") &&
                                       !item["system_per_unit"]
-                
+
                 custom_unit = get(item, "unit", nothing)
                 if !isnothing(unit[name]) && !isnothing(custom_unit) && custom_unit != unit[name]
                     unit_conversion = (From=custom_unit, To=unit[name])

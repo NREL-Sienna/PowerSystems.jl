@@ -326,12 +326,12 @@ function clear_forecasts!(sys::System)
 end
 
 """
-    split_forecasts!(sys::System, 
-                    forecasts, 
-                    interval::Dates.Period, 
+    split_forecasts!(sys::System,
+                    forecasts,
+                    interval::Dates.Period,
                     horizon::Int) where T <: Forecast
 
-Replaces system forecasts with a set of forecasts by incrementing through an iterable 
+Replaces system forecasts with a set of forecasts by incrementing through an iterable
 set of forecasts by interval and horizon.
 
 """

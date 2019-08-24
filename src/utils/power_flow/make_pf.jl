@@ -11,7 +11,7 @@ end
 #TODO: Apply actions according to load type
 function _get_load_data(sys::System, b::Bus)
     activepower = 0.0
-    reactivepower = 0.0 
+    reactivepower = 0.0
     for l in get_components(ElectricLoad, sys)
         if !isa(l,FixedAdmittance) && (l.bus == b)
             activepower += get_activepower(l)
@@ -24,14 +24,14 @@ end
 """
     make_pf(sys)
 
-Create the objects needed to solve an powerflow case using NLsolve.jl solvers. Returns 
+Create the objects needed to solve an powerflow case using NLsolve.jl solvers. Returns
 an anonymous function with the powerflow equations, initial conditions and a dict to link the
-solutions to the original system. Only supports systems with a single generator per bus and 
-currently doesn't support distributes slack buses and doesn't enforce reactive power limits. 
+solutions to the original system. Only supports systems with a single generator per bus and
+currently doesn't support distributes slack buses and doesn't enforce reactive power limits.
 
 ## Example
 ```julia
-pf!, x0, res_ref = make_pf(sys)  
+pf!, x0, res_ref = make_pf(sys)
 res = NLsolve.nlsolve(pf!, x0)
 ```
 
@@ -50,12 +50,12 @@ function make_pf(system)
         V = Vector{ComplexF64}(undef, $bus_count)
         Vc = Vector{ComplexF64}(undef, $bus_count)
         P_bal = Vector{Float64}(undef, $bus_count)
-        Q_bal = Vector{Float64}(undef, $bus_count)		
+        Q_bal = Vector{Float64}(undef, $bus_count)
     end
 
     var_count = 1
-    res_dict = Dict{String, Vector{Tuple{Symbol, Int}}}() 
-    x0 = Array{Float64}(undef, bus_count*2)	
+    res_dict = Dict{String, Vector{Tuple{Symbol, Int}}}()
+    x0 = Array{Float64}(undef, bus_count*2)
 
     for (ix, b) in enumerate(buses)
         #Gets relevant data about the generators
@@ -68,9 +68,9 @@ function make_pf(system)
                 !isnothing(generator) && throw(DataFormatError("There is more than one generator connected to Bus $b.name"))
                 generator = gen
             end
-        end        
-        if isnothing(generator) 
-            total_gen = (0.0, 0.0)  
+        end
+        if isnothing(generator)
+            total_gen = (0.0, 0.0)
         else
             total_gen = (get_activepower(generator),get_reactivepower(generator))
         end
@@ -97,8 +97,8 @@ function make_pf(system)
             push!(internal.args, :(V[$ix] = $Vm_name*(cos($ang_name)+sin($ang_name)*1im)))
             push!(internal.args, :(Vc[$ix] = conj(V[$ix])))
 			# Reference for the results Dict
-			res_dict[b.name] = [var_ref1, var_ref2]			
-        elseif b.bustype == PV::BusType			
+			res_dict[b.name] = [var_ref1, var_ref2]
+        elseif b.bustype == PV::BusType
             Q_name = Symbol("Q_", bus_number)
             net_p_load = :($(total_gen[1]) - $(total_load[1]))
             net_q_load = :(-$(total_load[2]))
@@ -128,7 +128,7 @@ function make_pf(system)
             push!(internal.args, :(Q_bal[$ix] = $net_q_load))
             push!(internal.args, :(V[$ix] = $Vm_name*(cos($ang_name)+sin($ang_name)*1im)))
             push!(internal.args, :(Vc[$ix] = conj(V[$ix])))
-			# Reference for the results Dict		
+			# Reference for the results Dict
 			res_dict[b.name] = [var_ref1, var_ref2]
         end
     end
@@ -150,7 +150,7 @@ function make_pf(system)
     @assert res_count == var_count
 
     ret = quote
-        f! =  @_fn (res, x) -> begin 
+        f! =  @_fn (res, x) -> begin
 						 $internal
 						 $balance_eqs
 						 end

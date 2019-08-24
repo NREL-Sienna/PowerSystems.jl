@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 
 
 mutable struct TechRenewable <: TechnicalParams
-    rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
+    rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity
     primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
     reactivepowerlimits::Union{Nothing, Min_Max}
     powerfactor::Float64

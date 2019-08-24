@@ -15,7 +15,7 @@ mutable struct Bus <: Topology
 
     function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, internal, )
         (number, name, bustype, angle, voltage, voltagelimits, basevoltage, internal, ) = CheckBusParams(
-             number,  name,  bustype,  angle,  voltage,  voltagelimits,  basevoltage,  internal, 
+             number,  name,  bustype,  angle,  voltage,  voltagelimits,  basevoltage,  internal,
         )
         new(number, name, bustype, angle, voltage, voltagelimits, basevoltage, internal, )
     end
