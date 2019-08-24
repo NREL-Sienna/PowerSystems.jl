@@ -120,7 +120,7 @@ function ScenarioBased(component::Component,
         initial_time : Dates.Hour(1) : initial_time + resolution * (time_steps-1),
         ones(time_steps, scenario_count)
     )
-    
+
 
     return ScenarioBased(component, label, Dates.Minute(resolution), initial_time, data)
 end
@@ -147,16 +147,16 @@ function ScenarioBased(component::Component,
     start_index = 1
     scenario_count = length(TimeSeries.colnames(data))
     horizon = length(data)
-    return ScenarioBased(component, label, resolution, initial_time, scenario_count, data, 
+    return ScenarioBased(component, label, resolution, initial_time, scenario_count, data,
                             start_index, horizon, PowerSystemInternal())
 end
 
-function PowerLoadPF(name::String, available::Bool, bus::Bus, 
+function PowerLoadPF(name::String, available::Bool, bus::Bus,
                      model::Union{Nothing, LoadModel}, activepower::Float64,
                      maxactivepower::Float64, power_factor::Float64)
     maxreactivepower = maxactivepower * sin(acos(power_factor))
     reactivepower = activepower * sin(acos(power_factor))
-    return PowerLoad(name, 
+    return PowerLoad(name,
                      available,
                      bus,
                      model,

@@ -24,8 +24,25 @@ end
 
 """Reads forecast metadata and fixes relative paths to the data files."""
 function read_timeseries_metadata(file_path::AbstractString)::Vector{TimeseriesFileMetadata}
-    metadata = open(file_path) do io
-        JSON2.read(io, Vector{TimeseriesFileMetadata})
+    if endswith(file_path, ".json")
+        metadata = open(file_path) do io
+            JSON2.read(io, Vector{TimeseriesFileMetadata})
+        end
+    elseif endswith(file_path, ".csv")
+        csv = CSV.read(file_path)
+        metadata = Vector{TimeseriesFileMetadata}()
+        for r in eachrow(csv)
+            push!(metadata,TimeseriesFileMetadata(r.Simulation,
+                                                 r.Category,
+                                                 r.Object,
+                                                 r.Parameter,
+                                                 r[Symbol("Scaling Factor")],
+                                                 r[Symbol("Data File")]
+                                                 ))
+        end
+
+    else
+        error("file not supported")
     end
 
     directory = dirname(file_path)
@@ -211,8 +228,8 @@ function _get_forecast_component(sys::System, category, name)
     else
         components = get_components_by_name(category, sys, name)
         if length(components) == 0
-            throw(DataFormatError(
-                "Did not find component for forecast category=$category name=$name"))
+            @warn "Did not find component for forecast category=$category name=$name"
+            component = nothing
         elseif length(components) == 1
             component = components[1]
         else
@@ -249,6 +266,7 @@ function add_forecast_info!(infos::ForecastInfos, sys::System,
 
     category = _get_category(metadata)
     component = _get_forecast_component(sys, category, metadata.component_name)
+    isnothing(component) && return
     forecast_info = ForecastInfo(metadata, component, timeseries)
     push!(infos.forecasts, forecast_info)
     @debug "Added ForecastInfo" metadata
@@ -308,12 +326,12 @@ function clear_forecasts!(sys::System)
 end
 
 """
-    split_forecasts!(sys::System, 
-                    forecasts, 
-                    interval::Dates.Period, 
+    split_forecasts!(sys::System,
+                    forecasts,
+                    interval::Dates.Period,
                     horizon::Int) where T <: Forecast
 
-Replaces system forecasts with a set of forecasts by incrementing through an iterable 
+Replaces system forecasts with a set of forecasts by incrementing through an iterable
 set of forecasts by interval and horizon.
 
 """

@@ -33,7 +33,7 @@ end
         end
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        tech_dat = (structname = :tech, 
+        tech_dat = (structname = :tech,
                     fields= (:rating, :activepowerlimits, :reactivepowerlimits, :ramplimits))
         gen_dat = (structname = nothing,
                     fields= (:activepower, :reactivepower))

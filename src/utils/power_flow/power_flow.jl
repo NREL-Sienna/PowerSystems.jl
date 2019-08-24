@@ -1,11 +1,11 @@
 function _update_slack_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Vector{Tuple{Symbol,Int64}})
-    injection_components = get_components(Generator, sys)   
+    injection_components = get_components(Generator, sys)
     devices = [d for d in injection_components if d.bus == bus]
     generator = devices[1]
     for field in v
         setfield!(generator, field[1], result[field[2]])
     end
-     
+
      return
  end
 
@@ -13,26 +13,26 @@ function _update_slack_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Ve
     for field in v
         setfield!(bus, field[1], result[field[2]])
     end
-     
+
      return
  end
 
  function _update_PV_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Vector{Tuple{Symbol,Int64}})
-    injection_components = get_components(Generator, sys)   
+    injection_components = get_components(Generator, sys)
     devices = [d for d in injection_components if d.bus == bus]
     generator = devices[1]
     for field in v
         field[1] == :reactivepower && setfield!(generator, field[1], result[field[2]])
         field[1] == :angle && setfield!(bus, field[1], result[field[2]])
     end
-     
+
      return
  end
 
  """
     flow_val(b::TapTransformer)
 
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type 
+Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
 TapTransformer
 
 """
@@ -50,7 +50,7 @@ end
 """
     flow_val(b::TapTransformer)
 
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type 
+Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
 Line
 
 """
@@ -59,7 +59,7 @@ function flow_val(b::Line)
     arc = PowerSystems.get_arc(b)
     V_from = arc.from.voltage*(cos(arc.from.angle)+sin(arc.from.angle)*1im)
     V_to = arc.to.voltage*(cos(arc.to.angle)+sin(arc.to.angle)*1im)
-    I = V_from*(Y_t + (1im * PowerSystems.get_b(b).from)) - V_to*Y_t  
+    I = V_from*(Y_t + (1im * PowerSystems.get_b(b).from)) - V_to*Y_t
     flow = V_from*conj(I)
     return flow
 end
@@ -67,7 +67,7 @@ end
 """
     flow_val(b::TapTransformer)
 
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type 
+Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
 Transformer2W
 
 """
@@ -76,7 +76,7 @@ function flow_val(b::Transformer2W)
     arc = PowerSystems.get_arc(b)
     V_from = arc.from.voltage*(cos(arc.from.angle)+sin(arc.from.angle)*1im)
     V_to = arc.to.voltage*(cos(arc.to.angle)+sin(arc.to.angle)*1im)
-    I = V_from*(Y_t + (1im * PowerSystems.get_primaryshunt(b))) - V_to*Y_t 
+    I = V_from*(Y_t + (1im * PowerSystems.get_primaryshunt(b))) - V_to*Y_t
     flow = V_from*conj(I)
     return flow
 end
@@ -84,7 +84,7 @@ end
 
 function flow_val(b::PhaseShiftingTransformer)
     error("Systems with PhaseShiftingTransformer not supported yet")
-    return 
+    return
 end
 
 function _update_branch_flow!(sys::System)
@@ -93,39 +93,39 @@ function _update_branch_flow!(sys::System)
         b.activepower_flow = real(S_flow)
         b.reactivepower_flow = imag(S_flow)
     end
-end  
+end
 
 function _write_pf_sol!(sys::System, nl_result, result_ref::Dict{String, Vector{Tuple{Symbol, Int}}})
     result = nl_result.zero
     for (k,v) in result_ref
         bus = get_component(Bus, sys, k)
-        if bus.bustype == PowerSystems.REF    
+        if bus.bustype == PowerSystems.REF
             _update_slack_bus(bus, sys, result, v)
-        elseif bus.bustype == PowerSystems.PQ    
+        elseif bus.bustype == PowerSystems.PQ
             _update_PQ_bus(bus, sys, result, v)
-        elseif bus.bustype == PowerSystems.PV    
+        elseif bus.bustype == PowerSystems.PV
             _update_PV_bus(bus, sys, result, v)
-        end    
+        end
     end
-    
+
     _update_branch_flow!(sys)
-            
+
     return
 end
 
 """
     @solve_powerflow!(sys, args...)
 
-Solves a the power flow into the system and writes the solution into the relevant structs. 
-Updates generators active and reactive power setpoints and branches active and reactive 
+Solves a the power flow into the system and writes the solution into the relevant structs.
+Updates generators active and reactive power setpoints and branches active and reactive
 power flows (calculated in the From - To direction) (see
 [@flow_val](@ref))
 
 Requires loading NLsolve.jl to run. Internally it uses the @make_pf macro (see
-[@make_pf](@ref)) to create the problem and solve it. As a result it doesn't enforce 
-reactivepower limits. 
+[@make_pf](@ref)) to create the problem and solve it. As a result it doesn't enforce
+reactivepower limits.
 
-Supports passing NLsolve kwargs in the args. By default shows the solver trace. 
+Supports passing NLsolve kwargs in the args. By default shows the solver trace.
 
 Arguments available for `nlsolve`:
 
@@ -169,10 +169,10 @@ macro solve_powerflow!(sys, args...)
     !(show_trace_in_params) && push!(par.args, :show_trace, true)
     eval_code =
         esc(quote
-            pf!, x0, res_ref = PowerSystems.make_pf($sys)    
-            res = NLsolve.nlsolve(pf!, x0; $par)        
+            pf!, x0, res_ref = PowerSystems.make_pf($sys)
+            res = NLsolve.nlsolve(pf!, x0; $par)
             show(res)
-            PowerSystems._write_pf_sol!($sys, res, res_ref)    
+            PowerSystems._write_pf_sol!($sys, res, res_ref)
     end)
     return eval_code
 end
