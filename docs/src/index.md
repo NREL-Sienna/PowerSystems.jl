@@ -4,8 +4,6 @@
 
 For more detailed documentation of each object in the library, see the API/[PowerSystems](@ref) page.
 
-Some examples of usage can be found in the [examples directory](https://github.com/PowerSystems/PowerSystems.jl/tree/master/Notebooks) using IJulia.
-
 ## Installation
 
 This package is not yet registered. **Until it is, things may change. It is perfectly
