@@ -2,7 +2,7 @@
 
 
 # Import modules.
-using Dates, MAT, TimeSeries
+using DataFrames, Dates, MAT, TimeSeries
 
 
 """
@@ -10,8 +10,17 @@ Segment of a charging plan for a BEV.
 
 # Type parameters
 - `L`            : network location
+
+# Fields:
+- `location        :: L`       : network location
+-  duration        :: Float64` : duration [time] of the time interval
+-  load            :: Float64` : average load [energy/time] on the power system
+-  chargerate      :: Float64` : average charging rate [energy/time] of the battery, accounting for the charging efficiency
+- `maxchargerate   :: Float64` : maximum allowable charging rate [energy/time] for the battery [energy/time]
+- `consumptionrate :: Float64` : average discharge rate [energy/time] of the battery due to driving
+- `batterylevel`   :: Float64` : the battery level [energy] at the beginning of the time interval
 """
-const ChargingSegment{L} = NamedTuple{(:location, :chargerate, :chargeamount, :batterylevel), Tuple{L, Float64, Float64, Float64}}
+const ChargingSegment{L} = NamedTuple{(:location, :duration, :load, :chargerate, :maxchargerate, :consumptionrate, :batterylevel), Tuple{L, Float64, Float64, Float64, Float64, Float64, Float64}}
 
 
 """
@@ -25,6 +34,14 @@ const ChargingPlan{T <: TimeType, L} = TimeArray{ChargingSegment{L},1,T,Vector{C
 
 
 """
+Convert a charging plan to a data frame.
+"""
+function convert(::Type{DataFrame}, plan :: ChargingPlan{T, L}) where T where L
+    insertcols!(DataFrame(values(plan)), 1, :timestamp => timestamp(plan))
+end
+
+
+"""
 Extract the locations from a charging plan.
 """
 function locations(plan :: ChargingPlan{T,L}) :: TimeArray{L,1,T,Vector{L}} where T where L
@@ -33,33 +50,73 @@ end
 
 
 """
-Extract the located demand from a charging plan.
+Extract the duration [time] of the time interval from a charging plan.
 """
-function locateddemand(plan :: ChargingPlan{T,L}) :: LocatedDemand{T,L} where T where L
-    map(x -> (x.location, x.chargerate), plan)
+function durations(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.duration, plan)
 end
 
 
 """
-Extract the charge rate from a charging plan.
+Extract the located demand from a charging plan.
 """
-function chargerate(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+function locateddemand(plan :: ChargingPlan{T,L}) :: LocatedDemand{T,L} where T where L
+    map(x -> (x.location, x.load), plan)
+end
+
+
+"""
+Extract the average system load [energy/time] from a charging plan.
+"""
+function loads(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.load, plan)
+end
+
+
+"""
+Extract the average charge rate [energy/time] of the battery, accounting for the charging efficiency, from a charging plan.
+"""
+function chargerates(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
     map(x -> x.chargerate, plan)
 end
 
 
 """
-Extract the charge amount from a charging plan.
+Extract the charge amount [energy] during the time interval from a charging plan.
 """
-function chargeamount(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
-    map(x -> x.chargeamount, plan)
+function chargeamounts(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.duration * x.chargerate, plan)
 end
 
 
 """
-Extract the battery level from a charging plan.
+Extract the maximum charge rate [energy/time] from a charging plan.
 """
-function batterylevel(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+function maxchargerates(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.maxchargerate, plan)
+end
+
+
+"""
+Extract the average consumption rate [energy/time], the average discharge rate of the battery due to driving, from a charging plan.
+"""
+function consumptionrates(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.consumptionrate, plan)
+end
+
+
+"""
+Extract the consumption amount [energy], the dicharge of the battery due to driving during the time interval, from a charging plan.
+"""
+function consumptionamounts(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
+    map(x -> x.duration * x.consumptionrate, plan)
+end
+
+
+"""
+Extract the battery level [energy] at the beginning of the time interval from a charging plan.
+"""
+function batterylevels(plan :: ChargingPlan{T,L}) :: TimeArray{Float64,1,T,Vector{Float64}} where T where L
     map(x -> x.batterylevel, plan)
 end
 
@@ -333,10 +390,23 @@ Procedural approach for BEV Greedy charging scenario, maximizing the BEV's batte
 - `prices :: TimeArray{T}`  : the electricity prices
 
 # Returns
-- `result() :: ChargingPlan{T,L}` : a function that results the located demand,
-                                    but which can only be called after the model
-                                    has been solved
+- `ChargingPlan{T,L}` : the charging plan
+"""
+function greedydemands(demand :: BevDemand{T,L}) where L where T <: TimeType
+    pricing = map(v -> 1., demand.power)
+    greedydemands(demand, pricing)
+end
 
+
+"""
+Procedural approach for BEV Greedy charging scenario, maximizing the BEV's battery level.
+
+# Arguments
+- `demand :: BevDemand{T,L}`: the BEV demand
+- `prices :: TimeArray{T}`  : the electricity prices
+
+# Returns
+- `ChargingPlan{T,L}` : the charging plan
 """
 function greedydemands(demand :: BevDemand{T,L}, prices :: TimeArray{Float64,1,T,Vector{Float64}}) :: ChargingPlan{T,L} where L where T <: TimeType
     @warn "`PowerSystems.greedydemands` fails some tests."
@@ -504,8 +574,24 @@ function greedydemands(demand :: BevDemand{T,L}, prices :: TimeArray{Float64,1,T
     TimeArray(
         xt,
         vcat(
-            [(location=location[i] , chargerate=eff(charge[i] / duration[i]), chargeamount=charge[i], batterylevel=battery[i] ) for i in 1:NP],
-             (location=location[NT], chargerate=NaN                         , chargeamount=NaN      , batterylevel=battery[NT])
+            [(
+                location        = location[i]                 ,
+                duration        = duration[i]                 ,
+                load            = eff(charge[i] / duration[i]),
+                chargerate      = charge[i] / duration[i]     ,
+                maxchargerate   = chargemax[i]                ,
+                consumptionrate = consumption[i]              ,
+                batterylevel    = battery[i]                  ,
+            ) for i in 1:NP],
+            (
+                location        = location[NT]                ,
+                duration        = NaN                         ,
+                load            = NaN                         ,
+                chargerate      = NaN                         ,
+                maxchargerate   = NaN                         ,
+                consumptionrate = NaN                         ,
+                batterylevel    = battery[NT]                 ,
+            )
         )
     )
 
