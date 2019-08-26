@@ -76,7 +76,7 @@ function fractionalhours(delta) :: Nanosecond
         resolution = 60 * 60 * 1000 # Resolve to the nearest millisecond.
         onehour * trunc(Int64, resolution * delta) / resolution
     else # New implementation.
-        typeof(onehour)(trunc(Int64, delta * convert(Float64, onehour.value)))
+        typeof(onehour)(trunc(Int64, delta * onehour.value))
     end
 end
 
