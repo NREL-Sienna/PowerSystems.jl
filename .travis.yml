@@ -2,6 +2,7 @@
 language: julia
 os:
   - linux
+  - osx
 julia:
   - 1.1
   - 1.2
@@ -19,6 +20,7 @@ notifications:
 matrix:
   allow_failures:
   - julia: nightly
+  - os: osx
 
 ## uncomment and modify the following lines to manually install system packages
 #addons:
@@ -41,4 +43,3 @@ jobs:
         - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.build("PowerSystems"); Pkg.instantiate()'
         - DOCUMENTER_DEBUG=true julia --project=docs/ docs/make.jl
       after_success: skip
-
