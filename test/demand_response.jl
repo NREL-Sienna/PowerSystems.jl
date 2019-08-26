@@ -19,6 +19,7 @@ end
 @testset "Reading EVIpro dataset" begin
     @trytotest begin
         @test begin
+           @info string("Testing using EVIpro dataset \"", EVIPRO_DATA, "\".")
            bevs = populate_BEV_demand(EVIPRO_DATA)
            length(bevs) == 1000
         end
@@ -42,7 +43,6 @@ function checkcharging(f)
         @test begin
             charging = f(bev)
             (balance, rates, battery) = verify(bev, charging, message=string("BEV ", i, " in '", EVIPRO_DATA, "'"))
-            battery |= bev.capacity.max < 30. # FIXME: Exclude vehicles with small batteries.
             balance && rates && battery
         end
     end
@@ -63,6 +63,7 @@ end
 
 
 @testset "Greedy demands on EVIpro dataset" begin
+    # FIXME: `PowerSystems.greedycharging` fails some tests.
     @error "`PowerSystems.greedycharging` fails some tests."
 #   @trytotest begin
 #       checkcharging(x -> greedydemands(x, map(v -> 1., x.power)) |> locateddemand)
