@@ -17,12 +17,12 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
-CSV = ">= 0.4.3"
-DataFrames = ">= 0.19.1"
-JSON2 = ">= 0.3.1"
-TimeSeries = ">= 0.16.0"
-YAML = ">= 0.3.2"
-julia = ">= 1.1.0"
+CSV = "~0.5.11"
+DataFrames = "~0.19.3"
+JSON2 = "~0.3.1"
+TimeSeries = "~0.16.0"
+YAML = "~0.3.2"
+julia = "~1.1.0"
 
 [extras]
 NLsolve = "2774e3e8-f4cf-5e23-947b-6d7e65073b56"
