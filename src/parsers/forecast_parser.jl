@@ -336,10 +336,11 @@ set of forecasts by interval and horizon.
 
 """
 function split_forecasts!(sys::System,
-                         forecasts, # must be an iterable
+                         forecasts::FlattenIteratorWrapper{T}, # must be an iterable
                          interval::Dates.Period,
                          horizon::Int) where T <: Forecast
 
+    isempty(forecasts) && throw(ArgumentError, "Forecasts is empty")
     split_forecasts = make_forecasts(forecasts, interval, horizon)
 
     clear_forecasts!(sys)

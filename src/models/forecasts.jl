@@ -329,11 +329,11 @@ end
 
 Make a vector of forecasts by incrementing through a forecast by interval and horizon.
 """
-function make_forecasts(forecast::Forecast, interval::Dates.Period, horizon::Int)
+function make_forecasts(forecast::F, interval::Dates.Period, horizon::Int) where F <: Forecast
     # TODO: need more test coverage of corner cases.
     resolution = get_resolution(forecast)
 
-    if forecast isa Probabilistic
+    if forecast isa Union{Probabilistic, ScenarioBased}
         # TODO
         throw(InvalidParameter("this function doesn't support Probabilistic yet"))
     end
