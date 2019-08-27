@@ -78,7 +78,7 @@ function im_replicate(sn_data::Dict{String,Any}, count::Int; global_keys::Set{St
 end
 
 
-
+#=
 "builds a table of component data"
 function component_table(data::Dict{String,Any}, component::String, fields::Vector{String})
     if ismultinetwork(data)
@@ -113,7 +113,7 @@ function _component_table(data::Dict{String,Any}, component::String, fields::Vec
     return reshape(items, length(comps), length(fields)+1)
 end
 
-#=
+
 "prints the text summary for a data dictionary to stdout"
 function print_summary(obj::Dict{String,Any}; kwargs...)
     summary(stdout, obj; kwargs...)

@@ -349,10 +349,10 @@ end
     Y5NS = Ybus(sys)
     @test isapprox(getindex(Y5NS, 10, 4), -3.3336667 + 33.336667im, atol= 1e-4)
 
-    Y5NS = Ybus([branches5[b] for b in Br5NS_ids], [nodes5[b] for b in Bu5NS_ids]);
-    for buf in Bu5NS_ids, but in Bu5NS_ids
-        @test isapprox(getindex(Y5NS,buf,but), Ybus5_matpower[buf,but], atol=1e-3)
-    end
+    #Y5NS = Ybus([branches5[b] for b in Br5NS_ids], [nodes5[b] for b in Bu5NS_ids]);
+    #for buf in Bu5NS_ids, but in Bu5NS_ids
+    #    @test isapprox(getindex(Y5NS, buf, but), Ybus5_matpower[buf,but], atol=1e-3)
+    #end
 
     @test Ybus5[nodes5[1],nodes5[2]] == (-3.5234840209999647 + 35.234840209999646im)
 
