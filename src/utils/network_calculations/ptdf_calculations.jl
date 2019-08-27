@@ -28,9 +28,9 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64}=[0.1])
             continue
         end
 
-        A[num_bus[get_arch(b) |> get_from |> get_number], ix] =  1;
+        A[num_bus[get_arc(b) |> get_from |> get_number], ix] =  1;
 
-        A[num_bus[get_arch(b) |> get_to |> get_number], ix] = -1;
+        A[num_bus[get_arc(b) |> get_to |> get_number], ix] = -1;
 
         if isa(b,Transformer2W)
             inv_X[ix,ix] = 1/get_x(b);

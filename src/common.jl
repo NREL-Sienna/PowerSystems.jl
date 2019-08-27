@@ -1,4 +1,3 @@
-
 const Min_Max = NamedTuple{(:min, :max),Tuple{Float64,Float64}}
 const From_To_Float = NamedTuple{(:from, :to),Tuple{Float64,Float64}}
 const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from),Tuple{Float64,Float64}}
@@ -22,11 +21,18 @@ end
     SLACK
 end
 
+@enum LoadModel begin
+    ConstantImpedance #Z
+    ConstantCurrent   #I
+    ConstantPower     #P
+end
+
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 @enum PrimeMovers begin
     BA #Energy Storage, Battery
     BT #Turbines Used in a Binary Cycle (including those used for geothermal applications)
     CA #Combined-Cycle – Steam Part
+    CC #Combined-Cycle - Aggregated Plant *augmentation of EIA
     CE #Energy Storage, Compressed Air
     CP #Energy Storage, Concentrated Solar Power
     CS #Combined-Cycle Single-Shaft Combustion turbine and steam turbine share a single generator
@@ -43,27 +49,27 @@ end
     PS #Energy Storage, Reversible Hydraulic Turbine (Pumped Storage)
     OT #Other – Specify on SCHEDULE 9.
     ST #Steam Turbine (including nuclear, geothermal and solar steam; does not include combined-cycle turbine)
-    PVe #Photovoltaic
+    PVe #Photovoltaic *renaming from EIA PV to PVe to avoid conflict with BusType::PV
     WT #Wind Turbine, Onshore
     WS #Wind Turbine, Offshore
 end
 
 "AER Aggregated Fuel Code From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 @enum ThermalFuels begin
-    COAL #COL	#Anthracite Coal and Bituminous Coal
-    WASTE_COAL #WOC	#Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)
+    COAL #COL    #Anthracite Coal and Bituminous Coal
+    WASTE_COAL #WOC    #Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)
     DISTILLATE_FUEL_OIL #DFO #Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4
-    WASTE_OIL #WOO	#Waste Oil Kerosene and JetFuel Butane, Propane,
+    WASTE_OIL #WOO    #Waste Oil Kerosene and JetFuel Butane, Propane,
     PETROLEUM_COKE #PC  #Petroleum Coke
-    RESIDUAL_FUEL_OIL	#RFO #Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil)
-    NATURAL_GAS #NG	#Natural Gas
-    OTHER_GAS #OOG	#Other Gas and blast furnace gas
+    RESIDUAL_FUEL_OIL    #RFO #Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil)
+    NATURAL_GAS #NG    #Natural Gas
+    OTHER_GAS #OOG    #Other Gas and blast furnace gas
     NUCLEAR #NUC #Nuclear Fission (Uranium, Plutonium, Thorium)
-    AG_BIPRODUCT #ORW	#Agricultural Crop Byproducts/Straw/Energy Crops
-    MUNICIPAL_WASTE #MLG	#Municipal Solid Waste – Biogenic component
-    WOOD_WASTE #WWW #Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)
-    GEOTHERMAL #GEO #Geothermal
-    OTHER #OTH #Other
+    AG_BIPRODUCT #ORW    #Agricultural Crop Byproducts/Straw/Energy Crops
+    MUNICIPAL_WASTE #MLG    #Municipal Solid Waste – Biogenic component
+    WOOD_WASTE #WWW     #Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)
+    GEOTHERMAL #GEO     #Geothermal
+    OTHER #OTH     #Other
 end
 
 "Thrown upon detection of user data that is not supported."

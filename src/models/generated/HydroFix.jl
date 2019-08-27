@@ -7,16 +7,18 @@ mutable struct HydroFix <: HydroGen
     name::String
     available::Bool
     bus::Bus
+    activepower::Float64
+    reactivepower::Float64
     tech::TechHydro
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function HydroFix(name, available, bus, tech, )
-    HydroFix(name, available, bus, tech, PowerSystemInternal())
+function HydroFix(name, available, bus, activepower, reactivepower, tech, )
+    HydroFix(name, available, bus, activepower, reactivepower, tech, PowerSystemInternal())
 end
 
-function HydroFix(; name, available, bus, tech, )
-    HydroFix(name, available, bus, tech, )
+function HydroFix(; name, available, bus, activepower, reactivepower, tech, )
+    HydroFix(name, available, bus, activepower, reactivepower, tech, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -26,6 +28,8 @@ function HydroFix(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
+        activepower=0.0,
+        reactivepower=0.0,
         tech=TechHydro(nothing),
     )
 end
@@ -36,6 +40,10 @@ get_name(value::HydroFix) = value.name
 get_available(value::HydroFix) = value.available
 """Get HydroFix bus."""
 get_bus(value::HydroFix) = value.bus
+"""Get HydroFix activepower."""
+get_activepower(value::HydroFix) = value.activepower
+"""Get HydroFix reactivepower."""
+get_reactivepower(value::HydroFix) = value.reactivepower
 """Get HydroFix tech."""
 get_tech(value::HydroFix) = value.tech
 """Get HydroFix internal."""

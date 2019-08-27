@@ -3,23 +3,22 @@ This file is auto-generated. Do not edit.
 =#
 
 
-mutable struct TechHydro <: PowerSystems.TechnicalParams
+mutable struct TechHydro <: TechnicalParams
     rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
-    activepower::Float64
-    activepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    reactivepower::Float64
-    reactivepowerlimits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
+    primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
+    activepowerlimits::Min_Max
+    reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function TechHydro(rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits, )
-    TechHydro(rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits, PowerSystemInternal())
+function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, PowerSystemInternal())
 end
 
-function TechHydro(; rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits, )
-    TechHydro(rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits, )
+function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -27,9 +26,8 @@ end
 function TechHydro(::Nothing)
     TechHydro(;
         rating=0.0,
-        activepower=0.0,
+        primemover=HY::PrimeMovers,
         activepowerlimits=(min=0.0, max=0.0),
-        reactivepower=0.0,
         reactivepowerlimits=nothing,
         ramplimits=nothing,
         timelimits=nothing,
@@ -38,12 +36,10 @@ end
 
 """Get TechHydro rating."""
 get_rating(value::TechHydro) = value.rating
-"""Get TechHydro activepower."""
-get_activepower(value::TechHydro) = value.activepower
+"""Get TechHydro primemover."""
+get_primemover(value::TechHydro) = value.primemover
 """Get TechHydro activepowerlimits."""
 get_activepowerlimits(value::TechHydro) = value.activepowerlimits
-"""Get TechHydro reactivepower."""
-get_reactivepower(value::TechHydro) = value.reactivepower
 """Get TechHydro reactivepowerlimits."""
 get_reactivepowerlimits(value::TechHydro) = value.reactivepowerlimits
 """Get TechHydro ramplimits."""

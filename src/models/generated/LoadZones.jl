@@ -9,7 +9,7 @@ mutable struct LoadZones <: Topology
     buses::Vector{Bus}
     maxactivepower::Float64
     maxreactivepower::Float64
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
 function LoadZones(number, name, buses, maxactivepower, maxreactivepower, )

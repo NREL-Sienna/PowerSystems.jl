@@ -47,9 +47,9 @@ end
     @test tPowerLoad isa PowerSystems.Component
     tPowerLoadPF = PowerLoadPF(nothing)
     @test tPowerLoadPF isa PowerSystems.Component
-    tPowerLoad = PowerLoad("init", true, Bus(nothing), 0.0, 0.0)
+    tPowerLoad = PowerLoad("init", true, Bus(nothing), nothing, 0.0, 0.0, 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF("init", true, Bus(nothing), 0.0, 1.0)
+    tPowerLoadPF = PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0)
     @test tPowerLoadPF isa PowerSystems.Component
     tLoad = InterruptibleLoad(nothing)
     @test tLoad isa PowerSystems.Component
@@ -83,13 +83,18 @@ end
     tg = RenewableFix(nothing)
     forecast_data = PowerSystems.TimeSeries.TimeArray([DateTime("01-01-01"), DateTime("01-01-01")+Hour(1)], [1.0, 1.0])
     #Deterministic Tests
-    tDeterministicForecast = Deterministic(tg,"scalingfactor",Hour(1),DateTime("01-01-01"),24)
+    tDeterministicForecast = Deterministic(tg,"scalingfactor", Hour(1),DateTime("01-01-01"),24)
     @test tDeterministicForecast isa PowerSystems.Forecast
-    tDeterministicForecast = Deterministic(tg,"scalingfactor",forecast_data)
+    tDeterministicForecast = Deterministic(tg,"scalingfactor", forecast_data)
     @test tDeterministicForecast isa PowerSystems.Forecast
     #Probabilistic Tests
-    tProbabilisticForecast = Probabilistic(tg,"scalingfactor",Hour(1), DateTime("01-01-01"),[0.5, 0.5], 24)
+    tProbabilisticForecast = Probabilistic(tg,"scalingfactor", Hour(1), DateTime("01-01-01"),[0.5, 0.5], 24)
     @test  tProbabilisticForecast isa PowerSystems.Forecast
-    tProbabilisticForecast = Probabilistic(tg,"scalingfactor",[1.0], forecast_data)
+    tProbabilisticForecast = Probabilistic(tg,"scalingfactor", [1.0], forecast_data)
     @test  tProbabilisticForecast isa PowerSystems.Forecast
+    #Scenario Tests
+    tScenarioForecast = ScenarioBased(tg, "scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
+    @test  tScenarioForecast isa PowerSystems.Forecast
+    tScenarioForecast = ScenarioBased(tg,"scalingfactor",forecast_data)
+    @test  tScenarioForecast isa PowerSystems.Forecast
 end

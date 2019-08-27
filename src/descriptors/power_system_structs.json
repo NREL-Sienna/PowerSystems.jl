@@ -11,11 +11,13 @@
       {
         "name": "fixed",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "warn"
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "OperationalCost"
@@ -50,7 +52,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "OperationalCost"
@@ -67,28 +69,21 @@
         "validation_action": "error"
       },
       {
-        "name": "activepower",
-        "null_value": "0.0",
-        "data_type": "Float64",
-        "valid_range": "activepowerlimits",
-        "validation_action": "warn"
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "HY::PrimeMovers",
+        "data_type": "PrimeMovers"
       },
       {
         "name": "activepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
-      },
-      {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64",
-        "valid_range": "reactivepowerlimits",
-        "validation_action": "warn"
+        "data_type": "Min_Max"
       },
       {
         "name": "reactivepowerlimits",
+        "validation_action": "warn",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "ramplimits",
@@ -106,10 +101,10 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
-    "supertype": "PowerSystems.TechnicalParams"
+    "supertype": "TechnicalParams"
   },
   {
     "struct_name": "TechRenewable",
@@ -123,16 +118,15 @@
         "validation_action": "error"
       },
       {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64",
-        "valid_range": "reactivepowerlimits",
-        "validation_action": "warn"
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "OT::PrimeMovers",
+        "data_type": "PrimeMovers"
       },
       {
         "name": "reactivepowerlimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "powerfactor",
@@ -143,10 +137,10 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
-    "supertype": "PowerSystems.TechnicalParams"
+    "supertype": "TechnicalParams"
   },
   {
     "struct_name": "TechThermal",
@@ -161,28 +155,26 @@
         "validation_action": "error"
       },
       {
-        "name": "activepower",
-        "null_value": "0.0",
-        "data_type": "Float64",
-        "valid_range": "activepowerlimits",
-        "validation_action": "warn"
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "OT::PrimeMovers",
+        "data_type": "PrimeMovers"
+      },
+      {
+        "name": "fuel",
+        "comment": "PrimeMover Fuel according to EIA 923",
+        "null_value": "OTHER::ThermalFuels",
+        "data_type": "ThermalFuels"
       },
       {
         "name": "activepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
-      },
-      {
-        "name": "reactivepower",
-        "null_value": "0.0",
-        "data_type": "Float64",
-        "valid_range" : "reactivepowerlimits",
-        "validation_action": "warn"
+        "data_type": "Min_Max"
       },
       {
         "name": "reactivepowerlimits",
         "null_value": "nothing",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "ramplimits",
@@ -200,10 +192,10 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
-    "supertype": "PowerSystems.TechnicalParams"
+    "supertype": "TechnicalParams"
   },
   {
     "struct_name": "Bus",
@@ -248,7 +240,7 @@
         "name": "voltagelimits",
         "comment": "limits on the voltage variation as multiples of basevoltage",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "basevoltage",
@@ -261,14 +253,14 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Topology"
   },
   {
-    "struct_name": "Arch",
-    "docstring": "A topological Arch.",
+    "struct_name": "Arc",
+    "docstring": "A topological Arc.",
     "fields": [
       {
         "name": "from",
@@ -282,7 +274,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Topology"
@@ -301,9 +293,19 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -343,7 +345,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -362,9 +364,19 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -405,13 +417,13 @@
       {
         "name": "anglelimits",
         "null_value": "(min=-3.142, max=3.142)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "data_type": "Min_Max",
         "valid_range": {"min":-3.142, "max":3.142},
         "validation_action": "error"
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -430,9 +442,19 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -481,7 +503,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -500,9 +522,19 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -544,7 +576,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -564,9 +596,19 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "null_value": "0.0",
@@ -601,7 +643,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -620,29 +662,34 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "name": "activepowerlimits_from",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "activepowerlimits_to",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "reactivepowerlimits_from",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "reactivepowerlimits_to",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "loss",
@@ -651,7 +698,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "DCBranch"
@@ -671,14 +718,19 @@
         "data_type": "Bool"
       },
       {
-        "null_value": "Arch(Bus(nothing), Bus(nothing))",
-        "name": "arch",
-        "data_type": "Arch"
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
       },
       {
         "name": "rectifier_taplimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "rectifier_xrc",
@@ -686,14 +738,14 @@
         "data_type": "Float64"
       },
       {
-        "name": "rectifier_firingangle",
+        "name": "rectifier_firing_angle",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "inverter_taplimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "inverter_xrc",
@@ -701,13 +753,13 @@
         "data_type": "Float64"
       },
       {
-        "name": "inverter_firingangle",
+        "name": "inverter_firing_angle",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        "data_type": "Min_Max"
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "DCBranch"
@@ -732,18 +784,27 @@
       },
       {
         "name": "model",
-        "comment": "[Z, I, P]",
-        "null_value": "0",
-        "data_type": "String"
+        "null_value": "ConstantPower::LoadModel",
+        "data_type": "LoadModel"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
       },
       {
         "name": "maxactivepower",
-        "null_value": "0",
+        "null_value": "0.0",
         "data_type": "Float64"
       },
       {
         "name": "maxreactivepower",
-        "null_value": "0",
+        "null_value": "0.0",
         "data_type": "Float64"
       },
       {
@@ -753,7 +814,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ControllableLoad"
@@ -783,7 +844,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ElectricLoad"
@@ -807,6 +868,21 @@
         "data_type": "Bus"
       },
       {
+        "name": "model",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, LoadModel}"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "maxactivepower",
         "null_value": "0.0",
         "data_type": "Float64"
@@ -818,7 +894,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "StaticLoad"
@@ -842,6 +918,18 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
         "name": "tech",
         "null_value": "TechHydro(nothing)",
         "data_type": "TechHydro"
@@ -853,7 +941,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -877,13 +965,25 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
         "name": "tech",
         "null_value": "TechHydro(nothing)",
         "data_type": "TechHydro"
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -905,6 +1005,18 @@
         "name": "bus",
         "null_value": "Bus(nothing)",
         "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "tech",
@@ -932,7 +1044,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -956,6 +1068,16 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "tech",
         "null_value": "TechRenewable(nothing)",
         "data_type": "TechRenewable"
@@ -967,7 +1089,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "RenewableGen"
@@ -991,13 +1113,23 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
         "name": "tech",
         "null_value": "TechRenewable(nothing)",
         "data_type": "TechRenewable"
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "RenewableGen"
@@ -1022,6 +1154,20 @@
         "data_type": "Bus"
       },
       {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.activepowerlimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
         "name": "tech",
         "null_value": "TechThermal(nothing)",
         "data_type": "Union{Nothing, TechThermal}"
@@ -1033,7 +1179,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "ThermalGen"
@@ -1068,7 +1214,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Topology"
@@ -1092,6 +1238,12 @@
         "data_type": "Bus"
       },
       {
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "BA::PrimeMovers",
+        "data_type": "PrimeMovers"
+      },
+      {
         "name": "energy",
         "null_value": "0.0",
         "comment": "State of Charge of the Battery p.u.-hr",
@@ -1103,7 +1255,7 @@
         "name": "capacity",
         "null_value": "(min=0.0, max=0.0)",
         "comment": "Maximum and Minimum storage capacity in p.u.-hr",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "data_type": "Min_Max",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
       },
@@ -1120,14 +1272,14 @@
       {
         "name": "inputactivepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "data_type": "Min_Max",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
       },
       {
         "name": "outputactivepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "data_type": "Min_Max",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
       },
@@ -1141,16 +1293,18 @@
       {
         "name": "reactivepower",
         "null_value": "0.0",
-        "data_type": "Float64"
+        "data_type": "Float64",
+        "valid_range": "reactivepowerlimits",
+        "validation_action": "warn"
       },
       {
         "name": "reactivepowerlimits",
         "null_value": "(min=0.0, max=0.0)",
-        "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+        "data_type": "Union{Nothing, Min_Max}"
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Storage"
@@ -1180,7 +1334,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Reserve"
@@ -1216,7 +1370,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Reserve"
@@ -1248,7 +1402,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Service"
@@ -1293,7 +1447,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Forecast"
@@ -1343,7 +1497,57 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystems.PowerSystemInternal"
+        "data_type": "PowerSystemInternal"
+      }
+    ],
+    "supertype": "Forecast"
+  },
+  {
+    "struct_name": "ScenarioBased",
+    "docstring": "A Discrete Scenario Based forecast for a particular data field in a PowerSystemDevice.",
+    "parametric": "Component",
+    "fields": [
+      {
+        "name": "component",
+        "data_type": "T"
+      },
+      {
+        "name": "label",
+        "data_type": "String",
+        "comment": "label of component parameter forecasted"
+      },
+      {
+        "name": "resolution",
+        "data_type": "Dates.Period"
+      },
+      {
+        "name": "initial_time",
+        "data_type": "Dates.DateTime",
+        "comment": "forecast availability time"
+      },
+      {
+        "name": "scenario_count",
+        "data_type": "Int64",
+        "comment": "Number of scenarios"
+      },
+      {
+        "name": "data",
+        "data_type": "TimeSeries.TimeArray",
+        "comment": "timestamp - scalingfactor"
+      },
+      {
+        "name": "start_index",
+        "data_type": "Int",
+        "comment": "starting index of data for this forecast"
+      },
+      {
+        "name": "horizon",
+        "data_type": "Int",
+        "comment": "length of this forecast"
+      },
+      {
+        "name": "internal",
+        "data_type": "PowerSystemInternal"
       }
     ],
     "supertype": "Forecast"

@@ -6,20 +6,22 @@ This file is auto-generated. Do not edit.
 mutable struct Transformer2W <: ACBranch
     name::String
     available::Bool
-    arch::Arch
+    activepower_flow::Float64
+    reactivepower_flow::Float64
+    arc::Arc
     r::Float64  # System per-unit value
     x::Float64  # System per-unit value
     primaryshunt::Float64  # System per-unit value
     rate::Union{Nothing, Float64}
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function Transformer2W(name, available, arch, r, x, primaryshunt, rate, )
-    Transformer2W(name, available, arch, r, x, primaryshunt, rate, PowerSystemInternal())
+function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, PowerSystemInternal())
 end
 
-function Transformer2W(; name, available, arch, r, x, primaryshunt, rate, )
-    Transformer2W(name, available, arch, r, x, primaryshunt, rate, )
+function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -28,7 +30,9 @@ function Transformer2W(::Nothing)
     Transformer2W(;
         name="init",
         available=false,
-        arch=Arch(Bus(nothing), Bus(nothing)),
+        activepower_flow=0.0,
+        reactivepower_flow=0.0,
+        arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
         primaryshunt=0.0,
@@ -40,8 +44,12 @@ end
 get_name(value::Transformer2W) = value.name
 """Get Transformer2W available."""
 get_available(value::Transformer2W) = value.available
-"""Get Transformer2W arch."""
-get_arch(value::Transformer2W) = value.arch
+"""Get Transformer2W activepower_flow."""
+get_activepower_flow(value::Transformer2W) = value.activepower_flow
+"""Get Transformer2W reactivepower_flow."""
+get_reactivepower_flow(value::Transformer2W) = value.reactivepower_flow
+"""Get Transformer2W arc."""
+get_arc(value::Transformer2W) = value.arc
 """Get Transformer2W r."""
 get_r(value::Transformer2W) = value.r
 """Get Transformer2W x."""

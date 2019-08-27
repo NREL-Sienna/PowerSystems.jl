@@ -3,20 +3,20 @@ This file is auto-generated. Do not edit.
 =#
 
 
-mutable struct TechRenewable <: PowerSystems.TechnicalParams
+mutable struct TechRenewable <: TechnicalParams
     rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
-    reactivepower::Float64
-    reactivepowerlimits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
+    primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
+    reactivepowerlimits::Union{Nothing, Min_Max}
     powerfactor::Float64
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function TechRenewable(rating, reactivepower, reactivepowerlimits, powerfactor, )
-    TechRenewable(rating, reactivepower, reactivepowerlimits, powerfactor, PowerSystemInternal())
+function TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
+    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, PowerSystemInternal())
 end
 
-function TechRenewable(; rating, reactivepower, reactivepowerlimits, powerfactor, )
-    TechRenewable(rating, reactivepower, reactivepowerlimits, powerfactor, )
+function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, )
+    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -24,7 +24,7 @@ end
 function TechRenewable(::Nothing)
     TechRenewable(;
         rating=0.0,
-        reactivepower=0.0,
+        primemover=OT::PrimeMovers,
         reactivepowerlimits=nothing,
         powerfactor=1.0,
     )
@@ -32,8 +32,8 @@ end
 
 """Get TechRenewable rating."""
 get_rating(value::TechRenewable) = value.rating
-"""Get TechRenewable reactivepower."""
-get_reactivepower(value::TechRenewable) = value.reactivepower
+"""Get TechRenewable primemover."""
+get_primemover(value::TechRenewable) = value.primemover
 """Get TechRenewable reactivepowerlimits."""
 get_reactivepowerlimits(value::TechRenewable) = value.reactivepowerlimits
 """Get TechRenewable powerfactor."""

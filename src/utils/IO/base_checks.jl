@@ -21,7 +21,7 @@ function getresolution(ts::TimeSeries.TimeArray)
     res = []
 
     for timediff in timediffs
-        if mod(timediff,Dates.Millisecond(Dates.Day(1))) == Dates.Millisecond(0) 
+        if mod(timediff,Dates.Millisecond(Dates.Day(1))) == Dates.Millisecond(0)
             push!(res,Dates.Day(timediff/Dates.Millisecond(Dates.Day(1))))
         elseif mod(timediff,Dates.Millisecond(Dates.Hour(1))) == Dates.Millisecond(0)
             push!(res,Dates.Hour(timediff/Dates.Millisecond(Dates.Hour(1))))
@@ -56,7 +56,7 @@ end
 
 """Checks if a PowerSystemDevice has a field or subfield name."""
 function isafield(component::Component, field::Symbol)
-    
+
     function _wrap(t,d=[])
         fn = fieldnames(typeof(t))
         for n in fn

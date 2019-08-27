@@ -7,19 +7,21 @@ mutable struct HydroStorage <: HydroGen
     name::String
     available::Bool
     bus::Bus
+    activepower::Float64
+    reactivepower::Float64
     tech::TechHydro
     op_cost::TwoPartCost
     storagecapacity::Float64
     initial_storage::Float64
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function HydroStorage(name, available, bus, tech, op_cost, storagecapacity, initial_storage, )
-    HydroStorage(name, available, bus, tech, op_cost, storagecapacity, initial_storage, PowerSystemInternal())
+function HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, )
+    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, PowerSystemInternal())
 end
 
-function HydroStorage(; name, available, bus, tech, op_cost, storagecapacity, initial_storage, )
-    HydroStorage(name, available, bus, tech, op_cost, storagecapacity, initial_storage, )
+function HydroStorage(; name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, )
+    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -29,6 +31,8 @@ function HydroStorage(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
+        activepower=0.0,
+        reactivepower=0.0,
         tech=TechHydro(nothing),
         op_cost=TwoPartCost(nothing),
         storagecapacity=0.0,
@@ -42,6 +46,10 @@ get_name(value::HydroStorage) = value.name
 get_available(value::HydroStorage) = value.available
 """Get HydroStorage bus."""
 get_bus(value::HydroStorage) = value.bus
+"""Get HydroStorage activepower."""
+get_activepower(value::HydroStorage) = value.activepower
+"""Get HydroStorage reactivepower."""
+get_reactivepower(value::HydroStorage) = value.reactivepower
 """Get HydroStorage tech."""
 get_tech(value::HydroStorage) = value.tech
 """Get HydroStorage op_cost."""

@@ -2,6 +2,8 @@
 include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
 include(joinpath(DATA_DIR,"data_14bus_pu.jl"))
 
+checksys = false
+
 @testset "Test System constructors from .jl files" begin
     tPowerSystem = System(nothing)
 
@@ -10,10 +12,10 @@ include(joinpath(DATA_DIR,"data_14bus_pu.jl"))
     end
 
     sys5 = System(nodes5, thermal_generators5, loads5, nothing, nothing,  100.0, nothing,
-                  nothing, nothing)
+                  nothing, nothing; runchecks = checksys)
 
     sys5b = System(nodes5, thermal_generators5, loads5, nothing, battery5,  100.0, nothing,
-                   nothing, nothing)
+                   nothing, nothing; runchecks = checksys)
 
     # GitHub issue #234 - fix forecasts5 in data file, use new format
     #_sys5b = PowerSystems._System(nodes5, thermal_generators5, loads5, nothing, battery5,
@@ -21,7 +23,7 @@ include(joinpath(DATA_DIR,"data_14bus_pu.jl"))
     #sys5b = System(_sys5b)
 
     sys5bh = System(nodes5, vcat(thermal_generators5, hydro_generators5), loads5, branches5,
-                    battery5,  100.0, nothing, nothing, nothing)
+                    battery5,  100.0, nothing, nothing, nothing; runchecks = checksys)
 
     sys5bh = System(; buses=nodes5,
                     generators=vcat(thermal_generators5, hydro_generators5),
@@ -31,7 +33,8 @@ include(joinpath(DATA_DIR,"data_14bus_pu.jl"))
                     basepower=100.0,
                     forecasts=nothing,
                     services=nothing,
-                    annex=nothing)
+                    annex=nothing,
+                    runchecks = checksys)
 
     # Test Data for 14 Bus
 
@@ -45,9 +48,9 @@ include(joinpath(DATA_DIR,"data_14bus_pu.jl"))
     end
 
     sys14b = PowerSystems.System(nodes14, thermal_generators14, loads14, nothing,
-                                 battery14, 100.0, nothing, nothing, nothing)
+                                 battery14, 100.0, nothing, nothing, nothing; runchecks = checksys)
     sys14b = PowerSystems.System(nodes14, thermal_generators14, loads14, branches14,
-                                 battery14, 100.0, nothing, nothing, nothing)
+                                 battery14, 100.0, nothing, nothing, nothing; runchecks = checksys)
 end
 
 @testset "Test System constructor from Matpower" begin

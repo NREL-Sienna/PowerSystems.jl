@@ -7,19 +7,21 @@ mutable struct InterruptibleLoad <: ControllableLoad
     name::String
     available::Bool
     bus::Bus
-    model::String  # [Z, I, P]
+    model::LoadModel
+    activepower::Float64
+    reactivepower::Float64
     maxactivepower::Float64
     maxreactivepower::Float64
     op_cost::TwoPartCost
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
+function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, PowerSystemInternal())
 end
 
-function InterruptibleLoad(; name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, maxactivepower, maxreactivepower, op_cost, )
+function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -29,9 +31,11 @@ function InterruptibleLoad(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        model="0",
-        maxactivepower=0,
-        maxreactivepower=0,
+        model=ConstantPower::LoadModel,
+        activepower=0.0,
+        reactivepower=0.0,
+        maxactivepower=0.0,
+        maxreactivepower=0.0,
         op_cost=TwoPartCost(nothing),
     )
 end
@@ -44,6 +48,10 @@ get_available(value::InterruptibleLoad) = value.available
 get_bus(value::InterruptibleLoad) = value.bus
 """Get InterruptibleLoad model."""
 get_model(value::InterruptibleLoad) = value.model
+"""Get InterruptibleLoad activepower."""
+get_activepower(value::InterruptibleLoad) = value.activepower
+"""Get InterruptibleLoad reactivepower."""
+get_reactivepower(value::InterruptibleLoad) = value.reactivepower
 """Get InterruptibleLoad maxactivepower."""
 get_maxactivepower(value::InterruptibleLoad) = value.maxactivepower
 """Get InterruptibleLoad maxreactivepower."""

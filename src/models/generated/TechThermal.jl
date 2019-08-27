@@ -3,23 +3,23 @@ This file is auto-generated. Do not edit.
 =#
 
 """Data Structure for the technical parameters of thermal generation technologies."""
-mutable struct TechThermal <: PowerSystems.TechnicalParams
+mutable struct TechThermal <: TechnicalParams
     rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
-    activepower::Float64
-    activepowerlimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    reactivepower::Float64
-    reactivepowerlimits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
+    primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
+    fuel::ThermalFuels  # PrimeMover Fuel according to EIA 923
+    activepowerlimits::Min_Max
+    reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 end
 
-function TechThermal(rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits, )
-    TechThermal(rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits, PowerSystemInternal())
+function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, PowerSystemInternal())
 end
 
-function TechThermal(; rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits, )
-    TechThermal(rating, activepower, activepowerlimits, reactivepower, reactivepowerlimits, ramplimits, timelimits, )
+function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -27,9 +27,9 @@ end
 function TechThermal(::Nothing)
     TechThermal(;
         rating=0.0,
-        activepower=0.0,
+        primemover=OT::PrimeMovers,
+        fuel=OTHER::ThermalFuels,
         activepowerlimits=(min=0.0, max=0.0),
-        reactivepower=0.0,
         reactivepowerlimits=nothing,
         ramplimits=nothing,
         timelimits=nothing,
@@ -38,12 +38,12 @@ end
 
 """Get TechThermal rating."""
 get_rating(value::TechThermal) = value.rating
-"""Get TechThermal activepower."""
-get_activepower(value::TechThermal) = value.activepower
+"""Get TechThermal primemover."""
+get_primemover(value::TechThermal) = value.primemover
+"""Get TechThermal fuel."""
+get_fuel(value::TechThermal) = value.fuel
 """Get TechThermal activepowerlimits."""
 get_activepowerlimits(value::TechThermal) = value.activepowerlimits
-"""Get TechThermal reactivepower."""
-get_reactivepower(value::TechThermal) = value.reactivepower
 """Get TechThermal reactivepowerlimits."""
 get_reactivepowerlimits(value::TechThermal) = value.reactivepowerlimits
 """Get TechThermal ramplimits."""

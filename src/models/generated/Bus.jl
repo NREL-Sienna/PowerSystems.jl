@@ -9,9 +9,9 @@ mutable struct Bus <: Topology
     bustype::Union{Nothing, BusType}  # bus type
     angle::Union{Nothing, Float64}  # angle of the bus in radians
     voltage::Union{Nothing, Float64}  # voltage as a multiple of basevoltage
-    voltagelimits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}  # limits on the voltage variation as multiples of basevoltage
+    voltagelimits::Union{Nothing, Min_Max}  # limits on the voltage variation as multiples of basevoltage
     basevoltage::Union{Nothing, Float64}  # the base voltage in kV
-    internal::PowerSystems.PowerSystemInternal
+    internal::PowerSystemInternal
 
     function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, internal, )
         (number, name, bustype, angle, voltage, voltagelimits, basevoltage, internal, ) = CheckBusParams(

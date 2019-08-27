@@ -1,31 +1,27 @@
-"""Accepts rating as a Float64 and then creates a TechRenewable."""
+"""Accepts rating as a Float64 and then creates a TwoPartCost."""
 function TwoPartCost(variable_cost::T, args...) where {T <: VarCostArgs}
     return TwoPartCost(VariableCost(variable_cost), args...)
 end
 
-"""Accepts rating as a Float64 and then creates a TechRenewable."""
+"""Accepts rating as a Float64 and then creates a ThreePartCost."""
 function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
     return ThreePartCost(VariableCost(variable_cost), args...)
 end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableFix(name, available, bus, rating::Float64)
-    tech = TechRenewable(rating, nothing, 1.0)
-    RenewableFix(name, available, bus, tech)
+function RenewableFix(name::String, available::Bool, bus::Bus,
+                        activepower::Float64, reactivepower::Float64,
+                        prime_mover::PrimeMovers, rating::Float64)
+    tech = TechRenewable(rating, prime_mover, nothing, 1.0)
+    RenewableFix(name, available, bus, activepower, reactivepower, tech)
 end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableDispatch(name::String, available::Bool, bus::Bus, rating::Float64,
-                           op_cost::TwoPartCost)
-    tech = TechRenewable(rating, 0.0, nothing, 1.0)
-    return RenewableDispatch(name, available, bus, tech, op_cost)
-end
-
-"""Accepts curtailment cost as a Float64 and then creates an EconHydro."""
-function HydroDispatch(name::AbstractString, available::Bool, bus::Bus, tech::TechHydro,
-                       curtailcost::Float64)
-    op_cost = TwoPartCost(0.0, curtailcost)
-    return HydroDispatch(name, available, bus, tech, op_cost)
+function RenewableDispatch(name::String, available::Bool, bus::Bus,
+                           activepower::Float64, reactivepower::Float64,
+                           prime_mover::PrimeMovers, rating::Float64, op_cost::TwoPartCost)
+    tech = TechRenewable(rating, prime_mover, nothing, 1.0)
+    return RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost)
 end
 
 """Constructs Deterministic from a Component, label, and TimeArray."""
@@ -110,19 +106,74 @@ function Probabilistic(component::Component,
                          start_index, horizon, PowerSystemInternal())
 end
 
-function PowerLoadPF(name::String, available::Bool, bus::Bus, maxactivepower::Float64,
-                     power_factor::Float64)
+
+"""Constructs ScenarioBased Forecast after constructing a TimeArray from initial_time and time_steps.
+"""
+function ScenarioBased(component::Component,
+                       label::String,
+                       resolution::Dates.Period,
+                       initial_time::Dates.DateTime,
+                       scenario_count::Int64,
+                       time_steps::Int)
+
+    data = TimeSeries.TimeArray(
+        initial_time : Dates.Hour(1) : initial_time + resolution * (time_steps-1),
+        ones(time_steps, scenario_count)
+    )
+
+
+    return ScenarioBased(component, label, Dates.Minute(resolution), initial_time, data)
+end
+
+"""Constructs ScenarioBased Forecast after constructing a TimeArray from initial_time and time_steps.
+"""
+function ScenarioBased(component::Component,
+                       label::String,
+                       data::TimeSeries.TimeArray,
+                      )
+
+    initial_time = TimeSeries.timestamp(data)[1]
+    resolution = getresolution(data)
+
+    return ScenarioBased(component, label, Dates.Minute(resolution), initial_time,
+                         data)
+end
+
+function ScenarioBased(component::Component,
+                       label::String,
+                       resolution::Dates.Period,
+                       initial_time::Dates.DateTime,
+                       data::TimeSeries.TimeArray)
+    start_index = 1
+    scenario_count = length(TimeSeries.colnames(data))
+    horizon = length(data)
+    return ScenarioBased(component, label, resolution, initial_time, scenario_count, data,
+                            start_index, horizon, PowerSystemInternal())
+end
+
+function PowerLoadPF(name::String, available::Bool, bus::Bus,
+                     model::Union{Nothing, LoadModel}, activepower::Float64,
+                     maxactivepower::Float64, power_factor::Float64)
     maxreactivepower = maxactivepower * sin(acos(power_factor))
-    return PowerLoad(name, available, bus, maxactivepower, maxreactivepower)
+    reactivepower = activepower * sin(acos(power_factor))
+    return PowerLoad(name,
+                     available,
+                     bus,
+                     model,
+                     activepower,
+                     reactivepower,
+                     maxactivepower,
+                     maxreactivepower)
 end
 
 function PowerLoadPF(::Nothing)
-    return PowerLoadPF("init", true, Bus(nothing), 0.0, 1.0)
+    return PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0)
 end
 
 """Accepts anglelimits as a Float64."""
-function Line(name, available, arch::Arch, r, x, b, rate, anglelimits::Float64)
-    return Line(name, available, arch::Arch, r, x, b, rate,
+function Line(name, available::Bool, activepower_flow::Float64,
+    reactivepower_flow::Float64, arc::Arc, r, x, b, rate, anglelimits::Float64)
+    return Line(name, available, activepower_flow, reactivepower_flow, arc::Arc, r, x, b, rate,
                 (min=-anglelimits, max=anglelimits))
 end
 

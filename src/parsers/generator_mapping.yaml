@@ -21,7 +21,7 @@ ThermalStandard:
 - {fuel: NUCLEAR, type: null}
 - {fuel: NUC, type: null}
 - {fuel: SYNC_COND, type: SYNC_COND}
-- {fuel: GENERIC, type: GENERIC}
+- {fuel: OTHER, type: OT}
 
 GenericBattery:
 - {fuel: STORAGE, type: null}
