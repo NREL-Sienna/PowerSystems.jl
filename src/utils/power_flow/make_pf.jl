@@ -86,50 +86,50 @@ function make_pf(system)
             net_q_load = :(-$(total_load[2]))
             push!(internal.args, :($Vm_name = $(bus_voltage)))
             push!(internal.args, :($ang_name = $(bus_angle)))
-			var_ref1 = (:activepower, var_count)
-			x0[var_count] = total_gen[1]
+            var_ref1 = (:activepower, var_count)
+            x0[var_count] = total_gen[1]
             push!(internal.args, :($P_name = x[$(var_count)])); var_count += 1
-			var_ref2 = (:reactivepower, var_count)
-			x0[var_count] = total_gen[2]
+            var_ref2 = (:reactivepower, var_count)
+            x0[var_count] = total_gen[2]
             push!(internal.args, :($Q_name = x[$(var_count)])); var_count += 1
             push!(internal.args, :(P_bal[$ix] = $P_name + $net_p_load))
             push!(internal.args, :(Q_bal[$ix] = $Q_name + $net_q_load))
             push!(internal.args, :(V[$ix] = $Vm_name*(cos($ang_name)+sin($ang_name)*1im)))
             push!(internal.args, :(Vc[$ix] = conj(V[$ix])))
-			# Reference for the results Dict
-			res_dict[b.name] = [var_ref1, var_ref2]
+            # Reference for the results Dict
+            res_dict[b.name] = [var_ref1, var_ref2]
         elseif b.bustype == PV::BusType
             Q_name = Symbol("Q_", bus_number)
             net_p_load = :($(total_gen[1]) - $(total_load[1]))
             net_q_load = :(-$(total_load[2]))
             push!(internal.args, :($Vm_name = $(bus_voltage)))
-			var_ref1 = (:reactivepower, var_count)
-			x0[var_count] = total_gen[2]
-			push!(internal.args, :($Q_name = x[$(var_count)])); var_count += 1
-			var_ref2 = (:angle, var_count)
-			x0[var_count] = bus_angle
+            var_ref1 = (:reactivepower, var_count)
+            x0[var_count] = total_gen[2]
+            push!(internal.args, :($Q_name = x[$(var_count)])); var_count += 1
+            var_ref2 = (:angle, var_count)
+            x0[var_count] = bus_angle
             push!(internal.args, :($ang_name = x[$(var_count)])); var_count += 1
             push!(internal.args, :(P_bal[$ix] = $net_p_load))
             push!(internal.args, :(Q_bal[$ix] = $Q_name + $net_q_load))
             push!(internal.args, :(V[$ix] = $Vm_name*(cos($ang_name)+sin($ang_name)*1im)))
             push!(internal.args, :(Vc[$ix] = conj(V[$ix])))
-			# Reference for the results Dict
-			res_dict[b.name] = [var_ref1, var_ref2]
+            # Reference for the results Dict
+            res_dict[b.name] = [var_ref1, var_ref2]
         elseif b.bustype == PQ::BusType
             net_p_load = :($(total_gen[1]) - $(total_load[1]))
             net_q_load = :($(total_gen[2]) - $(total_load[2]))
-			var_ref1 = (:voltage, var_count)
-			x0[var_count] = bus_voltage
+            var_ref1 = (:voltage, var_count)
+            x0[var_count] = bus_voltage
             push!(internal.args, :($Vm_name = x[$(var_count)])); var_count += 1
-			var_ref2 = (:angle, var_count)
-			x0[var_count] = bus_angle
+            var_ref2 = (:angle, var_count)
+            x0[var_count] = bus_angle
             push!(internal.args, :($ang_name = x[$(var_count)])); var_count += 1
             push!(internal.args, :(P_bal[$ix] = $net_p_load))
             push!(internal.args, :(Q_bal[$ix] = $net_q_load))
             push!(internal.args, :(V[$ix] = $Vm_name*(cos($ang_name)+sin($ang_name)*1im)))
             push!(internal.args, :(Vc[$ix] = conj(V[$ix])))
-			# Reference for the results Dict
-			res_dict[b.name] = [var_ref1, var_ref2]
+            # Reference for the results Dict
+            res_dict[b.name] = [var_ref1, var_ref2]
         end
     end
 
@@ -151,10 +151,10 @@ function make_pf(system)
 
     ret = quote
         f! =  @_fn (res, x) -> begin
-						 $internal
-						 $balance_eqs
-						 end
-		(f!, $x0, $res_dict)
+                         $internal
+                         $balance_eqs
+                         end
+        (f!, $x0, $res_dict)
     end
 
     res = eval(ret)
