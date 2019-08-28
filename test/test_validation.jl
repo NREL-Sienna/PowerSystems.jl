@@ -86,8 +86,12 @@ end
     #test recursive call of validate_fields and a regular valid range
     bad_therm_gen_rating = deepcopy(thermal_generators5)
     bad_therm_gen_rating[1].tech.rating = -10
-    @test_throws(PowerSystems.InvalidRange, System(nodes5, bad_therm_gen_rating, loads5,
-            nothing, nothing, 100.0, nothing, nothing, nothing; runchecks=true))
+    @test_logs((:error, r"Invalid range"),
+        @test_throws(PowerSystems.InvalidRange,
+                        System(nodes5, bad_therm_gen_rating, loads5, nothing, nothing,
+                               100.0, nothing, nothing, nothing; runchecks=true)
+        )
+    )
 
     #test custom range (activepower and activepowerlimits)
     bad_therm_gen_act_power = deepcopy(thermal_generators5)
@@ -98,7 +102,10 @@ end
     #test validating named tuple
     bad_therm_gen_ramp_lim = deepcopy(thermal_generators5)
     bad_therm_gen_ramp_lim[1].tech.ramplimits = (up = -10, down = -3)
-    @test_throws(PowerSystems.InvalidRange, System(nodes5, bad_therm_gen_ramp_lim, loads5,
-            nothing, nothing, 100.0, nothing, nothing, nothing; runchecks=true))
-
+    @test_logs((:error, r"Invalid range"), match_mode=:any,
+        @test_throws(PowerSystems.InvalidRange,
+                     System(nodes5, bad_therm_gen_ramp_lim, loads5, nothing, nothing, 100.0,
+                            nothing, nothing, nothing; runchecks=true)
+        )
+    )
 end
