@@ -4,6 +4,7 @@ using Dates
 
 using PowerSystems
 import PowerSystems: PowerSystemRaw
+const PSY = PowerSystems
 
 
 BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))

@@ -2,8 +2,6 @@ import DataFrames
 import Dates
 import TimeSeries
 
-const PSY = PowerSystems
-
 function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon)
     initial_times = get_forecast_initial_times(sys)
     if length(initial_times) != num_initial_times

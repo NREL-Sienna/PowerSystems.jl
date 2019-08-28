@@ -1,14 +1,12 @@
 import YAML
 import PowerSystems
 
-const VALID_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
-                                            "descriptors", "validation_config.json")
 const WRONG_FORMAT_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
                                             "descriptors", "config.yml")
 include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
 
 @testset "Test reading in config data" begin
-    data = PowerSystems.read_validation_descriptor(VALID_CONFIG_FILE)
+    data = PowerSystems.read_validation_descriptor(PSY.POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
     @test data isa Vector
     @test !isempty(data)
     function find_struct()
@@ -88,8 +86,12 @@ end
     #test recursive call of validate_fields and a regular valid range
     bad_therm_gen_rating = deepcopy(thermal_generators5)
     bad_therm_gen_rating[1].tech.rating = -10
-    @test_throws(PowerSystems.InvalidRange, System(nodes5, bad_therm_gen_rating, loads5,
-            nothing, nothing, 100.0, nothing, nothing, nothing; runchecks=true))
+    @test_logs((:error, r"Invalid range"),
+        @test_throws(PowerSystems.InvalidRange,
+                        System(nodes5, bad_therm_gen_rating, loads5, nothing, nothing,
+                               100.0, nothing, nothing, nothing; runchecks=true)
+        )
+    )
 
     #test custom range (activepower and activepowerlimits)
     bad_therm_gen_act_power = deepcopy(thermal_generators5)
@@ -100,7 +102,10 @@ end
     #test validating named tuple
     bad_therm_gen_ramp_lim = deepcopy(thermal_generators5)
     bad_therm_gen_ramp_lim[1].tech.ramplimits = (up = -10, down = -3)
-    @test_throws(PowerSystems.InvalidRange, System(nodes5, bad_therm_gen_ramp_lim, loads5,
-            nothing, nothing, 100.0, nothing, nothing, nothing; runchecks=true))
-
+    @test_logs((:error, r"Invalid range"), match_mode=:any,
+        @test_throws(PowerSystems.InvalidRange,
+                     System(nodes5, bad_therm_gen_ramp_lim, loads5, nothing, nothing, 100.0,
+                            nothing, nothing, nothing; runchecks=true)
+        )
+    )
 end

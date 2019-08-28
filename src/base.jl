@@ -1,7 +1,5 @@
 
 const Components = Dict{DataType, Dict{String, <:Component}}
-const VALID_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
-                                            "descriptors", "validation_config.json")
 const SKIP_PM_VALIDATION = false
 
 """
@@ -45,7 +43,7 @@ struct System <: PowerSystemType
     validation_descriptor::Vector
 
     function System(components, forecasts, basepower, internal; kwargs...)
-        configpath = get(kwargs, :configpath, VALID_CONFIG_FILE)
+        configpath = get(kwargs, :configpath, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
         runchecks = get(kwargs, :runchecks, true)
         validation_descriptor = runchecks ? read_validation_descriptor(configpath) : Vector()
         sys = new(components, forecasts, basepower, internal, validation_descriptor)
@@ -862,15 +860,16 @@ function read_validation_descriptor(filename::AbstractString)
             YAML.load(file)
         end
     elseif occursin(r"(\.json)"i, filename)
-        str = String(read(filename))
-        #data = JSON2.read(str, Array{Dict{Any,Any}})
-        data = JSON2.read(str,Vector{Dict{Any,Union{String,Vector{Dict{Any,Any}}}}})
+        data = open(filename) do file
+            # JSON2.read produces NamedTuples recursively. We want dicts. Use JSON instead.
+            JSON.parse(file)
+        end
     else
         error("Filename is not a YAML or JSON file.")
     end
 
     if !isa(data, Array)
-        error("YAML or JSON file format must exactly match example in $VALID_CONFIG_FILE")
+        error("YAML or JSON file format must exactly match example in $POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE")
     end
 
     return data
