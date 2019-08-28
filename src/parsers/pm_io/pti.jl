@@ -39,7 +39,7 @@ function get_pti_dtypes(field_name::AbstractString)::Array
                    ("IQ", Float64), ("YP", Float64), ("YQ", Float64), ("OWNER", Int64),
                    ("SCALE", Int64), ("INTRPT", Int64)]
 
-    fixded_shunt_dtypes = [("I", Int64), ("ID", String), ("STATUS", Int64), ("GL", Float64),
+    fixed_shunt_dtypes = [("I", Int64), ("ID", String), ("STATUS", Int64), ("GL", Float64),
                            ("BL", Float64)]
 
     generator_dtypes = [("I", Int64), ("ID", String), ("PG", Float64), ("QG", Float64),
@@ -210,7 +210,7 @@ function get_pti_dtypes(field_name::AbstractString)::Array
 
     dtypes = Dict{String,Array}("BUS" => bus_dtypes,
                                 "LOAD" => load_dtypes,
-                                "FIXED SHUNT" => fixded_shunt_dtypes,
+                                "FIXED SHUNT" => fixed_shunt_dtypes,
                                 "GENERATOR" => generator_dtypes,
                                 "BRANCH" => branch_dtypes,
                                 "TRANSFORMER TWO WINDING" => transformer_2_dtypes,
@@ -247,30 +247,29 @@ data types given by `section` and saved into `data::Dict`
 
 """
 function parse_line_element!(data::Dict, elements::Array, section::AbstractString)
-    missing = []
+    missing_fields = []
     for (field, dtype) in get_pti_dtypes(section)
         try
             element = popfirst!(elements)
         catch message
             if isa(message, ArgumentError)
                 @debug "Have run out of elements in $section at $field"
-                push!(missing, field)
+                push!(missing_fields, field)
                 continue
             end
         end
 
-        if startswith(element, "'") && endswith(element, "'")
+        if startswith(strip(element), "'") && endswith(strip(element), "'")
             dtype = String
-            element = chop(reverse(chop(reverse(element))))
+            element = chop(reverse(chop(reverse(strip(element)))))
         end
 
         try
-            if dtype != String
+            if dtype != String && element != ""
                 data[field] = parse(dtype, element)
             else
                 data[field] = element
             end
-
         catch message
             if isa(message, Meta.ParseError)
                 data[field] = element
@@ -280,8 +279,11 @@ function parse_line_element!(data::Dict, elements::Array, section::AbstractStrin
         end
     end
 
-    if length(missing) > 0
-        missing_str = join(missing, ", ")
+    if length(missing_fields) > 0
+        for field in missing_fields
+            data[field] = ""
+        end
+        missing_str = join(missing_fields, ", ")
         if !(section == "SWITCHED SHUNT" && startswith(missing_str, "N")) &&
             !(section == "MULTI-SECTION LINE" && startswith(missing_str, "DUM")) &&
             !(section == "IMPEDANCE CORRECTION" && startswith(missing_str, "T"))
@@ -425,14 +427,9 @@ function parse_pti_data(data_io::IO, sections::Array)
                     catch message
                         throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
                     end
-                    try
-                        if section_data["REV"] < 33
-                            @info("Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.")
-                        end
-                    catch message
-                        if isa(message, KeyError)
-                            @error("This file is unrecognized and cannot be parsed")
-                        end
+
+                    if section_data["REV"] != "" && section_data["REV"] < 33
+                        @info("Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.")
                     end
                 else
                     section_data["Comment_Line_$(line_number - 1)"] = line
