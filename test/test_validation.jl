@@ -1,14 +1,12 @@
 import YAML
 import PowerSystems
 
-const VALID_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
-                                            "descriptors", "validation_config.json")
 const WRONG_FORMAT_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
                                             "descriptors", "config.yml")
 include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
 
 @testset "Test reading in config data" begin
-    data = PowerSystems.read_validation_descriptor(VALID_CONFIG_FILE)
+    data = PowerSystems.read_validation_descriptor(PSY.POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
     @test data isa Vector
     @test !isempty(data)
     function find_struct()
