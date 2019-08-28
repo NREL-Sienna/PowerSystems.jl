@@ -861,6 +861,7 @@ function read_validation_descriptor(filename::AbstractString)
         end
     elseif occursin(r"(\.json)"i, filename)
         data = open(filename) do file
+            # JSON2.read produces NamedTuples recursively. We want dicts. Use JSON instead.
             JSON.parse(file)
         end
     else
