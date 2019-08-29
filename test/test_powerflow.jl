@@ -1,5 +1,3 @@
-import NLsolve
-
 result = [2.32551,
 -0.155293,
 0.469214,
@@ -37,12 +35,12 @@ c_sys5_re = System(nodes5, vcat(thermal_generators5, renewable_generators5), loa
                 nothing, nothing,  100.0, nothing, nothing, nothing)
 
 
-import NLsolve
 @testset begin
+    using NLsolve
     pf!, x0 = make_pf(c_sys14);
     res = NLsolve.nlsolve(pf!, x0)
     @test res.zero ≈ result rtol=1e-3
 
-    solve_powerflow!(c_sys14, method = :newton)
-    @test_throws PowerSystems.DataFormatError solve_powerflow!(c_sys5_re)
+    solve_powerflow!(c_sys14, nlsolve, method = :newton)
+    @test_throws PowerSystems.DataFormatError solve_powerflow!(c_sys5_re, nlsolve)
 end
