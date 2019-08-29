@@ -133,33 +133,15 @@ Arguments available for `nlsolve`:
 ## Examples
 ```julia
 using NLsolve
-@solve_powerflow!(sys)
+solve_powerflow!(sys)
 # Passing NLsolve arguments
-@rsolve_powerflow!(sys, method = :Newton)
+solve_powerflow!(sys, method = :Newton)
 
 ```
 
 """
-
-macro solve_powerflow!(sys, args...)
-    vals = filter((x) ->  x == :NLsolve, names(Main,imported=true))
-    isempty(vals) && error("NLsolve is not loaded, run \"import NLsolve\"")
-    par = Expr(:kw)
-    show_trace_in_params = false
-    for kwarg in args
-        k, v = kwarg.args
-        if k == :show_trace
-            show_trace_in_params = true
-        end
-        push!(par.args, k, v)
-    end
-    !(show_trace_in_params) && push!(par.args, :show_trace, true)
-    eval_code =
-        esc(quote
-            pf!, x0 = PowerSystems.make_pf($sys)
-            res = NLsolve.nlsolve(pf!, x0; $par)
-            show(res)
-            PowerSystems._write_pf_sol!($sys, res)
-    end)
-    return eval_code
+function solve_powerflow!(sys, args...)
+    pf!, x0 = PowerSystems.make_pf(sys)
+    res = NLsolve.nlsolve(pf!, x0; args...)
+    PowerSystems._write_pf_sol!(sys, res)
 end
