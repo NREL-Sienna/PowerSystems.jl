@@ -50,7 +50,7 @@ end
 """
     flow_val(b::TapTransformer)
 
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
+Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Line
 
 """
@@ -67,7 +67,7 @@ end
 """
     flow_val(b::TapTransformer)
 
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
+Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Transformer2W
 
 """
