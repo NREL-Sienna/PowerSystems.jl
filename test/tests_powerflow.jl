@@ -40,7 +40,7 @@ import NLsolve
 @testset begin
     pf!, x0, res_ref = make_pf_fast(c_sys14)
     res = NLsolve.nlsolve(pf!, x0)
-    @test res.zero ≈ result, rtol = 1e-3
+    @test res.zero ≈ result rtol=1e-3
 
     @solve_powerflow!(c_sys14, method = :newton)
     @test_throws PowerSystems.DataFormatError @solve_powerflow!(c_sys5_re)
@@ -51,5 +51,5 @@ import NLsolve
 @testset begin
     pf!, x0 = make_pf(c_sys14)
     res = NLsolve.nlsolve(pf!, x0)
-    @test res.zero ≈ result, rtol = 1e-3
+    @test res.zero ≈ result rtol=1e-3
 end
