@@ -33,6 +33,30 @@
   the code itself.
 * Use complete sentences and proper grammar.
 * Include a space in between the "#" and the first word of the comment.
+* Don't use block comments for Julia code. Prefer using the `# ` prefix.
+
+Bad:
+
+```julia
+for i in 1:100
+    #=
+    arr[i] += a[i] * x^2
+    arr[i] += b[i] * x
+    arr[i] += c[i]
+    =#
+end
+```
+
+Good:
+
+```julia
+for i in 1:100
+    # arr[i] += a[i] * x^2
+    # arr[i] += b[i] * x
+    # arr[i] += c[i]
+end
+```
+
 * Use these tags in comments to describe known work:
   * `TODO`:  tasks that need to be done
   * `FIXME`:  code that needs refactoring
