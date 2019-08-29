@@ -1,35 +1,4 @@
-function _update_slack_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Vector{Tuple{Symbol,Int64}})
-    injection_components = get_components(Generator, sys)
-    devices = [d for d in injection_components if d.bus == bus]
-    generator = devices[1]
-    for field in v
-        setfield!(generator, field[1], result[field[2]])
-    end
-
-     return
- end
-
- function _update_PQ_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Vector{Tuple{Symbol,Int64}})
-    for field in v
-        setfield!(bus, field[1], result[field[2]])
-    end
-
-     return
- end
-
- function _update_PV_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Vector{Tuple{Symbol,Int64}})
-    injection_components = get_components(Generator, sys)
-    devices = [d for d in injection_components if d.bus == bus]
-    generator = devices[1]
-    for field in v
-        field[1] == :reactivepower && setfield!(generator, field[1], result[field[2]])
-        field[1] == :angle && setfield!(bus, field[1], result[field[2]])
-    end
-
-     return
- end
-
- """
+"""
     flow_val(b::TapTransformer)
 
 Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
@@ -95,16 +64,34 @@ function _update_branch_flow!(sys::System)
     end
 end
 
-function _write_pf_sol!(sys::System, nl_result, result_ref::Dict{String, Vector{Tuple{Symbol, Int}}})
+function _write_pf_sol!(sys::System, nl_result)
     result = nl_result.zero
-    for (k,v) in result_ref
-        bus = get_component(Bus, sys, k)
+    buses = enumerate(sort(collect(get_components(Bus, sys)), by = x -> get_number(x)))
+
+    for (ix, bus) in buses
         if bus.bustype == PowerSystems.REF
-            _update_slack_bus(bus, sys, result, v)
+            P_gen = result[2 * ix - 1]
+            Q_gen = result[2 * ix]
+            injection_components = get_components(Generator, sys)
+            devices = [d for d in injection_components if d.bus == bus]
+            generator = devices[1]
+            generator.activepower = P_gen
+            generator.reactivepower = Q_gen
         elseif bus.bustype == PowerSystems.PQ
-            _update_PQ_bus(bus, sys, result, v)
+            Q_gen = result[2 * ix - 1]
+            θ = result[2 * ix]
+            injection_components = get_components(Generator, sys)
+            devices = [d for d in injection_components if d.bus == bus]
+            if length(devices) == 1
+                generator = devices[1]
+                generator.reactivepower = Q_gen
+            end
+            bus.angle = θ
         elseif bus.bustype == PowerSystems.PV
-            _update_PV_bus(bus, sys, result, v)
+            Vm = result[2 * ix - 1]
+            θ = result[2 * ix]
+            bus.voltage = Vm
+            bus.angle = θ
         end
     end
 
