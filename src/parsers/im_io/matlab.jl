@@ -9,15 +9,13 @@
 export parse_matlab_file, parse_matlab_string
 
 function parse_matlab_file(file_string::String; kwargs...)
-    result = open(file_string) do io
-        lines = readlines(io)
-        return parse_matlab_string(lines; kwargs...)
-    end
-
-    return result
+    data_string = read(open(file_string),String)
+    return parse_matlab_string(data_string; kwargs...)
 end
 
-function parse_matlab_string(data_lines::Array{String}; extended=false)
+function parse_matlab_string(data_string::String; extended=false)
+    data_lines = split(data_string, '\n')
+
     matlab_dict = Dict{String,Any}()
     struct_name = nothing
     function_name = nothing
@@ -35,7 +33,7 @@ function parse_matlab_string(data_lines::Array{String}; extended=false)
         end
 
         if occursin("function", line)
-            func, value = extract_matlab_assignment(line)
+            func, value = _extract_matlab_assignment(line)
             struct_name = strip(replace(func, "function" => ""))
             function_name = value
         elseif occursin("=",line)
@@ -44,22 +42,22 @@ function parse_matlab_string(data_lines::Array{String}; extended=false)
             end
 
             if occursin("[", line)
-                matrix_dict = parse_matlab_matrix(data_lines, index)
+                matrix_dict = _parse_matlab_matrix(data_lines, index)
                 matlab_dict[matrix_dict["name"]] = matrix_dict["data"]
                 if haskey(matrix_dict, "column_names")
                     column_names[matrix_dict["name"]] = matrix_dict["column_names"]
                 end
-                index = index + matrix_dict["line_count"]
+                index = index + matrix_dict["line_count"]-1
             elseif occursin("{", line)
-                cell_dict = parse_matlab_cells(data_lines, index)
+                cell_dict = _parse_matlab_cells(data_lines, index)
                 matlab_dict[cell_dict["name"]] = cell_dict["data"]
                 if haskey(cell_dict, "column_names")
                     column_names[cell_dict["name"]] = cell_dict["column_names"]
                 end
-                index = index + cell_dict["line_count"]
+                index = index + cell_dict["line_count"]-1
             else
-                name, value = extract_matlab_assignment(line)
-                value = type_value(value)
+                name, value = _extract_matlab_assignment(line)
+                value = _type_value(value)
                 matlab_dict[name] = value
             end
         else
@@ -78,7 +76,7 @@ end
 
 
 "breaks up matlab strings of the form 'name = value;'"
-function extract_matlab_assignment(string::AbstractString)
+function _extract_matlab_assignment(string::AbstractString)
     statement = split(string, ';')[1]
     statement_parts = split(statement, '=')
     @assert(length(statement_parts) == 2)
@@ -89,7 +87,7 @@ end
 
 
 "Attempts to determine the type of a string extracted from a matlab file"
-function type_value(value_string::AbstractString)
+function _type_value(value_string::AbstractString)
     value_string = strip(value_string)
 
     if occursin("'", value_string) # value is a string
@@ -107,7 +105,7 @@ function type_value(value_string::AbstractString)
 end
 
 "Attempts to determine the type of an array of strings extracted from a matlab file"
-function type_array(string_array::Vector{T}) where {T <: AbstractString}
+function _type_array(string_array::Vector{T}) where {T <: AbstractString}
     value_string = [strip(value_string) for value_string in string_array]
 
     return if any(occursin("'",value_string) for value_string in string_array)
@@ -121,13 +119,13 @@ end
 
 
 ""
-parse_matlab_cells(lines, index) = parse_matlab_data(lines, index, '{', '}')
+_parse_matlab_cells(lines, index) = _parse_matlab_data(lines, index, '{', '}')
 
 ""
-parse_matlab_matrix(lines, index) = parse_matlab_data(lines, index, '[', ']')
+_parse_matlab_matrix(lines, index) = _parse_matlab_data(lines, index, '[', ']')
 
 ""
-function parse_matlab_data(lines, index, start_char, end_char)
+function _parse_matlab_data(lines, index, start_char, end_char)
     last_index = length(lines)
     line_count = 0
     columns = -1
@@ -169,7 +167,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
     end
 
     #print(matrix_body_lines)
-    matrix_body_lines = [add_line_delimiter(line, start_char, end_char) for line in matrix_body_lines]
+    matrix_body_lines = [_add_line_delimiter(line, start_char, end_char) for line in matrix_body_lines]
     #print(matrix_body_lines)
 
     matrix_body = join(matrix_body_lines, ' ')
@@ -190,7 +188,7 @@ function parse_matlab_data(lines, index, start_char, end_char)
     end
 
     rows = length(matrix)
-    typed_columns = [type_array([ matrix[r][c] for r in 1:rows ]) for c in 1:columns]
+    typed_columns = [_type_array([ matrix[r][c] for r in 1:rows ]) for c in 1:columns]
     for r in 1:rows
         matrix[r] = [typed_columns[c][r] for c in 1:columns]
     end
@@ -260,7 +258,7 @@ function split_line(mp_line::AbstractString)
 end
 
 ""
-function add_line_delimiter(mp_line::AbstractString, start_char, end_char)
+function _add_line_delimiter(mp_line::AbstractString, start_char, end_char)
     if strip(mp_line) == string(start_char)
         return mp_line
     end
