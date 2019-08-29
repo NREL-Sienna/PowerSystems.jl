@@ -77,7 +77,7 @@ export GeneratorCostModel
 export BusType
 
 export make_pf
-export @solve_powerflow!
+export solve_powerflow!
 
 export parse_standard_files
 export parse_file
