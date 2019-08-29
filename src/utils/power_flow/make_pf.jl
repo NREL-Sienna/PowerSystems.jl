@@ -22,7 +22,7 @@ function _get_load_data(sys::System, b::Bus)
 end
 
 """
-    make_pf(sys)
+    make_pf_fast(sys)
 
 Create the objects needed to solve an powerflow case using NLsolve.jl solvers. Returns
 an anonymous function with the powerflow equations, initial conditions and a dict to link the
