@@ -1,4 +1,4 @@
-@Info "Generating Validation Table"
+@info "Generating Validation Table"
 function generate_validation_table(filepath::AbstractString)
     descriptor = PowerSystems.read_validation_descriptor(joinpath(PSYPATH,"descriptors","validation_config.json"))
     open(filepath, "w") do io
