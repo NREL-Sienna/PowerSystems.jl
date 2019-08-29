@@ -1,5 +1,5 @@
 
-abstract type PowerNetworkMatrix <: AbstractArray{Float64,2} end
+abstract type PowerNetworkMatrix{T} <: AbstractArray{T,2} end
 
 
 #  The container code for PowerNetworkMatrix is based in JuMP's Container in order to
@@ -23,9 +23,9 @@ end
 # AbstractArray interface
 Base.isempty(A::PowerNetworkMatrix) = isempty(A.data)
 Base.size(A::PowerNetworkMatrix) = size(A.data)
-Base.LinearIndices(A::PowerNetworkMatrix) = error("PowerSystems PowerNetworkMatrix does not support this operation.")
+Base.LinearIndices(A::PowerNetworkMatrix) = error("PowerSystems.$(typeof(A)) does not support this operation.")
 Base.axes(A::PowerNetworkMatrix) = A.axes
-Base.CartesianIndices(a::PowerNetworkMatrix) = error("PowerSystems PowerNetworkMatrix does not support this operation.")
+Base.CartesianIndices(A::PowerNetworkMatrix) = error("PowerSystems.$(typeof(A)) does not support this operation.")
 
 
 ############
