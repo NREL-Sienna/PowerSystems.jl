@@ -121,8 +121,8 @@ Updates generators active and reactive power setpoints and branches active and r
 power flows (calculated in the From - To direction) (see
 [@flow_val](@ref))
 
-Requires loading NLsolve.jl to run. Internally it uses the make_pf_fast (see
-[make_pf_fast](@ref)) to create the problem and solve it. As a result it doesn't enforce
+Requires loading NLsolve.jl to run. Internally it uses the make_pf (see
+[make_pf](@ref)) to create the problem and solve it. As a result it doesn't enforce
 reactivepower limits.
 
 Supports passing NLsolve kwargs in the args. By default shows the solver trace.
@@ -169,10 +169,10 @@ macro solve_powerflow!(sys, args...)
     !(show_trace_in_params) && push!(par.args, :show_trace, true)
     eval_code =
         esc(quote
-            pf!, x0, res_ref = PowerSystems.make_pf_fast($sys)
+            pf!, x0 = PowerSystems.make_pf($sys)
             res = NLsolve.nlsolve(pf!, x0; $par)
             show(res)
-            PowerSystems._write_pf_sol!($sys, res, res_ref)
+            PowerSystems._write_pf_sol!($sys, res)
     end)
     return eval_code
 end
