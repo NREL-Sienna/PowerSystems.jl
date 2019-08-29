@@ -47,9 +47,9 @@
   Use outer constructors to provide default values or to perform customization.
 * Document the reason why the outer constructor is different.
 * Note that the compiler will provide a default constructor with all struct
-  members if no inner constructor is defined.
-* When creating a constructor use "function Foo()" instead of "Foo() = ..."
-  One exception is the case where one file has all single-line functions.
+members if no inner constructor is defined.
+* When creating a constructor use `function Foo()` instead of `Foo() = ...`.
+  * One exception is the case where one file has all single-line functions.
 
 ## Exceptions
 
@@ -64,21 +64,24 @@
 
 ## Globals
 
-* Global constants should use UPPER_CASE and be declared const.
+* Global constants should be written in upper case and be declared `const`.
+    - `const UPPER_CASE_VARIABLE = π / 2`
 * If global variables are needed, prefix them with "g_".
-* Don't use magic numbers. Instead, define const globals or Enums (Julia
-  @enum).
+* Don't use [magic numbers](https://en.wikipedia.org/wiki/Magic_number_%28programming%29). Instead, define `const GLOBALS` or `Enums` (Julia @enum).
 
 ## One-line Conditionals
 
-Julia code base uses this idiom frequently:  ```<cond> && <statement>```
-[Example](https://docs.julialang.org/en/v1.0/manual/control-flow/#Short-Circuit-Evaluation-1):
->
-    function fact(n::Int)
-       n >= 0 || error("n must be non-negative")
-       n == 0 && return 1
-       n * fact(n-1)
-    end
+Julia code base uses this idiom frequently: `<cond> && <statement>`.
+
+See [Example](https://docs.julialang.org/en/v1.0/manual/control-flow/#Short-Circuit-Evaluation-1):
+
+```julia
+function fact(n::Int)
+   n >= 0 || error("n must be non-negative")
+   n == 0 && return 1
+   n * fact(n-1)
+end
+```
 
 This is acceptable for simple code as in this example. However, in general,
 prefer to write out an entire if statement.
@@ -87,8 +90,10 @@ Ternary operators provide a way to write clean, concise code.  Use good
 judgement.
 
 Good:
->
-    y = x > 0 ? x : -x
+
+```julia
+y = x > 0 ? x : -x
+```
 
 There are many examples in our codebase that use the form ```<cond> ?
 <statement> : <statement>```.  These can be expressed much more clearly in an
@@ -101,45 +106,52 @@ All code should be tested.
 ## Whitespace
 
 * If many function arguments cause the line length to be exceeded, put one
-  argument per line. In some cases it may make sense to pair some variables on
-  the same line.
-  >
-    function foo(
-        var1::String,
-        var2::String,
-        var3::String,
-        var4::String,
-        var5::String,
-        var6::String,
-    )
+argument per line. In some cases it may make sense to pair some variables on
+the same line.
+
+```julia
+function foo(var1::String,
+             var2::String,
+             var3::String,
+             var4::String,
+             var5::String,
+             var6::String)
+```
 
 * Do not surround equal signs with spaces when passing keyword args to a
-  function or defining default values in function declarations.
+function or defining default values in function declarations.
 * Do not right-align equal signs when assigning groups of variables. It causes
   unnecessary changes whenever someone adds a new variable with a longer name.
 
 Bad:
->
-    x   = 1
-    foo = 2
+
+```julia
+x   = 1
+foo = 2
+```
 
 Good:
->
-    x = 1
-    foo = 2
+
+```julia
+x = 1
+foo = 2
+```
 
 * Define abstract types on one line. Given the lack of IDE support for Julia,
   this makes it easier to find type definitions.
 
 Bad:
->
-    abstract type
-        Foo
-    end
+
+```julia
+abstract type
+    Foo
+end
+```
 
 Good:
->
-    abstract type Foo end
+
+```julia
+abstract type Foo end
 
 ## Exports
 
