@@ -1,10 +1,6 @@
 using Documenter, PowerSystems
 const PSYPATH = dirname(pathof(PowerSystems))
 
-script_name = joinpath(PSYPATH , "../bin", "generate_valid_config_file.py")		
-config_name = joinpath(PSYPATH , "../src", "descriptors", "validation_config.json")		
-descriptor_name = joinpath(PSYPATH , "../src", "descriptors", "power_system_structs.json")		
-read(`python3 $script_name $config_name $descriptor_name`)		
 include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
 
 makedocs(
