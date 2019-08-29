@@ -1042,7 +1042,7 @@ end
 
 
 "checks that each branch has a reasonable thermal rating-a, if not computes one"
-function check_thermal_limits(data::Dict{String,<:Any})
+function correct_thermal_limits!(data::Dict{String,<:Any})
     if ismultinetwork(data)
         error("correct_thermal_limits! does not yet support multinetwork data")
     end
@@ -1467,22 +1467,22 @@ function check_storage_parameters(data::Dict{String,Any})
             throw(DataFormatError("storage unit $(strg["index"]) has a non-positive discharge rating $(strg["energy_rating"])"))
         end
         if strg["standby_loss"] < 0.0
-            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])"))
         end
         if strg["r"][c] < 0.0
-            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive resistance $(strg["r"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive resistance $(strg["r"])"))
         end
         if strg["x"][c] < 0.0
-            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive reactance $(strg["x"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive reactance $(strg["x"])"))
         end
         if haskey(strg, "thermal_rating") && strg["thermal_rating"][c] < 0.0
-            throw(DataFormatError( "storage unit $(strg["index"]) has a non-positive thermal rating $(strg["thermal_rating"])")
+            throw(DataFormatError( "storage unit $(strg["index"]) has a non-positive thermal rating $(strg["thermal_rating"])"))
         end
         if haskey(strg, "current_rating") && strg["current_rating"][c] < 0.0
-            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive current rating $(strg["thermal_rating"])")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-positive current rating $(strg["thermal_rating"])"))
         end
         if !isapprox(strg["x"][c], 0.0, atol=1e-6, rtol=1e-6)
-            throw(DataFormatError("storage unit $(strg["index"]) has a non-zero reactance $(strg["x"]), which is currently ignored")
+            throw(DataFormatError("storage unit $(strg["index"]) has a non-zero reactance $(strg["x"]), which is currently ignored"))
         end
 
         if strg["charge_efficiency"] < 0.0
@@ -1520,10 +1520,10 @@ function check_switch_parameters(data::Dict{String,<:Any})
             @info "switch $(switch["index"]) is open with non-zero power values $(switch["psw"]), $(switch["qsw"])" maxlog=PS_MAX_LOG
         end
         if haskey(switch, "thermal_rating") && switch["thermal_rating"] < 0.0
-            throw(DataFormatError( "switch $(switch["index"]) has a non-positive thermal_rating $(switch["thermal_rating"])")
+            throw(DataFormatError( "switch $(switch["index"]) has a non-positive thermal_rating $(switch["thermal_rating"])"))
         end
         if haskey(switch, "current_rating") && switch["current_rating"] < 0.0
-            throw(DataFormatError("switch $(switch["index"]) has a non-positive current_rating $(switch["current_rating"])")
+            throw(DataFormatError("switch $(switch["index"]) has a non-positive current_rating $(switch["current_rating"])"))
         end
 
     end
@@ -1572,7 +1572,7 @@ end
 
 
 "checks that parameters for dc lines are reasonable"
-function check_dcline_limits(data::Dict{String,Any})
+function correct_dcline_limits!(data::Dict{String,Any})
     if ismultinetwork(data)
         error("check_dcline_limits does not yet support multinetwork data")
     end

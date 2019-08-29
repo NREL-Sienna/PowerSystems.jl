@@ -499,7 +499,7 @@ Internal function. Adds `section_data::Dict`, which contains all parsed
 elements of a PTI file section given by `section`, into the parent
 `pti_data::Dict`
 """
-function _add_section_data!(pti_data::Dict, section_data::Dict, section::AbstractString))
+function _add_section_data!(pti_data::Dict, section_data::Dict, section::AbstractString)
     try
         pti_data[section] = append!(pti_data[section], [deepcopy(section_data)])
     catch message
@@ -811,7 +811,7 @@ Reads PTI data in `io::IO`, returning a `Dict` of the data parsed into the
 proper types.
 """
 function parse_pti(io::IO)::Dict
-    pti_data = parse_pti_data(io, get_pti_sections())
+    pti_data = _parse_pti_data(io, _get_pti_sections())
     try
         pti_data["CASE IDENTIFICATION"][1]["NAME"] = match(r"^\<file\s[\/\\]*(?:.*[\/\\])*(.*)\.raw\>$", lowercase(io.name)).captures[1]
     catch

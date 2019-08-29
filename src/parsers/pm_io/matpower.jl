@@ -125,7 +125,7 @@ const _mp_switch_columns = [
 
 ""
 function _parse_matpower_string(data_string::String)
-    matlab_data, func_name, colnames = parse_matlab_string(data_lines, extended=true)
+    matlab_data, func_name, colnames = parse_matlab_string(data_string, extended=true)
 
     case = Dict{String,Any}()
 
@@ -156,7 +156,7 @@ function _parse_matpower_string(data_string::String)
         buses = []
         for bus_row in matlab_data["mpc.bus"]
             bus_data = row_to_typed_dict(bus_row, _mp_bus_columns)
-            bus_data["index"] = check_type(Int, bus_row[1]
+            bus_data["index"] = check_type(Int, bus_row[1])
             bus_data["source_id"] = ["bus", bus_data["index"]]
             push!(buses, bus_data)
         end
@@ -300,7 +300,7 @@ end
 
 
 ""
-function mp_cost_data(cost_row)
+function _mp_cost_data(cost_row)
     ncost = cost_row[4]
     model = cost_row[1]
     if model == 1

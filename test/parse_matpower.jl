@@ -32,8 +32,5 @@ POWER_MODELS_KEYS = [
 
         sys = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $path to System struct"
-
-        PowerSystems.make_mixed_units(pm_dict)
-        @info "Successfully converted $path to mixed_units"
     end
 end
