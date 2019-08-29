@@ -43,6 +43,6 @@ import NLsolve
     res = NLsolve.nlsolve(pf!, x0)
     @test res.zero ≈ result rtol=1e-3
 
-    # @solve_powerflow!(c_sys14, method = :newton)
-    # @test_throws PowerSystems.DataFormatError @solve_powerflow!(c_sys5_re)
+    solve_powerflow!(c_sys14, method = :newton)
+    @test_throws PowerSystems.DataFormatError solve_powerflow!(c_sys5_re)
 end
