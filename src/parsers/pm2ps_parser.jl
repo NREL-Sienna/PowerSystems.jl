@@ -337,7 +337,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         if haskey(pm_gen, "name")
             gen_name = pm_gen["name"]
         elseif haskey(pm_gen, "source_id")
-            gen_name = strip(string(pm_gen["source_id"][1]) * "-" * string(pm_gen["source_id"][2]))
+            gen_name = strip(string(pm_gen["source_id"][1]) * "-" * string(pm_gen["source_id"][2]) * "-" * name)
         else
             gen_name = name
         end
