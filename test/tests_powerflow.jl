@@ -38,13 +38,18 @@ c_sys5_re = System(nodes5, vcat(thermal_generators5, renewable_generators5), loa
 
 import NLsolve
 @testset begin
-    @solve_powerflow!(c_sys14, method = :newton)
-    pf!, x0, res_ref = make_pf(c_sys14)
+    pf!, x0, res_ref = make_pf_fast(c_sys14)
     res = NLsolve.nlsolve(pf!, x0)
-    for (ix,val) in enumerate(res.zero)
-        @test isapprox(result[ix], val; rtol = 1e-3)
-    end
+    @test res.zero ≈ result, rtol = 1e-3
 
+    @solve_powerflow!(c_sys14, method = :newton)
     @test_throws PowerSystems.DataFormatError @solve_powerflow!(c_sys5_re)
 
+end
+
+import NLsolve
+@testset begin
+    pf!, x0 = make_pf(c_sys14)
+    res = NLsolve.nlsolve(pf!, x0)
+    @test res.zero ≈ result, rtol = 1e-3
 end
