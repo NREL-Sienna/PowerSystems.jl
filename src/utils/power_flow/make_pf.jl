@@ -27,7 +27,7 @@ end
 Create the objects needed to solve an powerflow case using NLsolve.jl solvers. Returns
 an anonymous function with the powerflow equations, initial conditions and a dict to link the
 solutions to the original system. Only supports systems with a single generator per bus and
-currently doesn't support distributes slack buses and doesn't enforce reactive power limits.
+currently doesn't support distributed slack buses and doesn't enforce reactive power limits.
 
 ## Example
 ```julia
@@ -170,7 +170,7 @@ end
 Create the objects needed to solve an powerflow case using NLsolve.jl solvers. Returns
 an anonymous function with the powerflow equations, initial conditions and a dict to link the
 solutions to the original system. Only supports systems with a single generator per bus and
-currently doesn't support distributes slack buses and doesn't enforce reactive power limits.
+currently doesn't support distributed slack buses and doesn't enforce reactive power limits.
 
 ## Example
 ```julia
