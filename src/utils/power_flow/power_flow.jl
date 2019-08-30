@@ -1,35 +1,4 @@
-function _update_slack_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Vector{Tuple{Symbol,Int64}})
-    injection_components = get_components(Generator, sys)
-    devices = [d for d in injection_components if d.bus == bus]
-    generator = devices[1]
-    for field in v
-        setfield!(generator, field[1], result[field[2]])
-    end
-
-     return
- end
-
- function _update_PQ_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Vector{Tuple{Symbol,Int64}})
-    for field in v
-        setfield!(bus, field[1], result[field[2]])
-    end
-
-     return
- end
-
- function _update_PV_bus(bus::Bus, sys::System, result::Vector{Float64}, v::Vector{Tuple{Symbol,Int64}})
-    injection_components = get_components(Generator, sys)
-    devices = [d for d in injection_components if d.bus == bus]
-    generator = devices[1]
-    for field in v
-        field[1] == :reactivepower && setfield!(generator, field[1], result[field[2]])
-        field[1] == :angle && setfield!(bus, field[1], result[field[2]])
-    end
-
-     return
- end
-
- """
+"""
     flow_val(b::TapTransformer)
 
 Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
@@ -50,7 +19,7 @@ end
 """
     flow_val(b::TapTransformer)
 
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
+Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Line
 
 """
@@ -67,7 +36,7 @@ end
 """
     flow_val(b::TapTransformer)
 
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
+Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Transformer2W
 
 """
@@ -95,16 +64,34 @@ function _update_branch_flow!(sys::System)
     end
 end
 
-function _write_pf_sol!(sys::System, nl_result, result_ref::Dict{String, Vector{Tuple{Symbol, Int}}})
+function _write_pf_sol!(sys::System, nl_result)
     result = nl_result.zero
-    for (k,v) in result_ref
-        bus = get_component(Bus, sys, k)
+    buses = enumerate(sort(collect(get_components(Bus, sys)), by = x -> get_number(x)))
+
+    for (ix, bus) in buses
         if bus.bustype == PowerSystems.REF
-            _update_slack_bus(bus, sys, result, v)
+            P_gen = result[2 * ix - 1]
+            Q_gen = result[2 * ix]
+            injection_components = get_components(Generator, sys)
+            devices = [d for d in injection_components if d.bus == bus]
+            generator = devices[1]
+            generator.activepower = P_gen
+            generator.reactivepower = Q_gen
         elseif bus.bustype == PowerSystems.PQ
-            _update_PQ_bus(bus, sys, result, v)
+            Q_gen = result[2 * ix - 1]
+            θ = result[2 * ix]
+            injection_components = get_components(Generator, sys)
+            devices = [d for d in injection_components if d.bus == bus]
+            if length(devices) == 1
+                generator = devices[1]
+                generator.reactivepower = Q_gen
+            end
+            bus.angle = θ
         elseif bus.bustype == PowerSystems.PV
-            _update_PV_bus(bus, sys, result, v)
+            Vm = result[2 * ix - 1]
+            θ = result[2 * ix]
+            bus.voltage = Vm
+            bus.angle = θ
         end
     end
 
@@ -114,15 +101,15 @@ function _write_pf_sol!(sys::System, nl_result, result_ref::Dict{String, Vector{
 end
 
 """
-    @solve_powerflow!(sys, args...)
+    solve_powerflow!(sys, solve_function, args...)
 
 Solves a the power flow into the system and writes the solution into the relevant structs.
 Updates generators active and reactive power setpoints and branches active and reactive
 power flows (calculated in the From - To direction) (see
-[@flow_val](@ref))
+[flow_val](@ref))
 
-Requires loading NLsolve.jl to run. Internally it uses the @make_pf macro (see
-[@make_pf](@ref)) to create the problem and solve it. As a result it doesn't enforce
+Requires loading NLsolve.jl to run. Internally it uses the make_pf (see
+[make_pf](@ref)) to create the problem and solve it. As a result it doesn't enforce
 reactivepower limits.
 
 Supports passing NLsolve kwargs in the args. By default shows the solver trace.
@@ -146,33 +133,16 @@ Arguments available for `nlsolve`:
 ## Examples
 ```julia
 using NLsolve
-@solve_powerflow!(sys)
+solve_powerflow!(sys, nlsolve)
 # Passing NLsolve arguments
-@rsolve_powerflow!(sys, method = :Newton)
+solve_powerflow!(sys, nlsolve, method = :Newton)
 
 ```
 
 """
-
-macro solve_powerflow!(sys, args...)
-    vals = filter((x) ->  x == :NLsolve, names(Main,imported=true))
-    isempty(vals) && error("NLsolve is not loaded, run \"import NLsolve\"")
-    par = Expr(:kw)
-    show_trace_in_params = false
-    for kwarg in args
-        k, v = kwarg.args
-        if k == :show_trace
-            show_trace_in_params = true
-        end
-        push!(par.args, k, v)
-    end
-    !(show_trace_in_params) && push!(par.args, :show_trace, true)
-    eval_code =
-        esc(quote
-            pf!, x0, res_ref = PowerSystems.make_pf($sys)
-            res = NLsolve.nlsolve(pf!, x0; $par)
-            show(res)
-            PowerSystems._write_pf_sol!($sys, res, res_ref)
-    end)
-    return eval_code
+function solve_powerflow!(sys, nlsolve; args...)
+    pf!, x0 = PowerSystems.make_pf(sys)
+    res = nlsolve(pf!, x0; args...)
+    PowerSystems._write_pf_sol!(sys, res)
+    return
 end
