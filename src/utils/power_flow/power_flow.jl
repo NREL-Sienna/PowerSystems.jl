@@ -101,12 +101,12 @@ function _write_pf_sol!(sys::System, nl_result)
 end
 
 """
-    @solve_powerflow!(sys, solve_function, args...)
+    solve_powerflow!(sys, solve_function, args...)
 
 Solves a the power flow into the system and writes the solution into the relevant structs.
 Updates generators active and reactive power setpoints and branches active and reactive
 power flows (calculated in the From - To direction) (see
-[@flow_val](@ref))
+[flow_val](@ref))
 
 Requires loading NLsolve.jl to run. Internally it uses the make_pf (see
 [make_pf](@ref)) to create the problem and solve it. As a result it doesn't enforce
@@ -140,9 +140,9 @@ solve_powerflow!(sys, nlsolve, method = :Newton)
 ```
 
 """
-function solve_powerflow!(sys, solve_function; args...)
+function solve_powerflow!(sys, nlsolve; args...)
     pf!, x0 = PowerSystems.make_pf(sys)
-    res = solve_function(pf!, x0; args...)
+    res = nlsolve(pf!, x0; args...)
     PowerSystems._write_pf_sol!(sys, res)
     return
 end
