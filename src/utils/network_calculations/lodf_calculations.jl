@@ -1,8 +1,8 @@
 
-struct LODF <: PowerNetworkMatrix
+struct LODF{Ax,L<:NTuple{2,Dict}} <: PowerNetworkMatrix{Float64}
     data::Array{Float64,2}
-    axes::NTuple{2,Array}
-    lookup::NTuple{2,Dict}
+    axes::Ax
+    lookup::L
 end
 
 function _buildlodf(branches, nodes, dist_slack::Array{Float64}=[0.1] )
