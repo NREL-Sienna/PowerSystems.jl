@@ -1469,19 +1469,19 @@ function check_storage_parameters(data::Dict{String,Any})
         if strg["standby_loss"] < 0.0
             throw(DataFormatError("storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])"))
         end
-        if strg["r"][c] < 0.0
+        if strg["r"] < 0.0
             throw(DataFormatError("storage unit $(strg["index"]) has a non-positive resistance $(strg["r"])"))
         end
-        if strg["x"][c] < 0.0
+        if strg["x"] < 0.0
             throw(DataFormatError("storage unit $(strg["index"]) has a non-positive reactance $(strg["x"])"))
         end
-        if haskey(strg, "thermal_rating") && strg["thermal_rating"][c] < 0.0
+        if haskey(strg, "thermal_rating") && strg["thermal_rating"] < 0.0
             throw(DataFormatError( "storage unit $(strg["index"]) has a non-positive thermal rating $(strg["thermal_rating"])"))
         end
-        if haskey(strg, "current_rating") && strg["current_rating"][c] < 0.0
+        if haskey(strg, "current_rating") && strg["current_rating"] < 0.0
             throw(DataFormatError("storage unit $(strg["index"]) has a non-positive current rating $(strg["thermal_rating"])"))
         end
-        if !isapprox(strg["x"][c], 0.0, atol=1e-6, rtol=1e-6)
+        if !isapprox(strg["x"], 0.0, atol=1e-6, rtol=1e-6)
             throw(DataFormatError("storage unit $(strg["index"]) has a non-zero reactance $(strg["x"]), which is currently ignored"))
         end
 
