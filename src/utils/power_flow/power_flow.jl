@@ -144,4 +144,5 @@ function solve_powerflow!(sys, solve_function; args...)
     pf!, x0 = PowerSystems.make_pf(sys)
     res = solve_function(pf!, x0; args...)
     PowerSystems._write_pf_sol!(sys, res)
+    return
 end
