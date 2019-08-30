@@ -44,7 +44,7 @@ function make_pf(system)
     P_LOAD_BUS = fill(0.0, N_BUS)
     Q_LOAD_BUS = fill(0.0, N_BUS)
 
-    BUSES = [b for b in enumerate(buses)]
+    BUSES = (b for b in enumerate(buses))
 
     state_variable_count = 1
 
