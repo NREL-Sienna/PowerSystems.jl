@@ -4,8 +4,8 @@ function check_branches!(branches)
 end
 
 function check_angle_limits!(branches)
-    max_limit = 1.57
-    min_limit = -1.57
+    max_limit = pi/2
+    min_limit = -pi/2
 
     for line in branches
         if line isa Union{MonitoredLine,Line}

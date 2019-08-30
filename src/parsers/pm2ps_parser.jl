@@ -32,7 +32,7 @@ function make_bus(bus_dict::Dict{String,Any})
     bus = Bus(bus_dict["number"],
                      bus_dict["name"],
                      bus_dict["bustype"],
-                     deg2rad(bus_dict["angle"]),
+                     bus_dict["angle"],
                      bus_dict["voltage"],
                      bus_dict["voltagelimits"],
                      bus_dict["basevoltage"]
@@ -82,7 +82,7 @@ function read_bus!(sys::System, data)
     for (i, (d_key, d)) in enumerate(data)
         # d id the data dict for each bus
         # d_key is bus key
-        bus_name = haskey(d,"bus_name") ? d["bus_name"] : string(d["bus_i"])
+        bus_name = haskey(d,"name") ? d["name"] : string(d["bus_i"])
         bus_number = Int(d["bus_i"])
         bus = make_bus(bus_name, bus_number, d, bus_types)
         bus_number_to_bus[bus.number] = bus
@@ -337,7 +337,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         if haskey(pm_gen, "name")
             gen_name = pm_gen["name"]
         elseif haskey(pm_gen, "source_id")
-            gen_name = strip(string(pm_gen["source_id"][1]) * "-" * pm_gen["source_id"][2])
+            gen_name = strip(string(pm_gen["source_id"][1]) * "-" * string(pm_gen["source_id"][2]) * "-" * name)
         else
             gen_name = name
         end
@@ -410,7 +410,7 @@ function make_line(name, d, bus_f, bus_t)
         x=d["br_x"],
         b=(from=d["b_fr"], to=d["b_to"]),
         rate=d["rate_a"],
-        anglelimits=(min=deg2rad(d["angmin"]), max=deg2rad(d["angmax"])),
+        anglelimits=(min=d["angmin"], max=d["angmax"]),
     )
 end
 

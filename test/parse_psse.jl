@@ -8,8 +8,6 @@
         @info "Parsing $f ..."
         pm_dict = PowerSystems.parse_file(joinpath(PSSE_RAW_DIR, f))
         @info "Successfully parsed $f to PowerModels dict"
-        PowerSystems.make_mixed_units(pm_dict)
-        @info "Successfully converted $f to mixed_units"
         sys = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $f to System struct"
     end
@@ -31,8 +29,7 @@ end
         @info "Parsing $f ..."
         pm_dict = PowerSystems.parse_file(joinpath(PM_PSSE_PATH, f))
         @info "Successfully parsed $f to PowerModels dict"
-        PowerSystems.make_mixed_units(pm_dict)
-        @info "Successfully converted $f to mixed_units"
+
         sys = PowerSystems.pm2ps_dict(pm_dict)
         @info "Successfully parsed $f to System struct"
     end
