@@ -527,8 +527,8 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemRaw)
         return
     end
 
-    values = unique(data.bus[area_column])
-    lbs = zip(values, [sum(data.bus[area_column] .== a) for a in values])
+    values = unique(data.bus[!, area_column])
+    lbs = zip(values, [sum(data.bus[!, area_column] .== a) for a in values])
     for (zone, count) in lbs
         bus_numbers = Set{Int}()
         active_powers = Vector{Float64}()
@@ -573,7 +573,7 @@ function services_csv_parser!(sys::System, data::PowerSystemRaw)
         contributing_devices = Vector{Device}()
 
         for gen in iterate_rows(data, GENERATOR::InputCategory)
-            bus_ids = data.bus[bus_id_column]
+            bus_ids = data.bus[!, bus_id_column]
             area = string(data.bus[bus_ids .== gen.bus_id, bus_area_column][1])
             if gen.category in device_subcategories && area in regions
                 for dev_category in device_categories
