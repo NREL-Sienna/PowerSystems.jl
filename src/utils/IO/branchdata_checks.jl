@@ -1,48 +1,46 @@
 
-function check_branches!(branches)
-    check_angle_limits!(branches)
+function validate_struct(sys::System, ps_struct::T) where T <: Union{MonitoredLine,Line}
+    check_angle_limits!(ps_struct)
+    calculate_thermal_limits!(ps_struct, sys.basepower)
+    return true
 end
 
-function check_angle_limits!(branches)
+function check_angle_limits!(line)
     max_limit = pi/2
     min_limit = -pi/2
 
-    for line in branches
-        if line isa Union{MonitoredLine,Line}
-            orderedlimits(line.anglelimits, "Angles")
+    orderedlimits(line.anglelimits, "Angles")
 
-            if (line.anglelimits.max / max_limit > 3) ||
-               (-1 * line.anglelimits.min / max_limit > 3)
-                @warn "The angle limits provided is larger than 3π/2 radians.\n " *
-                      "PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog=PS_MAX_LOG
+    if (line.anglelimits.max / max_limit > 3) ||
+        (-1 * line.anglelimits.min / max_limit > 3)
+        @warn "The angle limits provided is larger than 3π/2 radians.\n " *
+                "PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog=PS_MAX_LOG
 
-                if line.anglelimits.max / max_limit >= 0.99
-                    line.anglelimits = (min=line.anglelimits.min,
-                                        max=min(line.anglelimits.max * (π / 180), max_limit))
-                else
-                    line.anglelimits = (min=line.anglelimits.min,
-                                        max=min(line.anglelimits.max, max_limit))
-                end
+        if line.anglelimits.max / max_limit >= 0.99
+            line.anglelimits = (min=line.anglelimits.min,
+                                max=min(line.anglelimits.max * (π / 180), max_limit))
+        else
+            line.anglelimits = (min=line.anglelimits.min,
+                                max=min(line.anglelimits.max, max_limit))
+        end
 
-                if (-1 * line.anglelimits.min / max_limit > 0.99)
-                    line.anglelimits = (min=max(line.anglelimits.min * (π / 180), min_limit),
-                                        max=line.anglelimits.max)
-                else
-                    line.anglelimits = (min=max(line.anglelimits.min, min_limit),
-                                        max=line.anglelimits.max)
-                end
-            else
+        if (-1 * line.anglelimits.min / max_limit > 0.99)
+            line.anglelimits = (min=max(line.anglelimits.min * (π / 180), min_limit),
+                                max=line.anglelimits.max)
+        else
+            line.anglelimits = (min=max(line.anglelimits.min, min_limit),
+                                max=line.anglelimits.max)
+        end
+    else
 
-                if line.anglelimits.max >= max_limit && line.anglelimits.min <= min_limit
-                    line.anglelimits = (min = min_limit,max = max_limit)
-                elseif line.anglelimits.max >= max_limit && line.anglelimits.min >= min_limit
-                    line.anglelimits = (min=line.anglelimits.min, max=max_limit)
-                elseif line.anglelimits.max <= max_limit && line.anglelimits.min <= min_limit
-                    line.anglelimits = (min=min_limit, max=line.anglelimits.max)
-                elseif line.anglelimits.max == 0.0 && line.anglelimits.min == 0.0
-                    line.anglelimits = (min = min_limit,max = max_limit)
-                end
-            end
+        if line.anglelimits.max >= max_limit && line.anglelimits.min <= min_limit
+            line.anglelimits = (min = min_limit,max = max_limit)
+        elseif line.anglelimits.max >= max_limit && line.anglelimits.min >= min_limit
+            line.anglelimits = (min=line.anglelimits.min, max=max_limit)
+        elseif line.anglelimits.max <= max_limit && line.anglelimits.min <= min_limit
+            line.anglelimits = (min=min_limit, max=line.anglelimits.max)
+        elseif line.anglelimits.max == 0.0 && line.anglelimits.min == 0.0
+            line.anglelimits = (min = min_limit,max = max_limit)
         end
     end
 end
@@ -72,21 +70,17 @@ function linerate_calculation(l::Line)
 
 end
 
-function calculate_thermal_limits!(branches, basemva::Float64)
-    for branch in branches
-        if branch isa Line
-            # This is the same check as implemented in PowerModels.
-            if branch.rate <= 0.0
-                branch.rate = linerate_calculation(branch)
-            elseif branch.rate > linerate_calculation(branch)
-                branch.rate = linerate_calculation(branch)
-            end
+function calculate_thermal_limits!(branch, basemva::Float64)
+    # This is the same check as implemented in PowerModels.
+    if branch.rate <= 0.0
+        branch.rate = linerate_calculation(branch)
+    elseif branch.rate > linerate_calculation(branch)
+        branch.rate = linerate_calculation(branch)
+    end
 
-            if (branch.rate / basemva) > 20
-                @warn "Data for line rating is 20 times larger than the base MVA for the system\n. " *
-                      "Power Systems inferred the Data Provided is in MVA and will transform it using a base of $("basemva")" maxlog=PS_MAX_LOG
-                branch.rate /= basemva
-            end
-        end
+    if (branch.rate / basemva) > 20
+        @warn "Data for line rating is 20 times larger than the base MVA for the system\n. " *
+                "Power Systems inferred the Data Provided is in MVA and will transform it using a base of $("basemva")" maxlog=PS_MAX_LOG
+        branch.rate /= basemva
     end
 end

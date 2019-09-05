@@ -164,6 +164,11 @@ function validation_error(valid_info::ValidationInfo, field_value)
     return false
 end
 
+
+function validate_struct(sys::System, ps_struct::T) where T <: PowerSystemType
+    return true
+end
+
 """
     validate_system(sys::System)
 
@@ -173,6 +178,9 @@ function validate_system(sys::System)
     error_detected = false
     for component in iterate_components(sys)
         if validate_fields(sys, component)
+            error_detected = true
+        end
+        if validate_struct(sys, component)
             error_detected = true
         end
     end

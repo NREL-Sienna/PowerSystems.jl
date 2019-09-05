@@ -184,12 +184,6 @@ function check!(sys::System)
     buses = get_components(Bus, sys)
     slack_bus_check(buses)
     buscheck(buses)
-
-    branches = get_components(Branch, sys)
-    if length(branches) > 0
-        check_branches!(branches)
-        calculate_thermal_limits!(branches, sys.basepower)
-    end
 end
 
 """Iterates over all components.
