@@ -20,6 +20,7 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 [compat]
 CSV = "~0.5"
 DataFrames = "~0.19"
+JSON = "~0.21"
 JSON2 = "~0.3"
 TimeSeries = "~0.16"
 YAML = "~0.3"
