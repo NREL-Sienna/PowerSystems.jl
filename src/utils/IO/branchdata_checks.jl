@@ -2,6 +2,7 @@
 function validate_struct(sys::System, ps_struct::T) where T <: Union{MonitoredLine,Line}
     check_angle_limits!(ps_struct)
     calculate_thermal_limits!(ps_struct, sys.basepower)
+    check_SIL(ps_struct, sys.basepower)
     return true
 end
 
@@ -72,15 +73,57 @@ end
 
 function calculate_thermal_limits!(branch, basemva::Float64)
     # This is the same check as implemented in PowerModels.
-    if branch.rate <= 0.0
+    if branch.rate < 0.0
+        #error
+        throw(DataFormatError("PowerSystems does not support negative line rates"))
+
+    elseif branch.rate == 0.0
+        @warn "Data for line rating is not provided, PowerSystems will infer a rate from line parameters" maxlog=PS_MAX_LOG
         branch.rate = linerate_calculation(branch)
+
     elseif branch.rate > linerate_calculation(branch)
+        mult = branch.rate/linerate_calculation(branch)
+        @warn "Data for line rating is $(mult) times larger than the base MVA for the system\n. " *
+        "PowerSystems inferred the Data Provided is in MVA and will transform it using a base of $("basemva")" maxlog=PS_MAX_LOG
+
         branch.rate = linerate_calculation(branch)
+        branch.rate /= basemva
     end
 
-    if (branch.rate / basemva) > 20
-        @warn "Data for line rating is 20 times larger than the base MVA for the system\n. " *
-                "Power Systems inferred the Data Provided is in MVA and will transform it using a base of $("basemva")" maxlog=PS_MAX_LOG
-        branch.rate /= basemva
+end
+
+const SIL_standards = Dict( #from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
+                        69.0 => (min=12.0, max=13.0),
+                        138.0 => (min=47.0, max=52.0),
+                        230.0 => (min=134.0, max=145.0),
+                        345.0 => (min=325.0, max=425.0),
+                        500.0 => (min=850.0, max=1075.0),
+                        765.0 => (min=2200.0, max=2300.0))
+
+
+# calculation from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
+function calculate_SIL(line, basemva::Float64)
+    arc = get_arc(line)
+    @assert get_from(arc) |> get_basevoltage == get_to(arc) |> get_basevoltage
+    Vrated = (get_to(arc) |> get_basevoltage)
+
+    Zbase = Vrated^2/basemva
+    L = get_x(line)/(2*pi*60)*Zbase
+    R = get_r(line)*Zbase
+    C = get_b(line)/(2*pi*60*Zbase)
+    Zc = sqrt((R+imag(2*pu*60*L))/imag(2*pi*60*C))
+    SIL = Vrated^2/abs(Zc)
+    return SIL
+end
+
+function check_SIL(line, basemva::Float64)
+    closestV = findmin(abs.(keys(SIL_standards).-get_rate(line)))[1]
+    closestSIL = SIL_standards[closestV]
+
+    if !(get_rate(line) >= closestSIL.min && get_rate(line) <= closestSIL.max)
+        # rate outside of expected SIL range
+        SIL = calculate_SIL(line, basemva)
+        @warn "Rate provided for $(line) is outside of the expected SIL range of $(closestSIL), and the expected value is $(SIL)." maxlog=PS_MAX_LOG
+
     end
 end
