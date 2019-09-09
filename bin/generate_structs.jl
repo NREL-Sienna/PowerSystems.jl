@@ -12,13 +12,15 @@ This file is auto-generated. Do not edit.
 {{#docstring}}\"\"\"{{docstring}}\"\"\"{{/docstring}}
 mutable struct {{struct_name}}{{#parametric}}{T <: {{parametric}}}{{/parametric}} <: {{supertype}}
     {{#parameters}}
-    {{name}}::{{data_type}}{{#comment}}  # {{comment}}{{/comment}}
+    {{name}}::{{data_type}}{{#comment}}  # {{{comment}}}{{/comment}}
     {{/parameters}}
     {{#inner_constructor_check}}
 
     function {{struct_name}}({{#parameters}}{{name}}, {{/parameters}})
         ({{#parameters}}{{name}}, {{/parameters}}) = {{inner_constructor_check}}(
-            {{#parameters}} {{name}}, {{/parameters}}
+            {{#parameters}}
+            {{name}},
+            {{/parameters}}
         )
         new({{#parameters}}{{name}}, {{/parameters}})
     end

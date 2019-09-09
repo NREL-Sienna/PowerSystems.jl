@@ -62,7 +62,7 @@
     "fields": [
       {
         "name": "rating",
-        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
         "null_value": "0.0",
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
@@ -111,7 +111,7 @@
     "fields": [
       {
         "name": "rating",
-        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
         "null_value": "0.0",
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
@@ -148,7 +148,7 @@
     "fields": [
       {
         "name": "rating",
-        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity ",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
         "null_value": "0.0",
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
