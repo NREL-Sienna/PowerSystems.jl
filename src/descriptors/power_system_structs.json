@@ -338,9 +338,9 @@
       },
       {
         "name": "anglelimits",
-        "null_value": "(min=-3.142, max=3.142)",
+        "null_value": "(min=-1.571, max=1.571)",
         "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
-        "valid_range": {"min":-3.142, "max":3.142},
+        "valid_range": {"min":-1.571, "max":1.571},
         "validation_action": "error"
       },
       {
