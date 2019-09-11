@@ -184,12 +184,6 @@ function check!(sys::System)
     buses = get_components(Bus, sys)
     slack_bus_check(buses)
     buscheck(buses)
-
-    branches = get_components(Branch, sys)
-    if length(branches) > 0
-        check_branches!(branches)
-        calculate_thermal_limits!(branches, sys.basepower)
-    end
 end
 
 """Iterates over all components.
@@ -314,6 +308,10 @@ function add_component!(sys::System, component::T; skip_validation=false) where 
         if !validate_fields(sys, component)
             throw(InvalidRange("Invalid value"))
         end
+    end
+
+    if !skip_validation && !validate_struct(sys, component)
+        throw(InvalidParameter("Invalid struct definiton for $(component)"))
     end
 
     sys.components[T][component.name] = component

@@ -36,7 +36,8 @@ end
              (from=0.00337, to=00.00337), 240.0, (min=-1.17, max=1.17))
     ]
 
-    PowerSystems.check_angle_limits!(branches_test)
+    foreach(x -> PowerSystems.check_angle_limits!(x), branches_test)
+
     @test branches_test[1].anglelimits == (min=-pi/2, max=pi/2)
     @test branches_test[2].anglelimits == (min=-pi/2, max=75.0 * (π / 180))
     @test branches_test[3].anglelimits == (min=-75.0 * (π / 180), max=pi/2)
@@ -44,10 +45,8 @@ end
     @test branches_test[5].anglelimits == (min=-1.2, max=60.0 * (π / 180))
     @test branches_test[6].anglelimits == (min=-1.17, max=1.17)
 
-    bad_angle_limits = [
-        Line("1", true, 0.0, 0.0, Arc(from=nodes5[1], to=nodes5[2]), 0.00281, 0.0281,
+    bad_angle_limits = Line("1", true, 0.0, 0.0, Arc(from=nodes5[1], to=nodes5[2]), 0.00281, 0.0281,
              (from=0.00356, to=0.00356), 400.0, (min=360.0, max=-360.0))
-    ]
 
     @test_throws(PowerSystems.DataFormatError,
                  PowerSystems.check_angle_limits!(bad_angle_limits))
