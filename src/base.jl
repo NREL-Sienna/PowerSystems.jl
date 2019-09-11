@@ -310,6 +310,10 @@ function add_component!(sys::System, component::T; skip_validation=false) where 
         end
     end
 
+    if !skip_validation && !validate_struct(sys, component)
+        throw(InvalidParameter("Invalid struct definiton for $(component)"))
+    end
+
     sys.components[T][component.name] = component
 end
 

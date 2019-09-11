@@ -1,9 +1,15 @@
 
 function validate_struct(sys::System, ps_struct::T) where T <: Union{MonitoredLine,Line}
-    check_angle_limits!(ps_struct)
-    calculate_thermal_limits!(ps_struct, sys.basepower)
-    check_SIL(ps_struct, sys.basepower)
-    return true
+    is_valid = true
+    if !check_endpoint_voltages(ps_struct)
+        is_valid = false
+    else
+        check_angle_limits!(ps_struct)
+        if !calculate_thermal_limits!(ps_struct, sys.basepower)
+            is_valid = false
+        end
+    end
+    return is_valid
 end
 
 function check_angle_limits!(line)
@@ -72,24 +78,27 @@ function linerate_calculation(l::Line)
 end
 
 function calculate_thermal_limits!(branch, basemva::Float64)
-    # This is the same check as implemented in PowerModels.
-    if branch.rate < 0.0
-        #error
-        throw(DataFormatError("PowerSystems does not support negative line rates"))
+    is_valid = true
+    if get_rate(branch) < 0.0
+        @error "PowerSystems does not support negative line rates"
+        is_valid = false
 
-    elseif branch.rate == 0.0
+    elseif get_rate(branch) == 0.0
         @warn "Data for line rating is not provided, PowerSystems will infer a rate from line parameters" maxlog=PS_MAX_LOG
-        branch.rate = linerate_calculation(branch)
+        if get_anglelimits(branch) == get_anglelimits(Line(nothing))
+            branch.rate = min(calculate_SIL(branch, basemva), linerate_calculation(branch))/basemva
+        else
+            branch.rate = linerate_calculation(branch)/basemva
+        end
 
-    elseif branch.rate > linerate_calculation(branch)
-        mult = branch.rate/linerate_calculation(branch)
-        @warn "Data for line rating is $(mult) times larger than the base MVA for the system\n. " *
-        "PowerSystems inferred the Data Provided is in MVA and will transform it using a base of $("basemva")" maxlog=PS_MAX_LOG
-
-        branch.rate = linerate_calculation(branch)
-        branch.rate /= basemva
+    elseif get_rate(branch) > linerate_calculation(branch)
+        mult = get_rate(branch)/linerate_calculation(branch)
+        @warn "Data for line rating is $(mult) times larger than the base MVA for the system" maxlog=PS_MAX_LOG
     end
 
+    check_SIL(branch, basemva)
+
+    return is_valid
 end
 
 const SIL_standards = Dict( #from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
@@ -104,26 +113,42 @@ const SIL_standards = Dict( #from https://neos-guide.org/sites/default/files/lin
 # calculation from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
 function calculate_SIL(line, basemva::Float64)
     arc = get_arc(line)
-    @assert get_from(arc) |> get_basevoltage == get_to(arc) |> get_basevoltage
     Vrated = (get_to(arc) |> get_basevoltage)
 
     Zbase = Vrated^2/basemva
     L = get_x(line)/(2*pi*60)*Zbase
     R = get_r(line)*Zbase
-    C = get_b(line)/(2*pi*60*Zbase)
-    Zc = sqrt((R+imag(2*pu*60*L))/imag(2*pi*60*C))
+    C = sum(get_b(line))/(2*pi*60*Zbase)
+    Zc = sqrt((R+im*2*pi*60*L)/(im*2*pi*60*C))
     SIL = Vrated^2/abs(Zc)
     return SIL
+
 end
 
 function check_SIL(line, basemva::Float64)
-    closestV = findmin(abs.(keys(SIL_standards).-get_rate(line)))[1]
-    closestSIL = SIL_standards[closestV]
 
-    if !(get_rate(line) >= closestSIL.min && get_rate(line) <= closestSIL.max)
+    arc = get_arc(line)
+    Vrated = (get_to(arc) |> get_basevoltage)
+
+    SIL_levels = collect(keys(SIL_standards))
+    rate = get_rate(line)
+    closestV = findmin(abs.(SIL_levels.-Vrated))
+    closestSIL = SIL_standards[SIL_levels[closestV[2]]]
+
+    if !(rate >= closestSIL.min/Vrated && rate <= closestSIL.max/Vrated)
         # rate outside of expected SIL range
         SIL = calculate_SIL(line, basemva)
-        @warn "Rate provided for $(line) is outside of the expected SIL range of $(closestSIL), and the expected value is $(SIL)." maxlog=PS_MAX_LOG
+        @warn "Rate provided for $(line) is $(rate*Vrated) and is outside of the expected SIL range of $(closestSIL), and the calculated SIL is $(SIL)." maxlog=PS_MAX_LOG
 
     end
+end
+
+function check_endpoint_voltages(line)
+    is_valid = true
+    arc = get_arc(line)
+    if get_from(arc) |> get_basevoltage != get_to(arc) |> get_basevoltage
+        is_valid = false
+        @error "Voltage endpoints of $(line) are different, cannot create Line"
+    end
+    return is_valid
 end

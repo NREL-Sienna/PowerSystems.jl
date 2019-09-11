@@ -175,16 +175,21 @@ end
 Iterates over all components and throws InvalidRange if any of the component's field values are outside of defined valid range.
 """
 function validate_system(sys::System)
-    error_detected = false
+    range_error_detected = false
+    struct_error_detected = false
+
     for component in iterate_components(sys)
-        if validate_fields(sys, component)
-            error_detected = true
+        if !validate_fields(sys, component)
+            range_error_detected = true
         end
-        if validate_struct(sys, component)
-            error_detected = true
+        if !validate_struct(sys, component)
+            struct_error_detected = true
         end
     end
-    if error_detected
+    if range_error_detected
         throw(InvalidRange("Invalid range detected"))
+    end
+    if struct_error_detected
+        throw(InvalidRange("Invalid struct detected"))
     end
 end
