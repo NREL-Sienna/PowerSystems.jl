@@ -109,3 +109,15 @@ end
         )
     )
 end
+
+@testset "Test field validation" begin
+    sys = System(nodes5, thermal_generators5, loads5, nothing, nothing,
+                               100.0, nothing, nothing, nothing; runchecks=true)
+
+    add_component!(sys,Bus(11,"11",PSY.PQ,1,1,(min=.9,max=1.1),123))
+    B = get_components(Bus,sys) |> collect
+    a = Arc(B[1],B[6])
+    badline = Line("badline",true,0.01,0.01,a,0.002,0.014,(from = 0.015, to = 0.015),5.0,(min = -1, max = 1))
+    @test_throws PSY.InvalidParameter add_component!(sys, badline)
+
+end
