@@ -165,7 +165,7 @@ function validation_error(valid_info::ValidationInfo, field_value)
 end
 
 
-function validate_struct(sys::System, ps_struct::T) where T <: PowerSystemType
+function validate_struct(sys::System, ps_struct::PowerSystemType)
     return true
 end
 

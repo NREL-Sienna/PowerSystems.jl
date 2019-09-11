@@ -63,12 +63,12 @@ function linerate_calculation(l::Line)
     if isa(fr_vmax,Nothing) || isa(to_vmax,Nothing)
         fr_vmax = 1.0
         to_vmax = 0.9
-        diff_angle = abs(l.arc.from.angle -l.arc.to.angle)
-        new_rate = y_mag*fr_vmax*to_vmax*cos(theta_max)
+        diff_angle = abs(l.arc.from.angle - l.arc.to.angle)
+        new_rate = y_mag * fr_vmax * to_vmax * cos(theta_max)
     else
 
         m_vmax = max(fr_vmax, to_vmax)
-        c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2*fr_vmax*to_vmax*cos(theta_max))
+        c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2 * fr_vmax*to_vmax*cos(theta_max))
         new_rate = y_mag*m_vmax*c_max
 
     end
@@ -86,13 +86,13 @@ function calculate_thermal_limits!(branch, basemva::Float64)
     elseif get_rate(branch) == 0.0
         @warn "Data for line rating is not provided, PowerSystems will infer a rate from line parameters" maxlog=PS_MAX_LOG
         if get_anglelimits(branch) == get_anglelimits(Line(nothing))
-            branch.rate = min(calculate_SIL(branch, basemva), linerate_calculation(branch))/basemva
+            branch.rate = min(calculate_sil(branch, basemva), linerate_calculation(branch)) / basemva
         else
             branch.rate = linerate_calculation(branch)/basemva
         end
 
     elseif get_rate(branch) > linerate_calculation(branch)
-        mult = get_rate(branch)/linerate_calculation(branch)
+        mult = get_rate(branch) / linerate_calculation(branch)
         @warn "Data for line rating is $(mult) times larger than the base MVA for the system" maxlog=PS_MAX_LOG
     end
 
@@ -101,7 +101,7 @@ function calculate_thermal_limits!(branch, basemva::Float64)
     return is_valid
 end
 
-const SIL_standards = Dict( #from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
+const SIL_STANDARDS = Dict( #from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
                         69.0 => (min=12.0, max=13.0),
                         138.0 => (min=47.0, max=52.0),
                         230.0 => (min=134.0, max=145.0),
@@ -111,34 +111,34 @@ const SIL_standards = Dict( #from https://neos-guide.org/sites/default/files/lin
 
 
 # calculation from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
-function calculate_SIL(line, basemva::Float64)
+function calculate_sil(line, basemva::Float64)
     arc = get_arc(line)
-    Vrated = (get_to(arc) |> get_basevoltage)
+    vrated = (get_to(arc) |> get_basevoltage)
 
-    Zbase = Vrated^2/basemva
-    L = get_x(line)/(2*pi*60)*Zbase
-    R = get_r(line)*Zbase
-    C = sum(get_b(line))/(2*pi*60*Zbase)
-    Zc = sqrt((R+im*2*pi*60*L)/(im*2*pi*60*C))
-    SIL = Vrated^2/abs(Zc)
-    return SIL
+    zbase = vrated^2 / basemva
+    l = get_x(line) / (2 * pi * 60) * zbase
+    r = get_r(line) * zbase
+    c = sum(get_b(line)) / (2 * pi * 60 * zbase)
+    zc = sqrt((r + im * 2 * pi * 60 * l) / (im * 2 * pi * 60 * c))
+    sil = vrated^2 / abs(zc)
+    return sil
 
 end
 
 function check_SIL(line, basemva::Float64)
 
     arc = get_arc(line)
-    Vrated = (get_to(arc) |> get_basevoltage)
+    vrated = (get_to(arc) |> get_basevoltage)
 
-    SIL_levels = collect(keys(SIL_standards))
+    SIL_levels = collect(keys(SIL_STANDARDS))
     rate = get_rate(line)
-    closestV = findmin(abs.(SIL_levels.-Vrated))
-    closestSIL = SIL_standards[SIL_levels[closestV[2]]]
+    closestV = findmin(abs.(SIL_levels.-vrated))
+    closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
 
-    if !(rate >= closestSIL.min/Vrated && rate <= closestSIL.max/Vrated)
+    if !(rate >= closestSIL.min / vrated && rate <= closestSIL.max / vrated)
         # rate outside of expected SIL range
-        SIL = calculate_SIL(line, basemva)
-        @warn "Rate provided for $(line) is $(rate*Vrated) and is outside of the expected SIL range of $(closestSIL), and the calculated SIL is $(SIL)." maxlog=PS_MAX_LOG
+        sil = calculate_sil(line, basemva)
+        @warn "Rate provided for $(line) is $(rate*vrated) and is outside of the expected SIL range of $(closestSIL), and the calculated SIL is $(sil)." maxlog=PS_MAX_LOG
 
     end
 end
