@@ -117,7 +117,7 @@ end
     B = get_components(Bus,sys) |> collect
     a = Arc(B[1],B[6])
     badline = Line("badline",true,0.01,0.01,a,0.002,0.014,(from = 0.015, to = 0.015),5.0,(min = -1, max = 1))
-    @test_logs((:error, r"Invalid range"), match_mode=:any,
+    @test_logs((:error, r"cannot create Line"), match_mode=:any,
         @test_throws(PSY.InvalidValue,
                      add_component!(sys, badline)
         )
