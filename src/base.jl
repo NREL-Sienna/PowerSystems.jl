@@ -40,17 +40,13 @@ struct System <: PowerSystemType
     internal::InfrastructureSystemsInternal
 
     function System(data, basepower, internal; kwargs...)
-        configpath = get(kwargs, :configpath, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
-        runchecks = get(kwargs, :runchecks, true)
-        #validation_descriptor = runchecks ? IS.read_validation_descriptor(configpath) : Vector()
         sys = new(data, basepower, internal)
     end
 end
 
 """Construct an empty System. Useful for building a System while parsing raw data."""
-function System(basepower; validation_descriptor=nothing)
-    data = IS.SystemData()
-    return System(data, basepower)
+function System(basepower; kwargs...)
+    return System(_create_system_data_from_kwargs(; kwargs...), basepower)
 end
 
 function System(data, basepower; kwargs...)
@@ -68,7 +64,7 @@ function System(buses::Vector{Bus},
                 services::Union{Nothing, Vector{ <: Service}},
                 annex::Union{Nothing,Dict}; kwargs...)
 
-    data = IS.SystemData()
+    data = _create_system_data_from_kwargs(; kwargs...)
 
     if isnothing(forecasts)
         forecasts = IS.Forecasts()
@@ -192,7 +188,7 @@ function System(filename::String)
 end
 
 """
-    add_component!(sys::System, component::T) where T <: Component
+    add_component!(sys::System, component::T; kwargs...) where T <: Component
 
 Add a component to the system.
 
@@ -713,12 +709,6 @@ function check!(sys::System)
     buses = get_components(Bus, sys)
     slack_bus_check(buses)
     buscheck(buses)
-
-    branches = get_components(Branch, sys)
-    if length(branches) > 0
-        check_branches!(branches)
-        calculate_thermal_limits!(branches, sys.basepower)
-    end
 end
 
 function JSON2.read(io::IO, ::Type{System})
@@ -864,4 +854,15 @@ function IS.compare_values(x::System, y::System)::Bool
     end
 
     return match
+end
+
+function _create_system_data_from_kwargs(; kwargs...)
+    validation_descriptor_file = nothing
+    runchecks = get(kwargs, :runchecks, true)
+    if runchecks
+        validation_descriptor_file = get(kwargs, :configpath,
+                                         POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
+    end
+
+    return IS.SystemData(; validation_descriptor_file=validation_descriptor_file)
 end

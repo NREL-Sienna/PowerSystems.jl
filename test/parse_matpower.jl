@@ -14,7 +14,7 @@ POWER_MODELS_KEYS = [
     "storage",
 ]
 
-badfiles = Dict("case30.m" => PowerSystems.InvalidParameter)
+badfiles = Dict("case30.m" => ArgumentError)
 
 @testset "Parse Matpower data files" begin
     files = [x for x in readdir(joinpath(MATPOWER_DIR)) if splitext(x)[2] == ".m"]
