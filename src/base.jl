@@ -338,6 +338,10 @@ function get_component(::Type{T}, sys::System, name::AbstractString) where T <: 
     return IS.get_component(T, sys.data, name)
 end
 
+function get_component(forecast::Forecast)
+    return IS.get_component(forecast)
+end
+
 """
     get_components(
                    ::Type{T},
