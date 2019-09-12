@@ -93,7 +93,9 @@ function calculate_thermal_limits!(branch, basemva::Float64)
 
     elseif get_rate(branch) > linerate_calculation(branch)
         mult = get_rate(branch) / linerate_calculation(branch)
-        @warn "Data for line rating is $(mult) times larger than the base MVA for the system" maxlog=PS_MAX_LOG
+        if mult > 50
+            @warn "Data for line rating is $(mult) times larger than the base MVA for the system" maxlog=PS_MAX_LOG
+        end
     end
 
     check_SIL(branch, basemva)
