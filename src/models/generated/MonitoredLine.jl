@@ -15,11 +15,11 @@ mutable struct MonitoredLine <: ACBranch
     flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}  # TODO: throw warning above max SIL
     rate::Float64  # TODO: compare to SIL (warn) (theoretical limit)
     anglelimits::Min_Max
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, )
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, PowerSystemInternal())
+    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, InfrastructureSystemsInternal())
 end
 
 function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, )

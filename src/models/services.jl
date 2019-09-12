@@ -34,7 +34,7 @@ function encode_for_json(service::T) where T <: Service
     for name in fields
         val = getfield(service, name)
         if val isa Vector{<:Device}
-            push!(vals, get_uuid.(val))
+            push!(vals, IS.get_uuid.(val))
         else
             push!(vals, val)
         end
@@ -47,10 +47,10 @@ end
 values for the field contributingdevices as UUIDs, so this will lookup each device in
 devices.
 """
-function convert_type(
+function IS.convert_type(
                       ::Type{T},
                       data::NamedTuple,
-                      devices::LazyDictFromIterator,
+                      devices::Dict,
                      ) where T <: Service
     @debug T data
     values = []
@@ -60,15 +60,12 @@ function convert_type(
             real_devices = []
             for item in val
                 uuid = Base.UUID(item.value)
-                service = get(devices, uuid)
-                if isnothing(service)
-                    throw(DataFormatError("failed to find $uuid"))
-                end
+                service = devices[uuid]
                 push!(real_devices, service)
             end
             push!(values, real_devices)
         else
-            obj = convert_type(fieldtype, val)
+            obj = IS.convert_type(fieldtype, val)
             push!(values, obj)
         end
     end
@@ -76,6 +73,6 @@ function convert_type(
     return T(values...)
 end
 
-function convert_type(::Type{T}, data::Any) where T <: Service
+function IS.convert_type(::Type{T}, data::Any) where T <: Service
     error("This form of convert_type is not supported for Services")
 end

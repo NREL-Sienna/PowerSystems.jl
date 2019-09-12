@@ -14,11 +14,11 @@ mutable struct TapTransformer <: ACBranch
     primaryshunt::Float64  # System per-unit value
     tap::Float64
     rate::Union{Nothing, Float64}
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, )
-    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, PowerSystemInternal())
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, InfrastructureSystemsInternal())
 end
 
 function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, )

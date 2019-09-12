@@ -11,11 +11,11 @@ mutable struct ThermalStandard <: ThermalGen
     reactivepower::Float64
     tech::Union{Nothing, TechThermal}
     op_cost::ThreePartCost
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, )
-    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, PowerSystemInternal())
+    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, InfrastructureSystemsInternal())
 end
 
 function ThermalStandard(; name, available, bus, activepower, reactivepower, tech, op_cost, )

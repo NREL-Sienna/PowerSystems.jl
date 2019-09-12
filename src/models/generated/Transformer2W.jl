@@ -13,11 +13,11 @@ mutable struct Transformer2W <: ACBranch
     x::Float64  # System per-unit value
     primaryshunt::Float64  # System per-unit value
     rate::Union{Nothing, Float64}
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, PowerSystemInternal())
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, InfrastructureSystemsInternal())
 end
 
 function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )

@@ -8,11 +8,11 @@ mutable struct Transfer <: Service
     contributingdevices::Vector{Device}
     timeframe::Float64
     requirement::TimeSeries.TimeArray
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function Transfer(name, contributingdevices, timeframe, requirement, )
-    Transfer(name, contributingdevices, timeframe, requirement, PowerSystemInternal())
+    Transfer(name, contributingdevices, timeframe, requirement, InfrastructureSystemsInternal())
 end
 
 function Transfer(; name, contributingdevices, timeframe, requirement, )

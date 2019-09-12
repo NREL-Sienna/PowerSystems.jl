@@ -8,11 +8,11 @@ mutable struct StaticReserve <: Reserve
     contributingdevices::Vector{Device}  # devices from which the product can be procured
     timeframe::Float64  # the relative saturation timeframe
     requirement::Float64  # the required quantity of the product should be scaled by a Forecast
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function StaticReserve(name, contributingdevices, timeframe, requirement, )
-    StaticReserve(name, contributingdevices, timeframe, requirement, PowerSystemInternal())
+    StaticReserve(name, contributingdevices, timeframe, requirement, InfrastructureSystemsInternal())
 end
 
 function StaticReserve(; name, contributingdevices, timeframe, requirement, )

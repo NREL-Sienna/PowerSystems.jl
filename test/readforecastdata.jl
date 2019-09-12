@@ -13,8 +13,8 @@ function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon
     for it in initial_times
         forecasts = get_forecasts(Forecast, sys, it)
         for forecast in forecasts
-            if get_horizon(forecast) != horizon
-                @error "horizon doesn't match" get_horizon(forecast) horizon
+            if IS.get_horizon(forecast) != horizon
+                @error "horizon doesn't match" IS.get_horizon(forecast) horizon
                 return false
             end
         end
@@ -30,7 +30,7 @@ function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon
 end
 
 @testset "Test read_timeseries_metadata" begin
-    forecasts = PSY.read_timeseries_metadata(joinpath(RTS_GMLC_DIR,
+    forecasts = IS.read_timeseries_metadata(joinpath(RTS_GMLC_DIR,
                                                      "timeseries_pointers.json"))
     @test length(forecasts) == 282
 
@@ -43,16 +43,18 @@ end
     component_name = "122_HYDRO_1"
     timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
                                "DAY_AHEAD_hydro.csv")
-    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
+    timeseries = IS.read_timeseries(timeseries_file)[Symbol(component_name)]
     max_value = maximum(TimeSeries.values(timeseries))
 
-    metadata = PSY.TimeseriesFileMetadata(
+    metadata = IS.TimeseriesFileMetadata(
         "DAY_AHEAD",
         "Generator",
         "122_HYDRO_1",
         "PMax MW",
         1.0,
         timeseries_file,
+        [],
+        "Deterministic",
     )
 
     # Test code path where no normalization occurs.
@@ -84,7 +86,7 @@ end
     component_name = "122_HYDRO_1"
     timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
                                "DAY_AHEAD_hydro.csv")
-    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
+    timeseries = IS.read_timeseries(timeseries_file)[Symbol(component_name)]
 
     # Test with a filename.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -93,7 +95,7 @@ end
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PSY.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
-    @test PSY.get_timeseries(forecast) == timeseries
+    @test IS.get_timeseries(forecast) == timeseries
 
     # Test with TimeSeries.TimeArray.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -102,7 +104,7 @@ end
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PSY.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
-    @test PSY.get_timeseries(forecast) == timeseries
+    @test IS.get_timeseries(forecast) == timeseries
 
     # Test with DataFrames.DataFrame.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -122,12 +124,12 @@ end
 
     # Add the same files.
     # This will fail because the component-label pairs will be duplicated.
-    @test_throws PowerSystems.DataFormatError add_forecasts!(sys, forecasts_metadata)
+    @test_throws IS.DataFormatError add_forecasts!(sys, forecasts_metadata)
 
     forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_rt.json")
 
     ## This will fail because the resolutions are different.
-    @test_throws PowerSystems.DataFormatError add_forecasts!(sys, forecasts_metadata)
+    @test_throws IS.DataFormatError add_forecasts!(sys, forecasts_metadata)
 
     ## TODO: need a dataset with same resolution but different horizon.
 
@@ -140,7 +142,7 @@ end
     component_name = "122_HYDRO_1"
     timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
                                "DAY_AHEAD_hydro.csv")
-    timeseries = PSY.read_timeseries(timeseries_file)[Symbol(component_name)]
+    timeseries = IS.read_timeseries(timeseries_file)[Symbol(component_name)]
 
     # Test with a filename.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
@@ -149,38 +151,38 @@ end
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PSY.iterate_forecasts(sys))[1]
     @test TimeSeries.values(forecast.data) == TimeSeries.values(timeseries)
-    @test PSY.get_timeseries(forecast) == timeseries
-    @test PSY.get_resolution(forecast) == Dates.Hour(1)
+    @test IS.get_timeseries(forecast) == timeseries
+    @test IS.get_resolution(forecast) == Dates.Hour(1)
 
     interval = Dates.Hour(1)
     horizon = 12
-    forecasts = PSY.make_forecasts(forecast, interval, horizon)
+    forecasts = IS.make_forecasts(forecast, interval, horizon)
     @test length(forecasts) == 13
-    compare_initial_time = PSY.get_initial_time(forecast)
+    compare_initial_time = IS.get_initial_time(forecast)
     for forecast_ in forecasts
-        @test PSY.get_horizon(forecast_) == horizon
-        @test PSY.get_initial_time(forecast_) == compare_initial_time
+        @test IS.get_horizon(forecast_) == horizon
+        @test IS.get_initial_time(forecast_) == compare_initial_time
         compare_initial_time += interval
     end
 
     # Interval is smaller than resolution.
-    @test_throws(PSY.InvalidParameter,
-                 PSY.make_forecasts(forecast, Dates.Minute(1), horizon))
+    @test_throws(IS.ArgumentError,
+                 IS.make_forecasts(forecast, Dates.Minute(1), horizon))
     # Interval is not multiple of resolution.
-    @test_throws(PSY.InvalidParameter,
-                 PSY.make_forecasts(forecast, Dates.Minute(13), horizon))
+    @test_throws(IS.ArgumentError,
+                 IS.make_forecasts(forecast, Dates.Minute(13), horizon))
     # Horizon is larger than forecast horizon.
-    @test_throws(PSY.InvalidParameter,
-                 PSY.make_forecasts(forecast, interval, 25))
+    @test_throws(IS.ArgumentError,
+                 IS.make_forecasts(forecast, interval, 25))
 
     # making a series of forecasts from a list of forecasts
-    forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
-    forecasts_ = make_forecasts(forecasts, Hour(1), 2)
+    forecasts = get_forecasts(IS.Deterministic, sys, IS.get_initial_time(forecast))
+    forecasts_ = IS.make_forecasts(forecasts, Hour(1), 2)
     @test length(forecasts_) == 23
 
     # removal of all forecasts
     clear_forecasts!(sys)
-    forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
+    forecasts = get_forecasts(IS.Deterministic, sys, IS.get_initial_time(forecast))
     @test length(forecasts) == 0
 
     # adding series of forecasts
@@ -191,11 +193,10 @@ end
     # replace a long forecast with a series of forecasts
     clear_forecasts!(sys)
     add_forecast!(sys, forecast)
-    forecasts = get_forecasts(Deterministic, sys, PSY.get_initial_time(forecast))
+    forecasts = get_forecasts(IS.Deterministic, sys, IS.get_initial_time(forecast))
     split_forecasts!(sys, forecasts, Hour(6), 12)
     ts = get_forecast_initial_times(sys)
     @test length(ts) == 3
 
     # TODO: need to cover serialization.
 end
-

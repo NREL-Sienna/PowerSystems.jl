@@ -28,10 +28,6 @@ export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
 
-export Forecast
-export Deterministic
-export Probabilistic
-export ScenarioBased
 export TimeseriesFileMetadata
 
 export ThreePartCost
@@ -85,6 +81,12 @@ export add_forecasts!
 export add_forecast!
 export remove_forecast!
 export clear_forecasts!
+export add_component!
+export remove_component!
+export remove_components!
+export get_component
+export get_components
+export get_components_by_name
 export get_component_forecasts
 export get_forecast_initial_times
 export get_forecasts
@@ -96,21 +98,14 @@ export get_forecast_component_name
 export get_forecast_value
 export get_horizon
 export get_timeseries
+export iterate_components
 export iterate_forecasts
 export make_forecasts
 export split_forecasts!
 export validate
-export add_component!
-export get_component
-export get_components
-export get_components_by_name
-export remove_components!
-export remove_component!
-export iterate_components
-export to_json
-export from_json
 export get_name
 export validate_system
+export to_json
 
 #################################################################################
 # Imports
@@ -130,16 +125,24 @@ import YAML
 import UUIDs
 import Base.to_index
 
+import InfrastructureSystems
+import InfrastructureSystems: Components, Deterministic, Probabilistic, Forecast,
+    ScenarioBased, InfrastructureSystemsType, InfrastructureSystemsInternal,
+    FlattenIteratorWrapper, LazyDictFromIterator, DataFormatError, InvalidRange,
+    InvalidValue
+
+const IS = InfrastructureSystems
+
 #################################################################################
 # Includes
 
 """
 Supertype for all PowerSystems types.
-All subtypes must include a PowerSystemInternal member.
-Subtypes should call PowerSystemInternal() by default, but also must provide a constructor
-that allows existing values to be deserialized.
+All subtypes must include a InfrastructureSystemsInternal member.
+Subtypes should call InfrastructureSystemsInternal() by default, but also must
+provide a constructor that allows existing values to be deserialized.
 """
-abstract type PowerSystemType end
+abstract type PowerSystemType <: IS.InfrastructureSystemsType end
 
 abstract type Component <: PowerSystemType end
 # supertype for "devices" (bus, line, etc.)
@@ -149,18 +152,12 @@ abstract type Injection <: Device end
 abstract type TechnicalParams <: PowerSystemType end
 
 include("common.jl")
-include("internal.jl")
 
 # Include utilities
-include("utils/utils.jl")
-include("utils/logging.jl")
-include("utils/flatten_iterator_wrapper.jl")
-include("utils/lazy_dict_from_iterator.jl")
 include("utils/IO/base_checks.jl")
 
 # PowerSystems models
 include("models/topological_elements.jl")
-include("models/forecasts.jl")
 include("models/branches.jl")
 include("models/operational_cost.jl")
 #include("models/network.jl")
@@ -174,7 +171,6 @@ include("models/services.jl")
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
-include("models/supplemental_accesors.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
@@ -199,13 +195,9 @@ include("parsers/enums.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/standardfiles_parser.jl")
-include("parsers/timeseries_formats.jl")
 include("parsers/forecast_parser.jl")
 include("parsers/cdm_parser.jl")
 include("parsers/pm2ps_parser.jl")
-
-# validation of System
-include("validation/validation_functions.jl")
 
 # Better printing
 include("utils/print.jl")
