@@ -72,6 +72,7 @@ export LODF
 export GeneratorCostModel
 export BusType
 
+export Forecast
 export Deterministic
 export Probabilistic
 export ScenarioBased
