@@ -797,39 +797,6 @@ function get_components(
     return iter
 end
 
-"""Shows the component types and counts in a table."""
-function Base.summary(io::IO, sys::System)
-    println(io, "System")
-    println(io, "======")
-    println(io, "Base Power: $(sys.basepower)\n")
-
-    Base.summary(io, sys.components)
-    println(io, "\n")
-    Base.summary(io, sys.forecasts)
-end
-
-function Base.summary(io::IO, components::Components)
-    counts = Dict{String, Int}()
-    rows = []
-
-    for (subtype, values) in components
-        type_str = strip_module_names(string(subtype))
-        counts[type_str] = length(values)
-        parents = [strip_module_names(string(x)) for x in supertypes(subtype)]
-        row = (ConcreteType=type_str,
-               SuperTypes=join(parents, " <: "),
-               Count=length(values))
-        push!(rows, row)
-    end
-
-    sort!(rows, by = x -> x.ConcreteType)
-
-    df = DataFrames.DataFrame(rows)
-    println(io, "Components")
-    println(io, "==========")
-    Base.show(io, df)
-end
-
 function compare_values(x::System, y::System)::Bool
     match = true
     for key in keys(x.components)
