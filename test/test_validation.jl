@@ -117,5 +117,5 @@ end
     B = get_components(Bus,sys) |> collect
     a = Arc(B[1],B[6])
     badline = Line("badline",true,0.01,0.01,a,0.002,0.014,(from = 0.015, to = 0.015),5.0,(min = -1, max = 1))
-    @test_skip @test_throws ArgumentError add_component!(sys, badline)
+    @test_throws ArgumentError add_component!(sys, badline)
 end
