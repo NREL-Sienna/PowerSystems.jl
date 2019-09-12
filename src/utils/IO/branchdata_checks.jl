@@ -137,10 +137,11 @@ function check_SIL(line, basemva::Float64)
     closestV = findmin(abs.(SIL_levels.-vrated))
     closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
 
-    if !(rate >= closestSIL.min / vrated && rate <= closestSIL.max / vrated)
+    if !(rate <= 5*closestSIL.max / vrated)
         # rate outside of expected SIL range
         sil = calculate_sil(line, basemva)
-        @warn "Rate provided for $(line) is $(rate*vrated) and is outside of the expected SIL range of $(closestSIL), and the calculated SIL is $(sil)." maxlog=PS_MAX_LOG
+        mult = sil/closestSIL.max
+        @warn "Rate provided for $(line) is $(rate*vrated), $(mult) times larger the expected SIL $(sil) in the range of $(closestSIL)." maxlog=PS_MAX_LOG
 
     end
 end
