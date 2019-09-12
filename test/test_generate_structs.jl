@@ -1,7 +1,7 @@
 @testset "Test generated structs" begin
     descriptor_file = joinpath(@__DIR__, "..", "src", "descriptors",
                                "power_system_structs.json")
-    existing_dir = joinpath(@__DIR__, "..", "src", "generated")
+    existing_dir = joinpath(@__DIR__, "..", "src", "models", "generated")
     output_dir = "tmp"
     mkdir(output_dir)
 
