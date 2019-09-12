@@ -128,7 +128,8 @@ import Base.to_index
 import InfrastructureSystems
 import InfrastructureSystems: Components, Deterministic, Probabilistic, Forecast,
     ScenarioBased, InfrastructureSystemsType, InfrastructureSystemsInternal,
-    FlattenIteratorWrapper, LazyDictFromIterator
+    FlattenIteratorWrapper, LazyDictFromIterator, DataFormatError, InvalidRange,
+    InvalidValue
 
 const IS = InfrastructureSystems
 
