@@ -72,6 +72,10 @@ export LODF
 export GeneratorCostModel
 export BusType
 
+export Deterministic
+export Probabilistic
+export ScenarioBased
+
 export make_pf
 export solve_powerflow!
 
