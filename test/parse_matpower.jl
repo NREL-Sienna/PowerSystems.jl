@@ -33,7 +33,11 @@ badfiles = Dict("case30.m" => ArgumentError)
         @info "Successfully parsed $path to PowerModels dict"
 
         if f in keys(badfiles)
-            @test_throws badfiles[f] PowerSystems.pm2ps_dict(pm_dict)
+            @test_logs((:error, r"cannot create Line"), match_mode=:any,
+                @test_throws(badfiles[f],
+			                 PowerSystems.pm2ps_dict(pm_dict)
+			    )
+			)
         else
             sys = PowerSystems.pm2ps_dict(pm_dict)
             @info "Successfully parsed $path to System struct"
@@ -58,7 +62,11 @@ end
         @info "Successfully parsed $path to PowerModels dict"
 
         if f in keys(badfiles)
-            @test_throws badfiles[f] PowerSystems.pm2ps_dict(pm_dict)
+            @test_logs((:error, r"cannot create Line"), match_mode=:any,
+                @test_throws(badfiles[f],
+			                 PowerSystems.pm2ps_dict(pm_dict)
+			    )
+			)
         else
             sys = PowerSystems.pm2ps_dict(pm_dict)
             @info "Successfully parsed $path to System struct"
