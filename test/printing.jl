@@ -1,7 +1,7 @@
 
 include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
 
-function are_type_and_fields_in_output(obj::T) where T <: PowerSystemType
+function are_type_and_fields_in_output(obj::T) where T <: Component
     match = true
     short = repr(obj)
     io = IOBuffer()

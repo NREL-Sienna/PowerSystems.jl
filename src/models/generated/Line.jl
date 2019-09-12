@@ -14,11 +14,11 @@ mutable struct Line <: ACBranch
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}  # System per-unit value
     rate::Float64
     anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, PowerSystemInternal())
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, InfrastructureSystemsInternal())
 end
 
 function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, )

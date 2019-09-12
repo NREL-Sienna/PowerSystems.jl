@@ -14,11 +14,11 @@ mutable struct VSCDCLine <: DCBranch
     inverter_taplimits::Min_Max
     inverter_xrc::Float64
     inverter_firing_angle::Min_Max
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, PowerSystemInternal())
+    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, InfrastructureSystemsInternal())
 end
 
 function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, )

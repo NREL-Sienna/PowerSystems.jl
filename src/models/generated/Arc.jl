@@ -6,11 +6,11 @@ This file is auto-generated. Do not edit.
 mutable struct Arc <: Topology
     from::Bus
     to::Bus
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function Arc(from, to, )
-    Arc(from, to, PowerSystemInternal())
+    Arc(from, to, InfrastructureSystemsInternal())
 end
 
 function Arc(; from, to, )

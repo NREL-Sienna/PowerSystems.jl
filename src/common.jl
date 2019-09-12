@@ -77,10 +77,6 @@ struct DataFormatError <: Exception
     msg::String
 end
 
-struct InvalidParameter <: Exception
-    msg::String
-end
-
 struct InvalidRange <: Exception
     msg::String
 end

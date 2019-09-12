@@ -8,11 +8,11 @@ mutable struct FixedAdmittance <: ElectricLoad
     available::Bool
     bus::Bus
     Y::Complex{Float64}
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function FixedAdmittance(name, available, bus, Y, )
-    FixedAdmittance(name, available, bus, Y, PowerSystemInternal())
+    FixedAdmittance(name, available, bus, Y, InfrastructureSystemsInternal())
 end
 
 function FixedAdmittance(; name, available, bus, Y, )

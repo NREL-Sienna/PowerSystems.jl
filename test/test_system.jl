@@ -5,40 +5,19 @@
 
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
-    @test PowerSystems.get_uuid(generator) == PowerSystems.get_uuid(generators[1])
-    @test_throws(PowerSystems.InvalidParameter, add_component!(sys, generator))
+    @test IS.get_uuid(generator) == IS.get_uuid(generators[1])
+    @test_throws(IS.ArgumentError, add_component!(sys, generator))
 
     generators2 = get_components_by_name(ThermalGen, sys, get_name(generators[1]))
     @test length(generators2) == 1
-    @test PowerSystems.get_uuid(generators2[1]) == PowerSystems.get_uuid(generators[1])
+    @test IS.get_uuid(generators2[1]) == IS.get_uuid(generators[1])
 
     @test isnothing(get_component(ThermalStandard, sys, "not-a-name"))
     @test isempty(get_components_by_name(ThermalGen, sys, "not-a-name"))
-    @test_throws(PowerSystems.InvalidParameter,
+    @test_throws(IS.ArgumentError,
                  get_component(ThermalGen, sys, "not-a-name"))
-    @test_throws(PowerSystems.InvalidParameter,
+    @test_throws(IS.ArgumentError,
                  get_components_by_name(ThermalStandard, sys, "not-a-name"))
-
-    # Negative test of missing type.
-    components = Vector{ThermalGen}()
-    for subtype in PowerSystems.subtypes(ThermalGen)
-        if haskey(sys.components, subtype)
-            for (component_type, component) in pop!(sys.components, subtype)
-                push!(components, component)
-            end
-        end
-    end
-
-    @test length(collect(get_components(ThermalGen, sys))) == 0
-    @test length(collect(get_components(ThermalStandard, sys))) == 0
-
-    # For the next test to work there must be at least one component to add back.
-    @test length(components) > 0
-    for component in components
-        add_component!(sys, component)
-    end
-
-    @test length(collect(get_components(ThermalGen, sys))) > 0
 
     # Test get_bus* functionality.
     bus_numbers = Vector{Int}()
@@ -80,7 +59,7 @@
     @test length(all_forecasts1) == length(all_forecasts2)
 
     # Get specific forecasts. They should not match.
-    specific_forecasts = get_forecasts(Deterministic{Bus}, sys, initial_time)
+    specific_forecasts = get_forecasts(PSY.Deterministic{Bus}, sys, initial_time)
     @test length(specific_forecasts) < length(all_forecasts1)
 
     @test get_forecasts_horizon(sys) == 24
@@ -93,11 +72,10 @@
     end
 
     @test length(get_forecasts(Forecast, sys, initial_time)) == 0
-    @test PowerSystems.is_uninitialized(sys.forecasts)
 
-    # InvalidParameter is thrown if the type is concrete and there is no forecast for a
+    # ArgumentError is thrown if the type is concrete and there is no forecast for a
     # component.
-    @test_throws(PowerSystems.InvalidParameter,
+    @test_throws(IS.ArgumentError,
                  get_forecasts(Forecast, sys, initial_time, components))
 
     # But not if the type is abstract.
@@ -110,26 +88,26 @@
     forecasts = get_forecasts(Forecast, sys, initial_time, components)
     @assert length(forecasts) == count
 
-    @test_throws(PowerSystems.InvalidParameter,
-                 get_forecasts(Deterministic{Bus}, sys, initial_time, components))
+    @test_throws(IS.ArgumentError,
+                 get_forecasts(PSY.Deterministic{Bus}, sys, initial_time, components))
 
     #Get forecast by type
     res = get_component_forecasts(RenewableDispatch, sys, initial_time)
     for i in res
-        @test isa(i,Deterministic{RenewableDispatch})
+        @test isa(i,PSY.Deterministic{RenewableDispatch})
     end
 
-    @test_throws(PowerSystems.InvalidParameter,
+    @test_throws(IS.ArgumentError,
                  get_component_forecasts(RenewableGen, sys, initial_time))
 
     f = forecasts[1]
-    forecast = Deterministic(Bus(nothing), f.label, f.resolution, f.initial_time, f.data)
-    @test_throws(PowerSystems.InvalidParameter, add_forecasts!(sys, [forecast]))
+    forecast = PSY.Deterministic(Bus(nothing), f.label, f.resolution, f.initial_time, f.data)
+    @test_throws(IS.ArgumentError, add_forecasts!(sys, [forecast]))
 
     component = deepcopy(f.component)
-    component.internal = PowerSystems.PowerSystemInternal()
-    forecast = Deterministic(component, f.label, f.resolution, f.initial_time, f.data)
-    @test_throws(PowerSystems.InvalidParameter, add_forecasts!(sys, [forecast]))
+    component.internal = IS.InfrastructureSystemsInternal()
+    forecast = PSY.Deterministic(component, f.label, f.resolution, f.initial_time, f.data)
+    @test_throws(IS.ArgumentError, add_forecasts!(sys, [forecast]))
 end
 
 @testset "Test System iterators" begin
@@ -170,7 +148,7 @@ end
     generators = get_components(typeof(gen), sys)
     @test length(generators) == initial_length - 1
 
-    @test_throws(PowerSystems.InvalidParameter, remove_component!(sys, gen))
+    @test_throws(IS.ArgumentError, remove_component!(sys, gen))
 
     add_component!(sys, gen)
     remove_component!(typeof(gen), sys, get_name(gen))
@@ -178,5 +156,5 @@ end
 
     @assert length(get_components(typeof(gen), sys)) > 0
     remove_components!(typeof(gen), sys)
-    @test_throws(PowerSystems.InvalidParameter, remove_components!(typeof(gen), sys))
+    @test_throws(IS.ArgumentError, remove_components!(typeof(gen), sys))
 end
