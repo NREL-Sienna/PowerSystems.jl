@@ -86,7 +86,7 @@ end
     bad_therm_gen_rating = deepcopy(thermal_generators5)
     bad_therm_gen_rating[1].tech.rating = -10
     @test_logs((:error, r"Invalid range"),
-        @test_throws(IS.InvalidRange,
+        @test_throws(PSY.InvalidRange,
                         System(nodes5, bad_therm_gen_rating, loads5, nothing, nothing,
                                100.0, nothing, nothing, nothing; runchecks=true)
         )
@@ -102,7 +102,7 @@ end
     bad_therm_gen_ramp_lim = deepcopy(thermal_generators5)
     bad_therm_gen_ramp_lim[1].tech.ramplimits = (up = -10, down = -3)
     @test_logs((:error, r"Invalid range"), match_mode=:any,
-        @test_throws(IS.InvalidRange,
+        @test_throws(PSY.InvalidRange,
                      System(nodes5, bad_therm_gen_ramp_lim, loads5, nothing, nothing, 100.0,
                             nothing, nothing, nothing; runchecks=true)
         )
@@ -117,5 +117,9 @@ end
     B = get_components(Bus,sys) |> collect
     a = Arc(B[1],B[6])
     badline = Line("badline",true,0.01,0.01,a,0.002,0.014,(from = 0.015, to = 0.015),5.0,(min = -1, max = 1))
-    @test_throws ArgumentError add_component!(sys, badline)
+    @test_logs((:error, r"Invalid range"), match_mode=:any,
+        @test_throws(PSY.InvalidValue,
+                     add_component!(sys, badline)
+        )
+    )
 end

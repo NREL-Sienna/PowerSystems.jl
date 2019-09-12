@@ -1,14 +1,13 @@
 
-function IS.validate_struct(ps_struct::Union{MonitoredLine, Line})
+function validate_struct(sys::System, ps_struct::Union{MonitoredLine, Line})
     is_valid = true
     if !check_endpoint_voltages(ps_struct)
         is_valid = false
     else
         check_angle_limits!(ps_struct)
-		# TODO broken...no access to sys
-        #if !calculate_thermal_limits!(ps_struct, sys.basepower)
-        #    is_valid = false
-        #end
+        if !calculate_thermal_limits!(ps_struct, sys.basepower)
+            is_valid = false
+        end
     end
     return is_valid
 end

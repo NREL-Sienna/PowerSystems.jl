@@ -37,10 +37,12 @@ const SKIP_PM_VALIDATION = false
 struct System <: PowerSystemType
     data::IS.SystemData
     basepower::Float64             # [MVA]
+	runchecks::Bool
     internal::InfrastructureSystemsInternal
 
     function System(data, basepower, internal; kwargs...)
-        sys = new(data, basepower, internal)
+		runchecks = get(kwargs, :runchecks, true)
+        sys = new(data, basepower, runchecks, internal)
     end
 end
 
@@ -208,6 +210,10 @@ function add_component!(sys::System, component::T; kwargs...) where T <: Compone
             ))
         end
     end
+
+	if sys.runchecks && !validate_struct(sys, component)
+        throw(InvalidValue("Invalid value for $(component)"))
+	end
 
     IS.add_component!(sys.data, component; kwargs...)
 end
@@ -705,6 +711,20 @@ function get_forecasts_resolution(sys::System)
     return IS.get_forecasts_resolution(sys.data)
 end
 
+"""
+	validate_struct(sys::System, value::PowerSystemType)
+
+Validates an instance of a PowerSystemType against System data.
+Returns true if the instance is valid.
+
+Users implementing this function for custom types should consider implementing
+InfrastructureSystems.validate_struct instead if the validation logic only requires data
+contained within the instance.
+"""
+function validate_struct(sys::System, value::PowerSystemType)::Bool
+	return true
+end
+
 function check!(sys::System)
     buses = get_components(Bus, sys)
     slack_bus_check(buses)
@@ -713,7 +733,7 @@ end
 
 function JSON2.read(io::IO, ::Type{System})
     raw = JSON2.read(io, NamedTuple)
-    sys = System(float(raw.basepower))
+    sys = System(float(raw.basepower); runchecks=raw.runchecks)
     component_cache = Dict{Base.UUID, Component}()
 
     # Buses and Arcs are encoded as UUIDs.
