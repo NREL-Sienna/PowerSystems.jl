@@ -5,7 +5,6 @@
 docs/build/*
 .DS_Store
 *.R
-*.PNG
 *.csv
 *.ipynb
 *.log
