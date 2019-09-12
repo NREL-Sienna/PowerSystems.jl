@@ -137,7 +137,8 @@ function check_SIL(line, basemva::Float64)
     closestV = findmin(abs.(SIL_levels.-vrated))
     closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
 
-    if !(rate <= 5*closestSIL.max / vrated)
+    #Consisten with Ned Mohan Electric Power Systems: A First Course page 70
+    if !(rate <= 3*closestSIL.max / vrated)
         # rate outside of expected SIL range
         sil = calculate_sil(line, basemva)
         mult = sil/closestSIL.max
