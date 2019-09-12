@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 
 """Data Structure for the technical parameters of thermal generation technologies."""
 mutable struct TechThermal <: TechnicalParams
-    rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
+    rating::Float64  # Thermal limited MVA Power Output of the unit. <= Capacity
     primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
     fuel::ThermalFuels  # PrimeMover Fuel according to EIA 923
     activepowerlimits::Min_Max

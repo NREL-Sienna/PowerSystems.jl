@@ -165,14 +165,6 @@ function System(::Nothing; buses=[Bus(nothing)],
     return System(buses, generators, loads, branches, storage, basepower, forecasts, services, annex; kwargs...)
 end
 
-"""
-    to_json(sys::System, filename::AbstractString)
-
-Serializes a system to a JSON file.
-"""
-function to_json(sys::System, filename::AbstractString)
-    return IS.to_json(sys, filename)
-end
 
 """
     to_json(sys::System, filename::AbstractString)
@@ -267,8 +259,6 @@ function add_forecasts!(
 
     add_forecasts!(sys, forecasts)
 end
-
-# TODO create new docstrings
 
 """
     iterate_components(sys::System)

@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 
 
 mutable struct TechHydro <: TechnicalParams
-    rating::Float64  # Thermal limited MVA Power Output of the unit. &lt;= Capacity 
+    rating::Float64  # Thermal limited MVA Power Output of the unit. <= Capacity
     primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
     activepowerlimits::Min_Max
     reactivepowerlimits::Union{Nothing, Min_Max}

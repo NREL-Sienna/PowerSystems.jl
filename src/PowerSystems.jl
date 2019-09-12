@@ -171,12 +171,12 @@ include("models/services.jl")
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
 
+# Definitions of PowerSystem
+include("base.jl")
+
 #Data Checks
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")
-
-# Definitions of PowerSystem
-include("base.jl")
 
 # network calculations
 include("utils/network_calculations/common.jl")

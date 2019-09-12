@@ -40,7 +40,7 @@ function MonitoredLine(::Nothing)
         b=(from=0.0, to=0.0),
         flowlimits=(from_to=0.0, to_from=0.0),
         rate=0.0,
-        anglelimits=(min=-3.142, max=3.142),
+        anglelimits=(min=-1.571, max=1.571),
     )
 end
 
