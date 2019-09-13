@@ -5,8 +5,8 @@ end
 function get_forecast_component_name(forecast::Forecast)
     return IS.get_forecast_component_name(forecast)
 end
-function get_forecast_value(forecast::Forecast)
-    return IS.get_forecast_value(forecast)
+function get_forecast_value(forecast::Forecast, ix)
+    return IS.get_forecast_value(forecast, ix)
 end
 function get_horizon(forecast::Forecast)
     return IS.get_horizon(forecast)
