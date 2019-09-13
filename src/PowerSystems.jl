@@ -28,8 +28,6 @@ export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
 
-export TimeseriesFileMetadata
-
 export ThreePartCost
 export TwoPartCost
 
