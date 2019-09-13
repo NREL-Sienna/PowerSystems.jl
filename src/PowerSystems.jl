@@ -101,6 +101,7 @@ export get_forecast_component_name
 export get_forecast_value
 export get_horizon
 export get_timeseries
+export get_data
 export iterate_components
 export iterate_forecasts
 export make_forecasts
@@ -175,6 +176,9 @@ include("models/supplemental_constructors.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+
+#Interfacing with Forecasts
+include("forecasts.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")

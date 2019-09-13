@@ -202,7 +202,7 @@ range.
 function add_component!(sys::System, component::T; kwargs...) where T <: Component
     if Bus in fieldtypes(T)
         name = get_name(get_bus(component))
-        bus = get_component(Bus, sys, name) 
+        bus = get_component(Bus, sys, name)
         if isnothing(bus)
             component_name = get_name(component)
             throw(ArgumentError(
@@ -336,10 +336,6 @@ Throws ArgumentError if T is not a concrete type.
 """
 function get_component(::Type{T}, sys::System, name::AbstractString) where T <: Component
     return IS.get_component(T, sys.data, name)
-end
-
-function get_component(forecast::Forecast)
-    return IS.get_component(forecast)
 end
 
 """
