@@ -1,5 +1,5 @@
 
-function validate_struct(sys::System, ps_struct::T) where T <: Union{MonitoredLine,Line}
+function validate_struct(sys::System, ps_struct::Union{MonitoredLine, Line})
     is_valid = true
     if !check_endpoint_voltages(ps_struct)
         is_valid = false

@@ -769,6 +769,15 @@ function make_storage(data::PowerSystemRaw, gen, bus)
     return battery
 end
 
+
+const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
+    "Bus" => Bus,
+    "Generator" => Generator,
+    "Reserve" => Service,
+    "LoadZone" => LoadZones,
+    "ElectricLoad" => ElectricLoad,
+)
+
 function _get_component_type_from_category(category::AbstractString)
     component_type = get(CATEGORY_STR_TO_COMPONENT, category, nothing)
     if isnothing(component_type)

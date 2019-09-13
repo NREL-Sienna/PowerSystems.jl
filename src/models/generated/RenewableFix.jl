@@ -10,11 +10,11 @@ mutable struct RenewableFix <: RenewableGen
     activepower::Float64
     reactivepower::Float64
     tech::TechRenewable
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function RenewableFix(name, available, bus, activepower, reactivepower, tech, )
-    RenewableFix(name, available, bus, activepower, reactivepower, tech, PowerSystemInternal())
+    RenewableFix(name, available, bus, activepower, reactivepower, tech, InfrastructureSystemsInternal())
 end
 
 function RenewableFix(; name, available, bus, activepower, reactivepower, tech, )

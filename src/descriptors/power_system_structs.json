@@ -17,7 +17,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "OperationalCost"
@@ -52,7 +52,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "OperationalCost"
@@ -101,7 +101,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "TechnicalParams"
@@ -137,7 +137,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "TechnicalParams"
@@ -192,7 +192,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "TechnicalParams"
@@ -253,7 +253,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "Topology"
@@ -274,7 +274,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "Topology"
@@ -345,7 +345,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -423,7 +423,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -503,7 +503,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -576,7 +576,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -643,7 +643,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "ACBranch"
@@ -698,7 +698,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "DCBranch"
@@ -759,7 +759,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "DCBranch"
@@ -814,7 +814,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "ControllableLoad"
@@ -844,7 +844,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "ElectricLoad"
@@ -894,7 +894,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "StaticLoad"
@@ -941,7 +941,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -983,7 +983,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -1044,7 +1044,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "HydroGen"
@@ -1089,7 +1089,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "RenewableGen"
@@ -1129,7 +1129,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "RenewableGen"
@@ -1179,7 +1179,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "ThermalGen"
@@ -1214,7 +1214,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "Topology"
@@ -1304,7 +1304,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "Storage"
@@ -1334,7 +1334,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "Reserve"
@@ -1370,7 +1370,7 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "Reserve"
@@ -1402,154 +1402,9 @@
       },
       {
         "name": "internal",
-        "data_type": "PowerSystemInternal"
+        "data_type": "InfrastructureSystemsInternal"
       }
     ],
     "supertype": "Service"
-  },
-  {
-    "struct_name": "Deterministic",
-    "docstring": "A deterministic forecast for a particular data field in a PowerSystemDevice.",
-    "parametric": "Component",
-    "fields": [
-      {
-        "name": "component",
-        "data_type": "T"
-      },
-      {
-        "name": "label",
-        "data_type": "String",
-        "comment": "label of component parameter forecasted"
-      },
-      {
-        "name": "resolution",
-        "data_type": "Dates.Period"
-      },
-      {
-        "name": "initial_time",
-        "data_type": "Dates.DateTime",
-        "comment": "forecast availability time"
-      },
-      {
-        "name": "data",
-        "data_type": "TimeSeries.TimeArray",
-        "comment": "timestamp - scalingfactor"
-      },
-      {
-        "name": "start_index",
-        "data_type": "Int",
-        "comment": "starting index of data for this forecast"
-      },
-      {
-        "name": "horizon",
-        "data_type": "Int",
-        "comment": "length of this forecast"
-      },
-      {
-        "name": "internal",
-        "data_type": "PowerSystemInternal"
-      }
-    ],
-    "supertype": "Forecast"
-  },
-  {
-    "struct_name": "Probabilistic",
-    "docstring": "A Probabilistic forecast for a particular data field in a PowerSystemDevice.",
-    "parametric": "Component",
-    "fields": [
-      {
-        "name": "component",
-        "data_type": "T"
-      },
-      {
-        "name": "label",
-        "data_type": "String",
-        "comment": "label of component parameter forecasted"
-      },
-      {
-        "name": "resolution",
-        "data_type": "Dates.Period"
-      },
-      {
-        "name": "initial_time",
-        "data_type": "Dates.DateTime",
-        "comment": "forecast availability time"
-      },
-      {
-        "name": "probabilities",
-        "data_type": "Vector{Float64}",
-        "comment": "Quantiles for the probabilistic forecast"
-      },
-      {
-        "name": "data",
-        "data_type": "TimeSeries.TimeArray",
-        "comment": "timestamp - scalingfactor"
-      },
-      {
-        "name": "start_index",
-        "data_type": "Int",
-        "comment": "starting index of data for this forecast"
-      },
-      {
-        "name": "horizon",
-        "data_type": "Int",
-        "comment": "length of this forecast"
-      },
-      {
-        "name": "internal",
-        "data_type": "PowerSystemInternal"
-      }
-    ],
-    "supertype": "Forecast"
-  },
-  {
-    "struct_name": "ScenarioBased",
-    "docstring": "A Discrete Scenario Based forecast for a particular data field in a PowerSystemDevice.",
-    "parametric": "Component",
-    "fields": [
-      {
-        "name": "component",
-        "data_type": "T"
-      },
-      {
-        "name": "label",
-        "data_type": "String",
-        "comment": "label of component parameter forecasted"
-      },
-      {
-        "name": "resolution",
-        "data_type": "Dates.Period"
-      },
-      {
-        "name": "initial_time",
-        "data_type": "Dates.DateTime",
-        "comment": "forecast availability time"
-      },
-      {
-        "name": "scenario_count",
-        "data_type": "Int64",
-        "comment": "Number of scenarios"
-      },
-      {
-        "name": "data",
-        "data_type": "TimeSeries.TimeArray",
-        "comment": "timestamp - scalingfactor"
-      },
-      {
-        "name": "start_index",
-        "data_type": "Int",
-        "comment": "starting index of data for this forecast"
-      },
-      {
-        "name": "horizon",
-        "data_type": "Int",
-        "comment": "length of this forecast"
-      },
-      {
-        "name": "internal",
-        "data_type": "PowerSystemInternal"
-      }
-    ],
-    "supertype": "Forecast"
   }
 ]

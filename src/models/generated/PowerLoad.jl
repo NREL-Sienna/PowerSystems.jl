@@ -12,11 +12,11 @@ mutable struct PowerLoad <: StaticLoad
     reactivepower::Float64
     maxactivepower::Float64
     maxreactivepower::Float64
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, )
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, PowerSystemInternal())
+    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, InfrastructureSystemsInternal())
 end
 
 function PowerLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, )

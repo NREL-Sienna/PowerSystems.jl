@@ -8,11 +8,11 @@ mutable struct TechRenewable <: TechnicalParams
     primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
     reactivepowerlimits::Union{Nothing, Min_Max}
     powerfactor::Float64
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
-    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, PowerSystemInternal())
+    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, InfrastructureSystemsInternal())
 end
 
 function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, )

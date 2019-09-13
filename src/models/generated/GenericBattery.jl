@@ -17,11 +17,11 @@ mutable struct GenericBattery <: Storage
     efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
     reactivepower::Float64
     reactivepowerlimits::Union{Nothing, Min_Max}
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, PowerSystemInternal())
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, InfrastructureSystemsInternal())
 end
 
 function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, )

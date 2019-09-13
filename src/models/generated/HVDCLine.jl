@@ -13,11 +13,11 @@ mutable struct HVDCLine <: DCBranch
     reactivepowerlimits_from::Min_Max
     reactivepowerlimits_to::Min_Max
     loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, )
-    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, PowerSystemInternal())
+    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, InfrastructureSystemsInternal())
 end
 
 function HVDCLine(; name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, )

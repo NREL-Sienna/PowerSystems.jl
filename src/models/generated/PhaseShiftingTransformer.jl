@@ -15,11 +15,11 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     tap::Float64
     α::Float64
     rate::Union{Nothing, Float64}
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, PowerSystemInternal())
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, InfrastructureSystemsInternal())
 end
 
 function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, )

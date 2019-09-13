@@ -6,11 +6,11 @@ This file is auto-generated. Do not edit.
 mutable struct TwoPartCost <: OperationalCost
     variable::VariableCost
     fixed::Float64
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function TwoPartCost(variable, fixed, )
-    TwoPartCost(variable, fixed, PowerSystemInternal())
+    TwoPartCost(variable, fixed, InfrastructureSystemsInternal())
 end
 
 function TwoPartCost(; variable, fixed, )

@@ -21,12 +21,12 @@ end
 """Get the enum value for the string. Case insensitive."""
 function get_enum_value(enum, value::String)
     if !haskey(ENUM_MAPPINGS, enum)
-        throw(InvalidParameter("enum=$enum is not valid"))
+        throw(ArgumentError("enum=$enum is not valid"))
     end
 
     val = lowercase(value)
     if !haskey(ENUM_MAPPINGS[enum], val)
-        throw(InvalidParameter("enum=$enum does not have value=$val"))
+        throw(ArgumentError("enum=$enum does not have value=$val"))
     end
 
     return ENUM_MAPPINGS[enum][val]

@@ -11,11 +11,11 @@ mutable struct RenewableDispatch <: RenewableGen
     reactivepower::Float64
     tech::TechRenewable
     op_cost::TwoPartCost
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, PowerSystemInternal())
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, InfrastructureSystemsInternal())
 end
 
 function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, )

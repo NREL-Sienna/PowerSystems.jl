@@ -10,11 +10,11 @@ mutable struct TechHydro <: TechnicalParams
     reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    internal::PowerSystemInternal
+    internal::InfrastructureSystemsInternal
 end
 
 function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
-    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, PowerSystemInternal())
+    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal())
 end
 
 function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
