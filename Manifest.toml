@@ -67,9 +67,7 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[InfrastructureSystems]]
 deps = ["CSV", "DataFrames", "Dates", "InteractiveUtils", "JSON", "JSON2", "Logging", "Mustache", "Test", "TimeSeries", "UUIDs", "YAML"]
-git-tree-sha1 = "92c2ad1bcb943f7474e2bb070c07809579fa388d"
-repo-rev = "master"
-repo-url = "https://github.com/NREL/InfrastructureSystems.jl.git"
+path = "/mnt/c/Users/dthom/Sandboxes/InfrastructureSystems.jl"
 uuid = "2cd47ed4-ca9b-11e9-27f2-ab636a7671f1"
 version = "0.1.0"
 

@@ -201,7 +201,7 @@ include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/forecast_parser.jl")
-include("parsers/cdm_parser.jl")
+include("parsers/power_system_table_data.jl")
 include("parsers/pm2ps_parser.jl")
 
 # Better printing

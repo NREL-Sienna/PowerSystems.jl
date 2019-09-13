@@ -2,7 +2,7 @@
 const POWER_SYSTEM_DESCRIPTOR_FILE = joinpath(dirname(pathof(PowerSystems)),
                                               "descriptors", "power_system_inputs.json")
 
-struct PowerSystemRaw
+struct PowerSystemTableData
     basepower::Float64
     branch::Union{DataFrames.DataFrame, Nothing}
     bus::DataFrames.DataFrame
@@ -18,15 +18,15 @@ struct PowerSystemRaw
     generator_mapping::Dict{NamedTuple, DataType}
 end
 
-function PowerSystemRaw(
-                        data::Dict{String, Any},
-                        directory::String,
-                        user_descriptors::Union{String, Dict},
-                        descriptors::Union{String, Dict},
-                        generator_mapping::Union{String, Dict};
-                        timeseries_metadata_file = joinpath(directory,
-                                                            "timeseries_pointers")
-                       )
+function PowerSystemTableData(
+                              data::Dict{String, Any},
+                              directory::String,
+                              user_descriptors::Union{String, Dict},
+                              descriptors::Union{String, Dict},
+                              generator_mapping::Union{String, Dict};
+                              timeseries_metadata_file = joinpath(directory,
+                                                                  "timeseries_pointers")
+                             )
     category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
     categories = [
         ("branch", BRANCH::InputCategory),
@@ -80,15 +80,15 @@ function PowerSystemRaw(
         generator_mapping = get_generator_mapping(generator_mapping)
     end
 
-    return PowerSystemRaw(basepower, dfs..., category_to_df, timeseries_metadata_file,
+    return PowerSystemTableData(basepower, dfs..., category_to_df, timeseries_metadata_file,
                           directory, user_descriptors, descriptors, generator_mapping)
 end
 
 """
-     PowerSystemRaw(directory::AbstractString,
-                    basepower::Float64,
-                    user_descriptor_file::AbstractString;
-                    descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE)
+     PowerSystemTableData(directory::AbstractString,
+                          basepower::Float64,
+                          user_descriptor_file::AbstractString;
+                          descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE)
 
 Reads in all the data stored in csv files
 The general format for data is
@@ -106,15 +106,15 @@ The general format for data is
 - `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: PowerSystems descriptor file
 - `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file
 """
-function PowerSystemRaw(
-                        directory::AbstractString,
-                        basepower::Float64,
-                        user_descriptor_file::AbstractString;
-                        descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE,
-                        generator_mapping_file=GENERATOR_MAPPING_FILE,
-                        timeseries_metadata_file = joinpath(directory,
-                                                            "timeseries_pointers")
-                       )
+function PowerSystemTableData(
+                              directory::AbstractString,
+                              basepower::Float64,
+                              user_descriptor_file::AbstractString;
+                              descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE,
+                              generator_mapping_file=GENERATOR_MAPPING_FILE,
+                              timeseries_metadata_file = joinpath(directory,
+                                                                  "timeseries_pointers")
+                             )
     files = readdir(directory)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
@@ -164,8 +164,9 @@ function PowerSystemRaw(
         error("No csv files or folders in $directory")
     end
 
-    return PowerSystemRaw(data, directory, user_descriptor_file, descriptor_file,
-                          generator_mapping_file, timeseries_metadata_file = timeseries_metadata_file)
+    return PowerSystemTableData(data, directory, user_descriptor_file, descriptor_file,
+                                generator_mapping_file,
+                                timeseries_metadata_file = timeseries_metadata_file)
 end
 
 """
@@ -173,7 +174,7 @@ Return the custom name stored in the user descriptor file.
 
 Throws DataFormatError if a required value is not found in the file.
 """
-function get_user_field(data::PowerSystemRaw, category::InputCategory,
+function get_user_field(data::PowerSystemTableData, category::InputCategory,
                         field::AbstractString)
     if !haskey(data.user_descriptors, category)
         throw(DataFormatError("Invalid category=$category"))
@@ -199,7 +200,7 @@ function get_user_field(data::PowerSystemRaw, category::InputCategory,
 end
 
 """Return a vector of user-defined fields for the category."""
-function get_user_fields(data::PowerSystemRaw, category::InputCategory)
+function get_user_fields(data::PowerSystemTableData, category::InputCategory)
     if !haskey(data.user_descriptors, category)
         throw(DataFormatError("Invalid category=$category"))
     end
@@ -208,20 +209,20 @@ function get_user_fields(data::PowerSystemRaw, category::InputCategory)
 end
 
 """Return the dataframe for the category."""
-function get_dataframe(data::PowerSystemRaw, category::InputCategory)
+function get_dataframe(data::PowerSystemTableData, category::InputCategory)
     @assert haskey(data.category_to_df, category)
     return data.category_to_df[category]
 end
 
 """
-    iterate_rows(data::PowerSystemRaw, category; na_to_nothing=true)
+    iterate_rows(data::PowerSystemTableData, category; na_to_nothing=true)
 
 Return a NamedTuple of parameters from the descriptor file for each row of a dataframe,
 making type conversions as necessary.
 
 Refer to the PowerSystems descriptor file for field names that will be created.
 """
-function iterate_rows(data::PowerSystemRaw, category; na_to_nothing=true)
+function iterate_rows(data::PowerSystemTableData, category; na_to_nothing=true)
     df = data.category_to_df[category]
     field_infos = _get_field_infos(data, category, names(df))
 
@@ -234,9 +235,9 @@ function iterate_rows(data::PowerSystemRaw, category; na_to_nothing=true)
 end
 
 """
-    System(data::PowerSystemRaw)
+    System(data::PowerSystemTableData)
 
-Construct a System from PowerSystemRaw data.
+Construct a System from PowerSystemTableData data.
 
 # Arguments
 - `forecast_resolution::Union{DateTime, Nothing}=nothing`: only store forecasts that match
@@ -248,7 +249,7 @@ Throws DataFormatError if forecasts with multiple resolutions are detected.
 - A forecast has a different horizon than others.
 
 """
-function System(data::PowerSystemRaw; forecast_resolution=nothing)
+function System(data::PowerSystemTableData; forecast_resolution=nothing)
     sys = System(data.basepower)
 
     bus_csv_parser!(sys, data)
@@ -283,7 +284,7 @@ end
 Add buses to the System from the raw data.
 
 """
-function bus_csv_parser!(sys::System, data::PowerSystemRaw)
+function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
         bus_type = get_enum_value(BusType, bus.bus_type)
         number = bus.bus_id
@@ -303,12 +304,12 @@ function bus_csv_parser!(sys::System, data::PowerSystemRaw)
 end
 
 """
-    branch_csv_parser!(sys::System, data::PowerSystemRaw)
+    branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
 Add branches to the System from the raw data.
 
 """
-function branch_csv_parser!(sys::System, data::PowerSystemRaw)
+function branch_csv_parser!(sys::System, data::PowerSystemTableData)
     available = true
 
     for branch in iterate_rows(data, BRANCH::InputCategory)
@@ -375,12 +376,12 @@ function branch_csv_parser!(sys::System, data::PowerSystemRaw)
 end
 
 """
-    dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
+    dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
 Add DC branches to the System from raw data.
 
 """
-function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
+function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
     for dc_branch in iterate_rows(data, DC_BRANCH::InputCategory)
         available = true
         bus_from = get_bus(sys, dc_branch.connection_points_from)
@@ -438,12 +439,12 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemRaw)
 end
 
 """
-    gen_csv_parser!(sys::System, data::PowerSystemRaw)
+    gen_csv_parser!(sys::System, data::PowerSystemTableData)
 
 Add generators to the System from the raw data.
 
 """
-function gen_csv_parser!(sys::System, data::PowerSystemRaw)
+function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     output_percent_fields = Vector{Symbol}()
     heat_rate_fields = Vector{Symbol}()
     fields = get_user_fields(data, GENERATOR::InputCategory)
@@ -472,12 +473,12 @@ function gen_csv_parser!(sys::System, data::PowerSystemRaw)
 end
 
 """
-    load_csv_parser!(sys::System, data::PowerSystemRaw)
+    load_csv_parser!(sys::System, data::PowerSystemTableData)
 
 Add loads to the System from the raw data.
 
 """
-function load_csv_parser!(sys::System, data::PowerSystemRaw)
+function load_csv_parser!(sys::System, data::PowerSystemTableData)
     for ps_bus in get_components(Bus, sys)
         max_active_power = 0.0
         max_reactive_power = 0.0
@@ -514,12 +515,12 @@ function load_csv_parser!(sys::System, data::PowerSystemRaw)
 end
 
 """
-    loadzone_csv_parser!(sys::System, cdm::PowerSystemRaw)
+    loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
 
 Add branches to the System from the raw data.
 
 """
-function loadzone_csv_parser!(sys::System, data::PowerSystemRaw)
+function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
     area_column = get_user_field(data, BUS::InputCategory, "area")
     if !in(area_column, names(data.bus))
         @warn "Missing Data : no 'area' information for buses, cannot create loads based "
@@ -554,12 +555,12 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemRaw)
 end
 
 """
-    services_csv_parser!(sys::System, data::PowerSystemRaw)
+    services_csv_parser!(sys::System, data::PowerSystemTableData)
 
 Add services to the System from the raw data.
 
 """
-function services_csv_parser!(sys::System, data::PowerSystemRaw)
+function services_csv_parser!(sys::System, data::PowerSystemTableData)
     bus_id_column = get_user_field(data, BUS::InputCategory, "bus_id")
     bus_area_column = get_user_field(data, BUS::InputCategory, "area")
 
@@ -608,7 +609,7 @@ function services_csv_parser!(sys::System, data::PowerSystemRaw)
 end
 
 """Creates a generator of any type."""
-function make_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
+function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     generator = nothing
     gen_type = get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
 
@@ -627,7 +628,7 @@ function make_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
     return generator
 end
 
-function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
+function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     fuel_cost = gen.fuel_price / 1000
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
@@ -677,7 +678,7 @@ function make_thermal_generator(data::PowerSystemRaw, gen, cost_colnames, bus)
                            op_cost)
 end
 
-function make_hydro_generator(data::PowerSystemRaw, gen, bus)
+function make_hydro_generator(data::PowerSystemTableData, gen, bus)
     available = true
 
     rating = calculate_rating(gen.active_power_limits_max, gen.reactive_power_limits_max)
@@ -704,7 +705,7 @@ function make_hydro_generator(data::PowerSystemRaw, gen, bus)
                          op_cost = TwoPartCost(curtailcost, 0.0))
 end
 
-function make_renewable_generator(gen_type, data::PowerSystemRaw, gen, bus)
+function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
     generator = nothing
     available = true
     rating = gen.active_power_limits_max
@@ -739,7 +740,7 @@ function make_renewable_generator(gen_type, data::PowerSystemRaw, gen, bus)
     return generator
 end
 
-function make_storage(data::PowerSystemRaw, gen, bus)
+function make_storage(data::PowerSystemTableData, gen, bus)
     available = true
     energy = 0.0
     capacity = (min=gen.active_power_limits_min,
@@ -808,7 +809,7 @@ struct _FieldInfo
     # TODO unit, value ranges and options
 end
 
-function _get_field_infos(data::PowerSystemRaw, category::InputCategory, df_names)
+function _get_field_infos(data::PowerSystemTableData, category::InputCategory, df_names)
     if !haskey(data.user_descriptors, category)
         throw(DataFormatError("Invalid category=$category"))
     end
@@ -869,7 +870,7 @@ function _get_field_infos(data::PowerSystemRaw, category::InputCategory, df_name
 end
 
 """Reads values from dataframe row and performs necessary conversions."""
-function _read_data_row(data::PowerSystemRaw, row, field_infos; na_to_nothing=true)
+function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_nothing=true)
     fields = Vector{String}()
     vals = Vector()
     for field_info in field_infos

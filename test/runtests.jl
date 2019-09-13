@@ -6,7 +6,7 @@ import InfrastructureSystems
 import InfrastructureSystems: Deterministic, Probabilistic, ScenarioBased, Forecast
 const IS = InfrastructureSystems
 using PowerSystems
-import PowerSystems: PowerSystemRaw
+import PowerSystems: PowerSystemTableData
 const PSY = PowerSystems
 
 
