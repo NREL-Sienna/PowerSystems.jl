@@ -25,3 +25,12 @@ end
 function Base.summary(io::IO, tech::TechnicalParams)
     print(io, "$(typeof(tech))")
 end
+
+function Base.summary(arc::Arc)
+    return "$(get_name(get_from(arc))) -> $(get_name(get_to(arc))): ($(typeof(arc)))"
+end
+
+function Base.summary(io::IO, arc::Arc)
+    print(io, summary(arc))
+end
+

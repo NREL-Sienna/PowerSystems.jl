@@ -47,12 +47,12 @@ sys = create_rts_system()
 for component in iterate_components(sys)
     print(devnull, component)
     print(devnull, MIME"text/plain")
+    @test !isempty(summary(component))
 end
 for forecast in iterate_forecasts(sys)
     show(devnull, forecast)
     show(devnull, MIME"text/plain")
+    @test !isempty(summary(forecast))
 end
 
-show(devnull, sys)
-show(devnull, MIME"text/plain"(), sys)
-show(devnull, MIME"text/html"(), sys)
+@test !isempty(summary(sys))
