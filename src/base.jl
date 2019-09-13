@@ -37,11 +37,11 @@ const SKIP_PM_VALIDATION = false
 struct System <: PowerSystemType
     data::IS.SystemData
     basepower::Float64             # [MVA]
-	runchecks::Bool
+    runchecks::Bool
     internal::InfrastructureSystemsInternal
 
     function System(data, basepower, internal; kwargs...)
-		runchecks = get(kwargs, :runchecks, true)
+        runchecks = get(kwargs, :runchecks, true)
         sys = new(data, basepower, runchecks, internal)
     end
 end
@@ -169,8 +169,8 @@ end
 
 Serializes a system to a JSON string.
 """
-function to_json(sys::System)
-    return IS.to_json(sys)
+function to_json(sys::System, filename::AbstractString)
+    return IS.to_json(sys, filename)
 end
 
 """
@@ -211,9 +211,9 @@ function add_component!(sys::System, component::T; kwargs...) where T <: Compone
         end
     end
 
-	if sys.runchecks && !validate_struct(sys, component)
+    if sys.runchecks && !validate_struct(sys, component)
         throw(InvalidValue("Invalid value for $(component)"))
-	end
+    end
 
     IS.add_component!(sys.data, component; kwargs...)
 end
@@ -712,7 +712,7 @@ function get_forecasts_resolution(sys::System)
 end
 
 """
-	validate_struct(sys::System, value::PowerSystemType)
+    validate_struct(sys::System, value::PowerSystemType)
 
 Validates an instance of a PowerSystemType against System data.
 Returns true if the instance is valid.
@@ -722,7 +722,7 @@ InfrastructureSystems.validate_struct instead if the validation logic only requi
 contained within the instance.
 """
 function validate_struct(sys::System, value::PowerSystemType)::Bool
-	return true
+    return true
 end
 
 function check!(sys::System)
@@ -850,14 +850,6 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     end
 
     return buses
-end
-
-function Base.summary(io::IO, sys::System)
-    # Shows the component/forecast types and counts in a table.
-    println(io, "System")
-    println(io, "======")
-    println(io, "Base Power: $(sys.basepower)\n")
-    Base.summary(io, sys.data)
 end
 
 function IS.compare_values(x::System, y::System)::Bool

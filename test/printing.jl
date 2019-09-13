@@ -1,35 +1,34 @@
 
-include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
-
 function are_type_and_fields_in_output(obj::T) where T <: Component
     match = true
-    short = repr(obj)
+    normal = repr(obj)
     io = IOBuffer()
     show(io, "text/plain", obj)
-    long = String(take!(io))
+    custom = String(take!(io))
     fields = fieldnames(T)
 
     # Type must always be present. name should be also, if the type defines it.
-    for text in (short, long)
+    #for text in (normal, custom)
+    for text in (custom,)
         if !occursin(string(T), text)
             @error "type name is not in output" string(T) text
             match = false
         end
         if :name in fields
-            if !occursin("name", text)
-                @error "name is not in output" text
+            if !occursin(obj.name, text)
+                @error "name is not in output" name text
                 match = false
             end
         end
     end
 
     for field in fields
-        if isnothing(getfield(obj, field))
+        if isnothing(getfield(obj, field)) || field == :internal
             continue
         end
 
-        if !occursin(string(getfield(obj, field)), long)
-            @error "field's value is not in long output" field long
+        if !occursin(string(getfield(obj, field)), custom)
+            @error "field's value is not in custom output" field custom
             match = false
         end
     end
@@ -37,19 +36,23 @@ function are_type_and_fields_in_output(obj::T) where T <: Component
     return match
 end
 
-# TODO: forecasts are in old format, and so are disabled for now.
-sys5 = PowerSystems.System(nodes5, thermal_generators5, loads5, branches5, nothing, 100.0,
-        nothing, nothing, nothing; runchecks = false)
-        #forecasts5, nothing, nothing)
-@test are_type_and_fields_in_output(collect(get_components(Bus,sys5))[1])
-@test are_type_and_fields_in_output(collect(get_components(Generator,sys5))[1])
-@test are_type_and_fields_in_output(collect(get_components(ThermalGen,sys5))[1])
-@test are_type_and_fields_in_output(collect(get_components(Branch,sys5))[1])
-@test are_type_and_fields_in_output(collect(get_components(ElectricLoad,sys5))[1])
-#for initial_time in get_forecast_initial_times(sys5)
-#    for forecast in get_forecasts(Forecast, sys5, initial_time)
-#        @test are_type_and_fields_in_output(forecast)
-#        # Just test one forecast per initial_time.
-#        break
-#    end
-#end
+sys = create_rts_system()
+@test are_type_and_fields_in_output(iterate(get_components(Bus, sys))[1])
+@test are_type_and_fields_in_output(iterate(get_components(Generator, sys))[1])
+@test are_type_and_fields_in_output(iterate(get_components(ThermalGen, sys))[1])
+@test are_type_and_fields_in_output(iterate(get_components(Branch, sys))[1])
+@test are_type_and_fields_in_output(iterate(get_components(ElectricLoad, sys))[1])
+
+# Just make sure nothing blows up.
+for component in iterate_components(sys)
+    print(devnull, component)
+    print(devnull, MIME"text/plain")
+end
+for forecast in iterate_forecasts(sys)
+    show(devnull, forecast)
+    show(devnull, MIME"text/plain")
+end
+
+show(devnull, sys)
+show(devnull, MIME"text/plain"(), sys)
+show(devnull, MIME"text/html"(), sys)
