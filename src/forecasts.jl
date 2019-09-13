@@ -18,3 +18,7 @@ end
 function get_data(forecast::Forecast)
     return IS.get_data(forecast)
 end
+
+function get_forecast_value(forecast::Forecast)
+    return IS.get_forecast_value(forecast)
+end
