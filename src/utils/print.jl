@@ -1,7 +1,7 @@
 # "smart" summary and REPL printing
 
-function Base.summary(io::IO, sys::System)
-    print(io, "System (base power $(sys.basepower))")
+function Base.summary(sys::System)
+    return "System (base power $(sys.basepower))"
 end
 
 function Base.show(io::IO, sys::System)
@@ -22,15 +22,10 @@ function Base.show(io::IO, ::MIME"text/html", sys::System)
     show(io, MIME"text/html"(), sys.data)
 end
 
-function Base.summary(io::IO, tech::TechnicalParams)
-    print(io, "$(typeof(tech))")
+function Base.summary(tech::TechnicalParams)
+    return "$(typeof(tech))"
 end
 
 function Base.summary(arc::Arc)
     return "$(get_name(get_from(arc))) -> $(get_name(get_to(arc))): ($(typeof(arc)))"
 end
-
-function Base.summary(io::IO, arc::Arc)
-    print(io, summary(arc))
-end
-
