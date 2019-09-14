@@ -37,11 +37,11 @@ const SKIP_PM_VALIDATION = false
 struct System <: PowerSystemType
     data::IS.SystemData
     basepower::Float64             # [MVA]
-	runchecks::Bool
+    runchecks::Bool
     internal::InfrastructureSystemsInternal
 
     function System(data, basepower, internal; kwargs...)
-		runchecks = get(kwargs, :runchecks, true)
+        runchecks = get(kwargs, :runchecks, true)
         sys = new(data, basepower, runchecks, internal)
     end
 end
@@ -169,8 +169,8 @@ end
 
 Serializes a system to a JSON string.
 """
-function to_json(sys::System)
-    return IS.to_json(sys)
+function to_json(sys::System, filename::AbstractString)
+    return IS.to_json(sys, filename)
 end
 
 """
@@ -200,20 +200,17 @@ Throws InvalidRange if any of the component's field values are outside of define
 range.
 """
 function add_component!(sys::System, component::T; kwargs...) where T <: Component
-    if Bus in fieldtypes(T)
-        name = get_name(get_bus(component))
-        bus = get_component(Bus, sys, name)
-        if isnothing(bus)
-            component_name = get_name(component)
-            throw(ArgumentError(
-                "$T $component_name has bus $name that is not stored in the system"
-            ))
-        end
+    if T <: Branch
+        arc = get_arc(component)
+        check_bus(sys, get_from(arc), arc)
+        check_bus(sys, get_to(arc), arc)
+    elseif Bus in fieldtypes(T)
+        check_bus(sys, get_bus(component), component)
     end
 
-	if sys.runchecks && !validate_struct(sys, component)
+    if sys.runchecks && !validate_struct(sys, component)
         throw(InvalidValue("Invalid value for $(component)"))
-	end
+    end
 
     IS.add_component!(sys.data, component; kwargs...)
 end
@@ -712,7 +709,7 @@ function get_forecasts_resolution(sys::System)
 end
 
 """
-	validate_struct(sys::System, value::PowerSystemType)
+    validate_struct(sys::System, value::PowerSystemType)
 
 Validates an instance of a PowerSystemType against System data.
 Returns true if the instance is valid.
@@ -722,7 +719,7 @@ InfrastructureSystems.validate_struct instead if the validation logic only requi
 contained within the instance.
 """
 function validate_struct(sys::System, value::PowerSystemType)::Bool
-	return true
+    return true
 end
 
 function check!(sys::System)
@@ -852,12 +849,14 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     return buses
 end
 
-function Base.summary(io::IO, sys::System)
-    # Shows the component/forecast types and counts in a table.
-    println(io, "System")
-    println(io, "======")
-    println(io, "Base Power: $(sys.basepower)\n")
-    Base.summary(io, sys.data)
+"""
+Throws ArgumentError if the bus is not stored in the system.
+"""
+function check_bus(sys::System, bus::Bus, component::Component)
+    name = get_name(bus)
+    if isnothing(get_component(Bus, sys, name))
+        throw(ArgumentError("$component has bus $name that is not stored in the system"))
+    end
 end
 
 function IS.compare_values(x::System, y::System)::Bool
