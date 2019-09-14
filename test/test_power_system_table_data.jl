@@ -1,7 +1,7 @@
 
 import PowerSystems: LazyDictFromIterator
 
-@testset "CDM parsing" begin
+@testset "PowerSystemTableData parsing" begin
     resolutions = (
         (resolution=Dates.Minute(5), len=288),
         (resolution=Dates.Minute(60), len=24),
@@ -15,12 +15,12 @@ import PowerSystems: LazyDictFromIterator
     end
 end
 
-@testset "CDM parsing invalid directory" begin
+@testset "PowerSystemTableData parsing invalid directory" begin
     baddir = abspath(joinpath(RTS_GMLC_DIR, "../../test"))
-    @test_throws ErrorException PowerSystemRaw(baddir, 100.0, DESCRIPTORS)
+    @test_throws ErrorException PowerSystemTableData(baddir, 100.0, DESCRIPTORS)
 end
 
-@testset "consistency between CDM and standardfiles" begin
+@testset "consistency between PowerSystemTableData and standardfiles" begin
     mpsys  = parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     cdmsys = create_rts_system()
 
