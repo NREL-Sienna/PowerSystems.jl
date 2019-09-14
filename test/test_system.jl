@@ -158,3 +158,9 @@ end
     remove_components!(typeof(gen), sys)
     @test_throws(IS.ArgumentError, remove_components!(typeof(gen), sys))
 end
+
+@testset "Test missing Arc bus" begin
+    sys = System(100)
+    line = Line(nothing)
+    @test_throws(IS.ArgumentError, add_component!(sys, line))
+end

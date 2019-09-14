@@ -200,15 +200,12 @@ Throws InvalidRange if any of the component's field values are outside of define
 range.
 """
 function add_component!(sys::System, component::T; kwargs...) where T <: Component
-    if Bus in fieldtypes(T)
-        name = get_name(get_bus(component))
-        bus = get_component(Bus, sys, name)
-        if isnothing(bus)
-            component_name = get_name(component)
-            throw(ArgumentError(
-                "$T $component_name has bus $name that is not stored in the system"
-            ))
-        end
+    if T <: Branch
+        arc = get_arc(component)
+        check_bus(sys, get_from(arc), arc)
+        check_bus(sys, get_to(arc), arc)
+    elseif Bus in fieldtypes(T)
+        check_bus(sys, get_bus(component), component)
     end
 
     if sys.runchecks && !validate_struct(sys, component)
@@ -850,6 +847,16 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     end
 
     return buses
+end
+
+"""
+Throws ArgumentError if the bus is not stored in the system.
+"""
+function check_bus(sys::System, bus::Bus, component::Component)
+    name = get_name(bus)
+    if isnothing(get_component(Bus, sys, name))
+        throw(ArgumentError("$component has bus $name that is not stored in the system"))
+    end
 end
 
 function IS.compare_values(x::System, y::System)::Bool
