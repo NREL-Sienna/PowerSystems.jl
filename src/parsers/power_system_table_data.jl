@@ -254,13 +254,13 @@ function System(data::PowerSystemTableData; forecast_resolution=nothing)
 
     bus_csv_parser!(sys, data)
     loadzone_csv_parser!(sys, data)
+    load_csv_parser!(sys, data)
 
     # Services and forecasts must be last.
     parsers = (
        (data.branch, branch_csv_parser!),
        (data.dcline, dc_branch_csv_parser!),
        (data.gen, gen_csv_parser!),
-       (data.load, load_csv_parser!),
        (data.services, services_csv_parser!),
     )
 
