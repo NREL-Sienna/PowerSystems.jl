@@ -67,11 +67,11 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[InfrastructureSystems]]
 deps = ["CSV", "DataFrames", "Dates", "InteractiveUtils", "JSON", "JSON2", "Logging", "Mustache", "Test", "TimeSeries", "UUIDs", "YAML"]
-git-tree-sha1 = "a158c7321542c878d9479a525ce7e136251ddaa2"
+git-tree-sha1 = "7a2ce69c2bddabb335565f47174b170ef2f3883d"
 repo-rev = "master"
 repo-url = "https://github.com/NREL/InfrastructureSystems.jl.git"
 uuid = "2cd47ed4-ca9b-11e9-27f2-ab636a7671f1"
-version = "0.1.0"
+version = "0.1.1"
 
 [[InteractiveUtils]]
 deps = ["Markdown"]
