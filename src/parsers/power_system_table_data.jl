@@ -641,6 +641,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     for i in 2:length(var_cost)
         var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
     end
+    fixed = var_cost[1][2]
+    var_cost[1] = (0.0, 0.0)
 
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
@@ -659,7 +661,6 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     )
 
     capacity = gen.active_power_limits_max
-    fixed = 0.0
     startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
     shutdown_cost = 0.0
     op_cost = ThreePartCost(
