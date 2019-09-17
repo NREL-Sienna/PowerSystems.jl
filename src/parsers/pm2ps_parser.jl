@@ -1,64 +1,27 @@
 
-MAPPING_BUSNUMBER2INDEX = Dict{Int64, Int64}()
-
 """
-Takes a dictionary parsed by PowerModels and returns a PowerSystems
-dictionary.  Currently Supports MATPOWER and PSSE data files parsed by
-PowerModels
+Converts a dictionary parsed by PowerModels to a System.
+Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 """
 function pm2ps_dict(data::Dict{String,Any}; kwargs...)
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
     end
-    ps_dict = Dict{String,Any}()
-    ps_dict["name"] = data["name"]
-    ps_dict["baseMVA"] = data["baseMVA"]
-    ps_dict["source_type"] = data["source_type"]
-    @info "Reading bus data"
-    Buses = read_bus(data)
-    if !isa(Buses,Nothing)
-         ps_dict["bus"] = Buses
-    else
-        @error "No bus data found" # TODO : need for a model without a bus
-    end
-    @info "Reading load data"
-    Loads= read_loads(data,ps_dict["bus"])
-    LoadZones= read_loadzones(data,ps_dict["bus"])
-    @info "Reading generator data"
-    Generators= read_gen(data, ps_dict["bus"]; kwargs...)
-    @info "Reading branch data"
-    Branches= read_branch(data,ps_dict["bus"])
-    Shunts = read_shunt(data,ps_dict["bus"])
-    DCLines= read_dcline(data,ps_dict["bus"])
 
-    ps_dict["load"] = Loads
-    if !isa(LoadZones,Nothing)
-        ps_dict["loadzone"] = LoadZones
-    else
-        @info "There are no Load Zones data in this file"
-    end
-    if !isa(Generators,Nothing)
-        ps_dict["gen"] = Generators
-    else
-        @error "There are no Generators in this file"
-    end
-    if !isa(Branches,Nothing)
-        ps_dict["branch"] = Branches
-    else
-        @info "There is no Branch data in this file"
-    end
-    if !isa(Shunts,Nothing)
-        ps_dict["shunt"] = Shunts
-    else
-        @info "There is no shunt data in this file"
-    end
-    if !isa(DCLines,Nothing)
-        ps_dict["dcline"] = DCLines
-    else
-        @info "There is no DClines data in this file"
-    end
+    @info "Constructing System from Power Models" data["name"] data["source_type"]
 
-    return ps_dict
+    sys = System(data["baseMVA"])
+
+    bus_number_to_bus = read_bus!(sys, data)
+    read_loads!(sys, data, bus_number_to_bus)
+    read_loadzones!(sys, data, bus_number_to_bus)
+    read_gen!(sys, data, bus_number_to_bus; kwargs...)
+    read_branch!(sys, data, bus_number_to_bus)
+    read_shunt!(sys, data, bus_number_to_bus)
+    read_dcline!(sys, data, bus_number_to_bus)
+
+    check!(sys)
+    return sys
 end
 
 
@@ -77,373 +40,500 @@ function make_bus(bus_dict::Dict{String,Any})
      return bus
  end
 
-"""
-Finds the bus dictionary where a Generator/Load is located or the from & to bus
-for a line/transformer
-"""
-function find_bus(Buses::Dict{Int64,Any},device_dict::Dict{String,Any})
-    if haskey(device_dict, "t_bus")
-        if haskey(device_dict, "f_bus")
-            t_bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["t_bus"])]]
-            f_bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["f_bus"])]]
-            value =(f_bus,t_bus)
-        end
-    elseif haskey(device_dict, "gen_bus")
-        bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["gen_bus"])]]
-        value =bus
-    elseif haskey(device_dict, "load_bus")
-        bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["load_bus"])]]
-        value =bus
-    elseif haskey(device_dict,"shunt_bus")
-        bus = Buses[MAPPING_BUSNUMBER2INDEX[Int(device_dict["shunt_bus"])]]
-        value =bus
-    else
-        throw(DataFormatError("Provided Dict missing key/s:  gen_bus or f_bus/t_bus or load_bus"))
-    end
-    return value
-end
-
-function make_bus(bus_name, d, bus_types)
-    bus = Dict{String,Any}("name" => bus_name ,
-                            "number" => MAPPING_BUSNUMBER2INDEX[d["bus_i"]],
+function make_bus(bus_name, bus_number, d, bus_types)
+    bus = make_bus(Dict{String,Any}("name" => bus_name ,
+                            "number" => bus_number,
                             "bustype" => bus_types[d["bus_type"]],
-                            "angle" => 0, # NOTE: angle 0, tuple(min, max)
+                            "angle" => d["va"],
                             "voltage" => d["vm"],
                             "voltagelimits" => (min=d["vmin"], max=d["vmax"]),
                             "basevoltage" => d["base_kv"]
-                            )
+                            ))
     return bus
 end
 
-function read_bus(data)
-    Buses = Dict{Int64,Any}()
-    bus_types = ["PV", "PQ", "SF","isolated"]
-    data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))    
+# "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
+@enum MatpowerBusType begin
+    MATPOWER_PQ = 1
+    MATPOWER_PV = 2
+    MATPOWER_REF = 3
+    MATPOWER_ISOLATED = 4
+end
+
+function Base.convert(::Type{BusType}, x::MatpowerBusType)
+    map = Dict(MATPOWER_ISOLATED => ISOLATED,
+               MATPOWER_PQ => PQ,
+               MATPOWER_PV => PV,
+               MATPOWER_REF => REF)
+    return map[x]
+end
+
+function read_bus!(sys::System, data)
+    @info "Reading bus data"
+    bus_number_to_bus = Dict{Int, Bus}()
+
+    bus_types = instances(MatpowerBusType)
+    data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))
+
+    if length(data) == 0
+        @error "No bus data found" # TODO : need for a model without a bus
+    end
+
     for (i, (d_key, d)) in enumerate(data)
         # d id the data dict for each bus
         # d_key is bus key
-        haskey(d,"bus_name") ? bus_name = d["bus_name"] : bus_name = string(d["bus_i"])
+        bus_name = haskey(d,"name") ? d["name"] : string(d["bus_i"])
         bus_number = Int(d["bus_i"])
-        MAPPING_BUSNUMBER2INDEX[bus_number] = i
-        Buses[MAPPING_BUSNUMBER2INDEX[bus_number]] =  make_bus(bus_name, d, bus_types)
+        bus = make_bus(bus_name, bus_number, d, bus_types)
+        bus_number_to_bus[bus.number] = bus
+        add_component!(sys, bus; skip_validation=SKIP_PM_VALIDATION)
     end
-    return Buses
+
+    return bus_number_to_bus
 end
 
-function make_load(d,bus)
-    load =Dict{String,Any}("name" => bus["name"],
-                            "available" => true,
-                            "bus" => make_bus(bus),
-                            "maxactivepower" => d["pd"],
-                            "maxreactivepower" => d["qd"],
-                            "scalingfactor" => TimeSeries.TimeArray(collect(Dates.DateTime(Dates.today()):Dates.Hour(1):Dates.DateTime(Dates.today()+Dates.Day(1))), ones(25))
-                            )
-    return load
+function make_load(d, bus)
+    return PowerLoad(;
+        name=bus.name,
+        available=true,
+        model = ConstantPower::LoadModel,
+        bus=bus,
+        activepower=d["pd"],
+        reactivepower=d["qd"],
+        maxactivepower=d["pd"],
+        maxreactivepower=d["qd"],
+    )
 end
 
-function read_loads(data,Buses)
-    if haskey(data,"load")
-        Loads = Dict{String,Any}() # Using least constrained Load
-        for d_key in keys(data["load"])
-            d = data["load"][d_key]
-            if d["pd"] != 0.0
-                # NOTE: access nodes using index i in case numbering of original data not sequential/consistent
-                bus = find_bus(Buses,d)
-                Loads[string(d["index"])] = make_load(d,bus)
+function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+    if !haskey(data, "load")
+        @error "There are no loads in this file"
+        return
+    end
+
+    for d_key in keys(data["load"])
+        d = data["load"][d_key]
+        if d["pd"] != 0.0
+            bus = bus_number_to_bus[d["load_bus"]]
+            load = make_load(d, bus)
+
+            add_component!(sys, load; skip_validation=SKIP_PM_VALIDATION)
+        end
+    end
+end
+
+function make_loadzones(d_key, d, bus_l, activepower, reactivepower)
+    return LoadZones(;
+        number=d["index"],
+        name=d_key,
+        buses=bus_l,
+        maxactivepower=sum(activepower),
+        maxreactivepower=sum(reactivepower),
+    )
+end
+
+function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+    if !haskey(data, "areas")
+        @info "There are no Load Zones data in this file"
+        return
+    end
+
+    for (d_key, d) in data["areas"]
+        buses = [bus_number_to_bus[b["bus_i"]] for (b_key, b) in data["bus"]
+                 if b["area"] == d["index"]]
+        bus_names = Set{String}()
+        for bus in buses
+            push!(bus_names, get_name(bus))
+        end
+
+        active_power = Vector{Float64}()
+        reactive_power = Vector{Float64}()
+
+        for (key, load) in data["load"]
+            load_bus = bus_number_to_bus[load["load_bus"]]
+            if get_name(load_bus) in bus_names
+                push!(active_power, load["pd"])
+                push!(reactive_power, load["qd"])
             end
         end
-        return Loads
-    else
-        @error "There are no loads in this file"
-    end
-end
 
-function make_loadzones(d_key,d,bus_l,activepower, reactivepower)
-    loadzone = Dict{String,Any}("number" => d["index"],
-                                "name" => d_key ,
-                                "buses" => bus_l,
-                                "maxactivepower" => sum(activepower),
-                                "maxreactivepower" => sum(reactivepower)
-                                )
-    return loadzone
-end
-
-function read_loadzones(data,Buses)
-    if haskey(data,"areas")
-        LoadZones = Dict{Int64,Any}()
-        for (d_key,d) in data["areas"]
-            b_array  = [MAPPING_BUSNUMBER2INDEX[b["bus_i"]] for (b_key, b) in data["bus"] if b["area"] == d["index"] ]
-            bus_l = [make_bus(Buses[Int(b_key)]) for b_key in b_array]
-            activepower  = [ l["pd"] for (l_key, l) in data["load"] if MAPPING_BUSNUMBER2INDEX[l["load_bus"]] in b_array ] #TODO: Fast Implementations
-            reactivepower  = [ l["qd"] for (l_key, l) in data["load"] if MAPPING_BUSNUMBER2INDEX[l["load_bus"]] in b_array]
-            LoadZones[d["index"]] = make_loadzones(d_key,d,bus_l,activepower, reactivepower)
-        end
-        return LoadZones
-    else
-        return nothing
+        load_zones = make_loadzones(d_key, d, buses, active_power, reactive_power)
+        add_component!(sys, load_zones; skip_validation=SKIP_PM_VALIDATION)
     end
 end
 
 function make_hydro_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
-    hydro =  Dict{String,Any}("name" => gen_name,
-                            "available" => d["gen_status"], # change from staus to available
-                            "bus" => make_bus(bus),
-                            "tech" => Dict{String,Any}( "installedcapacity" => float(d["pmax"]),
-                                                        "activepower" => d["pg"],
-                                                        "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
-                                                        "reactivepower" => d["qg"],
-                                                        "reactivepowerlimits" => (min=d["qmin"], max=d["qmax"]),
-                                                        "ramplimits" => (up=ramp_agc/d["mbase"],down=ramp_agc/d["mbase"]),
-                                                        "timelimits" => nothing),
-                            "econ" => Dict{String,Any}("curtailcost" => 0.0,
-                                                        "interruptioncost" => nothing),
-                            "scalingfactor" => TimeSeries.TimeArray(collect(Dates.DateTime(Dates.today()):Dates.Hour(1):Dates.DateTime(Dates.today()+Dates.Day(1))), ones(25))
-                            )
-    return hydro
+    tech = TechHydro(;
+        rating=calculate_rating(d["pmax"], d["qmax"]),
+        primemover=convert(PrimeMovers, d["type"]),
+        activepowerlimits=(min=d["pmin"], max=d["pmax"]),
+        reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
+        ramplimits=(up=ramp_agc / d["mbase"], down=ramp_agc / d["mbase"]),
+        timelimits=nothing,
+    )
+
+    curtailcost = TwoPartCost(0.0, 0.0)
+
+    return HydroDispatch(name = gen_name,
+                         available = Bool(d["gen_status"]),
+                         bus = bus,
+                         activepower = d["pg"],
+                         reactivepower = d["qg"],
+                         tech = tech,
+                         op_cost = curtailcost)
 end
 
-function make_ren_gen(gen_name, d, bus)
-    gen_re = Dict{String,Any}("name" => gen_name,
-                    "available" => d["gen_status"], # change from staus to available
-                    "bus" => make_bus(bus),
-                    "tech" => Dict{String,Any}("installedcapacity" => float(d["pmax"]),
-                                                "reactivepowerlimits" => (min=d["pmin"], max=d["pmax"]),
-                                                "powerfactor" => 1),
-                    "econ" => Dict{String,Any}("curtailcost" => 0.0,
-                                                "interruptioncost" => nothing),
-                    "scalingfactor" => TimeSeries.TimeArray(collect(Dates.DateTime(Dates.today()):Dates.Hour(1):Dates.DateTime(Dates.today()+Dates.Day(1))), ones(25))
-                    )
-    return gen_re
+function make_tech_renewable(d)
+    tech = TechRenewable(;
+        rating=float(d["pmax"]),
+        primemover=convert(PrimeMovers, d["type"]),
+        reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
+        powerfactor=1.0,
+    )
+
+    return tech
 end
 
-function make_thermal_gen(gen_name, d, bus)
-    if haskey(d,"model")
+function make_renewable_dispatch(gen_name, d, bus)
+    tech = make_tech_renewable(d)
+    cost = TwoPartCost(0.0, 0.0)
+    generator = RenewableDispatch(;
+        name=gen_name,
+        available=Bool(d["gen_status"]),
+        bus=bus,
+        activepower = d["pg"],
+        reactivepower = d["qg"],
+        tech=tech,
+        op_cost=cost,
+    )
+
+    return generator
+end
+
+function make_renewable_fix(gen_name, d, bus)
+    tech = make_tech_renewable(d)
+    generator = RenewableFix(;
+        name=gen_name,
+        available=Bool(d["gen_status"]),
+        bus=bus,
+        activepower = d["pg"],
+        reactivepower = d["qg"],
+        tech=tech,
+    )
+
+    return generator
+end
+
+function make_generic_battery(gen_name, d, bus)
+
+    # TODO: placeholder
+    #battery=GenericBattery(;
+    #    name=gen_name,
+    #    available=Bool(d["gen_status"]),
+    #    bus=bus,
+    #    energy=,
+    #    capacity=,
+    #    rating=,
+    #    activepower=,
+    #    inputactivepowerlimits=,
+    #    outputactivepowerlimits=,
+    #    efficiency=,
+    #    reactivepower=,
+    #    reactivepowerlimits=,
+    #)
+    #return battery
+end
+
+"""
+The polynomial term follows the convention that for an n-degree polynomial, at least n + 1 components are needed.
+    c(p) = c_n*p^n+...+c_1p+c_0
+    c_o is stored in the  field in of the Econ Struct
+"""
+function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
+    if haskey(d, "model")
         model = GeneratorCostModel(d["model"])
         if model == PIECEWISE_LINEAR::GeneratorCostModel
             cost_component = d["cost"]
             power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
-            cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]./power_p
+            cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]
             cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
-            fixedcost = cost[1][2]
+            fixed = cost[1][2]
         elseif model == POLYNOMIAL::GeneratorCostModel
             if d["ncost"] == 0
-                cost = x-> 0
+                cost = (0.0, 0.0)
+                fixed = 0.0
             elseif d["ncost"] == 1
-                cost = x-> d["cost"][1]
+                cost = (0.0, 0.0)
+                fixed = d["cost"][1]
             elseif d["ncost"] == 2
-                cost = x-> d["cost"][1]*x + d["cost"][2]
+                cost = (0.0, d["cost"][1])
+                fixed = d["cost"][2]
             elseif d["ncost"] == 3
-                cost = x-> d["cost"][1]*x^2 + d["cost"][2]*x + d["cost"][3]
-            elseif d["ncost"] == 4
-                cost = x-> d["cost"][1]*x^3 + d["cost"][2]*x^2 + d["cost"][3]*x + d["cost"][4]
+                cost = (d["cost"][1], d["cost"][2])
+                fixed = d["cost"][3]
             else
-                throw(DataFormatError("invalid value for ncost: $(d["ncost"])"))
+                throw(DataFormatError("invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree"))
             end
-
-            # TODO: Reviewers:  Is this correct?
-            fixedcost = cost(d["pmin"])
         end
-        startupcost = d["startup"]
-        shutdncost = d["shutdown"]
+        startup = d["startup"]
+        shutdn = d["shutdown"]
     else
         @warn "Generator cost data not included for Generator: $gen_name"
-        tmpcost = EconThermal()
-        cost = tmpcost.variablecost
-        fixedcost = tmpcost.fixedcost
-        startupcost = tmpcost.startupcost
-        shutdncost = tmpcost.shutdncost
+        tmpcost = ThreePartCost(nothing)
+        cost = tmpcost.variable
+        fixed = tmpcost.fixed
+        startup = tmpcost.startup
+        shutdn = tmpcost.shutdn
     end
 
     # TODO GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
-    thermal_gen = Dict{String,Any}("name" => gen_name,
-                                    "available" => d["gen_status"],
-                                    "bus" => make_bus(bus),
-                                    "tech" => Dict{String,Any}("activepower" => d["pg"],
-                                                                "activepowerlimits" => (min=d["pmin"], max=d["pmax"]),
-                                                                "reactivepower" => d["qg"],
-                                                                "reactivepowerlimits" => (min=d["qmin"], max=d["qmax"]),
-                                                                "ramplimits" => (up=ramp_agc/d["mbase"], down=ramp_agc/d["mbase"]),
-                                                                "timelimits" => nothing),
-                                    "econ" => Dict{String,Any}("capacity" => d["pmax"],
-                                                                "variablecost" => cost,
-                                                                "fixedcost" => fixedcost,
-                                                                "startupcost" => startupcost,
-                                                                "shutdncost" => shutdncost,
-                                                                "annualcapacityfactor" => nothing)
-                                    )
+
+    tech = TechThermal(;
+        rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
+        primemover = convert(PrimeMovers, d["type"]),
+        fuel = convert(ThermalFuels, d["fuel"]),
+        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
+        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
+        ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
+        timelimits = nothing,
+    )
+    op_cost = ThreePartCost(;
+        variable=cost,
+        fixed=fixed,
+        startup=startup,
+        shutdn=shutdn,
+    )
+
+    thermal_gen = ThermalStandard(
+        name=gen_name,
+        available=Bool(d["gen_status"]),
+        bus=bus,
+        activepower = d["pg"],
+        reactivepower = d["qg"],
+        tech=tech,
+        op_cost=op_cost,
+    )
+
     return thermal_gen
 end
 
 """
 Transfer generators to ps_dict according to their classification
 """
-function read_gen(data, Buses; kwargs...)
+function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+    @info "Reading generator data"
 
-    if :genmap_file in keys(kwargs)
-        genmap_file = kwargs[:genmap_file]
-    else # use default generator mapping config file
-        genmap_file = joinpath(dirname(dirname(pathof(PowerSystems))),
-                               "src/parsers/generator_mapping.yaml")
-    end
-    genmap_dict = open(genmap_file) do file
-        YAML.load(file)
-    end
-    
-    generators = Dict{String,Any}()
-    generators["Thermal"] = Dict{String,Any}()
-    generators["Hydro"] = Dict{String,Any}()
-    generators["Renewable"] = Dict{String,Any}()
-    generators["Renewable"]["PV"]= Dict{String,Any}()
-    generators["Renewable"]["RTPV"]= Dict{String,Any}()
-    generators["Renewable"]["WIND"]= Dict{String,Any}()
-    generators["Storage"] = Dict{String,Any}() # not currently used? JJS 3/13/19
-    
     if !haskey(data, "gen")
+        @error "There are no Generators in this file"
         return nothing
     end
-    
-    fuel = []
-    gen_name =[]
-    type_gen =[]
-    for (d_key,d) in data["gen"]
 
-        fuel = uppercase(get(d, "fuel", "generic"))
-        type_gen = uppercase(get(d, "type", "generic"))
-        if haskey(d, "name")
-            gen_name = d["name"]
-        elseif haskey(d, "source_id")
-            gen_name = strip(string(d["source_id"][1])*"-"*d["source_id"][2])
+    genmap_file = get(kwargs, :genmap_file, nothing)
+    genmap = get_generator_mapping(genmap_file)
+
+    for (name, pm_gen) in data["gen"]
+        if haskey(pm_gen, "name")
+            gen_name = pm_gen["name"]
+        elseif haskey(pm_gen, "source_id")
+            gen_name = strip(string(pm_gen["source_id"][1]) * "-" * string(pm_gen["source_id"][2]) * "-" * name)
         else
-            gen_name = d_key
-        end
-        
-        bus = find_bus(Buses, d)
-
-        assigned = false 
-        for (rkey, rval) in generators["Renewable"]
-            fuelkeys = genmap_dict[rkey]["fuel"]
-            typekeys = genmap_dict[rkey]["type"]
-            if fuel in fuelkeys && type_gen in typekeys
-                generators["Renewable"][rkey][gen_name] = make_ren_gen(gen_name, d, bus)
-                assigned = true
-                break
-            end
-        end
-        if !assigned
-            fuelkeys = genmap_dict["Hydro"]["fuel"]
-            typekeys = genmap_dict["Hydro"]["type"]
-            if fuel in fuelkeys && type_gen in typekeys
-                generators["Hydro"][gen_name] = make_hydro_gen(gen_name, d, bus)
-                assigned = true
-            end
-        end
-        if !assigned
-            # default to Thermal type if not already assigned
-            generators["Thermal"][gen_name] = make_thermal_gen(gen_name, d, bus)
+            gen_name = name
         end
 
-    end # for (d_key,d) in data["gen"]
+        bus = bus_number_to_bus[pm_gen["gen_bus"]]
+        pm_gen["fuel"] = get(pm_gen, "fuel", "OTHER")
+        pm_gen["type"] = get(pm_gen, "type", "OT")
+        @debug "Found generator" gen_name bus pm_gen["fuel"] pm_gen["type"]
 
-    return generators
-end
-
-function make_transformer(b_name, d, bus_f, bus_t)
-    trans = Dict{String,Any}("name" => b_name,
-                            "available" => Bool(d["br_status"]),
-                            "connectionpoints" => (from=make_bus(bus_f),to=make_bus(bus_t)),
-                            "r" => d["br_r"],
-                            "x" => d["br_x"],
-                            "primaryshunt" => d["b_fr"] ,  #TODO: which b ??
-                            "tap" => d["tap"],
-                            "rate" => d["rate_a"],
-                            "α" => d["shift"]
-                            )
-    return trans
-end
-
-function make_lines(b_name, d, bus_f, bus_t)
-    line = Dict{String,Any}("name" => b_name,
-                            "available" => Bool(d["br_status"]),
-                            "connectionpoints" => (from=make_bus(bus_f),to=make_bus(bus_t)),
-                            "r" => d["br_r"],
-                            "x" => d["br_x"],
-                            "b" => (from=d["b_fr"],to=d["b_to"]),
-                            "rate" =>  d["rate_a"],
-                            "anglelimits" => (min=rad2deg(d["angmin"]),max =rad2deg(d["angmax"]))
-                            )
-    return line
-end
-
-function read_branch(data,Buses)
-    Branches = Dict{String,Any}()
-    Branches["Transformers"] = Dict{String,Any}()
-    Branches["Lines"] = Dict{String,Any}()
-    if haskey(data,"branch")
-        b_name = []
-        for (d_key,d) in data["branch"]
-            haskey(d,"name") ? b_name = d["name"] : b_name = d_key
-            (bus_f,bus_t) = find_bus(Buses,d)
-            if d["transformer"]  #TODO : 3W Transformer
-                Branches["Transformers"][b_name] = make_transformer(b_name, d, bus_f, bus_t)
-            else
-                Branches["Lines"][b_name] = make_lines(b_name, d, bus_f, bus_t)
-            end
+        gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], genmap)
+        if gen_type == ThermalStandard
+            generator = make_thermal_gen(gen_name, pm_gen, bus)
+        elseif gen_type == HydroDispatch
+            generator = make_hydro_gen(gen_name, pm_gen, bus)
+        elseif gen_type == RenewableDispatch
+            generator = make_renewable_dispatch(gen_name, pm_gen, bus)
+        elseif gen_type == RenewableFix
+            generator = make_renewable_fix(gen_name, pm_gen, bus)
+        elseif gen_type == GenericBattery
+            @warn "Skipping GenericBattery"
+            continue
+            # TODO
+            #generator = make_generic_battery(gen_name, pm_gen, bus)
+        else
+            @error "Skipping unsupported generator" gen_type
+            continue
         end
-        return Branches
-    else
-        return nothing
+
+        add_component!(sys, generator; skip_validation=SKIP_PM_VALIDATION)
     end
 end
 
-function make_dcline(l_name, d, bus_f, bus_t)
-    dcline = Dict{String,Any}("name" => l_name,
-                            "available" =>d["br_status"] ,
-                            "connectionpoints" => (from = make_bus(bus_f),to = make_bus(bus_t) ) ,
-                            "activepowerlimits_from" => (min= d["pminf"] , max = d["pmaxf"]) ,
-                            "activepowerlimits_to" => (min= d["pmint"] , max =d["pmaxt"] ) ,
-                            "reactivepowerlimits_from" =>  (min= d["qminf"], max =d["qmaxf"] ),
-                            "reactivepowerlimits_to" =>  (min=d["qmint"] , max =d["qmaxt"] ),
-                            "loss" =>  (l0=d["loss0"] , l1 =d["loss1"] )
-                            )
-    return dcline
+function make_branch(name, d, bus_f, bus_t)
+    primary_shunt = d["b_fr"]
+    alpha = d["shift"]
+    branch_type = get_branch_type(d["tap"], alpha)
+
+    if d["transformer"]
+        if branch_type == Line
+            throw(DataFormatError("Data is mismatched; this cannot be a line. $d"))
+        elseif branch_type == Transformer2W
+            value = make_transformer_2w(name, d, bus_f, bus_t)
+        elseif branch_type == TapTransformer
+            value = make_tap_transformer(name, d, bus_f, bus_t)
+        elseif branch_type == PhaseShiftingTransformer
+            value = make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
+        else
+            error("Unsupported branch type $branch_type")
+        end
+    else
+        # The get_branch_type() logic doesn't work for this data.
+        # tap can be 1.0 for this data.
+        value = make_line(name, d, bus_f, bus_t)
+    end
+
+    return value
 end
 
-function read_dcline(data,Buses)
-    DCLines = Dict{String,Any}()
-    if haskey(data,"dcline")
-        for (d_key,d) in data["dcline"]
-            haskey(d,"name") ? l_name =d["name"] : l_name = d_key
-            (bus_f,bus_t) = find_bus(Buses,d)
-            DCLines[l_name] = make_dcline(l_name, d, bus_f, bus_t)
-        end
-        return DCLines
-    else
-        return nothing
+function make_line(name, d, bus_f, bus_t)
+    pf = get(d,"pf", 0.0)
+    qf = get(d,"qf", 0.0)
+
+    return Line(;
+        name=name,
+        available=Bool(d["br_status"]),
+        activepower_flow = pf,
+        reactivepower_flow = qf,
+        arc=Arc(bus_f, bus_t),
+        r=d["br_r"],
+        x=d["br_x"],
+        b=(from=d["b_fr"], to=d["b_to"]),
+        rate=d["rate_a"],
+        anglelimits=(min=d["angmin"], max=d["angmax"]),
+    )
+end
+
+function make_transformer_2w(name, d, bus_f, bus_t)
+    pf = get(d,"pf", 0.0)
+    qf = get(d,"qf", 0.0)
+    return Transformer2W(;
+        name=name,
+        available=Bool(d["br_status"]),
+        activepower_flow = pf,
+        reactivepower_flow = qf,
+        arc=Arc(bus_f, bus_t),
+        r=d["br_r"],
+        x=d["br_x"],
+        primaryshunt=d["b_fr"],  # TODO: which b ??
+        rate=d["rate_a"],
+    )
+end
+
+function make_tap_transformer(name, d, bus_f, bus_t)
+    pf = get(d,"pf", 0.0)
+    qf = get(d,"qf", 0.0)
+    return TapTransformer(;
+        name=name,
+        available=Bool(d["br_status"]),
+        activepower_flow = pf,
+        reactivepower_flow = qf,
+        arc=Arc(bus_f, bus_t),
+        r=d["br_r"],
+        x=d["br_x"],
+        tap=d["tap"],
+        primaryshunt=d["b_fr"],  # TODO: which b ??
+        rate=d["rate_a"],
+    )
+end
+
+function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
+    pf = get(d,"pf", 0.0)
+    qf = get(d,"qf", 0.0)
+    return PhaseShiftingTransformer(;
+        name=name,
+        available=Bool(d["br_status"]),
+        activepower_flow = pf,
+        reactivepower_flow = qf,
+        arc=Arc(bus_f, bus_t),
+        r=d["br_r"],
+        x=d["br_x"],
+        tap=d["tap"],
+        primaryshunt=d["b_fr"],  # TODO: which b ??
+        α=alpha,
+        rate=d["rate_a"],
+    )
+end
+
+function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+    @info "Reading branch data"
+    if !haskey(data, "branch")
+        @info "There is no Branch data in this file"
+        return
+    end
+
+    for (d_key, d) in data["branch"]
+        name = get(d, "name", d_key)
+        bus_f = bus_number_to_bus[d["f_bus"]]
+        bus_t = bus_number_to_bus[d["t_bus"]]
+        value = make_branch(name, d, bus_f, bus_t)
+
+        add_component!(sys, value; skip_validation=SKIP_PM_VALIDATION)
     end
 end
 
-function make_shunt(s_name, d, bus)
-    shunt = Dict{String,Any}("name" => s_name,
-                            "available" => d["status"],
-                            "bus" => make_bus(bus),
-                            "Y" => (-d["gs"] + d["bs"]im)
-                            )
-    return shunt
+function make_dcline(name, d, bus_f, bus_t)
+    return HVDCLine(;
+        name=name,
+        available=Bool(d["br_status"]),
+        activepower_flow = get(d,"pf", 0.0),
+        arc=Arc(bus_f, bus_t),
+        activepowerlimits_from=(min=d["pminf"] , max=d["pmaxf"]),
+        activepowerlimits_to=(min=d["pmint"], max=d["pmaxt"]),
+        reactivepowerlimits_from=(min=d["qminf"], max=d["qmaxf"]),
+        reactivepowerlimits_to=(min=d["qmint"], max=d["qmaxt"]),
+        loss=(l0=d["loss0"], l1 =d["loss1"]),
+    )
 end
 
-function read_shunt(data,Buses)
-    Shunts = Dict{String,Any}()
-    if haskey(data,"shunt")
-        s_name =[]
-        for (d_key,d) in data["shunt"]
-            haskey(d,"name") ? s_name =d["name"] : s_name = d_key
-            bus = find_bus(Buses,d)
-            Shunts[s_name] = make_shunt(s_name, d, bus)
-        end
-        return Shunts
-    else
-        return nothing
+function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+    @info "Reading DC Line data"
+    if !haskey(data,"dcline")
+        @info "There is no DClines data in this file"
+        return
+    end
+
+    for (d_key, d) in data["dcline"]
+        name = get(d, "name", d_key)
+        bus_f = bus_number_to_bus[d["f_bus"]]
+        bus_t = bus_number_to_bus[d["t_bus"]]
+
+        dcline = make_dcline(name, d, bus_f, bus_t)
+        add_component!(sys, dcline, skip_validation=SKIP_PM_VALIDATION)
+    end
+end
+
+function make_shunt(name, d, bus)
+    return FixedAdmittance(;
+        name=name,
+        available=Bool(d["status"]),
+        bus=bus,
+        Y=(-d["gs"] + d["bs"]im),
+    )
+end
+
+function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+    @info "Reading branch data"
+    if !haskey(data,"shunt")
+        @info "There is no shunt data in this file"
+        return
+    end
+
+    for (d_key,d) in data["shunt"]
+        name = get(d, "name", d_key)
+        bus = bus_number_to_bus[d["shunt_bus"]]
+        shunt = make_shunt(name, d, bus)
+
+        add_component!(sys, shunt; skip_validation=SKIP_PM_VALIDATION)
     end
 end

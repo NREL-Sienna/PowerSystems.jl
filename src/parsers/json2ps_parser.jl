@@ -54,7 +54,7 @@ function gen_json_parser(dict::Dict{String,Any})
     for (gen_type_key,gen_type_dict) in dict
         if gen_type_key =="Thermal"
             for (thermal_key,thermal_dict) in gen_type_dict
-                push!(Generators,ThermalDispatch(thermal_dict["name"],
+                push!(Generators,ThermalStandard(thermal_dict["name"],
                                                             thermal_dict["available"],
                                                             Bus(thermal_dict["bus"]["number"],
                                                                             thermal_dict["bus"]["name"],
@@ -69,17 +69,15 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                         (min =thermal_dict["tech"]["reactivepowerlimits"]["min"],max =thermal_dict["tech"]["reactivepowerlimits"]["min"]),
                                                                         (up=thermal_dict["tech"]["ramplimits"]["up"],down=thermal_dict["tech"]["ramplimits"]["down"]),
                                                                         (up=thermal_dict["tech"]["timelimits"]["up"],down=thermal_dict["tech"]["timelimits"]["down"])),
-                                                            EconThermal(thermal_dict["econ"]["capacity"],
-                                                                        json_var_cost(thermal_dict["econ"]["variablecost"]),
-                                                                        thermal_dict["econ"]["fixedcost"],
-                                                                        thermal_dict["econ"]["startupcost"],
-                                                                        thermal_dict["econ"]["shutdncost"],
-                                                                        thermal_dict["econ"]["annualcapacityfactor"])
+                                                            ThreePartCost(json_var_cost(thermal_dict["econ"]["variable"]),
+                                                                          thermal_dict["econ"]["fixedcost"],
+                                                                          thermal_dict["econ"]["startup"],
+                                                                          thermal_dict["econ"]["shutdn"])
                             ))
             end
         elseif gen_type_key =="Hydro"
             for (hydro_key,hydro_dict) in gen_type_dict
-                push!(Generators,HydroCurtailment(hydro_dict["name"],
+                push!(Generators,HydroDispatch(hydro_dict["name"],
                                                             hydro_dict["available"],
                                                             Bus(hydro_dict["bus"]["number"],
                                                                             hydro_dict["bus"]["name"],
@@ -88,7 +86,7 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                             hydro_dict["bus"]["voltage"],
                                                                             (min =hydro_dict["bus"]["voltagelimits"]["min"],max=hydro_dict["bus"]["voltagelimits"]["max"]),
                                                                             hydro_dict["bus"]["basevoltage"] ),
-                                                            TechHydro(  hydro_dict["tech"]["installedcapacity"],
+                                                            TechHydro(  hydro_dict["tech"]["rating"],
                                                                         hydro_dict["tech"]["activepower"],
                                                                         (min =hydro_dict["tech"]["activepowerlimits"]["min"],max =hydro_dict["tech"]["activepowerlimits"]["max"]),
                                                                         hydro_dict["tech"]["reactivepower"],
@@ -103,7 +101,7 @@ function gen_json_parser(dict::Dict{String,Any})
             for (ren_key,ren_dict) in  gen_type_dict
                 if ren_key == "PV"
                     for (pv_key,pv_dict) in ren_dict
-                        push!(Generators,RenewableCurtailment(pv_dict["name"],
+                        push!(Generators,RenewableDispatch(pv_dict["name"],
                                                                     pv_dict["available"],
                                                                     Bus(pv_dict["bus"]["number"],
                                                                             pv_dict["bus"]["name"],
@@ -112,8 +110,8 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                             pv_dict["bus"]["voltage"],
                                                                             (min =pv_dict["bus"]["voltagelimits"]["min"],max=pv_dict["bus"]["voltagelimits"]["max"]),
                                                                             pv_dict["bus"]["basevoltage"] ),
-                                                                    pv_dict["tech"]["installedcapacity"],
-                                                                    EconRenewable(pv_dict["econ"]["curtailcost"],
+                                                                    pv_dict["tech"]["rating"],
+                                                                    TwoPartCost(pv_dict["econ"]["curtailcost"],
                                                                                 pv_dict["econ"]["interruptioncost"]),
                                                                     dict_to_timearray(pv_dict["scalingfactor"])
                                     ))
@@ -129,13 +127,13 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                             rtpv_dict["bus"]["voltage"],
                                                                             (min =rtpv_dict["bus"]["voltagelimits"]["min"],max=rtpv_dict["bus"]["voltagelimits"]["max"]),
                                                                             rtpv_dict["bus"]["basevoltage"] ),
-                                                                    rtpv_dict["tech"]["installedcapacity"],
+                                                                    rtpv_dict["tech"]["rating"],
                                                                     dict_to_timearray(rtpv_dict["scalingfactor"])
                                     ))
                     end
                 elseif ren_key == "WIND"
                     for (wind_key,wind_dict) in ren_dict
-                        push!(Generators,RenewableCurtailment(wind_dict["name"],
+                        push!(Generators,RenewableDispatch(wind_dict["name"],
                                                                     wind_dict["available"],
                                                                     Bus(wind_dict["bus"]["number"],
                                                                             wind_dict["bus"]["name"],
@@ -144,8 +142,8 @@ function gen_json_parser(dict::Dict{String,Any})
                                                                             wind_dict["bus"]["voltage"],
                                                                             (min =wind_dict["bus"]["voltagelimits"]["min"],max=wind_dict["bus"]["voltagelimits"]["max"]),
                                                                             wind_dict["bus"]["basevoltage"] ),
-                                                                    wind_dict["tech"]["installedcapacity"],
-                                                                    EconRenewable(wind_dict["econ"]["curtailcost"],
+                                                                    wind_dict["tech"]["rating"],
+                                                                    TwoPartCost(wind_dict["econ"]["curtailcost"],
                                                                                 wind_dict["econ"]["interruptioncost"]),
                                                                     dict_to_timearray(wind_dict["scalingfactor"])
                                     ))
@@ -184,20 +182,20 @@ function branch_json_parser(dict)
     for (branch_key,branch_dict) in dict
         if branch_key == "Transformers"
             for (trans_key,trans_dict) in branch_dict
-                bus_f =Bus(trans_dict["connectionpoints"]["from"]["number"],
-                                        trans_dict["connectionpoints"]["from"]["name"],
-                                        trans_dict["connectionpoints"]["from"]["bustype"],
-                                        trans_dict["connectionpoints"]["from"]["angle"],
-                                        trans_dict["connectionpoints"]["from"]["voltage"],
-                                        (min =trans_dict["connectionpoints"]["from"]["voltagelimits"]["min"],max=trans_dict["connectionpoints"]["from"]["voltagelimits"]["max"]),
-                                        trans_dict["connectionpoints"]["from"]["basevoltage"] )
-                bus_t =Bus(trans_dict["connectionpoints"]["to"]["number"],
-                                        trans_dict["connectionpoints"]["to"]["name"],
-                                        trans_dict["connectionpoints"]["to"]["bustype"],
-                                        trans_dict["connectionpoints"]["to"]["angle"],
-                                        trans_dict["connectionpoints"]["to"]["voltage"],
-                                        (min =trans_dict["connectionpoints"]["to"]["voltagelimits"]["min"],max=trans_dict["connectionpoints"]["to"]["voltagelimits"]["max"]),
-                                        trans_dict["connectionpoints"]["to"]["basevoltage"] )
+                bus_f =Bus(trans_dict["arc"]["from"]["number"],
+                                        trans_dict["arc"]["from"]["name"],
+                                        trans_dict["arc"]["from"]["bustype"],
+                                        trans_dict["arc"]["from"]["angle"],
+                                        trans_dict["arc"]["from"]["voltage"],
+                                        (min =trans_dict["arc"]["from"]["voltagelimits"]["min"],max=trans_dict["arc"]["from"]["voltagelimits"]["max"]),
+                                        trans_dict["arc"]["from"]["basevoltage"] )
+                bus_t =Bus(trans_dict["arc"]["to"]["number"],
+                                        trans_dict["arc"]["to"]["name"],
+                                        trans_dict["arc"]["to"]["bustype"],
+                                        trans_dict["arc"]["to"]["angle"],
+                                        trans_dict["arc"]["to"]["voltage"],
+                                        (min =trans_dict["arc"]["to"]["voltagelimits"]["min"],max=trans_dict["arc"]["to"]["voltagelimits"]["max"]),
+                                        trans_dict["arc"]["to"]["basevoltage"] )
                 if trans_dict["tap"] ==1.0
                     push!(Branches,Transformer2W(trans_dict["name"],
                                                 trans_dict["available"],
@@ -221,20 +219,20 @@ function branch_json_parser(dict)
             end
         elseif branch_key == "Lines"
             for (line_key,line_dict) in branch_dict
-                bus_t =Bus(line_dict["connectionpoints"]["to"]["number"],
-                                        line_dict["connectionpoints"]["to"]["name"],
-                                        line_dict["connectionpoints"]["to"]["bustype"],
-                                        line_dict["connectionpoints"]["to"]["angle"],
-                                        line_dict["connectionpoints"]["to"]["voltage"],
-                                        (min =line_dict["connectionpoints"]["to"]["voltagelimits"]["min"],max=line_dict["connectionpoints"]["to"]["voltagelimits"]["max"]),
-                                        line_dict["connectionpoints"]["to"]["basevoltage"] )
-                bus_f =Bus(line_dict["connectionpoints"]["from"]["number"],
-                                        line_dict["connectionpoints"]["from"]["name"],
-                                        line_dict["connectionpoints"]["from"]["bustype"],
-                                        line_dict["connectionpoints"]["from"]["angle"],
-                                        line_dict["connectionpoints"]["from"]["voltage"],
-                                        (min =line_dict["connectionpoints"]["from"]["voltagelimits"]["min"],max=line_dict["connectionpoints"]["from"]["voltagelimits"]["max"]),
-                                        line_dict["connectionpoints"]["from"]["basevoltage"] )
+                bus_t =Bus(line_dict["arc"]["to"]["number"],
+                                        line_dict["arc"]["to"]["name"],
+                                        line_dict["arc"]["to"]["bustype"],
+                                        line_dict["arc"]["to"]["angle"],
+                                        line_dict["arc"]["to"]["voltage"],
+                                        (min =line_dict["arc"]["to"]["voltagelimits"]["min"],max=line_dict["arc"]["to"]["voltagelimits"]["max"]),
+                                        line_dict["arc"]["to"]["basevoltage"] )
+                bus_f =Bus(line_dict["arc"]["from"]["number"],
+                                        line_dict["arc"]["from"]["name"],
+                                        line_dict["arc"]["from"]["bustype"],
+                                        line_dict["arc"]["from"]["angle"],
+                                        line_dict["arc"]["from"]["voltage"],
+                                        (min =line_dict["arc"]["from"]["voltagelimits"]["min"],max=line_dict["arc"]["from"]["voltagelimits"]["max"]),
+                                        line_dict["arc"]["from"]["basevoltage"] )
                 push!(Branches,Line(line_dict["name"],
                                     line_dict["available"],
                                     (from = bus_f, to = bus_t),
@@ -274,7 +272,7 @@ end
 
 # Write dict to json file
 function dict_to_json(dict,filename)
-    stringdata =JSON.json(dict, 3)
+    stringdata =JSON2.write(dict)
     open("$filename.json", "w") do f
         write(f, stringdata)
     end
@@ -288,7 +286,7 @@ function json_parser(filename)
         open("../data/CDM/RTS/JSON/RTS-GMLC_Test_Case.json", "r") do f
         global temp
         dicttxt = readstring(f)  # file information to string
-        temp = JSON.parse(dicttxt)  # parse and transform data
+        temp = JSON2.read(dicttxt, Dict{Any,Array{Dict}})  # parse and transform data
         data = temp
         end
     else

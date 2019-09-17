@@ -2,7 +2,12 @@ using Test
 using Logging
 using Dates
 
+import InfrastructureSystems
+import InfrastructureSystems: Deterministic, Probabilistic, ScenarioBased, Forecast
+const IS = InfrastructureSystems
 using PowerSystems
+import PowerSystems: PowerSystemTableData
+const PSY = PowerSystems
 
 
 BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
@@ -21,6 +26,8 @@ LOG_LEVELS = Dict(
     "Warn" => Logging.Warn,
     "Error" => Logging.Error,
 )
+
+include("common.jl")
 
 
 """
@@ -48,7 +55,10 @@ macro includetests(testarg...)
         rootfile = @__FILE__
         if length(tests) == 0
             tests = readdir(dirname(rootfile))
-            tests = filter(f->endswith(f, ".jl") && f != basename(rootfile), tests)
+            tests = filter(f -> startswith(f, "test_") &&
+                                endswith(f, ".jl") &&
+                                f != basename(rootfile),
+                           tests)
         else
             tests = map(f->string(f, ".jl"), tests)
         end
@@ -76,10 +86,10 @@ function run_tests()
     console_logger = ConsoleLogger(stderr, console_level)
     file_level = get_logging_level("PS_LOG_LEVEL", "Info")
 
-    open_file_logger(LOG_FILE, file_level) do file_logger
+    IS.open_file_logger(LOG_FILE, file_level) do file_logger
         levels = (Logging.Info, Logging.Warn, Logging.Error)
-        multi_logger = MultiLogger([console_logger, file_logger],
-                                   LogEventTracker(levels))
+        multi_logger = IS.MultiLogger([console_logger, file_logger],
+                                      IS.LogEventTracker(levels))
         global_logger(multi_logger)
 
         # Testing Topological components of the schema
@@ -90,7 +100,7 @@ function run_tests()
         # TODO: once all known error logs are fixed, add this test:
         #@test length(get_log_events(multi_logger.tracker, Logging.Error)) == 0
 
-        @info report_log_summary(multi_logger)
+        @info IS.report_log_summary(multi_logger)
     end
 end
 

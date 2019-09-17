@@ -1,0 +1,1410 @@
+[
+  {
+    "struct_name": "TwoPartCost",
+    "docstring": "Data Structure Operational Cost Data in two parts fixed and variable cost.",
+    "fields": [
+      {
+        "name": "variable",
+        "null_value": "VariableCost((0.0, 0.0))",
+        "data_type": "VariableCost"
+      },
+      {
+        "name": "fixed",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "warn"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "OperationalCost"
+  },
+  {
+    "struct_name": "ThreePartCost",
+    "docstring": "Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.",
+    "fields": [
+      {
+        "name": "variable",
+        "null_value": "VariableCost((0.0, 0.0))",
+        "data_type": "VariableCost"
+      },
+      {
+        "name": "fixed",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "startup",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "warn"
+      },
+      {
+        "name": "shutdn",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "warn"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "OperationalCost"
+  },
+  {
+    "struct_name": "TechHydro",
+    "fields": [
+      {
+        "name": "rating",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "HY::PrimeMovers",
+        "data_type": "PrimeMovers"
+      },
+      {
+        "name": "activepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "reactivepowerlimits",
+        "validation_action": "warn",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Min_Max}"
+      },
+      {
+        "name": "ramplimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+        "valid_range": {"min":0.0, "max": null},
+        "validation_action": "error"
+      },
+      {
+        "name": "timelimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "TechnicalParams"
+  },
+  {
+    "struct_name": "TechRenewable",
+    "fields": [
+      {
+        "name": "rating",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "OT::PrimeMovers",
+        "data_type": "PrimeMovers"
+      },
+      {
+        "name": "reactivepowerlimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Min_Max}"
+      },
+      {
+        "name": "powerfactor",
+        "null_value": "1.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":1.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "TechnicalParams"
+  },
+  {
+    "struct_name": "TechThermal",
+    "docstring": "Data Structure for the technical parameters of thermal generation technologies.",
+    "fields": [
+      {
+        "name": "rating",
+        "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "OT::PrimeMovers",
+        "data_type": "PrimeMovers"
+      },
+      {
+        "name": "fuel",
+        "comment": "PrimeMover Fuel according to EIA 923",
+        "null_value": "OTHER::ThermalFuels",
+        "data_type": "ThermalFuels"
+      },
+      {
+        "name": "activepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "reactivepowerlimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Min_Max}"
+      },
+      {
+        "name": "ramplimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "timelimits",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "TechnicalParams"
+  },
+  {
+    "struct_name": "Bus",
+    "docstring": "A power-system bus.",
+    "inner_constructor_check": "CheckBusParams",
+    "fields": [
+      {
+        "name": "number",
+        "comment": "number associated with the bus",
+        "null_value": "0",
+        "data_type": "Int64"
+      },
+      {
+        "null_value": "init",
+        "name": "name",
+        "comment": "the name of the bus",
+        "data_type": "String"
+      },
+      {
+        "name": "bustype",
+        "comment": "bus type",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, BusType}"
+      },
+      {
+        "name": "angle",
+        "comment": "angle of the bus in radians",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":-1.571, "max":1.571},
+        "validation_action": "error"
+      },
+      {
+        "name": "voltage",
+        "comment": "voltage as a multiple of basevoltage",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": "voltagelimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "voltagelimits",
+        "comment": "limits on the voltage variation as multiples of basevoltage",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Union{Nothing, Min_Max}"
+      },
+      {
+        "name": "basevoltage",
+        "comment": "the base voltage in kV",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "Topology"
+  },
+  {
+    "struct_name": "Arc",
+    "docstring": "A topological Arc.",
+    "fields": [
+      {
+        "name": "from",
+        "null_vale": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "to",
+        "null_vale": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "Topology"
+  },
+  {
+    "struct_name": "Line",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "b",
+        "null_value": "(from=0.0, to=0.0)",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":100.0},
+        "validation_action": "error"
+      },
+      {
+        "null_value": "0.0",
+        "name": "rate",
+        "data_type": "Float64"
+      },
+      {
+        "name": "anglelimits",
+        "null_value": "(min=-1.571, max=1.571)",
+        "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+        "valid_range": {"min":-1.571, "max":1.571},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "MonitoredLine",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "null_value": "(from=0.0, to=0.0)",
+        "name": "b",
+        "data_type": "NamedTuple{(:from, :to), Tuple{Float64, Float64}}",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "flowlimits",
+        "null_value": "(from_to=0.0, to_from=0.0)",
+        "comment": "TODO: throw warning above max SIL",
+        "data_type": "NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}"
+      },
+      {
+        "null_value": "0.0",
+        "name": "rate",
+        "data_type": "Float64",
+        "comment": "TODO: compare to SIL (warn) (theoretical limit)"
+      },
+      {
+        "name": "anglelimits",
+        "null_value": "(min=-1.571, max=1.571)",
+        "data_type": "Min_Max",
+        "valid_range": {"min":-1.571, "max":1.571},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "PhaseShiftingTransformer",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "primaryshunt",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "Comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "tap",
+        "null_value": "1.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "\u03B1",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":-1.571, "max":1.571},
+        "validation_action": "warn"
+      },
+      {
+        "null_value": "0.0",
+        "name": "rate",
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "TapTransformer",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":-2.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":-2.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "primaryshunt",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "tap",
+        "null_value": "1.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "rate",
+        "null_value": "0.0",
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "Transformer2W",
+    "docstring": "The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
+      },
+      {
+        "null_value": "0.0",
+        "name": "r",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":-2.0, "max":2.5},
+        "validation_action": "error"
+      },
+      {
+        "null_value": "0.0",
+        "name": "x",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":-2.0, "max":2.5},
+        "validation_action": "error"
+      },
+      {
+        "name": "primaryshunt",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "comment": "System per-unit value",
+        "valid_range": {"min":0.0, "max":2.0},
+        "validation_action": "error"
+      },
+      {
+        "name": "rate",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, Float64}",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "ACBranch"
+  },
+  {
+    "struct_name": "HVDCLine",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
+      },
+      {
+        "name": "activepowerlimits_from",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "activepowerlimits_to",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "reactivepowerlimits_from",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "reactivepowerlimits_to",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "loss",
+        "null_value": "(l0=0.0, l1=0.0)",
+        "data_type": "NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "DCBranch"
+  },
+  {
+    "struct_name": "VSCDCLine",
+    "docstring": "As implemented in Milano's Book, Page 397",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "activepower_flow",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "null_value": "Arc(Bus(nothing), Bus(nothing))",
+        "name": "arc",
+        "data_type": "Arc"
+      },
+      {
+        "name": "rectifier_taplimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "rectifier_xrc",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "rectifier_firing_angle",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "inverter_taplimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "inverter_xrc",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "inverter_firing_angle",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "DCBranch"
+  },
+  {
+    "struct_name": "InterruptibleLoad",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "model",
+        "null_value": "ConstantPower::LoadModel",
+        "data_type": "LoadModel"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "maxactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "maxreactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "op_cost",
+        "null_value": "TwoPartCost(nothing)",
+        "data_type": "TwoPartCost"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "ControllableLoad"
+  },
+  {
+    "struct_name": "FixedAdmittance",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "Y",
+        "null_value": "0.0",
+        "data_type": "Complex{Float64}"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "ElectricLoad"
+  },
+  {
+    "struct_name": "PowerLoad",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "model",
+        "null_value": "nothing",
+        "data_type": "Union{Nothing, LoadModel}"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "maxactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "maxreactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "StaticLoad"
+  },
+  {
+    "struct_name": "HydroDispatch",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechHydro(nothing)",
+        "data_type": "TechHydro"
+      },
+      {
+        "name": "op_cost",
+        "null_value": "TwoPartCost(nothing)",
+        "data_type": "TwoPartCost"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "HydroGen"
+  },
+  {
+    "struct_name": "HydroFix",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechHydro(nothing)",
+        "data_type": "TechHydro"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "HydroGen"
+  },
+  {
+    "struct_name": "HydroStorage",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechHydro(nothing)",
+        "data_type": "TechHydro"
+      },
+      {
+        "name": "op_cost",
+        "null_value": "TwoPartCost(nothing)",
+        "data_type": "TwoPartCost"
+      },
+      {
+        "name": "storagecapacity",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "initial_storage",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "HydroGen"
+  },
+  {
+    "struct_name": "RenewableDispatch",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechRenewable(nothing)",
+        "data_type": "TechRenewable"
+      },
+      {
+        "name": "op_cost",
+        "null_value": "TwoPartCost(nothing)",
+        "data_type": "TwoPartCost"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "RenewableGen"
+  },
+  {
+    "struct_name": "RenewableFix",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechRenewable(nothing)",
+        "data_type": "TechRenewable"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "RenewableGen"
+  },
+  {
+    "struct_name": "ThermalStandard",
+    "docstring": "Data Structure for thermal generation technologies.",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.activepowerlimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "tech.reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "tech",
+        "null_value": "TechThermal(nothing)",
+        "data_type": "Union{Nothing, TechThermal}"
+      },
+      {
+        "name": "op_cost",
+        "null_value": "ThreePartCost(nothing)",
+        "data_type": "ThreePartCost"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "ThermalGen"
+  },
+  {
+    "struct_name": "LoadZones",
+    "fields": [
+      {
+        "name": "number",
+        "null_value": "0",
+        "data_type": "Int64"
+      },
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "name": "buses",
+        "null_value": "[Bus(nothing)]",
+        "data_type": "Vector{Bus}"
+      },
+      {
+        "name": "maxactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "maxreactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "Topology"
+  },
+  {
+    "struct_name": "GenericBattery",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "null_value": "false",
+        "name": "available",
+        "data_type": "Bool"
+      },
+      {
+        "name": "bus",
+        "null_value": "Bus(nothing)",
+        "data_type": "Bus"
+      },
+      {
+        "name": "primemover",
+        "comment": "PrimeMover Technology according to EIA 923",
+        "null_value": "BA::PrimeMovers",
+        "data_type": "PrimeMovers"
+      },
+      {
+        "name": "energy",
+        "null_value": "0.0",
+        "comment": "State of Charge of the Battery p.u.-hr",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "capacity",
+        "null_value": "(min=0.0, max=0.0)",
+        "comment": "Maximum and Minimum storage capacity in p.u.-hr",
+        "data_type": "Min_Max",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "rating",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "activepower",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "inputactivepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "outputactivepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Min_Max",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "efficiency",
+        "null_value": "(in=0.0, out=0.0)",
+        "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}",
+        "valid_range": {"min":0.0, "max":1.0},
+        "validation_action": "warn"
+      },
+      {
+        "name": "reactivepower",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": "reactivepowerlimits",
+        "validation_action": "warn"
+      },
+      {
+        "name": "reactivepowerlimits",
+        "null_value": "(min=0.0, max=0.0)",
+        "data_type": "Union{Nothing, Min_Max}"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "Storage"
+  },
+  {
+    "struct_name": "ProportionalReserve",
+    "docstring": "Data Structure for a proportional reserve product for system simulations.",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "name": "contributingdevices",
+        "comment": "devices from which the product can be procured",
+        "null_value": "[ThermalStandard(nothing)]",
+        "data_type": "Vector{Device}"
+      },
+      {
+        "name": "timeframe",
+        "comment": "the relative saturation timeframe",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "Reserve"
+  },
+  {
+    "struct_name": "StaticReserve",
+    "docstring": "Data Structure for the procurement products for system simulations.",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "name": "contributingdevices",
+        "comment": "devices from which the product can be procured",
+        "null_value": "[ThermalStandard(nothing)]",
+        "data_type": "Vector{Device}"
+      },
+      {
+        "name": "timeframe",
+        "comment": "the relative saturation timeframe",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "requirement",
+        "comment": "the required quantity of the product should be scaled by a Forecast",
+        "null_value": "0.0",
+        "data_type": "Float64"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "Reserve"
+  },
+  {
+    "struct_name": "Transfer",
+    "fields": [
+      {
+        "null_value": "init",
+        "name": "name",
+        "data_type": "String"
+      },
+      {
+        "name": "contributingdevices",
+        "null_value": "[ThermalStandard(nothing)]",
+        "data_type": "Vector{Device}"
+      },
+      {
+        "name": "timeframe",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
+      },
+      {
+        "name": "requirement",
+        "null_value": "[]",
+        "data_type": "TimeSeries.TimeArray"
+      },
+      {
+        "name": "internal",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "Service"
+  }
+]

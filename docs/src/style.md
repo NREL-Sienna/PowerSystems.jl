@@ -19,6 +19,7 @@ including its deviations from the Julia style guide.  In particular, note its po
   * [return statements](http://www.juliaopt.org/JuMP.jl/dev/style/#Return-statements-1)
   * [variable names](http://www.juliaopt.org/JuMP.jl/dev/style/#Use-of-underscores-within-names-1).
 * Read [The Zen of Python](https://www.python.org/dev/peps/pep-0020).
+* Consider using a plugin that configures your text editor to use [EditorConfig](https://editorconfig.org/) settings.
 
 ## Code Organization
 * Import standard modules, then 3rd-party modules, then yours. Include a blank
