@@ -55,8 +55,10 @@ macro includetests(testarg...)
         rootfile = @__FILE__
         if length(tests) == 0
             tests = readdir(dirname(rootfile))
-            tests = filter(f->endswith(f, ".jl") && f != basename(rootfile) &&
-                           f != "common.jl", tests)
+            tests = filter(f -> startswith(f, "test_") &&
+                                endswith(f, ".jl") &&
+                                f != basename(rootfile),
+                           tests)
         else
             tests = map(f->string(f, ".jl"), tests)
         end
