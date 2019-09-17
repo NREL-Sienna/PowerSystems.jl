@@ -633,21 +633,21 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
     var_cost = [(c[1], c[2]) for c in var_cost if !in(nothing, c)]
-    var_cost[2:end] = [(var_cost[i][1] * (var_cost[i][2] - var_cost[i-1][2]) * fuel_cost * data.basepower,
-                        var_cost[i][2]) .* gen.active_power_limits_max
-                       for i in 2:length(var_cost)]
-    var_cost[1] = (var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower, var_cost[1][2]) .*
-                  gen.active_power_limits_max
+    if length(unique(var_cost)) > 1
+        var_cost[2:end] = [(var_cost[i][1] * (var_cost[i][2] - var_cost[i-1][2]) * fuel_cost * data.basepower,
+                            var_cost[i][2]) .* gen.active_power_limits_max
+                        for i in 2:length(var_cost)]
+        var_cost[1] = (var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower, var_cost[1][2]) .*
+                    gen.active_power_limits_max
 
-    fixed = min(0.0, var_cost[1][1] - (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]))
-    var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
-    for i in 2:length(var_cost)
-        var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
-    end
-
-
-    for i in 2:length(var_cost)
-        var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
+        fixed = min(0.0, var_cost[1][1] - (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]))
+        var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
+        for i in 2:length(var_cost)
+            var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
+        end
+    else
+        var_cost = [(0.0, var_cost[1][2]), (1.0, var_cost[1][2])]
+        fixed = 0.0
     end
 
     available = true
