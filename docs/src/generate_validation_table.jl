@@ -1,6 +1,6 @@
 @info "Generating Validation Table"
 function generate_validation_table(filepath::AbstractString)
-    descriptor = PowerSystems.read_validation_descriptor(joinpath(PSYPATH,"descriptors","power_system_structs.json"))
+    descriptor = InfrastructureSystems.read_validation_descriptor(joinpath(PSYPATH,"descriptors","power_system_structs.json"))
     open(filepath, "w") do io
         write(io, "# Data Requirements\n\n")
         write(io, "|  Struct Name  |  Field Name  |  DataType  |  Min  |  Max  |  Action  |\n")

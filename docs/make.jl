@@ -1,4 +1,5 @@
 using Documenter, PowerSystems
+using InfrastructureSystems
 const PSYPATH = dirname(pathof(PowerSystems))
 
 include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
