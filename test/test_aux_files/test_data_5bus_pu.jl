@@ -1,4 +1,3 @@
-using PowerSystems
 using TimeSeries
 using Dates
 using Random
