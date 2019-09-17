@@ -449,7 +449,8 @@ end
     add_forecast!(
                   sys::System,
                   ta::TimeSeries.TimeArray,
-                  component, label,
+                  component,
+                  label,
                   scaling_factor::Union{String, Float64}=1.0,
                  )
 
@@ -461,7 +462,8 @@ scaling_factor.
 function add_forecast!(
                        sys::System,
                        ta::TimeSeries.TimeArray,
-                       component, label,
+                       component,
+                       label,
                        scaling_factor::Union{String, Float64}=1.0,
                       )
     return IS.add_forecast!(sys.data, ta, component, label, scaling_factor)
@@ -471,7 +473,8 @@ end
     add_forecast!(
                   sys::System,
                   df::DataFrames.DataFrame,
-                  component, label,
+                  component,
+                  label,
                   scaling_factor::Union{String, Float64}=1.0,
                  )
 
@@ -483,7 +486,8 @@ scaling_factor.
 function add_forecast!(
                        sys::System,
                        df::DataFrames.DataFrame,
-                       component, label,
+                       component,
+                       label,
                        scaling_factor::Union{String, Float64}=1.0,
                       )
     return IS.add_forecast!(sys.data, df, component, label, scaling_factor)
