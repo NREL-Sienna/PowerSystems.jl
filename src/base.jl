@@ -198,6 +198,19 @@ Throws ArgumentError if the component's name is already stored for its concrete 
 
 Throws InvalidRange if any of the component's field values are outside of defined valid
 range.
+
+# Examples
+```julia
+sys = System(100.0)
+
+# Add a single component.
+add_component!(sys, bus)
+
+# Add many at once.
+buses = [bus1, bus2, bus3]
+generators = [gen1, gen2, gen3]
+foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
+```
 """
 function add_component!(sys::System, component::T; kwargs...) where T <: Component
     if T <: Branch

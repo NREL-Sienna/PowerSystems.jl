@@ -123,3 +123,36 @@ end
         )
     )
 end
+
+@testset "Test field validation after deserialization" begin
+    sys = System(nodes5, thermal_generators5, loads5, nothing, nothing,
+                 100.0, nothing, nothing, nothing)
+
+    add_component!(sys, Bus(11, "11", PSY.PQ, 1, 1, (min=.9, max=1.1), 123))
+    path, io = mktemp()
+    PSY.to_json(sys, path)
+    try
+        to_json(io, sys)
+    catch
+        close(io)
+        rm(path)
+        rethrow()
+    end
+    close(io)
+
+    try
+        sys2 = PSY.System(path)
+
+        B = get_components(Bus, sys2) |> collect
+        a = Arc(B[1], B[6])
+        badline = Line("badline", true, 0.01, 0.01, a, 0.002, 0.014,
+                       (from = 0.015, to = 0.015), 5.0, (min = -1, max = 1))
+        @test_logs((:error, r"cannot create Line"), match_mode=:any,
+            @test_throws(PSY.InvalidValue,
+                         add_component!(sys2, badline)
+            )
+        )
+    finally
+        rm(path)
+    end
+end
