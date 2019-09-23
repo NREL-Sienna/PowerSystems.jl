@@ -762,7 +762,7 @@ function JSON2.read(io::IO, ::Type{System})
 
     # Skip Services this round because they have Devices.
     for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw.data)
-        c_type = getfield(PowerSystems, Symbol(IS.strip_module_names(string(c_type_sym))))
+        c_type = getfield(PowerSystems, Symbol(IS.strip_module_name(string(c_type_sym))))
         (c_type in composite_components || c_type <: Service) && continue
         for component in IS.get_components_raw(IS.SystemData, c_type, raw.data)
             comp = IS.convert_type(c_type, component, component_cache)
@@ -773,7 +773,7 @@ function JSON2.read(io::IO, ::Type{System})
 
     # Now get the Services.
     for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw.data)
-        c_type = getfield(PowerSystems, Symbol(IS.strip_module_names(string(c_type_sym))))
+        c_type = getfield(PowerSystems, Symbol(IS.strip_module_name(string(c_type_sym))))
         if c_type <: Service
             for component in IS.get_components_raw(IS.SystemData, c_type, raw.data)
                 comp = IS.convert_type(c_type, component, component_cache)
