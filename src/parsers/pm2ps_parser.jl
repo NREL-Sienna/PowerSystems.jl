@@ -10,7 +10,7 @@ function pm2ps_dict(data::Dict{String,Any}; kwargs...)
 
     @info "Constructing System from Power Models" data["name"] data["source_type"]
 
-    sys = System(data["baseMVA"])
+    sys = System(data["baseMVA"]; kwargs...)
 
     bus_number_to_bus = read_bus!(sys, data)
     read_loads!(sys, data, bus_number_to_bus)
@@ -94,7 +94,7 @@ end
 
 function make_load(d, bus)
     return PowerLoad(;
-        name=bus.name,
+        name=join(d["source_id"], "_"), #bus.name,
         available=true,
         model = ConstantPower::LoadModel,
         bus=bus,
