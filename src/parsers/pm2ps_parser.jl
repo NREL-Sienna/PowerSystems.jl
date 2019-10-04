@@ -2,6 +2,15 @@
 """
 Converts a dictionary parsed by PowerModels to a System.
 Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
+Supports kwargs to supply formatters for different device types,
+such as `bus_name_formatter` or `gen_name_formatter`.
+
+# Examples
+```julia
+sys = PSY.pm2ps_dict(pm_data, configpath = "ACTIVSg25k_validation.json",
+                    bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
+                    load_name_formatter = x->strip(join(x["source_id"], "_")))
+```
 """
 function pm2ps_dict(data::Dict{String,Any}; kwargs...)
     if length(data["bus"]) < 1
