@@ -11,15 +11,16 @@ mutable struct RenewableDispatch <: RenewableGen
     reactivepower::Float64
     tech::TechRenewable
     op_cost::TwoPartCost
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, InfrastructureSystemsInternal())
+function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, InfrastructureSystemsInternal())
 end
 
-function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, )
+function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -33,6 +34,7 @@ function RenewableDispatch(::Nothing)
         reactivepower=0.0,
         tech=TechRenewable(nothing),
         op_cost=TwoPartCost(nothing),
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -50,5 +52,7 @@ get_reactivepower(value::RenewableDispatch) = value.reactivepower
 get_tech(value::RenewableDispatch) = value.tech
 """Get RenewableDispatch op_cost."""
 get_op_cost(value::RenewableDispatch) = value.op_cost
+"""Get RenewableDispatch _forecasts."""
+get__forecasts(value::RenewableDispatch) = value._forecasts
 """Get RenewableDispatch internal."""
 get_internal(value::RenewableDispatch) = value.internal

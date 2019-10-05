@@ -13,15 +13,16 @@ mutable struct Transformer2W <: ACBranch
     x::Float64  # System per-unit value
     primaryshunt::Float64  # System per-unit value
     rate::Union{Nothing, Float64}
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, InfrastructureSystemsInternal())
+function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, _forecasts=InfrastructureSystems.Forecasts(), )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, _forecasts, InfrastructureSystemsInternal())
 end
 
-function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, )
+function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, _forecasts=InfrastructureSystems.Forecasts(), )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -37,6 +38,7 @@ function Transformer2W(::Nothing)
         x=0.0,
         primaryshunt=0.0,
         rate=nothing,
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -58,5 +60,7 @@ get_x(value::Transformer2W) = value.x
 get_primaryshunt(value::Transformer2W) = value.primaryshunt
 """Get Transformer2W rate."""
 get_rate(value::Transformer2W) = value.rate
+"""Get Transformer2W _forecasts."""
+get__forecasts(value::Transformer2W) = value._forecasts
 """Get Transformer2W internal."""
 get_internal(value::Transformer2W) = value.internal

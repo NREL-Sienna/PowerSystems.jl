@@ -91,15 +91,6 @@
     @test_throws(IS.ArgumentError,
                  get_forecasts(PSY.Deterministic{Bus}, sys, initial_time, components))
 
-    #Get forecast by type
-    res = get_component_forecasts(RenewableDispatch, sys, initial_time)
-    for i in res
-        @test isa(i,PSY.Deterministic{RenewableDispatch})
-    end
-
-    @test_throws(IS.ArgumentError,
-                 get_component_forecasts(RenewableGen, sys, initial_time))
-
     f = forecasts[1]
     forecast = PSY.Deterministic(Bus(nothing), f.label, f.resolution, f.initial_time, f.data)
     @test_throws(IS.ArgumentError, add_forecasts!(sys, [forecast]))

@@ -14,15 +14,16 @@ mutable struct TapTransformer <: ACBranch
     primaryshunt::Float64  # System per-unit value
     tap::Float64
     rate::Union{Nothing, Float64}
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, )
-    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, InfrastructureSystemsInternal())
+function TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, _forecasts=InfrastructureSystems.Forecasts(), )
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, _forecasts, InfrastructureSystemsInternal())
 end
 
-function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, )
-    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, )
+function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, _forecasts=InfrastructureSystems.Forecasts(), )
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -39,6 +40,7 @@ function TapTransformer(::Nothing)
         primaryshunt=0.0,
         tap=1.0,
         rate=0.0,
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -62,5 +64,7 @@ get_primaryshunt(value::TapTransformer) = value.primaryshunt
 get_tap(value::TapTransformer) = value.tap
 """Get TapTransformer rate."""
 get_rate(value::TapTransformer) = value.rate
+"""Get TapTransformer _forecasts."""
+get__forecasts(value::TapTransformer) = value._forecasts
 """Get TapTransformer internal."""
 get_internal(value::TapTransformer) = value.internal

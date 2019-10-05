@@ -190,13 +190,5 @@ end
     ts = get_forecast_initial_times(sys)
     @test length(ts) == 23
 
-    # replace a long forecast with a series of forecasts
-    clear_forecasts!(sys)
-    add_forecast!(sys, forecast)
-    forecasts = get_forecasts(IS.Deterministic, sys, IS.get_initial_time(forecast))
-    split_forecasts!(sys, forecasts, Hour(6), 12)
-    ts = get_forecast_initial_times(sys)
-    @test length(ts) == 3
-
     # TODO: need to cover serialization.
 end

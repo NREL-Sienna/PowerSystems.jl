@@ -8,15 +8,16 @@ mutable struct Transfer <: Service
     contributingdevices::Vector{Device}
     timeframe::Float64
     requirement::TimeSeries.TimeArray
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, contributingdevices, timeframe, requirement, )
-    Transfer(name, contributingdevices, timeframe, requirement, InfrastructureSystemsInternal())
+function Transfer(name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, InfrastructureSystemsInternal())
 end
 
-function Transfer(; name, contributingdevices, timeframe, requirement, )
-    Transfer(name, contributingdevices, timeframe, requirement, )
+function Transfer(; name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -27,6 +28,7 @@ function Transfer(::Nothing)
         contributingdevices=[ThermalStandard(nothing)],
         timeframe=0.0,
         requirement=[],
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -38,5 +40,7 @@ get_contributingdevices(value::Transfer) = value.contributingdevices
 get_timeframe(value::Transfer) = value.timeframe
 """Get Transfer requirement."""
 get_requirement(value::Transfer) = value.requirement
+"""Get Transfer _forecasts."""
+get__forecasts(value::Transfer) = value._forecasts
 """Get Transfer internal."""
 get_internal(value::Transfer) = value.internal
