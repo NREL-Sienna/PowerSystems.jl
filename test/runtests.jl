@@ -9,6 +9,9 @@ using PowerSystems
 import PowerSystems: PowerSystemTableData
 const PSY = PowerSystems
 
+include(joinpath(@__DIR__, "../src/utils/data.jl"))
+import .UtilsData: TestData
+download(TestData; branch = "master")
 
 BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
 DATA_DIR = joinpath(BASE_DIR, "data")
@@ -16,8 +19,6 @@ FORECASTS_DIR = joinpath(DATA_DIR, "forecasts")
 MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
 PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
 RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
-
-download(PowerSystems.TestData)
 
 LOG_FILE = "power-systems.log"
 LOG_LEVELS = Dict(
