@@ -44,5 +44,5 @@ c_sys5_re = System(nodes5, vcat(thermal_generators5, renewable_generators5), loa
     solve_powerflow!(c_sys14, nlsolve, method = :newton)
     pf!, x0 = make_pf(c_sys5_re);
     res = NLsolve.nlsolve(pf!, x0)
-    @test res.f_converged == false
+    @test !res.f_converged
 end

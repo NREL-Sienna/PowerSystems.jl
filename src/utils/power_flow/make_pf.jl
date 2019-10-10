@@ -54,14 +54,15 @@ function make_pf(system)
         bus_number = get_number(b)::Int
         bus_angle = get_angle(b)::Float64
         bus_voltage = get_voltage(b)::Float64
-        generator = []
+        P_GEN_BUS[ix] = 0.0
+        Q_GEN_BUS[ix] = 0.0
         for gen in get_components(Generator, system)
             if gen.bus == b
-                push!(generator, gen)
+                P_GEN_BUS[ix] += get_activepower(gen)
+                Q_GEN_BUS[ix] += get_reactivepower(gen)
             end
         end
-        P_GEN_BUS[ix] = isempty(generator) ? 0.0 : sum(get_activepower.(generator))
-        Q_GEN_BUS[ix] = isempty(generator) ? 0.0 : sum(get_reactivepower.(generator))
+
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
 
         if b.bustype == REF::BusType
