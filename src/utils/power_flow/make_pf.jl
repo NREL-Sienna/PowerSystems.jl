@@ -34,7 +34,9 @@ function make_pf(system)
     N_BUS = length(buses)
 
     # assumes the ordering in YBus is the same as in the buses.
-    Yb = Ybus(system)
+    tempYb = Ybus(get_components(ACBranch, system), buses)
+    a = collect(1:N_BUS)
+    Yb = Ybus(tempYb.data, (a, a), (_make_ax_ref(a), _make_ax_ref(a)))
     x0 = zeros(N_BUS * 2)
 
     # Use vectors to cache data for closure
@@ -52,15 +54,14 @@ function make_pf(system)
         bus_number = get_number(b)::Int
         bus_angle = get_angle(b)::Float64
         bus_voltage = get_voltage(b)::Float64
-        generator = nothing
+        generator = []
         for gen in get_components(Generator, system)
             if gen.bus == b
-                !isnothing(generator) && throw(DataFormatError("There is more than one generator connected to Bus $b.name"))
-                generator = gen
+                push!(generator, gen)
             end
         end
-        P_GEN_BUS[ix] = isnothing(generator) ? 0.0 : get_activepower(generator)
-        Q_GEN_BUS[ix] = isnothing(generator) ? 0.0 : get_reactivepower(generator)
+        P_GEN_BUS[ix] = isempty(generator) ? 0.0 : sum(get_activepower.(generator))
+        Q_GEN_BUS[ix] = isempty(generator) ? 0.0 : sum(get_reactivepower.(generator))
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
 
         if b.bustype == REF::BusType
