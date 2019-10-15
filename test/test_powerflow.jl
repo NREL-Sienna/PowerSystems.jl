@@ -42,5 +42,7 @@ c_sys5_re = System(nodes5, vcat(thermal_generators5, renewable_generators5), loa
     @test res.zero ≈ result rtol=1e-3
 
     solve_powerflow!(c_sys14, nlsolve, method = :newton)
-    @test_throws PowerSystems.DataFormatError solve_powerflow!(c_sys5_re, nlsolve)
+    pf!, x0 = make_pf(c_sys5_re);
+    res = NLsolve.nlsolve(pf!, x0)
+    @test !res.f_converged
 end
