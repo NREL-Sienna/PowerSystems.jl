@@ -227,7 +227,12 @@ function add_component!(sys::System, component::T; kwargs...) where T <: Compone
 end
 
 """
-    add_forecasts!(sys::System, metadata_file::AbstractString; resolution=nothing)
+    add_forecasts!(
+                   sys::System,
+                   metadata_file::AbstractString,
+                   label_mapping::Dict{Tuple{String, String}, String};
+                   resolution=nothing,
+                  )
 
 Adds forecasts from a metadata file or metadata descriptors.
 
@@ -235,16 +240,25 @@ Adds forecasts from a metadata file or metadata descriptors.
 - `sys::System`: system
 - `metadata_file::AbstractString`: metadata file for timeseries
   that includes an array of IS.TimeseriesFileMetadata instances or a vector.
+- `label_mapping::Dict{Tuple{String, String}, String}`: maps customized component field names to
+  PowerSystem field names
 - `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
 """
-function add_forecasts!(sys::System, metadata_file::AbstractString; resolution=nothing)
-    return IS.add_forecasts!(Component, sys.data, metadata_file; resolution=resolution)
+function add_forecasts!(
+                        sys::System,
+                        metadata_file::AbstractString,
+                        label_mapping::Dict{Tuple{String, String}, String};
+                        resolution=nothing,
+                       )
+    return IS.add_forecasts!(Component, sys.data, metadata_file, label_mapping;
+                             resolution=resolution)
 end
 
 """
     add_forecasts!(
                    sys::System,
-                   timeseries_metadata::Vector{IS.TimeseriesFileMetadata};
+                   timeseries_metadata::Vector{IS.TimeseriesFileMetadata},
+                   label_mapping::Dict{Tuple{String, String}, String};
                    resolution=nothing,
                   )
 
@@ -253,14 +267,17 @@ Adds forecasts from a metadata file or metadata descriptors.
 # Arguments
 - `sys::System`: system
 - `timeseries_metadata::Vector{IS.TimeseriesFileMetadata}`: metadata for timeseries
+- `label_mapping::Dict{Tuple{String, String}, String}`: maps customized component field names to
+  PowerSystem field names
 - `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
 """
 function add_forecasts!(
                         sys::System,
-                        timeseries_metadata::Vector{IS.TimeseriesFileMetadata};
+                        timeseries_metadata::Vector{IS.TimeseriesFileMetadata},
+                        label_mapping::Dict{Tuple{String, String}, String};
                         resolution=nothing
                        )
-    return IS.add_forecasts!(Component, sys.data, timeseries_metadata;
+    return IS.add_forecasts!(Component, sys.data, timeseries_metadata, label_mapping;
                              resolution=resolution)
 end
 

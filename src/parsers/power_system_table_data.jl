@@ -34,7 +34,7 @@ function PowerSystemTableData(
         ("dc_branch", DC_BRANCH::InputCategory),
         ("gen", GENERATOR::InputCategory),
         ("load", LOAD::InputCategory),
-        ("reserves", RESERVES::InputCategory),
+        ("reserve", RESERVE::InputCategory),
     ]
 
     if !haskey(data, "bus")
@@ -244,7 +244,6 @@ Construct a System from PowerSystemTableData data.
   this resolution.
 
 Throws DataFormatError if forecasts with multiple resolutions are detected.
-- A component-label pair is not unique within a forecast array.
 - A forecast has a different resolution than others.
 - A forecast has a different horizon than others.
 
@@ -271,7 +270,9 @@ function System(data::PowerSystemTableData; forecast_resolution=nothing)
     end
 
     if !isnothing(data.timeseries_metadata_file)
-        add_forecasts!(sys, data.timeseries_metadata_file; resolution=forecast_resolution)
+        label_mapping = _create_forecast_label_mapping(data)
+        add_forecasts!(sys, data.timeseries_metadata_file, label_mapping;
+                       resolution=forecast_resolution)
     end
 
     check!(sys)
@@ -567,7 +568,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
     # Shortcut for data that looks like "(val1,val2,val3)"
     make_array(x) = split(strip(x, ['(', ')']), ",")
 
-    for reserve in iterate_rows(data, RESERVES::InputCategory)
+    for reserve in iterate_rows(data, RESERVE::InputCategory)
         device_categories = make_array(reserve.eligible_device_categories)
         device_subcategories = make_array(reserve.eligible_device_subcategories)
         regions = make_array(reserve.eligible_regions)
@@ -903,4 +904,22 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     end
 
     return NamedTuple{Tuple(Symbol.(fields))}(vals)
+end
+
+"""
+Forecasts are created for specific fields of a component. The field name in the metadata
+file may be customized, so this creates a mapping of (category, custom_name) to name.
+"""
+function _create_forecast_label_mapping(data::PowerSystemTableData)
+    mapping = Dict{Tuple{String, String}, String}()
+    for (category, params) in data.user_descriptors
+        for param in params
+            key = (lowercase(string(category)), param["custom_name"])
+            println("_create_forecast_label_mapping $key")
+            @assert !haskey(mapping, key)
+            mapping[key] = param["name"]
+        end
+    end
+
+    return mapping
 end
