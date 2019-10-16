@@ -2,6 +2,15 @@
 """
 Converts a dictionary parsed by PowerModels to a System.
 Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
+Supports kwargs to supply formatters for different device types,
+such as `bus_name_formatter` or `gen_name_formatter`.
+
+# Examples
+```julia
+sys = PSY.pm2ps_dict(pm_data, configpath = "ACTIVSg25k_validation.json",
+                    bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
+                    load_name_formatter = x->strip(join(x["source_id"], "_")))
+```
 """
 function pm2ps_dict(data::Dict{String,Any}; kwargs...)
     if length(data["bus"]) < 1
@@ -10,20 +19,26 @@ function pm2ps_dict(data::Dict{String,Any}; kwargs...)
 
     @info "Constructing System from Power Models" data["name"] data["source_type"]
 
-    sys = System(data["baseMVA"])
+    sys = System(data["baseMVA"]; kwargs...)
 
-    bus_number_to_bus = read_bus!(sys, data)
-    read_loads!(sys, data, bus_number_to_bus)
-    read_loadzones!(sys, data, bus_number_to_bus)
+    bus_number_to_bus = read_bus!(sys, data; kwargs...)
+    read_loads!(sys, data, bus_number_to_bus; kwargs...)
+    read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
     read_gen!(sys, data, bus_number_to_bus; kwargs...)
-    read_branch!(sys, data, bus_number_to_bus)
-    read_shunt!(sys, data, bus_number_to_bus)
-    read_dcline!(sys, data, bus_number_to_bus)
+    read_branch!(sys, data, bus_number_to_bus; kwargs...)
+    read_shunt!(sys, data, bus_number_to_bus; kwargs...)
+    read_dcline!(sys, data, bus_number_to_bus; kwargs...)
 
     check!(sys)
     return sys
 end
 
+"""
+Internal component name retreval from pm2ps_dict
+"""
+function _get_pm_dict_name(device_dict)
+    return get(device_dict,"name", string(device_dict["index"]))
+end
 
 """
 Creates a PowerSystems.Bus from a PowerSystems bus dictionary
@@ -68,7 +83,7 @@ function Base.convert(::Type{BusType}, x::MatpowerBusType)
     return map[x]
 end
 
-function read_bus!(sys::System, data)
+function read_bus!(sys::System, data; kwargs...)
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
 
@@ -79,10 +94,13 @@ function read_bus!(sys::System, data)
         @error "No bus data found" # TODO : need for a model without a bus
     end
 
+    _get_name = get(kwargs, :bus_name_formatter, _get_pm_dict_name)
+
     for (i, (d_key, d)) in enumerate(data)
         # d id the data dict for each bus
         # d_key is bus key
-        bus_name = haskey(d,"name") ? d["name"] : string(d["bus_i"])
+        d["name"] = get(d,"name", string(d["bus_i"]))
+        bus_name = _get_name(d)
         bus_number = Int(d["bus_i"])
         bus = make_bus(bus_name, bus_number, d, bus_types)
         bus_number_to_bus[bus.number] = bus
@@ -92,9 +110,10 @@ function read_bus!(sys::System, data)
     return bus_number_to_bus
 end
 
-function make_load(d, bus)
+function make_load(d, bus; kwargs...)
+    _get_name = get(kwargs, :load_name_formatter, x->strip(join(x["source_id"])))
     return PowerLoad(;
-        name=bus.name,
+        name= _get_name(d),
         available=true,
         model = ConstantPower::LoadModel,
         bus=bus,
@@ -105,7 +124,7 @@ function make_load(d, bus)
     )
 end
 
-function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     if !haskey(data, "load")
         @error "There are no loads in this file"
         return
@@ -115,24 +134,25 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
         d = data["load"][d_key]
         if d["pd"] != 0.0
             bus = bus_number_to_bus[d["load_bus"]]
-            load = make_load(d, bus)
+            load = make_load(d, bus; kwargs...)
 
             add_component!(sys, load; skip_validation=SKIP_PM_VALIDATION)
         end
     end
 end
 
-function make_loadzones(d_key, d, bus_l, activepower, reactivepower)
+function make_loadzones(d, bus_l, activepower, reactivepower; kwargs...)
+    _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
     return LoadZones(;
         number=d["index"],
-        name=d_key,
+        name=_get_name(d),
         buses=bus_l,
         maxactivepower=sum(activepower),
         maxreactivepower=sum(reactivepower),
     )
 end
 
-function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     if !haskey(data, "areas")
         @info "There are no Load Zones data in this file"
         return
@@ -157,7 +177,9 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
             end
         end
 
-        load_zones = make_loadzones(d_key, d, buses, active_power, reactive_power)
+        d["name"] = get(d, "name", d_key)
+
+        load_zones = make_loadzones(d, buses, active_power, reactive_power; kwargs...)
         add_component!(sys, load_zones; skip_validation=SKIP_PM_VALIDATION)
     end
 end
@@ -334,13 +356,15 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
     genmap = get_generator_mapping(genmap_file)
 
     for (name, pm_gen) in data["gen"]
-        if haskey(pm_gen, "name")
-            gen_name = pm_gen["name"]
+        if haskey(kwargs, :gen_name_formatter)
+            _get_name = kwargs[:gen_name_formatter]
+        elseif haskey(pm_gen, "name")
+            _get_name = _get_pm_dict_name
         elseif haskey(pm_gen, "source_id")
-            gen_name = strip(string(pm_gen["source_id"][1]) * "-" * string(pm_gen["source_id"][2]) * "-" * name)
-        else
-            gen_name = name
+            _get_name = d -> strip(string(d["source_id"][1]) * "-" * string(d["source_id"][2]) * "-" * string(d["index"]))
         end
+
+        gen_name = _get_name(pm_gen)
 
         bus = bus_number_to_bus[pm_gen["gen_bus"]]
         pm_gen["fuel"] = get(pm_gen, "fuel", "OTHER")
@@ -465,15 +489,18 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     )
 end
 
-function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
         return
     end
 
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_dict_name)
+
     for (d_key, d) in data["branch"]
-        name = get(d, "name", d_key)
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         value = make_branch(name, d, bus_f, bus_t)
@@ -496,15 +523,18 @@ function make_dcline(name, d, bus_f, bus_t)
     )
 end
 
-function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading DC Line data"
     if !haskey(data,"dcline")
         @info "There is no DClines data in this file"
         return
     end
 
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_dict_name)
+
     for (d_key, d) in data["dcline"]
-        name = get(d, "name", d_key)
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
 
@@ -522,15 +552,18 @@ function make_shunt(name, d, bus)
     )
 end
 
-function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus})
+function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data,"shunt")
         @info "There is no shunt data in this file"
         return
     end
 
+    _get_name = get(kwargs, :shunt_name_formatter, _get_pm_dict_name)
+
     for (d_key,d) in data["shunt"]
-        name = get(d, "name", d_key)
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
         shunt = make_shunt(name, d, bus)
 

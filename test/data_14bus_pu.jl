@@ -178,17 +178,17 @@ loads14 = [PowerLoad("Bus2", true, nodes14[2], PowerSystems.ConstantPower, 0.217
           PowerLoad("Bus13", true, nodes14[13], PowerSystems.ConstantPower, 0.135, 0.058, 0.135, 0.058),
           PowerLoad("Bus14", true, nodes14[14], PowerSystems.ConstantPower, 0.149, 0.050, 0.149, 0.050)]
 
-forecast_DA14 = [Deterministic(loads14[1], "scalingfactor", TimeArray(dates, loadz1_ts)),
-               Deterministic(loads14[2], "scalingfactor", TimeArray(dates, loadz1_ts)),
-               Deterministic(loads14[3], "scalingfactor", TimeArray(dates, loadz3_ts)),
-               Deterministic(loads14[4], "scalingfactor", TimeArray(dates, loadz1_ts)),
-               Deterministic(loads14[5], "scalingfactor", TimeArray(dates, loadz2_ts)),
-               Deterministic(loads14[6], "scalingfactor", TimeArray(dates, loadz3_ts)),
-               Deterministic(loads14[7], "scalingfactor", TimeArray(dates, loadz2_ts)),
-               Deterministic(loads14[8], "scalingfactor", TimeArray(dates, loadz2_ts)),
-               Deterministic(loads14[9], "scalingfactor", TimeArray(dates, loadz2_ts)),
-               Deterministic(loads14[10], "scalingfactor", TimeArray(dates, loadz2_ts)),
-               Deterministic(loads14[11], "scalingfactor", TimeArray(dates, loadz2_ts))
+forecast_DA14 =[Deterministic("scalingfactor", TimeArray(dates, loadz1_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz1_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz3_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz1_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz3_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts)),
+                Deterministic( "scalingfactor", TimeArray(dates, loadz2_ts)),
+                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts))
 ];
 
 forecasts14 = Dict{Symbol,Vector{<:Forecast}}(:DA=>forecast_DA14);
