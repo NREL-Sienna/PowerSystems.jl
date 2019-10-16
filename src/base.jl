@@ -162,6 +162,7 @@ end
 Serializes a system to a JSON string.
 """
 function to_json(sys::System, filename::AbstractString)
+    _to_json(sys, filename)
     return IS.to_json(sys, filename)
 end
 
@@ -171,7 +172,12 @@ end
 Serializes a system an IO stream in JSON.
 """
 function to_json(io::IO, sys::System)
+    _to_json(sys, filename)
     return IS.to_json(io, sys)
+end
+
+function _to_json(sys::System, filename)
+    IS.prepare_for_serialization(sys.data, filename)
 end
 
 """Constructs a System from a JSON file."""
@@ -532,6 +538,20 @@ Return a vector of forecasts from a vector of TimeseriesFileMetadata values.
 function make_forecasts(sys::System, metadata::Vector{IS.TimeseriesFileMetadata};
                         resolution=nothing)
     return IS.make_forecasts(sys.data, metadata, PowerSystems; resolution=resolution)
+end
+
+"""
+    generate_initial_times(sys::System, interval::Dates.Period, horizon::Int)
+
+Generates all possible initial times for the stored forecasts. This should be used when
+contiguous forecasts have been stored in chunks, such as a one-year forecast broken up into
+365 one-day forecasts.
+
+Throws ArgumentError if there are no forecasts stored, interval is not a multiple of the
+system's forecast resolution, or if the stored forecasts have overlapping timestamps.
+"""
+function generate_initial_times(sys::System, interval::Dates.Period, horizon::Int)
+    return generate_initial_times(sys.data, interval, horizon)
 end
 
 """
