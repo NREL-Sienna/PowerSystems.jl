@@ -919,7 +919,6 @@ function _create_forecast_label_mapping(data::PowerSystemTableData)
     for (category, params) in data.user_descriptors
         for param in params
             key = (lowercase(string(category)), param["custom_name"])
-            println("_create_forecast_label_mapping $key")
             @assert !haskey(mapping, key)
             mapping[key] = param["name"]
         end
