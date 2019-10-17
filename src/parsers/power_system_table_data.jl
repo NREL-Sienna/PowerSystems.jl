@@ -451,7 +451,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     for field in fields
         if occursin("output_percent", field)
             push!(output_percent_fields, Symbol(field))
-        elseif occursin("heat_rate_avg", field)
+        elseif occursin("heat_rate_", field)
             push!(heat_rate_fields, Symbol(field))
         end
     end
