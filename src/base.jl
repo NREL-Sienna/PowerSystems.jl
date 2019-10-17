@@ -574,7 +574,6 @@ end
 """
     get_forecast(
                  ::Type{T},
-                 sys::System,
                  component::Component,
                  initial_time::Dates.DateTime,
                  label::AbstractString,
@@ -584,18 +583,16 @@ Return a forecast for the entire time series range stored for these parameters.
 """
 function get_forecast(
                       ::Type{T},
-                      sys::System,
                       component::Component,
                       initial_time::Dates.DateTime,
                       label::AbstractString,
                       ) where T <: Forecast
-    return IS.get_forecast(T, sys.data, component, initial_time, label)
+    return IS.get_forecast(T, component, initial_time, label)
 end
 
 """
     get_forecast(
                  ::Type{T},
-                 sys::System,
                  component::Component,
                  initial_time::Dates.DateTime,
                  label::AbstractString,
@@ -606,13 +603,12 @@ Return a forecast for a subset of the time series range stored for these paramet
 """
 function get_forecast(
                       ::Type{T},
-                      sys::System,
                       component::InfrastructureSystemsType,
                       initial_time::Dates.DateTime,
                       label::AbstractString,
                       horizon::Int,
                      ) where T <: Forecast
-    return IS.get_forecast(T, sys.data, component, initial_time, label, horizon)
+    return IS.get_forecast(T, component, initial_time, label, horizon)
 end
 
 function get_forecast_initial_times(

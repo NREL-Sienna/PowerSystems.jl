@@ -802,6 +802,10 @@ function _read_config_file(file_path::String)
         # Replace keys with enums.
         config_data = Dict{InputCategory, Vector}()
         for (key, val) in data
+            # TODO: need to change user_descriptors.yaml to use reserve instead.
+            if key == "reserves"
+                key = "reserve"
+            end
             config_data[get_enum_value(InputCategory, key)] = val
         end
         return config_data
