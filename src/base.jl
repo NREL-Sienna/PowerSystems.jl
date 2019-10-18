@@ -840,6 +840,11 @@ function IS.convert_type(
     return T(values...)
 end
 
+"""
+    get_bus(sys::System, bus_number::Int)
+
+Return bus with bus_number.
+"""
 function get_bus(sys::System, bus_number::Int)
     for bus in get_components(Bus, sys)
         if bus.number == bus_number
