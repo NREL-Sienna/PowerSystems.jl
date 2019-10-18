@@ -635,6 +635,16 @@ function get_forecast_labels(
 end
 
 """
+    get_forecast_values(component::Component, forecast::Forecast)
+
+Return a TimeSeries.TimeArray where the forecast data has been multiplied by the forecasted
+component field.
+"""
+function get_forecast_values(component::Component, forecast::Forecast)
+    return IS.get_forecast_values(component, forecast)
+end
+
+"""
     get_forecast_initial_times(sys::System)::Vector{Dates.DateTime}
 
 Return sorted forecast initial times.
