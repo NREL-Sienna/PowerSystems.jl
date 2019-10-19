@@ -3,7 +3,7 @@ using Dates
 
 dates  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
 
-nodes14= [
+nodes14() = [
                 Bus(1 , "Bus 1"  , "REF" ,0.0, 1.06  , (min=0.94, max=1.06), 69),
                 Bus(2 , "Bus 2"  , "PV" , -0.08691739674931762,  1.045 , (min=0.94, max=1.06), 69),
                 Bus(3 , "Bus 3"  , "PV" , -0.22200588085367873,  1.01  , (min=0.94, max=1.06), 69),
@@ -19,7 +19,7 @@ nodes14= [
                 Bus(13, "Bus 13" , "PQ" , -0.2645919146023404,  1.05  , (min=0.94, max=1.06), 13.8),
                 Bus(14, "Bus 14" , "PQ" , -0.27995081201989047,  1.036 , (min=0.94, max=1.06), 13.8)
             ]
-branches14_dc = [
+branches14_dc() = [
                 Line("Line1",  true, 0.0, 0.0, Arc(from=nodes14[1],to=nodes14[2]), 0.01938, 0.05917, (from=0.0264, to=0.0264), 18.046, 1.04),
                 Line("Line2",  true, 0.0, 0.0, Arc(from=nodes14[1],to=nodes14[5]),   0.05403, 0.22304, (from=0.0246, to=0.0246), 4.896, 1.04),
                 HVDCLine("DCLine3", true, 0.0, Arc(from=nodes14[2],to=nodes14[3]), (min = -600.0, max = 600), (min = -600.0, max = 600), (min = -600.0, max = 600), (min = -600.0, max = 600), (l0 = 0.01, l1 = 0.001)),
@@ -44,7 +44,7 @@ branches14_dc = [
                 Line("Line15", true, 0.0, 0.0, Arc(from=nodes14[13],to=nodes14[14]), 0.17093, 0.34802, (from=0.0, to=0.0), 10.213, 1.04)
             ]
 
-branches14 = [
+branches14() = [
                 Line("Line1",  true, 0.0, 0.0, Arc(from=nodes14[1],to=nodes14[2]),   0.01938, 0.05917, (from=0.0264, to=0.0264), 18.046, 1.04),
                 Line("Line2",  true, 0.0, 0.0, Arc(from=nodes14[1],to=nodes14[5]),   0.05403, 0.22304, (from=0.0246, to=0.0246), 4.896, 1.04),
                 Line("Line3",  true, 0.0, 0.0, Arc(from=nodes14[2],to=nodes14[3]),   0.04699, 0.19797, (from=0.0219, to=0.0219), 5.522, 1.04),
@@ -67,7 +67,7 @@ branches14 = [
                 Line("Line15", true, 0.0, 0.0, Arc(from=nodes14[13],to=nodes14[14]), 0.17093, 0.34802, (from=0.0, to=0.0), 10.213, 1.04)
             ]
 
-thermal_generators14 = [ThermalStandard("Bus1", true, nodes14[1], 2.0, -0.169,
+thermal_generators14() = [ThermalStandard("Bus1", true, nodes14[1], 2.0, -0.169,
                     TechThermal(2.324, PowerSystems.ST, PowerSystems.COAL, (min=0.0, max=3.332), (min=0.0, max=0.1), nothing, nothing),
                     ThreePartCost((430.292599, 2000.0), 0.0, 0.0, 0.0)
                     ),
@@ -87,7 +87,7 @@ thermal_generators14 = [ThermalStandard("Bus1", true, nodes14[1], 2.0, -0.169,
                     TechThermal(1.0, PowerSystems.ST, PowerSystems.COAL, (min=0.0, max=1.0), (min=-0.06, max=0.24), nothing, nothing),
                     ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0)
                     )
-            ];
+            ]
 
 
 loadz1_ts = [ 0.792729978
@@ -165,7 +165,7 @@ loadz3_ts = [ 0.871297342
               0.771004923
               0.717847996]
 
-loads14 = [PowerLoad("Bus2", true, nodes14[2], PowerSystems.ConstantPower, 0.217, 0.127, 0.217, 0.127),
+loads14() = [PowerLoad("Bus2", true, nodes14[2], PowerSystems.ConstantPower, 0.217, 0.127, 0.217, 0.127),
           PowerLoad("Bus3", true, nodes14[3], PowerSystems.ConstantPower, 0.942, 0.19, 0.942, 0.19),
           PowerLoad("Bus4", true, nodes14[4], PowerSystems.ConstantPower, 0.478, -0.039, 0.478, -0.039),
           PowerLoad("Bus5", true, nodes14[5], PowerSystems.ConstantPower, 0.076, 0.016, 0.076, 0.016),
@@ -177,7 +177,7 @@ loads14 = [PowerLoad("Bus2", true, nodes14[2], PowerSystems.ConstantPower, 0.217
           PowerLoad("Bus13", true, nodes14[13], PowerSystems.ConstantPower, 0.135, 0.058, 0.135, 0.058),
           PowerLoad("Bus14", true, nodes14[14], PowerSystems.ConstantPower, 0.149, 0.050, 0.149, 0.050)]
 
-forecast_DA14 =[TimeArray(dates, loadz1_ts),
+timeseries_DA14 =[TimeArray(dates, loadz1_ts),
                 TimeArray(dates, loadz1_ts),
                 TimeArray(dates, loadz3_ts),
                 TimeArray(dates, loadz1_ts),
@@ -190,7 +190,7 @@ forecast_DA14 =[TimeArray(dates, loadz1_ts),
                 TimeArray(dates, loadz2_ts)
 ];
 
-battery14 = [GenericBattery(name = "Bat",
+battery14() = [GenericBattery(name = "Bat",
                             primemover = PowerSystems.BA,
                             available = true,
                             bus = nodes14[1],
