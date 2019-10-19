@@ -44,61 +44,20 @@
     initial_time = initial_times[1]
 
     # Get forecasts with a label and without.
-    components = get_components(HydroDispatch, sys)
-    forecasts = get_forecasts(Forecast, sys, initial_time, components, "PMax MW")
-    @test length(forecasts) > 0
-
-    forecasts = collect(get_forecasts(Forecast, sys, initial_time, components))
-    count = length(forecasts)
-    @test count > 0
-
-    # Verify that the two accessor functions return the same results.
-    all_components = get_components(Component, sys)
-    all_forecasts1 = get_forecasts(Forecast, sys, initial_time, all_components)
-    all_forecasts2 = get_forecasts(Forecast, sys, initial_time)
-    @test length(all_forecasts1) == length(all_forecasts2)
-
-    # Get specific forecasts. They should not match.
-    specific_forecasts = get_forecasts(PSY.Deterministic{Bus}, sys, initial_time)
-    @test length(specific_forecasts) < length(all_forecasts1)
+    components = collect(get_components(HydroDispatch, sys))
+    @test !isempty(components)
+    component = components[1]
+    forecast = get_forecast(Deterministic, component, initial_time,
+                            "active_power_limits_max")
+    @test forecast isa Deterministic
 
     @test get_forecasts_horizon(sys) == 24
     @test get_forecasts_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
-    @test get_forecasts_interval(sys) == Dates.Hour(1)  # TODO
+    @test get_forecasts_interval(sys) == Dates.Hour(0)
     @test get_forecasts_resolution(sys) == Dates.Hour(1)  # TODO
 
-    for forecast in collect(get_forecasts(Forecast, sys, initial_time))
-        remove_forecast!(sys, forecast)
-    end
-
-    @test length(get_forecasts(Forecast, sys, initial_time)) == 0
-
-    # ArgumentError is thrown if the type is concrete and there is no forecast for a
-    # component.
-    @test_throws(IS.ArgumentError,
-                 get_forecasts(Forecast, sys, initial_time, components))
-
-    # But not if the type is abstract.
-    new_forecasts = get_forecasts(Forecast, sys, initial_time,
-                                  get_components(HydroGen, sys))
-    @test length(new_forecasts) == 0
-
-    add_forecasts!(sys, forecasts)
-
-    forecasts = get_forecasts(Forecast, sys, initial_time, components)
-    @assert length(forecasts) == count
-
-    @test_throws(IS.ArgumentError,
-                 get_forecasts(PSY.Deterministic{Bus}, sys, initial_time, components))
-
-    f = forecasts[1]
-    forecast = PSY.Deterministic(Bus(nothing), f.label, f.resolution, f.initial_time, f.data)
-    @test_throws(IS.ArgumentError, add_forecasts!(sys, [forecast]))
-
-    component = deepcopy(f.component)
-    component.internal = IS.InfrastructureSystemsInternal()
-    forecast = PSY.Deterministic(component, f.label, f.resolution, f.initial_time, f.data)
-    @test_throws(IS.ArgumentError, add_forecasts!(sys, [forecast]))
+    clear_forecasts!(sys)
+    @test length(collect(iterate_forecasts(sys))) == 0
 end
 
 @testset "Test System iterators" begin
@@ -112,18 +71,12 @@ end
     components = get_components(Component, sys)
     @test i == length(components)
 
-    i = 0
-    for forecast in iterate_forecasts(sys)
-        i += 1
-    end
-
-    j = 0
     initial_times = get_forecast_initial_times(sys)
-    for initial_time in initial_times
-        j += length(get_forecasts(Forecast, sys, initial_time))
+    unique_initial_times = Set{Dates.DateTime}()
+    for forecast in iterate_forecasts(sys)
+        push!(unique_initial_times, get_initial_time(forecast))
     end
-
-    @test i == j
+    @test initial_times == sort!(collect(unique_initial_times))
 end
 
 @testset "Test remove_component" begin

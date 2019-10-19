@@ -28,11 +28,11 @@ result = [2.32551,
 -0.280381]
 
 include(joinpath(BASE_DIR,"data/data_14bus_pu.jl"))
-c_sys14 = System(nodes14, thermal_generators14, loads14, branches14, nothing, 100.0, nothing, nothing, nothing);
+c_sys14 = System(nodes14, thermal_generators14, loads14, branches14, nothing, 100.0, nothing, nothing);
 
 include(joinpath(BASE_DIR,"data/data_5bus_pu.jl"))
 c_sys5_re = System(nodes5, vcat(thermal_generators5, renewable_generators5), loads5,
-                nothing, nothing,  100.0, nothing, nothing, nothing)
+                nothing, nothing,  100.0, nothing, nothing)
 
 
 @testset begin

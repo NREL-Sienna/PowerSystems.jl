@@ -270,7 +270,7 @@ function System(data::PowerSystemTableData; forecast_resolution=nothing)
     end
 
     if !isnothing(data.timeseries_metadata_file)
-        label_mapping = _create_forecast_label_mapping(data)
+        label_mapping = _create_forecast_label_mapping(data.user_descriptors)
         add_forecasts!(sys, data.timeseries_metadata_file, label_mapping;
                        resolution=forecast_resolution)
     end
@@ -914,9 +914,9 @@ end
 Forecasts are created for specific fields of a component. The field name in the metadata
 file may be customized, so this creates a mapping of (category, custom_name) to name.
 """
-function _create_forecast_label_mapping(data::PowerSystemTableData)
+function _create_forecast_label_mapping(user_descriptors::Dict)
     mapping = Dict{Tuple{String, String}, String}()
-    for (category, params) in data.user_descriptors
+    for (category, params) in user_descriptors
         for param in params
             key = (lowercase(string(category)), param["custom_name"])
             @assert !haskey(mapping, key)
