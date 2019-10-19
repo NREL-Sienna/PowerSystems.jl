@@ -549,7 +549,8 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
 
         buses = get_buses(sys, bus_numbers)
         name = string(zone)
-        load_zones = LoadZones(zone, name, buses, sum(active_powers), sum(reactive_powers))
+        zoneid = typeof(zone) <: Number ? zone : count
+        load_zones = LoadZones(zoneid, name, buses, sum(active_powers), sum(reactive_powers))
         add_component!(sys, load_zones)
     end
 end
@@ -611,7 +612,9 @@ end
 """Creates a generator of any type."""
 function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     generator = nothing
-    gen_type = get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
+    gen_type = get_generator_type(get(gen, :fuel, nothing),
+                                      get(gen,:unit_type,nothing),
+                                      data.generator_mapping)
 
     if gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
@@ -882,6 +885,9 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     vals = Vector()
     for field_info in field_infos
         value = row[field_info.custom_name]
+        if ismissing(value)
+            throw(DataFormatError("$(field_info.custom_name) value missing"))
+        end
         if na_to_nothing && value == "NA"
             value = nothing
         end
