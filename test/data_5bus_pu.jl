@@ -217,25 +217,25 @@ loads5 = [ PowerLoad("Bus2", true, nodes5[2], PowerSystems.ConstantPower, 3.0, 0
 
 interruptible = [InterruptibleLoad("IloadBus4", true, nodes5[4], PowerSystems.ConstantPower, 0.10, 0.0,  0.10, 0.0, TwoPartCost(150.0, 2400.0))]
 
-reserve5 = StaticReserve("test_reserve", thermal_generators5, 0.6, maximum([gen.tech.activepowerlimits[:max] for gen in thermal_generators5]))
+reserve5 = [StaticReserve("test_reserve", thermal_generators5, 0.6, maximum([gen.tech.activepowerlimits[:max] for gen in thermal_generators5]))]
 
-Iload_forecast = [Deterministic("scalingfactor", TimeArray(DayAhead, loadbus4_ts_DA)),
-                  Deterministic("scalingfactor", TimeArray(DayAhead+Day(1), loadbus4_ts_DA + 0.1*rand(24))),]
+Iload_forecast = [[TimeArray(DayAhead, loadbus4_ts_DA)],
+                  [TimeArray(DayAhead+Day(1), loadbus4_ts_DA + 0.1*rand(24))]]
 
-load_forecast_DA = [Deterministic("scalingfactor", TimeArray(DayAhead, loadbus2_ts_DA)),
-                    Deterministic("scalingfactor", TimeArray(DayAhead, loadbus3_ts_DA)),
-                    Deterministic("scalingfactor", TimeArray(DayAhead, loadbus4_ts_DA)),
-                    Deterministic("scalingfactor", TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus2_ts_DA)),
-                    Deterministic("scalingfactor", TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus3_ts_DA)),
-                    Deterministic("scalingfactor", TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus4_ts_DA))]
+load_forecast_DA = [[TimeArray(DayAhead, loadbus2_ts_DA),
+                     TimeArray(DayAhead, loadbus3_ts_DA),
+                     TimeArray(DayAhead, loadbus4_ts_DA)],
+                    [TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus2_ts_DA),
+                     TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus3_ts_DA),
+                     TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus4_ts_DA)]]
 
-ren_forecast_DA = [Deterministic("scalingfactor", TimeSeries.TimeArray(DayAhead,solar_ts_DA)),
-                   Deterministic("scalingfactor", TimeSeries.TimeArray(DayAhead,wind_ts_DA)),
-                   Deterministic("scalingfactor", TimeSeries.TimeArray(DayAhead,wind_ts_DA)),
-                   Deterministic("scalingfactor", TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + solar_ts_DA)),
-                   Deterministic("scalingfactor", TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA)),
-                   Deterministic("scalingfactor", TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA))
-                  ];
+ren_forecast_DA = [[TimeSeries.TimeArray(DayAhead,solar_ts_DA),
+                    TimeSeries.TimeArray(DayAhead,wind_ts_DA),
+                    TimeSeries.TimeArray(DayAhead,wind_ts_DA)],
+                   [TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + solar_ts_DA),
+                    TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA),
+                    TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA)
+                  ]];
 
-hydro_forecast_DA = [Deterministic("scalingfactor", TimeSeries.TimeArray(DayAhead,wind_ts_DA)),
-                     Deterministic("scalingfactor", TimeSeries.TimeArray(DayAhead,wind_ts_DA))]
+hydro_forecast_DA = [[TimeSeries.TimeArray(DayAhead,wind_ts_DA)],
+                     [TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA)]]

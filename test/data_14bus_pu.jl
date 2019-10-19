@@ -1,7 +1,6 @@
 using TimeSeries
 using Dates
 
-
 dates  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
 
 nodes14= [
@@ -178,32 +177,30 @@ loads14 = [PowerLoad("Bus2", true, nodes14[2], PowerSystems.ConstantPower, 0.217
           PowerLoad("Bus13", true, nodes14[13], PowerSystems.ConstantPower, 0.135, 0.058, 0.135, 0.058),
           PowerLoad("Bus14", true, nodes14[14], PowerSystems.ConstantPower, 0.149, 0.050, 0.149, 0.050)]
 
-forecast_DA14 =[Deterministic("scalingfactor", TimeArray(dates, loadz1_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz1_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz3_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz1_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz3_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts)),
-                Deterministic( "scalingfactor", TimeArray(dates, loadz2_ts)),
-                Deterministic("scalingfactor", TimeArray(dates, loadz2_ts))
+forecast_DA14 =[TimeArray(dates, loadz1_ts),
+                TimeArray(dates, loadz1_ts),
+                TimeArray(dates, loadz3_ts),
+                TimeArray(dates, loadz1_ts),
+                TimeArray(dates, loadz2_ts),
+                TimeArray(dates, loadz3_ts),
+                TimeArray(dates, loadz2_ts),
+                TimeArray(dates, loadz2_ts),
+                TimeArray(dates, loadz2_ts),
+                TimeArray(dates, loadz2_ts),
+                TimeArray(dates, loadz2_ts)
 ];
 
-forecasts14 = Dict{Symbol,Vector{<:Forecast}}(:DA=>forecast_DA14);
-
 battery14 = [GenericBattery(name = "Bat",
-primemover = PowerSystems.BA,
-available = true,
-bus = nodes14[1],
-energy = 5.0,
-capacity = (min = 5.0, max = 100.0),
-rating = 70,
-activepower = 10.0,
-inputactivepowerlimits = (min = 0.0, max = 50.0),
-outputactivepowerlimits = (min = 0.0, max = 50.0),
-reactivepower = 0.0,
-reactivepowerlimits = (min = -50.0, max = 50.0),
-efficiency = (in = 0.80, out = 0.90)
-)]
+                            primemover = PowerSystems.BA,
+                            available = true,
+                            bus = nodes14[1],
+                            energy = 5.0,
+                            capacity = (min = 5.0, max = 100.0),
+                            rating = 70,
+                            activepower = 10.0,
+                            inputactivepowerlimits = (min = 0.0, max = 50.0),
+                            outputactivepowerlimits = (min = 0.0, max = 50.0),
+                            reactivepower = 0.0,
+                            reactivepowerlimits = (min = -50.0, max = 50.0),
+                            efficiency = (in = 0.80, out = 0.90)
+                            )]
