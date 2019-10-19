@@ -278,20 +278,20 @@
             "description": "Heat rate Average 0 TODO"
         },
         {
-            "name": "heat_rate_avg_1",
-            "description": "Heat rate Average 1 TODO"
+            "name": "heat_rate_incr_1",
+            "description": "Heat rate Incremental 1 TODO"
         },
         {
-            "name": "heat_rate_avg_2",
-            "description": "Heat rate Average 2 TODO"
+            "name": "heat_rate_incr_2",
+            "description": "Heat rate Incremental 2 TODO"
         },
         {
-            "name": "heat_rate_avg_3",
-            "description": "Heat rate Average 3 TODO"
+            "name": "heat_rate_incr_3",
+            "description": "Heat rate Incremental 3 TODO"
         },
         {
-            "name": "heat_rate_avg_4",
-            "description": "Heat rate Average 4 TODO"
+            "name": "heat_rate_incr_4",
+            "description": "Heat rate Incremental 4 TODO"
         },
         {
             "unit": "%",
