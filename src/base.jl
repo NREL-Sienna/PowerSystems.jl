@@ -725,6 +725,15 @@ function clear_forecasts!(sys::System)
 end
 
 """
+    check_forecast_consistency(sys::System)
+
+Throws DataFormatError if forecasts have inconsistent parameters.
+"""
+function check_forecast_consistency(sys::System)
+    IS.check_forecast_consistency(sys.data)
+end
+
+"""
     validate_forecast_consistency(sys::System)
 
 Return true if all forecasts have consistent parameters.
