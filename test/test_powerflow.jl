@@ -27,11 +27,14 @@ result = [2.32551,
 1.02131,
 -0.280381]
 
-include(joinpath(BASE_DIR,"data/data_14bus_pu.jl"))
-c_sys14 = System(nodes14, thermal_generators14, loads14, branches14, nothing, 100.0, nothing, nothing);
+include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
+include(joinpath(BASE_DIR, "test", "data_14bus_pu.jl"))
 
-include(joinpath(BASE_DIR,"data/data_5bus_pu.jl"))
-c_sys5_re = System(nodes5, vcat(thermal_generators5, renewable_generators5), loads5,
+nodes_5 = nodes5()
+nodes_14 = nodes14()
+c_sys14 = System(nodes_14, thermal_generators14(nodes_14), loads14(nodes_14), branches14(nodes_14), nothing, 100.0, nothing, nothing);
+
+c_sys5_re = System(nodes_5, vcat(thermal_generators5(nodes_5), renewable_generators5(nodes_5)), loads5(nodes_5),
                 nothing, nothing,  100.0, nothing, nothing)
 
 
