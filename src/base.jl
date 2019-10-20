@@ -162,7 +162,7 @@ end
 Serializes a system to a JSON string.
 """
 function to_json(sys::System, filename::AbstractString)
-    IS.prepare_for_serialization(sys.data, filename)
+    IS.prepare_for_serialization!(sys.data, filename)
     return IS.to_json(sys, filename)
 end
 
