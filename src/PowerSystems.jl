@@ -112,6 +112,8 @@ export iterate_forecasts
 export make_forecasts
 export get_name
 export to_json
+export check_forecast_consistency
+export validate_forecast_consistency
 
 #################################################################################
 # Imports
