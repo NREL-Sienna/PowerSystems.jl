@@ -87,6 +87,7 @@ export clear_forecasts!
 export add_component!
 export remove_component!
 export remove_components!
+export clear_components!
 export get_component
 export get_components
 export get_components_by_name
@@ -102,6 +103,8 @@ export get_forecasts_resolution
 export get_forecast_component_name
 export get_forecast_value
 export get_horizon
+export get_initial_time
+export get_resolution
 export get_timeseries
 export get_data
 export iterate_components

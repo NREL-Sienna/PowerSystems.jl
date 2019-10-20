@@ -11,11 +11,16 @@ checksys = false
           nodes5[i].angle = deg2rad(nodes5[i].angle)
     end
 
+    # Components with forecasts cannot be added to multiple systems, so clear them on each
+    # test.
+
     sys5 = System(nodes5, thermal_generators5, loads5, nothing, nothing,  100.0, nothing,
-                  nothing, nothing; runchecks = checksys)
+                  nothing; runchecks = checksys)
+    clear_components!(sys5)
 
     sys5b = System(nodes5, thermal_generators5, loads5, nothing, battery5,  100.0, nothing,
-                   nothing, nothing; runchecks = checksys)
+                   nothing; runchecks = checksys)
+    clear_components!(sys5b)
 
     # GitHub issue #234 - fix forecasts5 in data file, use new format
     #_sys5b = PowerSystems._System(nodes5, thermal_generators5, loads5, nothing, battery5,
@@ -23,7 +28,8 @@ checksys = false
     #sys5b = System(_sys5b)
 
     sys5bh = System(nodes5, vcat(thermal_generators5, hydro_generators5), loads5, branches5,
-                    battery5,  100.0, nothing, nothing, nothing; runchecks = checksys)
+                    battery5,  100.0, nothing, nothing; runchecks = checksys)
+    clear_components!(sys5bh)
 
     sys5bh = System(; buses=nodes5,
                     generators=vcat(thermal_generators5, hydro_generators5),
@@ -31,10 +37,10 @@ checksys = false
                     branches=branches5,
                     storage=battery5,
                     basepower=100.0,
-                    forecasts=nothing,
                     services=nothing,
                     annex=nothing,
                     runchecks = checksys)
+    clear_components!(sys5bh)
 
     # Test Data for 14 Bus
 
@@ -48,9 +54,11 @@ checksys = false
     end
 
     sys14b = PowerSystems.System(nodes14, thermal_generators14, loads14, nothing,
-                                 battery14, 100.0, nothing, nothing, nothing; runchecks = checksys)
+                                 battery14, 100.0, nothing, nothing; runchecks = checksys)
+    clear_components!(sys14b)
     sys14b = PowerSystems.System(nodes14, thermal_generators14, loads14, branches14,
-                                 battery14, 100.0, nothing, nothing, nothing; runchecks = checksys)
+                                 battery14, 100.0, nothing, nothing; runchecks = checksys)
+    clear_components!(sys14b)
 end
 
 @testset "Test System constructor from Matpower" begin

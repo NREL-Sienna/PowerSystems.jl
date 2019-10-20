@@ -162,7 +162,7 @@ end
 Serializes a system to a JSON string.
 """
 function to_json(sys::System, filename::AbstractString)
-    _to_json(sys, filename)
+    IS.prepare_for_serialization(sys.data, filename)
     return IS.to_json(sys, filename)
 end
 
@@ -172,12 +172,7 @@ end
 Serializes a system an IO stream in JSON.
 """
 function to_json(io::IO, sys::System)
-    _to_json(sys, filename)
     return IS.to_json(io, sys)
-end
-
-function _to_json(sys::System, filename)
-    IS.prepare_for_serialization(sys.data, filename)
 end
 
 """Constructs a System from a JSON file."""
@@ -258,7 +253,6 @@ end
     add_forecasts!(
                    sys::System,
                    timeseries_metadata::Vector{IS.TimeseriesFileMetadata},
-                   label_mapping::Dict{Tuple{String, String}, String};
                    resolution=nothing,
                   )
 
@@ -267,17 +261,14 @@ Adds forecasts from a metadata file or metadata descriptors.
 # Arguments
 - `sys::System`: system
 - `timeseries_metadata::Vector{IS.TimeseriesFileMetadata}`: metadata for timeseries
-- `label_mapping::Dict{Tuple{String, String}, String}`: maps customized component field names to
-  PowerSystem field names
 - `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
 """
 function add_forecasts!(
                         sys::System,
                         timeseries_metadata::Vector{IS.TimeseriesFileMetadata},
-                        label_mapping::Dict{Tuple{String, String}, String};
                         resolution=nothing
                        )
-    return IS.add_forecasts!(Component, sys.data, timeseries_metadata, label_mapping;
+    return IS.add_forecasts!(Component, sys.data, timeseries_metadata;
                              resolution=resolution)
 end
 
@@ -307,7 +298,7 @@ function IS.add_forecast!(
                 forecast_ = IS.DeterministicInternal(IS.get_label(forecast), ts_data)
             else
                 # TODO: others
-                error("unsupported forecast type $(typeof(forecast))")
+                error("forecast type is not supported yet: $(typeof(forecast))")
             end
             IS.add_forecast!(data, component_, forecast, ts_data)
         end
@@ -332,6 +323,15 @@ See also: [`get_components`](@ref)
 """
 function iterate_components(sys::System)
     return IS.iterate_components(sys.data)
+end
+
+"""
+    clear_components!(sys::System)
+
+Remove all components from the system.
+"""
+function clear_components!(sys::System)
+    return IS.clear_components!(sys.data)
 end
 
 """
