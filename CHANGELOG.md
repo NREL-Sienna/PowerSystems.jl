@@ -1,5 +1,8 @@
 # PowerSystems Change Log
 
+### v0.5.0
+- Store and access forecast data from Disk
+
 ### v0.4.3
  - Fix Parsing bug in Table data #362
  - Enable custom validation descriptors when parsing PSS/E and MATPOWER files
