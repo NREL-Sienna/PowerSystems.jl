@@ -14,15 +14,16 @@ mutable struct Line <: ACBranch
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}  # System per-unit value
     rate::Float64
     anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, InfrastructureSystemsInternal())
+function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts, InfrastructureSystemsInternal())
 end
 
-function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, )
+function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -39,6 +40,7 @@ function Line(::Nothing)
         b=(from=0.0, to=0.0),
         rate=0.0,
         anglelimits=(min=-1.571, max=1.571),
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -62,5 +64,7 @@ get_b(value::Line) = value.b
 get_rate(value::Line) = value.rate
 """Get Line anglelimits."""
 get_anglelimits(value::Line) = value.anglelimits
+"""Get Line _forecasts."""
+get__forecasts(value::Line) = value._forecasts
 """Get Line internal."""
 get_internal(value::Line) = value.internal

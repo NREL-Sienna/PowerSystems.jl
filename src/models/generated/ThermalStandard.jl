@@ -11,15 +11,16 @@ mutable struct ThermalStandard <: ThermalGen
     reactivepower::Float64
     tech::Union{Nothing, TechThermal}
     op_cost::ThreePartCost
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, )
-    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, InfrastructureSystemsInternal())
+function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, InfrastructureSystemsInternal())
 end
 
-function ThermalStandard(; name, available, bus, activepower, reactivepower, tech, op_cost, )
-    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, )
+function ThermalStandard(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -33,6 +34,7 @@ function ThermalStandard(::Nothing)
         reactivepower=0.0,
         tech=TechThermal(nothing),
         op_cost=ThreePartCost(nothing),
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -50,5 +52,7 @@ get_reactivepower(value::ThermalStandard) = value.reactivepower
 get_tech(value::ThermalStandard) = value.tech
 """Get ThermalStandard op_cost."""
 get_op_cost(value::ThermalStandard) = value.op_cost
+"""Get ThermalStandard _forecasts."""
+get__forecasts(value::ThermalStandard) = value._forecasts
 """Get ThermalStandard internal."""
 get_internal(value::ThermalStandard) = value.internal

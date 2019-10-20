@@ -9,15 +9,16 @@ mutable struct LoadZones <: Topology
     buses::Vector{Bus}
     maxactivepower::Float64
     maxreactivepower::Float64
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function LoadZones(number, name, buses, maxactivepower, maxreactivepower, )
-    LoadZones(number, name, buses, maxactivepower, maxreactivepower, InfrastructureSystemsInternal())
+function LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
+    LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts, InfrastructureSystemsInternal())
 end
 
-function LoadZones(; number, name, buses, maxactivepower, maxreactivepower, )
-    LoadZones(number, name, buses, maxactivepower, maxreactivepower, )
+function LoadZones(; number, name, buses, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
+    LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -29,6 +30,7 @@ function LoadZones(::Nothing)
         buses=[Bus(nothing)],
         maxactivepower=0.0,
         maxreactivepower=0.0,
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -42,5 +44,7 @@ get_buses(value::LoadZones) = value.buses
 get_maxactivepower(value::LoadZones) = value.maxactivepower
 """Get LoadZones maxreactivepower."""
 get_maxreactivepower(value::LoadZones) = value.maxreactivepower
+"""Get LoadZones _forecasts."""
+get__forecasts(value::LoadZones) = value._forecasts
 """Get LoadZones internal."""
 get_internal(value::LoadZones) = value.internal

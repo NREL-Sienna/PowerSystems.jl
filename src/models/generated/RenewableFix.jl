@@ -10,15 +10,16 @@ mutable struct RenewableFix <: RenewableGen
     activepower::Float64
     reactivepower::Float64
     tech::TechRenewable
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableFix(name, available, bus, activepower, reactivepower, tech, )
-    RenewableFix(name, available, bus, activepower, reactivepower, tech, InfrastructureSystemsInternal())
+function RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts, InfrastructureSystemsInternal())
 end
 
-function RenewableFix(; name, available, bus, activepower, reactivepower, tech, )
-    RenewableFix(name, available, bus, activepower, reactivepower, tech, )
+function RenewableFix(; name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -31,6 +32,7 @@ function RenewableFix(::Nothing)
         activepower=0.0,
         reactivepower=0.0,
         tech=TechRenewable(nothing),
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -46,5 +48,7 @@ get_activepower(value::RenewableFix) = value.activepower
 get_reactivepower(value::RenewableFix) = value.reactivepower
 """Get RenewableFix tech."""
 get_tech(value::RenewableFix) = value.tech
+"""Get RenewableFix _forecasts."""
+get__forecasts(value::RenewableFix) = value._forecasts
 """Get RenewableFix internal."""
 get_internal(value::RenewableFix) = value.internal

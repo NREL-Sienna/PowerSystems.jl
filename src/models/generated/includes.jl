@@ -28,6 +28,7 @@ include("StaticReserve.jl")
 include("Transfer.jl")
 
 export get_Y
+export get__forecasts
 export get_activepower
 export get_activepower_flow
 export get_activepowerlimits

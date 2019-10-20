@@ -12,15 +12,16 @@ mutable struct PowerLoad <: StaticLoad
     reactivepower::Float64
     maxactivepower::Float64
     maxreactivepower::Float64
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, )
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, InfrastructureSystemsInternal())
+function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
+    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, _forecasts, InfrastructureSystemsInternal())
 end
 
-function PowerLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, )
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, )
+function PowerLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
+    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -35,6 +36,7 @@ function PowerLoad(::Nothing)
         reactivepower=0.0,
         maxactivepower=0.0,
         maxreactivepower=0.0,
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -54,5 +56,7 @@ get_reactivepower(value::PowerLoad) = value.reactivepower
 get_maxactivepower(value::PowerLoad) = value.maxactivepower
 """Get PowerLoad maxreactivepower."""
 get_maxreactivepower(value::PowerLoad) = value.maxreactivepower
+"""Get PowerLoad _forecasts."""
+get__forecasts(value::PowerLoad) = value._forecasts
 """Get PowerLoad internal."""
 get_internal(value::PowerLoad) = value.internal
