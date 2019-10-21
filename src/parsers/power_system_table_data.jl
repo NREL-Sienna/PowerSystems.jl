@@ -34,7 +34,7 @@ function PowerSystemTableData(
         ("dc_branch", DC_BRANCH::InputCategory),
         ("gen", GENERATOR::InputCategory),
         ("load", LOAD::InputCategory),
-        ("reserve", RESERVE::InputCategory),
+        ("reserves", RESERVE::InputCategory),
     ]
 
     if !haskey(data, "bus")
