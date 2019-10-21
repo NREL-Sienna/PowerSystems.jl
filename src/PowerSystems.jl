@@ -78,6 +78,42 @@ export ScenarioBased
 export make_pf
 export solve_powerflow!
 
+export BevDemand
+export ChargingSegment
+export ChargingPlan
+export Demand
+export Envelope
+export FlexibleDemand
+export InflexibleDemand
+export InterruptibleDemand
+export LocatedDemand
+export LocatedEnvelope
+export MobileDemand
+export StationaryInflexibleDemand
+export TemporalDemand
+export aligntimes
+export batterylevels
+export chargeamounts
+export chargelevels
+export chargerates
+export consumptionamounts
+export consumptionrates
+export demands
+export durations
+export earliestdemands
+export envelope
+export greedydemands
+export latestdemands
+export loads
+export locateddemand
+export locations
+export maxchargerates
+export populate_BEV_demand
+export shortfall
+export verify
+export verifybattery
+export verifylimits
+
 export parse_standard_files
 export parse_file
 export add_forecasts!
@@ -157,6 +193,7 @@ include("common.jl")
 
 # Include utilities
 include("utils/IO/base_checks.jl")
+include("utils/timearray.jl")
 
 # PowerSystems models
 include("models/topological_elements.jl")
@@ -169,6 +206,7 @@ include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
+include("models/demand.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")

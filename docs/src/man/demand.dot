@@ -1,0 +1,40 @@
+digraph "Demand" {
+
+  Demand [shape=oval]
+  Demand -> InflexibleDemand
+  Demand -> FlexibleDemand
+
+  InflexibleDemand [shape=oval]
+  InflexibleDemand -> StationaryInflexibleDemand
+
+  FlexibleDemand [shape=oval]
+  FlexibleDemand -> InterruptibleDemand
+  FlexibleDemand -> BuildingDemand
+  FlexibleDemand -> BevDemand
+  FlexibleDemand -> PhevDemand
+
+  StationaryInflexibleDemand [shape=box]
+  InterruptibleDemand        [shape=box]
+  BuildingDemand             [shape=box]
+  BevDemand                  [shape=box]
+  PhevDemand                 [shape=box]
+
+  TimeArray [shape=oval]
+  TimeArray -> Envelope
+  TimeArray -> LocatedEnvelope
+  TimeArray -> TemporalDemand
+  TimeArray -> MobileDemand
+  TimeArray -> LocatedDemand
+
+  Envelope        [shape=box]
+  LocatedEnvelope [shape=box]
+  TemporalDemand  [shape=box]
+  MobileDemand    [shape=box]
+  LocatedDemand   [shape=box]
+
+  DemandResponseConstraint [shape=oval]
+
+  InterruptibleDemand -> TimeArray                [style=invisible arrowhead=none]
+  TemporalDemand      -> DemandResponseConstraint [style=invisible arrowhead=none]
+
+}
