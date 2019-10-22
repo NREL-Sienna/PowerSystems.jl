@@ -13,6 +13,9 @@ docs/build/*
 *.zip
 data
 *.bak
+*.sw?
+*.tmp
+tmp/
 *~
 *.vscode
 src/descriptors/validation_config.*

@@ -3,6 +3,7 @@
 
 # Import modules.
 using DataFrames, Dates, MAT, TimeSeries
+import Base: convert
 
 
 """
