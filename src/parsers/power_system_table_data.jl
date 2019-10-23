@@ -612,7 +612,7 @@ end
 """Creates a generator of any type."""
 function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     generator = nothing
-    gen_type = get_generator_type(get(gen, :fuel, nothing),
+    gen_type = get_generator_type(gen.fuel,
                                       get(gen,:unit_type,nothing),
                                       data.generator_mapping)
 
@@ -635,7 +635,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     fuel_cost = gen.fuel_price / 1000
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
-    var_cost = [(c[1], c[2]) for c in var_cost if !in(nothing, c)]
+    var_cost = [(tryparse(Float64, c[1]), tryparse(Float64, c[2])) for c in var_cost if !in(nothing, c)]
     if length(unique(var_cost)) > 1
         var_cost[2:end] = [(var_cost[i][1] * (var_cost[i][2] - var_cost[i-1][2]) * fuel_cost * data.basepower,
                             var_cost[i][2]) .* gen.active_power_limits_max
