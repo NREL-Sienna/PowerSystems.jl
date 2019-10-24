@@ -562,37 +562,51 @@ Add services to the System from the raw data.
 
 """
 function services_csv_parser!(sys::System, data::PowerSystemTableData)
-    bus_id_column = get_user_field(data, BUS::InputCategory, "bus_id")
+    bus_id_column = get_user_field(data, BUS::InputCategory, "name")
     bus_area_column = get_user_field(data, BUS::InputCategory, "area")
 
     # Shortcut for data that looks like "(val1,val2,val3)"
-    make_array(x) = split(strip(x, ['(', ')']), ",")
+    make_array(x) = isnothing(x) ? x : split(strip(x, ['(', ')']), ",")
+
+    function _add_device!(contributing_devices, device_categories, name)
+        for dev_category in device_categories
+            component_type = _get_component_type_from_category(dev_category)
+            components = get_components_by_name(component_type, sys, name)
+            if length(components) == 0
+                # There multiple categories, so we might not find a match in some.
+                continue
+            elseif length(components) == 1
+                component = components[1]
+            else
+                msg = "Found duplicate names type=$component_type name=$name"
+                throw(DataFormatError(msg))
+            end
+
+            push!(contributing_devices, component)
+        end
+    end
 
     for reserve in iterate_rows(data, RESERVES::InputCategory)
         device_categories = make_array(reserve.eligible_device_categories)
-        device_subcategories = make_array(reserve.eligible_device_subcategories)
+        device_subcategories = make_array(get(reserve, :eligible_device_subcategories, nothing))
+        devices = make_array(get(reserve, :contributing_devices, nothing))
         regions = make_array(reserve.eligible_regions)
+        requirement = get(reserve, :requirement, nothing)
         contributing_devices = Vector{Device}()
 
-        for gen in iterate_rows(data, GENERATOR::InputCategory)
-            bus_ids = data.bus[!, bus_id_column]
-            area = string(data.bus[bus_ids .== gen.bus_id, bus_area_column][1])
-            if gen.category in device_subcategories && area in regions
-                for dev_category in device_categories
-                    component_type = _get_component_type_from_category(dev_category)
-                    components = get_components_by_name(component_type, sys, gen.name)
-                    if length(components) == 0
-                        # There multiple categories, so we might not find a match in some.
-                        continue
-                    elseif length(components) == 1
-                        component = components[1]
-                    else
-                        msg = "Found duplicate names type=$component_type name=$name"
-                        throw(DataFormatError(msg))
-                    end
-
-                    push!(contributing_devices, component)
+        if !isnothing(device_subcategories)
+            @info("Adding contributing components for $(reserve.name) by category")
+            for gen in iterate_rows(data, GENERATOR::InputCategory)
+                bus_ids = data.bus[!, bus_id_column]
+                area = string(data.bus[bus_ids .== gen.bus_id, bus_area_column][1])
+                if gen.category in device_subcategories && area in regions
+                    _add_device!(contributing_devices, device_categories, gen.name)
                 end
+            end
+        else
+            @info("Adding contributing components for $(reserve.name) by component name")
+            for device in devices
+                _add_device!(contributing_devices, device_categories, device)
             end
         end
 
@@ -602,9 +616,16 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             ))
         end
 
-        service = ProportionalReserve(reserve.name,
-                                      contributing_devices,
-                                      reserve.timeframe)
+        if isnothing(requirement)
+            service = ProportionalReserve(reserve.name,
+                                        contributing_devices,
+                                        reserve.timeframe)
+        else
+            service = StaticReserve(reserve.name,
+                                    contributing_devices,
+                                    reserve.timeframe,
+                                    requirement)
+        end
         add_component!(sys, service)
     end
 end
@@ -635,7 +656,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     fuel_cost = gen.fuel_price / 1000
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
-    var_cost = [(tryparse(Float64, c[1]), tryparse(Float64, c[2])) for c in var_cost if !in(nothing, c)]
+    var_cost = [(tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for c in var_cost if !in(nothing, c)]
     if length(unique(var_cost)) > 1
         var_cost[2:end] = [(var_cost[i][1] * (var_cost[i][2] - var_cost[i-1][2]) * fuel_cost * data.basepower,
                             var_cost[i][2]) .* gen.active_power_limits_max
@@ -670,8 +691,19 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     )
 
     capacity = gen.active_power_limits_max
-    startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
-    shutdown_cost = 0.0
+    startup_cost = get(gen, :startup_cost, nothing)
+    if isnothing(startup_cost) && hasfield(typeof(gen), :startup_heat_cold_cost)
+        startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
+    else
+        @warn("No startup_cost defined for $(gen.name), setting to 0.0")
+        startup_cost = 0.0
+    end
+
+    shutdown_cost = get(gen, :shutdown_cost, nothing)
+    if isnothing(shutdown_cost)
+        @warn("No shutdown_cost defined for $(gen.name), setting to 0.0")
+        shutdown_cost = 0.0
+    end
     op_cost = ThreePartCost(
         var_cost,
         fixed,
