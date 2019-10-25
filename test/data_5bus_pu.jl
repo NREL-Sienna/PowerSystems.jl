@@ -1,18 +1,19 @@
 using TimeSeries
 using Dates
 using Random
+using PowerSystems
 
 DayAhead  = collect(DateTime("1/1/2024  0:00:00", "d/m/y  H:M:S"):Hour(1):DateTime("1/1/2024  23:00:00", "d/m/y  H:M:S"))
 #Dispatch_11am =  collect(DateTime("1/1/2024  0:11:00", "d/m/y  H:M:S"):Minute(15):DateTime("1/1/2024  12::00", "d/m/y  H:M:S"))
 
-nodes5    = [Bus(1,"nodeA", "PV", 0, 1.0, (min = 0.9, max=1.05), 230),
+nodes5() = [Bus(1,"nodeA", "PV", 0, 1.0, (min = 0.9, max=1.05), 230),
              Bus(2,"nodeB", "PQ", 0, 1.0, (min = 0.9, max=1.05), 230),
              Bus(3,"nodeC", "PV", 0, 1.0, (min = 0.9, max=1.05), 230),
              Bus(4,"nodeD", "REF", 0, 1.0, (min = 0.9, max=1.05), 230),
              Bus(5,"nodeE", "PV", 0, 1.0, (min = 0.9, max=1.05), 230),
             ];
 
-branches5_dc = [Line("1", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, (from=0.00356, to=0.00356), 2.0, (min = -0.7, max = 0.7)),
+branches5_dc(nodes5) = [Line("1", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, (from=0.00356, to=0.00356), 2.0, (min = -0.7, max = 0.7)),
              HVDCLine("DCL2", true, 0.0, Arc(from=nodes5[1],to=nodes5[4]), (min=-3000.0, max=3000.0), (min=-3000, max=3000), (min=-3000.0, max=3000.0), (min=-3000.0, max=3000.0), (l0=0.0, l1=0.01)),
              Line("3", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[5]), 0.00064, 0.0064, (from=0.01563, to=0.01563), 18.8120, (min = -0.7, max = 0.7)),
              Line("4", true, 0.0, 0.0, Arc(from=nodes5[2],to=nodes5[3]), 0.00108, 0.0108, (from=0.00926, to=0.00926), 11.1480, (min = -0.7, max = 0.7)),
@@ -20,7 +21,7 @@ branches5_dc = [Line("1", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[2]), 0.00
              Line("6", true, 0.0, 0.0, Arc(from=nodes5[4],to=nodes5[5]), 0.00297, 0.0297, (from=0.00337, to=00.00337), 2.00, (min = -0.7, max = 0.7))
 ];
 
-branches5 = [Line("1", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, (from=0.00356, to=0.00356), 2.0, (min = -0.7, max = 0.7)),
+branches5(nodes5) = [Line("1", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, (from=0.00356, to=0.00356), 2.0, (min = -0.7, max = 0.7)),
              Line("2", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[4]), 0.00304, 0.0304, (from=0.00329, to=0.00329), 2.0, (min = -0.7, max = 0.7)),
              Line("3", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[5]), 0.00064, 0.0064, (from=0.01563, to=0.01563), 18.8120, (min = -0.7, max = 0.7)),
              Line("4", true, 0.0, 0.0, Arc(from=nodes5[2],to=nodes5[3]), 0.00108, 0.0108, (from=0.00926, to=0.00926), 11.1480, (min = -0.7, max = 0.7)),
@@ -28,7 +29,7 @@ branches5 = [Line("1", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[2]), 0.00281
              Line("6", true, 0.0, 0.0, Arc(from=nodes5[4],to=nodes5[5]), 0.00297, 0.0297, (from=0.00337, to=00.00337), 2.00, (min = -0.7, max = 0.7))
 ];
 
-branches5_ml = [MonitoredLine("1", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, (from=0.00356, to=0.00356), (from_to=1.0, to_from=1.0), 2.0, (min = -0.7, max = 0.7)),
+branches5_ml(nodes5) = [MonitoredLine("1", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[2]), 0.00281, 0.0281, (from=0.00356, to=0.00356), (from_to=1.0, to_from=1.0), 2.0, (min = -0.7, max = 0.7)),
                 Line("2", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[4]), 0.00304, 0.0304, (from=0.00329, to=0.00329), 2.0, (min = -0.7, max = 0.7)),
                 Line("3", true, 0.0, 0.0, Arc(from=nodes5[1],to=nodes5[5]), 0.00064, 0.0064, (from=0.01563, to=0.01563), 18.8120, (min = -0.7, max = 0.7)),
                 Line("4", true, 0.0, 0.0, Arc(from=nodes5[2],to=nodes5[3]), 0.00108, 0.0108, (from=0.00926, to=0.00926), 11.1480, (min = -0.7, max = 0.7)),
@@ -86,7 +87,7 @@ wind_ts_DA = [0.985205412
            0.099302656
            0.069569628]
 
-thermal_generators5 = [ThermalStandard("Alta", true, nodes5[1], 0.40, 0.010,
+thermal_generators5(nodes5) = [ThermalStandard("Alta", true, nodes5[1], 0.40, 0.010,
            TechThermal(0.5, PowerSystems.ST, PowerSystems.COAL, (min=0.0, max=0.40),  (min = -0.30, max = 0.30), nothing, nothing),
            ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0)
            ),
@@ -107,13 +108,11 @@ thermal_generators5 = [ThermalStandard("Alta", true, nodes5[1], 0.40, 0.010,
                ThreePartCost((0.0, 1000.0), 0.0, 1.5, 0.75)
            )];
 
-renewable_generators5 = [RenewableDispatch("WindBusA", true, nodes5[5], 0.0, 0.0, PowerSystems.WT, 1.200, TwoPartCost(22.0, 0.0)),
+renewable_generators5(nodes5) = [RenewableDispatch("WindBusA", true, nodes5[5], 0.0, 0.0, PowerSystems.WT, 1.200, TwoPartCost(22.0, 0.0)),
                          RenewableDispatch("WindBusB", true, nodes5[4], 0.0, 0.0, PowerSystems.WT, 1.200, TwoPartCost(22.0, 0.0)),
                          RenewableDispatch("WindBusC", true, nodes5[3], 0.0, 0.0, TechRenewable(1.20, PowerSystems.WT, (min = -0.800, max = 0.800), 1.0), TwoPartCost(22.0, 0.0))];
 
-
-
-hydro_generators5 = [
+hydro_generators5(nodes5) = [
                     HydroFix("HydroFix", true, nodes5[2], 0.0, 0.0,
                         TechHydro(0.600, PowerSystems.HY, (min = 0.0, max = 60.0), (min = 0.0, max = 60.0), nothing, nothing)
                     ),
@@ -122,7 +121,7 @@ hydro_generators5 = [
                         TwoPartCost(15.0, 0.0))
                     ];
 
-battery5 = [GenericBattery(name = "Bat",
+battery5(nodes5) = [GenericBattery(name = "Bat",
                             primemover = PowerSystems.BA,
                             available = true,
                             bus = nodes5[1],
@@ -212,31 +211,32 @@ loadbus4_ts_DA = [ 0.871297342
                 0.771004923
                 0.717847996]
 
-loads5 = [ PowerLoad("Bus2", true, nodes5[2], PowerSystems.ConstantPower, 3.0, 0.9861, 3.0, 0.9861),
+loads5(nodes5) = [ PowerLoad("Bus2", true, nodes5[2], PowerSystems.ConstantPower, 3.0, 0.9861, 3.0, 0.9861),
            PowerLoad("Bus3", true, nodes5[3], PowerSystems.ConstantPower, 3.0, 0.9861, 3.0, 0.9861),
            PowerLoad("Bus4", true, nodes5[4], PowerSystems.ConstantPower, 4.0, 1.3147, 4.0, 1.3147),
         ];
 
-interruptible = [InterruptibleLoad("IloadBus4", true, nodes5[4], PowerSystems.ConstantPower, 0.10, 0.0,  0.10, 0.0, TwoPartCost(150.0, 2400.0))]
-Iload_forecast = [Deterministic(interruptible[1], "scalingfactor", TimeArray(DayAhead, loadbus4_ts_DA)),
-                  Deterministic(interruptible[1], "scalingfactor", TimeArray(DayAhead+Day(1), loadbus4_ts_DA + 0.1*rand(24))),]
+interruptible(nodes5) = [InterruptibleLoad("IloadBus4", true, nodes5[4], PowerSystems.ConstantPower, 0.10, 0.0,  0.10, 0.0, TwoPartCost(150.0, 2400.0))]
 
-reserve5 = StaticReserve("test_reserve", thermal_generators5, 0.6, maximum([gen.tech.activepowerlimits[:max] for gen in thermal_generators5]))
+reserve5(thermal_generators5) = [StaticReserve("test_reserve", thermal_generators5, 0.6, maximum([gen.tech.activepowerlimits[:max] for gen in thermal_generators5]))]
 
-load_forecast_DA = [Deterministic(loads5[1], "scalingfactor", TimeArray(DayAhead, loadbus2_ts_DA)),
-                    Deterministic(loads5[2], "scalingfactor", TimeArray(DayAhead, loadbus3_ts_DA)),
-                    Deterministic(loads5[3], "scalingfactor", TimeArray(DayAhead, loadbus4_ts_DA)),
-                    Deterministic(loads5[1], "scalingfactor", TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus2_ts_DA)),
-                    Deterministic(loads5[2], "scalingfactor", TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus3_ts_DA)),
-                    Deterministic(loads5[3], "scalingfactor", TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus4_ts_DA))]
+Iload_timeseries_DA = [[TimeArray(DayAhead, loadbus4_ts_DA)],
+                      [TimeArray(DayAhead+Day(1), loadbus4_ts_DA + 0.1*rand(24))]]
 
-ren_forecast_DA = [Deterministic(renewable_generators5[1], "scalingfactor", TimeSeries.TimeArray(DayAhead,solar_ts_DA)),
-                   Deterministic(renewable_generators5[2], "scalingfactor", TimeSeries.TimeArray(DayAhead,wind_ts_DA)),
-                   Deterministic(renewable_generators5[3], "scalingfactor", TimeSeries.TimeArray(DayAhead,wind_ts_DA)),
-                   Deterministic(renewable_generators5[1], "scalingfactor", TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + solar_ts_DA)),
-                   Deterministic(renewable_generators5[2], "scalingfactor", TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA)),
-                   Deterministic(renewable_generators5[3], "scalingfactor", TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA))
-                  ];
+load_timeseries_DA = [[TimeArray(DayAhead, loadbus2_ts_DA),
+                     TimeArray(DayAhead, loadbus3_ts_DA),
+                     TimeArray(DayAhead, loadbus4_ts_DA)],
+                    [TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus2_ts_DA),
+                     TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus3_ts_DA),
+                     TimeArray(DayAhead+Day(1), rand(24)*0.1 + loadbus4_ts_DA)]]
 
-hydro_forecast_DA = [Deterministic(hydro_generators5[1], "scalingfactor", TimeSeries.TimeArray(DayAhead,wind_ts_DA)),
-                     Deterministic(hydro_generators5[2], "scalingfactor", TimeSeries.TimeArray(DayAhead,wind_ts_DA))]
+ren_timeseries_DA = [[TimeSeries.TimeArray(DayAhead,solar_ts_DA),
+                    TimeSeries.TimeArray(DayAhead,wind_ts_DA),
+                    TimeSeries.TimeArray(DayAhead,wind_ts_DA)],
+                   [TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + solar_ts_DA),
+                    TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA),
+                    TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA)
+                  ]];
+
+hydro_timeseries_DA = [[TimeSeries.TimeArray(DayAhead,wind_ts_DA)],
+                     [TimeSeries.TimeArray(DayAhead + Day(1), rand(24)*0.1 + wind_ts_DA)]]

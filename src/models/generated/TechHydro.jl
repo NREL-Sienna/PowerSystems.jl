@@ -10,15 +10,16 @@ mutable struct TechHydro <: TechnicalParams
     reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
-    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal())
+function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, _forecasts=InfrastructureSystems.Forecasts(), )
+    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, _forecasts, InfrastructureSystemsInternal())
 end
 
-function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
-    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, _forecasts=InfrastructureSystems.Forecasts(), )
+    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -31,6 +32,7 @@ function TechHydro(::Nothing)
         reactivepowerlimits=nothing,
         ramplimits=nothing,
         timelimits=nothing,
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -46,5 +48,7 @@ get_reactivepowerlimits(value::TechHydro) = value.reactivepowerlimits
 get_ramplimits(value::TechHydro) = value.ramplimits
 """Get TechHydro timelimits."""
 get_timelimits(value::TechHydro) = value.timelimits
+"""Get TechHydro _forecasts."""
+get__forecasts(value::TechHydro) = value._forecasts
 """Get TechHydro internal."""
 get_internal(value::TechHydro) = value.internal

@@ -1,7 +1,9 @@
 using SparseArrays
 using Test
-include("../data/data_5bus_pu.jl")
-include("../data/data_14bus_pu.jl")
+
+include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
+include(joinpath(BASE_DIR, "test", "data_14bus_pu.jl"))
+
 # The 5-bus case from PowerModels data is modified to include 2 phase shifters
 pm_dict = PowerSystems.parse_file(joinpath(MATPOWER_DIR, "case5.m"));
 sys = PowerSystems.pm2ps_dict(pm_dict);
@@ -289,14 +291,18 @@ Ybus5_phaseshifter[4,5]= -3.33366670000333 + 33.3366670000333im
 Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
 
 @testset "PTDF matrices" begin
-    P5 = PowerSystems.PTDF(branches5, nodes5);
+    nodes_5 = nodes5()
+    branches_5 = branches5(nodes_5)
+    P5 = PowerSystems.PTDF(branches_5, nodes_5);
     @test maximum(P5.data - S5_slackB4) <= 1e-3
-    @test P5[branches5[1],nodes5[1]] == 0.1939166051164976
+    @test P5[branches_5[1],nodes_5[1]] == 0.1939166051164976
 
-    P14 = PowerSystems.PTDF(branches14, nodes14);
+    nodes_14 = nodes14()
+    branches_14 = branches14(nodes_14)
+    P14 = PowerSystems.PTDF(branches_14, nodes_14);
     @test maximum(P14.data - S14_slackB1) <= 1e-3
 
-    P5NS = PTDF([branches5[b] for b in Br5NS_ids], [nodes5[b] for b in Bu5NS_ids]);
+    P5NS = PTDF([branches_5[b] for b in Br5NS_ids], [nodes_5[b] for b in Bu5NS_ids]);
     for br in Br5NS_ids, b in Bu5NS_ids
         @test getindex(P5NS,string(br),b) - S5_slackB4[br,b] <= 1e-3
     end
@@ -309,17 +315,21 @@ Ybus5_phaseshifter[5,5]=  18.8039637297063 - 188.020637297063im;
 end
 
 @testset "LODF matrices" begin
-    L5 = PowerSystems.LODF(branches5,nodes5)
+    nodes_5 = nodes5()
+    branches_5 = branches5(nodes_5)
+    L5 = PowerSystems.LODF(branches_5,nodes_5)
     @test maximum(L5.data - Lodf_5) <= 1e-3
-    @test L5[branches5[1],branches5[2]] == 0.3447946513849091
+    @test L5[branches_5[1],branches_5[2]] == 0.3447946513849091
 
-    L14 = PowerSystems.LODF(branches14,nodes14)
+    nodes_14 = nodes14()
+    branches_14 = branches14(nodes_14)
+    L14 = PowerSystems.LODF(branches_14, nodes_14)
     @test maximum(L14.data - Lodf_14) <= 1e-3
 
     L5NS = PowerSystems.LODF(sys)
     @test getindex(L5NS,"5","4") - 0.0003413469090 <= 1e-4
 
-    L5NS = LODF([branches5[b] for b in Br5NS_ids], [nodes5[b] for b in Bu5NS_ids]);
+    L5NS = LODF([branches_5[b] for b in Br5NS_ids], [nodes_5[b] for b in Bu5NS_ids]);
     for brf in Br5NS_ids, brt in Br5NS_ids
         @test getindex(L5NS,string(brf),string(brt)) - Lodf_5[brf,brt] <= 1e-3
     end
@@ -327,8 +337,12 @@ end
 end
 
 @testset "Ybus Matrix" begin
+    nodes_5 = nodes5()
+    branches_5 = branches5(nodes_5)
+    nodes_14 = nodes14()
+    branches_14 = branches14(nodes_14)
 
-    Ybus5 = Ybus(branches5, nodes5)
+    Ybus5 = Ybus(branches_5, nodes_5)
 
     I, J, V = findnz(Ybus5.data)
     indices = collect(zip(I,J))
@@ -338,7 +352,7 @@ end
     end
 
 
-    Ybus14 = Ybus(branches14, nodes14);
+    Ybus14 = Ybus(branches_14, nodes_14);
     I, J, V = findnz(Ybus14.data)
     indices = collect(zip(I,J))
 
@@ -349,11 +363,11 @@ end
     Y5NS = Ybus(sys)
     @test isapprox(getindex(Y5NS, 10, 4), -3.3336667 + 33.336667im, atol= 1e-4)
 
-    #Y5NS = Ybus([branches5[b] for b in Br5NS_ids], [nodes5[b] for b in Bu5NS_ids]);
+    #Y5NS = Ybus([branches_5[b] for b in Br5NS_ids], [nodes_5[b] for b in Bu5NS_ids]);
     #for buf in Bu5NS_ids, but in Bu5NS_ids
     #    @test isapprox(getindex(Y5NS, buf, but), Ybus5_matpower[buf,but], atol=1e-3)
     #end
 
-    @test Ybus5[nodes5[1],nodes5[2]] == (-3.5234840209999647 + 35.234840209999646im)
+    @test Ybus5[nodes_5[1],nodes_5[2]] == (-3.5234840209999647 + 35.234840209999646im)
 
 end

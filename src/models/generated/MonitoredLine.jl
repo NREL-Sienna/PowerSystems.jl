@@ -15,15 +15,16 @@ mutable struct MonitoredLine <: ACBranch
     flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}  # TODO: throw warning above max SIL
     rate::Float64  # TODO: compare to SIL (warn) (theoretical limit)
     anglelimits::Min_Max
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, )
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, InfrastructureSystemsInternal())
+function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, _forecasts=InfrastructureSystems.Forecasts(), )
+    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, _forecasts, InfrastructureSystemsInternal())
 end
 
-function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, )
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, )
+function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, _forecasts=InfrastructureSystems.Forecasts(), )
+    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -41,6 +42,7 @@ function MonitoredLine(::Nothing)
         flowlimits=(from_to=0.0, to_from=0.0),
         rate=0.0,
         anglelimits=(min=-1.571, max=1.571),
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -66,5 +68,7 @@ get_flowlimits(value::MonitoredLine) = value.flowlimits
 get_rate(value::MonitoredLine) = value.rate
 """Get MonitoredLine anglelimits."""
 get_anglelimits(value::MonitoredLine) = value.anglelimits
+"""Get MonitoredLine _forecasts."""
+get__forecasts(value::MonitoredLine) = value._forecasts
 """Get MonitoredLine internal."""
 get_internal(value::MonitoredLine) = value.internal

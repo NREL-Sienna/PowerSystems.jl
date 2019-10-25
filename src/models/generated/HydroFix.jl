@@ -10,15 +10,16 @@ mutable struct HydroFix <: HydroGen
     activepower::Float64
     reactivepower::Float64
     tech::TechHydro
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function HydroFix(name, available, bus, activepower, reactivepower, tech, )
-    HydroFix(name, available, bus, activepower, reactivepower, tech, InfrastructureSystemsInternal())
+function HydroFix(name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroFix(name, available, bus, activepower, reactivepower, tech, _forecasts, InfrastructureSystemsInternal())
 end
 
-function HydroFix(; name, available, bus, activepower, reactivepower, tech, )
-    HydroFix(name, available, bus, activepower, reactivepower, tech, )
+function HydroFix(; name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroFix(name, available, bus, activepower, reactivepower, tech, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -31,6 +32,7 @@ function HydroFix(::Nothing)
         activepower=0.0,
         reactivepower=0.0,
         tech=TechHydro(nothing),
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -46,5 +48,7 @@ get_activepower(value::HydroFix) = value.activepower
 get_reactivepower(value::HydroFix) = value.reactivepower
 """Get HydroFix tech."""
 get_tech(value::HydroFix) = value.tech
+"""Get HydroFix _forecasts."""
+get__forecasts(value::HydroFix) = value._forecasts
 """Get HydroFix internal."""
 get_internal(value::HydroFix) = value.internal

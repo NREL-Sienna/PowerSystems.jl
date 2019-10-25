@@ -8,15 +8,16 @@ mutable struct StaticReserve <: Reserve
     contributingdevices::Vector{Device}  # devices from which the product can be procured
     timeframe::Float64  # the relative saturation timeframe
     requirement::Float64  # the required quantity of the product should be scaled by a Forecast
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserve(name, contributingdevices, timeframe, requirement, )
-    StaticReserve(name, contributingdevices, timeframe, requirement, InfrastructureSystemsInternal())
+function StaticReserve(name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), )
+    StaticReserve(name, contributingdevices, timeframe, requirement, _forecasts, InfrastructureSystemsInternal())
 end
 
-function StaticReserve(; name, contributingdevices, timeframe, requirement, )
-    StaticReserve(name, contributingdevices, timeframe, requirement, )
+function StaticReserve(; name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), )
+    StaticReserve(name, contributingdevices, timeframe, requirement, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -27,6 +28,7 @@ function StaticReserve(::Nothing)
         contributingdevices=[ThermalStandard(nothing)],
         timeframe=0.0,
         requirement=0.0,
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -38,5 +40,7 @@ get_contributingdevices(value::StaticReserve) = value.contributingdevices
 get_timeframe(value::StaticReserve) = value.timeframe
 """Get StaticReserve requirement."""
 get_requirement(value::StaticReserve) = value.requirement
+"""Get StaticReserve _forecasts."""
+get__forecasts(value::StaticReserve) = value._forecasts
 """Get StaticReserve internal."""
 get_internal(value::StaticReserve) = value.internal

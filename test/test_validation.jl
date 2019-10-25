@@ -2,7 +2,7 @@ import YAML
 
 const WRONG_FORMAT_CONFIG_FILE = joinpath(dirname(pathof(PowerSystems)),
                                             "descriptors", "config.yml")
-include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
+include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
 
 @testset "Test reading in config data" begin
     data = IS.read_validation_descriptor(PSY.POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
@@ -21,12 +21,14 @@ include(joinpath(DATA_DIR,"data_5bus_pu.jl"))
 end
 
 @testset "Test adding custom validation YAML file to System" begin
-    sys_no_config = System(nodes5, thermal_generators5, loads5, nothing, nothing,
-                            100.0, nothing, nothing, nothing; runchecks=true)
+    nodes = nodes5()
+    sys_no_config = System(nodes, thermal_generators5(nodes), loads5(nodes), nothing, nothing,
+                            100.0, nothing, nothing; runchecks=true)
     @test !isempty(sys_no_config.data.validation_descriptors)
 
-    sys_no_runchecks = System(nodes5, thermal_generators5, loads5, nothing, nothing,
-                            100.0, nothing, nothing, nothing; runchecks=false)
+    nodes = nodes5()
+    sys_no_runchecks = System(nodes, thermal_generators5(nodes), loads5(nodes), nothing, nothing,
+                            100.0, nothing, nothing; runchecks=false)
     @test isempty(sys_no_runchecks.data.validation_descriptors)
 end
 
@@ -47,7 +49,6 @@ end
     @test haskey(descriptor, "struct_name")
     @test haskey(descriptor, "fields")
     @test descriptor["struct_name"] == struct_name
-
 end
 
 @testset "Test extracting field info from struct descriptor dictionary" begin
@@ -83,35 +84,39 @@ end
 
 @testset "Test field validation" begin
     #test recursive call of validate_fields and a regular valid range
-    bad_therm_gen_rating = deepcopy(thermal_generators5)
+    nodes = nodes5()
+    bad_therm_gen_rating = thermal_generators5(nodes)
     bad_therm_gen_rating[1].tech.rating = -10
     @test_logs((:error, r"Invalid range"),
         @test_throws(PSY.InvalidRange,
-                        System(nodes5, bad_therm_gen_rating, loads5, nothing, nothing,
-                               100.0, nothing, nothing, nothing; runchecks=true)
+                        System(nodes, bad_therm_gen_rating, loads5(nodes), nothing,
+                               nothing, 100.0, nothing, nothing; runchecks=true)
         )
     )
 
     #test custom range (activepower and activepowerlimits)
-    bad_therm_gen_act_power = deepcopy(thermal_generators5)
+    bad_therm_gen_act_power = thermal_generators5(nodes)
     bad_therm_gen_act_power[1].activepower = 10
-    @test_logs (:warn, r"Invalid range") System(nodes5, bad_therm_gen_act_power, loads5,
-            nothing, nothing, 100.0, nothing, nothing, nothing; runchecks=true)
+    nodes = nodes5()
+    @test_logs (:warn, r"Invalid range") System(nodes, bad_therm_gen_act_power,
+            loads5(nodes), nothing, nothing, 100.0, nothing, nothing; runchecks=true)
 
     #test validating named tuple
-    bad_therm_gen_ramp_lim = deepcopy(thermal_generators5)
+    nodes = nodes5()
+    bad_therm_gen_ramp_lim = thermal_generators5(nodes)
     bad_therm_gen_ramp_lim[1].tech.ramplimits = (up = -10, down = -3)
     @test_logs((:error, r"Invalid range"), match_mode=:any,
         @test_throws(PSY.InvalidRange,
-                     System(nodes5, bad_therm_gen_ramp_lim, loads5, nothing, nothing, 100.0,
-                            nothing, nothing, nothing; runchecks=true)
+                     System(nodes, bad_therm_gen_ramp_lim, loads5(nodes), nothing, nothing,
+                            100.0, nothing, nothing; runchecks=true)
         )
     )
 end
 
 @testset "Test field validation" begin
-    sys = System(nodes5, thermal_generators5, loads5, nothing, nothing,
-                               100.0, nothing, nothing, nothing; runchecks=true)
+    nodes = nodes5()
+    sys = System(nodes, thermal_generators5(nodes), loads5(nodes), nothing, nothing,
+                               100.0, nothing, nothing; runchecks=true)
 
     add_component!(sys,Bus(11,"11",PSY.PQ,1,1,(min=.9,max=1.1),123))
     B = get_components(Bus,sys) |> collect
@@ -125,8 +130,9 @@ end
 end
 
 @testset "Test field validation after deserialization" begin
-    sys = System(nodes5, thermal_generators5, loads5, nothing, nothing,
-                 100.0, nothing, nothing, nothing)
+    nodes = nodes5()
+    sys = System(nodes, thermal_generators5(nodes), loads5(nodes), nothing, nothing,
+                 100.0, nothing, nothing)
 
     add_component!(sys, Bus(11, "11", PSY.PQ, 1, 1, (min=.9, max=1.1), 123))
     path, io = mktemp()

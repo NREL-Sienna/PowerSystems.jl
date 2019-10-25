@@ -11,15 +11,16 @@ mutable struct HydroDispatch <: HydroGen
     reactivepower::Float64
     tech::TechHydro
     op_cost::TwoPartCost
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, )
-    HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, InfrastructureSystemsInternal())
+function HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, InfrastructureSystemsInternal())
 end
 
-function HydroDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, )
-    HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, )
+function HydroDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -33,6 +34,7 @@ function HydroDispatch(::Nothing)
         reactivepower=0.0,
         tech=TechHydro(nothing),
         op_cost=TwoPartCost(nothing),
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -50,5 +52,7 @@ get_reactivepower(value::HydroDispatch) = value.reactivepower
 get_tech(value::HydroDispatch) = value.tech
 """Get HydroDispatch op_cost."""
 get_op_cost(value::HydroDispatch) = value.op_cost
+"""Get HydroDispatch _forecasts."""
+get__forecasts(value::HydroDispatch) = value._forecasts
 """Get HydroDispatch internal."""
 get_internal(value::HydroDispatch) = value.internal

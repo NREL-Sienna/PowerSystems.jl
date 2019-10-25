@@ -13,15 +13,16 @@ mutable struct InterruptibleLoad <: ControllableLoad
     maxactivepower::Float64
     maxreactivepower::Float64
     op_cost::TwoPartCost
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, InfrastructureSystemsInternal())
+function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts, InfrastructureSystemsInternal())
 end
 
-function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, )
+function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -37,6 +38,7 @@ function InterruptibleLoad(::Nothing)
         maxactivepower=0.0,
         maxreactivepower=0.0,
         op_cost=TwoPartCost(nothing),
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -58,5 +60,7 @@ get_maxactivepower(value::InterruptibleLoad) = value.maxactivepower
 get_maxreactivepower(value::InterruptibleLoad) = value.maxreactivepower
 """Get InterruptibleLoad op_cost."""
 get_op_cost(value::InterruptibleLoad) = value.op_cost
+"""Get InterruptibleLoad _forecasts."""
+get__forecasts(value::InterruptibleLoad) = value._forecasts
 """Get InterruptibleLoad internal."""
 get_internal(value::InterruptibleLoad) = value.internal

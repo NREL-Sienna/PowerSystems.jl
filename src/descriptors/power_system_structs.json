@@ -16,6 +16,12 @@
         "validation_action": "warn"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -49,6 +55,12 @@
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "warn"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -100,6 +112,12 @@
         "validation_action": "error"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -134,6 +152,12 @@
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":1.0},
         "validation_action": "error"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -189,6 +213,12 @@
         "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -344,6 +374,12 @@
         "validation_action": "error"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -420,6 +456,12 @@
         "data_type": "Min_Max",
         "valid_range": {"min":-1.571, "max":1.571},
         "validation_action": "error"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -502,6 +544,12 @@
         "validation_action": "error"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -575,6 +623,12 @@
         "validation_action": "error"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -642,6 +696,12 @@
         "validation_action": "error"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -695,6 +755,12 @@
         "name": "loss",
         "null_value": "(l0=0.0, l1=0.0)",
         "data_type": "NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -758,6 +824,12 @@
         "data_type": "Min_Max"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -813,6 +885,12 @@
         "data_type": "TwoPartCost"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -841,6 +919,12 @@
         "name": "Y",
         "null_value": "0.0",
         "data_type": "Complex{Float64}"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -893,6 +977,12 @@
         "data_type": "Float64"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -940,6 +1030,12 @@
         "data_type": "TwoPartCost"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -980,6 +1076,12 @@
         "name": "tech",
         "null_value": "TechHydro(nothing)",
         "data_type": "TechHydro"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -1043,6 +1145,12 @@
         "validation_action": "error"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -1088,6 +1196,12 @@
         "data_type": "TwoPartCost"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -1126,6 +1240,12 @@
         "name": "tech",
         "null_value": "TechRenewable(nothing)",
         "data_type": "TechRenewable"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -1178,6 +1298,12 @@
         "data_type": "ThreePartCost"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -1211,6 +1337,12 @@
         "name": "maxreactivepower",
         "null_value": "0.0",
         "data_type": "Float64"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -1303,6 +1435,12 @@
         "data_type": "Union{Nothing, Min_Max}"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -1331,6 +1469,12 @@
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -1369,6 +1513,12 @@
         "data_type": "Float64"
       },
       {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -1399,6 +1549,12 @@
         "name": "requirement",
         "null_value": "[]",
         "data_type": "TimeSeries.TimeArray"
+      },
+      {
+        "name": "_forecasts",
+        "null_value": "InfrastructureSystems.Forecasts()",
+        "data_type": "InfrastructureSystems.Forecasts",
+        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",

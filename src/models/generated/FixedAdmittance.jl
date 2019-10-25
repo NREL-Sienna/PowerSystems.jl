@@ -8,15 +8,16 @@ mutable struct FixedAdmittance <: ElectricLoad
     available::Bool
     bus::Bus
     Y::Complex{Float64}
+    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function FixedAdmittance(name, available, bus, Y, )
-    FixedAdmittance(name, available, bus, Y, InfrastructureSystemsInternal())
+function FixedAdmittance(name, available, bus, Y, _forecasts=InfrastructureSystems.Forecasts(), )
+    FixedAdmittance(name, available, bus, Y, _forecasts, InfrastructureSystemsInternal())
 end
 
-function FixedAdmittance(; name, available, bus, Y, )
-    FixedAdmittance(name, available, bus, Y, )
+function FixedAdmittance(; name, available, bus, Y, _forecasts=InfrastructureSystems.Forecasts(), )
+    FixedAdmittance(name, available, bus, Y, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -27,6 +28,7 @@ function FixedAdmittance(::Nothing)
         available=false,
         bus=Bus(nothing),
         Y=0.0,
+        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -38,5 +40,7 @@ get_available(value::FixedAdmittance) = value.available
 get_bus(value::FixedAdmittance) = value.bus
 """Get FixedAdmittance Y."""
 get_Y(value::FixedAdmittance) = value.Y
+"""Get FixedAdmittance _forecasts."""
+get__forecasts(value::FixedAdmittance) = value._forecasts
 """Get FixedAdmittance internal."""
 get_internal(value::FixedAdmittance) = value.internal

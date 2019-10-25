@@ -38,10 +38,10 @@ end
     add_component!(sys, bus)
     tg = RenewableFix(nothing)
     tg.bus = bus
-    tProbabilisticForecast = PSY.Probabilistic(tg, "scalingfactor", Hour(1),
-                                           DateTime("01-01-01"), [0.5, 0.5], 24)
     add_component!(sys, tg)
-    add_forecast!(sys, tProbabilisticForecast)
+    tProbabilisticForecast = PSY.Probabilistic("scalingfactor", Hour(1),
+                                           DateTime("01-01-01"), [0.5, 0.5], 24)
+    add_forecast!(sys, tg, tProbabilisticForecast)
 
     @test validate_serialization(sys)
 end
