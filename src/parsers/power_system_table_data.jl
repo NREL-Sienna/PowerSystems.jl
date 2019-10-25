@@ -975,9 +975,14 @@ file may be customized, so this creates a mapping of (category, custom_name) to 
 function _create_forecast_label_mapping(user_descriptors::Dict)
     mapping = Dict{Tuple{String, String}, String}()
     for (category, params) in user_descriptors
+        fields = [d["name"] for d in params]
+        ufields = unique(fields)
+        counts=[(i,count(x->x==i,fields)) for i in ufields if count(x->x==i,fields)>1]
+        if length(counts) < 0
+            throw(DataFormatError("$POWER_SYSTEM_DESCRIPTOR_FILE has multiple entries for $(counts[1])"))
+        end
         for param in params
             key = (lowercase(string(category)), param["custom_name"])
-            @assert !haskey(mapping, key)
             mapping[key] = param["name"]
         end
     end
