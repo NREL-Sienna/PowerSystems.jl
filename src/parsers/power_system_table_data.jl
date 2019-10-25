@@ -563,7 +563,7 @@ Add services to the System from the raw data.
 
 """
 function services_csv_parser!(sys::System, data::PowerSystemTableData)
-    bus_id_column = get_user_field(data, BUS::InputCategory, "name")
+    bus_id_column = get_user_field(data, BUS::InputCategory, "bus_id")
     bus_area_column = get_user_field(data, BUS::InputCategory, "area")
 
     # Shortcut for data that looks like "(val1,val2,val3)"
@@ -596,12 +596,19 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         contributing_devices = Vector{Device}()
 
         if !isnothing(device_subcategories)
-            @info("Adding contributing components for $(reserve.name) by category")
+            @info("Adding contributing generators for $(reserve.name) by category")
+            @warn("Adding contributing components by category only supports generators")
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 bus_ids = data.bus[!, bus_id_column]
-                area = string(data.bus[bus_ids .== gen.bus_id, bus_area_column][1])
-                if gen.category in device_subcategories && area in regions
-                    _add_device!(contributing_devices, device_categories, gen.name)
+                sys_gen = get_components_by_name(Generator, sys, gen.name)
+                if length(sys_gen) == 1
+                    sys_gen = sys_gen[1]
+                    area = string(data.bus[bus_ids .== get_number(get_bus(sys_gen)), bus_area_column][1])
+                    if gen.category in device_subcategories && area in regions
+                        _add_device!(contributing_devices, device_categories, gen.name)
+                    end
+                else
+                    @warn "Found $(length(sys_gen)) Generators with name=$(gen.name)"
                 end
             end
         else
