@@ -570,6 +570,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
     make_array(x) = isnothing(x) ? x : split(strip(x, ['(', ')']), ",")
 
     function _add_device!(contributing_devices, device_categories, name)
+        component = []
         for dev_category in device_categories
             component_type = _get_component_type_from_category(dev_category)
             components = get_components_by_name(component_type, sys, name)
@@ -577,13 +578,17 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 # There multiple categories, so we might not find a match in some.
                 continue
             elseif length(components) == 1
-                component = components[1]
+                push!(component, components[1])
             else
                 msg = "Found duplicate names type=$component_type name=$name"
                 throw(DataFormatError(msg))
             end
-
-            push!(contributing_devices, component)
+        end
+        if length(component) > 1
+            msg = "Found duplicate components with name=$name"
+            throw(DataFormatError(msg))
+        elseif length(component) == 1
+            push!(contributing_devices, component[1])
         end
     end
 
