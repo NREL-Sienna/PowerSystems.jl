@@ -896,7 +896,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
             if custom_name in df_names
                 if !(name in descriptor_names)
                     if occursin("heat_rate_", name) || occursin("output_percent_", name)
-                        base = join(split(name, "_")[1:end-1], "_")
+                        base = name[findlast("_", name)[end]+1:end]
                         d_name = descriptor_names[occursin.(base, descriptor_names)][end]
                         per_unit[name] = per_unit[d_name]
                         unit[name] = unit[d_name]
@@ -982,7 +982,7 @@ function _create_forecast_label_mapping(user_descriptors::Dict)
     for (category, params) in user_descriptors
         fields = [d["name"] for d in params]
         ufields = unique(fields)
-        counts=[(i, count(x->x==i, fields)) for i in ufields if count(x->x==i, fields)>1]
+        counts=[(i, count(x->x==i, fields)) for i in ufields if count(x->x==i, fields)>1] # finding duplicated targets
         if length(counts) > 0
             throw(DataFormatError("$POWER_SYSTEM_DESCRIPTOR_FILE has multiple entries for $(counts[1]) in $category"))
         end
