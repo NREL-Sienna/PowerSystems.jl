@@ -59,10 +59,10 @@ function PowerSystemTableData(
     end
 
     if !isfile(timeseries_metadata_file)
-        if isfile(string(timeseries_metadata_file,".json"))
-            timeseries_metadata_file = string(timeseries_metadata_file,".json")
-        elseif isfile(string(timeseries_metadata_file,".csv"))
-            timeseries_metadata_file = string(timeseries_metadata_file,".csv")
+        if isfile(string(timeseries_metadata_file, ".json"))
+            timeseries_metadata_file = string(timeseries_metadata_file, ".json")
+        elseif isfile(string(timeseries_metadata_file, ".csv"))
+            timeseries_metadata_file = string(timeseries_metadata_file, ".csv")
         else
             timeseries_metadata_file = nothing
         end
@@ -118,7 +118,7 @@ function PowerSystemTableData(
     files = readdir(directory)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
-    data = Dict{String,Any}()
+    data = Dict{String, Any}()
 
     if length(files) == 0
         error("No files in the folder")
@@ -131,14 +131,14 @@ function PowerSystemTableData(
         try
             if match(REGEX_IS_FOLDER, d_file) != nothing
                 @info "Parsing csv files in $d_file ..."
-                d_file_data = Dict{String,Any}()
-                for file in readdir(joinpath(directory,d_file))
+                d_file_data = Dict{String, Any}()
+                for file in readdir(joinpath(directory, d_file))
                     if match(REGEX_DEVICE_TYPE, file) != nothing
                         @info "Parsing csv data in $file ..."
                         encountered_files += 1
-                        fpath = joinpath(directory,d_file,file)
+                        fpath = joinpath(directory, d_file, file)
                         raw_data = CSV.File(fpath) |> DataFrames.DataFrame
-                        d_file_data[split(file,r"[.]")[1]] = raw_data
+                        d_file_data[split(file, r"[.]")[1]] = raw_data
                     end
                 end
 
@@ -150,9 +150,9 @@ function PowerSystemTableData(
             elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
                 @info "Parsing csv data in $d_file ..."
                 encountered_files += 1
-                fpath = joinpath(directory,d_file)
+                fpath = joinpath(directory, d_file)
                 raw_data = CSV.File(fpath)|> DataFrames.DataFrame
-                data[split(d_file,r"[.]")[1]] = raw_data
+                data[split(d_file, r"[.]")[1]] = raw_data
                 @info "Successfully parsed $d_file"
             end
         catch ex
@@ -550,7 +550,7 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
 
         buses = get_buses(sys, bus_numbers)
         name = string(zone)
-        zoneid = typeof(zone) <: Number ? zone : count
+        zoneid = zone isa Number ? zone : count # if the zone is text use iteration count for zoneid
         load_zones = LoadZones(zoneid, name, buses, sum(active_powers), sum(reactive_powers))
         add_component!(sys, load_zones)
     end
@@ -595,9 +595,14 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         requirement = get(reserve, :requirement, nothing)
         contributing_devices = Vector{Device}()
 
-        if !isnothing(device_subcategories)
+        if isnothing(device_subcategories)
+            @info("Adding contributing components for $(reserve.name) by component name")
+            for device in devices
+                _add_device!(contributing_devices, device_categories, device)
+            end
+        else
             @info("Adding contributing generators for $(reserve.name) by category")
-            @warn("Adding contributing components by category only supports generators")
+            @warn("Adding contributing components by category only supports generators") maxlog=PS_MAX_LOG
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 bus_ids = data.bus[!, bus_id_column]
                 sys_gen = get_components_by_name(Generator, sys, gen.name)
@@ -611,11 +616,6 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                     @warn "Found $(length(sys_gen)) Generators with name=$(gen.name)"
                 end
             end
-        else
-            @info("Adding contributing components for $(reserve.name) by component name")
-            for device in devices
-                _add_device!(contributing_devices, device_categories, device)
-            end
         end
 
         if length(contributing_devices) == 0
@@ -626,8 +626,8 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
 
         if isnothing(requirement)
             service = ProportionalReserve(reserve.name,
-                                        contributing_devices,
-                                        reserve.timeframe)
+                                          contributing_devices,
+                                          reserve.timeframe)
         else
             service = StaticReserve(reserve.name,
                                     contributing_devices,
@@ -642,7 +642,7 @@ end
 function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     generator = nothing
     gen_type = get_generator_type(gen.fuel,
-                                      get(gen,:unit_type,nothing),
+                                      get(gen, :unit_type, nothing),
                                       data.generator_mapping)
 
     if gen_type == ThermalStandard
@@ -859,7 +859,7 @@ struct _FieldInfo
     name::String
     custom_name::Symbol
     needs_per_unit_conversion::Bool
-    unit_conversion::Union{NamedTuple{(:From,:To),Tuple{String,String}},Nothing}
+    unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
     # TODO unit, value ranges and options
 end
 
@@ -875,12 +875,12 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
     # Cache whether PowerSystems uses a column's values as system-per-unit.
     # The user's descriptors indicate that the raw data is already system-per-unit or not.
     per_unit = Dict{String, Bool}()
-    unit = Dict{String,Union{String,Nothing}}()
+    unit = Dict{String, Union{String, Nothing}}()
     descriptor_names = Vector{String}()
     for descriptor in data.descriptors[category]
         per_unit[descriptor["name"]] = get(descriptor, "system_per_unit", false)
         unit[descriptor["name"]] = get(descriptor, "unit", nothing)
-        push!(descriptor_names,descriptor["name"])
+        push!(descriptor_names, descriptor["name"])
     end
 
     fields = Vector{_FieldInfo}()
@@ -890,7 +890,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
             name = item["name"]
             if custom_name in df_names
                 if !(name in descriptor_names)
-                    if (occursin("heat_rate_",name) | occursin("output_percent_",name))
+                    if occursin("heat_rate_", name) || occursin("output_percent_", name)
                         base = join(split(name, "_")[1:end-1], "_")
                         d_name = descriptor_names[occursin.(base, descriptor_names)][end]
                         per_unit[name] = per_unit[d_name]
@@ -977,8 +977,8 @@ function _create_forecast_label_mapping(user_descriptors::Dict)
     for (category, params) in user_descriptors
         fields = [d["name"] for d in params]
         ufields = unique(fields)
-        counts=[(i,count(x->x==i,fields)) for i in ufields if count(x->x==i,fields)>1]
-        if length(counts) < 0
+        counts=[(i, count(x->x==i, fields)) for i in ufields if count(x->x==i, fields)>1]
+        if length(counts) > 0
             throw(DataFormatError("$POWER_SYSTEM_DESCRIPTOR_FILE has multiple entries for $(counts[1])"))
         end
         for param in params

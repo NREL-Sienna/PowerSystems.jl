@@ -282,7 +282,6 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
             cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
             fixed = max(0.0, cost[1][1] - (cost[2][1] - cost[1][1])/(cost[2][2] - cost[1][2])*cost[1][2])
             cost = [(c[1] - fixed, c[2]) for c in cost]
-            #fixed = cost[1][2]
         elseif model == POLYNOMIAL::GeneratorCostModel
             if d["ncost"] == 0
                 cost = (0.0, 0.0)
