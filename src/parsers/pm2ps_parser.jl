@@ -12,7 +12,7 @@ sys = PSY.pm2ps_dict(pm_data, configpath = "ACTIVSg25k_validation.json",
                     load_name_formatter = x->strip(join(x["source_id"], "_")))
 ```
 """
-function pm2ps_dict(data::Dict{String,Any}; kwargs...)
+function pm2ps_dict(data::Dict{String, Any}; kwargs...)
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
     end
@@ -37,13 +37,13 @@ end
 Internal component name retreval from pm2ps_dict
 """
 function _get_pm_dict_name(device_dict)
-    return get(device_dict,"name", string(device_dict["index"]))
+    return get(device_dict, "name", string(device_dict["index"]))
 end
 
 """
 Creates a PowerSystems.Bus from a PowerSystems bus dictionary
 """
-function make_bus(bus_dict::Dict{String,Any})
+function make_bus(bus_dict::Dict{String, Any})
     bus = Bus(bus_dict["number"],
                      bus_dict["name"],
                      bus_dict["bustype"],
@@ -56,7 +56,7 @@ function make_bus(bus_dict::Dict{String,Any})
  end
 
 function make_bus(bus_name, bus_number, d, bus_types)
-    bus = make_bus(Dict{String,Any}("name" => bus_name ,
+    bus = make_bus(Dict{String, Any}("name" => bus_name ,
                             "number" => bus_number,
                             "bustype" => bus_types[d["bus_type"]],
                             "angle" => d["va"],
@@ -88,7 +88,7 @@ function read_bus!(sys::System, data; kwargs...)
     bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusType)
-    data = sort(collect(data["bus"]), by = x->parse(Int64,x[1]))
+    data = sort(collect(data["bus"]), by = x->parse(Int64, x[1]))
 
     if length(data) == 0
         @error "No bus data found" # TODO : need for a model without a bus
@@ -99,7 +99,7 @@ function read_bus!(sys::System, data; kwargs...)
     for (i, (d_key, d)) in enumerate(data)
         # d id the data dict for each bus
         # d_key is bus key
-        d["name"] = get(d,"name", string(d["bus_i"]))
+        d["name"] = get(d, "name", string(d["bus_i"]))
         bus_name = _get_name(d)
         bus_number = Int(d["bus_i"])
         bus = make_bus(bus_name, bus_number, d, bus_types)
@@ -277,10 +277,11 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         model = GeneratorCostModel(d["model"])
         if model == PIECEWISE_LINEAR::GeneratorCostModel
             cost_component = d["cost"]
-            power_p = [i for (ix,i) in enumerate(cost_component) if isodd(ix)]
-            cost_p =  [i for (ix,i) in enumerate(cost_component) if iseven(ix)]
-            cost = [(p,c) for (p,c) in zip(cost_p,power_p)]
-            fixed = cost[1][2]
+            power_p = [i for (ix, i) in enumerate(cost_component) if isodd(ix)]
+            cost_p =  [i for (ix, i) in enumerate(cost_component) if iseven(ix)]
+            cost = [(p, c) for (p, c) in zip(cost_p, power_p)]
+            fixed = max(0.0, cost[1][1] - (cost[2][1] - cost[1][1])/(cost[2][2] - cost[1][2])*cost[1][2])
+            cost = [(c[1] - fixed, c[2]) for c in cost]
         elseif model == POLYNOMIAL::GeneratorCostModel
             if d["ncost"] == 0
                 cost = (0.0, 0.0)
@@ -421,8 +422,8 @@ function make_branch(name, d, bus_f, bus_t)
 end
 
 function make_line(name, d, bus_f, bus_t)
-    pf = get(d,"pf", 0.0)
-    qf = get(d,"qf", 0.0)
+    pf = get(d, "pf", 0.0)
+    qf = get(d, "qf", 0.0)
 
     return Line(;
         name=name,
@@ -439,8 +440,8 @@ function make_line(name, d, bus_f, bus_t)
 end
 
 function make_transformer_2w(name, d, bus_f, bus_t)
-    pf = get(d,"pf", 0.0)
-    qf = get(d,"qf", 0.0)
+    pf = get(d, "pf", 0.0)
+    qf = get(d, "qf", 0.0)
     return Transformer2W(;
         name=name,
         available=Bool(d["br_status"]),
@@ -455,8 +456,8 @@ function make_transformer_2w(name, d, bus_f, bus_t)
 end
 
 function make_tap_transformer(name, d, bus_f, bus_t)
-    pf = get(d,"pf", 0.0)
-    qf = get(d,"qf", 0.0)
+    pf = get(d, "pf", 0.0)
+    qf = get(d, "qf", 0.0)
     return TapTransformer(;
         name=name,
         available=Bool(d["br_status"]),
@@ -472,8 +473,8 @@ function make_tap_transformer(name, d, bus_f, bus_t)
 end
 
 function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
-    pf = get(d,"pf", 0.0)
-    qf = get(d,"qf", 0.0)
+    pf = get(d, "pf", 0.0)
+    qf = get(d, "qf", 0.0)
     return PhaseShiftingTransformer(;
         name=name,
         available=Bool(d["br_status"]),
@@ -513,7 +514,7 @@ function make_dcline(name, d, bus_f, bus_t)
     return HVDCLine(;
         name=name,
         available=Bool(d["br_status"]),
-        activepower_flow = get(d,"pf", 0.0),
+        activepower_flow = get(d, "pf", 0.0),
         arc=Arc(bus_f, bus_t),
         activepowerlimits_from=(min=d["pminf"] , max=d["pmaxf"]),
         activepowerlimits_to=(min=d["pmint"], max=d["pmaxt"]),
@@ -525,7 +526,7 @@ end
 
 function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading DC Line data"
-    if !haskey(data,"dcline")
+    if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
         return
     end
@@ -554,14 +555,14 @@ end
 
 function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
-    if !haskey(data,"shunt")
+    if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
         return
     end
 
     _get_name = get(kwargs, :shunt_name_formatter, _get_pm_dict_name)
 
-    for (d_key,d) in data["shunt"]
+    for (d_key, d) in data["shunt"]
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
