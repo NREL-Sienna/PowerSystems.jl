@@ -529,9 +529,8 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
         return
     end
 
-    values = unique(data.bus[!, area_column])
-    lbs = zip(values, [sum(data.bus[!, area_column] .== a) for a in values])
-    for (zone, count) in lbs
+    zones = unique(data.bus[!, area_column])
+    for (i, zone) in enumerate(zones)
         bus_numbers = Set{Int}()
         active_powers = Vector{Float64}()
         reactive_powers = Vector{Float64}()
@@ -550,7 +549,7 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
 
         buses = get_buses(sys, bus_numbers)
         name = string(zone)
-        zoneid = zone isa Number ? zone : count # if the zone is text use iteration count for zoneid
+        zoneid = zone isa Number ? zone : i # if the zone is text use iteration count for zoneid
         load_zones = LoadZones(zoneid, name, buses, sum(active_powers), sum(reactive_powers))
         add_component!(sys, load_zones)
     end
@@ -607,7 +606,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             end
         else
             @info("Adding contributing generators for $(reserve.name) by category")
-            @warn "Adding contributing components by category only supports generators" maxlog=PS_MAX_LOG
+            @warn "Adding contributing components by category only supports generators" maxlog=1
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 bus_ids = data.bus[!, bus_id_column]
                 sys_gen = get_components_by_name(Generator, sys, gen.name)
