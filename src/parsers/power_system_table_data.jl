@@ -607,7 +607,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             end
         else
             @info("Adding contributing generators for $(reserve.name) by category")
-            @warn("Adding contributing components by category only supports generators") maxlog=PS_MAX_LOG
+            @warn "Adding contributing components by category only supports generators" maxlog=PS_MAX_LOG
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 bus_ids = data.bus[!, bus_id_column]
                 sys_gen = get_components_by_name(Generator, sys, gen.name)
@@ -984,7 +984,7 @@ function _create_forecast_label_mapping(user_descriptors::Dict)
         ufields = unique(fields)
         counts=[(i, count(x->x==i, fields)) for i in ufields if count(x->x==i, fields)>1]
         if length(counts) > 0
-            throw(DataFormatError("$POWER_SYSTEM_DESCRIPTOR_FILE has multiple entries for $(counts[1])"))
+            throw(DataFormatError("$POWER_SYSTEM_DESCRIPTOR_FILE has multiple entries for $(counts[1]) in $category"))
         end
         for param in params
             key = (lowercase(string(category)), param["custom_name"])
