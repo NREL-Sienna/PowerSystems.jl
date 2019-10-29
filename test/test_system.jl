@@ -48,7 +48,7 @@
     @test !isempty(components)
     component = components[1]
     forecast = get_forecast(Deterministic, component, initial_time,
-                            "active_power_limits_max")
+                            "rating")
     @test forecast isa Deterministic
 
     @test get_forecasts_horizon(sys) == 24
