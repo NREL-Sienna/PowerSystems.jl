@@ -9,7 +9,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 
 ## Version Advisory
 
-- The latest tagged version in PowerSystems (v0.4.0) will work with Julia v1.2+.
+- The latest tagged version in PowerSystems (v0.5.1) will work with Julia v1.2+.
 
 ### Device data enabled in PowerSystems:
  - Generators (Thermal, Renewable and Hydro)
@@ -24,7 +24,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 ### Parsing capabilities in PowerSystems:
  - MATPOWER CaseFormat
  - PSS/E - PTI Format
- - [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) data format
+ - [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) table data format
 
 ## Installation
 
