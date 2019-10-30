@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+### v0.5.1
+- Bug fix in generate_initial_times
+- Bug fixes on SystemTable Data
+
 ### v0.5.0
 - Store and access forecast data from Disk
 
