@@ -568,7 +568,7 @@ Throws ArgumentError if there are no forecasts stored, interval is not a multipl
 system's forecast resolution, or if the stored forecasts have overlapping timestamps.
 """
 function generate_initial_times(sys::System, interval::Dates.Period, horizon::Int)
-    return generate_initial_times(sys.data, interval, horizon)
+    return IS.generate_initial_times(sys.data, interval, horizon)
 end
 
 """
