@@ -1,4 +1,4 @@
-# Julia Coding Style Guide for SIIP
+# Julia Coding Style Guide for PowerSystems.jl
 
 ## Goals
 

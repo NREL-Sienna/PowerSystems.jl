@@ -54,3 +54,10 @@ jq '.forecasts.data["PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic
 
 ## View the value of every field in an array of forecasts.
 jq '.forecasts.data["PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"] | .[].initial_time'
+
+## Contents
+```@contents
+Pages = [
+  "man/data_requirements_table.md",
+]
+```
