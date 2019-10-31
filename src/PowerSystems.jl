@@ -110,6 +110,7 @@ export get_data
 export iterate_components
 export iterate_forecasts
 export make_forecasts
+export get_bus_numbers
 export get_name
 export to_json
 export check_forecast_consistency

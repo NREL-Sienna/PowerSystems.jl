@@ -60,6 +60,39 @@
     @test length(collect(iterate_forecasts(sys))) == 0
 end
 
+@testset "Test handling of bus_numbers" begin
+    sys = create_rts_system()
+
+    @test length(sys.bus_numbers) > 0
+    buses = get_components(Bus, sys)
+    bus_numbers = sort!([get_number(bus) for bus in buses])
+    @test bus_numbers == get_bus_numbers(sys)
+
+    # Remove entire type
+    remove_components!(Bus, sys)
+    @test length(sys.bus_numbers) == 0
+ 
+    # Remove individually.
+    for bus in buses
+        add_component!(sys, bus)
+    end
+    @test length(sys.bus_numbers) > 0
+    for bus in buses
+        remove_component!(sys, bus)
+    end
+    @test length(sys.bus_numbers) == 0
+ 
+    # Remove by name.
+    for bus in buses
+        add_component!(sys, bus)
+    end
+    @test length(sys.bus_numbers) > 0
+    for bus in buses
+        remove_component!(Bus, sys, get_name(bus))
+    end
+    @test length(sys.bus_numbers) == 0
+end
+
 @testset "Test System iterators" begin
     sys = create_rts_system()
 
