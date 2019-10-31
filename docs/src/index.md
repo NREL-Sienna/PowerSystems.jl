@@ -1,7 +1,7 @@
 # PowerSystems.jl
 
 ```@meta
-CurrentModule = PowerSimulations
+CurrentModule = PowerSystems
 ```
 
 `PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package Power Systems Modeling that provides a rigorous data model using Julia structures to enable power systems analysis in addition to stand-alone system analysis tools and model building. Each device is defined using a Julia Structure embedded in a hierarchy for types. This enables categorization of the devices by their operational characteristics and the data required to model them.

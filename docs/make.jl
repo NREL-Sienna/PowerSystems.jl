@@ -15,7 +15,7 @@ makedocs(
     pages = Any[ # Compat: `Any` for 0.4 compat
         "Introduction" => "index.md",
         "User Guide" => Any["man/data.md"],
-        "developer" => Any["Tests"=>"developer/tests.md",
+        "Developer" => Any["Tests"=>"developer/tests.md",
                            "Logging"=>"developer/logging.md",
                            "Style Guide" => "developer/style.md"],
         "API" => Any[
