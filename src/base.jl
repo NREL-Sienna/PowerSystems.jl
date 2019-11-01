@@ -221,7 +221,7 @@ function add_component!(sys::System, component::T; kwargs...) where T <: Compone
     IS.add_component!(sys.data, component; kwargs...)
 
     # Whatever this may change should have been validated above in check_component_addition,
-    # so this should not fail. So, the add_component changes will not have to be undone.
+    # so this should not fail.
     handle_component_addition!(sys, component)
 end
 

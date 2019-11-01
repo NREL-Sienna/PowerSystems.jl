@@ -88,6 +88,7 @@ export add_component!
 export remove_component!
 export remove_components!
 export clear_components!
+export generate_initial_times
 export get_component
 export get_components
 export get_components_by_name

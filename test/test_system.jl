@@ -51,10 +51,15 @@
                             "rating")
     @test forecast isa Deterministic
 
-    @test get_forecasts_horizon(sys) == 24
+    horizon = get_forecasts_horizon(sys)
+    @test horizon == 24
     @test get_forecasts_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
     @test get_forecasts_interval(sys) == Dates.Hour(0)
-    @test get_forecasts_resolution(sys) == Dates.Hour(1)  # TODO
+    resolution = get_forecasts_resolution(sys)
+    @test resolution == Dates.Hour(1)
+
+    # Actual functionality is tested in InfrastructureSystems.
+    @test generate_initial_times(sys, resolution, horizon)[1] == initial_time
 
     clear_forecasts!(sys)
     @test length(collect(iterate_forecasts(sys))) == 0
