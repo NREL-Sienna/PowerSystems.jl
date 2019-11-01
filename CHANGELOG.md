@@ -1,6 +1,10 @@
 # PowerSystems Change Log
 
 ### v0.5.1
+- Enforce unique bus numbers 
+- Set min version of IS to 0.2.4
+
+### v0.5.1
 - Bug fix in generate_initial_times
 - Bug fixes on SystemTable Data
 
