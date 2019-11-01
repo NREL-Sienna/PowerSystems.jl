@@ -96,13 +96,11 @@ export get_forecast_labels
 export get_forecast_initial_times
 export get_forecast_keys
 export get_forecast
-export get_forecasts
+export get_forecast_values
 export get_forecasts_horizon
 export get_forecasts_initial_time
 export get_forecasts_interval
 export get_forecasts_resolution
-export get_forecast_component_name
-export get_forecast_value
 export get_horizon
 export get_initial_time
 export get_resolution
