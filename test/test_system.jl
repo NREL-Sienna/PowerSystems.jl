@@ -51,13 +51,51 @@
                             "rating")
     @test forecast isa Deterministic
 
-    @test get_forecasts_horizon(sys) == 24
+    horizon = get_forecasts_horizon(sys)
+    @test horizon == 24
     @test get_forecasts_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
     @test get_forecasts_interval(sys) == Dates.Hour(0)
-    @test get_forecasts_resolution(sys) == Dates.Hour(1)  # TODO
+    resolution = get_forecasts_resolution(sys)
+    @test resolution == Dates.Hour(1)
+
+    # Actual functionality is tested in InfrastructureSystems.
+    @test generate_initial_times(sys, resolution, horizon)[1] == initial_time
 
     clear_forecasts!(sys)
     @test length(collect(iterate_forecasts(sys))) == 0
+end
+
+@testset "Test handling of bus_numbers" begin
+    sys = create_rts_system()
+
+    @test length(sys.bus_numbers) > 0
+    buses = get_components(Bus, sys)
+    bus_numbers = sort!([get_number(bus) for bus in buses])
+    @test bus_numbers == get_bus_numbers(sys)
+
+    # Remove entire type
+    remove_components!(Bus, sys)
+    @test length(sys.bus_numbers) == 0
+ 
+    # Remove individually.
+    for bus in buses
+        add_component!(sys, bus)
+    end
+    @test length(sys.bus_numbers) > 0
+    for bus in buses
+        remove_component!(sys, bus)
+    end
+    @test length(sys.bus_numbers) == 0
+ 
+    # Remove by name.
+    for bus in buses
+        add_component!(sys, bus)
+    end
+    @test length(sys.bus_numbers) > 0
+    for bus in buses
+        remove_component!(Bus, sys, get_name(bus))
+    end
+    @test length(sys.bus_numbers) == 0
 end
 
 @testset "Test System iterators" begin

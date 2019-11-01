@@ -36,12 +36,14 @@ const SKIP_PM_VALIDATION = false
 struct System <: PowerSystemType
     data::IS.SystemData
     basepower::Float64             # [MVA]
+    bus_numbers::Set{Int}
     runchecks::Bool
     internal::InfrastructureSystemsInternal
 
     function System(data, basepower, internal; kwargs...)
+        bus_numbers = Set{Int}()
         runchecks = get(kwargs, :runchecks, true)
-        sys = new(data, basepower, runchecks, internal)
+        sys = new(data, basepower, bus_numbers, runchecks, internal)
     end
 end
 
@@ -188,7 +190,7 @@ end
 Add a component to the system.
 
 Throws ArgumentError if the component's name is already stored for its concrete type.
-
+Throws ArgumentError if any Component-specific rule is violated.
 Throws InvalidRange if any of the component's field values are outside of defined valid
 range.
 
@@ -206,11 +208,9 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
 """
 function add_component!(sys::System, component::T; kwargs...) where T <: Component
-    if T <: Branch
-        arc = get_arc(component)
-        check_bus(sys, get_from(arc), arc)
-        check_bus(sys, get_to(arc), arc)
-    elseif Bus in fieldtypes(T)
+    check_component_addition(sys, component)
+
+    if Bus in fieldtypes(T)
         check_bus(sys, get_bus(component), component)
     end
 
@@ -219,6 +219,10 @@ function add_component!(sys::System, component::T; kwargs...) where T <: Compone
     end
 
     IS.add_component!(sys.data, component; kwargs...)
+
+    # Whatever this may change should have been validated above in check_component_addition,
+    # so this should not fail.
+    handle_component_addition!(sys, component)
 end
 
 """
@@ -342,7 +346,9 @@ Remove all components of type T from the system.
 Throws ArgumentError if the type is not stored.
 """
 function remove_components!(::Type{T}, sys::System) where T <: Component
-    return IS.remove_components!(T, sys.data)
+    for component in IS.remove_components!(T, sys.data)
+        handle_component_removal!(sys, component)
+    end
 end
 
 """
@@ -352,8 +358,9 @@ Remove a component from the system by its value.
 
 Throws ArgumentError if the component is not stored.
 """
-function remove_component!(sys::System, component)
-    return IS.remove_component!(sys.data, component)
+function remove_component!(sys::System, component::T) where T <: Component
+    IS.remove_component!(sys.data, component)
+    handle_component_removal!(sys, component)
 end
 
 """
@@ -372,7 +379,8 @@ function remove_component!(
                            sys::System,
                            name::AbstractString,
                           ) where T <: Component
-    return IS.remove_component!(T, sys.data, name)
+    component = IS.remove_component!(T, sys.data, name)
+    handle_component_removal!(sys, component)
 end
 
 """
@@ -560,9 +568,10 @@ end
 """
     generate_initial_times(sys::System, interval::Dates.Period, horizon::Int)
 
-Generates all possible initial times for the stored forecasts. This should be used when
-contiguous forecasts have been stored in chunks, such as a one-year forecast broken up into
-365 one-day forecasts.
+Generates all possible initial times for the stored forecasts. This should return the same
+result regardless of whether the forecasts have been stored as one contiguous array or
+chunks of contiguous arrays, such as one 365-day forecast vs 365 one-day forecasts.
+
 
 Throws ArgumentError if there are no forecasts stored, interval is not a multiple of the
 system's forecast resolution, or if the stored forecasts have overlapping timestamps.
@@ -783,6 +792,31 @@ function check!(sys::System)
     buscheck(buses)
 end
 
+function JSON2.write(io::IO, sys::System)
+    return JSON2.write(io, encode_for_json(sys))
+end
+
+function JSON2.write(sys::System)
+    return JSON2.write(encode_for_json(sys))
+end
+
+function encode_for_json(sys::T) where T <: System
+    fields = fieldnames(T)
+    final_fields = Vector{Symbol}()
+    vals = []
+
+    for field in fields
+        # Exclude bus_numbers because they will get rebuilt during deserialization.
+        if field != :bus_numbers
+            push!(vals, getfield(sys, field))
+            push!(final_fields, field)
+        end
+    end
+
+    return NamedTuple{Tuple(final_fields)}(vals)
+end
+
+
 function JSON2.read(io::IO, ::Type{System})
     raw = JSON2.read(io, NamedTuple)
     data = IS.deserialize(IS.SystemData, Component, raw.data)
@@ -795,8 +829,8 @@ function IS.deserialize_components(
                                    data::IS.SystemData,
                                    raw::NamedTuple,
                                   )
-    # TODO: This adds components through IS.SystemData instead System, which is what should
-    # happen. There is a catch-22 between creating System and SystemData.
+    # TODO: This adds components through IS.SystemData instead of System, which is what
+    # should happen. There is a catch-22 between creating System and SystemData.
     component_cache = Dict{Base.UUID, Component}()
 
     # Buses and Arcs are encoded as UUIDs.
@@ -922,6 +956,64 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     end
 
     return buses
+end
+
+"""
+Throws ArgumentError if a PowerSystems rule blocks addition to the system.
+
+This method is tied with handle_component_addition!. If the methods are re-implemented for
+a subtype then whatever is added in handle_component_addition! must be checked here.
+"""
+function check_component_addition(sys::System, component::Component)
+    # no-op
+end
+
+"""
+Refer to docstring for check_component_addition!
+"""
+function handle_component_addition!(sys::System, component::Component)
+    # no-op
+end
+
+function handle_component_removal!(sys::System, component::Component)
+    # no-op
+end
+
+function check_component_addition(sys::System, branch::Branch)
+    arc = get_arc(branch)
+    check_bus(sys, get_from(arc), arc)
+    check_bus(sys, get_to(arc), arc)
+end
+
+function check_component_addition(sys::System, bus::Bus)
+    number = get_number(bus)
+    if number in sys.bus_numbers
+        throw(ArgumentError("bus number $number is already stored in the system"))
+    end
+end
+
+function handle_component_addition!(sys::System, bus::Bus)
+    number = get_number(bus)
+    @assert !(number in sys.bus_numbers) "bus number $number is already stored"
+    push!(sys.bus_numbers, number)
+end
+
+"""
+Throws ArgumentError if the bus number is not stored in the system.
+"""
+function handle_component_removal!(sys::System, bus::Bus)
+    number = get_number(bus)
+    @assert number in sys.bus_numbers "bus number $number is not stored"
+    pop!(sys.bus_numbers, number)
+end
+
+"""
+    get_bus_numbers(sys::System)
+
+Return a sorted vector of bus numbers in the system.
+"""
+function get_bus_numbers(sys::System)
+    return sort(collect(sys.bus_numbers))
 end
 
 """
