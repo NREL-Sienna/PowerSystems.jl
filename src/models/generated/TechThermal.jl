@@ -11,16 +11,15 @@ mutable struct TechThermal <: TechnicalParams
     reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    _forecasts::InfrastructureSystems.Forecasts
     internal::InfrastructureSystemsInternal
 end
 
-function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, _forecasts=InfrastructureSystems.Forecasts(), )
-    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, _forecasts, InfrastructureSystemsInternal())
+function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal())
 end
 
-function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, _forecasts=InfrastructureSystems.Forecasts(), )
-    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, _forecasts, )
+function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -34,7 +33,6 @@ function TechThermal(::Nothing)
         reactivepowerlimits=nothing,
         ramplimits=nothing,
         timelimits=nothing,
-        _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -52,7 +50,5 @@ get_reactivepowerlimits(value::TechThermal) = value.reactivepowerlimits
 get_ramplimits(value::TechThermal) = value.ramplimits
 """Get TechThermal timelimits."""
 get_timelimits(value::TechThermal) = value.timelimits
-"""Get TechThermal _forecasts."""
-get__forecasts(value::TechThermal) = value._forecasts
 """Get TechThermal internal."""
 get_internal(value::TechThermal) = value.internal

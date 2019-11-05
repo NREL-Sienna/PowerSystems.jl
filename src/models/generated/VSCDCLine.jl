@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 
-"""As implemented in Milano&#39;s Book, Page 397"""
+"""As implemented in Milano's Book, Page 397"""
 mutable struct VSCDCLine <: DCBranch
     name::String
     available::Bool

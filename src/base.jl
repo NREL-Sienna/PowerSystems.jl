@@ -229,7 +229,6 @@ end
     add_forecasts!(
                    sys::System,
                    metadata_file::AbstractString,
-                   label_mapping::Dict{Tuple{String, String}, String};
                    resolution=nothing,
                   )
 
@@ -239,18 +238,14 @@ Adds forecasts from a metadata file or metadata descriptors.
 - `sys::System`: system
 - `metadata_file::AbstractString`: metadata file for timeseries
   that includes an array of IS.TimeseriesFileMetadata instances or a vector.
-- `label_mapping::Dict{Tuple{String, String}, String}`: maps customized component field names to
-  PowerSystem field names
 - `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
 """
 function add_forecasts!(
                         sys::System,
-                        metadata_file::AbstractString,
-                        label_mapping::Dict{Tuple{String, String}, String};
+                        metadata_file::AbstractString;
                         resolution=nothing,
                        )
-    return IS.add_forecasts!(Component, sys.data, metadata_file, label_mapping;
-                             resolution=resolution)
+    return IS.add_forecasts!(Component, sys.data, metadata_file; resolution=resolution)
 end
 
 """
@@ -269,7 +264,7 @@ Adds forecasts from a metadata file or metadata descriptors.
 """
 function add_forecasts!(
                         sys::System,
-                        timeseries_metadata::Vector{IS.TimeseriesFileMetadata},
+                        timeseries_metadata::Vector{IS.TimeseriesFileMetadata};
                         resolution=nothing
                        )
     return IS.add_forecasts!(Component, sys.data, timeseries_metadata;
@@ -650,7 +645,7 @@ Return a TimeSeries.TimeArray where the forecast data has been multiplied by the
 component field.
 """
 function get_forecast_values(component::Component, forecast::Forecast)
-    return IS.get_forecast_values(component, forecast)
+    return IS.get_forecast_values(PowerSystems, component, forecast)
 end
 
 """
