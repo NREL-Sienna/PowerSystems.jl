@@ -28,7 +28,6 @@ function validate_serialization(sys::System)
         @debug "delete temp file" path
         rm(path)
         rm(ts_file)
-        println("Deleted $path and $ts_file")
     end
 end
 
