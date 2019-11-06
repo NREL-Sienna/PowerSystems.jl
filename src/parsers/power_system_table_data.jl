@@ -242,14 +242,19 @@ Construct a System from PowerSystemTableData data.
 # Arguments
 - `forecast_resolution::Union{DateTime, Nothing}=nothing`: only store forecasts that match
   this resolution.
+- `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5 file
 
 Throws DataFormatError if forecasts with multiple resolutions are detected.
 - A forecast has a different resolution than others.
 - A forecast has a different horizon than others.
 
 """
-function System(data::PowerSystemTableData; forecast_resolution=nothing)
-    sys = System(data.basepower)
+function System(
+                data::PowerSystemTableData;
+                forecast_resolution=nothing,
+                time_series_in_memory=false,
+               )
+    sys = System(data.basepower; time_series_in_memory=time_series_in_memory)
 
     bus_csv_parser!(sys, data)
     loadzone_csv_parser!(sys, data)

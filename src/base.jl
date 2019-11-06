@@ -30,6 +30,7 @@ const SKIP_PM_VALIDATION = false
     # Keyword arguments
 
     * `runchecks`::Bool : run available checks on input fields. If an error is found in a field, that component will not be added to the system and InvalidRange is thrown.
+    * `time_series_in_memory`::Bool=false : Store time series data in memory instead of HDF5
     * `configpath`::String : specify path to validation config file
     DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
@@ -1040,12 +1041,14 @@ end
 function _create_system_data_from_kwargs(; kwargs...)
     validation_descriptor_file = nothing
     runchecks = get(kwargs, :runchecks, true)
+    time_series_in_memory = get(kwargs, :time_series_in_memory, false)
     if runchecks
         validation_descriptor_file = get(kwargs, :configpath,
                                          POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
     end
 
-    return IS.SystemData(; validation_descriptor_file=validation_descriptor_file)
+    return IS.SystemData(; validation_descriptor_file=validation_descriptor_file,
+                         time_series_in_memory=time_series_in_memory)
 end
 
 function parse_types(mod)
