@@ -2,37 +2,36 @@
 const SKIP_PM_VALIDATION = false
 
 """
-    System
+System
 
-    A power system defined by fields for basepower, components, and forecasts.
+A power system defined by fields for basepower, components, and forecasts.
 
-    # Constructor
-    ```julia
-    System(basepower)
-    System(components, basepower)
-    System(buses, generators, loads, branches, storage, basepower, services, annex; kwargs...)
-    System(buses, generators, loads, basepower; kwargs...)
-    System(file; kwargs...)
-    System(; buses, generators, loads, branches, storage, basepower, services, annex, kwargs...)
-    System(; kwargs...)
-    ```
+```julia
+System(basepower)
+System(components, basepower)
+System(buses, generators, loads, branches, storage, basepower, services, annex; kwargs...)
+System(buses, generators, loads, basepower; kwargs...)
+System(file; kwargs...)
+System(; buses, generators, loads, branches, storage, basepower, services, annex, kwargs...)
+System(; kwargs...)
+```
 
-    # Arguments
+# Arguments
+- `buses::Vector{Bus}`: an array of buses
+- `generators::Vector{Generator}`: an array of generators of (possibly) different types
+- `loads::Vector{ElectricLoad}`: an array of load specifications that includes timing of the loads
+- `branches::Union{Nothing, Vector{Branch}}`: an array of branches; may be `nothing`
+- `storage::Union{Nothing, Vector{Storage}}`: an array of storage devices; may be `nothing`
+- `basepower::Float64`: the base power value for the system
+- `services::Union{Nothing, Vector{ <: Service}}`: an array of services; may be `nothing`
 
-    * `buses`::Vector{Bus} : an array of buses
-    * `generators`::Vector{Generator} : an array of generators of (possibly) different types
-    * `loads`::Vector{ElectricLoad} : an array of load specifications that includes timing of the loads
-    * `branches`::Union{Nothing, Vector{Branch}} : an array of branches; may be `nothing`
-    * `storage`::Union{Nothing, Vector{Storage}} : an array of storage devices; may be `nothing`
-    * `basepower`::Float64 : the base power value for the system
-    * `services`::Union{Nothing, Vector{ <: Service}} : an array of services; may be `nothing`
+# Keyword arguments
+- `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
+  Throws InvalidRange if an error is found.
+- `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
+- `configpath::String`: specify path to validation config file
 
-    # Keyword arguments
 
-    * `runchecks`::Bool : run available checks on input fields. If an error is found in a field, that component will not be added to the system and InvalidRange is thrown.
-    * `time_series_in_memory`::Bool=false : Store time series data in memory instead of HDF5
-    * `configpath`::String : specify path to validation config file
-    DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
 struct System <: PowerSystemType
     data::IS.SystemData
