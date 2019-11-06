@@ -47,8 +47,7 @@
     components = collect(get_components(HydroDispatch, sys))
     @test !isempty(components)
     component = components[1]
-    forecast = get_forecast(Deterministic, component, initial_time,
-                            "rating")
+    forecast = get_forecast(Deterministic, component, initial_time, "get_rating")
     @test forecast isa Deterministic
 
     horizon = get_forecasts_horizon(sys)
