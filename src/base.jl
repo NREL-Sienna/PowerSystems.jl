@@ -2,46 +2,48 @@
 const SKIP_PM_VALIDATION = false
 
 """
-    System
+System
 
-    A power system defined by fields for basepower, components, and forecasts.
+A power system defined by fields for basepower, components, and forecasts.
 
-    # Constructor
-    ```julia
-    System(basepower)
-    System(components, basepower)
-    System(buses, generators, loads, branches, storage, basepower, services, annex; kwargs...)
-    System(buses, generators, loads, basepower; kwargs...)
-    System(file; kwargs...)
-    System(; buses, generators, loads, branches, storage, basepower, services, annex, kwargs...)
-    System(; kwargs...)
-    ```
+```julia
+System(basepower)
+System(components, basepower)
+System(buses, generators, loads, branches, storage, basepower, services, annex; kwargs...)
+System(buses, generators, loads, basepower; kwargs...)
+System(file; kwargs...)
+System(; buses, generators, loads, branches, storage, basepower, services, annex, kwargs...)
+System(; kwargs...)
+```
 
-    # Arguments
+# Arguments
+- `buses::Vector{Bus}`: an array of buses
+- `generators::Vector{Generator}`: an array of generators of (possibly) different types
+- `loads::Vector{ElectricLoad}`: an array of load specifications that includes timing of the loads
+- `branches::Union{Nothing, Vector{Branch}}`: an array of branches; may be `nothing`
+- `storage::Union{Nothing, Vector{Storage}}`: an array of storage devices; may be `nothing`
+- `basepower::Float64`: the base power value for the system
+- `services::Union{Nothing, Vector{ <: Service}}`: an array of services; may be `nothing`
 
-    * `buses`::Vector{Bus} : an array of buses
-    * `generators`::Vector{Generator} : an array of generators of (possibly) different types
-    * `loads`::Vector{ElectricLoad} : an array of load specifications that includes timing of the loads
-    * `branches`::Union{Nothing, Vector{Branch}} : an array of branches; may be `nothing`
-    * `storage`::Union{Nothing, Vector{Storage}} : an array of storage devices; may be `nothing`
-    * `basepower`::Float64 : the base power value for the system
-    * `services`::Union{Nothing, Vector{ <: Service}} : an array of services; may be `nothing`
+# Keyword arguments
+- `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
+  Throws InvalidRange if an error is found.
+- `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
+- `configpath::String`: specify path to validation config file
 
-    # Keyword arguments
 
-    * `runchecks`::Bool : run available checks on input fields. If an error is found in a field, that component will not be added to the system and InvalidRange is thrown.
-    * `configpath`::String : specify path to validation config file
-    DOCTODO: any other keyword arguments? genmap_file, REGEX_FILE
 """
 struct System <: PowerSystemType
     data::IS.SystemData
     basepower::Float64             # [MVA]
+    bus_numbers::Set{Int}
     runchecks::Bool
     internal::InfrastructureSystemsInternal
 
     function System(data, basepower, internal; kwargs...)
+        bus_numbers = Set{Int}()
         runchecks = get(kwargs, :runchecks, true)
-        sys = new(data, basepower, runchecks, internal)
+        sys = new(data, basepower, bus_numbers, runchecks, internal)
     end
 end
 
@@ -188,7 +190,7 @@ end
 Add a component to the system.
 
 Throws ArgumentError if the component's name is already stored for its concrete type.
-
+Throws ArgumentError if any Component-specific rule is violated.
 Throws InvalidRange if any of the component's field values are outside of defined valid
 range.
 
@@ -206,11 +208,9 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
 """
 function add_component!(sys::System, component::T; kwargs...) where T <: Component
-    if T <: Branch
-        arc = get_arc(component)
-        check_bus(sys, get_from(arc), arc)
-        check_bus(sys, get_to(arc), arc)
-    elseif Bus in fieldtypes(T)
+    check_component_addition(sys, component)
+
+    if Bus in fieldtypes(T)
         check_bus(sys, get_bus(component), component)
     end
 
@@ -219,13 +219,16 @@ function add_component!(sys::System, component::T; kwargs...) where T <: Compone
     end
 
     IS.add_component!(sys.data, component; kwargs...)
+
+    # Whatever this may change should have been validated above in check_component_addition,
+    # so this should not fail.
+    handle_component_addition!(sys, component)
 end
 
 """
     add_forecasts!(
                    sys::System,
                    metadata_file::AbstractString,
-                   label_mapping::Dict{Tuple{String, String}, String};
                    resolution=nothing,
                   )
 
@@ -235,18 +238,14 @@ Adds forecasts from a metadata file or metadata descriptors.
 - `sys::System`: system
 - `metadata_file::AbstractString`: metadata file for timeseries
   that includes an array of IS.TimeseriesFileMetadata instances or a vector.
-- `label_mapping::Dict{Tuple{String, String}, String}`: maps customized component field names to
-  PowerSystem field names
 - `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
 """
 function add_forecasts!(
                         sys::System,
-                        metadata_file::AbstractString,
-                        label_mapping::Dict{Tuple{String, String}, String};
+                        metadata_file::AbstractString;
                         resolution=nothing,
                        )
-    return IS.add_forecasts!(Component, sys.data, metadata_file, label_mapping;
-                             resolution=resolution)
+    return IS.add_forecasts!(Component, sys.data, metadata_file; resolution=resolution)
 end
 
 """
@@ -265,7 +264,7 @@ Adds forecasts from a metadata file or metadata descriptors.
 """
 function add_forecasts!(
                         sys::System,
-                        timeseries_metadata::Vector{IS.TimeseriesFileMetadata},
+                        timeseries_metadata::Vector{IS.TimeseriesFileMetadata};
                         resolution=nothing
                        )
     return IS.add_forecasts!(Component, sys.data, timeseries_metadata;
@@ -342,7 +341,9 @@ Remove all components of type T from the system.
 Throws ArgumentError if the type is not stored.
 """
 function remove_components!(::Type{T}, sys::System) where T <: Component
-    return IS.remove_components!(T, sys.data)
+    for component in IS.remove_components!(T, sys.data)
+        handle_component_removal!(sys, component)
+    end
 end
 
 """
@@ -352,8 +353,9 @@ Remove a component from the system by its value.
 
 Throws ArgumentError if the component is not stored.
 """
-function remove_component!(sys::System, component)
-    return IS.remove_component!(sys.data, component)
+function remove_component!(sys::System, component::T) where T <: Component
+    IS.remove_component!(sys.data, component)
+    handle_component_removal!(sys, component)
 end
 
 """
@@ -372,7 +374,8 @@ function remove_component!(
                            sys::System,
                            name::AbstractString,
                           ) where T <: Component
-    return IS.remove_component!(T, sys.data, name)
+    component = IS.remove_component!(T, sys.data, name)
+    handle_component_removal!(sys, component)
 end
 
 """
@@ -560,9 +563,10 @@ end
 """
     generate_initial_times(sys::System, interval::Dates.Period, horizon::Int)
 
-Generates all possible initial times for the stored forecasts. This should be used when
-contiguous forecasts have been stored in chunks, such as a one-year forecast broken up into
-365 one-day forecasts.
+Generates all possible initial times for the stored forecasts. This should return the same
+result regardless of whether the forecasts have been stored as one contiguous array or
+chunks of contiguous arrays, such as one 365-day forecast vs 365 one-day forecasts.
+
 
 Throws ArgumentError if there are no forecasts stored, interval is not a multiple of the
 system's forecast resolution, or if the stored forecasts have overlapping timestamps.
@@ -641,7 +645,7 @@ Return a TimeSeries.TimeArray where the forecast data has been multiplied by the
 component field.
 """
 function get_forecast_values(component::Component, forecast::Forecast)
-    return IS.get_forecast_values(component, forecast)
+    return IS.get_forecast_values(PowerSystems, component, forecast)
 end
 
 """
@@ -783,6 +787,31 @@ function check!(sys::System)
     buscheck(buses)
 end
 
+function JSON2.write(io::IO, sys::System)
+    return JSON2.write(io, encode_for_json(sys))
+end
+
+function JSON2.write(sys::System)
+    return JSON2.write(encode_for_json(sys))
+end
+
+function encode_for_json(sys::T) where T <: System
+    fields = fieldnames(T)
+    final_fields = Vector{Symbol}()
+    vals = []
+
+    for field in fields
+        # Exclude bus_numbers because they will get rebuilt during deserialization.
+        if field != :bus_numbers
+            push!(vals, getfield(sys, field))
+            push!(final_fields, field)
+        end
+    end
+
+    return NamedTuple{Tuple(final_fields)}(vals)
+end
+
+
 function JSON2.read(io::IO, ::Type{System})
     raw = JSON2.read(io, NamedTuple)
     data = IS.deserialize(IS.SystemData, Component, raw.data)
@@ -795,8 +824,8 @@ function IS.deserialize_components(
                                    data::IS.SystemData,
                                    raw::NamedTuple,
                                   )
-    # TODO: This adds components through IS.SystemData instead System, which is what should
-    # happen. There is a catch-22 between creating System and SystemData.
+    # TODO: This adds components through IS.SystemData instead of System, which is what
+    # should happen. There is a catch-22 between creating System and SystemData.
     component_cache = Dict{Base.UUID, Component}()
 
     # Buses and Arcs are encoded as UUIDs.
@@ -925,6 +954,64 @@ function get_buses(sys::System, bus_numbers::Set{Int})
 end
 
 """
+Throws ArgumentError if a PowerSystems rule blocks addition to the system.
+
+This method is tied with handle_component_addition!. If the methods are re-implemented for
+a subtype then whatever is added in handle_component_addition! must be checked here.
+"""
+function check_component_addition(sys::System, component::Component)
+    # no-op
+end
+
+"""
+Refer to docstring for check_component_addition!
+"""
+function handle_component_addition!(sys::System, component::Component)
+    # no-op
+end
+
+function handle_component_removal!(sys::System, component::Component)
+    # no-op
+end
+
+function check_component_addition(sys::System, branch::Branch)
+    arc = get_arc(branch)
+    check_bus(sys, get_from(arc), arc)
+    check_bus(sys, get_to(arc), arc)
+end
+
+function check_component_addition(sys::System, bus::Bus)
+    number = get_number(bus)
+    if number in sys.bus_numbers
+        throw(ArgumentError("bus number $number is already stored in the system"))
+    end
+end
+
+function handle_component_addition!(sys::System, bus::Bus)
+    number = get_number(bus)
+    @assert !(number in sys.bus_numbers) "bus number $number is already stored"
+    push!(sys.bus_numbers, number)
+end
+
+"""
+Throws ArgumentError if the bus number is not stored in the system.
+"""
+function handle_component_removal!(sys::System, bus::Bus)
+    number = get_number(bus)
+    @assert number in sys.bus_numbers "bus number $number is not stored"
+    pop!(sys.bus_numbers, number)
+end
+
+"""
+    get_bus_numbers(sys::System)
+
+Return a sorted vector of bus numbers in the system.
+"""
+function get_bus_numbers(sys::System)
+    return sort(collect(sys.bus_numbers))
+end
+
+"""
 Throws ArgumentError if the bus is not stored in the system.
 """
 function check_bus(sys::System, bus::Bus, component::Component)
@@ -953,12 +1040,14 @@ end
 function _create_system_data_from_kwargs(; kwargs...)
     validation_descriptor_file = nothing
     runchecks = get(kwargs, :runchecks, true)
+    time_series_in_memory = get(kwargs, :time_series_in_memory, false)
     if runchecks
         validation_descriptor_file = get(kwargs, :configpath,
                                          POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
     end
 
-    return IS.SystemData(; validation_descriptor_file=validation_descriptor_file)
+    return IS.SystemData(; validation_descriptor_file=validation_descriptor_file,
+                         time_series_in_memory=time_series_in_memory)
 end
 
 function parse_types(mod)

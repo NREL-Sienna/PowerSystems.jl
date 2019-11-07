@@ -113,12 +113,6 @@
         "validation_action": "error"
       },
       {
-        "name": "_forecasts",
-        "null_value": "InfrastructureSystems.Forecasts()",
-        "data_type": "InfrastructureSystems.Forecasts",
-        "default": "InfrastructureSystems.Forecasts()"
-      },
-      {
         "name": "internal",
         "data_type": "InfrastructureSystemsInternal"
       }
@@ -154,12 +148,6 @@
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":1.0},
         "validation_action": "error"
-      },
-      {
-        "name": "_forecasts",
-        "null_value": "InfrastructureSystems.Forecasts()",
-        "data_type": "InfrastructureSystems.Forecasts",
-        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
@@ -215,12 +203,6 @@
         "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
-      },
-      {
-        "name": "_forecasts",
-        "null_value": "InfrastructureSystems.Forecasts()",
-        "data_type": "InfrastructureSystems.Forecasts",
-        "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",

@@ -242,14 +242,19 @@ Construct a System from PowerSystemTableData data.
 # Arguments
 - `forecast_resolution::Union{DateTime, Nothing}=nothing`: only store forecasts that match
   this resolution.
+- `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5 file
 
 Throws DataFormatError if forecasts with multiple resolutions are detected.
 - A forecast has a different resolution than others.
 - A forecast has a different horizon than others.
 
 """
-function System(data::PowerSystemTableData; forecast_resolution=nothing)
-    sys = System(data.basepower)
+function System(
+                data::PowerSystemTableData;
+                forecast_resolution=nothing,
+                time_series_in_memory=false,
+               )
+    sys = System(data.basepower; time_series_in_memory=time_series_in_memory)
 
     bus_csv_parser!(sys, data)
     loadzone_csv_parser!(sys, data)
@@ -270,9 +275,7 @@ function System(data::PowerSystemTableData; forecast_resolution=nothing)
     end
 
     if !isnothing(data.timeseries_metadata_file)
-        label_mapping = _create_forecast_label_mapping(data.user_descriptors)
-        add_forecasts!(sys, data.timeseries_metadata_file, label_mapping;
-                       resolution=forecast_resolution)
+        add_forecasts!(sys, data.timeseries_metadata_file; resolution=forecast_resolution)
     end
 
     check!(sys)
@@ -970,26 +973,4 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     end
 
     return NamedTuple{Tuple(Symbol.(fields))}(vals)
-end
-
-"""
-Forecasts are created for specific fields of a component. The field name in the metadata
-file may be customized, so this creates a mapping of (category, custom_name) to name.
-"""
-function _create_forecast_label_mapping(user_descriptors::Dict)
-    mapping = Dict{Tuple{String, String}, String}()
-    for (category, params) in user_descriptors
-        fields = [d["name"] for d in params]
-        ufields = unique(fields)
-        counts=[(i, count(x->x==i, fields)) for i in ufields if count(x->x==i, fields)>1] # finding duplicated targets
-        if length(counts) > 0
-            throw(DataFormatError("$POWER_SYSTEM_DESCRIPTOR_FILE has multiple entries for $(counts[1]) in $category"))
-        end
-        for param in params
-            key = (lowercase(string(category)), param["custom_name"])
-            mapping[key] = param["name"]
-        end
-    end
-
-    return mapping
 end

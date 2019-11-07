@@ -2,13 +2,6 @@ import DataFrames
 import Dates
 import TimeSeries
 
-function get_forecast_label_mapping()
-    descriptors = PSY._read_config_file(joinpath(RTS_GMLC_DIR, "user_descriptors.yaml"))
-    return PSY._create_forecast_label_mapping(descriptors)
-end
-
-const LABEL_MAPPING = get_forecast_label_mapping()
-
 function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon)
     initial_times = get_forecast_initial_times(sys)
     if length(initial_times) != num_initial_times
@@ -35,9 +28,8 @@ function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon
 end
 
 @testset "Test read_time_series_metadata" begin
-    forecasts = IS.read_time_series_metadata(joinpath(RTS_GMLC_DIR,
-                                                      "timeseries_pointers.json"),
-                                            LABEL_MAPPING)
+    filename = joinpath(RTS_GMLC_DIR, "timeseries_pointers.json")
+    forecasts = IS.read_time_series_metadata(filename)
     @test length(forecasts) == 282
 
     for forecast in forecasts
@@ -121,26 +113,25 @@ end
     forecast = collect(PSY.iterate_forecasts(sys))[1]
 end
 
-# Disabled because the label mapping doesn't work.
-#@testset "Forecast data matpower" begin
-#    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
-#    forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_da.json")
-#    add_forecasts!(sys, forecasts_metadata, LABEL_MAPPING)
-#    @test verify_forecasts(sys, 1, 5, 24)
-#
-#
-#    # Add the same files.
-#    # This will fail because the component-label pairs will be duplicated.
-#    @test_throws IS.DataFormatError add_forecasts!(sys, forecasts_metadata, LABEL_MAPPING)
-#
-#    forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_rt.json")
-#
-#    ## This will fail because the resolutions are different.
-#    @test_throws IS.DataFormatError add_forecasts!(sys, forecasts_metadata, LABEL_MAPPING)
-#
-#    ## TODO: need a dataset with same resolution but different horizon.
-#
-#    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
-#    add_forecasts!(sys, forecasts_metadata, LABEL_MAPPING)
-#    @test verify_forecasts(sys, 1, 5, 288)
-#end
+@testset "Forecast data matpower" begin
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_da.json")
+    add_forecasts!(sys, forecasts_metadata)
+    @test verify_forecasts(sys, 1, 5, 24)
+
+
+    # Add the same files.
+    # This will fail because the component-label pairs will be duplicated.
+    @test_throws ArgumentError add_forecasts!(sys, forecasts_metadata)
+
+    forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_rt.json")
+
+    ## This will fail because the resolutions are different.
+    @test_throws IS.DataFormatError add_forecasts!(sys, forecasts_metadata)
+
+    ## TODO: need a dataset with same resolution but different horizon.
+
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    add_forecasts!(sys, forecasts_metadata)
+    @test verify_forecasts(sys, 1, 5, 288)
+end

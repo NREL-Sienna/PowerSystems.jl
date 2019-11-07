@@ -13,3 +13,28 @@ sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
     # TODO: add test for loadzones testing MAPPING_BUSNUMBER2INDEX
 
 end
+
+@testset "Test unique bus numbers" begin
+    number = 100
+    bus1 = Bus(;
+               number=number,
+               name="bus100",
+               bustype=PSY.PV::BusType,
+               angle=1.0,
+               voltage=1.0,
+               voltagelimits=(min=-1.0, max=1.0),
+               basevoltage=1.0
+              )
+    bus2 = Bus(;
+               number=number,
+               name="bus101",
+               bustype=PSY.PV::BusType,
+               angle=1.0,
+               voltage=1.0,
+               voltagelimits=(min=-1.0, max=1.0),
+               basevoltage=1.0
+              )
+
+    add_component!(sys, bus1)
+    @test_throws ArgumentError add_component!(sys, bus2)
+end
