@@ -561,6 +561,24 @@ function make_forecasts(sys::System, metadata::Vector{IS.TimeseriesFileMetadata}
 end
 
 """
+    are_forecasts_contiguous(sys::System)
+
+Return true if forecasts are stored contiguously.
+
+Throws ArgumentError if there are no forecasts stored.
+"""
+function are_forecasts_contiguous(sys::System)
+    return IS.are_forecasts_contiguous(sys.data)
+end
+
+"""
+    are_forecasts_contiguous(component::Component)
+"""
+function are_forecasts_contiguous(component::Component)
+    return IS.are_forecasts_contiguous(component)
+end
+
+"""
     generate_initial_times(
                            sys::System,
                            interval::Dates.Period,

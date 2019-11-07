@@ -59,6 +59,9 @@
 
     # Actual functionality is tested in InfrastructureSystems.
     @test generate_initial_times(sys, resolution, horizon)[1] == initial_time
+    @test generate_initial_times(component, resolution, horizon)[1] == initial_time
+    @test are_forecasts_contiguous(sys)
+    @test are_forecasts_contiguous(component)
 
     clear_forecasts!(sys)
     @test length(collect(iterate_forecasts(sys))) == 0
@@ -75,7 +78,7 @@ end
     # Remove entire type
     remove_components!(Bus, sys)
     @test length(sys.bus_numbers) == 0
- 
+
     # Remove individually.
     for bus in buses
         add_component!(sys, bus)
@@ -85,7 +88,7 @@ end
         remove_component!(sys, bus)
     end
     @test length(sys.bus_numbers) == 0
- 
+
     # Remove by name.
     for bus in buses
         add_component!(sys, bus)

@@ -88,6 +88,7 @@ export add_component!
 export remove_component!
 export remove_components!
 export clear_components!
+export are_forecasts_contiguous
 export generate_initial_times
 export get_component
 export get_components
