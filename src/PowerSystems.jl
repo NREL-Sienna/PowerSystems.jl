@@ -104,7 +104,6 @@ export get_forecasts_resolution
 export get_horizon
 export get_initial_time
 export get_resolution
-export get_timeseries
 export get_data
 export iterate_components
 export iterate_forecasts

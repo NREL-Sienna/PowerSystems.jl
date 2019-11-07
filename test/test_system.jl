@@ -145,3 +145,7 @@ end
     line = Line(nothing)
     @test_throws(IS.ArgumentError, add_component!(sys, line))
 end
+
+@testset "Test exported names" begin
+    @test IS.validate_exported_names(PowerSystems)
+end
