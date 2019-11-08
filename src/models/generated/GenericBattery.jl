@@ -1,15 +1,54 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct GenericBattery <: Storage
+        name::String
+        available::Bool
+        bus::Bus
+        primemover::PrimeMovers
+        energy::Float64
+        capacity::Min_Max
+        rating::Float64
+        activepower::Float64
+        inputactivepowerlimits::Min_Max
+        outputactivepowerlimits::Min_Max
+        efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
+        reactivepower::Float64
+        reactivepowerlimits::Union{Nothing, Min_Max}
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
+Data structure for a generic battery
 
+# Arguments
+-`name::String`
+-`available::Bool`
+-`bus::Bus`
+-`primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
+-`energy::Float64`: State of Charge of the Battery p.u.-hr
+-`capacity::Min_Max`: Maximum and Minimum storage capacity in p.u.-hr
+-`rating::Float64`
+-`activepower::Float64`
+-`inputactivepowerlimits::Min_Max`
+-`outputactivepowerlimits::Min_Max`
+-`efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`
+-`reactivepower::Float64`
+-`reactivepowerlimits::Union{Nothing, Min_Max}`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct GenericBattery <: Storage
     name::String
     available::Bool
     bus::Bus
-    primemover::PrimeMovers  # PrimeMover Technology according to EIA 923
-    energy::Float64  # State of Charge of the Battery p.u.-hr
-    capacity::Min_Max  # Maximum and Minimum storage capacity in p.u.-hr
+    "PrimeMover Technology according to EIA 923"
+    primemover::PrimeMovers
+    "State of Charge of the Battery p.u.-hr"
+    energy::Float64
+    "Maximum and Minimum storage capacity in p.u.-hr"
+    capacity::Min_Max
     rating::Float64
     activepower::Float64
     inputactivepowerlimits::Min_Max
@@ -18,6 +57,7 @@ mutable struct GenericBattery <: Storage
     reactivepower::Float64
     reactivepowerlimits::Union{Nothing, Min_Max}
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

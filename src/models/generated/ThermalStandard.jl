@@ -1,8 +1,32 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct ThermalStandard <: ThermalGen
+        name::String
+        available::Bool
+        bus::Bus
+        activepower::Float64
+        reactivepower::Float64
+        tech::Union{Nothing, TechThermal}
+        op_cost::ThreePartCost
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
-"""Data Structure for thermal generation technologies."""
+Data Structure for thermal generation technologies.
+
+# Arguments
+-`name::String`
+-`available::Bool`
+-`bus::Bus`
+-`activepower::Float64`
+-`reactivepower::Float64`
+-`tech::Union{Nothing, TechThermal}`
+-`op_cost::ThreePartCost`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct ThermalStandard <: ThermalGen
     name::String
     available::Bool
@@ -12,6 +36,7 @@ mutable struct ThermalStandard <: ThermalGen
     tech::Union{Nothing, TechThermal}
     op_cost::ThreePartCost
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

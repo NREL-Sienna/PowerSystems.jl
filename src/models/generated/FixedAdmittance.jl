@@ -1,14 +1,34 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct FixedAdmittance <: ElectricLoad
+        name::String
+        available::Bool
+        bus::Bus
+        Y::Complex{Float64}
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
 
+
+# Arguments
+-`name::String`
+-`available::Bool`
+-`bus::Bus`
+-`Y::Complex{Float64}`: System per-unit value
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct FixedAdmittance <: ElectricLoad
     name::String
     available::Bool
     bus::Bus
+    "System per-unit value"
     Y::Complex{Float64}
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

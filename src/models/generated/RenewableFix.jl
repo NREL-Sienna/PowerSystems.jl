@@ -1,8 +1,30 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct RenewableFix <: RenewableGen
+        name::String
+        available::Bool
+        bus::Bus
+        activepower::Float64
+        reactivepower::Float64
+        tech::TechRenewable
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
+Data Structure for fixed renewable generation technologies.
 
+# Arguments
+-`name::String`
+-`available::Bool`
+-`bus::Bus`
+-`activepower::Float64`
+-`reactivepower::Float64`
+-`tech::TechRenewable`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct RenewableFix <: RenewableGen
     name::String
     available::Bool
@@ -11,6 +33,7 @@ mutable struct RenewableFix <: RenewableGen
     reactivepower::Float64
     tech::TechRenewable
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
