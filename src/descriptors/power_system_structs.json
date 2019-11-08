@@ -912,7 +912,6 @@
   },
   {
     "struct_name": "FixedAdmittance",
-    "docstring": "",
     "fields": [
       {
         "null_value": "init",
