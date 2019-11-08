@@ -16,9 +16,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-The 2-W transformer model uses an equivalent circuit assuming the
-impedance is on the High Voltage Side of the transformer. The model
-allocates the iron losses and magnetizing susceptance to the primary side.
+The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.
 
 # Arguments
 -`name::String`

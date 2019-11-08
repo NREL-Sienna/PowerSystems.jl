@@ -19,7 +19,7 @@
       },
       {
         "name": "_forecasts",
-        "comment": "system forecasts",
+        "comment": "component forecasts",
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
@@ -34,7 +34,7 @@
   },
   {
     "struct_name": "ThreePartCost",
-    "docstring": "Data Structure Operational Cost Data in Three parts fixed,\nvariable cost and start - stop costs.",
+    "docstring": "Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.",
     "fields": [
       {
         "name": "variable",
@@ -645,7 +645,7 @@
   },
   {
     "struct_name": "Transformer2W",
-    "docstring": "The 2-W transformer model uses an equivalent circuit assuming the\nimpedance is on the High Voltage Side of the transformer. The model\nallocates the iron losses and magnetizing susceptance to the primary side.",
+    "docstring": "The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
     "fields": [
       {
         "null_value": "init",

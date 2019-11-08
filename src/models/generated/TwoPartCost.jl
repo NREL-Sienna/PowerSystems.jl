@@ -14,7 +14,7 @@ Data Structure Operational Cost Data in two parts: fixed and variable cost.
 # Arguments
 -`variable::VariableCost`: variable cost
 -`fixed::Float64`: fixed cost
--`_forecasts::InfrastructureSystems.Forecasts`: system forecasts
+-`_forecasts::InfrastructureSystems.Forecasts`: component forecasts
 -`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TwoPartCost <: OperationalCost
@@ -22,7 +22,7 @@ mutable struct TwoPartCost <: OperationalCost
     variable::VariableCost
     "fixed cost"
     fixed::Float64
-    "system forecasts"
+    "component forecasts"
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

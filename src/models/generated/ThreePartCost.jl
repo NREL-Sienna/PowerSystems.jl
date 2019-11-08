@@ -11,8 +11,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Data Structure Operational Cost Data in Three parts fixed,
-variable cost and start - stop costs.
+Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.
 
 # Arguments
 -`variable::VariableCost`: variable cost
