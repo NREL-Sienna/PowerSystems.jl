@@ -1,7 +1,7 @@
 name = "PowerSystems"
 uuid = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
 authors = ["Jose Daniel Lara", "Dheepak Krishnamurthy", "Clayton Barrows", "Daniel Thom"]
-version = "0.6.0"
+version = "0.6.1"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -21,7 +21,7 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 [compat]
 CSV = "~0.5"
 DataFrames = "~0.19"
-InfrastructureSystems = "~0.3"
+InfrastructureSystems = "~0.4"
 JSON = "~0.21"
 JSON2 = "~0.3"
 TimeSeries = "~0.16"
