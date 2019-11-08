@@ -600,8 +600,13 @@ system's forecast resolution, or if the stored forecasts have overlapping timest
 - `initial_time::Union{Nothing, Dates.DateTime}=nothing`: Start with this time. If nothing,
   use the first initial time.
 """
-function generate_initial_times(sys::System, interval::Dates.Period, horizon::Int)
-    return IS.generate_initial_times(sys.data, interval, horizon)
+function generate_initial_times(
+                                sys::System,
+                                interval::Dates.Period,
+                                horizon::Int;
+                                initial_time::Union{Nothing, Dates.DateTime}=nothing)
+    return IS.generate_initial_times(sys.data, interval, horizon;
+                                     initial_time = initial_time)
 end
 
 """
