@@ -66,7 +66,7 @@
       },
       {
         "name": "_forecasts",
-        "comment": "system forecasts",
+        "comment": "component forecasts",
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
@@ -1542,7 +1542,7 @@
       },
       {
         "name": "_forecasts",
-        "comment": "system forecasts",
+        "comment": "component forecasts",
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"

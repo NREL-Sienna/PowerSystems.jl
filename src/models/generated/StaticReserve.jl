@@ -18,7 +18,7 @@ Data Structure for the procurement products for system simulations.
 -`contributingdevices::Vector{Device}`: devices from which the product can be procured
 -`timeframe::Float64`: the relative saturation timeframe
 -`requirement::Float64`: the required quantity of the product should be scaled by a Forecast
--`_forecasts::InfrastructureSystems.Forecasts`: system forecasts
+-`_forecasts::InfrastructureSystems.Forecasts`: component forecasts
 -`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct StaticReserve <: Reserve
@@ -29,7 +29,7 @@ mutable struct StaticReserve <: Reserve
     timeframe::Float64
     "the required quantity of the product should be scaled by a Forecast"
     requirement::Float64
-    "system forecasts"
+    "component forecasts"
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
