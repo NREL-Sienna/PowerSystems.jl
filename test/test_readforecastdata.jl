@@ -28,12 +28,14 @@ function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon
 end
 
 @testset "Test read_time_series_metadata" begin
-    filename = joinpath(RTS_GMLC_DIR, "timeseries_pointers.json")
-    forecasts = IS.read_time_series_metadata(filename)
-    @test length(forecasts) == 282
+    for file in ("timeseries_pointers.json", "timeseries_pointers.csv")
+        filename = joinpath(RTS_GMLC_DIR, file)
+        forecasts = IS.read_time_series_metadata(filename)
+        @test length(forecasts) == 282
 
-    for forecast in forecasts
-        @test isfile(forecast.data_file)
+        for forecast in forecasts
+            @test isfile(forecast.data_file)
+        end
     end
 end
 

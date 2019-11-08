@@ -561,18 +561,67 @@ function make_forecasts(sys::System, metadata::Vector{IS.TimeseriesFileMetadata}
 end
 
 """
-    generate_initial_times(sys::System, interval::Dates.Period, horizon::Int)
+    are_forecasts_contiguous(sys::System)
+
+Return true if forecasts are stored contiguously.
+
+Throws ArgumentError if there are no forecasts stored.
+"""
+function are_forecasts_contiguous(sys::System)
+    return IS.are_forecasts_contiguous(sys.data)
+end
+
+"""
+    are_forecasts_contiguous(component::Component)
+"""
+function are_forecasts_contiguous(component::Component)
+    return IS.are_forecasts_contiguous(component)
+end
+
+"""
+    generate_initial_times(
+                           sys::System,
+                           interval::Dates.Period,
+                           horizon::Int;
+                           initial_time::Union{Nothing, Dates.DateTime}=nothing,
+                          )
 
 Generates all possible initial times for the stored forecasts. This should return the same
 result regardless of whether the forecasts have been stored as one contiguous array or
 chunks of contiguous arrays, such as one 365-day forecast vs 365 one-day forecasts.
 
-
 Throws ArgumentError if there are no forecasts stored, interval is not a multiple of the
 system's forecast resolution, or if the stored forecasts have overlapping timestamps.
+
+# Arguments
+- `sys::System`: System.
+- `interval::Dates.Period`: Amount of time in between each initial time.
+- `horizon::Int`: Length of each forecast array.
+- `initial_time::Union{Nothing, Dates.DateTime}=nothing`: Start with this time. If nothing,
+  use the first initial time.
 """
 function generate_initial_times(sys::System, interval::Dates.Period, horizon::Int)
     return IS.generate_initial_times(sys.data, interval, horizon)
+end
+
+"""
+    generate_initial_times(
+                           component::InfrastructureSystemsType,
+                           interval::Dates.Period,
+                           horizon::Int;
+                           initial_time::Union{Nothing, Dates.DateTime}=nothing,
+                          )
+
+Generate initial times for a component.
+"""
+function generate_initial_times(
+                                component::InfrastructureSystemsType,
+                                interval::Dates.Period,
+                                horizon::Int;
+                                initial_time::Union{Nothing, Dates.DateTime}=nothing,
+                               )
+    return IS.generate_initial_times(component, interval, horizon;
+                                     initial_time=initial_time)
 end
 
 """
