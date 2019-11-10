@@ -8,7 +8,21 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+
+    mutable struct Arc <: Topology
+        from::Bus
+       to::Bus
+       internal::InfrastructureSystemsInternal
+   end
+
 A topological Arc.
+
+# Arguments
+
+-`from::Bus`:The initial bus
+-`to::Bus`:The ending bus
+-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify
+
 
 # Arguments
 -`from::Bus`: The initial bus

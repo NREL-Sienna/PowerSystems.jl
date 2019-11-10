@@ -11,7 +11,25 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+
+    mutable struct StaticReserve <: Reserve
+        name::String
+        contributingdevices::Vector{Device}
+        timeframe::Float64
+        requirement::Float64
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
+
 Data Structure for the procurement products for system simulations.
+
+# Arguments
+
+-`contributingdevices::Vector{Device}`: devices from which the product can be procured
+-`timeframe::Float64`: the relative saturation timeframe
+-`requirement::Float64`: the required quantity of the product should be scaled by a Forecast
+-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify
+
 
 # Arguments
 -`name::String`

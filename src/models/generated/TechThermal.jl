@@ -13,7 +13,27 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+
+    mutable struct TechThermal <: TechnicalParams
+        rating::Float64
+       primemover::PrimeMovers
+        fuel::ThermalFuels
+        activepowerlimits::Min_Max
+        reactivepowerlimits::Union{Nothing, Min_Max}
+        ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+        timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
+
 Data Structure for the technical parameters of thermal generation technologies.
+
+# Arguments
+-`rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity
+ -`primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
+-`fuel::ThermalFuels`: PrimeMover Fuel according to EIA 923
+-`internal::InfrastructureSystemsInternalData`: Power System internal reference, do not modify
+
 
 # Arguments
 -`rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity

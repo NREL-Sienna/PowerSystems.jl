@@ -10,7 +10,22 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+
+    mutable struct ProportionalReserve <: Reserve
+       name::String
+        contributingdevices::Vector{Device}
+       timeframe::Float64
+        _forecasts::InfrastructureSystems.Forecasts
+       internal::InfrastructureSystemsInternal
+   end
+
 Data Structure for a proportional reserve product for system simulations.
+
+# Arguments
+-`contributingdevices::Vector{Device}`: devices from which the product can be procured
+-`timeframe::Float64`: the relative saturation timeframe
+-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify
+
 
 # Arguments
 -`name::String`

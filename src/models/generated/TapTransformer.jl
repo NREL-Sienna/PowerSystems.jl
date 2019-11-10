@@ -18,6 +18,21 @@ This file is auto-generated. Do not edit.
     end
 
 
+    mutable struct TapTransformer <: ACBranch
+        name::String
+        available::Bool
+        activepower_flow::Float64
+        reactivepower_flow::Float64
+        arc::Arc
+        r::Float64
+        x::Float64
+        primaryshunt::Float64
+        tap::Float64
+        rate::Union{Nothing, Float64}
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
+
 
 # Arguments
 -`name::String`
