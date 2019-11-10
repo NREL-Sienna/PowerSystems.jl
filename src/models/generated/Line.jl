@@ -1,20 +1,54 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct Line <: ACBranch
+        name::String
+        available::Bool
+        activepower_flow::Float64
+        reactivepower_flow::Float64
+        arc::Arc
+        r::Float64
+        x::Float64
+        b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
+        rate::Float64
+        anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
 
+
+# Arguments
+-`name::String`
+-`available::Bool`
+-`activepower_flow::Float64`
+-`reactivepower_flow::Float64`
+-`arc::Arc`
+-`r::Float64`: System per-unit value
+-`x::Float64`: System per-unit value
+-`b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value
+-`rate::Float64`
+-`anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct Line <: ACBranch
     name::String
     available::Bool
     activepower_flow::Float64
     reactivepower_flow::Float64
     arc::Arc
-    r::Float64  # System per-unit value
-    x::Float64  # System per-unit value
-    b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}  # System per-unit value
+    "System per-unit value"
+    r::Float64
+    "System per-unit value"
+    x::Float64
+    "System per-unit value"
+    b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
     rate::Float64
     anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

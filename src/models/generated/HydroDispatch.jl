@@ -1,8 +1,32 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct HydroDispatch <: HydroGen
+        name::String
+        available::Bool
+        bus::Bus
+        activepower::Float64
+        reactivepower::Float64
+        tech::TechHydro
+        op_cost::TwoPartCost
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
 
+
+# Arguments
+-`name::String`
+-`available::Bool`
+-`bus::Bus`
+-`activepower::Float64`
+-`reactivepower::Float64`
+-`tech::TechHydro`
+-`op_cost::TwoPartCost`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct HydroDispatch <: HydroGen
     name::String
     available::Bool
@@ -12,6 +36,7 @@ mutable struct HydroDispatch <: HydroGen
     tech::TechHydro
     op_cost::TwoPartCost
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

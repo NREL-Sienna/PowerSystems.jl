@@ -1,14 +1,34 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct Transfer <: Service
+        name::String
+        contributingdevices::Vector{Device}
+        timeframe::Float64
+        requirement::TimeSeries.TimeArray
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
 
+
+# Arguments
+-`name::String`
+-`contributingdevices::Vector{Device}`
+-`timeframe::Float64`: the relative saturation timeframe
+-`requirement::TimeSeries.TimeArray`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct Transfer <: Service
     name::String
     contributingdevices::Vector{Device}
+    "the relative saturation timeframe"
     timeframe::Float64
     requirement::TimeSeries.TimeArray
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

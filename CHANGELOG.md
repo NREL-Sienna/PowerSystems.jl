@@ -3,6 +3,7 @@
 ## v0.6.0
 
 - Use accessor functions instead of labels to get forecasts
+- Bug Fix in code autogeneration
 
 ## v0.5.2
 

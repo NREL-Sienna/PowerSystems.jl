@@ -1,11 +1,26 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct Arc <: Topology
+        from::Bus
+        to::Bus
+        internal::InfrastructureSystemsInternal
+    end
 
-"""A topological Arc."""
+A topological Arc.
+
+# Arguments
+-`from::Bus`: The initial bus
+-`to::Bus`: The terminal bus
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct Arc <: Topology
+    "The initial bus"
     from::Bus
+    "The terminal bus"
     to::Bus
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

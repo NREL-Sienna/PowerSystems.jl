@@ -1,12 +1,30 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct TwoPartCost <: OperationalCost
+        variable::VariableCost
+        fixed::Float64
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
-"""Data Structure Operational Cost Data in two parts fixed and variable cost."""
+Data Structure Operational Cost Data in two parts: fixed and variable cost.
+
+# Arguments
+-`variable::VariableCost`: variable cost
+-`fixed::Float64`: fixed cost
+-`_forecasts::InfrastructureSystems.Forecasts`: component forecasts
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct TwoPartCost <: OperationalCost
+    "variable cost"
     variable::VariableCost
+    "fixed cost"
     fixed::Float64
+    "component forecasts"
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

@@ -1,8 +1,38 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct VSCDCLine <: DCBranch
+        name::String
+        available::Bool
+        activepower_flow::Float64
+        arc::Arc
+        rectifier_taplimits::Min_Max
+        rectifier_xrc::Float64
+        rectifier_firing_angle::Min_Max
+        inverter_taplimits::Min_Max
+        inverter_xrc::Float64
+        inverter_firing_angle::Min_Max
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
-"""As implemented in Milano's Book, Page 397"""
+As implemented in Milano's Book, Page 397.
+
+# Arguments
+-`name::String`
+-`available::Bool`
+-`activepower_flow::Float64`
+-`arc::Arc`
+-`rectifier_taplimits::Min_Max`
+-`rectifier_xrc::Float64`
+-`rectifier_firing_angle::Min_Max`
+-`inverter_taplimits::Min_Max`
+-`inverter_xrc::Float64`
+-`inverter_firing_angle::Min_Max`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct VSCDCLine <: DCBranch
     name::String
     available::Bool
@@ -15,6 +45,7 @@ mutable struct VSCDCLine <: DCBranch
     inverter_xrc::Float64
     inverter_firing_angle::Min_Max
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
