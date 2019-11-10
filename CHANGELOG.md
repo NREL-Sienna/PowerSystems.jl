@@ -1,5 +1,10 @@
 # PowerSystems Change Log
 
+## v0.6.1
+
+- Remove bin from auto generation code
+- Updated docstrings
+
 ## v0.6.0
 
 - Use accessor functions instead of labels to get forecasts
