@@ -1,14 +1,55 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct StaticReserve <: Reserve
+        name::String
+        contributingdevices::Vector{Device}
+        timeframe::Float64
+        requirement::Float64
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
-"""Data Structure for the procurement products for system simulations."""
+
+    mutable struct StaticReserve <: Reserve
+        name::String
+        contributingdevices::Vector{Device}
+        timeframe::Float64
+        requirement::Float64
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
+
+Data Structure for the procurement products for system simulations.
+
+# Arguments
+
+-`contributingdevices::Vector{Device}`: devices from which the product can be procured
+-`timeframe::Float64`: the relative saturation timeframe
+-`requirement::Float64`: the required quantity of the product should be scaled by a Forecast
+-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify
+
+
+# Arguments
+-`name::String`
+-`contributingdevices::Vector{Device}`: devices from which the product can be procured
+-`timeframe::Float64`: the relative saturation timeframe
+-`requirement::Float64`: the required quantity of the product should be scaled by a Forecast
+-`_forecasts::InfrastructureSystems.Forecasts`: component forecasts
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct StaticReserve <: Reserve
     name::String
-    contributingdevices::Vector{Device}  # devices from which the product can be procured
-    timeframe::Float64  # the relative saturation timeframe
-    requirement::Float64  # the required quantity of the product should be scaled by a Forecast
+    "devices from which the product can be procured"
+    contributingdevices::Vector{Device}
+    "the relative saturation timeframe"
+    timeframe::Float64
+    "the required quantity of the product should be scaled by a Forecast"
+    requirement::Float64
+    "component forecasts"
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

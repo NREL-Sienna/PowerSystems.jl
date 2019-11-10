@@ -1,15 +1,17 @@
 [
   {
     "struct_name": "TwoPartCost",
-    "docstring": "Data Structure Operational Cost Data in two parts fixed and variable cost.",
+    "docstring": "Data Structure Operational Cost Data in two parts: fixed and variable cost.",
     "fields": [
       {
         "name": "variable",
+        "comment": "variable cost",
         "null_value": "VariableCost((0.0, 0.0))",
         "data_type": "VariableCost"
       },
       {
         "name": "fixed",
+        "comment": "fixed cost",
         "null_value": "0.0",
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
@@ -17,12 +19,14 @@
       },
       {
         "name": "_forecasts",
+        "comment": "component forecasts",
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -34,16 +38,19 @@
     "fields": [
       {
         "name": "variable",
+        "comment": "variable cost",
         "null_value": "VariableCost((0.0, 0.0))",
         "data_type": "VariableCost"
       },
       {
         "name": "fixed",
+        "comment": "fixed cost",
         "null_value": "0.0",
         "data_type": "Float64"
       },
       {
         "name": "startup",
+        "comment": "startup cost",
         "null_value": "0.0",
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
@@ -51,6 +58,7 @@
       },
       {
         "name": "shutdn",
+        "comment": "shutdown cost",
         "null_value": "0.0",
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
@@ -58,12 +66,14 @@
       },
       {
         "name": "_forecasts",
+        "comment": "component forecasts",
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -71,6 +81,7 @@
   },
   {
     "struct_name": "TechHydro",
+    "docstring": "Data Structures for the technical parameters of hydropower generation technologies.",
     "fields": [
       {
         "name": "rating",
@@ -99,6 +110,7 @@
       },
       {
         "name": "ramplimits",
+        "comment": "ramp up and ramp down limits",
         "null_value": "nothing",
         "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
         "valid_range": {"min":0.0, "max": null},
@@ -106,6 +118,7 @@
       },
       {
         "name": "timelimits",
+        "comment": "ramp up and ramp down time limits",
         "null_value": "nothing",
         "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
         "valid_range": {"min":0.0, "max":null},
@@ -113,6 +126,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -120,6 +134,7 @@
   },
   {
     "struct_name": "TechRenewable",
+    "docstring": "Data Structures for the technical parameters of renewable generation technologies.",
     "fields": [
       {
         "name": "rating",
@@ -149,6 +164,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -156,7 +172,7 @@
   },
   {
     "struct_name": "TechThermal",
-    "docstring": "Data Structure for the technical parameters of thermal generation technologies.",
+    "docstring": "\n    mutable struct TechThermal <: TechnicalParams\n        rating::Float64\n       primemover::PrimeMovers\n        fuel::ThermalFuels\n        activepowerlimits::Min_Max\n        reactivepowerlimits::Union{Nothing, Min_Max}\n        ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}\n        timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}\n        _forecasts::InfrastructureSystems.Forecasts\n        internal::InfrastructureSystemsInternal\n    end\n\nData Structure for the technical parameters of thermal generation technologies.\n\n# Arguments\n-`rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity\n -`primemover::PrimeMovers`: PrimeMover Technology according to EIA 923\n-`fuel::ThermalFuels`: PrimeMover Fuel according to EIA 923\n-`internal::InfrastructureSystemsInternalData`: Power System internal reference, do not modify\n",
     "fields": [
       {
         "name": "rating",
@@ -204,6 +220,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -211,7 +228,7 @@
   },
   {
     "struct_name": "Bus",
-    "docstring": "A power-system bus.",
+    "docstring": "\n    mutable struct Bus <: Topology\n        number::Int64\n        name::String\n        bustype::Union{Nothing, BusType}\n        angle::Union{Nothing, Float64}\n        voltage::Union{Nothing, Float64}\n        voltagelimits::Union{Nothing, Min_Max}\n        basevoltage::Union{Nothing, Float64}\n        internal::InfrastructureSystemsInternal\n    end\n\nA power-system bus.\n\n# Arguments\n\n-`number::Int64`: number associated with the bus\n-`name::String`: the name of the bus\n-`bustype::Union{Nothing, BusType}`: bus type\n-`angle::Union{Nothing, Float64}`: angle of the bus in radians\n-`voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage\n-`voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage\n-`basevoltage::Union{Nothing, Float64}`: the base voltage in kV\n-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify\n",
     "inner_constructor_check": "CheckBusParams",
     "fields": [
       {
@@ -265,6 +282,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -272,20 +290,23 @@
   },
   {
     "struct_name": "Arc",
-    "docstring": "A topological Arc.",
+    "docstring": "\n    mutable struct Arc <: Topology\n        from::Bus\n       to::Bus\n       internal::InfrastructureSystemsInternal\n   end\n\nA topological Arc.\n\n# Arguments\n\n-`from::Bus`:The initial bus\n-`to::Bus`:The ending bus\n-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify\n",
     "fields": [
       {
         "name": "from",
+        "comment": "The initial bus",
         "null_vale": "Bus(nothing)",
         "data_type": "Bus"
       },
       {
         "name": "to",
+        "comment": "The terminal bus",
         "null_vale": "Bus(nothing)",
         "data_type": "Bus"
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -363,6 +384,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -447,6 +469,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -533,6 +556,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -540,6 +564,7 @@
   },
   {
     "struct_name": "TapTransformer",
+    "docstring": "\n    mutable struct TapTransformer <: ACBranch\n        name::String\n        available::Bool\n        activepower_flow::Float64\n        reactivepower_flow::Float64\n        arc::Arc\n        r::Float64\n        x::Float64\n        primaryshunt::Float64\n        tap::Float64\n        rate::Union{Nothing, Float64}\n        _forecasts::InfrastructureSystems.Forecasts\n        internal::InfrastructureSystemsInternal\n    end\n",
     "fields": [
       {
         "null_value": "init",
@@ -612,6 +637,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -685,6 +711,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -692,6 +719,7 @@
   },
   {
     "struct_name": "HVDCLine",
+    "docstring": "a High voltage DC line.",
     "fields": [
       {
         "null_value": "init",
@@ -746,6 +774,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -753,7 +782,7 @@
   },
   {
     "struct_name": "VSCDCLine",
-    "docstring": "As implemented in Milano's Book, Page 397",
+    "docstring": "As implemented in Milano's Book, Page 397.",
     "fields": [
       {
         "null_value": "init",
@@ -813,6 +842,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -874,6 +904,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -899,6 +930,7 @@
       },
       {
         "name": "Y",
+        "comment": "System per-unit value",
         "null_value": "0.0",
         "data_type": "Complex{Float64}"
       },
@@ -910,6 +942,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -917,6 +950,7 @@
   },
   {
     "struct_name": "PowerLoad",
+    "docstring": "Data structure for a static power load.",
     "fields": [
       {
         "null_value": "init",
@@ -966,6 +1000,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1019,6 +1054,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1067,6 +1103,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1134,6 +1171,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1185,6 +1223,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1192,6 +1231,7 @@
   },
   {
     "struct_name": "RenewableFix",
+    "docstring": "Data Structure for fixed renewable generation technologies.",
     "fields": [
       {
         "null_value": "init",
@@ -1231,6 +1271,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1238,7 +1279,7 @@
   },
   {
     "struct_name": "ThermalStandard",
-    "docstring": "Data Structure for thermal generation technologies.",
+    "docstring": "\n    mutable struct ThermalStandard <: ThermalGen\n        name::String\n        available::Bool\n        bus::Bus\n        activepower::Float64\n        reactivepower::Float64\n        tech::Union{Nothing, TechThermal}\n        op_cost::ThreePartCost\n        _forecasts::InfrastructureSystems.Forecasts\n        internal::InfrastructureSystemsInternal\n    end\n\nData Structure for thermal generation technologies.\n",
     "fields": [
       {
         "null_value": "init",
@@ -1287,6 +1328,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1328,6 +1370,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1335,6 +1378,7 @@
   },
   {
     "struct_name": "GenericBattery",
+    "docstring": "Data structure for a generic battery",
     "fields": [
       {
         "null_value": "init",
@@ -1424,6 +1468,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1431,7 +1476,7 @@
   },
   {
     "struct_name": "ProportionalReserve",
-    "docstring": "Data Structure for a proportional reserve product for system simulations.",
+    "docstring": "\n    mutable struct ProportionalReserve <: Reserve\n       name::String\n        contributingdevices::Vector{Device}\n       timeframe::Float64\n        _forecasts::InfrastructureSystems.Forecasts\n       internal::InfrastructureSystemsInternal\n   end\n\nData Structure for a proportional reserve product for system simulations.\n\n# Arguments\n-`contributingdevices::Vector{Device}`: devices from which the product can be procured\n-`timeframe::Float64`: the relative saturation timeframe\n-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify\n",
     "fields": [
       {
         "null_value": "init",
@@ -1460,6 +1505,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1467,7 +1513,7 @@
   },
   {
     "struct_name": "StaticReserve",
-    "docstring": "Data Structure for the procurement products for system simulations.",
+    "docstring": "\n    mutable struct StaticReserve <: Reserve\n        name::String\n        contributingdevices::Vector{Device}\n        timeframe::Float64\n        requirement::Float64\n        _forecasts::InfrastructureSystems.Forecasts\n        internal::InfrastructureSystemsInternal\n    end\n\nData Structure for the procurement products for system simulations.\n\n# Arguments\n\n-`contributingdevices::Vector{Device}`: devices from which the product can be procured\n-`timeframe::Float64`: the relative saturation timeframe\n-`requirement::Float64`: the required quantity of the product should be scaled by a Forecast\n-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify\n",
     "fields": [
       {
         "null_value": "init",
@@ -1496,12 +1542,14 @@
       },
       {
         "name": "_forecasts",
+        "comment": "component forecasts",
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
@@ -1522,6 +1570,7 @@
       },
       {
         "name": "timeframe",
+        "comment": "the relative saturation timeframe",
         "null_value": "0.0",
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
@@ -1540,6 +1589,7 @@
       },
       {
         "name": "internal",
+        "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
       }
     ],

@@ -1,8 +1,34 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct PowerLoad <: StaticLoad
+        name::String
+        available::Bool
+        bus::Bus
+        model::Union{Nothing, LoadModel}
+        activepower::Float64
+        reactivepower::Float64
+        maxactivepower::Float64
+        maxreactivepower::Float64
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
+Data structure for a static power load.
 
+# Arguments
+-`name::String`
+-`available::Bool`
+-`bus::Bus`
+-`model::Union{Nothing, LoadModel}`
+-`activepower::Float64`
+-`reactivepower::Float64`
+-`maxactivepower::Float64`
+-`maxreactivepower::Float64`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct PowerLoad <: StaticLoad
     name::String
     available::Bool
@@ -13,6 +39,7 @@ mutable struct PowerLoad <: StaticLoad
     maxactivepower::Float64
     maxreactivepower::Float64
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 

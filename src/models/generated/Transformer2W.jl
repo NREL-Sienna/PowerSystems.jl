@@ -1,19 +1,51 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+"""
+    mutable struct Transformer2W <: ACBranch
+        name::String
+        available::Bool
+        activepower_flow::Float64
+        reactivepower_flow::Float64
+        arc::Arc
+        r::Float64
+        x::Float64
+        primaryshunt::Float64
+        rate::Union{Nothing, Float64}
+        _forecasts::InfrastructureSystems.Forecasts
+        internal::InfrastructureSystemsInternal
+    end
 
-"""The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side."""
+The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.
+
+# Arguments
+-`name::String`
+-`available::Bool`
+-`activepower_flow::Float64`
+-`reactivepower_flow::Float64`
+-`arc::Arc`
+-`r::Float64`: System per-unit value
+-`x::Float64`: System per-unit value
+-`primaryshunt::Float64`: System per-unit value
+-`rate::Union{Nothing, Float64}`
+-`_forecasts::InfrastructureSystems.Forecasts`
+-`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+"""
 mutable struct Transformer2W <: ACBranch
     name::String
     available::Bool
     activepower_flow::Float64
     reactivepower_flow::Float64
     arc::Arc
-    r::Float64  # System per-unit value
-    x::Float64  # System per-unit value
-    primaryshunt::Float64  # System per-unit value
+    "System per-unit value"
+    r::Float64
+    "System per-unit value"
+    x::Float64
+    "System per-unit value"
+    primaryshunt::Float64
     rate::Union{Nothing, Float64}
     _forecasts::InfrastructureSystems.Forecasts
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
