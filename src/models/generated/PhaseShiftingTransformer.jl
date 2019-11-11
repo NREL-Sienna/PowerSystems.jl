@@ -21,19 +21,19 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
--`name::String`
--`available::Bool`
--`activepower_flow::Float64`
--`reactivepower_flow::Float64`
--`arc::Arc`
--`r::Float64`: System per-unit value
--`x::Float64`: System per-unit value
--`primaryshunt::Float64`
--`tap::Float64`
--`α::Float64`
--`rate::Union{Nothing, Float64}`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `activepower_flow::Float64`
+- `reactivepower_flow::Float64`
+- `arc::Arc`
+- `r::Float64`: System per-unit value
+- `x::Float64`: System per-unit value
+- `primaryshunt::Float64`
+- `tap::Float64`
+- `α::Float64`
+- `rate::Union{Nothing, Float64}`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PhaseShiftingTransformer <: ACBranch
     name::String

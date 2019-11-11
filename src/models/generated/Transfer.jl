@@ -14,12 +14,12 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
--`name::String`
--`contributingdevices::Vector{Device}`
--`timeframe::Float64`: the relative saturation timeframe
--`requirement::TimeSeries.TimeArray`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `contributingdevices::Vector{Device}`
+- `timeframe::Float64`: the relative saturation timeframe
+- `requirement::TimeSeries.TimeArray`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Transfer <: Service
     name::String

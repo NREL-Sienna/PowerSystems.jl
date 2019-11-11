@@ -13,41 +13,17 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-
-    mutable struct Bus <: Topology
-        number::Int64
-        name::String
-        bustype::Union{Nothing, BusType}
-        angle::Union{Nothing, Float64}
-        voltage::Union{Nothing, Float64}
-        voltagelimits::Union{Nothing, Min_Max}
-        basevoltage::Union{Nothing, Float64}
-        internal::InfrastructureSystemsInternal
-    end
-
 A power-system bus.
 
 # Arguments
-
--`number::Int64`: number associated with the bus
--`name::String`: the name of the bus
--`bustype::Union{Nothing, BusType}`: bus type
--`angle::Union{Nothing, Float64}`: angle of the bus in radians
--`voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage
--`voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
--`basevoltage::Union{Nothing, Float64}`: the base voltage in kV
--`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify
-
-
-# Arguments
--`number::Int64`: number associated with the bus
--`name::String`: the name of the bus
--`bustype::Union{Nothing, BusType}`: bus type
--`angle::Union{Nothing, Float64}`: angle of the bus in radians
--`voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage
--`voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
--`basevoltage::Union{Nothing, Float64}`: the base voltage in kV
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `number::Int64`: number associated with the bus
+- `name::String`: the name of the bus
+- `bustype::Union{Nothing, BusType}`: bus type
+- `angle::Union{Nothing, Float64}`: angle of the bus in radians
+- `voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage
+- `voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
+- `basevoltage::Union{Nothing, Float64}`: the base voltage in kV
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Bus <: Topology
     "number associated with the bus"
