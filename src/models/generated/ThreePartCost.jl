@@ -14,12 +14,12 @@ This file is auto-generated. Do not edit.
 Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.
 
 # Arguments
--`variable::VariableCost`: variable cost
--`fixed::Float64`: fixed cost
--`startup::Float64`: startup cost
--`shutdn::Float64`: shutdown cost
--`_forecasts::InfrastructureSystems.Forecasts`: component forecasts
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `variable::VariableCost`: variable cost
+- `fixed::Float64`: fixed cost
+- `startup::Float64`: startup cost
+- `shutdn::Float64`: shutdown cost
+- `_forecasts::InfrastructureSystems.Forecasts`: component forecasts
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ThreePartCost <: OperationalCost
     "variable cost"

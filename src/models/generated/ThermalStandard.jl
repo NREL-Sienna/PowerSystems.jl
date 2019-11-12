@@ -14,32 +14,18 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-
-    mutable struct ThermalStandard <: ThermalGen
-        name::String
-        available::Bool
-        bus::Bus
-        activepower::Float64
-        reactivepower::Float64
-        tech::Union{Nothing, TechThermal}
-        op_cost::ThreePartCost
-        _forecasts::InfrastructureSystems.Forecasts
-        internal::InfrastructureSystemsInternal
-    end
-
 Data Structure for thermal generation technologies.
 
-
 # Arguments
--`name::String`
--`available::Bool`
--`bus::Bus`
--`activepower::Float64`
--`reactivepower::Float64`
--`tech::Union{Nothing, TechThermal}`
--`op_cost::ThreePartCost`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `bus::Bus`
+- `activepower::Float64`
+- `reactivepower::Float64`
+- `tech::Union{Nothing, TechThermal}`
+- `op_cost::ThreePartCost`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ThermalStandard <: ThermalGen
     name::String

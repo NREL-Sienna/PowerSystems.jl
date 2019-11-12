@@ -23,21 +23,21 @@ This file is auto-generated. Do not edit.
 Data structure for a generic battery
 
 # Arguments
--`name::String`
--`available::Bool`
--`bus::Bus`
--`primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
--`energy::Float64`: State of Charge of the Battery p.u.-hr
--`capacity::Min_Max`: Maximum and Minimum storage capacity in p.u.-hr
--`rating::Float64`
--`activepower::Float64`
--`inputactivepowerlimits::Min_Max`
--`outputactivepowerlimits::Min_Max`
--`efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`
--`reactivepower::Float64`
--`reactivepowerlimits::Union{Nothing, Min_Max}`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `bus::Bus`
+- `primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
+- `energy::Float64`: State of Charge of the Battery p.u.-hr
+- `capacity::Min_Max`: Maximum and Minimum storage capacity in p.u.-hr
+- `rating::Float64`
+- `activepower::Float64`
+- `inputactivepowerlimits::Min_Max`
+- `outputactivepowerlimits::Min_Max`
+- `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`
+- `reactivepower::Float64`
+- `reactivepowerlimits::Union{Nothing, Min_Max}`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GenericBattery <: Storage
     name::String

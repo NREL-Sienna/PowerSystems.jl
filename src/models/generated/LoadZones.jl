@@ -15,13 +15,13 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
--`number::Int64`
--`name::String`
--`buses::Vector{Bus}`
--`maxactivepower::Float64`
--`maxreactivepower::Float64`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `number::Int64`
+- `name::String`
+- `buses::Vector{Bus}`
+- `maxactivepower::Float64`
+- `maxreactivepower::Float64`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct LoadZones <: Topology
     number::Int64

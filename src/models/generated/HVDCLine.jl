@@ -19,17 +19,17 @@ This file is auto-generated. Do not edit.
 a High voltage DC line.
 
 # Arguments
--`name::String`
--`available::Bool`
--`activepower_flow::Float64`
--`arc::Arc`
--`activepowerlimits_from::Min_Max`
--`activepowerlimits_to::Min_Max`
--`reactivepowerlimits_from::Min_Max`
--`reactivepowerlimits_to::Min_Max`
--`loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `activepower_flow::Float64`
+- `arc::Arc`
+- `activepowerlimits_from::Min_Max`
+- `activepowerlimits_to::Min_Max`
+- `reactivepowerlimits_from::Min_Max`
+- `reactivepowerlimits_to::Min_Max`
+- `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HVDCLine <: DCBranch
     name::String

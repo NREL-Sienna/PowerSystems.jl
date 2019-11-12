@@ -16,14 +16,14 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
--`name::String`
--`available::Bool`
--`bus::Bus`
--`activepower::Float64`
--`reactivepower::Float64`
--`tech::TechHydro`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `bus::Bus`
+- `activepower::Float64`
+- `reactivepower::Float64`
+- `tech::TechHydro`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroFix <: HydroGen
     name::String

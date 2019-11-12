@@ -19,17 +19,17 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
--`name::String`
--`available::Bool`
--`bus::Bus`
--`model::LoadModel`
--`activepower::Float64`
--`reactivepower::Float64`
--`maxactivepower::Float64`
--`maxreactivepower::Float64`
--`op_cost::TwoPartCost`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `bus::Bus`
+- `model::LoadModel`
+- `activepower::Float64`
+- `reactivepower::Float64`
+- `maxactivepower::Float64`
+- `maxreactivepower::Float64`
+- `op_cost::TwoPartCost`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct InterruptibleLoad <: ControllableLoad
     name::String

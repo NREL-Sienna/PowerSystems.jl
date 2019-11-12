@@ -18,16 +18,16 @@ This file is auto-generated. Do not edit.
 Data structure for a static power load.
 
 # Arguments
--`name::String`
--`available::Bool`
--`bus::Bus`
--`model::Union{Nothing, LoadModel}`
--`activepower::Float64`
--`reactivepower::Float64`
--`maxactivepower::Float64`
--`maxreactivepower::Float64`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `bus::Bus`
+- `model::Union{Nothing, LoadModel}`
+- `activepower::Float64`
+- `reactivepower::Float64`
+- `maxactivepower::Float64`
+- `maxreactivepower::Float64`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PowerLoad <: StaticLoad
     name::String
