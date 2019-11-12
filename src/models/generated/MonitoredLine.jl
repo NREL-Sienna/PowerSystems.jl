@@ -21,19 +21,19 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
--`name::String`
--`available::Bool`
--`activepower_flow::Float64`
--`reactivepower_flow::Float64`
--`arc::Arc`
--`r::Float64`: System per-unit value
--`x::Float64`: System per-unit value
--`b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value
--`flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}`: TODO: throw warning above max SIL
--`rate::Float64`: TODO: compare to SIL (warn) (theoretical limit)
--`anglelimits::Min_Max`
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `activepower_flow::Float64`
+- `reactivepower_flow::Float64`
+- `arc::Arc`
+- `r::Float64`: System per-unit value
+- `x::Float64`: System per-unit value
+- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value
+- `flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}`: TODO: throw warning above max SIL
+- `rate::Float64`: TODO: compare to SIL (warn) (theoretical limit)
+- `anglelimits::Min_Max`
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct MonitoredLine <: ACBranch
     name::String

@@ -1,5 +1,10 @@
 # PowerSystems Change Log
 
+## v0.6.2
+
+- Bug Fix in docstrings autogeneration code
+- Contigous forecasts function added
+
 ## v0.6.1
 
 - Remove bin from auto generation code

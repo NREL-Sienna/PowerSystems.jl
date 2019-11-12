@@ -14,12 +14,12 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
--`name::String`
--`available::Bool`
--`bus::Bus`
--`Y::Complex{Float64}`: System per-unit value
--`_forecasts::InfrastructureSystems.Forecasts`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`
+- `available::Bool`
+- `bus::Bus`
+- `Y::Complex{Float64}`: System per-unit value
+- `_forecasts::InfrastructureSystems.Forecasts`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct FixedAdmittance <: ElectricLoad
     name::String

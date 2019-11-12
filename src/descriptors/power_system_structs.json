@@ -172,7 +172,7 @@
   },
   {
     "struct_name": "TechThermal",
-    "docstring": "\n    mutable struct TechThermal <: TechnicalParams\n        rating::Float64\n       primemover::PrimeMovers\n        fuel::ThermalFuels\n        activepowerlimits::Min_Max\n        reactivepowerlimits::Union{Nothing, Min_Max}\n        ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}\n        timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}\n        _forecasts::InfrastructureSystems.Forecasts\n        internal::InfrastructureSystemsInternal\n    end\n\nData Structure for the technical parameters of thermal generation technologies.\n\n# Arguments\n-`rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity\n -`primemover::PrimeMovers`: PrimeMover Technology according to EIA 923\n-`fuel::ThermalFuels`: PrimeMover Fuel according to EIA 923\n-`internal::InfrastructureSystemsInternalData`: Power System internal reference, do not modify\n",
+    "docstring": "Data Structure for the technical parameters of thermal generation technologies.",
     "fields": [
       {
         "name": "rating",
@@ -228,7 +228,7 @@
   },
   {
     "struct_name": "Bus",
-    "docstring": "\n    mutable struct Bus <: Topology\n        number::Int64\n        name::String\n        bustype::Union{Nothing, BusType}\n        angle::Union{Nothing, Float64}\n        voltage::Union{Nothing, Float64}\n        voltagelimits::Union{Nothing, Min_Max}\n        basevoltage::Union{Nothing, Float64}\n        internal::InfrastructureSystemsInternal\n    end\n\nA power-system bus.\n\n# Arguments\n\n-`number::Int64`: number associated with the bus\n-`name::String`: the name of the bus\n-`bustype::Union{Nothing, BusType}`: bus type\n-`angle::Union{Nothing, Float64}`: angle of the bus in radians\n-`voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage\n-`voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage\n-`basevoltage::Union{Nothing, Float64}`: the base voltage in kV\n-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify\n",
+    "docstring": "A power-system bus.",
     "inner_constructor_check": "CheckBusParams",
     "fields": [
       {
@@ -290,7 +290,7 @@
   },
   {
     "struct_name": "Arc",
-    "docstring": "\n    mutable struct Arc <: Topology\n        from::Bus\n       to::Bus\n       internal::InfrastructureSystemsInternal\n   end\n\nA topological Arc.\n\n# Arguments\n\n-`from::Bus`:The initial bus\n-`to::Bus`:The ending bus\n-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify\n",
+    "docstring": "A topological Arc.",
     "fields": [
       {
         "name": "from",
@@ -564,7 +564,6 @@
   },
   {
     "struct_name": "TapTransformer",
-    "docstring": "\n    mutable struct TapTransformer <: ACBranch\n        name::String\n        available::Bool\n        activepower_flow::Float64\n        reactivepower_flow::Float64\n        arc::Arc\n        r::Float64\n        x::Float64\n        primaryshunt::Float64\n        tap::Float64\n        rate::Union{Nothing, Float64}\n        _forecasts::InfrastructureSystems.Forecasts\n        internal::InfrastructureSystemsInternal\n    end\n",
     "fields": [
       {
         "null_value": "init",
@@ -1279,7 +1278,7 @@
   },
   {
     "struct_name": "ThermalStandard",
-    "docstring": "\n    mutable struct ThermalStandard <: ThermalGen\n        name::String\n        available::Bool\n        bus::Bus\n        activepower::Float64\n        reactivepower::Float64\n        tech::Union{Nothing, TechThermal}\n        op_cost::ThreePartCost\n        _forecasts::InfrastructureSystems.Forecasts\n        internal::InfrastructureSystemsInternal\n    end\n\nData Structure for thermal generation technologies.\n",
+    "docstring": "Data Structure for thermal generation technologies.",
     "fields": [
       {
         "null_value": "init",
@@ -1476,7 +1475,7 @@
   },
   {
     "struct_name": "ProportionalReserve",
-    "docstring": "\n    mutable struct ProportionalReserve <: Reserve\n       name::String\n        contributingdevices::Vector{Device}\n       timeframe::Float64\n        _forecasts::InfrastructureSystems.Forecasts\n       internal::InfrastructureSystemsInternal\n   end\n\nData Structure for a proportional reserve product for system simulations.\n\n# Arguments\n-`contributingdevices::Vector{Device}`: devices from which the product can be procured\n-`timeframe::Float64`: the relative saturation timeframe\n-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify\n",
+    "docstring": "Data Structure for a proportional reserve product for system simulations.",
     "fields": [
       {
         "null_value": "init",
@@ -1513,7 +1512,7 @@
   },
   {
     "struct_name": "StaticReserve",
-    "docstring": "\n    mutable struct StaticReserve <: Reserve\n        name::String\n        contributingdevices::Vector{Device}\n        timeframe::Float64\n        requirement::Float64\n        _forecasts::InfrastructureSystems.Forecasts\n        internal::InfrastructureSystemsInternal\n    end\n\nData Structure for the procurement products for system simulations.\n\n# Arguments\n\n-`contributingdevices::Vector{Device}`: devices from which the product can be procured\n-`timeframe::Float64`: the relative saturation timeframe\n-`requirement::Float64`: the required quantity of the product should be scaled by a Forecast\n-`internal::InfrastructureSystemsInternal`: Power System internal reference, do not modify\n",
+    "docstring": "Data Structure for the procurement products for system simulations.",
     "fields": [
       {
         "null_value": "init",

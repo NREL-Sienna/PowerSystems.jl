@@ -13,11 +13,11 @@ This file is auto-generated. Do not edit.
 Data Structures for the technical parameters of renewable generation technologies.
 
 # Arguments
--`rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity
--`primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
--`reactivepowerlimits::Union{Nothing, Min_Max}`
--`powerfactor::Float64`
--`internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity
+- `primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
+- `reactivepowerlimits::Union{Nothing, Min_Max}`
+- `powerfactor::Float64`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TechRenewable <: TechnicalParams
     "Thermal limited MVA Power Output of the unit. <= Capacity"
