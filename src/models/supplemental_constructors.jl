@@ -55,3 +55,11 @@ function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basev
     return Bus(number, name, get_enum_value(BusType, bustype), angle, voltage,
                voltagelimits, basevoltage, InfrastructureSystemsInternal())
 end
+
+"""Allows to contruct a reserve from and iterator """
+function StaticReserve(name, contributingdevices::IS.FlattenIteratorWrapper,
+                       timeframe, requirement, _forecasts, InfrastructureSystemsInternal)
+
+    StaticReserve(name, collect(contributingdevices),
+                  timeframe, requirement, _forecasts, InfrastructureSystemsInternal)
+end
