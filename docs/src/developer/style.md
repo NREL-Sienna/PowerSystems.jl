@@ -159,6 +159,27 @@ end
 
 * Surround equal signs with spaces when passing keyword args to a
 function or defining default values in function declarations.
+
+* Prefer elements in an array on separate lines. Follow opening square bracket with a new line and use closing square bracket on a separate new line.
+
+Good:
+
+```julia
+nodes = [
+    Node(1),
+    Node(2),
+    Node(3),
+    Node(4),
+    Node(5),
+];
+```
+
+Bad:
+
+```julia
+nodes = [Node(1), Node(2), Node(3), Node(4), Node(5)];
+```
+
 * Do not right-align equal signs when assigning groups of variables. It causes
   unnecessary changes whenever someone adds a new variable with a longer name.
 
