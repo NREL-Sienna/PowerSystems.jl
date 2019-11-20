@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct ProportionalReserve <: Reserve
         name::String
-        contributingdevices::Vector{&lt;:Device}
+        contributingdevices::Vector{<:Device}
         timeframe::Float64
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -14,7 +14,7 @@ Data Structure for a proportional reserve product for system simulations.
 
 # Arguments
 - `name::String`
-- `contributingdevices::Vector{&lt;:Device}`: devices from which the product can be procured
+- `contributingdevices::Vector{<:Device}`: devices from which the product can be procured
 - `timeframe::Float64`: the relative saturation timeframe
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -22,7 +22,7 @@ Data Structure for a proportional reserve product for system simulations.
 mutable struct ProportionalReserve <: Reserve
     name::String
     "devices from which the product can be procured"
-    contributingdevices::Vector{&lt;:Device}
+    contributingdevices::Vector{<:Device}
     "the relative saturation timeframe"
     timeframe::Float64
     _forecasts::InfrastructureSystems.Forecasts
