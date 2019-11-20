@@ -1,5 +1,3 @@
-
-
 @testset "TestData" begin
 
     force = get(ENV, "PS_FORCE_DOWNLOAD", "false")

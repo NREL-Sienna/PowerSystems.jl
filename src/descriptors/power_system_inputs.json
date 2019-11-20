@@ -423,8 +423,8 @@
         {
             "name": "reserve_category",
             "value_options": [
-                "ProportionalReserve",
                 "StaticReserve",
+                "VariableReserve",
                 "Transfer"
             ],
             "description": "Type of Struct"

@@ -60,8 +60,8 @@ export GenericBattery
 
 export Service
 export Reserve
-export ProportionalReserve
 export StaticReserve
+export VariableReserve
 export Transfer
 
 export PTDF

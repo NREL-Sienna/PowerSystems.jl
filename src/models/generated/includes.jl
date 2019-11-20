@@ -23,8 +23,8 @@ include("RenewableFix.jl")
 include("ThermalStandard.jl")
 include("LoadZones.jl")
 include("GenericBattery.jl")
-include("ProportionalReserve.jl")
 include("StaticReserve.jl")
+include("VariableReserve.jl")
 include("Transfer.jl")
 
 export get_Y
