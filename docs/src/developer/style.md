@@ -2,8 +2,8 @@
 
 ## Goals
 
-* Define a straightforward set of rules that lead to consistent, readable
-  code.
+* Define a straightforward set of rules that lead to consistent, readable code.
+* Define a straightforward set of rules that lead to consistent, readable code.
 * Developers focus on producing high quality code, not how to format it.
 
 ## Base
@@ -33,7 +33,7 @@
   the code itself.
 * Use complete sentences and proper grammar.
 * Include a space in between the "#" and the first word of the comment.
-* Don't use block comments for Julia code. Prefer using the `# ` prefix.
+* Don't use block comments for Julia code. Prefer using the `# ` prefix. If you are commenting code, consider deleting it instead.
 
 Bad:
 
@@ -74,6 +74,7 @@ end
 members if no inner constructor is defined.
 * When creating a constructor use `function Foo()` instead of `Foo() = ...`.
   * One exception is the case where one file has all single-line functions.
+* Prefer explicit `return` in multi line functions instead of the implicit return.
 
 ## Exceptions
 
@@ -95,7 +96,7 @@ members if no inner constructor is defined.
 
 ## One-line Conditionals
 
-Julia code base uses this idiom frequently: `<cond> && <statement>`.
+Julia code base uses this idiom frequently: `<condition> && <statement>`.
 
 See [Example](https://docs.julialang.org/en/v1.0/manual/control-flow/#Short-Circuit-Evaluation-1):
 
@@ -133,16 +134,29 @@ All code should be tested.
 argument per line. In some cases it may make sense to pair some variables on
 the same line.
 
+Good:
+
 ```julia
+function foo(
+    var1::String,
+    var2::String,
+    var3::String,
+    var6::T,
+) where T <: Number
+    println("hello world")
+end
+```
+
+Bad:
+
 function foo(var1::String,
              var2::String,
              var3::String,
-             var4::String,
-             var5::String,
-             var6::String)
-```
+             var6::T) where T <: Number
+    println("hello world")
+end
 
-* Do not surround equal signs with spaces when passing keyword args to a
+* Surround equal signs with spaces when passing keyword args to a
 function or defining default values in function declarations.
 * Do not right-align equal signs when assigning groups of variables. It causes
   unnecessary changes whenever someone adds a new variable with a longer name.
