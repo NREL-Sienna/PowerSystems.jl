@@ -17,6 +17,7 @@
   * [return statements](http://www.juliaopt.org/JuMP.jl/dev/style/#Return-statements-1)
   * [variable names](http://www.juliaopt.org/JuMP.jl/dev/style/#Use-of-underscores-within-names-1).
 * Read [The Zen of Python](https://www.python.org/dev/peps/pep-0020).
+* Read [BlueStyle](https://github.com/invenia/BlueStyle/) style guide.
 * Consider using a plugin that configures your text editor to use [EditorConfig](https://editorconfig.org/) settings.
 
 ## Code Organization
