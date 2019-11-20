@@ -73,10 +73,10 @@ end
 end
 
 @testset "Service Constructors" begin
-    #tProportionalReserve = ProportionalReserve(nothing)
-    #@test tProportionalReserve isa PowerSystems.Service
     tStaticReserve = StaticReserve(nothing)
     @test tStaticReserve isa PowerSystems.Service
+    tVariableReserve = VariableReserve(nothing)
+    @test tVariableReserve isa PowerSystems.Service
 end
 
 @testset "Forecast Constructors" begin

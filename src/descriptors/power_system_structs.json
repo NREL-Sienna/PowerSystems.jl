@@ -1474,7 +1474,7 @@
     "supertype": "Storage"
   },
   {
-    "struct_name": "ProportionalReserve",
+    "struct_name": "StaticReserve",
     "docstring": "Data Structure for a proportional reserve product for system simulations.",
     "fields": [
       {
@@ -1497,10 +1497,12 @@
         "validation_action": "error"
       },
       {
-        "name": "_forecasts",
-        "null_value": "InfrastructureSystems.Forecasts()",
-        "data_type": "InfrastructureSystems.Forecasts",
-        "default": "InfrastructureSystems.Forecasts()"
+        "name": "requirement",
+        "comment": "the static value of required reserves",
+        "null_value": "0.0",
+        "data_type": "Float64",
+        "valid_range": {"min":0.0, "max":null},
+        "validation_action": "error"
       },
       {
         "name": "internal",
@@ -1511,7 +1513,7 @@
     "supertype": "Reserve"
   },
   {
-    "struct_name": "StaticReserve",
+    "struct_name": "VariableReserve",
     "docstring": "Data Structure for the procurement products for system simulations.",
     "fields": [
       {

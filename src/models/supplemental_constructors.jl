@@ -57,8 +57,8 @@ function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basev
 end
 
 """Allows construction of a reserve from an iterator."""
-function StaticReserve(name, contributingdevices::IS.FlattenIteratorWrapper{D},
+function VariableReserve(name, contributingdevices::IS.FlattenIteratorWrapper{D},
                        timeframe, requirement, _forecasts, InfrastructureSystemsInternal) where D <: Device
-    return StaticReserve(name, collect(contributingdevices),
+    return VariableReserve(name, collect(contributingdevices),
                   timeframe, requirement, _forecasts, InfrastructureSystemsInternal)
 end

@@ -1,4 +1,3 @@
-
 abstract type Service <: Component end
 abstract type Reserve <: Service end
 
@@ -33,7 +32,7 @@ function encode_for_json(service::T) where T <: Service
 
     for name in fields
         val = getfield(service, name)
-        if val isa Vector{<:Device}
+        if val isa Vector{Device}
             push!(vals, IS.get_uuid.(val))
         else
             push!(vals, val)

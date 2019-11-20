@@ -600,7 +600,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         devices = make_array(get(reserve, :contributing_devices, nothing))
         regions = make_array(reserve.eligible_regions)
         requirement = get(reserve, :requirement, nothing)
-        contributing_devices = Vector{<:Device}()
+        contributing_devices = Vector{Device}()
 
         if isnothing(device_subcategories)
             @info("Adding contributing components for $(reserve.name) by component name")
@@ -632,11 +632,12 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         end
 
         if isnothing(requirement)
-            service = ProportionalReserve(reserve.name,
-                                          contributing_devices,
-                                          reserve.timeframe)
-        else
             service = StaticReserve(reserve.name,
+                                    contributing_devices,
+                                    reserve.timeframe,
+                                    0.0)
+        else
+            service = VariableReserve(reserve.name,
                                     contributing_devices,
                                     reserve.timeframe,
                                     requirement)
