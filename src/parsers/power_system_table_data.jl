@@ -600,7 +600,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         devices = make_array(get(reserve, :contributing_devices, nothing))
         regions = make_array(reserve.eligible_regions)
         requirement = get(reserve, :requirement, nothing)
-        contributing_devices = Vector{Device}()
+        contributing_devices = Vector{<:Device}()
 
         if isnothing(device_subcategories)
             @info("Adding contributing components for $(reserve.name) by component name")

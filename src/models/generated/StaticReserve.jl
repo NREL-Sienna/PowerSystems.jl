@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct StaticReserve <: Reserve
         name::String
-        contributingdevices::Vector{Device}
+        contributingdevices::Vector{<:Device}
         timeframe::Float64
         requirement::Float64
         _forecasts::InfrastructureSystems.Forecasts
@@ -15,7 +15,7 @@ Data Structure for the procurement products for system simulations.
 
 # Arguments
 - `name::String`
-- `contributingdevices::Vector{Device}`: devices from which the product can be procured
+- `contributingdevices::Vector{<:Device}`: devices from which the product can be procured
 - `timeframe::Float64`: the relative saturation timeframe
 - `requirement::Float64`: the required quantity of the product should be scaled by a Forecast
 - `_forecasts::InfrastructureSystems.Forecasts`: component forecasts
@@ -24,7 +24,7 @@ Data Structure for the procurement products for system simulations.
 mutable struct StaticReserve <: Reserve
     name::String
     "devices from which the product can be procured"
-    contributingdevices::Vector{Device}
+    contributingdevices::Vector{<:Device}
     "the relative saturation timeframe"
     timeframe::Float64
     "the required quantity of the product should be scaled by a Forecast"

@@ -1486,7 +1486,7 @@
         "name": "contributingdevices",
         "comment": "devices from which the product can be procured",
         "null_value": "[ThermalStandard(nothing)]",
-        "data_type": "Vector{Device}"
+        "data_type": "Vector{<:Device}"
       },
       {
         "name": "timeframe",
@@ -1523,7 +1523,7 @@
         "name": "contributingdevices",
         "comment": "devices from which the product can be procured",
         "null_value": "[ThermalStandard(nothing)]",
-        "data_type": "Vector{Device}"
+        "data_type": "Vector{<:Device}"
       },
       {
         "name": "timeframe",
@@ -1565,7 +1565,7 @@
       {
         "name": "contributingdevices",
         "null_value": "[ThermalStandard(nothing)]",
-        "data_type": "Vector{Device}"
+        "data_type": "Vector{<:Device}"
       },
       {
         "name": "timeframe",

@@ -3,7 +3,7 @@ abstract type Service <: Component end
 abstract type Reserve <: Service end
 
 """
-All subtypes of Service define contributingdevices::Vector{Device}. The values get populated
+All subtypes of Service define contributingdevices::Vector{<:Device}. The values get populated
 with references to existing devices. The following functions override JSON encoding to
 replace the devices with their UUIDs. This solves two problems:
 
