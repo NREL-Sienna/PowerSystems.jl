@@ -638,9 +638,9 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                                     0.0)
         else
             service = VariableReserve(reserve.name,
-                                    contributing_devices,
-                                    reserve.timeframe,
-                                    requirement)
+                                      contributing_devices,
+                                      reserve.timeframe,
+                                      requirement)
         end
         add_component!(sys, service)
     end
