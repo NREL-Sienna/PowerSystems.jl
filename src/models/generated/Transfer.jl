@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct Transfer <: Service
         name::String
-        contributingdevices::Vector{<:Device}
+        contributingdevices::Vector{&lt;:Device}
         timeframe::Float64
         requirement::TimeSeries.TimeArray
         _forecasts::InfrastructureSystems.Forecasts
@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
 
 # Arguments
 - `name::String`
-- `contributingdevices::Vector{<:Device}`
+- `contributingdevices::Vector{&lt;:Device}`
 - `timeframe::Float64`: the relative saturation timeframe
 - `requirement::TimeSeries.TimeArray`
 - `_forecasts::InfrastructureSystems.Forecasts`
@@ -23,7 +23,7 @@ This file is auto-generated. Do not edit.
 """
 mutable struct Transfer <: Service
     name::String
-    contributingdevices::Vector{<:Device}
+    contributingdevices::Vector{&lt;:Device}
     "the relative saturation timeframe"
     timeframe::Float64
     requirement::TimeSeries.TimeArray
