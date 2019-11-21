@@ -209,8 +209,6 @@ end
 
 
 """
-    to_json(sys::System, filename::AbstractString)
-
 Serializes a system to a JSON string.
 """
 function to_json(sys::System, filename::AbstractString)
@@ -219,8 +217,6 @@ function to_json(sys::System, filename::AbstractString)
 end
 
 """
-    to_json(io::IO, sys::System)
-
 Serializes a system an IO stream in JSON.
 """
 function to_json(io::IO, sys::System)
@@ -245,8 +241,6 @@ Clear any value stored in ext.
 clear_ext(sys::System) = IS.clear_ext(sys.internal)
 
 """
-    add_component!(sys::System, component::T; kwargs...) where T <: Component
-
 Add a component to the system.
 
 Throws ArgumentError if the component's name is already stored for its concrete type.
@@ -323,12 +317,6 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
 end
 
 """
-    add_forecasts!(
-                   sys::System,
-                   metadata_file::AbstractString,
-                   resolution=nothing,
-                  )
-
 Adds forecasts from a metadata file or metadata descriptors.
 
 # Arguments
@@ -346,12 +334,6 @@ function add_forecasts!(
 end
 
 """
-    add_forecasts!(
-                   sys::System,
-                   timeseries_metadata::Vector{IS.TimeseriesFileMetadata},
-                   resolution=nothing,
-                  )
-
 Adds forecasts from a metadata file or metadata descriptors.
 
 # Arguments
@@ -399,8 +381,6 @@ function IS.add_forecast!(
 end
 
 """
-    iterate_components(sys::System)
-
 Iterates over all components.
 
 # Examples
@@ -417,8 +397,6 @@ function iterate_components(sys::System)
 end
 
 """
-    clear_components!(sys::System)
-
 Remove all components from the system.
 """
 function clear_components!(sys::System)
@@ -426,8 +404,6 @@ function clear_components!(sys::System)
 end
 
 """
-    remove_components!(::Type{T}, sys::System) where T <: Component
-
 Remove all components of type T from the system.
 
 Throws ArgumentError if the type is not stored.
@@ -439,8 +415,6 @@ function remove_components!(::Type{T}, sys::System) where T <: Component
 end
 
 """
-    remove_component!(sys::System, component::T) where T <: Component
-
 Remove a component from the system by its value.
 
 Throws ArgumentError if the component is not stored.
@@ -451,12 +425,6 @@ function remove_component!(sys::System, component::T) where T <: Component
 end
 
 """
-    remove_component!(
-                      ::Type{T},
-                      sys::System,
-                      name::AbstractString,
-                      ) where T <: Component
-
 Remove a component from the system by its name.
 
 Throws ArgumentError if the component is not stored.
@@ -471,12 +439,6 @@ function remove_component!(
 end
 
 """
-    get_component(
-                  ::Type{T},
-                  sys::System,
-                  name::AbstractString
-                 )::Union{T, Nothing} where {T <: Component}
-
 Get the component of concrete type T with name. Returns nothing if no component matches.
 
 See [`get_components_by_name`](@ref) if the concrete type is unknown.
@@ -488,11 +450,6 @@ function get_component(::Type{T}, sys::System, name::AbstractString) where T <: 
 end
 
 """
-    get_components(
-                   ::Type{T},
-                   sys::System,
-                  )::FlattenIteratorWrapper{T} where {T <: Component}
-
 Returns an iterator of components. T can be concrete or abstract.
 Call collect on the result if an array is desired.
 
@@ -673,8 +630,6 @@ function get_contributing_device_mapping(sys::System)
 end
 
 """
-    add_forecast!(sys::System, component::Component, forecast::Forecast)
-
 Adds forecast to the system.
 
 Throws ArgumentError if the component is not stored in the system.
@@ -685,14 +640,6 @@ function add_forecast!(sys::System, component::Component, forecast::IS.Forecast)
 end
 
 """
-    add_forecast!(
-                  sys::System,
-                  filename::AbstractString,
-                  component::Component,
-                  label::AbstractString,
-                  scaling_factor::Union{String, Float64}=1.0,
-                 )
-
 Add a forecast to a system from a CSV file.
 
 See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
@@ -709,14 +656,6 @@ function add_forecast!(
 end
 
 """
-    add_forecast!(
-        sys::System,
-        ta::TimeSeries.TimeArray,
-        component,
-        label,
-        scaling_factor::Union{String, Float64}=1.0,
-    )
-
 Add a forecast to a system from a TimeSeries.TimeArray.
 
 See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
@@ -733,14 +672,6 @@ function add_forecast!(
 end
 
 """
-    add_forecast!(
-        sys::System,
-        df::DataFrames.DataFrame,
-        component,
-        label,
-        scaling_factor::Union{String, Float64}=1.0,
-    )
-
 Add a forecast to a system from a DataFrames.DataFrame.
 
 See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
@@ -757,8 +688,6 @@ function add_forecast!(
 end
 
 """
-    make_forecasts(sys::System, metadata_file::AbstractString; resolution=nothing)
-
 Return a vector of forecasts from a metadata file.
 
 # Arguments
@@ -774,9 +703,6 @@ function make_forecasts(sys::System, metadata_file::AbstractString; resolution=n
 end
 
 """
-    make_forecasts(data::SystemData, timeseries_metadata::Vector{TimeseriesFileMetadata};
-                   resolution=nothing)
-
 Return a vector of forecasts from a vector of TimeseriesFileMetadata values.
 
 # Arguments
@@ -793,8 +719,6 @@ function make_forecasts(
 end
 
 """
-    are_forecasts_contiguous(sys::System)
-
 Return true if forecasts are stored contiguously.
 
 Throws ArgumentError if there are no forecasts stored.
@@ -804,20 +728,12 @@ function are_forecasts_contiguous(sys::System)
 end
 
 """
-    are_forecasts_contiguous(component::Component)
 """
 function are_forecasts_contiguous(component::Component)
     return IS.are_forecasts_contiguous(component)
 end
 
 """
-    generate_initial_times(
-                           sys::System,
-                           interval::Dates.Period,
-                           horizon::Int;
-                           initial_time::Union{Nothing, Dates.DateTime}=nothing,
-                          )
-
 Generates all possible initial times for the stored forecasts. This should return the same
 result regardless of whether the forecasts have been stored as one contiguous array or
 chunks of contiguous arrays, such as one 365-day forecast vs 365 one-day forecasts.
@@ -844,13 +760,6 @@ function generate_initial_times(
 end
 
 """
-    generate_initial_times(
-                           component::InfrastructureSystemsType,
-                           interval::Dates.Period,
-                           horizon::Int;
-                           initial_time::Union{Nothing, Dates.DateTime}=nothing,
-                          )
-
 Generate initial times for a component.
 """
 function generate_initial_times(
@@ -865,13 +774,6 @@ function generate_initial_times(
 end
 
 """
-    get_forecast(
-                 ::Type{T},
-                 component::Component,
-                 initial_time::Dates.DateTime,
-                 label::AbstractString,
-                ) where T <: Forecast
-
 Return a forecast for the entire time series range stored for these parameters.
 """
 function get_forecast(
@@ -884,14 +786,6 @@ function get_forecast(
 end
 
 """
-    get_forecast(
-                 ::Type{T},
-                 component::Component,
-                 initial_time::Dates.DateTime,
-                 label::AbstractString,
-                 horizon::Int,
-                ) where T <: Forecast
-
 Return a forecast for a subset of the time series range stored for these parameters.
 """
 function get_forecast(
@@ -928,8 +822,6 @@ function get_forecast_labels(
 end
 
 """
-    get_forecast_values(component::Component, forecast::Forecast)
-
 Return a TimeSeries.TimeArray where the forecast data has been multiplied by the forecasted
 component field.
 """
@@ -938,8 +830,6 @@ function get_forecast_values(component::Component, forecast::IS.Forecast)
 end
 
 """
-    get_forecast_initial_times(sys::System) -> Vector{Dates.DateTime}
-
 Return sorted forecast initial times.
 """
 function get_forecast_initial_times(sys::System)
@@ -947,8 +837,6 @@ function get_forecast_initial_times(sys::System)
 end
 
 """
-    get_forecast_keys(component::InfrastructureSystemsType)
-
 Return an iterable of NamedTuple keys for forecasts stored for this component.
 """
 function get_forecast_keys(component::Component)
@@ -956,8 +844,6 @@ function get_forecast_keys(component::Component)
 end
 
 """
-    get_forecasts_horizon(sys::System)
-
 Return the horizon for all forecasts.
 """
 function get_forecasts_horizon(sys::System)
@@ -965,8 +851,6 @@ function get_forecasts_horizon(sys::System)
 end
 
 """
-    get_forecasts_initial_time(sys::System)
-
 Return the earliest initial_time for a forecast.
 """
 function get_forecasts_initial_time(sys::System)
@@ -974,8 +858,6 @@ function get_forecasts_initial_time(sys::System)
 end
 
 """
-    get_forecasts_interval(sys::System)
-
 Return the interval for all forecasts.
 """
 function get_forecasts_interval(sys::System)
@@ -983,8 +865,6 @@ function get_forecasts_interval(sys::System)
 end
 
 """
-    get_forecasts_resolution(sys::System)
-
 Return the resolution for all forecasts.
 """
 function get_forecasts_resolution(sys::System)
@@ -992,8 +872,6 @@ function get_forecasts_resolution(sys::System)
 end
 
 """
-    iterate_forecasts(sys::System)
-
 Iterates over all forecasts in order of initial time.
 
 # Examples
@@ -1008,8 +886,6 @@ function iterate_forecasts(sys::System)
 end
 
 """
-    clear_forecasts!(sys::System)
-
 Remove all forecasts from the system.
 """
 function clear_forecasts!(sys::System)
@@ -1017,8 +893,6 @@ function clear_forecasts!(sys::System)
 end
 
 """
-    check_forecast_consistency(sys::System)
-
 Throws DataFormatError if forecasts have inconsistent parameters.
 """
 function check_forecast_consistency(sys::System)
@@ -1026,8 +900,6 @@ function check_forecast_consistency(sys::System)
 end
 
 """
-    validate_forecast_consistency(sys::System)
-
 Return true if all forecasts have consistent parameters.
 """
 function validate_forecast_consistency(sys::System)
@@ -1035,14 +907,6 @@ function validate_forecast_consistency(sys::System)
 end
 
 """
-    remove_forecast!(
-                     ::Type{T},
-                     sys::System,
-                     component::Component,
-                     initial_time::Dates.DateTime,
-                     label::String,
-                    )
-
 Remove the time series data for a component.
 """
 function remove_forecast!(
@@ -1056,8 +920,6 @@ function remove_forecast!(
 end
 
 """
-    validate_struct(sys::System, value::PowerSystemType) -> Bool
-
 Validates an instance of a PowerSystemType against System data.
 Returns true if the instance is valid.
 
@@ -1217,8 +1079,6 @@ function IS.convert_type(
 end
 
 """
-    get_bus(sys::System, name::String)
-
 Return bus with name.
 """
 function get_bus(sys::System, name::String)
@@ -1226,8 +1086,6 @@ function get_bus(sys::System, name::String)
 end
 
 """
-    get_bus(sys::System, bus_number::Int)
-
 Return bus with bus_number.
 """
 function get_bus(sys::System, bus_number::Int)
@@ -1241,8 +1099,6 @@ function get_bus(sys::System, bus_number::Int)
 end
 
 """
-    get_buses(sys::System, bus_numbers::Set{Int})
-
 Return all buses values with bus_numbers.
 """
 function get_buses(sys::System, bus_numbers::Set{Int})
@@ -1321,8 +1177,6 @@ function handle_component_removal!(sys::System, service::Service)
 end
 
 """
-    get_bus_numbers(sys::System)
-
 Return a sorted vector of bus numbers in the system.
 """
 function get_bus_numbers(sys::System)
