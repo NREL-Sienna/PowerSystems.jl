@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         reactivepower::Float64
         tech::TechRenewable
         _forecasts::InfrastructureSystems.Forecasts
+        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -23,6 +24,7 @@ Data Structure for fixed renewable generation technologies.
 - `reactivepower::Float64`
 - `tech::TechRenewable`
 - `_forecasts::InfrastructureSystems.Forecasts`
+- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct RenewableFix <: RenewableGen
@@ -33,16 +35,23 @@ mutable struct RenewableFix <: RenewableGen
     reactivepower::Float64
     tech::TechRenewable
     _forecasts::InfrastructureSystems.Forecasts
+    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts, InfrastructureSystemsInternal())
+function RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
-function RenewableFix(; name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts, )
+function RenewableFix(; name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts, ext, )
+end
+
+
+function RenewableFix(name, available, bus, activepower, reactivepower, tech, ; ext=nothing)
+    _forecasts=InfrastructureSystems.Forecasts()
+    RenewableFix(name, available, bus, activepower, reactivepower, tech, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -56,6 +65,7 @@ function RenewableFix(::Nothing)
         reactivepower=0.0,
         tech=TechRenewable(nothing),
         _forecasts=InfrastructureSystems.Forecasts(),
+        ext=nothing,
     )
 end
 
@@ -73,5 +83,7 @@ get_reactivepower(value::RenewableFix) = value.reactivepower
 get_tech(value::RenewableFix) = value.tech
 """Get RenewableFix _forecasts."""
 get__forecasts(value::RenewableFix) = value._forecasts
+"""Get RenewableFix ext."""
+get_ext(value::RenewableFix) = value.ext
 """Get RenewableFix internal."""
 get_internal(value::RenewableFix) = value.internal

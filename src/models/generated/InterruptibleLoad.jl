@@ -13,6 +13,7 @@ This file is auto-generated. Do not edit.
         maxreactivepower::Float64
         op_cost::TwoPartCost
         _forecasts::InfrastructureSystems.Forecasts
+        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -29,6 +30,7 @@ This file is auto-generated. Do not edit.
 - `maxreactivepower::Float64`
 - `op_cost::TwoPartCost`
 - `_forecasts::InfrastructureSystems.Forecasts`
+- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct InterruptibleLoad <: ControllableLoad
@@ -42,16 +44,23 @@ mutable struct InterruptibleLoad <: ControllableLoad
     maxreactivepower::Float64
     op_cost::TwoPartCost
     _forecasts::InfrastructureSystems.Forecasts
+    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts, InfrastructureSystemsInternal())
+function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
-function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts, )
+function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts, ext, )
+end
+
+
+function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ; ext=nothing)
+    _forecasts=InfrastructureSystems.Forecasts()
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -68,6 +77,7 @@ function InterruptibleLoad(::Nothing)
         maxreactivepower=0.0,
         op_cost=TwoPartCost(nothing),
         _forecasts=InfrastructureSystems.Forecasts(),
+        ext=nothing,
     )
 end
 
@@ -91,5 +101,7 @@ get_maxreactivepower(value::InterruptibleLoad) = value.maxreactivepower
 get_op_cost(value::InterruptibleLoad) = value.op_cost
 """Get InterruptibleLoad _forecasts."""
 get__forecasts(value::InterruptibleLoad) = value._forecasts
+"""Get InterruptibleLoad ext."""
+get_ext(value::InterruptibleLoad) = value.ext
 """Get InterruptibleLoad internal."""
 get_internal(value::InterruptibleLoad) = value.internal

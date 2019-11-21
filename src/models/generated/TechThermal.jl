@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         reactivepowerlimits::Union{Nothing, Min_Max}
         ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -23,6 +24,7 @@ Data Structure for the technical parameters of thermal generation technologies.
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`
+- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TechThermal <: TechnicalParams
@@ -36,16 +38,23 @@ mutable struct TechThermal <: TechnicalParams
     reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
-    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal())
+function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext=nothing, )
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext, InfrastructureSystemsInternal())
 end
 
-function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
-    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext=nothing, )
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext, )
+end
+
+
+function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ; ext=nothing)
+    
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -59,6 +68,7 @@ function TechThermal(::Nothing)
         reactivepowerlimits=nothing,
         ramplimits=nothing,
         timelimits=nothing,
+        ext=nothing,
     )
 end
 
@@ -76,5 +86,7 @@ get_reactivepowerlimits(value::TechThermal) = value.reactivepowerlimits
 get_ramplimits(value::TechThermal) = value.ramplimits
 """Get TechThermal timelimits."""
 get_timelimits(value::TechThermal) = value.timelimits
+"""Get TechThermal ext."""
+get_ext(value::TechThermal) = value.ext
 """Get TechThermal internal."""
 get_internal(value::TechThermal) = value.internal

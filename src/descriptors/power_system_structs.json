@@ -25,6 +25,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -70,6 +76,12 @@
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -125,6 +137,12 @@
         "validation_action": "error"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -161,6 +179,12 @@
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":1.0},
         "validation_action": "error"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -217,6 +241,12 @@
         "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -279,6 +309,12 @@
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
 
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -383,6 +419,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -466,6 +508,12 @@
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -555,6 +603,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -635,6 +689,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -709,6 +769,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -770,6 +836,12 @@
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -840,6 +912,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -902,6 +980,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -938,6 +1022,12 @@
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -998,6 +1088,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -1052,6 +1148,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -1099,6 +1201,12 @@
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -1169,6 +1277,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -1221,6 +1335,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -1267,6 +1387,12 @@
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -1324,6 +1450,12 @@
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -1466,6 +1598,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -1503,6 +1641,12 @@
         "data_type": "Float64",
         "valid_range": {"min":0.0, "max":null},
         "validation_action": "error"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",
@@ -1549,6 +1693,12 @@
         "default": "InfrastructureSystems.Forecasts()"
       },
       {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
         "data_type": "InfrastructureSystemsInternal"
@@ -1587,6 +1737,12 @@
         "null_value": "InfrastructureSystems.Forecasts()",
         "data_type": "InfrastructureSystems.Forecasts",
         "default": "InfrastructureSystems.Forecasts()"
+      },
+      {
+        "name": "ext",
+        "data_type": "Union{Nothing, Dict{String, Any}}",
+        "null_value": "nothing",
+        "default": "nothing"
       },
       {
         "name": "internal",

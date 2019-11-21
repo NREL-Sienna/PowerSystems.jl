@@ -47,6 +47,7 @@ export get_capacity
 export get_contributingdevices
 export get_efficiency
 export get_energy
+export get_ext
 export get_fixed
 export get_flowlimits
 export get_from

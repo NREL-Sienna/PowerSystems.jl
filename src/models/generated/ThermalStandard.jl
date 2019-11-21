@@ -11,6 +11,7 @@ This file is auto-generated. Do not edit.
         tech::Union{Nothing, TechThermal}
         op_cost::ThreePartCost
         _forecasts::InfrastructureSystems.Forecasts
+        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -25,6 +26,7 @@ Data Structure for thermal generation technologies.
 - `tech::Union{Nothing, TechThermal}`
 - `op_cost::ThreePartCost`
 - `_forecasts::InfrastructureSystems.Forecasts`
+- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ThermalStandard <: ThermalGen
@@ -36,16 +38,23 @@ mutable struct ThermalStandard <: ThermalGen
     tech::Union{Nothing, TechThermal}
     op_cost::ThreePartCost
     _forecasts::InfrastructureSystems.Forecasts
+    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, InfrastructureSystemsInternal())
+function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
-function ThermalStandard(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, )
+function ThermalStandard(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, ext, )
+end
+
+
+function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, ; ext=nothing)
+    _forecasts=InfrastructureSystems.Forecasts()
+    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -60,6 +69,7 @@ function ThermalStandard(::Nothing)
         tech=TechThermal(nothing),
         op_cost=ThreePartCost(nothing),
         _forecasts=InfrastructureSystems.Forecasts(),
+        ext=nothing,
     )
 end
 
@@ -79,5 +89,7 @@ get_tech(value::ThermalStandard) = value.tech
 get_op_cost(value::ThermalStandard) = value.op_cost
 """Get ThermalStandard _forecasts."""
 get__forecasts(value::ThermalStandard) = value._forecasts
+"""Get ThermalStandard ext."""
+get_ext(value::ThermalStandard) = value.ext
 """Get ThermalStandard internal."""
 get_internal(value::ThermalStandard) = value.internal

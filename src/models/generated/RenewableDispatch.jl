@@ -11,6 +11,7 @@ This file is auto-generated. Do not edit.
         tech::TechRenewable
         op_cost::TwoPartCost
         _forecasts::InfrastructureSystems.Forecasts
+        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -25,6 +26,7 @@ This file is auto-generated. Do not edit.
 - `tech::TechRenewable`
 - `op_cost::TwoPartCost`
 - `_forecasts::InfrastructureSystems.Forecasts`
+- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct RenewableDispatch <: RenewableGen
@@ -36,16 +38,23 @@ mutable struct RenewableDispatch <: RenewableGen
     tech::TechRenewable
     op_cost::TwoPartCost
     _forecasts::InfrastructureSystems.Forecasts
+    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, InfrastructureSystemsInternal())
+function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
-function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, )
+function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, ext, )
+end
+
+
+function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ; ext=nothing)
+    _forecasts=InfrastructureSystems.Forecasts()
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -60,6 +69,7 @@ function RenewableDispatch(::Nothing)
         tech=TechRenewable(nothing),
         op_cost=TwoPartCost(nothing),
         _forecasts=InfrastructureSystems.Forecasts(),
+        ext=nothing,
     )
 end
 
@@ -79,5 +89,7 @@ get_tech(value::RenewableDispatch) = value.tech
 get_op_cost(value::RenewableDispatch) = value.op_cost
 """Get RenewableDispatch _forecasts."""
 get__forecasts(value::RenewableDispatch) = value._forecasts
+"""Get RenewableDispatch ext."""
+get_ext(value::RenewableDispatch) = value.ext
 """Get RenewableDispatch internal."""
 get_internal(value::RenewableDispatch) = value.internal

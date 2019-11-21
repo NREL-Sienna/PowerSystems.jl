@@ -17,6 +17,7 @@ This file is auto-generated. Do not edit.
         reactivepower::Float64
         reactivepowerlimits::Union{Nothing, Min_Max}
         _forecasts::InfrastructureSystems.Forecasts
+        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -37,6 +38,7 @@ Data structure for a generic battery
 - `reactivepower::Float64`
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `_forecasts::InfrastructureSystems.Forecasts`
+- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GenericBattery <: Storage
@@ -57,16 +59,23 @@ mutable struct GenericBattery <: Storage
     reactivepower::Float64
     reactivepowerlimits::Union{Nothing, Min_Max}
     _forecasts::InfrastructureSystems.Forecasts
+    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts, InfrastructureSystemsInternal())
+function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
-function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts, )
+function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts, ext, )
+end
+
+
+function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ; ext=nothing)
+    _forecasts=InfrastructureSystems.Forecasts()
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -87,6 +96,7 @@ function GenericBattery(::Nothing)
         reactivepower=0.0,
         reactivepowerlimits=(min=0.0, max=0.0),
         _forecasts=InfrastructureSystems.Forecasts(),
+        ext=nothing,
     )
 end
 
@@ -118,5 +128,7 @@ get_reactivepower(value::GenericBattery) = value.reactivepower
 get_reactivepowerlimits(value::GenericBattery) = value.reactivepowerlimits
 """Get GenericBattery _forecasts."""
 get__forecasts(value::GenericBattery) = value._forecasts
+"""Get GenericBattery ext."""
+get_ext(value::GenericBattery) = value.ext
 """Get GenericBattery internal."""
 get_internal(value::GenericBattery) = value.internal

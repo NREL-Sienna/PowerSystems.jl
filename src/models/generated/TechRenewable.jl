@@ -7,6 +7,7 @@ This file is auto-generated. Do not edit.
         primemover::PrimeMovers
         reactivepowerlimits::Union{Nothing, Min_Max}
         powerfactor::Float64
+        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -17,6 +18,7 @@ Data Structures for the technical parameters of renewable generation technologie
 - `primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `powerfactor::Float64`
+- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TechRenewable <: TechnicalParams
@@ -26,16 +28,23 @@ mutable struct TechRenewable <: TechnicalParams
     primemover::PrimeMovers
     reactivepowerlimits::Union{Nothing, Min_Max}
     powerfactor::Float64
+    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
-    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, InfrastructureSystemsInternal())
+function TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, ext=nothing, )
+    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, ext, InfrastructureSystemsInternal())
 end
 
-function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, )
-    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
+function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, ext=nothing, )
+    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, ext, )
+end
+
+
+function TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, ; ext=nothing)
+    
+    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, ext, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -46,6 +55,7 @@ function TechRenewable(::Nothing)
         primemover=OT::PrimeMovers,
         reactivepowerlimits=nothing,
         powerfactor=1.0,
+        ext=nothing,
     )
 end
 
@@ -57,5 +67,7 @@ get_primemover(value::TechRenewable) = value.primemover
 get_reactivepowerlimits(value::TechRenewable) = value.reactivepowerlimits
 """Get TechRenewable powerfactor."""
 get_powerfactor(value::TechRenewable) = value.powerfactor
+"""Get TechRenewable ext."""
+get_ext(value::TechRenewable) = value.ext
 """Get TechRenewable internal."""
 get_internal(value::TechRenewable) = value.internal

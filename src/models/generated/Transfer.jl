@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
         timeframe::Float64
         requirement::TimeSeries.TimeArray
         _forecasts::InfrastructureSystems.Forecasts
+        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -19,6 +20,7 @@ This file is auto-generated. Do not edit.
 - `timeframe::Float64`: the relative saturation timeframe
 - `requirement::TimeSeries.TimeArray`
 - `_forecasts::InfrastructureSystems.Forecasts`
+- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Transfer <: Service
@@ -28,16 +30,23 @@ mutable struct Transfer <: Service
     timeframe::Float64
     requirement::TimeSeries.TimeArray
     _forecasts::InfrastructureSystems.Forecasts
+    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, InfrastructureSystemsInternal())
+function Transfer(name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
-function Transfer(; name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, )
+function Transfer(; name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
+    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, ext, )
+end
+
+
+function Transfer(name, contributingdevices, timeframe, requirement, ; ext=nothing)
+    _forecasts=InfrastructureSystems.Forecasts()
+    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, ext, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -49,6 +58,7 @@ function Transfer(::Nothing)
         timeframe=0.0,
         requirement=[],
         _forecasts=InfrastructureSystems.Forecasts(),
+        ext=nothing,
     )
 end
 
@@ -62,5 +72,7 @@ get_timeframe(value::Transfer) = value.timeframe
 get_requirement(value::Transfer) = value.requirement
 """Get Transfer _forecasts."""
 get__forecasts(value::Transfer) = value._forecasts
+"""Get Transfer ext."""
+get_ext(value::Transfer) = value.ext
 """Get Transfer internal."""
 get_internal(value::Transfer) = value.internal
