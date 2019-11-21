@@ -1270,20 +1270,14 @@ Throws ArgumentError if a PowerSystems rule blocks addition to the system.
 This method is tied with handle_component_addition!. If the methods are re-implemented for
 a subtype then whatever is added in handle_component_addition! must be checked here.
 """
-function check_component_addition(sys::System, component::Component)
-    # no-op
-end
+check_component_addition(sys::System, component::Component) = nothing
 
 """
 Refer to docstring for check_component_addition!
 """
-function handle_component_addition!(sys::System, component::Component)
-    # no-op
-end
+handle_component_addition!(sys::System, component::Component) = nothing
 
-function handle_component_removal!(sys::System, component::Component)
-    # no-op
-end
+handle_component_removal!(sys::System, component::Component) = nothing
 
 function check_component_addition(sys::System, branch::Branch)
     arc = get_arc(branch)
