@@ -212,14 +212,9 @@ import InfrastructureSystems
 import InfrastructureSystems: Components, Deterministic, Probabilistic, Forecast,
     ScenarioBased, InfrastructureSystemsType, InfrastructureSystemsInternal,
     FlattenIteratorWrapper, LazyDictFromIterator, DataFormatError, InvalidRange,
-    InvalidValue
+    InvalidValue, get_data, get_horizon, get_initial_time, get_resolution
 
 const IS = InfrastructureSystems
-
-import IS: get_data
-import IS: get_horizon
-import IS: get_initial_time
-import IS: get_resolution
 
 #################################################################################
 # Includes
