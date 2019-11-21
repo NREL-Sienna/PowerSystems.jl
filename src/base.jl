@@ -48,7 +48,7 @@ struct System <: PowerSystemType
     end
 end
 
-"""Construct an empty System. Useful for building a System while parsing raw data."""
+"""Construct an empty `System`. Useful for building a System while parsing raw data."""
 function System(basepower; kwargs...)
     return System(_create_system_data_from_kwargs(; kwargs...), basepower)
 end
@@ -388,8 +388,9 @@ function IS.add_forecast!(
 
     if component isa LoadZones
         uuids = Set([IS.get_uuid(x) for x in get_buses(component)])
-        for component_ in (load for load in IS.get_components(ElectricLoad, data)
-                          if get_bus(load) |> IS.get_uuid in uuids)
+        for component_ in (
+            load for load in IS.get_components(ElectricLoad, data) if get_bus(load) |> IS.get_uuid in uuids
+        )
             IS.add_forecast!(data, component_, forecast, ts_data)
         end
     else
@@ -1299,6 +1300,7 @@ end
 
 function handle_component_addition!(sys::System, bus::Bus)
     number = get_number(bus)
+    # FIXME: call `check_component_addition` here instead of `@assert`
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
 end
@@ -1343,20 +1345,19 @@ function check_bus(sys::System, bus::Bus, component::Component)
     end
 end
 
-function IS.compare_values(x::System, y::System)::Bool
-    match = true
-
-    if !IS.compare_values(x.data, y.data)
-        @debug "SystemData values do not match"
-        match = false
-    end
+function IS.compare_values(x::System, y::System)
 
     if x.basepower != y.basepower
         @debug "basepower does not match" x.basepower y.basepower
-        match = false
+        return false
     end
 
-    return match
+    if !IS.compare_values(x.data, y.data)
+        @debug "SystemData values do not match"
+        return false
+    end
+
+    return true
 end
 
 function _create_system_data_from_kwargs(; kwargs...)
