@@ -217,6 +217,16 @@ import InfrastructureSystems: Components, Deterministic, Probabilistic, Forecast
 const IS = InfrastructureSystems
 
 #################################################################################
+
+using DocStringExtensions
+
+@template (FUNCTIONS, METHODS) =
+    """
+    $(TYPEDSIGNATURES)
+    $(DOCSTRING)
+    """
+
+#################################################################################
 # Includes
 
 """
