@@ -1,4 +1,4 @@
-#TODO: Apply actions according to load type
+# TODO: Apply actions according to load type
 function _get_load_data(sys::System, b::Bus)
     activepower = 0.0
     reactivepower = 0.0
@@ -41,8 +41,8 @@ function make_pf(system)
 
     # Use vectors to cache data for closure
     # These should be read only
-    P_GEN_BUS  = fill(0.0, N_BUS)
-    Q_GEN_BUS  = fill(0.0, N_BUS)
+    P_GEN_BUS = fill(0.0, N_BUS)
+    Q_GEN_BUS = fill(0.0, N_BUS)
     P_LOAD_BUS = fill(0.0, N_BUS)
     Q_LOAD_BUS = fill(0.0, N_BUS)
 
@@ -66,15 +66,15 @@ function make_pf(system)
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
 
         if b.bustype == REF::BusType
-            x0[state_variable_count]     = P_GEN_BUS[ix]
+            x0[state_variable_count] = P_GEN_BUS[ix]
             x0[state_variable_count + 1] = Q_GEN_BUS[ix]
             state_variable_count += 2
         elseif b.bustype == PV::BusType
-            x0[state_variable_count]     = Q_GEN_BUS[ix]
+            x0[state_variable_count] = Q_GEN_BUS[ix]
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
         elseif b.bustype == PQ::BusType
-            x0[state_variable_count]     = bus_voltage
+            x0[state_variable_count]  = bus_voltage
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
         end
@@ -96,20 +96,20 @@ function make_pf(system)
                 # When bustype == REFERENCE Bus, state variables are Active and Reactive Power Generated
                 P_net[ix] = X[2 * ix - 1] - P_LOAD_BUS[ix]
                 Q_net[ix] = X[2 * ix] - Q_LOAD_BUS[ix]
-                Vm[ix]    = bus_voltage
-                θ[ix]     = bus_angle
+                Vm[ix] = bus_voltage
+                θ[ix] = bus_angle
             elseif b.bustype == PV::BusType
                 # When bustype == PV Bus, state variables are Reactive Power Generated and Voltage Angle
                 P_net[ix] = P_GEN_BUS[ix] - P_LOAD_BUS[ix]
                 Q_net[ix] = X[2 * ix - 1] - Q_LOAD_BUS[ix]
-                Vm[ix]    = bus_voltage
-                θ[ix]     = X[2 * ix]
+                Vm[ix] = bus_voltage
+                θ[ix] = X[2 * ix]
             elseif b.bustype == PQ::BusType
                 # When bustype == PQ Bus, state variables are Voltage Magnitude and Voltage Angle
                 P_net[ix] = P_GEN_BUS[ix] - P_LOAD_BUS[ix]
                 Q_net[ix] = Q_GEN_BUS[ix] - Q_LOAD_BUS[ix]
-                Vm[ix]    = X[2 * ix - 1]
-                θ[ix]     = X[2 * ix]
+                Vm[ix] = X[2 * ix - 1]
+                θ[ix] = X[2 * ix]
             end
         end
 

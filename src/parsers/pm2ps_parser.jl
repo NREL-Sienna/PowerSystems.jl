@@ -44,26 +44,30 @@ end
 Creates a PowerSystems.Bus from a PowerSystems bus dictionary
 """
 function make_bus(bus_dict::Dict{String, Any})
-    bus = Bus(bus_dict["number"],
-                     bus_dict["name"],
-                     bus_dict["bustype"],
-                     bus_dict["angle"],
-                     bus_dict["voltage"],
-                     bus_dict["voltagelimits"],
-                     bus_dict["basevoltage"]
-                     )
+    bus = Bus(
+        bus_dict["number"],
+        bus_dict["name"],
+        bus_dict["bustype"],
+        bus_dict["angle"],
+        bus_dict["voltage"],
+        bus_dict["voltagelimits"],
+        bus_dict["basevoltage"],
+    )
      return bus
  end
 
 function make_bus(bus_name, bus_number, d, bus_types)
-    bus = make_bus(Dict{String, Any}("name" => bus_name ,
-                            "number" => bus_number,
-                            "bustype" => bus_types[d["bus_type"]],
-                            "angle" => d["va"],
-                            "voltage" => d["vm"],
-                            "voltagelimits" => (min=d["vmin"], max=d["vmax"]),
-                            "basevoltage" => d["base_kv"]
-                            ))
+    bus = make_bus(
+        Dict{String, Any}(
+            "name" => bus_name ,
+            "number" => bus_number,
+            "bustype" => bus_types[d["bus_type"]],
+            "angle" => d["va"],
+            "voltage" => d["vm"],
+            "voltagelimits" => (min=d["vmin"], max=d["vmax"]),
+            "basevoltage" => d["base_kv"]
+        )
+    )
     return bus
 end
 
@@ -76,10 +80,12 @@ end
 end
 
 function Base.convert(::Type{BusType}, x::MatpowerBusType)
-    map = Dict(MATPOWER_ISOLATED => ISOLATED,
-               MATPOWER_PQ => PQ,
-               MATPOWER_PV => PV,
-               MATPOWER_REF => REF)
+    map = Dict(
+        MATPOWER_ISOLATED => ISOLATED,
+        MATPOWER_PQ => PQ,
+        MATPOWER_PV => PV,
+        MATPOWER_REF => REF
+    )
     return map[x]
 end
 
@@ -248,23 +254,7 @@ function make_renewable_fix(gen_name, d, bus)
 end
 
 function make_generic_battery(gen_name, d, bus)
-
-    # TODO: placeholder
-    #battery=GenericBattery(;
-    #    name=gen_name,
-    #    available=Bool(d["gen_status"]),
-    #    bus=bus,
-    #    energy=,
-    #    capacity=,
-    #    rating=,
-    #    activepower=,
-    #    inputactivepowerlimits=,
-    #    outputactivepowerlimits=,
-    #    efficiency=,
-    #    reactivepower=,
-    #    reactivepowerlimits=,
-    #)
-    #return battery
+    error("Not implemented yet.")
 end
 
 """

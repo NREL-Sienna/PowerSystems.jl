@@ -23,7 +23,7 @@ System(; kwargs...)
 - `branches::Union{Nothing, Vector{Branch}}`: an array of branches; may be `nothing`
 - `storage::Union{Nothing, Vector{Storage}}`: an array of storage devices; may be `nothing`
 - `basepower::Float64`: the base power value for the system
-- `services::Union{Nothing, Vector{ <: Service}}`: an array of services; may be `nothing`
+- `services::Union{Nothing, Vector{<:Service}}`: an array of services; may be `nothing`
 
 # Keyword arguments
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
@@ -59,14 +59,18 @@ function System(data, basepower; kwargs...)
 end
 
 """System constructor when components are constructed externally."""
-function System(buses::Vector{Bus},
-                generators::Vector{<:Generator},
-                loads::Vector{<:ElectricLoad},
-                branches::Union{Nothing, Vector{<:Branch}},
-                storage::Union{Nothing, Vector{<:Storage}},
-                basepower::Float64,
-                services::Union{Nothing, Vector{ <: Service}},
-                annex::Union{Nothing,Dict}; kwargs...)
+function System(
+    buses::Vector{Bus},
+    generators::Vector{<:Generator},
+    loads::Vector{<:ElectricLoad},
+    branches::Union{Nothing, Vector{<:Branch}},
+    storage::Union{Nothing, Vector{<:Storage}},
+    basepower::Float64,
+    services::Union{Nothing, Vector{<:Service}},
+    annex::Union{Nothing,Dict},
+    ;
+    kwargs...
+)
 
     data = _create_system_data_from_kwargs(; kwargs...)
 
@@ -126,37 +130,81 @@ function System(buses::Vector{Bus},
 end
 
 """System constructor without nothing-able arguments."""
-function System(buses::Vector{Bus},
-                generators::Vector{<:Generator},
-                loads::Vector{<:ElectricLoad},
-                basepower::Float64; kwargs...)
-    return System(buses, generators, loads, nothing, nothing, basepower, nothing, nothing, nothing; kwargs...)
+function System(
+    buses::Vector{Bus},
+    generators::Vector{<:Generator},
+    loads::Vector{<:ElectricLoad},
+    basepower::Float64,
+    ;
+    kwargs...
+)
+    return System(
+        buses,
+        generators,
+        loads,
+        nothing,
+        nothing,
+        basepower,
+        nothing,
+        nothing,
+        nothing,
+        ;
+        kwargs...
+    )
 end
 
 """System constructor with keyword arguments."""
-function System(; basepower=100.0,
-                buses,
-                generators,
-                loads,
-                branches,
-                storage,
-                services,
-                annex,
-                kwargs...)
-    return System(buses, generators, loads, branches, storage, basepower, services, annex; kwargs...)
+function System(;
+    basepower=100.0,
+    buses,
+    generators,
+    loads,
+    branches,
+    storage,
+    services,
+    annex,
+    kwargs...
+)
+    return System(
+        buses,
+        generators,
+        loads,
+        branches,
+        storage,
+        basepower,
+        services,
+        annex,
+        ;
+        kwargs...
+    )
 end
 
 """Constructs a non-functional System for demo purposes."""
-function System(::Nothing; buses=[Bus(nothing)],
-                generators=[ThermalStandard(nothing), RenewableFix(nothing)],
-                loads=[PowerLoad(nothing)],
-                branches=nothing,
-                storage=nothing,
-                basepower=100.0,
-                services = nothing,
-                annex = nothing,
-                kwargs...)
-    return System(buses, generators, loads, branches, storage, basepower, services, annex; kwargs...)
+function System(
+    ::Nothing,
+    ;
+    buses=[Bus(nothing)],
+    generators = [ThermalStandard(nothing), RenewableFix(nothing)],
+    loads = [PowerLoad(nothing)],
+    branches = nothing,
+    storage = nothing,
+    basepower = 100.0,
+    services = nothing,
+    annex = nothing,
+    kwargs...
+)
+    return System(
+        buses,
+        generators,
+        loads,
+        branches,
+        storage,
+        basepower,
+        services,
+        annex,
+        ;
+        kwargs...
+    )
 end
 
 
@@ -290,10 +338,10 @@ Adds forecasts from a metadata file or metadata descriptors.
 - `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
 """
 function add_forecasts!(
-                        sys::System,
-                        metadata_file::AbstractString;
-                        resolution=nothing,
-                       )
+    sys::System,
+    metadata_file::AbstractString;
+    resolution = nothing,
+)
     return IS.add_forecasts!(Component, sys.data, metadata_file; resolution=resolution)
 end
 
@@ -312,21 +360,21 @@ Adds forecasts from a metadata file or metadata descriptors.
 - `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
 """
 function add_forecasts!(
-                        sys::System,
-                        timeseries_metadata::Vector{IS.TimeseriesFileMetadata};
-                        resolution=nothing
-                       )
+    sys::System,
+    timeseries_metadata::Vector{IS.TimeseriesFileMetadata};
+    resolution = nothing,
+)
     return IS.add_forecasts!(Component, sys.data, timeseries_metadata;
                              resolution=resolution)
 end
 
 function IS.add_forecast!(
-                          ::Type{<:Component},
-                          data::IS.SystemData,
-                          forecast_cache::IS.ForecastCache,
-                          metadata::IS.TimeseriesFileMetadata;
-                          resolution=nothing,
-                         )
+    ::Type{<:Component},
+    data::IS.SystemData,
+    forecast_cache::IS.ForecastCache,
+    metadata::IS.TimeseriesFileMetadata;
+    resolution=nothing,
+)
     IS.set_component!(metadata, data, PowerSystems)
     component = metadata.component
     if isnothing(component)
@@ -413,10 +461,10 @@ Remove a component from the system by its name.
 Throws ArgumentError if the component is not stored.
 """
 function remove_component!(
-                           ::Type{T},
-                           sys::System,
-                           name::AbstractString,
-                          ) where T <: Component
+    ::Type{T},
+    sys::System,
+    name::AbstractString,
+) where T <: Component
     component = IS.remove_component!(T, sys.data, name)
     handle_component_removal!(sys, component)
 end
@@ -458,9 +506,10 @@ generators = collect(PowerSystems.get_components(Generator, sys))
 See also: [`iterate_components`](@ref)
 """
 function get_components(
-                        ::Type{T},
-                        sys::System,
-                       )::FlattenIteratorWrapper{T} where {T <: Component}
+    ::Type{T},
+    sys::System,
+) where {T <: Component}
+    # TODO: Verify that return type annotation is not required
     return IS.get_components(T, sys.data)
 end
 
@@ -564,10 +613,11 @@ See [`get_component`](@ref) if the concrete type is known.
 Throws ArgumentError if T is not an abstract type.
 """
 function get_components_by_name(
-                                ::Type{T},
-                                sys::System,
-                                name::AbstractString
-                               )::Vector{T} where {T <: Component}
+    ::Type{T},
+    sys::System,
+    name::AbstractString
+) where {T <: Component}
+    # TODO: Verify that return type annotation is not required
     return IS.get_components_by_name(T, sys.data, name)
 end
 
@@ -648,23 +698,23 @@ See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
 scaling_factor.
 """
 function add_forecast!(
-                       sys::System,
-                       filename::AbstractString,
-                       component::Component,
-                       label::AbstractString,
-                       scaling_factor::Union{String, Float64}=1.0,
-                      )
+    sys::System,
+    filename::AbstractString,
+    component::Component,
+    label::AbstractString,
+    scaling_factor::Union{String, Float64}=1.0,
+)
     return IS.add_forecast!(sys.data, filename, component, label, scaling_factor)
 end
 
 """
     add_forecast!(
-                  sys::System,
-                  ta::TimeSeries.TimeArray,
-                  component,
-                  label,
-                  scaling_factor::Union{String, Float64}=1.0,
-                 )
+        sys::System,
+        ta::TimeSeries.TimeArray,
+        component,
+        label,
+        scaling_factor::Union{String, Float64}=1.0,
+    )
 
 Add a forecast to a system from a TimeSeries.TimeArray.
 
@@ -672,23 +722,23 @@ See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
 scaling_factor.
 """
 function add_forecast!(
-                       sys::System,
-                       ta::TimeSeries.TimeArray,
-                       component,
-                       label,
-                       scaling_factor::Union{String, Float64}=1.0,
-                      )
+    sys::System,
+    ta::TimeSeries.TimeArray,
+    component,
+    label,
+    scaling_factor::Union{String, Float64}=1.0,
+)
     return IS.add_forecast!(sys.data, ta, component, label, scaling_factor)
 end
 
 """
     add_forecast!(
-                  sys::System,
-                  df::DataFrames.DataFrame,
-                  component,
-                  label,
-                  scaling_factor::Union{String, Float64}=1.0,
-                 )
+        sys::System,
+        df::DataFrames.DataFrame,
+        component,
+        label,
+        scaling_factor::Union{String, Float64}=1.0,
+    )
 
 Add a forecast to a system from a DataFrames.DataFrame.
 
@@ -696,12 +746,12 @@ See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
 scaling_factor.
 """
 function add_forecast!(
-                       sys::System,
-                       df::DataFrames.DataFrame,
-                       component,
-                       label,
-                       scaling_factor::Union{String, Float64}=1.0,
-                      )
+    sys::System,
+    df::DataFrames.DataFrame,
+    component,
+    label,
+    scaling_factor::Union{String, Float64}=1.0,
+)
     return IS.add_forecast!(sys.data, df, component, label, scaling_factor)
 end
 
@@ -733,8 +783,11 @@ Return a vector of forecasts from a vector of TimeseriesFileMetadata values.
 - `timeseries_metadata::Vector{TimeseriesFileMetadata}`: metadata values
 - `resolution::{Nothing, Dates.Period}`: skip any forecasts that don't match this resolution
 """
-function make_forecasts(sys::System, metadata::Vector{IS.TimeseriesFileMetadata};
-                        resolution=nothing)
+function make_forecasts(
+    sys::System,
+    metadata::Vector{IS.TimeseriesFileMetadata};
+    resolution = nothing
+)
     return IS.make_forecasts(sys.data, metadata, PowerSystems; resolution=resolution)
 end
 
@@ -779,12 +832,14 @@ system's forecast resolution, or if the stored forecasts have overlapping timest
   use the first initial time.
 """
 function generate_initial_times(
-                                sys::System,
-                                interval::Dates.Period,
-                                horizon::Int;
-                                initial_time::Union{Nothing, Dates.DateTime}=nothing)
-    return IS.generate_initial_times(sys.data, interval, horizon;
-                                     initial_time = initial_time)
+    sys::System,
+    interval::Dates.Period,
+    horizon::Int;
+    initial_time::Union{Nothing, Dates.DateTime} = nothing
+)
+    return IS.generate_initial_times(
+        sys.data, interval, horizon; initial_time = initial_time
+    )
 end
 
 """
@@ -798,13 +853,14 @@ end
 Generate initial times for a component.
 """
 function generate_initial_times(
-                                component::InfrastructureSystemsType,
-                                interval::Dates.Period,
-                                horizon::Int;
-                                initial_time::Union{Nothing, Dates.DateTime}=nothing,
-                               )
-    return IS.generate_initial_times(component, interval, horizon;
-                                     initial_time=initial_time)
+    component::IS.InfrastructureSystemsType,
+    interval::Dates.Period,
+    horizon::Int;
+    initial_time::Union{Nothing, Dates.DateTime} = nothing,
+)
+    return IS.generate_initial_times(
+        component, interval, horizon; initial_time = initial_time
+    )
 end
 
 """
@@ -818,11 +874,11 @@ end
 Return a forecast for the entire time series range stored for these parameters.
 """
 function get_forecast(
-                      ::Type{T},
-                      component::Component,
-                      initial_time::Dates.DateTime,
-                      label::AbstractString,
-                      ) where T <: Forecast
+    ::Type{T},
+    component::Component,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+) where T <: IS.Forecast
     return IS.get_forecast(T, component, initial_time, label)
 end
 
@@ -990,12 +1046,12 @@ end
 Remove the time series data for a component.
 """
 function remove_forecast!(
-                          ::Type{T},
-                          sys::System,
-                          component::Component,
-                          initial_time::Dates.DateTime,
-                          label::String,
-                         ) where T <: Forecast
+    ::Type{T},
+    sys::System,
+    component::Component,
+    initial_time::Dates.DateTime,
+    label::String,
+) where T <: IS.Forecast
     return IS.remove_forecast!(T, sys.data, component, initial_time, label)
 end
 
@@ -1309,10 +1365,13 @@ function _create_system_data_from_kwargs(; kwargs...)
     runchecks = get(kwargs, :runchecks, true)
     time_series_in_memory = get(kwargs, :time_series_in_memory, false)
     if runchecks
-        validation_descriptor_file = get(kwargs, :configpath,
-                                         POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
+        validation_descriptor_file = get(
+            kwargs, :configpath, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE
+        )
     end
 
-    return IS.SystemData(; validation_descriptor_file=validation_descriptor_file,
-                         time_series_in_memory=time_series_in_memory)
+    return IS.SystemData(;
+        validation_descriptor_file = validation_descriptor_file,
+        time_series_in_memory = time_series_in_memory
+    )
 end

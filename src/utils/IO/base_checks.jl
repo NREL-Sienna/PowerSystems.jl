@@ -72,5 +72,3 @@ function isafield(component::Component, field::Symbol)
     allfields = _wrap(component)
     return field in allfields
 end
-
-

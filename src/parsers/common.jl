@@ -1,9 +1,38 @@
 const GENERATOR_MAPPING_FILE = joinpath(dirname(pathof(PowerSystems)), "parsers",
                                         "generator_mapping.yaml")
 
+const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels))
+merge!(
+    STRING2FUEL, Dict(
+        "NG" => NATURAL_GAS::ThermalFuels,
+        "NUC" => NUCLEAR::ThermalFuels,
+        "GAS" => NATURAL_GAS::ThermalFuels,
+        "OIL" => DISTILLATE_FUEL_OIL::ThermalFuels,
+        "SYNC_COND" => OTHER::ThermalFuels,
+    )
+)
+
+const STRING2PRIMEMOVER = Dict((string(e) => e) for e in instances(PrimeMovers))
+merge!(
+    STRING2PRIMEMOVER, Dict(
+        "W2" => WT::PrimeMovers,
+        "WIND" => WT::PrimeMovers,
+        "PV" => PVe::PrimeMovers,
+        "RTPV" => PVe::PrimeMovers,
+        "NB" => ST::PrimeMovers,
+        "STEAM" => ST::PrimeMovers,
+        "HYDRO" => HY::PrimeMovers,
+        "NUCLEAR" => ST::PrimeMovers,
+        "SYNC_COND" => OT::PrimeMovers,
+        "CSP" => CP::PrimeMovers,
+        "UN" => OT::PrimeMovers,
+        "STORAGE" => BA::PrimeMovers,
+    )
+)
+
 """Return a dict where keys are a tuple of input parameters (fuel, unit_type) and values are
 generator types."""
-function get_generator_mapping(filename=nothing)
+function get_generator_mapping(filename = nothing)
     if isnothing(filename)
         filename = GENERATOR_MAPPING_FILE
     end
@@ -15,7 +44,7 @@ function get_generator_mapping(filename=nothing)
     for (gen_type, vals) in genmap
         gen = getfield(PowerSystems, Symbol(gen_type))
         for val in vals
-            key = (fuel=val["fuel"], unit_type=val["type"])
+            key = (fuel = val["fuel"], unit_type = val["type"])
             if haskey(mappings, key)
                 error("duplicate generator mappings: $gen $(key.fuel) $(key.unit_type)")
             end
@@ -34,7 +63,7 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
 
     # Try to match the unit_type if it's defined. If it's nothing then just match on fuel.
     for ut in (unit_type, nothing)
-        key = (fuel=fuel, unit_type=ut)
+        key = (fuel = fuel, unit_type = ut)
         if haskey(mappings, key)
             generator = mappings[key]
             break
@@ -76,18 +105,10 @@ function convert_units!(value::Float64,
     elseif unit_conversion.From == "radian" && unit_conversion.To == "degree"
         value = rad2deg(value)
     else
-        throw(DataFormatError("Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported"))
+        throw(IS.DataFormatError("Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported"))
     end
     return value
 end
-
-const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels))
-merge!(STRING2FUEL, Dict("NG" => NATURAL_GAS::ThermalFuels,
-              "NUC" => NUCLEAR::ThermalFuels,
-              "GAS" => NATURAL_GAS::ThermalFuels,
-              "OIL" => DISTILLATE_FUEL_OIL::ThermalFuels,
-              "SYNC_COND" => OTHER::ThermalFuels,
-              ))
 
 function Base.convert(::Type{ThermalFuels}, fuel::AbstractString)
     return STRING2FUEL[uppercase(fuel)]
@@ -96,21 +117,6 @@ end
 function Base.convert(::Type{ThermalFuels}, fuel::Symbol)
     return convert(ThermalFuels, string(fuel))
 end
-
-const STRING2PRIMEMOVER = Dict((string(e) => e) for e in instances(PrimeMovers))
-merge!(STRING2PRIMEMOVER, Dict("W2" => WT::PrimeMovers,
-              "WIND" => WT::PrimeMovers,
-              "PV" => PVe::PrimeMovers,
-              "RTPV" => PVe::PrimeMovers,
-              "NB" => ST::PrimeMovers,
-              "STEAM" => ST::PrimeMovers,
-              "HYDRO" => HY::PrimeMovers,
-              "NUCLEAR" => ST::PrimeMovers,
-              "SYNC_COND" => OT::PrimeMovers,
-              "CSP" => CP::PrimeMovers,
-              "UN" => OT::PrimeMovers,
-              "STORAGE" => BA::PrimeMovers,
-            ))
 
 function Base.convert(::Type{PrimeMovers}, primemover::AbstractString)
     return STRING2PRIMEMOVER[uppercase(primemover)]
