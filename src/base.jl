@@ -604,7 +604,7 @@ end
                            ::Type{T},
                            sys::System,
                            name::AbstractString
-                          )::Vector{T} where {T <: Component}
+                          ) where {T <: Component}
 
 Get the components of abstract type T with name. Note that PowerSystems enforces unique
 names on each concrete type but not across concrete types.
@@ -938,11 +938,11 @@ function get_forecast_values(component::Component, forecast::IS.Forecast)
 end
 
 """
-    get_forecast_initial_times(sys::System)::Vector{Dates.DateTime}
+    get_forecast_initial_times(sys::System) -> Vector{Dates.DateTime}
 
 Return sorted forecast initial times.
 """
-function get_forecast_initial_times(sys::System)::Vector{Dates.DateTime}
+function get_forecast_initial_times(sys::System)
     return IS.get_forecast_initial_times(sys.data)
 end
 
@@ -1056,7 +1056,7 @@ function remove_forecast!(
 end
 
 """
-    validate_struct(sys::System, value::PowerSystemType)
+    validate_struct(sys::System, value::PowerSystemType) -> Bool
 
 Validates an instance of a PowerSystemType against System data.
 Returns true if the instance is valid.
@@ -1065,7 +1065,7 @@ Users implementing this function for custom types should consider implementing
 InfrastructureSystems.validate_struct instead if the validation logic only requires data
 contained within the instance.
 """
-function validate_struct(sys::System, value::PowerSystemType)::Bool
+function validate_struct(sys::System, value::PowerSystemType)
     return true
 end
 
