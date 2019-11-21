@@ -38,7 +38,7 @@ struct System <: PowerSystemType
     basepower::Float64             # [MVA]
     bus_numbers::Set{Int}
     runchecks::Bool
-    internal::InfrastructureSystemsInternal
+    internal::IS.InfrastructureSystemsInternal
 
     function System(data, basepower, internal; kwargs...)
         bus_numbers = Set{Int}()
@@ -53,8 +53,9 @@ function System(basepower; kwargs...)
     return System(_create_system_data_from_kwargs(; kwargs...), basepower)
 end
 
+"""Construct a `System` from `InfrastructureSystems.SystemData`"""
 function System(data, basepower; kwargs...)
-    internal = get(kwargs, :internal, InfrastructureSystemsInternal())
+    internal = get(kwargs, :internal, IS.InfrastructureSystemsInternal())
     return System(data, basepower, internal; kwargs...)
 end
 
@@ -88,12 +89,11 @@ function System(
     end
 
     error_detected = false
-
     for component in Iterators.flatten(arrays)
         try
             add_component!(sys, component)
         catch e
-            if isa(e, InvalidRange)
+            if isa(e, IS.InvalidRange)
                 error_detected = true
             else
                 rethrow()
@@ -107,7 +107,7 @@ function System(
             try
                 add_component!(sys, lz)
             catch e
-                if isa(e, InvalidRange)
+                if isa(e, IS.InvalidRange)
                     error_detected = true
                 else
                     rethrow()
@@ -119,7 +119,7 @@ function System(
     runchecks = get(kwargs, :runchecks, true)
 
     if error_detected
-        throw(InvalidRange("Invalid value(s) detected"))
+        throw(IS.InvalidRange("Invalid value(s) detected"))
     end
 
     if runchecks
@@ -276,7 +276,7 @@ function add_component!(sys::System, component::T; kwargs...) where T <: Compone
     end
 
     if sys.runchecks && !validate_struct(sys, component)
-        throw(InvalidValue("Invalid value for $(component)"))
+        throw(IS.InvalidValue("Invalid value for $(component)"))
     end
 
     IS.add_component!(sys.data, component; kwargs...)
@@ -679,7 +679,7 @@ Adds forecast to the system.
 Throws ArgumentError if the component is not stored in the system.
 
 """
-function add_forecast!(sys::System, component::Component, forecast::Forecast)
+function add_forecast!(sys::System, component::Component, forecast::IS.Forecast)
     return IS.add_forecast!(sys.data, component, forecast)
 end
 
@@ -894,19 +894,19 @@ end
 Return a forecast for a subset of the time series range stored for these parameters.
 """
 function get_forecast(
-                      ::Type{T},
-                      component::InfrastructureSystemsType,
-                      initial_time::Dates.DateTime,
-                      label::AbstractString,
-                      horizon::Int,
-                     ) where T <: Forecast
+    ::Type{T},
+    component::IS.InfrastructureSystemsType,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+    horizon::Int,
+) where T <: IS.Forecast
     return IS.get_forecast(T, component, initial_time, label, horizon)
 end
 
 function get_forecast_initial_times(
                                     ::Type{T},
                                     component::Component,
-                                   ) where T <: Forecast
+                                   ) where T <: IS.Forecast
     return IS.get_forecast_initial_times(T, component)
 end
 
@@ -914,7 +914,7 @@ function get_forecast_initial_times(
                                     ::Type{T},
                                     component::Component,
                                     label::AbstractString
-                                   ) where T <: Forecast
+                                   ) where T <: IS.Forecast
     return IS.get_forecast_initial_times(T, component, label)
 end
 
@@ -922,7 +922,7 @@ function get_forecast_labels(
                              ::Type{T},
                              component::Component,
                              initial_time::Dates.DateTime,
-                            ) where T <: Forecast
+                            ) where T <: IS.Forecast
     return IS.get_forecast_labels(T, component, initial_time)
 end
 
@@ -932,7 +932,7 @@ end
 Return a TimeSeries.TimeArray where the forecast data has been multiplied by the forecasted
 component field.
 """
-function get_forecast_values(component::Component, forecast::Forecast)
+function get_forecast_values(component::Component, forecast::IS.Forecast)
     return IS.get_forecast_values(PowerSystems, component, forecast)
 end
 
@@ -940,7 +940,6 @@ end
     get_forecast_initial_times(sys::System)::Vector{Dates.DateTime}
 
 Return sorted forecast initial times.
-
 """
 function get_forecast_initial_times(sys::System)::Vector{Dates.DateTime}
     return IS.get_forecast_initial_times(sys.data)

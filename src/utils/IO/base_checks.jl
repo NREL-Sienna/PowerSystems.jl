@@ -5,7 +5,7 @@ function orderedlimits(limits::Union{NamedTuple{(:min, :max), Tuple{Float64, Flo
         @info "'$limitsname' limits defined as nothing"
     else
         if limits.max < limits.min
-            throw(DataFormatError("$limitsname limits not in ascending order"))
+            throw(IS.DataFormatError("$limitsname limits not in ascending order"))
         end
     end
 
@@ -30,13 +30,15 @@ function getresolution(ts::TimeSeries.TimeArray)
         elseif mod(timediff,Dates.Millisecond(Dates.Second(1))) == Dates.Millisecond(0)
             push!(res,Dates.Second(timediff/Dates.Millisecond(Dates.Second(1))))
         else
-            throw(DataFormatError("cannot understand the resolution of the timeseries"))
+            throw(IS.DataFormatError("cannot understand the resolution of the timeseries"))
         end
     end
 
     if length(res) > 1
-        throw(DataFormatError(
-            "timeseries has non-uniform resolution: this is currently not supported")
+        throw(
+            IS.DataFormatError(
+                "timeseries has non-uniform resolution: this is currently not supported"
+            )
         )
     end
 
@@ -47,7 +49,7 @@ end
 function check_ascending_order(array::Array{Int}, name::AbstractString)
     for (i, num) in enumerate(array)
         if i > 1 && num < array[i - 1]
-            throw(DataFormatError("$name Numbers are not in ascending order."))
+            throw(IS.DataFormatError("$name Numbers are not in ascending order."))
         end
     end
 

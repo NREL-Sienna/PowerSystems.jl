@@ -16,7 +16,7 @@ function CheckBusParams(
             bustype = REF::BusType
             @debug "Changed bus type from SLACK to" bustype
         elseif bustype == ISOLATED::BusType
-            throw(DataFormatError("isolated buses are not supported; name=$name"))
+            throw(IS.DataFormatError("isolated buses are not supported; name=$name"))
         end
     end
 
