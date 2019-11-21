@@ -9,7 +9,6 @@ This file is auto-generated. Do not edit.
         reactivepowerlimits::Union{Nothing, Min_Max}
         ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -22,7 +21,6 @@ Data Structures for the technical parameters of hydropower generation technologi
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down time limits
-- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TechHydro <: TechnicalParams
@@ -36,24 +34,19 @@ mutable struct TechHydro <: TechnicalParams
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "ramp up and ramp down time limits"
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext=nothing, )
-    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext, InfrastructureSystemsInternal())
+function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal())
 end
 
-function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext=nothing, )
-    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext, )
+function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
 
 
-function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ; ext=nothing)
-    
-    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, ext, InfrastructureSystemsInternal())
-end
 
 # Constructor for demo purposes; non-functional.
 
@@ -65,7 +58,6 @@ function TechHydro(::Nothing)
         reactivepowerlimits=nothing,
         ramplimits=nothing,
         timelimits=nothing,
-        ext=nothing,
     )
 end
 
@@ -81,7 +73,5 @@ get_reactivepowerlimits(value::TechHydro) = value.reactivepowerlimits
 get_ramplimits(value::TechHydro) = value.ramplimits
 """Get TechHydro timelimits."""
 get_timelimits(value::TechHydro) = value.timelimits
-"""Get TechHydro ext."""
-get_ext(value::TechHydro) = value.ext
 """Get TechHydro internal."""
 get_internal(value::TechHydro) = value.internal

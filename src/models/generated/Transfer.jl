@@ -7,8 +7,8 @@ This file is auto-generated. Do not edit.
         contributingdevices::Vector{<:Device}
         timeframe::Float64
         requirement::TimeSeries.TimeArray
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
-        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -19,8 +19,8 @@ This file is auto-generated. Do not edit.
 - `contributingdevices::Vector{<:Device}`
 - `timeframe::Float64`: the relative saturation timeframe
 - `requirement::TimeSeries.TimeArray`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
-- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Transfer <: Service
@@ -29,24 +29,24 @@ mutable struct Transfer <: Service
     "the relative saturation timeframe"
     timeframe::Float64
     requirement::TimeSeries.TimeArray
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
-    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, ext, InfrastructureSystemsInternal())
+function Transfer(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
-function Transfer(; name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, ext, )
+function Transfer(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, )
 end
 
 
-function Transfer(name, contributingdevices, timeframe, requirement, ; ext=nothing)
+function Transfer(name, contributingdevices, timeframe, requirement, ; ext=Dict{String, Any}())
     _forecasts=InfrastructureSystems.Forecasts()
-    Transfer(name, contributingdevices, timeframe, requirement, _forecasts, ext, InfrastructureSystemsInternal())
+    Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -57,8 +57,8 @@ function Transfer(::Nothing)
         contributingdevices=[ThermalStandard(nothing)],
         timeframe=0.0,
         requirement=[],
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
-        ext=nothing,
     )
 end
 
@@ -70,9 +70,9 @@ get_contributingdevices(value::Transfer) = value.contributingdevices
 get_timeframe(value::Transfer) = value.timeframe
 """Get Transfer requirement."""
 get_requirement(value::Transfer) = value.requirement
-"""Get Transfer _forecasts."""
-get__forecasts(value::Transfer) = value._forecasts
 """Get Transfer ext."""
 get_ext(value::Transfer) = value.ext
+"""Get Transfer _forecasts."""
+get__forecasts(value::Transfer) = value._forecasts
 """Get Transfer internal."""
 get_internal(value::Transfer) = value.internal

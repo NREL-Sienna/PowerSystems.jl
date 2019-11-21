@@ -10,7 +10,7 @@ This file is auto-generated. Do not edit.
         voltage::Union{Nothing, Float64}
         voltagelimits::Union{Nothing, Min_Max}
         basevoltage::Union{Nothing, Float64}
-        ext::Union{Nothing, Dict{String, Any}}
+        ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
@@ -24,7 +24,7 @@ A power-system bus.
 - `voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage
 - `voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
 - `basevoltage::Union{Nothing, Float64}`: the base voltage in kV
-- `ext::Union{Nothing, Dict{String, Any}}`
+- `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Bus <: Topology
@@ -42,7 +42,7 @@ mutable struct Bus <: Topology
     voltagelimits::Union{Nothing, Min_Max}
     "the base voltage in kV"
     basevoltage::Union{Nothing, Float64}
-    ext::Union{Nothing, Dict{String, Any}}
+    ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 
@@ -62,16 +62,16 @@ mutable struct Bus <: Topology
     end
 end
 
-function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext=nothing, )
+function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext=Dict{String, Any}(), )
     Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, InfrastructureSystemsInternal())
 end
 
-function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext=nothing, )
+function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext=Dict{String, Any}(), )
     Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, )
 end
 
 
-function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ; ext=nothing)
+function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ; ext=Dict{String, Any}())
     
     Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, InfrastructureSystemsInternal())
 end
@@ -87,7 +87,7 @@ function Bus(::Nothing)
         voltage=0.0,
         voltagelimits=(min=0.0, max=0.0),
         basevoltage=nothing,
-        ext=nothing,
+        ext=Dict{String, Any}(),
     )
 end
 

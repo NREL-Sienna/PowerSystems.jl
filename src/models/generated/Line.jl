@@ -13,8 +13,8 @@ This file is auto-generated. Do not edit.
         b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
         rate::Float64
         anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
-        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -31,8 +31,8 @@ This file is auto-generated. Do not edit.
 - `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value
 - `rate::Float64`
 - `anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
-- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Line <: ACBranch
@@ -49,24 +49,24 @@ mutable struct Line <: ACBranch
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
     rate::Float64
     anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
-    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts, ext, InfrastructureSystemsInternal())
+function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
-function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts, ext, )
+function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext, _forecasts, )
 end
 
 
-function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ; ext=nothing)
+function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ; ext=Dict{String, Any}())
     _forecasts=InfrastructureSystems.Forecasts()
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, _forecasts, ext, InfrastructureSystemsInternal())
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -83,8 +83,8 @@ function Line(::Nothing)
         b=(from=0.0, to=0.0),
         rate=0.0,
         anglelimits=(min=-1.571, max=1.571),
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
-        ext=nothing,
     )
 end
 
@@ -108,9 +108,9 @@ get_b(value::Line) = value.b
 get_rate(value::Line) = value.rate
 """Get Line anglelimits."""
 get_anglelimits(value::Line) = value.anglelimits
-"""Get Line _forecasts."""
-get__forecasts(value::Line) = value._forecasts
 """Get Line ext."""
 get_ext(value::Line) = value.ext
+"""Get Line _forecasts."""
+get__forecasts(value::Line) = value._forecasts
 """Get Line internal."""
 get_internal(value::Line) = value.internal

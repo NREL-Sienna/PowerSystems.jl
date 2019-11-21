@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         contributingdevices::Vector{<:Device}
         timeframe::Float64
         requirement::Float64
-        ext::Union{Nothing, Dict{String, Any}}
+        ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
@@ -18,7 +18,7 @@ Data Structure for a proportional reserve product for system simulations.
 - `contributingdevices::Vector{<:Device}`: devices from which the product can be procured
 - `timeframe::Float64`: the relative saturation timeframe
 - `requirement::Float64`: the static value of required reserves
-- `ext::Union{Nothing, Dict{String, Any}}`
+- `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct StaticReserve <: Reserve
@@ -29,21 +29,21 @@ mutable struct StaticReserve <: Reserve
     timeframe::Float64
     "the static value of required reserves"
     requirement::Float64
-    ext::Union{Nothing, Dict{String, Any}}
+    ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserve(name, contributingdevices, timeframe, requirement, ext=nothing, )
+function StaticReserve(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), )
     StaticReserve(name, contributingdevices, timeframe, requirement, ext, InfrastructureSystemsInternal())
 end
 
-function StaticReserve(; name, contributingdevices, timeframe, requirement, ext=nothing, )
+function StaticReserve(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), )
     StaticReserve(name, contributingdevices, timeframe, requirement, ext, )
 end
 
 
-function StaticReserve(name, contributingdevices, timeframe, requirement, ; ext=nothing)
+function StaticReserve(name, contributingdevices, timeframe, requirement, ; ext=Dict{String, Any}())
     
     StaticReserve(name, contributingdevices, timeframe, requirement, ext, InfrastructureSystemsInternal())
 end
@@ -56,7 +56,7 @@ function StaticReserve(::Nothing)
         contributingdevices=[ThermalStandard(nothing)],
         timeframe=0.0,
         requirement=0.0,
-        ext=nothing,
+        ext=Dict{String, Any}(),
     )
 end
 

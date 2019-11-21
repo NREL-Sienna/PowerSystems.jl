@@ -12,8 +12,8 @@ This file is auto-generated. Do not edit.
         reactivepowerlimits_from::Min_Max
         reactivepowerlimits_to::Min_Max
         loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
-        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -29,8 +29,8 @@ a High voltage DC line.
 - `reactivepowerlimits_from::Min_Max`
 - `reactivepowerlimits_to::Min_Max`
 - `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
-- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HVDCLine <: DCBranch
@@ -43,24 +43,24 @@ mutable struct HVDCLine <: DCBranch
     reactivepowerlimits_from::Min_Max
     reactivepowerlimits_to::Min_Max
     loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
-    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, _forecasts, ext, InfrastructureSystemsInternal())
+function HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
-function HVDCLine(; name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, _forecasts, ext, )
+function HVDCLine(; name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ext, _forecasts, )
 end
 
 
-function HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ; ext=nothing)
+function HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ; ext=Dict{String, Any}())
     _forecasts=InfrastructureSystems.Forecasts()
-    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, _forecasts, ext, InfrastructureSystemsInternal())
+    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,8 +76,8 @@ function HVDCLine(::Nothing)
         reactivepowerlimits_from=(min=0.0, max=0.0),
         reactivepowerlimits_to=(min=0.0, max=0.0),
         loss=(l0=0.0, l1=0.0),
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
-        ext=nothing,
     )
 end
 
@@ -99,9 +99,9 @@ get_reactivepowerlimits_from(value::HVDCLine) = value.reactivepowerlimits_from
 get_reactivepowerlimits_to(value::HVDCLine) = value.reactivepowerlimits_to
 """Get HVDCLine loss."""
 get_loss(value::HVDCLine) = value.loss
-"""Get HVDCLine _forecasts."""
-get__forecasts(value::HVDCLine) = value._forecasts
 """Get HVDCLine ext."""
 get_ext(value::HVDCLine) = value.ext
+"""Get HVDCLine _forecasts."""
+get__forecasts(value::HVDCLine) = value._forecasts
 """Get HVDCLine internal."""
 get_internal(value::HVDCLine) = value.internal

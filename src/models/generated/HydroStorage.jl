@@ -12,8 +12,8 @@ This file is auto-generated. Do not edit.
         op_cost::TwoPartCost
         storagecapacity::Float64
         initial_storage::Float64
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
-        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -29,8 +29,8 @@ This file is auto-generated. Do not edit.
 - `op_cost::TwoPartCost`
 - `storagecapacity::Float64`
 - `initial_storage::Float64`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
-- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroStorage <: HydroGen
@@ -43,24 +43,24 @@ mutable struct HydroStorage <: HydroGen
     op_cost::TwoPartCost
     storagecapacity::Float64
     initial_storage::Float64
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
-    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, _forecasts, ext, InfrastructureSystemsInternal())
+function HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
-function HydroStorage(; name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, _forecasts, ext, )
+function HydroStorage(; name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext, _forecasts, )
 end
 
 
-function HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ; ext=nothing)
+function HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ; ext=Dict{String, Any}())
     _forecasts=InfrastructureSystems.Forecasts()
-    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, _forecasts, ext, InfrastructureSystemsInternal())
+    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,8 +76,8 @@ function HydroStorage(::Nothing)
         op_cost=TwoPartCost(nothing),
         storagecapacity=0.0,
         initial_storage=0.0,
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
-        ext=nothing,
     )
 end
 
@@ -99,9 +99,9 @@ get_op_cost(value::HydroStorage) = value.op_cost
 get_storagecapacity(value::HydroStorage) = value.storagecapacity
 """Get HydroStorage initial_storage."""
 get_initial_storage(value::HydroStorage) = value.initial_storage
-"""Get HydroStorage _forecasts."""
-get__forecasts(value::HydroStorage) = value._forecasts
 """Get HydroStorage ext."""
 get_ext(value::HydroStorage) = value.ext
+"""Get HydroStorage _forecasts."""
+get__forecasts(value::HydroStorage) = value._forecasts
 """Get HydroStorage internal."""
 get_internal(value::HydroStorage) = value.internal

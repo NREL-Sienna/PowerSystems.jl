@@ -9,8 +9,8 @@ This file is auto-generated. Do not edit.
         activepower::Float64
         reactivepower::Float64
         tech::TechHydro
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
-        ext::Union{Nothing, Dict{String, Any}}
         internal::InfrastructureSystemsInternal
     end
 
@@ -23,8 +23,8 @@ This file is auto-generated. Do not edit.
 - `activepower::Float64`
 - `reactivepower::Float64`
 - `tech::TechHydro`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
-- `ext::Union{Nothing, Dict{String, Any}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroFix <: HydroGen
@@ -34,24 +34,24 @@ mutable struct HydroFix <: HydroGen
     activepower::Float64
     reactivepower::Float64
     tech::TechHydro
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
-    ext::Union{Nothing, Dict{String, Any}}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroFix(name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    HydroFix(name, available, bus, activepower, reactivepower, tech, _forecasts, ext, InfrastructureSystemsInternal())
+function HydroFix(name, available, bus, activepower, reactivepower, tech, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
-function HydroFix(; name, available, bus, activepower, reactivepower, tech, _forecasts=InfrastructureSystems.Forecasts(), ext=nothing, )
-    HydroFix(name, available, bus, activepower, reactivepower, tech, _forecasts, ext, )
+function HydroFix(; name, available, bus, activepower, reactivepower, tech, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, )
 end
 
 
-function HydroFix(name, available, bus, activepower, reactivepower, tech, ; ext=nothing)
+function HydroFix(name, available, bus, activepower, reactivepower, tech, ; ext=Dict{String, Any}())
     _forecasts=InfrastructureSystems.Forecasts()
-    HydroFix(name, available, bus, activepower, reactivepower, tech, _forecasts, ext, InfrastructureSystemsInternal())
+    HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, InfrastructureSystemsInternal())
 end
 
 # Constructor for demo purposes; non-functional.
@@ -64,8 +64,8 @@ function HydroFix(::Nothing)
         activepower=0.0,
         reactivepower=0.0,
         tech=TechHydro(nothing),
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
-        ext=nothing,
     )
 end
 
@@ -81,9 +81,9 @@ get_activepower(value::HydroFix) = value.activepower
 get_reactivepower(value::HydroFix) = value.reactivepower
 """Get HydroFix tech."""
 get_tech(value::HydroFix) = value.tech
-"""Get HydroFix _forecasts."""
-get__forecasts(value::HydroFix) = value._forecasts
 """Get HydroFix ext."""
 get_ext(value::HydroFix) = value.ext
+"""Get HydroFix _forecasts."""
+get__forecasts(value::HydroFix) = value._forecasts
 """Get HydroFix internal."""
 get_internal(value::HydroFix) = value.internal
