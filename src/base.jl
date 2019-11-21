@@ -1194,18 +1194,19 @@ function check_bus(sys::System, bus::Bus, component::Component)
 end
 
 function IS.compare_values(x::System, y::System)
+    match = true
 
     if x.basepower != y.basepower
         @debug "basepower does not match" x.basepower y.basepower
-        return false
+        match = false
     end
 
     if !IS.compare_values(x.data, y.data)
         @debug "SystemData values do not match"
-        return false
+        match = false
     end
 
-    return true
+    return match
 end
 
 function _create_system_data_from_kwargs(; kwargs...)
