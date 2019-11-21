@@ -23,16 +23,12 @@ mutable struct Arc <: Topology
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
-
 function Arc(from, to, )
     Arc(from, to, InfrastructureSystemsInternal())
 end
-
 function Arc(; from, to, )
     Arc(from, to, )
 end
-
-
 
 """Get Arc from."""
 get_from(value::Arc) = value.from

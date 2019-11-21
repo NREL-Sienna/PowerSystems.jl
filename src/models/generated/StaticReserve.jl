@@ -33,16 +33,12 @@ mutable struct StaticReserve <: Reserve
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
-
 function StaticReserve(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), )
     StaticReserve(name, contributingdevices, timeframe, requirement, ext, InfrastructureSystemsInternal())
 end
-
 function StaticReserve(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), )
     StaticReserve(name, contributingdevices, timeframe, requirement, ext, )
 end
-
-
 # Constructor for demo purposes; non-functional.
 
 function StaticReserve(::Nothing)

@@ -39,16 +39,12 @@ mutable struct HydroFix <: HydroGen
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
-
 function HydroFix(name, available, bus, activepower, reactivepower, tech, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, InfrastructureSystemsInternal())
 end
-
 function HydroFix(; name, available, bus, activepower, reactivepower, tech, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, )
 end
-
-
 # Constructor for demo purposes; non-functional.
 
 function HydroFix(::Nothing)

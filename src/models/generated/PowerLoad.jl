@@ -45,16 +45,12 @@ mutable struct PowerLoad <: StaticLoad
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
-
 function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext, _forecasts, InfrastructureSystemsInternal())
 end
-
 function PowerLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext, _forecasts, )
 end
-
-
 # Constructor for demo purposes; non-functional.
 
 function PowerLoad(::Nothing)

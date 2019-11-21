@@ -27,16 +27,12 @@ mutable struct TwoPartCost <: OperationalCost
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
-
 function TwoPartCost(variable, fixed, _forecasts=InfrastructureSystems.Forecasts(), )
     TwoPartCost(variable, fixed, _forecasts, InfrastructureSystemsInternal())
 end
-
 function TwoPartCost(; variable, fixed, _forecasts=InfrastructureSystems.Forecasts(), )
     TwoPartCost(variable, fixed, _forecasts, )
 end
-
-
 # Constructor for demo purposes; non-functional.
 
 function TwoPartCost(::Nothing)

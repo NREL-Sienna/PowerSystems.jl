@@ -37,16 +37,12 @@ mutable struct VariableReserve <: Reserve
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
-
 function VariableReserve(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     VariableReserve(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal())
 end
-
 function VariableReserve(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     VariableReserve(name, contributingdevices, timeframe, requirement, ext, _forecasts, )
 end
-
-
 # Constructor for demo purposes; non-functional.
 
 function VariableReserve(::Nothing)
