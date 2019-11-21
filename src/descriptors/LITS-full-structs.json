@@ -1,0 +1,1082 @@
+[
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "AVRFixed",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "AVRSimple",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "AVRTypeI",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "AVRTypeII",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "AVRTypeIIManual",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "AndersonFouadMachine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "AvgCnvFixedDC",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "BaseMachine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "CombinedVIwithVZ",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "DynLine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "DynamicSimulation",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "DynamicSystem",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "FiveMassShaft",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "FixedDCSource",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "FullMachine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "LCLFilter",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "MarconatoMachine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "OneDOneQMachine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "PLL",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "PSSFixed",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "ReactivePowerDroop",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "SimpleAFMachine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "SimpleFullMachine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "SimpleMarconatoMachine",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "SingleMass",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "StaticSource",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "TGFixed",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "TGTypeI",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "TGTypeII",
+        "docstring": ""
+    },
+    {
+        "fields": [
+            {
+                "name": "Vs",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Int64",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            },
+            {
+                "name": "states",
+                "comment": "",
+                "null_value": 0.0,
+                "data_type": "Array{Symbol,1}",
+                "valid_range": {
+                    "min": 0.0,
+                    "max": null
+                }
+            }
+        ],
+        "struct_name": "VirtualInertia",
+        "docstring": ""
+    }
+]
