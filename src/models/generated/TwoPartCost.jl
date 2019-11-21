@@ -37,7 +37,6 @@ function TwoPartCost(; variable, fixed, _forecasts=InfrastructureSystems.Forecas
 end
 
 
-
 # Constructor for demo purposes; non-functional.
 
 function TwoPartCost(::Nothing)

@@ -43,11 +43,6 @@ function StaticReserve(; name, contributingdevices, timeframe, requirement, ext=
 end
 
 
-function StaticReserve(name, contributingdevices, timeframe, requirement, ; ext=Dict{String, Any}())
-    
-    StaticReserve(name, contributingdevices, timeframe, requirement, ext, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function StaticReserve(::Nothing)

@@ -58,11 +58,6 @@ function HydroStorage(; name, available, bus, activepower, reactivepower, tech, 
 end
 
 
-function HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function HydroStorage(::Nothing)

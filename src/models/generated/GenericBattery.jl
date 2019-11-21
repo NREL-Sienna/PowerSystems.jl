@@ -73,11 +73,6 @@ function GenericBattery(; name, available, bus, primemover, energy, capacity, ra
 end
 
 
-function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function GenericBattery(::Nothing)

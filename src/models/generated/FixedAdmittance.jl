@@ -44,11 +44,6 @@ function FixedAdmittance(; name, available, bus, Y, ext=Dict{String, Any}(), _fo
 end
 
 
-function FixedAdmittance(name, available, bus, Y, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    FixedAdmittance(name, available, bus, Y, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function FixedAdmittance(::Nothing)

@@ -49,11 +49,6 @@ function HydroFix(; name, available, bus, activepower, reactivepower, tech, ext=
 end
 
 
-function HydroFix(name, available, bus, activepower, reactivepower, tech, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function HydroFix(::Nothing)

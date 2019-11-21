@@ -52,11 +52,6 @@ function RenewableDispatch(; name, available, bus, activepower, reactivepower, t
 end
 
 
-function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function RenewableDispatch(::Nothing)

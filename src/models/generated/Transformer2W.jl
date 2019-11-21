@@ -61,11 +61,6 @@ function Transformer2W(; name, available, activepower_flow, reactivepower_flow, 
 end
 
 
-function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function Transformer2W(::Nothing)

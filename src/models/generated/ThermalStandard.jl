@@ -52,11 +52,6 @@ function ThermalStandard(; name, available, bus, activepower, reactivepower, tec
 end
 
 
-function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function ThermalStandard(::Nothing)

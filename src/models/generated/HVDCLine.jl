@@ -58,11 +58,6 @@ function HVDCLine(; name, available, activepower_flow, arc, activepowerlimits_fr
 end
 
 
-function HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function HVDCLine(::Nothing)

@@ -44,11 +44,6 @@ function Transfer(; name, contributingdevices, timeframe, requirement, ext=Dict{
 end
 
 
-function Transfer(name, contributingdevices, timeframe, requirement, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function Transfer(::Nothing)

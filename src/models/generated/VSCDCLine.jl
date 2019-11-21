@@ -61,11 +61,6 @@ function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits
 end
 
 
-function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function VSCDCLine(::Nothing)

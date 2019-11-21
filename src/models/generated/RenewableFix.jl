@@ -49,11 +49,6 @@ function RenewableFix(; name, available, bus, activepower, reactivepower, tech, 
 end
 
 
-function RenewableFix(name, available, bus, activepower, reactivepower, tech, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    RenewableFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function RenewableFix(::Nothing)

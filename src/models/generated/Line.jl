@@ -64,11 +64,6 @@ function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x
 end
 
 
-function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function Line(::Nothing)

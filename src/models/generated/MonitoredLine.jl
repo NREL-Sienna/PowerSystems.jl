@@ -69,11 +69,6 @@ function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, 
 end
 
 
-function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function MonitoredLine(::Nothing)

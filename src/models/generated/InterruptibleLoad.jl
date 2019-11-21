@@ -58,11 +58,6 @@ function InterruptibleLoad(; name, available, bus, model, activepower, reactivep
 end
 
 
-function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function InterruptibleLoad(::Nothing)

@@ -71,11 +71,6 @@ function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage
 end
 
 
-function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ; ext=Dict{String, Any}())
-    
-    Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function Bus(::Nothing)

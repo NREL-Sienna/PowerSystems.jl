@@ -55,11 +55,6 @@ function PowerLoad(; name, available, bus, model, activepower, reactivepower, ma
 end
 
 
-function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ; ext=Dict{String, Any}())
-    _forecasts=InfrastructureSystems.Forecasts()
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext, _forecasts, InfrastructureSystemsInternal())
-end
-
 # Constructor for demo purposes; non-functional.
 
 function PowerLoad(::Nothing)
