@@ -172,7 +172,7 @@ gen2_avr_benchmark = AVRTypeII(20.0, #K0 - Gain
 end
 ######################### Generators ########################
 @testset "Dynamic Generators" begin
-Gen1AVR = DynGenerator(1, #Number
+Gen1AVR = DynamicGenerator(1, #Number
                  :TestGen,
                  nodes_OMIB[2],#bus
                  1.0, # ω_ref,
@@ -185,7 +185,7 @@ Gen1AVR = DynGenerator(1, #Number
                  no_pss)
 @test Gen1AVR isa PowerSystems.Component
 
-Gen1AVRnoAVR = DynGenerator(1, #Number
+Gen1AVRnoAVR = DynamicGenerator(1, #Number
                  :TestGen,
                  nodes_OMIB[2],#bus
                  1.0, # ω_ref,
@@ -198,7 +198,7 @@ Gen1AVRnoAVR = DynGenerator(1, #Number
                  no_pss)
 @test Gen1AVRnoAVR isa PowerSystems.Component
 
-Gen2AVRnoAVR = DynGenerator(1, #Number
+Gen2AVRnoAVR = DynamicGenerator(1, #Number
                  :TestGen,
                  nodes_OMIB[2],#bus
                  1.0, # ω_ref,
@@ -211,7 +211,7 @@ Gen2AVRnoAVR = DynGenerator(1, #Number
                  no_pss)
 @test Gen2AVRnoAVR isa PowerSystems.Component
 
-Gen2AVR = DynGenerator(1, #Number
+Gen2AVR = DynamicGenerator(1, #Number
                  :TestGen,
                  nodes_OMIB[2],#bus
                  1.0, # ω_ref,
