@@ -32,47 +32,65 @@ Parameters of 5 mass-spring shaft model.
  steam turbine, Low-Pressure (LP) steam turbine, the Rotor and an Exciter (EX) mover.
 
 # Arguments
-- `H::Float64`
-- `H_hp::Float64`
-- `H_ip::Float64`
-- `H_lp::Float64`
-- `H_ex::Float64`
-- `D::Float64`
-- `D_hp::Float64`
-- `D_ip::Float64`
-- `D_lp::Float64`
-- `D_ex::Float64`
-- `D_12::Float64`
-- `D_23::Float64`
-- `D_34::Float64`
-- `D_45::Float64`
-- `K_hp::Float64`
-- `K_ip::Float64`
-- `K_lp::Float64`
-- `K_ex::Float64`
+- `H::Float64`: Rotor inertia constant in MWs/MVA
+- `H_hp::Float64`: High pressure turbine inertia constant in MWs/MVA
+- `H_ip::Float64`: Intermediate pressure turbine inertia constant in MWs/MVA
+- `H_lp::Float64`: Low pressure turbine inertia constant in MWs/MVA
+- `H_ex::Float64`:  Exciter inertia constant in MWs/MVA
+- `D::Float64`: Rotor natural damping in pu
+- `D_hp::Float64`: High pressure turbine natural damping in pu
+- `D_ip::Float64`: Intermediate pressure turbine natural damping in pu
+- `D_lp::Float64`: Low pressure turbine natural damping in pu
+- `D_ex::Float64`: Exciter natural damping in pu
+- `D_12::Float64`: High-Intermediate pressure turbine damping
+- `D_23::Float64`: Intermediate-Low pressure turbine damping
+- `D_34::Float64`: Low pressure turbine-Rotor damping
+- `D_45::Float64`: Rotor-Exciter damping
+- `K_hp::Float64`: High pressure turbine angle coefficient
+- `K_ip::Float64`: Intermediate pressure turbine angle coefficient
+- `K_lp::Float64`: Low pressure turbine angle coefficient
+- `K_ex::Float64`: Exciter angle coefficient
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct FiveMassShaft <: Shaft
+    "Rotor inertia constant in MWs/MVA"
     H::Float64
+    "High pressure turbine inertia constant in MWs/MVA"
     H_hp::Float64
+    "Intermediate pressure turbine inertia constant in MWs/MVA"
     H_ip::Float64
+    "Low pressure turbine inertia constant in MWs/MVA"
     H_lp::Float64
+    " Exciter inertia constant in MWs/MVA"
     H_ex::Float64
+    "Rotor natural damping in pu"
     D::Float64
+    "High pressure turbine natural damping in pu"
     D_hp::Float64
+    "Intermediate pressure turbine natural damping in pu"
     D_ip::Float64
+    "Low pressure turbine natural damping in pu"
     D_lp::Float64
+    "Exciter natural damping in pu"
     D_ex::Float64
+    "High-Intermediate pressure turbine damping"
     D_12::Float64
+    "Intermediate-Low pressure turbine damping"
     D_23::Float64
+    "Low pressure turbine-Rotor damping"
     D_34::Float64
+    "Rotor-Exciter damping"
     D_45::Float64
+    "High pressure turbine angle coefficient"
     K_hp::Float64
+    "Intermediate pressure turbine angle coefficient"
     K_ip::Float64
+    "Low pressure turbine angle coefficient"
     K_lp::Float64
+    "Exciter angle coefficient"
     K_ex::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}

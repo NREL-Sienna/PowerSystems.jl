@@ -2999,14 +2999,14 @@
     "fields": [
       {
         "name": "K_ω",
-        "comment": "Fixed voltage stabilization signal",
+        "comment": "Proportional gain for frequency",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "K_p",
-        "comment": "Fixed voltage stabilization signal",
+        "comment": "Proportional gain for active power",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
@@ -3089,108 +3089,126 @@
     "fields": [
       {
         "name": "H",
+        "comment": "Rotor inertia constant in MWs/MVA",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "H_hp",
+        "comment": "High pressure turbine inertia constant in MWs/MVA",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "H_ip",
+        "comment": "Intermediate pressure turbine inertia constant in MWs/MVA",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "H_lp",
+        "comment": "Low pressure turbine inertia constant in MWs/MVA",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "H_ex",
+        "comment": " Exciter inertia constant in MWs/MVA",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D",
+        "comment": "Rotor natural damping in pu",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D_hp",
+        "comment": "High pressure turbine natural damping in pu",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D_ip",
+        "comment": "Intermediate pressure turbine natural damping in pu",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D_lp",
+        "comment": "Low pressure turbine natural damping in pu",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D_ex",
+        "comment": "Exciter natural damping in pu",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D_12",
+        "comment": "High-Intermediate pressure turbine damping",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D_23",
+        "comment": "Intermediate-Low pressure turbine damping",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D_34",
+        "comment": "Low pressure turbine-Rotor damping",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "D_45",
+        "comment": "Rotor-Exciter damping",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "K_hp",
+        "comment": "High pressure turbine angle coefficient",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "K_ip",
+        "comment": "Intermediate pressure turbine angle coefficient",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "K_lp",
+        "comment": "Low pressure turbine angle coefficient",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "K_ex",
+        "comment": "Exciter angle coefficient",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
@@ -3221,5 +3239,196 @@
       }
     ],
     "supertype": "Shaft"
+  },
+  {
+    "struct_name": "TGFixed",
+    "docstring": "Parameters of a fixed Turbine Governor that returns a fixed mechanical torque\n given by the product of P_ref*efficiency",
+    "fields": [
+      {
+        "name": "efficiency",
+        "comment": " Efficiency factor that multiplies P_ref",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "TurbineGov"
+  },
+  {
+    "struct_name": "TGTypeI",
+    "docstring": "Parameters of a Turbine Governor Type I.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Droop parameter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ts",
+        "comment": "Governor time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tc",
+        "comment": "Servo time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T3",
+        "comment": "Transient gain time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T4",
+        "comment": "Power fraction time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T5",
+        "comment": "Reheat time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "P_min",
+        "comment": "Min Power into the Governor",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "P_max",
+        "comment": "Max Power into the Governor",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:x_g1, :x_g2, :x_g3]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 3,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "TurbineGov"
+  },
+  {
+    "struct_name": "TGTypeII",
+    "docstring": "Parameters of a Turbine Governor Type II.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Droop parameter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T1",
+        "comment": "Transient gain time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T2",
+        "comment": "Power fraction time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "τ_min",
+        "comment": "Min Power into the Governor",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "τ_max",
+        "comment": "Max Power into the Governor",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:xg]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 1,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "TurbineGov"
   }
 ]

@@ -14,17 +14,17 @@ This file is auto-generated. Do not edit.
 Parameters of a PSS that returns a proportional droop voltage to add to the reference for the AVR
 
 # Arguments
-- `K_ω::Float64`: Fixed voltage stabilization signal
-- `K_p::Float64`: Fixed voltage stabilization signal
+- `K_ω::Float64`: Proportional gain for frequency
+- `K_p::Float64`: Proportional gain for active power
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PSSSimple <: PSS
-    "Fixed voltage stabilization signal"
+    "Proportional gain for frequency"
     K_ω::Float64
-    "Fixed voltage stabilization signal"
+    "Proportional gain for active power"
     K_p::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}

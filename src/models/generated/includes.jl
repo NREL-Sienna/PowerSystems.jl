@@ -42,6 +42,9 @@ include("PSSFixed.jl")
 include("PSSSimple.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
+include("TGFixed.jl")
+include("TGTypeI.jl")
+include("TGTypeII.jl")
 
 export get_Ae
 export get_Be
@@ -80,6 +83,8 @@ export get_L_f1d
 export get_L_ff
 export get_L_q
 export get_MVABase
+export get_P_max
+export get_P_min
 export get_R
 export get_R_1d
 export get_R_1q
@@ -88,8 +93,10 @@ export get_T1
 export get_T2
 export get_T3
 export get_T4
+export get_T5
 export get_T_AA
 export get_Ta
+export get_Tc
 export get_Td0_p
 export get_Td0_pp
 export get_Te
@@ -97,6 +104,7 @@ export get_Tf
 export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
+export get_Ts
 export get_V_pss
 export get_Vr_max
 export get_Vr_min
@@ -181,3 +189,5 @@ export get_x
 export get_α
 export get_γd
 export get_γq
+export get_τ_max
+export get_τ_min
