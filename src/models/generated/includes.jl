@@ -38,11 +38,15 @@ include("OneDOneQMachine.jl")
 include("SimpleAFMachine.jl")
 include("SimpleFullMachine.jl")
 include("SimpleMarconatoMachine.jl")
+include("PSSFixed.jl")
+include("PSSSimple.jl")
 
 export get_Ae
 export get_Be
 export get_Emf
 export get_K0
+export get_K_p
+export get_K_ω
 export get_Ka
 export get_Ke
 export get_Kf
@@ -73,6 +77,7 @@ export get_Tf
 export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
+export get_V_pss
 export get_Vr_max
 export get_Vr_min
 export get_Xd

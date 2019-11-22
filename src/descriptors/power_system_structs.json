@@ -2954,5 +2954,88 @@
       }
     ],
     "supertype": "Machine"
+  },
+  {
+    "struct_name": "PSSFixed",
+    "docstring": "Parameters of a PSS that returns a fixed voltage to add to the reference for the AVR",
+    "fields": [
+      {
+        "name": "V_pss",
+        "comment": "Fixed voltage stabilization signal",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "PSS"
+  },
+  {
+    "struct_name": "PSSSimple",
+    "docstring": "Parameters of a PSS that returns a proportional droop voltage to add to the reference for the AVR",
+    "fields": [
+      {
+        "name": "K_ω",
+        "comment": "Fixed voltage stabilization signal",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "K_p",
+        "comment": "Fixed voltage stabilization signal",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "PSS"
   }
 ]
