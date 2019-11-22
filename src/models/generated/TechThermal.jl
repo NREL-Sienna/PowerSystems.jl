@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct TechThermal <: TechnicalParams
+    mutable struct TechThermal <: DeviceParameter
         rating::Float64
         primemover::PrimeMovers
         fuel::ThermalFuels
@@ -25,7 +25,7 @@ Data Structure for the technical parameters of thermal generation technologies.
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct TechThermal <: TechnicalParams
+mutable struct TechThermal <: DeviceParameter
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "PrimeMover Technology according to EIA 923"

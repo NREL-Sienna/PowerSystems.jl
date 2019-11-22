@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct TechHydro <: TechnicalParams
+    mutable struct TechHydro <: DeviceParameter
         rating::Float64
         primemover::PrimeMovers
         activepowerlimits::Min_Max
@@ -23,7 +23,7 @@ Data Structures for the technical parameters of hydropower generation technologi
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down time limits
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct TechHydro <: TechnicalParams
+mutable struct TechHydro <: DeviceParameter
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "PrimeMover Technology according to EIA 923"

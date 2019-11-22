@@ -1,4 +1,4 @@
-abstract type Generator <: Injection end
+abstract type Generator <: StaticInjection end
 const Generators = Array{<: Generator, 1}
 
 abstract type HydroGen <: Generator end

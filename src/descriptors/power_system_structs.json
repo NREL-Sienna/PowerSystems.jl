@@ -130,7 +130,7 @@
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
-    "supertype": "TechnicalParams"
+    "supertype": "DeviceParameter"
   },
   {
     "struct_name": "TechRenewable",
@@ -168,7 +168,7 @@
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
-    "supertype": "TechnicalParams"
+    "supertype": "DeviceParameter"
   },
   {
     "struct_name": "TechThermal",
@@ -224,7 +224,7 @@
         "data_type": "InfrastructureSystemsInternal"
       }
     ],
-    "supertype": "TechnicalParams"
+    "supertype": "DeviceParameter"
   },
   {
     "struct_name": "Bus",
@@ -1721,5 +1721,49 @@
       }
     ],
     "supertype": "Service"
+  },
+  {
+    "struct_name": "AVRFixed",
+    "docstring": "Parameters of a AVR that returns a fixed voltage to the rotor winding",
+    "fields": [
+      {
+          "name": "Vs",
+          "comment": "",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+          "name": "n_states",
+          "comment": "",
+          "null_value": 0.0,
+          "default": 0.0,
+          "data_type": "Int64"
+      },
+      {
+          "name": "states",
+          "comment": "",
+          "default": "Vector{Symbol}()",
+          "data_type": "Array{Symbol,1}"
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal"
+      }
+    ],
+    "supertype": "AVR",
+    "dynamic": true
   }
+
+
+
+
+
 ]
