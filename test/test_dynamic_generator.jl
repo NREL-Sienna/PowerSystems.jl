@@ -13,7 +13,7 @@ Basic = BaseMachine(   0.0, #R
                        0.2995, #Xd_p
                        1.05, #eq_p
                        615.0)  #MVABase
-@test Basic isa PowerSystems.Component
+@test Basic isa PowerSystems.DynamicComponent
 
 oneDoneQ = OneDOneQMachine(0.0, #R
                         0.8979, #Xd
@@ -23,7 +23,7 @@ oneDoneQ = OneDOneQMachine(0.0, #R
                         7.4, #Td0_p
                         0.033, #Tq0_p
                         615.0)   #MVABase
-@test oneDoneQ isa PowerSystems.Component
+@test oneDoneQ isa PowerSystems.DynamicComponent
 
 AndersonFouad = AndersonFouadMachine(0.0, #R
                         0.8979, #Xd
@@ -37,7 +37,7 @@ AndersonFouad = AndersonFouadMachine(0.0, #R
                         0.03, #Td0_pp
                         0.033, #Tq0_pp
                         615.0) #MVABase
-@test AndersonFouad isa PowerSystems.Component
+@test AndersonFouad isa PowerSystems.DynamicComponent
 
 KundurMachine = SimpleFullMachine(0.003, #R on Example 3.1 and 4.1 of Kundur
                                   0.0006, #R_f
@@ -52,7 +52,7 @@ KundurMachine = SimpleFullMachine(0.003, #R on Example 3.1 and 4.1 of Kundur
                                   0.1713, #L_1d or L_D in Machowski
                                   0.7525, #L_1q or L_Q in Machowski
                                   555.0) #MVABase
-@test KundurMachine isa PowerSystems.Component
+@test KundurMachine isa PowerSystems.DynamicComponent
 
 
 KundurFullMachine = FullMachine(0.003, #R on Example 3.1 and 4.1 of Kundur
@@ -69,7 +69,7 @@ KundurFullMachine = FullMachine(0.003, #R on Example 3.1 and 4.1 of Kundur
                                 0.1713, #L_1d or L_D in Machowski
                                 0.7525, #L_1q or L_Q in Machowski
                                 555.0) #MVABase
-@test KundurFullMachine isa PowerSystems.Component
+@test KundurFullMachine isa PowerSystems.DynamicComponent
 
 Mach2_benchmark = OneDOneQMachine(0.0, #R
                         1.3125, #Xd
@@ -79,14 +79,14 @@ Mach2_benchmark = OneDOneQMachine(0.0, #R
                         5.89, #Td0_p
                         0.6, #Tq0_p
                         100.0)   #MVABase
-@test Mach2_benchmark isa PowerSystems.Component
+@test Mach2_benchmark isa PowerSystems.DynamicComponent
 end
 
 ################ Shaft Data #####################
 @testset "Dynamic Shaft" begin
 BaseShaft = SingleMass(5.148, #H
                        2.0) #D
-@test BaseShaft isa PowerSystems.Component
+@test BaseShaft isa PowerSystems.DynamicComponent
 
 FiveShaft = FiveMassShaft(5.148,  #H
                           0.3348, #H_hp
@@ -106,18 +106,18 @@ FiveShaft = FiveMassShaft(5.148,  #H
                           28.59,  #K_ip
                           44.68,  #K_lp
                           21.984) #K_ex
-@test FiveShaft isa PowerSystems.Component
+@test FiveShaft isa PowerSystems.DynamicComponent
 end
 
 ################# PSS Data #####################
 @testset "Dynamic PSS" begin
 no_pss = PSSFixed(0.0)
-@test no_pss isa PowerSystems.Component
+@test no_pss isa PowerSystems.DynamicComponent
 end
 ################ TG Data #####################
 @testset "Dynamic Turbine Governor Constructors" begin
 fixed_tg = TGFixed(1.0) #eff
-@test fixed_tg isa PowerSystems.Component
+@test fixed_tg isa PowerSystems.DynamicComponent
 
 typeI_tg = TGTypeI(0.02, #R
                    0.1, #Ts
@@ -127,22 +127,22 @@ typeI_tg = TGTypeI(0.02, #R
                    50.0, #T5
                    0.3, #P_min
                    1.2) #P_max
-@test typeI_tg isa PowerSystems.Component
+@test typeI_tg isa PowerSystems.DynamicComponent
 
 typeII_tg = TGTypeII(0.05, #R
                      0.3, #T1
                      0.1, #T2
                      1.0, #τ_max
                      0.1) #τ_min
-@test typeII_tg isa PowerSystems.Component
+@test typeII_tg isa PowerSystems.DynamicComponent
 end
 ################ AVR Data #####################
 @testset "Dynamic AVR Constructors" begin
 proportional_avr = AVRSimple(5000.0) #Kv
-@test proportional_avr isa PowerSystems.Component
+@test proportional_avr isa PowerSystems.DynamicComponent
 
 fixed_avr = AVRFixed(1.05) #Emf
-@test fixed_avr isa PowerSystems.Component
+@test fixed_avr isa PowerSystems.DynamicComponent
 
 typeI_avr = AVRTypeI(200.0, #Ka
                      1.0, #Ke
@@ -155,7 +155,7 @@ typeI_avr = AVRTypeI(200.0, #Ka
                      0.0, #Vr_min
                      0.0006, #Ae
                      0.9)
-@test typeI_avr isa PowerSystems.Component
+@test typeI_avr isa PowerSystems.DynamicComponent
 
 gen2_avr_benchmark = AVRTypeII(20.0, #K0 - Gain
                      0.2, #T1 - 1st pole
@@ -168,10 +168,36 @@ gen2_avr_benchmark = AVRTypeII(20.0, #K0 - Gain
                      -5.0, #Vrmin
                      0.0039, #Ae - 1st ceiling coefficient
                      1.555) #Be - 2nd ceiling coefficient
-@test gen2_avr_benchmark isa PowerSystems.Component
+@test gen2_avr_benchmark isa PowerSystems.DynamicComponent
 end
 ######################### Generators ########################
 @testset "Dynamic Generators" begin
+#Components for the test
+Basic = BaseMachine(   0.0, #R
+                       0.2995, #Xd_p
+                       1.05, #eq_p
+                       615.0)  #MVABase
+
+BaseShaft = SingleMass(5.148, #H
+                       2.0) #D
+
+fixed_avr = AVRFixed(1.05) #Emf
+
+proportional_avr = AVRSimple(5000.0) #Kv
+
+fixed_tg = TGFixed(1.0) #eff
+
+no_pss = PSSFixed(0.0)
+
+oneDoneQ = OneDOneQMachine(0.0, #R
+                        0.8979, #Xd
+                        0.646, #Xq
+                        0.2995, #Xd_p
+                        0.04, #Xq_p
+                        7.4, #Td0_p
+                        0.033, #Tq0_p
+                        615.0)   #MVABase
+
 Gen1AVR = DynamicGenerator(1, #Number
                  :TestGen,
                  nodes_OMIB[2],#bus
