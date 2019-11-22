@@ -35,12 +35,15 @@ mutable struct ThreePartCost <: OperationalCost
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function ThreePartCost(variable, fixed, startup, shutdn, _forecasts=InfrastructureSystems.Forecasts(), )
     ThreePartCost(variable, fixed, startup, shutdn, _forecasts, InfrastructureSystemsInternal())
 end
+
 function ThreePartCost(; variable, fixed, startup, shutdn, _forecasts=InfrastructureSystems.Forecasts(), )
     ThreePartCost(variable, fixed, startup, shutdn, _forecasts, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function ThreePartCost(::Nothing)

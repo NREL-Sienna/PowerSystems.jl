@@ -29,12 +29,15 @@ mutable struct TechRenewable <: TechnicalParams
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
     TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, InfrastructureSystemsInternal())
 end
+
 function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, )
     TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function TechRenewable(::Nothing)

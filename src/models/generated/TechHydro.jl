@@ -37,12 +37,15 @@ mutable struct TechHydro <: TechnicalParams
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
     TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal())
 end
+
 function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
     TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function TechHydro(::Nothing)

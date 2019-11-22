@@ -39,12 +39,15 @@ mutable struct TechThermal <: TechnicalParams
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
     TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal())
 end
+
 function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
     TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function TechThermal(::Nothing)

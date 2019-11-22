@@ -34,12 +34,15 @@ mutable struct FixedAdmittance <: ElectricLoad
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function FixedAdmittance(name, available, bus, Y, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     FixedAdmittance(name, available, bus, Y, ext, _forecasts, InfrastructureSystemsInternal())
 end
+
 function FixedAdmittance(; name, available, bus, Y, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     FixedAdmittance(name, available, bus, Y, ext, _forecasts, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function FixedAdmittance(::Nothing)

@@ -42,12 +42,15 @@ mutable struct RenewableDispatch <: RenewableGen
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, InfrastructureSystemsInternal())
 end
+
 function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function RenewableDispatch(::Nothing)

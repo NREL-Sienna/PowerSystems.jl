@@ -42,12 +42,15 @@ mutable struct HydroDispatch <: HydroGen
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, InfrastructureSystemsInternal())
 end
+
 function HydroDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function HydroDispatch(::Nothing)

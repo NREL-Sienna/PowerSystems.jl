@@ -33,12 +33,15 @@ mutable struct LoadZones <: Topology
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
     LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts, InfrastructureSystemsInternal())
 end
+
 function LoadZones(; number, name, buses, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
     LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function LoadZones(::Nothing)

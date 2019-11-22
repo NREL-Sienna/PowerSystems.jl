@@ -63,12 +63,15 @@ mutable struct GenericBattery <: Storage
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext, _forecasts, InfrastructureSystemsInternal())
 end
+
 function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext, _forecasts, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function GenericBattery(::Nothing)

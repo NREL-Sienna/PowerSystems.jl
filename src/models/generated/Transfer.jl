@@ -34,12 +34,15 @@ mutable struct Transfer <: Service
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
+
 function Transfer(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal())
 end
+
 function Transfer(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, )
 end
+
 # Constructor for demo purposes; non-functional.
 
 function Transfer(::Nothing)
