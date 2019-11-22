@@ -47,15 +47,15 @@ mutable struct PowerLoad <: StaticLoad
 end
 
 function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext, _forecasts, InfrastructureSystemsInternal())
+    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function PowerLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function PowerLoad(::Nothing)
     PowerLoad(;
         name="init",

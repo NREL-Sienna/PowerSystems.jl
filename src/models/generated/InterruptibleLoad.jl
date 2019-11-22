@@ -50,15 +50,15 @@ mutable struct InterruptibleLoad <: ControllableLoad
 end
 
 function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ext, _forecasts, InfrastructureSystemsInternal())
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function InterruptibleLoad(::Nothing)
     InterruptibleLoad(;
         name="init",

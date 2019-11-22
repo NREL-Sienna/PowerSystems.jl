@@ -26,7 +26,9 @@ include("GenericBattery.jl")
 include("StaticReserve.jl")
 include("VariableReserve.jl")
 include("Transfer.jl")
+include("AVRFixed.jl")
 
+export get_Vs
 export get_Y
 export get__forecasts
 export get_activepower
@@ -62,6 +64,7 @@ export get_loss
 export get_maxactivepower
 export get_maxreactivepower
 export get_model
+export get_n_states
 export get_name
 export get_number
 export get_op_cost
@@ -84,6 +87,7 @@ export get_rectifier_xrc
 export get_requirement
 export get_shutdn
 export get_startup
+export get_states
 export get_storagecapacity
 export get_tap
 export get_tech

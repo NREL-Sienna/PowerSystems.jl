@@ -50,15 +50,15 @@ mutable struct HydroStorage <: HydroGen
 end
 
 function HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext, _forecasts, InfrastructureSystemsInternal())
+    HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function HydroStorage(; name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function HydroStorage(::Nothing)
     HydroStorage(;
         name="init",

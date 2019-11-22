@@ -44,15 +44,15 @@ mutable struct RenewableDispatch <: RenewableGen
 end
 
 function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, InfrastructureSystemsInternal())
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function RenewableDispatch(::Nothing)
     RenewableDispatch(;
         name="init",

@@ -17,7 +17,7 @@ export PowerSystemType
 export Component
 export Device
 export Branch
-export Injection
+export StaticInjection
 export ACBranch
 export Line
 export MonitoredLine
@@ -57,6 +57,9 @@ export InterruptibleLoad
 
 export Storage
 export GenericBattery
+
+export DynamicGenerator
+export DynamicInverter
 
 export Service
 export Reserve
@@ -155,9 +158,10 @@ abstract type PowerSystemType <: IS.InfrastructureSystemsType end
 abstract type Component <: PowerSystemType end
 # supertype for "devices" (bus, line, etc.)
 abstract type Device <: Component end
-abstract type Injection <: Device end
-# supertype for generation technologies (thermal, renewable, etc.)
-abstract type TechnicalParams <: PowerSystemType end
+abstract type StaticInjection <: Device end
+abstract type DynamicInjection <: Device end
+abstract type DeviceParameter <: PowerSystemType end
+abstract type DynamicComponent <: DeviceParameter end
 
 include("common.jl")
 
@@ -175,6 +179,9 @@ include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
+include("models/dynamic_generator_components.jl")
+#include("models/dynamic_generator.jl")
+#include("models/dynamic_inverter.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")

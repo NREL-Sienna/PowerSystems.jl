@@ -53,15 +53,15 @@ mutable struct VSCDCLine <: DCBranch
 end
 
 function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext, _forecasts, InfrastructureSystemsInternal())
+    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function VSCDCLine(::Nothing)
     VSCDCLine(;
         name="init",

@@ -35,15 +35,15 @@ mutable struct StaticReserve <: Reserve
 end
 
 function StaticReserve(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), )
-    StaticReserve(name, contributingdevices, timeframe, requirement, ext, InfrastructureSystemsInternal())
+    StaticReserve(name, contributingdevices, timeframe, requirement, ext, InfrastructureSystemsInternal(), )
 end
 
 function StaticReserve(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), )
     StaticReserve(name, contributingdevices, timeframe, requirement, ext, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function StaticReserve(::Nothing)
     StaticReserve(;
         name="init",

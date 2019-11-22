@@ -56,15 +56,15 @@ mutable struct TapTransformer <: ACBranch
 end
 
 function TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext, _forecasts, InfrastructureSystemsInternal())
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function TapTransformer(::Nothing)
     TapTransformer(;
         name="init",
