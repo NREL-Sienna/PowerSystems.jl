@@ -52,6 +52,7 @@ include("LCFilter.jl")
 include("PLL.jl")
 include("VirtualInertia.jl")
 include("ReactivePowerDroop.jl")
+include("CombinedVIwithVZ.jl")
 
 export get_Ae
 export get_Be
@@ -156,14 +157,22 @@ export get_inv_q_fluxlink
 export get_inverter_firing_angle
 export get_inverter_taplimits
 export get_inverter_xrc
+export get_kad
 export get_kd
+export get_kffi
+export get_kffv
 export get_ki_pll
+export get_kic
+export get_kiv
 export get_kp_pll
+export get_kpc
+export get_kpv
 export get_kq
 export get_kω
 export get_lf
 export get_lg
 export get_loss
+export get_lv
 export get_maxactivepower
 export get_maxreactivepower
 export get_model
@@ -190,6 +199,7 @@ export get_rectifier_xrc
 export get_requirement
 export get_rf
 export get_rg
+export get_rv
 export get_s_rated
 export get_shutdn
 export get_startup
@@ -211,5 +221,6 @@ export get_γq
 export get_τ_max
 export get_τ_min
 export get_ω_lp
+export get_ωad
 export get_ωb
 export get_ωf

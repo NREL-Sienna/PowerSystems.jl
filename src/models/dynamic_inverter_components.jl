@@ -3,6 +3,7 @@ abstract type Converter <: DynamicInverterComponent end
 abstract type DCSource <: DynamicInverterComponent end
 abstract type Filter <: DynamicInverterComponent end
 abstract type FrequencyEstimator <: DynamicInverterComponent end
+abstract type VSControl <: DynamicInverterComponent end
 
 abstract type OuterControl <: DynamicInverterComponent end
 abstract type ActivePowerControl end

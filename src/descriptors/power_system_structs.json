@@ -3787,5 +3787,106 @@
       }
     ],
     "supertype": "ReactivePowerControl"
+  },
+  {
+    "struct_name": "CombinedVIwithVZ",
+    "docstring": "Parameters of an inner loop controller using virtual impedance, voltage controller and current controller.",
+    "fields": [
+      {
+        "name": "kpv",
+        "comment": "voltage controller proportional gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kiv",
+        "comment": "voltage controller integral gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kffv",
+        "comment": "Binary variable to enable feed-forward gain of voltage.",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "rv",
+        "comment": "virtual resistance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "lv",
+        "comment": "virtual inductance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kpc",
+        "comment": "current controller proportional gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kic",
+        "comment": "current controller integral gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kffi",
+        "comment": "Binary variable to enable feed-forward gain of current",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ωad",
+        "comment": "active damping filter cutoff frequency (rad/sec)",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kad",
+        "comment": "active damping gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:ξ_d, :ξ_q, :γ_d, :γ_q, :ϕ_d, :ϕ_q]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 6,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "VSControl"
   }
 ]
