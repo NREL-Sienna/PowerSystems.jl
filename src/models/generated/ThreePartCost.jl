@@ -44,7 +44,6 @@ function ThreePartCost(; variable, fixed, startup, shutdn, _forecasts=Infrastruc
     ThreePartCost(variable, fixed, startup, shutdn, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function ThreePartCost(::Nothing)
     ThreePartCost(;

@@ -48,7 +48,6 @@ function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowe
     TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function TechThermal(::Nothing)
     TechThermal(;

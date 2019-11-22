@@ -27,8 +27,28 @@ include("StaticReserve.jl")
 include("VariableReserve.jl")
 include("Transfer.jl")
 include("AVRFixed.jl")
+include("AVRSimple.jl")
+include("AVRTypeI.jl")
+include("AVRTypeII.jl")
 
-export get_Vs
+export get_Ae
+export get_Be
+export get_Emf
+export get_K0
+export get_Ka
+export get_Ke
+export get_Kf
+export get_Kv
+export get_T1
+export get_T2
+export get_T3
+export get_T4
+export get_Ta
+export get_Te
+export get_Tf
+export get_Tr
+export get_Vr_max
+export get_Vr_min
 export get_Y
 export get__forecasts
 export get_activepower

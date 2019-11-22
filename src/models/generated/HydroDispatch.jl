@@ -51,7 +51,6 @@ function HydroDispatch(; name, available, bus, activepower, reactivepower, tech,
     HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function HydroDispatch(::Nothing)
     HydroDispatch(;

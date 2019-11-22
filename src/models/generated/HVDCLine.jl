@@ -57,7 +57,6 @@ function HVDCLine(; name, available, activepower_flow, arc, activepowerlimits_fr
     HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function HVDCLine(::Nothing)
     HVDCLine(;

@@ -57,7 +57,6 @@ function InterruptibleLoad(; name, available, bus, model, activepower, reactivep
     InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function InterruptibleLoad(::Nothing)
     InterruptibleLoad(;

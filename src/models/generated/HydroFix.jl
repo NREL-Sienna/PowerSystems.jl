@@ -48,7 +48,6 @@ function HydroFix(; name, available, bus, activepower, reactivepower, tech, ext=
     HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function HydroFix(::Nothing)
     HydroFix(;

@@ -46,7 +46,6 @@ function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits,
     TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function TechHydro(::Nothing)
     TechHydro(;
