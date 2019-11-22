@@ -35,8 +35,8 @@ Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 - `Ae::Float64`: 1st ceiling coefficient
 - `Be::Float64`: 2nd ceiling coefficient
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: Fixed AVR has no states
-- `n_states::Int64`: Fixed AVR has no states
+- `states::Vector{Symbol}`
+- `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AVRTypeI <: AVR
@@ -63,9 +63,7 @@ mutable struct AVRTypeI <: AVR
     "2nd ceiling coefficient"
     Be::Float64
     ext::Dict{String, Any}
-    "Fixed AVR has no states"
     states::Vector{Symbol}
-    "Fixed AVR has no states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
