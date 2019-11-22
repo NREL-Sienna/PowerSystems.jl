@@ -6,8 +6,8 @@ abstract type FrequencyEstimator <: DynamicInverterComponent end
 abstract type VSControl <: DynamicInverterComponent end
 
 abstract type OuterControl <: DynamicInverterComponent end
-abstract type ActivePowerControl end
-abstract type ReactivePowerControl end
+abstract type ActivePowerControl <: DeviceParameter end
+abstract type ReactivePowerControl <: DeviceParameter end
 
 """
 Parameters of a Outer-Loop controller using a virtual inertia with VSM for active power controller
@@ -38,8 +38,8 @@ function VirtualInertiaQdroop(active_power::A,
     VirtualInertiaQdroop(active_power,
                          reactive_power,
                          ext,
-                         active_power.n_states + reactive_power.n_states,
                          vcat(active_power.states, reactive_power.states),
+                         active_power.n_states + reactive_power.n_states,
                          InfrastructureSystemsInternal())
 end
 

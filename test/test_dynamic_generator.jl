@@ -1,5 +1,3 @@
-# Electrical Parameters of Machine 1, Milano's Book Page 526
-################## Machine Data #####################
 nodes_OMIB= [Bus(1 , #number
                  "Bus 1", #Name
                  "REF" , #BusType (REF, PV, PQ)
