@@ -3633,7 +3633,7 @@
     "supertype": "Filter"
   },
   {
-    "struct_name": "LITS.PLL",
+    "struct_name": "PLL",
     "docstring": "Parameters of a Phase-Locked Loop (PLL) for VSM",
     "fields": [
       {
@@ -3683,5 +3683,109 @@
       }
     ],
     "supertype": "FrequencyEstimator"
+  },
+  {
+    "struct_name": "VirtualInertia",
+    "docstring": "Parameters of a Virtual Inertia with SRF using VSM for active power controller",
+    "fields": [
+      {
+        "name": "Ta",
+        "comment": "VSM inertia constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kd",
+        "comment": "VSM damping constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kω",
+        "comment": "frequency droop gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ωb",
+        "comment": "rated angular frequency",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:δω_vsm, :δθ_vsm]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 2,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "ActivePowerControl"
+  },
+  {
+    "struct_name": "ReactivePowerDroop",
+    "docstring": "Parameters of a Reactive Power droop controller",
+    "fields": [
+      {
+        "name": "kq",
+        "comment": "frequency droop gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ωf",
+        "comment": "frequency droop gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:qm]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 1,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "ReactivePowerControl"
   }
 ]

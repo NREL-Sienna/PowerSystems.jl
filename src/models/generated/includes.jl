@@ -49,7 +49,9 @@ include("AvgCnvFixedDC.jl")
 include("FixedDCSource.jl")
 include("LCLFilter.jl")
 include("LCFilter.jl")
-include("LITS.PLL.jl")
+include("PLL.jl")
+include("VirtualInertia.jl")
+include("ReactivePowerDroop.jl")
 
 export get_Ae
 export get_Be
@@ -154,8 +156,11 @@ export get_inv_q_fluxlink
 export get_inverter_firing_angle
 export get_inverter_taplimits
 export get_inverter_xrc
+export get_kd
 export get_ki_pll
 export get_kp_pll
+export get_kq
+export get_kω
 export get_lf
 export get_lg
 export get_loss
@@ -206,3 +211,5 @@ export get_γq
 export get_τ_max
 export get_τ_min
 export get_ω_lp
+export get_ωb
+export get_ωf
