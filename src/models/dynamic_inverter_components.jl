@@ -7,7 +7,7 @@ abstract type VSControl <: DynamicInverterComponent end
 
 abstract type OuterControl <: DynamicInverterComponent end
 abstract type ActivePowerControl end
-abstract type ReativePowerControl end
+abstract type ReactivePowerControl end
 
 """
 Parameters of a Outer-Loop controller using a virtual inertia with VSM for active power controller
@@ -21,7 +21,7 @@ VirtualInertiaQDroop(A, R)
 *  `R`::Float64 : Reactive power controller using reactive power droop
 """
 mutable struct VirtualInertiaQdroop{A <: ActivePowerControl,
-                                    R <: ReativePowerControl} <: OuterControl
+                                    R <: ReactivePowerControl} <: OuterControl
     active_power::A
     reactive_power::R
     ext::Dict{String, Any}
@@ -34,7 +34,7 @@ end
 function VirtualInertiaQdroop(active_power::A,
                               reactive_power::R,
                               ext=Dict{String, Any}()) where {A <: ActivePowerControl,
-                                                              R <: ReativePowerControl}
+                                                              R <: ReactivePowerControl}
     VirtualInertiaQdroop(active_power,
                          reactive_power,
                          ext,

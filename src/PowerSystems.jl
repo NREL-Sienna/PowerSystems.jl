@@ -241,7 +241,7 @@ include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
 include("models/dynamic_generator_components.jl")
-include("models/inverter_generator_components.jl")
+include("models/dynamic_inverter_components.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
