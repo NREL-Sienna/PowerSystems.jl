@@ -104,12 +104,14 @@ All code should be tested.
 argument per line. In some cases it may make sense to pair some variables on
 the same line.
 >
-    function foo(var1::String,
-                 var2::String,
-                 var3::String,
-                 var4::String,
-                 var5::String,
-                 var6::String)
+    function foo(
+        var1::String,
+        var2::String,
+        var3::String,
+        var4::String,
+        var5::String,
+        var6::String,
+    )
 
 * Do not surround equal signs with spaces when passing keyword args to a
 function or defining default values in function declarations.
@@ -138,3 +140,13 @@ Bad:
 Good:
 >
     abstract type Foo end
+
+## Exports
+
+`export` should be used to make it easy for the user to use a symbol from the REPL,
+an interactive interface or a program.
+
+You may _need_ to use `export` when extending functionality of other packages
+that have also exported the same symbol.
+
+All symbols that have `export` **must** have proper docstrings.
