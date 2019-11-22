@@ -3430,5 +3430,206 @@
       }
     ],
     "supertype": "TurbineGov"
+  },
+  {
+    "struct_name": "AvgCnvFixedDC",
+    "docstring": "Parameters of an average converter model",
+    "fields": [
+      {
+        "name": "v_rated",
+        "comment": "rated voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "s_rated",
+        "comment": "rated VA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Converter"
+  },
+  {
+    "struct_name": "FixedDCSource",
+    "docstring": "Parameters of a Fixed DC Source that returns a fixed DC voltage",
+    "fields": [
+      {
+        "name": "voltage",
+        "comment": "rated VA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "DCSource"
+  },
+  {
+    "struct_name": "LCLFilter",
+    "docstring": "Parameters of a LCL filter outside the converter",
+    "fields": [
+      {
+        "name": "lf",
+        "comment": "Series inductance in p.u. of converter filter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "rf",
+        "comment": "Series resistance in p.u. of converter filter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "cf",
+        "comment": "Shunt capacitance in p.u. of converter filter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "lg",
+        "comment": "Series inductance in p.u. of converter filter to the grid",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "rg",
+        "comment": "Series resistance in p.u. of converter filter to the grid",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:id_c, :iq_c, :vd_cap, :vq_cap, :id_o, :iq_o]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 6,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Filter"
+  },
+  {
+    "struct_name": "LCFilter",
+    "docstring": "Parameters of a LCL filter outside the converter",
+    "fields": [
+      {
+        "name": "lf",
+        "comment": "filter inductance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "rf",
+        "comment": "filter resistance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "cf",
+        "comment": "filter capacitance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:id_o, :iq_o]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Filter"
   }
 ]

@@ -45,6 +45,10 @@ include("FiveMassShaft.jl")
 include("TGFixed.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
+include("AvgCnvFixedDC.jl")
+include("FixedDCSource.jl")
+include("LCLFilter.jl")
+include("LCFilter.jl")
 
 export get_Ae
 export get_Be
@@ -131,6 +135,7 @@ export get_bus
 export get_buses
 export get_bustype
 export get_capacity
+export get_cf
 export get_contributingdevices
 export get_efficiency
 export get_energy
@@ -148,6 +153,8 @@ export get_inv_q_fluxlink
 export get_inverter_firing_angle
 export get_inverter_taplimits
 export get_inverter_xrc
+export get_lf
+export get_lg
 export get_loss
 export get_maxactivepower
 export get_maxreactivepower
@@ -173,6 +180,9 @@ export get_rectifier_firing_angle
 export get_rectifier_taplimits
 export get_rectifier_xrc
 export get_requirement
+export get_rf
+export get_rg
+export get_s_rated
 export get_shutdn
 export get_startup
 export get_states
@@ -182,6 +192,7 @@ export get_tech
 export get_timeframe
 export get_timelimits
 export get_to
+export get_v_rated
 export get_variable
 export get_voltage
 export get_voltagelimits
