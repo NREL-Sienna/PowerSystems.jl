@@ -5,7 +5,7 @@ mutable struct DynamicInverter{C<:Converter,
                                VC<:VSControl,
                                DC<:DCSource,
                                P<:FrequencyEstimator,
-                               F<:Filter} <: DynInjection
+                               F<:Filter} <: DynamicInjection
     number::Int64
     name::Symbol
     bus::Bus
