@@ -3,7 +3,7 @@
 ## Goals
 
 * Define a straightforward set of rules that lead to consistent, readable
-code.
+  code.
 * Developers focus on producing high quality code, not how to format it.
 
 ## Base
@@ -22,52 +22,52 @@ code.
 ## Code Organization
 
 * Import standard modules, then 3rd-party modules, then yours. Include a blank
-line between each group.
+  line between each group.
 
 <!-- ### Modules:  TODO -->
 
 ## Comments
 
 * Use comments to describe non-obvious or non-trivial aspects of code.
-Describe why something was done but not how.  The "how" should be apparent from
-the code itself.
+  Describe why something was done but not how. The "how" should be apparent from
+  the code itself.
 * Use complete sentences and proper grammar.
 * Include a space in between the "#" and the first word of the comment.
 * Use these tags in comments to describe known work:
-  * TODO:  tasks that need to be done
-  * FIXME:  code that needs refactoring
-  * BUG:  known bug that exists. Should include a bug ID and tracking system.
-  * PERF:  known performance limitation that needs improvement
+  * `TODO`:  tasks that need to be done
+  * `FIXME`:  code that needs refactoring
+  * `BUG`:  known bug that exists. Should include a bug ID and tracking system.
+  * `PERF`:  known performance limitation that needs improvement
 
 ## Constructors
 
 * Per guidance from Julia documentation, use inner constructors to enforce
-restrictions on parameters or to allow construction of self-referential
-objects.
-Use outer constructors to provide default values or to perform customization.
+  restrictions on parameters or to allow construction of self-referential
+  objects.
+  Use outer constructors to provide default values or to perform customization.
 * Document the reason why the outer constructor is different.
 * Note that the compiler will provide a default constructor with all struct
-members if no inner constructor is defined.
+  members if no inner constructor is defined.
 * When creating a constructor use "function Foo()" instead of "Foo() = ..."
-One exception is the case where one file has all single-line functions.
+  One exception is the case where one file has all single-line functions.
 
 ## Exceptions
 
 * Use exceptions for unexpected errors and not for normal error handling.
   * Detection of an unsupported data format from a user should likely throw
-an exception and terminate the application.
+  an exception and terminate the application.
   * Do not use try/catch to handle retrieving a potentially-missing key from a
-dictionary.
+  dictionary.
 * Use @assert statements to guard against programming errors. Do not use them
-after detecting bad user input. Note that they may be compiled out in release
-builds.
+  after detecting bad user input. Note that they may be compiled out in release
+  builds.
 
 ## Globals
 
 * Global constants should use UPPER_CASE and be declared const.
 * If global variables are needed, prefix them with "g_".
 * Don't use magic numbers. Instead, define const globals or Enums (Julia
-@enum).
+  @enum).
 
 ## One-line Conditionals
 
@@ -101,9 +101,9 @@ All code should be tested.
 ## Whitespace
 
 * If many function arguments cause the line length to be exceeded, put one
-argument per line. In some cases it may make sense to pair some variables on
-the same line.
->
+  argument per line. In some cases it may make sense to pair some variables on
+  the same line.
+  >
     function foo(
         var1::String,
         var2::String,
@@ -114,9 +114,9 @@ the same line.
     )
 
 * Do not surround equal signs with spaces when passing keyword args to a
-function or defining default values in function declarations.
+  function or defining default values in function declarations.
 * Do not right-align equal signs when assigning groups of variables. It causes
-unnecessary changes whenever someone adds a new variable with a longer name.
+  unnecessary changes whenever someone adds a new variable with a longer name.
 
 Bad:
 >
@@ -129,7 +129,7 @@ Good:
     foo = 2
 
 * Define abstract types on one line. Given the lack of IDE support for Julia,
-this makes it easier to find type definitions.
+  this makes it easier to find type definitions.
 
 Bad:
 >
