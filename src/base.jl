@@ -30,8 +30,6 @@ System(; kwargs...)
   Throws InvalidRange if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
 - `configpath::String`: specify path to validation config file
-
-
 """
 struct System <: PowerSystemType
     data::IS.SystemData
