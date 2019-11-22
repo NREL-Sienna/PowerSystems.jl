@@ -15,10 +15,10 @@ This file is auto-generated. Do not edit.
         L_ff::Float64
         L_1d::Float64
         L_1q::Float64
-        inv_d_fluxlink::Array{Float64,2}
-        inv_q_fluxlink::Array{Float64,2}
         MVABase::Float64
         ext::Dict{String, Any}
+        inv_d_fluxlink::Array{Float64,2}
+        inv_q_fluxlink::Array{Float64,2}
         states::Vector{Symbol}
         n_states::Int64
         internal::InfrastructureSystemsInternal
@@ -42,10 +42,10 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `L_ff::Float64`: Field rotor winding inductance, in per unit
 - `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit
 - `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit
-- `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
-- `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
 - `MVABase::Float64`: Nominal Capacity in MVA
 - `ext::Dict{String, Any}`
+- `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
+- `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
 - `states::Vector{Symbol}`
 - `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -75,13 +75,13 @@ mutable struct FullMachine <: Machine
     L_1d::Float64
     "Inductance of the q-axis rotor damping circuit, in per unit"
     L_1q::Float64
+    "Nominal Capacity in MVA"
+    MVABase::Float64
+    ext::Dict{String, Any}
     "Equations 3.127, 3.130, 3.131 From Kundur"
     inv_d_fluxlink::Array{Float64,2}
     "Equations 3.128, 3.132 From Kundur"
     inv_q_fluxlink::Array{Float64,2}
-    "Nominal Capacity in MVA"
-    MVABase::Float64
-    ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
     "power system internal reference, do not modify"
@@ -140,14 +140,14 @@ get_L_ff(value::FullMachine) = value.L_ff
 get_L_1d(value::FullMachine) = value.L_1d
 """Get FullMachine L_1q."""
 get_L_1q(value::FullMachine) = value.L_1q
-"""Get FullMachine inv_d_fluxlink."""
-get_inv_d_fluxlink(value::FullMachine) = value.inv_d_fluxlink
-"""Get FullMachine inv_q_fluxlink."""
-get_inv_q_fluxlink(value::FullMachine) = value.inv_q_fluxlink
 """Get FullMachine MVABase."""
 get_MVABase(value::FullMachine) = value.MVABase
 """Get FullMachine ext."""
 get_ext(value::FullMachine) = value.ext
+"""Get FullMachine inv_d_fluxlink."""
+get_inv_d_fluxlink(value::FullMachine) = value.inv_d_fluxlink
+"""Get FullMachine inv_q_fluxlink."""
+get_inv_q_fluxlink(value::FullMachine) = value.inv_q_fluxlink
 """Get FullMachine states."""
 get_states(value::FullMachine) = value.states
 """Get FullMachine n_states."""

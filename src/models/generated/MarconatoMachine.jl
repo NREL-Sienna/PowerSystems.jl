@@ -15,10 +15,10 @@ This file is auto-generated. Do not edit.
         Td0_pp::Float64
         Tq0_pp::Float64
         T_AA::Float64
-        γd::Float64
-        γq::Float64
         MVABase::Float64
         ext::Dict{String, Any}
+        γd::Float64
+        γq::Float64
         states::Vector{Symbol}
         n_states::Int64
         internal::InfrastructureSystemsInternal
@@ -39,10 +39,10 @@ Parameters of 6-states synchronous machine: Marconato model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage
 - `T_AA::Float64`: Time constant of d-axis additional leakage
-- `γd::Float64`
-- `γq::Float64`
 - `MVABase::Float64`: Nominal Capacity in MVA
 - `ext::Dict{String, Any}`
+- `γd::Float64`
+- `γq::Float64`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -72,11 +72,11 @@ mutable struct MarconatoMachine <: Machine
     Tq0_pp::Float64
     "Time constant of d-axis additional leakage"
     T_AA::Float64
-    γd::Float64
-    γq::Float64
     "Nominal Capacity in MVA"
     MVABase::Float64
     ext::Dict{String, Any}
+    γd::Float64
+    γq::Float64
     states::Vector{Symbol}
     n_states::Int64
     "power system internal reference, do not modify"
@@ -135,14 +135,14 @@ get_Td0_pp(value::MarconatoMachine) = value.Td0_pp
 get_Tq0_pp(value::MarconatoMachine) = value.Tq0_pp
 """Get MarconatoMachine T_AA."""
 get_T_AA(value::MarconatoMachine) = value.T_AA
-"""Get MarconatoMachine γd."""
-get_γd(value::MarconatoMachine) = value.γd
-"""Get MarconatoMachine γq."""
-get_γq(value::MarconatoMachine) = value.γq
 """Get MarconatoMachine MVABase."""
 get_MVABase(value::MarconatoMachine) = value.MVABase
 """Get MarconatoMachine ext."""
 get_ext(value::MarconatoMachine) = value.ext
+"""Get MarconatoMachine γd."""
+get_γd(value::MarconatoMachine) = value.γd
+"""Get MarconatoMachine γq."""
+get_γq(value::MarconatoMachine) = value.γq
 """Get MarconatoMachine states."""
 get_states(value::MarconatoMachine) = value.states
 """Get MarconatoMachine n_states."""

@@ -2306,18 +2306,6 @@
         "valid_range": {"min": 0.0, "max": null}
       },
       {
-        "name": "inv_d_fluxlink",
-        "data_type": "Array{Float64,2}",
-        "internal_default": "inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]])",
-        "comment": "Equations 3.127, 3.130, 3.131 From Kundur"
-      },
-      {
-        "name": "inv_q_fluxlink",
-        "data_type": "Array{Float64,2}",
-        "internal_default": "inv([[-L_q L_aq]; [-L_aq L_1q]])",
-        "comment": "Equations 3.128, 3.132 From Kundur"
-      },
-      {
         "name": "MVABase",
         "comment": "Nominal Capacity in MVA",
         "null_value": 0.0,
@@ -2329,6 +2317,18 @@
         "data_type": "Dict{String, Any}",
         "null_value": "Dict{String, Any}()",
         "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "inv_d_fluxlink",
+        "data_type": "Array{Float64,2}",
+        "internal_default": "inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]])",
+        "comment": "Equations 3.127, 3.130, 3.131 From Kundur"
+      },
+      {
+        "name": "inv_q_fluxlink",
+        "data_type": "Array{Float64,2}",
+        "internal_default": "inv([[-L_q L_aq]; [-L_aq L_1q]])",
+        "comment": "Equations 3.128, 3.132 From Kundur"
       },
       {
         "name": "states",
@@ -2440,18 +2440,6 @@
         "valid_range": {"min": 0.0, "max": null}
       },
       {
-        "name": "γd",
-        "data_type": "Float64",
-        "internal_default": "((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p)",
-        "comment": ""
-      },
-      {
-        "name": "γq",
-        "data_type": "Float64",
-        "internal_default": "((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p)",
-        "comment": ""
-      },
-      {
         "name": "MVABase",
         "comment": "Nominal Capacity in MVA",
         "null_value": 0.0,
@@ -2463,6 +2451,18 @@
         "data_type": "Dict{String, Any}",
         "null_value": "Dict{String, Any}()",
         "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "γd",
+        "data_type": "Float64",
+        "internal_default": "((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p)",
+        "comment": ""
+      },
+      {
+        "name": "γq",
+        "data_type": "Float64",
+        "internal_default": "((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p)",
+        "comment": ""
       },
       {
         "name": "states",
@@ -2776,18 +2776,6 @@
         "valid_range": {"min": 0.0, "max": null}
       },
       {
-        "name": "inv_d_fluxlink",
-        "data_type": "Array{Float64,2}",
-        "internal_default": "inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]])",
-        "comment": "Equations 3.127, 3.130, 3.131 From Kundur"
-      },
-      {
-        "name": "inv_q_fluxlink",
-        "data_type": "Array{Float64,2}",
-        "internal_default": "inv([[-L_q L_aq]; [-L_aq L_1q]])",
-        "comment": "Equations 3.128, 3.132 From Kundur"
-      },
-      {
         "name": "MVABase",
         "comment": "Nominal Capacity in MVA",
         "null_value": 0.0,
@@ -2799,6 +2787,18 @@
         "data_type": "Dict{String, Any}",
         "null_value": "Dict{String, Any}()",
         "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "inv_d_fluxlink",
+        "data_type": "Array{Float64,2}",
+        "internal_default": "inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]])",
+        "comment": "Equations 3.127, 3.130, 3.131 From Kundur"
+      },
+      {
+        "name": "inv_q_fluxlink",
+        "data_type": "Array{Float64,2}",
+        "internal_default": "inv([[-L_q L_aq]; [-L_aq L_1q]])",
+        "comment": "Equations 3.128, 3.132 From Kundur"
       },
       {
         "name": "states",
@@ -2910,18 +2910,6 @@
         "valid_range": {"min": 0.0, "max": null}
       },
       {
-        "name": "γd",
-        "data_type": "Float64",
-        "internal_default": "((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p)",
-        "comment": ""
-      },
-      {
-        "name": "γq",
-        "data_type": "Float64",
-        "internal_default": "((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p)",
-        "comment": ""
-      },
-      {
         "name": "MVABase",
         "comment": "Nominal Capacity in MVA",
         "null_value": 0.0,
@@ -2933,6 +2921,18 @@
         "data_type": "Dict{String, Any}",
         "null_value": "Dict{String, Any}()",
         "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "γd",
+        "data_type": "Float64",
+        "internal_default": "((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p)",
+        "comment": ""
+      },
+      {
+        "name": "γq",
+        "data_type": "Float64",
+        "internal_default": "((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p)",
+        "comment": ""
       },
       {
         "name": "states",

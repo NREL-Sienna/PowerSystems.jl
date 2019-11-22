@@ -15,10 +15,10 @@ This file is auto-generated. Do not edit.
         Td0_pp::Float64
         Tq0_pp::Float64
         T_AA::Float64
-        γd::Float64
-        γq::Float64
         MVABase::Float64
         ext::Dict{String, Any}
+        γd::Float64
+        γq::Float64
         states::Vector{Symbol}
         n_states::Int64
         internal::InfrastructureSystemsInternal
@@ -42,10 +42,10 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage
 - `T_AA::Float64`: Time constant of d-axis additional leakage
-- `γd::Float64`
-- `γq::Float64`
 - `MVABase::Float64`: Nominal Capacity in MVA
 - `ext::Dict{String, Any}`
+- `γd::Float64`
+- `γq::Float64`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -75,11 +75,11 @@ mutable struct SimpleMarconatoMachine <: Machine
     Tq0_pp::Float64
     "Time constant of d-axis additional leakage"
     T_AA::Float64
-    γd::Float64
-    γq::Float64
     "Nominal Capacity in MVA"
     MVABase::Float64
     ext::Dict{String, Any}
+    γd::Float64
+    γq::Float64
     states::Vector{Symbol}
     n_states::Int64
     "power system internal reference, do not modify"
@@ -138,14 +138,14 @@ get_Td0_pp(value::SimpleMarconatoMachine) = value.Td0_pp
 get_Tq0_pp(value::SimpleMarconatoMachine) = value.Tq0_pp
 """Get SimpleMarconatoMachine T_AA."""
 get_T_AA(value::SimpleMarconatoMachine) = value.T_AA
-"""Get SimpleMarconatoMachine γd."""
-get_γd(value::SimpleMarconatoMachine) = value.γd
-"""Get SimpleMarconatoMachine γq."""
-get_γq(value::SimpleMarconatoMachine) = value.γq
 """Get SimpleMarconatoMachine MVABase."""
 get_MVABase(value::SimpleMarconatoMachine) = value.MVABase
 """Get SimpleMarconatoMachine ext."""
 get_ext(value::SimpleMarconatoMachine) = value.ext
+"""Get SimpleMarconatoMachine γd."""
+get_γd(value::SimpleMarconatoMachine) = value.γd
+"""Get SimpleMarconatoMachine γq."""
+get_γq(value::SimpleMarconatoMachine) = value.γq
 """Get SimpleMarconatoMachine states."""
 get_states(value::SimpleMarconatoMachine) = value.states
 """Get SimpleMarconatoMachine n_states."""
