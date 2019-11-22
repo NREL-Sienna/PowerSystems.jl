@@ -1755,8 +1755,8 @@
     "docstring": "Parameters of a AVR that returns a fixed voltage to the rotor winding",
     "fields": [
       {
-        "name": "Vs",
-        "comment": "",
+        "name": "Emf",
+        "comment": "Fixed voltage to the rotor winding",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
@@ -1771,13 +1771,13 @@
         "name": "states",
         "comment": "Fixed AVR has no states",
         "internal_default": "Vector{Symbol}()",
-        "data_type": "Array{Symbol,1}"
+        "data_type": "Vector{Symbol}"
       },
       {
         "name": "n_states",
         "comment": "Fixed AVR has no states",
-        "null_value": 0.0,
-        "internal_default": 0.0,
+        "null_value": 0,
+        "internal_default": 0,
         "data_type": "Int64"
       },
       {
@@ -1788,6 +1788,319 @@
       }
     ],
     "supertype": "AVR"
+  },
+  {
+    "struct_name": "AVRSimple",
+    "docstring": "Parameters of a simple proportional AVR in the derivative of EMF\ni.e. an integrator controller on EMF",
+    "fields": [
+      {
+        "name": "Kv",
+        "comment": "Proportional Gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:Vf]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "Fixed AVR has 1 states",
+        "internal_default": 1,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "AVR"
+  },
+  {
+    "struct_name": "AVRTypeI",
+    "docstring": "Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1",
+    "fields": [
+      {
+        "name": "Ka",
+        "comment": "Amplifier Gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ke",
+        "comment": "Field circuit integral deviation",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Kf",
+        "comment": "Stabilizer Gain in s * pu/pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ta",
+        "comment": "Amplifier Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Te",
+        "comment": "Field Circuit Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tf",
+        "comment": "Stabilizer Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tr",
+        "comment": "Voltage Measurement Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Vr_max",
+        "comment": "Maximum regulator voltage in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Vr_min",
+        "comment": "Minimum regulator voltage in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ae",
+        "comment": "1st ceiling coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Be",
+        "comment": "2nd ceiling coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "AVR"
+  },
+  {
+    "struct_name": "AVRTypeII",
+    "docstring": "Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model",
+    "fields": [
+      {
+        "name": "K0",
+        "comment": "Regulator Gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T1",
+        "comment": "First Pole in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T2",
+        "comment": "First zero in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T3",
+        "comment": "First Pole in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T4",
+        "comment": "First zero in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Te",
+        "comment": "Field Circuit Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tr",
+        "comment": "Voltage Measurement Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Vr_max",
+        "comment": "Maximum regulator voltage in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Vr_min",
+        "comment": "Minimum regulator voltage in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ae",
+        "comment": "1st ceiling coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Be",
+        "comment": "2nd ceiling coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "AVR"
+  },
+  {
+    "struct_name": "BaseMachine",
+    "docstring": "Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_p",
+        "comment": "Reactance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "eq_p",
+        "comment": "Fixed EMF behind the impedance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "BaseMachine",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "BaseMachine has no states",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Machine"
   }
 
 
