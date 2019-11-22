@@ -2,6 +2,10 @@
 
 ## v0.6.2
 
+- Downgrade compatible version of CSV to 0.5.13 to avoid tab complete hang.
+
+## v0.6.2
+
 - Bug Fix in docstrings autogeneration code
 - Contigous forecasts function added
 
