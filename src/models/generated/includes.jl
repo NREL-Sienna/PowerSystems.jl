@@ -40,11 +40,31 @@ include("SimpleFullMachine.jl")
 include("SimpleMarconatoMachine.jl")
 include("PSSFixed.jl")
 include("PSSSimple.jl")
+include("SingleMass.jl")
+include("FiveMassShaft.jl")
 
 export get_Ae
 export get_Be
+export get_D
+export get_D_12
+export get_D_23
+export get_D_34
+export get_D_45
+export get_D_ex
+export get_D_hp
+export get_D_ip
+export get_D_lp
 export get_Emf
+export get_H
+export get_H_ex
+export get_H_hp
+export get_H_ip
+export get_H_lp
 export get_K0
+export get_K_ex
+export get_K_hp
+export get_K_ip
+export get_K_lp
 export get_K_p
 export get_K_ω
 export get_Ka
