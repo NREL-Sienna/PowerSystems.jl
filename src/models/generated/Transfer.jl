@@ -36,15 +36,15 @@ mutable struct Transfer <: Service
 end
 
 function Transfer(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal())
+    Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function Transfer(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function Transfer(::Nothing)
     Transfer(;
         name="init",

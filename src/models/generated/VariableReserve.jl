@@ -39,15 +39,15 @@ mutable struct VariableReserve <: Reserve
 end
 
 function VariableReserve(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    VariableReserve(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal())
+    VariableReserve(name, contributingdevices, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function VariableReserve(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     VariableReserve(name, contributingdevices, timeframe, requirement, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function VariableReserve(::Nothing)
     VariableReserve(;
         name="init",

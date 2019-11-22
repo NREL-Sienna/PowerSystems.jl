@@ -31,15 +31,15 @@ mutable struct TechRenewable <: DeviceParameter
 end
 
 function TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
-    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, InfrastructureSystemsInternal())
+    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, InfrastructureSystemsInternal(), )
 end
 
 function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, )
     TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function TechRenewable(::Nothing)
     TechRenewable(;
         rating=0.0,

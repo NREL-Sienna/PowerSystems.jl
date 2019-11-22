@@ -174,17 +174,18 @@ include("models/branches.jl")
 include("models/operational_cost.jl")
 #include("models/network.jl")
 
-# Include all auto-generated structs.
-include("models/generated/includes.jl")
-include("models/supplemental_constructors.jl")
-
 # Static types
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
-include("models/dynamic_generator.jl")
+include("models/dynamic_generator_components.jl")
+#include("models/dynamic_generator.jl")
 #include("models/dynamic_inverter.jl")
+
+# Include all auto-generated structs.
+include("models/generated/includes.jl")
+include("models/supplemental_constructors.jl")
 
 # Definitions of PowerSystem
 include("base.jl")

@@ -61,15 +61,15 @@ mutable struct MonitoredLine <: ACBranch
 end
 
 function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, ext, _forecasts, InfrastructureSystemsInternal())
+    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function MonitoredLine(::Nothing)
     MonitoredLine(;
         name="init",

@@ -37,15 +37,15 @@ mutable struct ThreePartCost <: OperationalCost
 end
 
 function ThreePartCost(variable, fixed, startup, shutdn, _forecasts=InfrastructureSystems.Forecasts(), )
-    ThreePartCost(variable, fixed, startup, shutdn, _forecasts, InfrastructureSystemsInternal())
+    ThreePartCost(variable, fixed, startup, shutdn, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function ThreePartCost(; variable, fixed, startup, shutdn, _forecasts=InfrastructureSystems.Forecasts(), )
     ThreePartCost(variable, fixed, startup, shutdn, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function ThreePartCost(::Nothing)
     ThreePartCost(;
         variable=VariableCost((0.0, 0.0)),

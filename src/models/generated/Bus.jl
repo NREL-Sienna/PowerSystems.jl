@@ -63,15 +63,15 @@ mutable struct Bus <: Topology
 end
 
 function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext=Dict{String, Any}(), )
-    Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, InfrastructureSystemsInternal())
+    Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, InfrastructureSystemsInternal(), )
 end
 
 function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext=Dict{String, Any}(), )
     Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function Bus(::Nothing)
     Bus(;
         number=0,

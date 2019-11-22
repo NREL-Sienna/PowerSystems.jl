@@ -25,12 +25,13 @@ mutable struct Arc <: Topology
 end
 
 function Arc(from, to, )
-    Arc(from, to, InfrastructureSystemsInternal())
+    Arc(from, to, InfrastructureSystemsInternal(), )
 end
 
 function Arc(; from, to, )
     Arc(from, to, )
 end
+
 
 
 """Get Arc from."""

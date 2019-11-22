@@ -41,15 +41,15 @@ mutable struct RenewableFix <: RenewableGen
 end
 
 function RenewableFix(name, available, bus, activepower, reactivepower, tech, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, InfrastructureSystemsInternal())
+    RenewableFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function RenewableFix(; name, available, bus, activepower, reactivepower, tech, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     RenewableFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function RenewableFix(::Nothing)
     RenewableFix(;
         name="init",

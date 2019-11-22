@@ -27,7 +27,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "OperationalCost"
@@ -74,7 +75,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "OperationalCost"
@@ -127,7 +129,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "DeviceParameter"
@@ -165,7 +168,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "DeviceParameter"
@@ -221,7 +225,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "DeviceParameter"
@@ -289,7 +294,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "Topology"
@@ -313,7 +319,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "Topology"
@@ -397,7 +404,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "ACBranch"
@@ -488,7 +496,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "ACBranch"
@@ -581,7 +590,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "ACBranch"
@@ -667,7 +677,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "ACBranch"
@@ -747,7 +758,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "ACBranch"
@@ -816,7 +828,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "DCBranch"
@@ -890,7 +903,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "DCBranch"
@@ -958,7 +972,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "ControllableLoad"
@@ -1002,7 +1017,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "ElectricLoad"
@@ -1066,7 +1082,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "StaticLoad"
@@ -1126,7 +1143,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "HydroGen"
@@ -1181,7 +1199,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "HydroGen"
@@ -1255,7 +1274,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "HydroGen"
@@ -1313,7 +1333,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "RenewableGen"
@@ -1367,7 +1388,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "RenewableGen"
@@ -1430,7 +1452,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "ThermalGen"
@@ -1472,7 +1495,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "Topology"
@@ -1576,7 +1600,8 @@
             {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "Storage"
@@ -1621,7 +1646,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "Reserve"
@@ -1671,7 +1697,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "Reserve"
@@ -1717,7 +1744,8 @@
       {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
     "supertype": "Service"
@@ -1727,24 +1755,11 @@
     "docstring": "Parameters of a AVR that returns a fixed voltage to the rotor winding",
     "fields": [
       {
-          "name": "Vs",
-          "comment": "",
-          "null_value": 0.0,
-          "data_type": "Float64",
-          "valid_range": {"min": 0.0, "max": null}
-      },
-      {
-          "name": "n_states",
-          "comment": "",
-          "null_value": 0.0,
-          "default": 0.0,
-          "data_type": "Int64"
-      },
-      {
-          "name": "states",
-          "comment": "",
-          "default": "Vector{Symbol}()",
-          "data_type": "Array{Symbol,1}"
+        "name": "Vs",
+        "comment": "",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
       },
       {
         "name": "ext",
@@ -1753,13 +1768,26 @@
         "default": "Dict{String, Any}()"
       },
       {
+        "name": "states",
+        "comment": "Fixed AVR has no states",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Array{Symbol,1}"
+      },
+      {
+        "name": "n_states",
+        "comment": "Fixed AVR has no states",
+        "null_value": 0.0,
+        "internal_default": 0.0,
+        "data_type": "Int64"
+      },
+      {
         "name": "internal",
         "comment": "power system internal reference, do not modify",
-        "data_type": "InfrastructureSystemsInternal"
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
       }
     ],
-    "supertype": "AVR",
-    "dynamic": true
+    "supertype": "AVR"
   }
 
 

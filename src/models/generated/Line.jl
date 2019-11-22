@@ -56,15 +56,15 @@ mutable struct Line <: ACBranch
 end
 
 function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext, _forecasts, InfrastructureSystemsInternal())
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function Line(::Nothing)
     Line(;
         name="init",

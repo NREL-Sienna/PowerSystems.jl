@@ -39,15 +39,15 @@ mutable struct TechHydro <: DeviceParameter
 end
 
 function TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
-    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal())
+    TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal(), )
 end
 
 function TechHydro(; rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
     TechHydro(rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function TechHydro(::Nothing)
     TechHydro(;
         rating=0.0,

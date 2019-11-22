@@ -58,15 +58,15 @@ mutable struct PhaseShiftingTransformer <: ACBranch
 end
 
 function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext, _forecasts, InfrastructureSystemsInternal())
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
     PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext, _forecasts, )
 end
 
-# Constructor for demo purposes; non-functional.
 
+# Constructor for demo purposes; non-functional.
 function PhaseShiftingTransformer(::Nothing)
     PhaseShiftingTransformer(;
         name="init",
