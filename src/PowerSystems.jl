@@ -59,7 +59,68 @@ export Storage
 export GenericBattery
 
 export DynamicGenerator
+#AVR Exports
+export AVR
+export AVRFixed
+export AVRSimple
+export AVRTypeI
+export AVRTypeII
+
+#Machine Exports
+export Machine
+export BaseMachine
+export OneDOneQMachine
+export MarconatoMachine
+export SimpleMarconatoMachine
+export AndersonFouadMachine
+export SimpleAFMachine
+export FullMachine
+export SimpleFullMachine
+
+#PSS Exports
+export PSS
+export PSSFixed
+export PSSFixed
+
+#Shaft Exports
+export SingleMass
+export FiveMassShaft
+
+#TG Exports
+export TurbineGov
+export TGFixed
+export TGTypeI
+export TGTypeII
+
+#=
 export DynamicInverter
+# Converter Exports
+export Converter
+export AvgCnvFixedDC
+
+# DC Source Exports
+export DCSource
+export FixedDCSource
+
+# Filter Exports
+export Filter
+export LCLFilter
+
+# FrequencyEstimator Exports
+export FrequencyEstimator
+export PLL
+
+# Outer Control Exports
+export OuterControl
+export VirtualInertiaQdroop
+export VirtualInertia
+export ReactivePowerDroop
+
+# VSControl Export
+export VSControl
+export CombinedVIwithVZ
+=#
+
 
 export Service
 export Reserve
