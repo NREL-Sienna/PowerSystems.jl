@@ -37,6 +37,11 @@ end
     @test tRenewableDispatch isa PowerSystems.Component
 end
 
+@testset "Source Constructors" begin
+    tSource = GenericBattery(nothing)
+    @test tSource isa PowerSystems.Component
+end
+
 @testset "Storage Constructors" begin
     tStorage = GenericBattery(nothing)
     @test tStorage isa PowerSystems.Component
