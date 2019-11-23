@@ -72,7 +72,6 @@ function GenericBattery(; name, available, bus, primemover, energy, capacity, ra
     GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function GenericBattery(::Nothing)
     GenericBattery(;

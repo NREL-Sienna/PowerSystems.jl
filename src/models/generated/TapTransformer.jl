@@ -63,7 +63,6 @@ function TapTransformer(; name, available, activepower_flow, reactivepower_flow,
     TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function TapTransformer(::Nothing)
     TapTransformer(;

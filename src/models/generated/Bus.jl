@@ -70,7 +70,6 @@ function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage
     Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function Bus(::Nothing)
     Bus(;

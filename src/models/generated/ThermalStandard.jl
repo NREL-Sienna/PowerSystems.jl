@@ -51,7 +51,6 @@ function ThermalStandard(; name, available, bus, activepower, reactivepower, tec
     ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function ThermalStandard(::Nothing)
     ThermalStandard(;

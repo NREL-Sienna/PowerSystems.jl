@@ -43,7 +43,6 @@ function Transfer(; name, contributingdevices, timeframe, requirement, ext=Dict{
     Transfer(name, contributingdevices, timeframe, requirement, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function Transfer(::Nothing)
     Transfer(;

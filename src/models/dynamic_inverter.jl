@@ -5,7 +5,7 @@ mutable struct DynamicInverter{C<:Converter,
                                VC<:VSControl,
                                DC<:DCSource,
                                P<:FrequencyEstimator,
-                               F<:Filter} <: DynInjection
+                               F<:Filter} <: DynamicInjection
     number::Int64
     name::Symbol
     bus::Bus
@@ -26,7 +26,7 @@ mutable struct DynamicInverter{C<:Converter,
     local_state_ix::Dict{InverterComponent,Vector{Int64}}
     input_port_mapping::Dict{InverterComponent,Vector{Int64}}
 
-        function DynInverter(number::Int64,
+        function DynamicInverter(number::Int64,
                             name::Symbol,
                             bus::Bus,
                             ω_ref::Float64,

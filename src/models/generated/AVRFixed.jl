@@ -3,9 +3,9 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct AVRFixed <: AVR
-        Vs::Float64
+        Emf::Float64
         ext::Dict{String, Any}
-        states::Array{Symbol,1}
+        states::Vector{Symbol}
         n_states::Int64
         internal::InfrastructureSystemsInternal
     end
@@ -13,35 +13,42 @@ This file is auto-generated. Do not edit.
 Parameters of a AVR that returns a fixed voltage to the rotor winding
 
 # Arguments
-- `Vs::Float64`
+- `Emf::Float64`: Fixed voltage to the rotor winding
 - `ext::Dict{String, Any}`
-- `states::Array{Symbol,1}`: Fixed AVR has no states
+- `states::Vector{Symbol}`: Fixed AVR has no states
 - `n_states::Int64`: Fixed AVR has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AVRFixed <: AVR
-    Vs::Float64
+    "Fixed voltage to the rotor winding"
+    Emf::Float64
     ext::Dict{String, Any}
     "Fixed AVR has no states"
-    states::Array{Symbol,1}
+    states::Vector{Symbol}
     "Fixed AVR has no states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function AVRFixed(Vs, ext=Dict{String, Any}(), )
-    AVRFixed(Vs, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
+function AVRFixed(Emf, ext=Dict{String, Any}(), )
+    AVRFixed(Emf, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
 end
 
-function AVRFixed(; Vs, ext=Dict{String, Any}(), )
-    AVRFixed(Vs, ext, )
+function AVRFixed(; Emf, ext=Dict{String, Any}(), )
+    AVRFixed(Emf, ext, )
 end
 
+# Constructor for demo purposes; non-functional.
+function AVRFixed(::Nothing)
+    AVRFixed(;
+        Emf=0,
+        ext=Dict{String, Any}(),
+    )
+end
 
-
-"""Get AVRFixed Vs."""
-get_Vs(value::AVRFixed) = value.Vs
+"""Get AVRFixed Emf."""
+get_Emf(value::AVRFixed) = value.Emf
 """Get AVRFixed ext."""
 get_ext(value::AVRFixed) = value.ext
 """Get AVRFixed states."""

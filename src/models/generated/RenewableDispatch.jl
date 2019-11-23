@@ -51,7 +51,6 @@ function RenewableDispatch(; name, available, bus, activepower, reactivepower, t
     RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function RenewableDispatch(::Nothing)
     RenewableDispatch(;

@@ -2,7 +2,7 @@ mutable struct DynamicGenerator{M<:Machine,
                                S<:Shaft,
                                A<:AVR,
                                TG<:TurbineGov,
-                               P<:PSS} <: DynInjection
+                               P<:PSS} <: DynamicInjection
     number::Int64
     name::Symbol
     bus::Bus
@@ -16,7 +16,7 @@ mutable struct DynamicGenerator{M<:Machine,
     pss::P
     n_states::Int64
     states::Vector{Symbol}
-        function DynGenerator(number::Int64,
+        function DynamicGenerator(number::Int64,
                               name::Symbol,
                               bus::Bus,
                               ω_ref::Float64,

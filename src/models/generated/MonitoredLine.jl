@@ -68,7 +68,6 @@ function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, 
     MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function MonitoredLine(::Nothing)
     MonitoredLine(;

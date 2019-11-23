@@ -65,7 +65,6 @@ function PhaseShiftingTransformer(; name, available, activepower_flow, reactivep
     PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function PhaseShiftingTransformer(::Nothing)
     PhaseShiftingTransformer(;

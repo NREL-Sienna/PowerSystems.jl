@@ -46,7 +46,6 @@ function VariableReserve(; name, contributingdevices, timeframe, requirement, ex
     VariableReserve(name, contributingdevices, timeframe, requirement, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function VariableReserve(::Nothing)
     VariableReserve(;

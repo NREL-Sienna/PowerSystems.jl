@@ -63,7 +63,6 @@ function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x
     Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function Line(::Nothing)
     Line(;

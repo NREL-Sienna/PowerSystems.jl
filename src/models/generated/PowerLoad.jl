@@ -54,7 +54,6 @@ function PowerLoad(; name, available, bus, model, activepower, reactivepower, ma
     PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function PowerLoad(::Nothing)
     PowerLoad(;

@@ -43,7 +43,6 @@ function FixedAdmittance(; name, available, bus, Y, ext=Dict{String, Any}(), _fo
     FixedAdmittance(name, available, bus, Y, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function FixedAdmittance(::Nothing)
     FixedAdmittance(;

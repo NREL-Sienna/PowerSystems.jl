@@ -57,7 +57,6 @@ function HydroStorage(; name, available, bus, activepower, reactivepower, tech, 
     HydroStorage(name, available, bus, activepower, reactivepower, tech, op_cost, storagecapacity, initial_storage, ext, _forecasts, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function HydroStorage(::Nothing)
     HydroStorage(;

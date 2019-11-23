@@ -42,7 +42,6 @@ function StaticReserve(; name, contributingdevices, timeframe, requirement, ext=
     StaticReserve(name, contributingdevices, timeframe, requirement, ext, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function StaticReserve(::Nothing)
     StaticReserve(;

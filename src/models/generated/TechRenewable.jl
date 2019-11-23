@@ -38,7 +38,6 @@ function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, )
     TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
 end
 
-
 # Constructor for demo purposes; non-functional.
 function TechRenewable(::Nothing)
     TechRenewable(;

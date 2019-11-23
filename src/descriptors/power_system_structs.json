@@ -1755,8 +1755,8 @@
     "docstring": "Parameters of a AVR that returns a fixed voltage to the rotor winding",
     "fields": [
       {
-        "name": "Vs",
-        "comment": "",
+        "name": "Emf",
+        "comment": "Fixed voltage to the rotor winding",
         "null_value": 0.0,
         "data_type": "Float64",
         "valid_range": {"min": 0.0, "max": null}
@@ -1771,13 +1771,13 @@
         "name": "states",
         "comment": "Fixed AVR has no states",
         "internal_default": "Vector{Symbol}()",
-        "data_type": "Array{Symbol,1}"
+        "data_type": "Vector{Symbol}"
       },
       {
         "name": "n_states",
         "comment": "Fixed AVR has no states",
-        "null_value": 0.0,
-        "internal_default": 0.0,
+        "null_value": 0,
+        "internal_default": 0,
         "data_type": "Int64"
       },
       {
@@ -1788,10 +1788,2163 @@
       }
     ],
     "supertype": "AVR"
+  },
+  {
+    "struct_name": "AVRSimple",
+    "docstring": "Parameters of a simple proportional AVR in the derivative of EMF\ni.e. an integrator controller on EMF",
+    "fields": [
+      {
+        "name": "Kv",
+        "comment": "Proportional Gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:Vf]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "Fixed AVR has 1 states",
+        "internal_default": 1,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "AVR"
+  },
+  {
+    "struct_name": "AVRTypeI",
+    "docstring": "Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1",
+    "fields": [
+      {
+        "name": "Ka",
+        "comment": "Amplifier Gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ke",
+        "comment": "Field circuit integral deviation",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Kf",
+        "comment": "Stabilizer Gain in s * pu/pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ta",
+        "comment": "Amplifier Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Te",
+        "comment": "Field Circuit Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tf",
+        "comment": "Stabilizer Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tr",
+        "comment": "Voltage Measurement Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Vr_max",
+        "comment": "Maximum regulator voltage in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Vr_min",
+        "comment": "Minimum regulator voltage in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ae",
+        "comment": "1st ceiling coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Be",
+        "comment": "2nd ceiling coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "AVR"
+  },
+  {
+    "struct_name": "AVRTypeII",
+    "docstring": "Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model",
+    "fields": [
+      {
+        "name": "K0",
+        "comment": "Regulator Gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T1",
+        "comment": "First Pole in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T2",
+        "comment": "First zero in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T3",
+        "comment": "First Pole in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T4",
+        "comment": "First zero in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Te",
+        "comment": "Field Circuit Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tr",
+        "comment": "Voltage Measurement Time Constant in s",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Vr_max",
+        "comment": "Maximum regulator voltage in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Vr_min",
+        "comment": "Minimum regulator voltage in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ae",
+        "comment": "1st ceiling coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Be",
+        "comment": "2nd ceiling coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "AVR"
+  },
+  {
+    "struct_name": "BaseMachine",
+    "docstring": "Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_p",
+        "comment": "Reactance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "eq_p",
+        "comment": "Fixed EMF behind the impedance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Machine"
+  },
+  {
+    "struct_name": "AndersonFouadMachine",
+    "docstring": "Parameters of 6-states synchronous machine: Anderson-Fouad model",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in d-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in q-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_p",
+        "comment": "Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_p",
+        "comment": "Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_pp",
+        "comment": "Sub-Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_pp",
+        "comment": "Sub-Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_p",
+        "comment": "Time constant of transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_p",
+        "comment": "Time constant of transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_pp",
+        "comment": "Time constant of sub-transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_pp",
+        "comment": "Time constant of sub-transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 6,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Machine"
+  },
+  {
+    "struct_name": "FullMachine",
+    "docstring": "Parameter of a full order flux stator-rotor model without zero sequence flux in the stator.\n The derivative of stator fluxes (ψd and ψq) is NOT neglected. Only one q-axis damping circuit is considered. All parameters are in machine per unit.\n Refer to Chapter 3 of Power System Stability and Control by P. Kundur or Chapter 11 of Power System Dynamics: Stability and Control, by J. Machowski, J. Bialek and J. Bumby, for more details.\n Note that the models are somewhat different (but equivalent) due to the different Park Transformation used in both books.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "R_f",
+        "comment": "Field rotor winding resistance in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "R_1d",
+        "comment": " Damping rotor winding resistance on d-axis in per unit. This value is denoted as RD in Machowski.",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "R_1q",
+        "comment": "Damping rotor winding resistance on q-axis in per unit. This value is denoted as RQ in Machowski.",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_d",
+        "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_q",
+        "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_ad",
+        "comment": "Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_aq",
+        "comment": "Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_f1d",
+        "comment": "Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_ff",
+        "comment": "Field rotor winding inductance, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_1d",
+        "comment": "Inductance of the d-axis rotor damping circuit, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_1q",
+        "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "inv_d_fluxlink",
+        "data_type": "Array{Float64,2}",
+        "internal_default": "inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]])",
+        "comment": "Equations 3.127, 3.130, 3.131 From Kundur"
+      },
+      {
+        "name": "inv_q_fluxlink",
+        "data_type": "Array{Float64,2}",
+        "internal_default": "inv([[-L_q L_aq]; [-L_aq L_1q]])",
+        "comment": "Equations 3.128, 3.132 From Kundur"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:ψd, :ψq, :ψf, :ψ1d, :ψ1q]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 5,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+  "supertype": "Machine"
+  },
+  {
+    "struct_name": "MarconatoMachine",
+    "docstring": "Parameters of 6-states synchronous machine: Marconato model",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in d-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in q-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_p",
+        "comment": "Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_p",
+        "comment": "Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_pp",
+        "comment": "Sub-Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_pp",
+        "comment": "Sub-Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_p",
+        "comment": "Time constant of transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_p",
+        "comment": "Time constant of transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_pp",
+        "comment": "Time constant of sub-transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_pp",
+        "comment": "Time constant of sub-transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T_AA",
+        "comment": "Time constant of d-axis additional leakage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "γd",
+        "data_type": "Float64",
+        "internal_default": "((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p)",
+        "comment": ""
+      },
+      {
+        "name": "γq",
+        "data_type": "Float64",
+        "internal_default": "((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p)",
+        "comment": ""
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 6,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Machine"
+  },
+  {
+    "struct_name": "OneDOneQMachine",
+    "docstring": "Parameters of 4-states synchronous machine: Simplified Marconato model\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when\n transmission network dynamics is neglected.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in d-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in q-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_p",
+        "comment": "Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_p",
+        "comment": "Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_p",
+        "comment": "Time constant of transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_p",
+        "comment": "Time constant of transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:eq_p, :ed_p]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 2,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Machine"
+  },
+  {
+    "struct_name": "SimpleAFMachine",
+    "docstring": "Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network\n dynamics is neglected.\n If transmission dynamics is considered use the full order Anderson Fouad model.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in d-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in q-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_p",
+        "comment": "Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_p",
+        "comment": "Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_pp",
+        "comment": "Sub-Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_pp",
+        "comment": "Sub-Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_p",
+        "comment": "Time constant of transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_p",
+        "comment": "Time constant of transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_pp",
+        "comment": "Time constant of sub-transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_pp",
+        "comment": "Time constant of sub-transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:eq_p, :ed_p, :eq_pp, :ed_pp]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Machine"
+  },
+  {
+    "struct_name": "SimpleFullMachine",
+    "docstring": "Parameter of a full order flux stator-rotor model without zero sequence flux in the stator.\n The derivative of stator fluxes (ψd and ψq) is neglected. This is standard when\n transmission network dynamics is neglected. Only one q-axis damping circuit\n is considered. All per unit are in machine per unit.\n Refer to Chapter 3 of Power System Stability and Control by P. Kundur or Chapter 11 of Power System Dynamics: Stability and Control, by J. Machowski, J. Bialek and J. Bumby, for more details.\n Note that the models are somewhat different (but equivalent) due to the different Park Transformation used in both books.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "R_f",
+        "comment": "Field rotor winding resistance in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "R_1d",
+        "comment": " Damping rotor winding resistance on d-axis in per unit. This value is denoted as RD in Machowski.",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "R_1q",
+        "comment": "Damping rotor winding resistance on q-axis in per unit. This value is denoted as RQ in Machowski.",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_d",
+        "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_q",
+        "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_ad",
+        "comment": "Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_aq",
+        "comment": "Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_f1d",
+        "comment": "Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_ff",
+        "comment": "Field rotor winding inductance, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_1d",
+        "comment": "Inductance of the d-axis rotor damping circuit, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "L_1q",
+        "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "inv_d_fluxlink",
+        "data_type": "Array{Float64,2}",
+        "internal_default": "inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]])",
+        "comment": "Equations 3.127, 3.130, 3.131 From Kundur"
+      },
+      {
+        "name": "inv_q_fluxlink",
+        "data_type": "Array{Float64,2}",
+        "internal_default": "inv([[-L_q L_aq]; [-L_aq L_1q]])",
+        "comment": "Equations 3.128, 3.132 From Kundur"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:ψf, :ψ1d, :ψ1q]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 3,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Machine"
+  },
+  {
+    "struct_name": "SimpleMarconatoMachine",
+    "docstring": "Parameters of 4-states synchronous machine: Simplified Marconato model\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network\n dynamics is neglected.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Resistance after EMF in machine per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in d-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq",
+        "data_type": "Float64",
+        "null_value": 0,
+        "comment": "Reactance after EMF in q-axis per unit",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_p",
+        "comment": "Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_p",
+        "comment": "Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xd_pp",
+        "comment": "Sub-Transient reactance after EMF in d-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Xq_pp",
+        "comment": "Sub-Transient reactance after EMF in q-axis per unit",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_p",
+        "comment": "Time constant of transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_p",
+        "comment": "Time constant of transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Td0_pp",
+        "comment": "Time constant of sub-transient d-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tq0_pp",
+        "comment": "Time constant of sub-transient q-axis voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T_AA",
+        "comment": "Time constant of d-axis additional leakage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "MVABase",
+        "comment": "Nominal Capacity in MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "γd",
+        "data_type": "Float64",
+        "internal_default": "((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p)",
+        "comment": ""
+      },
+      {
+        "name": "γq",
+        "data_type": "Float64",
+        "internal_default": "((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p)",
+        "comment": ""
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:eq_p, :ed_p, :eq_pp, :ed_pp]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Machine"
+  },
+  {
+    "struct_name": "PSSFixed",
+    "docstring": "Parameters of a PSS that returns a fixed voltage to add to the reference for the AVR",
+    "fields": [
+      {
+        "name": "V_pss",
+        "comment": "Fixed voltage stabilization signal",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "PSS"
+  },
+  {
+    "struct_name": "PSSSimple",
+    "docstring": "Parameters of a PSS that returns a proportional droop voltage to add to the reference for the AVR",
+    "fields": [
+      {
+        "name": "K_ω",
+        "comment": "Proportional gain for frequency",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "K_p",
+        "comment": "Proportional gain for active power",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "PSS"
+  },
+  {
+    "struct_name": "SingleMass",
+    "docstring": "Parameters of single mass shaft model. Typically represents the rotor mass.",
+    "fields": [
+      {
+        "name": "H",
+        "comment": "Rotor inertia constant in MWs/MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D",
+        "comment": "Rotor natural damping in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:δ, :ω]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 2,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+      "supertype": "Shaft"
+  },
+  {
+    "struct_name": "FiveMassShaft",
+    "docstring": "Parameters of 5 mass-spring shaft model.\n It contains a High-Pressure (HP) steam turbine, Intermediate-Pressure (IP)\n steam turbine, Low-Pressure (LP) steam turbine, the Rotor and an Exciter (EX) mover.",
+    "fields": [
+      {
+        "name": "H",
+        "comment": "Rotor inertia constant in MWs/MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "H_hp",
+        "comment": "High pressure turbine inertia constant in MWs/MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "H_ip",
+        "comment": "Intermediate pressure turbine inertia constant in MWs/MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "H_lp",
+        "comment": "Low pressure turbine inertia constant in MWs/MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "H_ex",
+        "comment": " Exciter inertia constant in MWs/MVA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D",
+        "comment": "Rotor natural damping in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D_hp",
+        "comment": "High pressure turbine natural damping in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D_ip",
+        "comment": "Intermediate pressure turbine natural damping in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D_lp",
+        "comment": "Low pressure turbine natural damping in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D_ex",
+        "comment": "Exciter natural damping in pu",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D_12",
+        "comment": "High-Intermediate pressure turbine damping",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D_23",
+        "comment": "Intermediate-Low pressure turbine damping",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D_34",
+        "comment": "Low pressure turbine-Rotor damping",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "D_45",
+        "comment": "Rotor-Exciter damping",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "K_hp",
+        "comment": "High pressure turbine angle coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "K_ip",
+        "comment": "Intermediate pressure turbine angle coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "K_lp",
+        "comment": "Low pressure turbine angle coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "K_ex",
+        "comment": "Exciter angle coefficient",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:δ, :ω, :δ_hp, :ω_hp, :δ_ip, :ω_ip, :δ_lp, :ω_lp, :δ_ex, :ω_ex]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 10,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Shaft"
+  },
+  {
+    "struct_name": "TGFixed",
+    "docstring": "Parameters of a fixed Turbine Governor that returns a fixed mechanical torque\n given by the product of P_ref*efficiency",
+    "fields": [
+      {
+        "name": "efficiency",
+        "comment": " Efficiency factor that multiplies P_ref",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "TurbineGov"
+  },
+  {
+    "struct_name": "TGTypeI",
+    "docstring": "Parameters of a Turbine Governor Type I.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Droop parameter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Ts",
+        "comment": "Governor time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "Tc",
+        "comment": "Servo time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T3",
+        "comment": "Transient gain time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T4",
+        "comment": "Power fraction time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T5",
+        "comment": "Reheat time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "P_min",
+        "comment": "Min Power into the Governor",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "P_max",
+        "comment": "Max Power into the Governor",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:x_g1, :x_g2, :x_g3]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 3,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "TurbineGov"
+  },
+  {
+    "struct_name": "TGTypeII",
+    "docstring": "Parameters of a Turbine Governor Type II.",
+    "fields": [
+      {
+        "name": "R",
+        "comment": "Droop parameter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T1",
+        "comment": "Transient gain time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "T2",
+        "comment": "Power fraction time constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "τ_min",
+        "comment": "Min Power into the Governor",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "τ_max",
+        "comment": "Max Power into the Governor",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:xg]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 1,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "TurbineGov"
+  },
+  {
+    "struct_name": "AvgCnvFixedDC",
+    "docstring": "Parameters of an average converter model",
+    "fields": [
+      {
+        "name": "v_rated",
+        "comment": "rated voltage",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "s_rated",
+        "comment": "rated VA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Converter"
+  },
+  {
+    "struct_name": "FixedDCSource",
+    "docstring": "Parameters of a Fixed DC Source that returns a fixed DC voltage",
+    "fields": [
+      {
+        "name": "voltage",
+        "comment": "rated VA",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "Vector{Symbol}()",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 0,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "DCSource"
+  },
+  {
+    "struct_name": "LCLFilter",
+    "docstring": "Parameters of a LCL filter outside the converter",
+    "fields": [
+      {
+        "name": "lf",
+        "comment": "Series inductance in p.u. of converter filter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "rf",
+        "comment": "Series resistance in p.u. of converter filter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "cf",
+        "comment": "Shunt capacitance in p.u. of converter filter",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "lg",
+        "comment": "Series inductance in p.u. of converter filter to the grid",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "rg",
+        "comment": "Series resistance in p.u. of converter filter to the grid",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:id_c, :iq_c, :vd_cap, :vq_cap, :id_o, :iq_o]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 6,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Filter"
+  },
+  {
+    "struct_name": "LCFilter",
+    "docstring": "Parameters of a LCL filter outside the converter",
+    "fields": [
+      {
+        "name": "lf",
+        "comment": "filter inductance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "rf",
+        "comment": "filter resistance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "cf",
+        "comment": "filter capacitance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:id_o, :iq_o]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "Filter"
+  },
+  {
+    "struct_name": "PLL",
+    "docstring": "Parameters of a Phase-Locked Loop (PLL) for VSM",
+    "fields": [
+      {
+        "name": "ω_lp",
+        "comment": "PLL low-pass filter frequency (rad/sec)",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kp_pll",
+        "comment": "PLL proportional gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ki_pll",
+        "comment": "PLL integral gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:vpll_d, :vpll_q, :ε_pll, :δθ_pll]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 4,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "FrequencyEstimator"
+  },
+  {
+    "struct_name": "VirtualInertia",
+    "docstring": "Parameters of a Virtual Inertia with SRF using VSM for active power controller",
+    "fields": [
+      {
+        "name": "Ta",
+        "comment": "VSM inertia constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kd",
+        "comment": "VSM damping constant",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kω",
+        "comment": "frequency droop gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ωb",
+        "comment": "rated angular frequency",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:δω_vsm, :δθ_vsm]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 2,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "ActivePowerControl"
+  },
+  {
+    "struct_name": "ReactivePowerDroop",
+    "docstring": "Parameters of a Reactive Power droop controller",
+    "fields": [
+      {
+        "name": "kq",
+        "comment": "frequency droop gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ωf",
+        "comment": "frequency droop gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:qm]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 1,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "ReactivePowerControl"
+  },
+  {
+    "struct_name": "CombinedVIwithVZ",
+    "docstring": "Parameters of an inner loop controller using virtual impedance, voltage controller and current controller.",
+    "fields": [
+      {
+        "name": "kpv",
+        "comment": "voltage controller proportional gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kiv",
+        "comment": "voltage controller integral gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kffv",
+        "comment": "Binary variable to enable feed-forward gain of voltage.",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "rv",
+        "comment": "virtual resistance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "lv",
+        "comment": "virtual inductance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kpc",
+        "comment": "current controller proportional gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kic",
+        "comment": "current controller integral gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kffi",
+        "comment": "Binary variable to enable feed-forward gain of current",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ωad",
+        "comment": "active damping filter cutoff frequency (rad/sec)",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "kad",
+        "comment": "active damping gain",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "states",
+        "comment": "",
+        "internal_default": "[:ξ_d, :ξ_q, :γ_d, :γ_q, :ϕ_d, :ϕ_q]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "comment": "",
+        "internal_default": 6,
+        "data_type": "Int64"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "VSControl"
+  },
+  {
+    "struct_name": "Source",
+    "docstring": "This struct acts as an infinity bus.",
+    "fields": [
+      {
+        "name": "number",
+        "data_type": "Int64",
+        "null_value": 0,
+        "comment": ""
+      },
+      {
+        "name": "name",
+        "data_type": "Symbol",
+        "null_value": 0,
+        "comment": ""
+      },
+      {
+        "name": "bus",
+        "data_type": "PowerSystems.Bus",
+        "null_value": 0,
+        "comment": ""
+      },
+      {
+        "name": "V_R",
+        "comment": "Voltage Source Real Component",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "V_I",
+        "comment": "Voltage Source Imaginary Component",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "X_th",
+        "comment": "Source Thevenin impedance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "StaticInjection"
   }
-
-
-
-
-
 ]
