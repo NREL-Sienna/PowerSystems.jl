@@ -38,7 +38,7 @@ end
 end
 
 @testset "Source Constructors" begin
-    tSource = GenericBattery(nothing)
+    tSource = Source(nothing)
     @test tSource isa PowerSystems.Component
 end
 
