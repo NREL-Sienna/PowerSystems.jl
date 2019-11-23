@@ -72,16 +72,16 @@ function _write_pf_sol!(sys::System, nl_result)
         if bus.bustype == PowerSystems.REF
             P_gen = result[2 * ix - 1]
             Q_gen = result[2 * ix]
-            StaticInjection_components = get_components(Generator, sys)
-            devices = [d for d in StaticInjection_components if d.bus == bus]
+            injection_components = get_components(Generator, sys)
+            devices = [d for d in injection_components if d.bus == bus]
             generator = devices[1]
             generator.activepower = P_gen
             generator.reactivepower = Q_gen
         elseif bus.bustype == PowerSystems.PQ
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
-            StaticInjection_components = get_components(Generator, sys)
-            devices = [d for d in StaticInjection_components if d.bus == bus]
+            injection_components = get_components(Generator, sys)
+            devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
                 generator = devices[1]
                 generator.reactivepower = Q_gen

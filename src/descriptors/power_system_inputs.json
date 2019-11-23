@@ -219,7 +219,7 @@
         {
             "unit": "MW",
             "name": "active_power",
-            "description": "Real power StaticInjection setpoint",
+            "description": "Real power injection setpoint",
             "system_per_unit": true
         },
         {
@@ -451,7 +451,7 @@
         {
             "unit": "MW",
             "name": "active_power",
-            "description": "Real power StaticInjection setpoint",
+            "description": "Real power injection setpoint",
             "system_per_unit": true
         },
         {
