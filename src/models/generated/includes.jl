@@ -53,6 +53,7 @@ include("PLL.jl")
 include("VirtualInertia.jl")
 include("ReactivePowerDroop.jl")
 include("CombinedVIwithVZ.jl")
+include("Source.jl")
 
 export get_Ae
 export get_Be
@@ -113,9 +114,12 @@ export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
 export get_Ts
+export get_V_I
+export get_V_R
 export get_V_pss
 export get_Vr_max
 export get_Vr_min
+export get_X_th
 export get_Xd
 export get_Xd_p
 export get_Xd_pp

@@ -3888,5 +3888,63 @@
       }
     ],
     "supertype": "VSControl"
+  },
+  {
+    "struct_name": "Source",
+    "docstring": "This struct acts as an infinity bus.",
+    "fields": [
+      {
+        "name": "number",
+        "data_type": "Int64",
+        "null_value": 0,
+        "comment": ""
+      },
+      {
+        "name": "name",
+        "data_type": "Symbol",
+        "null_value": 0,
+        "comment": ""
+      },
+      {
+        "name": "bus",
+        "data_type": "PowerSystems.Bus",
+        "null_value": 0,
+        "comment": ""
+      },
+      {
+        "name": "V_R",
+        "comment": "Voltage Source Real Component",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "V_I",
+        "comment": "Voltage Source Imaginary Component",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "X_th",
+        "comment": "Source Thevenin impedance",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "valid_range": {"min": 0.0, "max": null}
+      },
+      {
+        "name": "ext",
+        "data_type": "Dict{String, Any}",
+        "null_value": "Dict{String, Any}()",
+        "default": "Dict{String, Any}()"
+      },
+      {
+        "name": "internal",
+        "comment": "power system internal reference, do not modify",
+        "data_type": "InfrastructureSystemsInternal",
+        "internal_default": "InfrastructureSystemsInternal()"
+      }
+    ],
+    "supertype": "StaticInjection"
   }
 ]
