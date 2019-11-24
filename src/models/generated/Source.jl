@@ -3,9 +3,9 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct Source <: StaticInjection
-        number::Int64
-        name::Symbol
-        bus::PowerSystems.Bus
+        name::String
+        available::Bool
+        bus::Bus
         V_R::Float64
         V_I::Float64
         X_th::Float64
@@ -16,9 +16,9 @@ This file is auto-generated. Do not edit.
 This struct acts as an infinity bus.
 
 # Arguments
-- `number::Int64`
-- `name::Symbol`
-- `bus::PowerSystems.Bus`
+- `name::String`
+- `available::Bool`
+- `bus::Bus`
 - `V_R::Float64`: Voltage Source Real Component
 - `V_I::Float64`: Voltage Source Imaginary Component
 - `X_th::Float64`: Source Thevenin impedance
@@ -26,9 +26,9 @@ This struct acts as an infinity bus.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Source <: StaticInjection
-    number::Int64
-    name::Symbol
-    bus::PowerSystems.Bus
+    name::String
+    available::Bool
+    bus::Bus
     "Voltage Source Real Component"
     V_R::Float64
     "Voltage Source Imaginary Component"
@@ -40,20 +40,20 @@ mutable struct Source <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function Source(number, name, bus, V_R, V_I, X_th, ext=Dict{String, Any}(), )
-    Source(number, name, bus, V_R, V_I, X_th, ext, InfrastructureSystemsInternal(), )
+function Source(name, available, bus, V_R, V_I, X_th, ext=Dict{String, Any}(), )
+    Source(name, available, bus, V_R, V_I, X_th, ext, InfrastructureSystemsInternal(), )
 end
 
-function Source(; number, name, bus, V_R, V_I, X_th, ext=Dict{String, Any}(), )
-    Source(number, name, bus, V_R, V_I, X_th, ext, )
+function Source(; name, available, bus, V_R, V_I, X_th, ext=Dict{String, Any}(), )
+    Source(name, available, bus, V_R, V_I, X_th, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
 function Source(::Nothing)
     Source(;
-        number=0,
-        name=0,
-        bus=0,
+        name="init",
+        available=false,
+        bus=Bus(nothing),
         V_R=0,
         V_I=0,
         X_th=0,
@@ -61,10 +61,10 @@ function Source(::Nothing)
     )
 end
 
-"""Get Source number."""
-get_number(value::Source) = value.number
 """Get Source name."""
 get_name(value::Source) = value.name
+"""Get Source available."""
+get_available(value::Source) = value.available
 """Get Source bus."""
 get_bus(value::Source) = value.bus
 """Get Source V_R."""

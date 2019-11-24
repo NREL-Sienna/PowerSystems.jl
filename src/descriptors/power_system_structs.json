@@ -4571,22 +4571,19 @@
         "docstring": "This struct acts as an infinity bus.",
         "fields": [
             {
-                "name": "number",
-                "data_type": "Int64",
-                "null_value": 0,
-                "comment": ""
+                "null_value": "init",
+                "name": "name",
+                "data_type": "String"
             },
             {
-                "name": "name",
-                "data_type": "Symbol",
-                "null_value": 0,
-                "comment": ""
+                "null_value": "false",
+                "name": "available",
+                "data_type": "Bool"
             },
             {
                 "name": "bus",
-                "data_type": "PowerSystems.Bus",
-                "null_value": 0,
-                "comment": ""
+                "null_value": "Bus(nothing)",
+                "data_type": "Bus"
             },
             {
                 "name": "V_R",
