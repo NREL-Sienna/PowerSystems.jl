@@ -6,9 +6,13 @@ function validate_serialization(sys::System)
     path = "test_system_serialization.json"
     io = open(path, "w")
     @info "Serializing to $path"
-
+    ext_test_bus_name = ""
     try
         IS.prepare_for_serialization!(sys.data, path)
+        bus = collect(PSY.get_components(PSY.Bus, sys))[1]
+        ext_test_bus_name = PSY.get_name(bus)
+        ext = PSY.get_ext(bus)
+        ext["test_field"] = 1
         to_json(io, sys)
     catch
         close(io)
@@ -23,6 +27,9 @@ function validate_serialization(sys::System)
             JSON2.read(file).data.time_series_storage_file
         end
         sys2 = System(path)
+        bus = PSY.get_component(PSY.Bus, sys2, ext_test_bus_name)
+        ext = PSY.get_ext(bus)
+        ext["test_field"] != 1 && return false
         return IS.compare_values(sys, sys2)
     finally
         @debug "delete temp file" path
