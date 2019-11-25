@@ -1148,7 +1148,6 @@ end
 
 function handle_component_addition!(sys::System, bus::Bus)
     number = get_number(bus)
-    # FIXME: call `check_component_addition` here instead of `@assert`
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
 end
