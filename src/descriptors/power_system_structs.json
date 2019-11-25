@@ -345,13 +345,13 @@
             {
                 "name": "from",
                 "comment": "The initial bus",
-                "null_vale": "Bus(nothing)",
+                "null_value": "Bus(nothing)",
                 "data_type": "Bus"
             },
             {
                 "name": "to",
                 "comment": "The terminal bus",
-                "null_vale": "Bus(nothing)",
+                "null_value": "Bus(nothing)",
                 "data_type": "Bus"
             },
             {
