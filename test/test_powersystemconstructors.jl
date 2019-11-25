@@ -66,3 +66,21 @@ end
 @testset "Test System constructor from Matpower" begin
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
 end
+
+@testset "Test accessor functions of PowerSystems auto-generated types" begin
+    # If this test fails because a type doesn't have a constructor that takes nothing,
+    # it's because not all fields in that type are defined in power_system_structs.json
+    # with nullable values. Consider adding them so that this "demo-constructor" works.
+    # If that isn't appropriate for this type, add it to types_to_skip below.
+
+    types_to_skip = (System,)
+    for ps_type in IS.get_all_concrete_subtypes(PowerSystemType)
+        ps_type in types_to_skip && continue
+        obj = ps_type(nothing)
+        for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
+            func = getfield(PowerSystems, Symbol("get_" * string(field_name)))
+            val = func(obj)
+            @test val isa field_type
+        end
+    end
+end
