@@ -105,7 +105,7 @@ function convert_units!(value::Float64,
     elseif unit_conversion.From == "radian" && unit_conversion.To == "degree"
         value = rad2deg(value)
     else
-        throw(IS.DataFormatError("Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported"))
+        throw(DataFormatError("Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported"))
     end
     return value
 end
