@@ -2633,7 +2633,7 @@
             {
                 "name": "L_d",
                 "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2643,7 +2643,7 @@
             {
                 "name": "L_q",
                 "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2653,7 +2653,7 @@
             {
                 "name": "L_ad",
                 "comment": "Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2663,7 +2663,7 @@
             {
                 "name": "L_aq",
                 "comment": "Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2673,7 +2673,7 @@
             {
                 "name": "L_f1d",
                 "comment": "Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2683,7 +2683,7 @@
             {
                 "name": "L_ff",
                 "comment": "Field rotor winding inductance, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2693,7 +2693,7 @@
             {
                 "name": "L_1d",
                 "comment": "Inductance of the d-axis rotor damping circuit, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2703,7 +2703,7 @@
             {
                 "name": "L_1q",
                 "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3241,7 +3241,7 @@
             {
                 "name": "L_d",
                 "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3251,7 +3251,7 @@
             {
                 "name": "L_q",
                 "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3261,7 +3261,7 @@
             {
                 "name": "L_ad",
                 "comment": "Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3271,7 +3271,7 @@
             {
                 "name": "L_aq",
                 "comment": "Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3281,7 +3281,7 @@
             {
                 "name": "L_f1d",
                 "comment": "Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3291,7 +3291,7 @@
             {
                 "name": "L_ff",
                 "comment": "Field rotor winding inductance, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3301,7 +3301,7 @@
             {
                 "name": "L_1d",
                 "comment": "Inductance of the d-axis rotor damping circuit, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3311,7 +3311,7 @@
             {
                 "name": "L_1q",
                 "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
