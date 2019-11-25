@@ -294,6 +294,37 @@
             "description": "Heat rate Incremental 4 TODO"
         },
         {
+            "name": "heat_rate_incr_5",
+            "description": "Heat rate Incremental 5 TODO"
+        },
+        {
+            "name": "heat_rate_incr_6",
+            "description": "Heat rate Incremental 6 TODO"
+        },
+        {
+            "name": "heat_rate_incr_7",
+            "description": "Heat rate Incremental 7 TODO"
+        },
+        {
+            "name": "heat_rate_incr_8",
+            "description": "Heat rate Incremental 8 TODO"
+        },
+        {
+            "name": "heat_rate_incr_9",
+            "description": "Heat rate Incremental 9 TODO"
+        },      {
+            "name": "heat_rate_incr_10",
+            "description": "Heat rate Incremental 10 TODO"
+        },
+        {
+            "name": "heat_rate_incr_11",
+            "description": "Heat rate Incremental 11 TODO"
+        },
+        {
+            "name": "heat_rate_incr_12",
+            "description": "Heat rate Incremental 12 TODO"
+        },
+        {
             "unit": "%",
             "name": "output_percent_0",
             "description": "Output point 0 on heat rate curve as a percentage of PMax"
@@ -317,6 +348,44 @@
             "unit": "%",
             "name": "output_percent_4",
             "description": "Output point 4 on heat rate curve as a percentage of PMax"
+        },{
+            "unit": "%",
+            "name": "output_percent_5",
+            "description": "Output point 5 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_6",
+            "description": "Output point 6 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_7",
+            "description": "Output point 7 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_8",
+            "description": "Output point 8 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_9",
+            "description": "Output point 9 on heat rate curve as a percentage of PMax"
+        },{
+            "unit": "%",
+            "name": "output_percent_10",
+            "description": "Output point 10 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_11",
+            "description": "Output point 11 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_12",
+            "description": "Output point 12 on heat rate curve as a percentage of PMax"
         },
         {
             "unit": "MVA",
