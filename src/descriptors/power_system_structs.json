@@ -1975,8 +1975,8 @@
             },
             {
                 "name": "requirement",
-                "null_value": "[]",
-                "data_type": "TimeSeries.TimeArray"
+                "null_value": "0.0",
+                "data_type": "Float64"
             },
             {
                 "name": "ext",
