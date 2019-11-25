@@ -633,7 +633,7 @@ Adds forecast to the system.
 Throws ArgumentError if the component is not stored in the system.
 
 """
-function add_forecast!(sys::System, component::Component, forecast::IS.Forecast)
+function add_forecast!(sys::System, component::Component, forecast::Forecast)
     return IS.add_forecast!(sys.data, component, forecast)
 end
 
@@ -779,7 +779,7 @@ function get_forecast(
     component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
-) where T <: IS.Forecast
+) where T <: Forecast
     return IS.get_forecast(T, component, initial_time, label)
 end
 
@@ -792,14 +792,14 @@ function get_forecast(
     initial_time::Dates.DateTime,
     label::AbstractString,
     horizon::Int,
-) where T <: IS.Forecast
+) where T <: Forecast
     return IS.get_forecast(T, component, initial_time, label, horizon)
 end
 
 function get_forecast_initial_times(
                                     ::Type{T},
                                     component::Component,
-                                   ) where T <: IS.Forecast
+                                   ) where T <: Forecast
     return IS.get_forecast_initial_times(T, component)
 end
 
@@ -807,7 +807,7 @@ function get_forecast_initial_times(
                                     ::Type{T},
                                     component::Component,
                                     label::AbstractString
-                                   ) where T <: IS.Forecast
+                                   ) where T <: Forecast
     return IS.get_forecast_initial_times(T, component, label)
 end
 
@@ -815,7 +815,7 @@ function get_forecast_labels(
                              ::Type{T},
                              component::Component,
                              initial_time::Dates.DateTime,
-                            ) where T <: IS.Forecast
+                            ) where T <: Forecast
     return IS.get_forecast_labels(T, component, initial_time)
 end
 
@@ -823,7 +823,7 @@ end
 Return a TimeSeries.TimeArray where the forecast data has been multiplied by the forecasted
 component field.
 """
-function get_forecast_values(component::Component, forecast::IS.Forecast)
+function get_forecast_values(component::Component, forecast::Forecast)
     return IS.get_forecast_values(PowerSystems, component, forecast)
 end
 
@@ -913,7 +913,7 @@ function remove_forecast!(
     component::Component,
     initial_time::Dates.DateTime,
     label::String,
-) where T <: IS.Forecast
+) where T <: Forecast
     return IS.remove_forecast!(T, sys.data, component, initial_time, label)
 end
 
