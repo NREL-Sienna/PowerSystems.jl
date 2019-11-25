@@ -345,13 +345,13 @@
             {
                 "name": "from",
                 "comment": "The initial bus",
-                "null_vale": "Bus(nothing)",
+                "null_value": "Bus(nothing)",
                 "data_type": "Bus"
             },
             {
                 "name": "to",
                 "comment": "The terminal bus",
-                "null_vale": "Bus(nothing)",
+                "null_value": "Bus(nothing)",
                 "data_type": "Bus"
             },
             {
@@ -438,6 +438,13 @@
                     "max": 1.571
                 },
                 "validation_action": "error"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -542,6 +549,13 @@
                     "max": 1.571
                 },
                 "validation_action": "error"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -656,6 +670,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -758,6 +779,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -851,6 +879,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -919,6 +954,13 @@
                 "name": "loss",
                 "null_value": "(l0=0.0, l1=0.0)",
                 "data_type": "NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -996,6 +1038,13 @@
                 "data_type": "Min_Max"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1065,6 +1114,13 @@
                 "data_type": "TwoPartCost"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1108,6 +1164,13 @@
                 "comment": "System per-unit value",
                 "null_value": "0.0",
                 "data_type": "Complex{Float64}"
+            },
+            { 
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -1175,6 +1238,13 @@
                 "data_type": "Float64"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1236,6 +1306,13 @@
                 "data_type": "TwoPartCost"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1290,6 +1367,13 @@
                 "name": "tech",
                 "null_value": "TechHydro(nothing)",
                 "data_type": "TechHydro"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -1373,6 +1457,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1432,6 +1523,13 @@
                 "data_type": "TwoPartCost"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1485,6 +1583,13 @@
                 "name": "tech",
                 "null_value": "TechRenewable(nothing)",
                 "data_type": "TechRenewable"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -1551,6 +1656,13 @@
                 "data_type": "ThreePartCost"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1598,6 +1710,13 @@
                 "name": "maxreactivepower",
                 "null_value": "0.0",
                 "data_type": "Float64"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "_forecasts",
@@ -1714,6 +1833,13 @@
                 "data_type": "Union{Nothing, Min_Max}"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1742,12 +1868,6 @@
                 "null_value": "init",
                 "name": "name",
                 "data_type": "String"
-            },
-            {
-                "name": "contributingdevices",
-                "comment": "devices from which the product can be procured",
-                "null_value": "[ThermalStandard(nothing)]",
-                "data_type": "Vector{<:Device}"
             },
             {
                 "name": "timeframe",
@@ -1794,12 +1914,6 @@
                 "null_value": "init",
                 "name": "name",
                 "data_type": "String"
-            },
-            {
-                "name": "contributingdevices",
-                "comment": "devices from which the product can be procured",
-                "null_value": "[ThermalStandard(nothing)]",
-                "data_type": "Vector{<:Device}"
             },
             {
                 "name": "timeframe",
@@ -1849,11 +1963,6 @@
                 "data_type": "String"
             },
             {
-                "name": "contributingdevices",
-                "null_value": "[ThermalStandard(nothing)]",
-                "data_type": "Vector{<:Device}"
-            },
-            {
                 "name": "timeframe",
                 "comment": "the relative saturation timeframe",
                 "null_value": "0.0",
@@ -1866,8 +1975,8 @@
             },
             {
                 "name": "requirement",
-                "null_value": "[]",
-                "data_type": "TimeSeries.TimeArray"
+                "null_value": "0.0",
+                "data_type": "Float64"
             },
             {
                 "name": "ext",
@@ -2524,7 +2633,7 @@
             {
                 "name": "L_d",
                 "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2534,7 +2643,7 @@
             {
                 "name": "L_q",
                 "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2544,7 +2653,7 @@
             {
                 "name": "L_ad",
                 "comment": "Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2554,7 +2663,7 @@
             {
                 "name": "L_aq",
                 "comment": "Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2564,7 +2673,7 @@
             {
                 "name": "L_f1d",
                 "comment": "Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2574,7 +2683,7 @@
             {
                 "name": "L_ff",
                 "comment": "Field rotor winding inductance, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2584,7 +2693,7 @@
             {
                 "name": "L_1d",
                 "comment": "Inductance of the d-axis rotor damping circuit, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2594,7 +2703,7 @@
             {
                 "name": "L_1q",
                 "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3132,7 +3241,7 @@
             {
                 "name": "L_d",
                 "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3142,7 +3251,7 @@
             {
                 "name": "L_q",
                 "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3152,7 +3261,7 @@
             {
                 "name": "L_ad",
                 "comment": "Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3162,7 +3271,7 @@
             {
                 "name": "L_aq",
                 "comment": "Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3172,7 +3281,7 @@
             {
                 "name": "L_f1d",
                 "comment": "Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3182,7 +3291,7 @@
             {
                 "name": "L_ff",
                 "comment": "Field rotor winding inductance, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3192,7 +3301,7 @@
             {
                 "name": "L_1d",
                 "comment": "Inductance of the d-axis rotor damping circuit, in per unit",
-                "null_value": 0,
+                "null_value": 1.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3202,7 +3311,7 @@
             {
                 "name": "L_1q",
                 "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
-                "null_value": 0,
+                "null_value": 2.0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -4614,6 +4723,13 @@
                     "min": 0,
                     "max": null
                 }
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",

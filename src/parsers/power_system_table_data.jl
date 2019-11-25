@@ -632,17 +632,12 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         end
 
         if isnothing(requirement)
-            service = StaticReserve(reserve.name,
-                                    contributing_devices,
-                                    reserve.timeframe,
-                                    0.0)
+            service = StaticReserve(reserve.name, reserve.timeframe, 0.0)
         else
-            service = VariableReserve(reserve.name,
-                                      contributing_devices,
-                                      reserve.timeframe,
-                                      requirement)
+            service = VariableReserve(reserve.name, reserve.timeframe, requirement)
         end
-        add_component!(sys, service)
+
+        add_service!(sys, service, contributing_devices)
     end
 end
 

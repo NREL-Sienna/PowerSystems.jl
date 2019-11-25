@@ -9,6 +9,7 @@ This file is auto-generated. Do not edit.
         activepower::Float64
         reactivepower::Float64
         tech::TechHydro
+        services::Vector{Service}
         ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -23,6 +24,7 @@ This file is auto-generated. Do not edit.
 - `activepower::Float64`
 - `reactivepower::Float64`
 - `tech::TechHydro`
+- `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -34,18 +36,20 @@ mutable struct HydroFix <: HydroGen
     activepower::Float64
     reactivepower::Float64
     tech::TechHydro
+    "Services that this device contributes to"
+    services::Vector{Service}
     ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroFix(name, available, bus, activepower, reactivepower, tech, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, InfrastructureSystemsInternal(), )
+function HydroFix(name, available, bus, activepower, reactivepower, tech, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroFix(name, available, bus, activepower, reactivepower, tech, services, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroFix(; name, available, bus, activepower, reactivepower, tech, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroFix(name, available, bus, activepower, reactivepower, tech, ext, _forecasts, )
+function HydroFix(; name, available, bus, activepower, reactivepower, tech, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroFix(name, available, bus, activepower, reactivepower, tech, services, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -57,6 +61,7 @@ function HydroFix(::Nothing)
         activepower=0.0,
         reactivepower=0.0,
         tech=TechHydro(nothing),
+        services=Device[],
         ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -74,6 +79,8 @@ get_activepower(value::HydroFix) = value.activepower
 get_reactivepower(value::HydroFix) = value.reactivepower
 """Get HydroFix tech."""
 get_tech(value::HydroFix) = value.tech
+"""Get HydroFix services."""
+get_services(value::HydroFix) = value.services
 """Get HydroFix ext."""
 get_ext(value::HydroFix) = value.ext
 """Get HydroFix _forecasts."""

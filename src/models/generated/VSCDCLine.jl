@@ -13,6 +13,7 @@ This file is auto-generated. Do not edit.
         inverter_taplimits::Min_Max
         inverter_xrc::Float64
         inverter_firing_angle::Min_Max
+        services::Vector{Service}
         ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -31,6 +32,7 @@ As implemented in Milano's Book, Page 397.
 - `inverter_taplimits::Min_Max`
 - `inverter_xrc::Float64`
 - `inverter_firing_angle::Min_Max`
+- `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -46,18 +48,20 @@ mutable struct VSCDCLine <: DCBranch
     inverter_taplimits::Min_Max
     inverter_xrc::Float64
     inverter_firing_angle::Min_Max
+    "Services that this device contributes to"
+    services::Vector{Service}
     ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext, _forecasts, InfrastructureSystemsInternal(), )
+function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, ext, _forecasts, )
+function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -73,6 +77,7 @@ function VSCDCLine(::Nothing)
         inverter_taplimits=(min=0.0, max=0.0),
         inverter_xrc=0.0,
         inverter_firing_angle=(min=0.0, max=0.0),
+        services=Device[],
         ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -98,6 +103,8 @@ get_inverter_taplimits(value::VSCDCLine) = value.inverter_taplimits
 get_inverter_xrc(value::VSCDCLine) = value.inverter_xrc
 """Get VSCDCLine inverter_firing_angle."""
 get_inverter_firing_angle(value::VSCDCLine) = value.inverter_firing_angle
+"""Get VSCDCLine services."""
+get_services(value::VSCDCLine) = value.services
 """Get VSCDCLine ext."""
 get_ext(value::VSCDCLine) = value.ext
 """Get VSCDCLine _forecasts."""

@@ -4,7 +4,6 @@ This file is auto-generated. Do not edit.
 """
     mutable struct StaticReserve <: Reserve
         name::String
-        contributingdevices::Vector{<:Device}
         timeframe::Float64
         requirement::Float64
         ext::Dict{String, Any}
@@ -15,7 +14,6 @@ Data Structure for a proportional reserve product for system simulations.
 
 # Arguments
 - `name::String`
-- `contributingdevices::Vector{<:Device}`: devices from which the product can be procured
 - `timeframe::Float64`: the relative saturation timeframe
 - `requirement::Float64`: the static value of required reserves
 - `ext::Dict{String, Any}`
@@ -23,8 +21,6 @@ Data Structure for a proportional reserve product for system simulations.
 """
 mutable struct StaticReserve <: Reserve
     name::String
-    "devices from which the product can be procured"
-    contributingdevices::Vector{<:Device}
     "the relative saturation timeframe"
     timeframe::Float64
     "the static value of required reserves"
@@ -34,19 +30,18 @@ mutable struct StaticReserve <: Reserve
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserve(name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), )
-    StaticReserve(name, contributingdevices, timeframe, requirement, ext, InfrastructureSystemsInternal(), )
+function StaticReserve(name, timeframe, requirement, ext=Dict{String, Any}(), )
+    StaticReserve(name, timeframe, requirement, ext, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserve(; name, contributingdevices, timeframe, requirement, ext=Dict{String, Any}(), )
-    StaticReserve(name, contributingdevices, timeframe, requirement, ext, )
+function StaticReserve(; name, timeframe, requirement, ext=Dict{String, Any}(), )
+    StaticReserve(name, timeframe, requirement, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
 function StaticReserve(::Nothing)
     StaticReserve(;
         name="init",
-        contributingdevices=[ThermalStandard(nothing)],
         timeframe=0.0,
         requirement=0.0,
         ext=Dict{String, Any}(),
@@ -55,8 +50,6 @@ end
 
 """Get StaticReserve name."""
 get_name(value::StaticReserve) = value.name
-"""Get StaticReserve contributingdevices."""
-get_contributingdevices(value::StaticReserve) = value.contributingdevices
 """Get StaticReserve timeframe."""
 get_timeframe(value::StaticReserve) = value.timeframe
 """Get StaticReserve requirement."""
