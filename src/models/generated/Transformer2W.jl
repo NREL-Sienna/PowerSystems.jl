@@ -12,6 +12,7 @@ This file is auto-generated. Do not edit.
         x::Float64
         primaryshunt::Float64
         rate::Union{Nothing, Float64}
+        services::Vector{Service}
         ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -29,6 +30,7 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 - `x::Float64`: System per-unit value
 - `primaryshunt::Float64`: System per-unit value
 - `rate::Union{Nothing, Float64}`
+- `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -46,18 +48,20 @@ mutable struct Transformer2W <: ACBranch
     "System per-unit value"
     primaryshunt::Float64
     rate::Union{Nothing, Float64}
+    "Services that this device contributes to"
+    services::Vector{Service}
     ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, ext, _forecasts, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, services, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, ext, _forecasts, )
+function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, services, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -72,6 +76,7 @@ function Transformer2W(::Nothing)
         x=0.0,
         primaryshunt=0.0,
         rate=nothing,
+        services=Device[],
         ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -95,6 +100,8 @@ get_x(value::Transformer2W) = value.x
 get_primaryshunt(value::Transformer2W) = value.primaryshunt
 """Get Transformer2W rate."""
 get_rate(value::Transformer2W) = value.rate
+"""Get Transformer2W services."""
+get_services(value::Transformer2W) = value.services
 """Get Transformer2W ext."""
 get_ext(value::Transformer2W) = value.ext
 """Get Transformer2W _forecasts."""

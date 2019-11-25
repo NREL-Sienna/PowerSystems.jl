@@ -144,7 +144,6 @@ export get_buses
 export get_bustype
 export get_capacity
 export get_cf
-export get_contributingdevices
 export get_efficiency
 export get_energy
 export get_eq_p
@@ -205,6 +204,7 @@ export get_rf
 export get_rg
 export get_rv
 export get_s_rated
+export get_services
 export get_shutdn
 export get_startup
 export get_states

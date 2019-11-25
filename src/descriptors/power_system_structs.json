@@ -440,6 +440,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -542,6 +549,13 @@
                     "max": 1.571
                 },
                 "validation_action": "error"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -656,6 +670,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -758,6 +779,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -851,6 +879,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -919,6 +954,13 @@
                 "name": "loss",
                 "null_value": "(l0=0.0, l1=0.0)",
                 "data_type": "NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -996,6 +1038,13 @@
                 "data_type": "Min_Max"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1065,6 +1114,13 @@
                 "data_type": "TwoPartCost"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1108,6 +1164,13 @@
                 "comment": "System per-unit value",
                 "null_value": "0.0",
                 "data_type": "Complex{Float64}"
+            },
+            { 
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -1175,6 +1238,13 @@
                 "data_type": "Float64"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1236,6 +1306,13 @@
                 "data_type": "TwoPartCost"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1290,6 +1367,13 @@
                 "name": "tech",
                 "null_value": "TechHydro(nothing)",
                 "data_type": "TechHydro"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -1373,6 +1457,13 @@
                 "validation_action": "error"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1432,6 +1523,13 @@
                 "data_type": "TwoPartCost"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1485,6 +1583,13 @@
                 "name": "tech",
                 "null_value": "TechRenewable(nothing)",
                 "data_type": "TechRenewable"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",
@@ -1551,6 +1656,13 @@
                 "data_type": "ThreePartCost"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1598,6 +1710,13 @@
                 "name": "maxreactivepower",
                 "null_value": "0.0",
                 "data_type": "Float64"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "_forecasts",
@@ -1714,6 +1833,13 @@
                 "data_type": "Union{Nothing, Min_Max}"
             },
             {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1742,12 +1868,6 @@
                 "null_value": "init",
                 "name": "name",
                 "data_type": "String"
-            },
-            {
-                "name": "contributingdevices",
-                "comment": "devices from which the product can be procured",
-                "null_value": "[ThermalStandard(nothing)]",
-                "data_type": "Vector{<:Device}"
             },
             {
                 "name": "timeframe",
@@ -1796,12 +1916,6 @@
                 "data_type": "String"
             },
             {
-                "name": "contributingdevices",
-                "comment": "devices from which the product can be procured",
-                "null_value": "[ThermalStandard(nothing)]",
-                "data_type": "Vector{<:Device}"
-            },
-            {
                 "name": "timeframe",
                 "comment": "the relative saturation timeframe",
                 "null_value": "0.0",
@@ -1847,11 +1961,6 @@
                 "null_value": "init",
                 "name": "name",
                 "data_type": "String"
-            },
-            {
-                "name": "contributingdevices",
-                "null_value": "[ThermalStandard(nothing)]",
-                "data_type": "Vector{<:Device}"
             },
             {
                 "name": "timeframe",
@@ -4614,6 +4723,13 @@
                     "min": 0,
                     "max": null
                 }
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
             },
             {
                 "name": "ext",

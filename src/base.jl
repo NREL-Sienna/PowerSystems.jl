@@ -209,6 +209,7 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 """
 function add_component!(sys::System, component::T; kwargs...) where T <: Component
     check_component_addition(sys, component)
+    check_for_services_on_addition(sys, component)
 
     if Bus in fieldtypes(T)
         check_bus(sys, get_bus(component), component)
@@ -223,6 +224,42 @@ function add_component!(sys::System, component::T; kwargs...) where T <: Compone
     # Whatever this may change should have been validated above in check_component_addition,
     # so this should not fail.
     handle_component_addition!(sys, component)
+end
+
+"""
+    add_service!(sys::System, service::Service, contributing_devices; kwargs...)
+
+Similar to [`add_component!`](@ref) but for services.
+
+# Arguments
+- `sys::System`: system
+- `service::Service`: service to add
+- `contributing_devices`: Must be an iterable of type Device
+"""
+function add_service!(sys::System, service::Service, contributing_devices; kwargs...)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+
+    for device in contributing_devices
+        device_type = typeof(device)
+        if !(device_type <: Device)
+            throw(ArgumentError("contributing_devices must be of type Device"))
+        end
+
+        name = get_name(device)
+        sys_device = get_component(device_type, sys, name)
+        if isnothing(sys_device)
+            throw(ArgumentError("device $device_type $name is not part of the system"))
+        end
+    end
+
+    # Since this isn't atomic, order is important. Add to system before adding to devices.
+    IS.add_component!(sys.data, service; kwargs...)
+
+    for device in contributing_devices
+        add_service!(device, service)
+    end
 end
 
 """
@@ -293,12 +330,6 @@ function IS.add_forecast!(
         uuids = Set([IS.get_uuid(x) for x in get_buses(component)])
         for component_ in (load for load in IS.get_components(ElectricLoad, data)
                           if get_bus(load) |> IS.get_uuid in uuids)
-            if forecast isa IS.DeterministicInternal
-                forecast_ = IS.DeterministicInternal(IS.get_label(forecast), ts_data)
-            else
-                # TODO: others
-                error("forecast type is not supported yet: $(typeof(forecast))")
-            end
             IS.add_forecast!(data, component_, forecast, ts_data)
         end
     else
@@ -441,6 +472,56 @@ function get_components_by_name(
                                 name::AbstractString
                                )::Vector{T} where {T <: Component}
     return IS.get_components_by_name(T, sys.data, name)
+end
+
+"""
+    get_contributing_devices(sys::System, service::Service)
+
+Return a vector of devices contributing to the service.
+"""
+function get_contributing_devices(sys::System, service::T) where T <: Service
+    if isnothing(get_component(T, sys, get_name(service)))
+        throw(ArgumentError("service $(get_name(service)) is not part of the system"))
+    end
+
+    return [x for x in get_components(Device, sys) if has_service(x, service)]
+end
+
+struct ServiceContributingDevices
+    service::Service
+    contributing_devices::Vector{Device}
+end
+
+const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
+const ServiceContributingDevicesMapping = Dict{
+    ServiceContributingDevicesKey,
+    ServiceContributingDevices
+}
+
+"""
+    get_contributing_device_mapping(sys::System)
+
+Return an instance of ServiceContributingDevicesMapping.
+"""
+function get_contributing_device_mapping(sys::System)
+    services = ServiceContributingDevicesMapping()
+    for service in get_components(Service, sys)
+        uuid = IS.get_uuid(service)
+        devices = ServiceContributingDevices(service, Vector{Device}())
+        for device in get_components(Device, sys)
+            for _service in get_services(device)
+                if IS.get_uuid(_service) == uuid
+                    push!(devices.contributing_devices, device)
+                    break
+                end
+            end
+
+            key = ServiceContributingDevicesKey((typeof(service), get_name(service)))
+            services[key] = devices
+        end
+    end
+
+    return services
 end
 
 """
@@ -880,22 +961,25 @@ function IS.deserialize_components(
                                   )
     # TODO: This adds components through IS.SystemData instead of System, which is what
     # should happen. There is a catch-22 between creating System and SystemData.
+    # This means that the restrictions in add_component! are not applied here.
+
+    # Maintain a lookup of UUID to component because some component types encode
+    # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
 
-    # Buses and Arcs are encoded as UUIDs.
-    composite_components = [Bus]
-    for composite_component in composite_components
-        for component in IS.get_components_raw(IS.SystemData, composite_component, raw)
-            comp = IS.convert_type(composite_component, component)
+    components_as_uuids = [Bus]
+    for component_as_uuid in components_as_uuids
+        for component in IS.get_components_raw(IS.SystemData, component_as_uuid, raw)
+            comp = IS.convert_type(component_as_uuid, component)
             IS.add_component!(data, comp)
             component_cache[IS.get_uuid(comp)] = comp
         end
     end
 
-    # Skip Services this round because they have Devices.
+    # Skip Devices this round because they have Services.
     for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
         c_type = getfield(PowerSystems, Symbol(IS.strip_module_name(string(c_type_sym))))
-        (c_type in composite_components || c_type <: Service) && continue
+        (c_type in components_as_uuids || c_type <: Device) && continue
         for component in IS.get_components_raw(IS.SystemData, c_type, raw)
             comp = IS.convert_type(c_type, component, component_cache)
             IS.add_component!(data, comp)
@@ -903,10 +987,10 @@ function IS.deserialize_components(
         end
     end
 
-    # Now get the Services.
+    # Now get the Devices.
     for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
         c_type = getfield(PowerSystems, Symbol(IS.strip_module_name(string(c_type_sym))))
-        if c_type <: Service
+        if c_type <: Device
             for component in IS.get_components_raw(IS.SystemData, c_type, raw)
                 comp = IS.convert_type(c_type, component, component_cache)
                 IS.add_component!(data, comp)
@@ -924,7 +1008,7 @@ function JSON2.write(component::T) where T <: Component
 end
 
 """
-Encode composite buses as UUIDs.
+Encode composed buses as UUIDs.
 """
 function encode_for_json(component::T) where T <: Component
     fields = fieldnames(T)
@@ -1007,6 +1091,14 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     return buses
 end
 
+check_for_services_on_addition(sys::System, component::Component) = nothing
+
+function check_for_services_on_addition(sys::System, component::Device)
+    if length(get_services(component)) > 0
+        throw(ArgumentError("type Device cannot be added with services"))
+    end
+end
+
 """
 Throws ArgumentError if a PowerSystems rule blocks addition to the system.
 
@@ -1056,6 +1148,18 @@ function handle_component_removal!(sys::System, bus::Bus)
     pop!(sys.bus_numbers, number)
 end
 
+function handle_component_removal!(sys::System, device::Device)
+    # This may have to be refactored if handle_component_removal! needs to be implemented
+    # for a subtype.
+    clear_services!(device)
+end
+
+function handle_component_removal!(sys::System, service::Service)
+    for device in get_components(Device, sys)
+        _remove_service!(device, service)
+    end
+end
+
 """
     get_bus_numbers(sys::System)
 
@@ -1102,27 +1206,4 @@ function _create_system_data_from_kwargs(; kwargs...)
 
     return IS.SystemData(; validation_descriptor_file=validation_descriptor_file,
                          time_series_in_memory=time_series_in_memory)
-end
-
-function parse_types(mod)
-    for name in names(mod)
-        mod_type = getfield(mod, name)
-        try
-            !isstructtype(mod_type) && continue
-        catch(e)
-            continue
-        end
-        !isconcretetype(mod_type) && continue
-        println("object $mod_type")
-    end
-    for name in names(mod)
-        mod_type = getfield(mod, name)
-        !isstructtype(mod_type) && continue
-        !isconcretetype(mod_type) && continue
-        for (fname, ftype) in zip(fieldnames(mod_type), fieldtypes(mod_type))
-            if ftype in names(mod)
-                println("$mod_type o-- $ftype")
-            end
-        end
-    end
 end

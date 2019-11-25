@@ -152,6 +152,13 @@ export add_component!
 export remove_component!
 export remove_components!
 export clear_components!
+export add_service!
+export remove_service!
+export get_contributing_devices
+export get_contributing_device_mapping
+export ServiceContributingDevices
+export ServiceContributingDevicesKey
+export ServiceContributingDevicesMapping
 export are_forecasts_contiguous
 export generate_initial_times
 export get_component
@@ -236,10 +243,12 @@ include("models/operational_cost.jl")
 #include("models/network.jl")
 
 # Static types
+include("models/services.jl")
+include("models/reserves.jl")
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
-include("models/services.jl")
+include("models/devices.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 
