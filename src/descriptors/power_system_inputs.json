@@ -225,31 +225,31 @@
         {
             "unit": "MW",
             "name": "reactive_power",
-            "description": "Reactive power injection setpoint",
+            "description": "Reactive power StaticInjection setpoint",
             "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "active_power_limits_max",
-            "description": "Maximum real power injection (Unit Capacity)",
+            "description": "Maximum real power StaticInjection (Unit Capacity)",
             "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "active_power_limits_min",
-            "description": "Minimum real power injection (Unit minimum stable level)",
+            "description": "Minimum real power StaticInjection (Unit minimum stable level)",
             "system_per_unit": true
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_max",
-            "description": "Maximum reactive power injection",
+            "description": "Maximum reactive power StaticInjection",
             "system_per_unit": true
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_min",
-            "description": "Minimum reactive power injection",
+            "description": "Minimum reactive power StaticInjection",
             "system_per_unit": true
         },
         {
@@ -526,7 +526,7 @@
         {
             "unit": "MW",
             "name": "reactive_power",
-            "description": "Reactive power injection setpoint",
+            "description": "Reactive power StaticInjection setpoint",
             "system_per_unit": true
         },
         {
@@ -544,25 +544,25 @@
         {
             "unit": "MW",
             "name": "output_active_power_limits_max",
-            "description": "Maximum real power injection",
+            "description": "Maximum real power StaticInjection",
             "system_per_unit": true
         },
         {
             "unit": "MW",
             "name": "output_active_power_limits_min",
-            "description": "Minimum real power injection",
+            "description": "Minimum real power StaticInjection",
             "system_per_unit": true
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_max",
-            "description": "Maximum reactive power injection",
+            "description": "Maximum reactive power StaticInjection",
             "system_per_unit": true
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_min",
-            "description": "Minimum reactive power injection",
+            "description": "Minimum reactive power StaticInjection",
             "system_per_unit": true
         },
         {

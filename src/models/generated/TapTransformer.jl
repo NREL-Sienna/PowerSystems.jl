@@ -13,6 +13,7 @@ This file is auto-generated. Do not edit.
         primaryshunt::Float64
         tap::Float64
         rate::Union{Nothing, Float64}
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -30,6 +31,7 @@ This file is auto-generated. Do not edit.
 - `primaryshunt::Float64`: System per-unit value
 - `tap::Float64`
 - `rate::Union{Nothing, Float64}`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -47,21 +49,21 @@ mutable struct TapTransformer <: ACBranch
     primaryshunt::Float64
     tap::Float64
     rate::Union{Nothing, Float64}
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, _forecasts=InfrastructureSystems.Forecasts(), )
-    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, _forecasts, InfrastructureSystemsInternal())
+function TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, _forecasts=InfrastructureSystems.Forecasts(), )
-    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, _forecasts, )
+function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function TapTransformer(::Nothing)
     TapTransformer(;
         name="init",
@@ -74,6 +76,7 @@ function TapTransformer(::Nothing)
         primaryshunt=0.0,
         tap=1.0,
         rate=0.0,
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -98,6 +101,8 @@ get_primaryshunt(value::TapTransformer) = value.primaryshunt
 get_tap(value::TapTransformer) = value.tap
 """Get TapTransformer rate."""
 get_rate(value::TapTransformer) = value.rate
+"""Get TapTransformer ext."""
+get_ext(value::TapTransformer) = value.ext
 """Get TapTransformer _forecasts."""
 get__forecasts(value::TapTransformer) = value._forecasts
 """Get TapTransformer internal."""

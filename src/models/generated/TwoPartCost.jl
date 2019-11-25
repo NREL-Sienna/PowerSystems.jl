@@ -29,7 +29,7 @@ mutable struct TwoPartCost <: OperationalCost
 end
 
 function TwoPartCost(variable, fixed, _forecasts=InfrastructureSystems.Forecasts(), )
-    TwoPartCost(variable, fixed, _forecasts, InfrastructureSystemsInternal())
+    TwoPartCost(variable, fixed, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function TwoPartCost(; variable, fixed, _forecasts=InfrastructureSystems.Forecasts(), )
@@ -37,7 +37,6 @@ function TwoPartCost(; variable, fixed, _forecasts=InfrastructureSystems.Forecas
 end
 
 # Constructor for demo purposes; non-functional.
-
 function TwoPartCost(::Nothing)
     TwoPartCost(;
         variable=VariableCost((0.0, 0.0)),

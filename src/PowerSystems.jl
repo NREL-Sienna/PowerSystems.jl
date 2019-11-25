@@ -17,7 +17,7 @@ export PowerSystemType
 export Component
 export Device
 export Branch
-export Injection
+export StaticInjection
 export ACBranch
 export Line
 export MonitoredLine
@@ -57,6 +57,70 @@ export InterruptibleLoad
 
 export Storage
 export GenericBattery
+
+export DynamicGenerator
+#AVR Exports
+export AVR
+export AVRFixed
+export AVRSimple
+export AVRTypeI
+export AVRTypeII
+
+#Machine Exports
+export Machine
+export BaseMachine
+export OneDOneQMachine
+export MarconatoMachine
+export SimpleMarconatoMachine
+export AndersonFouadMachine
+export SimpleAFMachine
+export FullMachine
+export SimpleFullMachine
+
+#PSS Exports
+export PSS
+export PSSFixed
+export PSSFixed
+
+#Shaft Exports
+export SingleMass
+export FiveMassShaft
+
+#TG Exports
+export TurbineGov
+export TGFixed
+export TGTypeI
+export TGTypeII
+
+
+export DynamicInverter
+# Converter Exports
+export Converter
+export AvgCnvFixedDC
+
+# DC Source Exports
+export DCSource
+export FixedDCSource
+
+# Filter Exports
+export Filter
+export LCLFilter
+
+# FrequencyEstimator Exports
+export FrequencyEstimator
+export PLL
+
+# Outer Control Exports
+export OuterControl
+export VirtualInertiaQdroop
+export VirtualInertia
+export ReactivePowerDroop
+
+# VSControl Export
+export VSControl
+export CombinedVIwithVZ
+
+export Source
 
 export Service
 export Reserve
@@ -155,9 +219,10 @@ abstract type PowerSystemType <: IS.InfrastructureSystemsType end
 abstract type Component <: PowerSystemType end
 # supertype for "devices" (bus, line, etc.)
 abstract type Device <: Component end
-abstract type Injection <: Device end
-# supertype for generation technologies (thermal, renewable, etc.)
-abstract type TechnicalParams <: PowerSystemType end
+abstract type StaticInjection <: Device end
+abstract type DynamicInjection <: Device end
+abstract type DeviceParameter <: PowerSystemType end
+abstract type DynamicComponent <: DeviceParameter end
 
 include("common.jl")
 
@@ -175,10 +240,16 @@ include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
 include("models/services.jl")
+include("models/dynamic_generator_components.jl")
+include("models/dynamic_inverter_components.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
+
+# Dynamic Composed types
+include("models/dynamic_generator.jl")
+include("models/dynamic_inverter.jl")
 
 # Definitions of PowerSystem
 include("base.jl")

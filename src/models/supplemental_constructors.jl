@@ -51,9 +51,9 @@ function Line(name, available::Bool, activepower_flow::Float64,
 end
 
 """Allows construction with bus type specified as a string for legacy code."""
-function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basevoltage)
+function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basevoltage; ext=Dict{String,Any}())
     return Bus(number, name, get_enum_value(BusType, bustype), angle, voltage,
-               voltagelimits, basevoltage, InfrastructureSystemsInternal())
+               voltagelimits, basevoltage, ext, InfrastructureSystemsInternal())
 end
 
 """Allows construction of a reserve from an iterator."""

@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         reactivepower::Float64
         tech::TechHydro
         op_cost::TwoPartCost
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -24,6 +25,7 @@ This file is auto-generated. Do not edit.
 - `reactivepower::Float64`
 - `tech::TechHydro`
 - `op_cost::TwoPartCost`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -35,21 +37,21 @@ mutable struct HydroDispatch <: HydroGen
     reactivepower::Float64
     tech::TechHydro
     op_cost::TwoPartCost
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, InfrastructureSystemsInternal())
+function HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, )
+function HydroDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    HydroDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function HydroDispatch(::Nothing)
     HydroDispatch(;
         name="init",
@@ -59,6 +61,7 @@ function HydroDispatch(::Nothing)
         reactivepower=0.0,
         tech=TechHydro(nothing),
         op_cost=TwoPartCost(nothing),
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -77,6 +80,8 @@ get_reactivepower(value::HydroDispatch) = value.reactivepower
 get_tech(value::HydroDispatch) = value.tech
 """Get HydroDispatch op_cost."""
 get_op_cost(value::HydroDispatch) = value.op_cost
+"""Get HydroDispatch ext."""
+get_ext(value::HydroDispatch) = value.ext
 """Get HydroDispatch _forecasts."""
 get__forecasts(value::HydroDispatch) = value._forecasts
 """Get HydroDispatch internal."""

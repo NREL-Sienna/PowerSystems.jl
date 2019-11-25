@@ -1,6 +1,6 @@
 const VarCostArgs = Union{Float64, NTuple{2,Float64}, Vector{NTuple{2,Float64}}}
 
-abstract type OperationalCost <: TechnicalParams end
+abstract type OperationalCost <: DeviceParameter end
 
 mutable struct VariableCost{T}
     cost::T

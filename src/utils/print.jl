@@ -22,7 +22,7 @@ function Base.show(io::IO, ::MIME"text/html", sys::System)
     show(io, MIME"text/html"(), sys.data)
 end
 
-function Base.summary(tech::TechnicalParams)
+function Base.summary(tech::DeviceParameter)
     return "$(typeof(tech))"
 end
 

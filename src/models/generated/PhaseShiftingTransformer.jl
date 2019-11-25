@@ -14,6 +14,7 @@ This file is auto-generated. Do not edit.
         tap::Float64
         α::Float64
         rate::Union{Nothing, Float64}
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -32,6 +33,7 @@ This file is auto-generated. Do not edit.
 - `tap::Float64`
 - `α::Float64`
 - `rate::Union{Nothing, Float64}`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -49,21 +51,21 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     tap::Float64
     α::Float64
     rate::Union{Nothing, Float64}
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, _forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, _forecasts, InfrastructureSystemsInternal())
+function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, _forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, _forecasts, )
+function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function PhaseShiftingTransformer(::Nothing)
     PhaseShiftingTransformer(;
         name="init",
@@ -77,6 +79,7 @@ function PhaseShiftingTransformer(::Nothing)
         tap=1.0,
         α=0.0,
         rate=0.0,
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -103,6 +106,8 @@ get_tap(value::PhaseShiftingTransformer) = value.tap
 get_α(value::PhaseShiftingTransformer) = value.α
 """Get PhaseShiftingTransformer rate."""
 get_rate(value::PhaseShiftingTransformer) = value.rate
+"""Get PhaseShiftingTransformer ext."""
+get_ext(value::PhaseShiftingTransformer) = value.ext
 """Get PhaseShiftingTransformer _forecasts."""
 get__forecasts(value::PhaseShiftingTransformer) = value._forecasts
 """Get PhaseShiftingTransformer internal."""

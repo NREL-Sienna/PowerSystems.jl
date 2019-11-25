@@ -1,7 +1,7 @@
 abstract type Topology <: Component end
 
 function CheckBusParams(number, name, bustype, angle, voltage, voltagelimits, basevoltatge,
-                        internal)
+                        ext, internal)
     if !isnothing(bustype)
         if bustype == SLACK::BusType
             bustype = REF::BusType
@@ -11,5 +11,5 @@ function CheckBusParams(number, name, bustype, angle, voltage, voltagelimits, ba
         end
     end
 
-    return number, name, bustype, angle, voltage, voltagelimits, basevoltatge, internal
+    return number, name, bustype, angle, voltage, voltagelimits, basevoltatge, ext, internal
 end

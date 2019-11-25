@@ -16,6 +16,7 @@ This file is auto-generated. Do not edit.
         efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
         reactivepower::Float64
         reactivepowerlimits::Union{Nothing, Min_Max}
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -36,6 +37,7 @@ Data structure for a generic battery
 - `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`
 - `reactivepower::Float64`
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -56,21 +58,21 @@ mutable struct GenericBattery <: Storage
     efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
     reactivepower::Float64
     reactivepowerlimits::Union{Nothing, Min_Max}
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts, InfrastructureSystemsInternal())
+function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, _forecasts, )
+function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function GenericBattery(::Nothing)
     GenericBattery(;
         name="init",
@@ -86,6 +88,7 @@ function GenericBattery(::Nothing)
         efficiency=(in=0.0, out=0.0),
         reactivepower=0.0,
         reactivepowerlimits=(min=0.0, max=0.0),
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -116,6 +119,8 @@ get_efficiency(value::GenericBattery) = value.efficiency
 get_reactivepower(value::GenericBattery) = value.reactivepower
 """Get GenericBattery reactivepowerlimits."""
 get_reactivepowerlimits(value::GenericBattery) = value.reactivepowerlimits
+"""Get GenericBattery ext."""
+get_ext(value::GenericBattery) = value.ext
 """Get GenericBattery _forecasts."""
 get__forecasts(value::GenericBattery) = value._forecasts
 """Get GenericBattery internal."""

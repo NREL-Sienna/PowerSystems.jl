@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct TechRenewable <: TechnicalParams
+    mutable struct TechRenewable <: DeviceParameter
         rating::Float64
         primemover::PrimeMovers
         reactivepowerlimits::Union{Nothing, Min_Max}
@@ -19,7 +19,7 @@ Data Structures for the technical parameters of renewable generation technologie
 - `powerfactor::Float64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct TechRenewable <: TechnicalParams
+mutable struct TechRenewable <: DeviceParameter
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "PrimeMover Technology according to EIA 923"
@@ -31,7 +31,7 @@ mutable struct TechRenewable <: TechnicalParams
 end
 
 function TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, )
-    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, InfrastructureSystemsInternal())
+    TechRenewable(rating, primemover, reactivepowerlimits, powerfactor, InfrastructureSystemsInternal(), )
 end
 
 function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, )
@@ -39,7 +39,6 @@ function TechRenewable(; rating, primemover, reactivepowerlimits, powerfactor, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function TechRenewable(::Nothing)
     TechRenewable(;
         rating=0.0,

@@ -35,7 +35,7 @@ mutable struct LoadZones <: Topology
 end
 
 function LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
-    LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts, InfrastructureSystemsInternal())
+    LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts, InfrastructureSystemsInternal(), )
 end
 
 function LoadZones(; number, name, buses, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
@@ -43,7 +43,6 @@ function LoadZones(; number, name, buses, maxactivepower, maxreactivepower, _for
 end
 
 # Constructor for demo purposes; non-functional.
-
 function LoadZones(::Nothing)
     LoadZones(;
         number=0,
