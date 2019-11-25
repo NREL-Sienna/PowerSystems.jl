@@ -103,6 +103,7 @@ function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basev
         voltage,
         voltagelimits,
         basevoltage,
+        ext,
         InfrastructureSystemsInternal(),
     )
 end
