@@ -454,7 +454,6 @@ Call collect on the result if an array is desired.
 ```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
-generators = PowerSystems.get_components(Generator, sys) |> collect
 generators = collect(PowerSystems.get_components(Generator, sys))
 ```
 

@@ -33,7 +33,7 @@ Returns the downloaded folder name.
 """
 function Base.download(
     ::Type{TestData};
-    folder::AbstractString = joinpath(@__DIR__, "../..") |> abspath,
+    folder::AbstractString = abspath(joinpath(@__DIR__, "../..")),
     branch::String = "master",
     force::Bool = false,
 )
@@ -43,7 +43,7 @@ function Base.download(
     else
         POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.tar.gz"
     end
-    directory = folder |> normpath |> abspath
+    directory = abspath(normpath(folder))
     data = joinpath(directory, "data")
     if !isdir(data) || force
         tempfilename = Base.download(POWERSYSTEMSTESTDATA_URL)

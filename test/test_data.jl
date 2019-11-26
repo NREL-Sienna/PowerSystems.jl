@@ -10,7 +10,7 @@
     end
 
     base = abspath(joinpath(@__DIR__, ".."))
-    directory = download(PowerSystems.TestData; folder=base, force=force) |> abspath
+    directory =  abspath(download(PowerSystems.TestData; folder = base, force = force))
     @test directory == joinpath(base, "data")
 
 end # testset

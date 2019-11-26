@@ -126,7 +126,7 @@ const SIL_STANDARDS = Dict( #from https://neos-guide.org/sites/default/files/lin
 # calculation from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
 function calculate_sil(line, basemva::Float64)
     arc = get_arc(line)
-    vrated = (get_to(arc) |> get_basevoltage)
+    vrated = get_basevoltage(get_to(arc))
 
     zbase = vrated^2 / basemva
     l = get_x(line) / (2 * pi * 60) * zbase
@@ -141,7 +141,7 @@ end
 function check_SIL(line, basemva::Float64)
 
     arc = get_arc(line)
-    vrated = (get_to(arc) |> get_basevoltage)
+    vrated = get_basevoltage(get_to(arc))
 
     SIL_levels = collect(keys(SIL_STANDARDS))
     rate = get_rate(line)
@@ -161,7 +161,7 @@ end
 function check_endpoint_voltages(line)
     is_valid = true
     arc = get_arc(line)
-    if get_from(arc) |> get_basevoltage != get_to(arc) |> get_basevoltage
+    if get_basevoltage(get_from(arc)) != get_basevoltage(get_to(arc))
         is_valid = false
         @error "Voltage endpoints of $(line) are different, cannot create Line"
     end

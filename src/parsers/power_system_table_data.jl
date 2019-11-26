@@ -146,7 +146,7 @@ function PowerSystemTableData(
                         @info "Parsing csv data in $file ..."
                         encountered_files += 1
                         fpath = joinpath(directory, d_file, file)
-                        raw_data = CSV.File(fpath) |> DataFrames.DataFrame
+                        raw_data = DataFrames.DataFrame(CSV.File(fpath))
                         d_file_data[split(file, r"[.]")[1]] = raw_data
                     end
                 end
@@ -160,7 +160,7 @@ function PowerSystemTableData(
                 @info "Parsing csv data in $d_file ..."
                 encountered_files += 1
                 fpath = joinpath(directory, d_file)
-                raw_data = CSV.File(fpath) |> DataFrames.DataFrame
+                raw_data = DataFrames.DataFrame(CSV.File(fpath))
                 data[split(d_file, r"[.]")[1]] = raw_data
                 @info "Successfully parsed $d_file"
             end
