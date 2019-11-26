@@ -454,56 +454,42 @@ end
 
 # The following functions are reimplemented because Reserve subtypes are parameterized and
 # so we cannot auto-discover the types.
-# TODO: this needs performance improvement to reduce the number of extra arrays that get
-# created.
 
 function get_components(::Type{Component}, sys::System)
     return FlattenIteratorWrapper(
         Component,
         [
-            collect(IS.get_components(Component, sys.data)),
-            collect(get_components(Service, sys)),
+            IS.get_components(Component, sys.data),
+            get_components(Service, sys),
         ],
     )
 end
 
-function get_components(
-                        ::Type{Service},
-                        sys::System,
-                       )
+function get_components(::Type{Service}, sys::System)
     return FlattenIteratorWrapper(
         Service,
-        [collect(IS.get_components(x, sys.data)) for x in SERVICE_STRUCT_TYPES]
+        [IS.get_components(x, sys.data) for x in SERVICE_STRUCT_TYPES]
     )
 end
 
-function get_components(
-                        ::Type{Reserve},
-                        sys::System,
-                       )
+function get_components(::Type{Reserve}, sys::System)
     return FlattenIteratorWrapper(
         Reserve,
-        [collect(IS.get_components(x, sys.data)) for x in RESERVE_STRUCT_TYPES]
+        [IS.get_components(x, sys.data) for x in RESERVE_STRUCT_TYPES]
     )
 end
 
-function get_components(
-                        ::Type{StaticReserve},
-                        sys::System,
-                       )
+function get_components(::Type{StaticReserve}, sys::System)
     return FlattenIteratorWrapper(
         StaticReserve,
-        [collect(IS.get_components(x, sys.data)) for x in STATIC_RESERVE_STRUCT_TYPES]
+        [IS.get_components(x, sys.data) for x in STATIC_RESERVE_STRUCT_TYPES]
     )
 end
 
-function get_components(
-                        ::Type{VariableReserve},
-                        sys::System,
-                       )
+function get_components(::Type{VariableReserve}, sys::System)
     return FlattenIteratorWrapper(
         VariableReserve,
-        [collect(IS.get_components(x, sys.data)) for x in VARIABLE_RESERVE_STRUCT_TYPES]
+        [IS.get_components(x, sys.data) for x in VARIABLE_RESERVE_STRUCT_TYPES]
     )
 end
 
