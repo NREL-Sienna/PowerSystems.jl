@@ -67,15 +67,3 @@ end
                                                      "ACTIVSg2000.m"))
     validate_serialization(sys)
 end
-
-@testset "Test serialization utility functions" begin
-    text = "SomeType{ParameterType1, ParameterType2}"
-    type_str, parameters = IS.separate_type_and_parameter_types(text)
-    @test type_str == "SomeType"
-    @test parameters == ["ParameterType1", "ParameterType2"]
-
-    text = "SomeType"
-    type_str, parameters = IS.separate_type_and_parameter_types(text)
-    @test type_str == "SomeType"
-    @test parameters == []
-end

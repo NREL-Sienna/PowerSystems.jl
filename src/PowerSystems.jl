@@ -124,6 +124,9 @@ export Source
 
 export Service
 export Reserve
+export ReserveDirection
+export ReserveUp
+export ReserveDown
 export StaticReserve
 export VariableReserve
 export Transfer
@@ -255,6 +258,8 @@ include("models/dynamic_inverter_components.jl")
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
+
+include("models/service_struct_types.jl")
 
 # Dynamic Composed types
 include("models/dynamic_generator.jl")

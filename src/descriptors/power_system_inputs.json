@@ -497,6 +497,14 @@
                 "Transfer"
             ],
             "description": "Type of Struct"
+        },
+        {
+            "name": "direction",
+            "description": "Direction",
+            "value_options": [
+                "Up",
+                "Down"
+            ]
         }
     ],
     "storage": [

@@ -102,3 +102,12 @@ end
     @test cdm_branches[6].rate == get_branch(mpsys, cdm_branches[6]).rate
     @test cdm_branches[120].rate == get_branch(mpsys, cdm_branches[120]).rate
 end
+
+@testset "Test reserve direction" begin
+    @test PSY.get_reserve_direction("Up") == ReserveUp
+    @test PSY.get_reserve_direction("Down") == ReserveDown
+
+    for invalid in ("up", "down", "right", "left")
+        @test_throws PSY.DataFormatError PSY.get_reserve_direction(invalid)
+    end
+end
