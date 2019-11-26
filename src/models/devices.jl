@@ -9,9 +9,7 @@ function add_service!(device::Device, service::Service)
     services = get_services(device)
     for _service in services
         if IS.get_uuid(service) == IS.get_uuid(_service)
-            throw(ArgumentError(
-                "service $(get_name(service)) is already attached to $(get_name(device))"
-            ))
+            throw(ArgumentError("service $(get_name(service)) is already attached to $(get_name(device))"))
         end
     end
 
@@ -28,9 +26,7 @@ Throws ArgumentError if the service is not attached to the device.
 """
 function remove_service!(device::Device, service::Service)
     if !_remove_service!(device, service)
-        throw(ArgumentError(
-            "service $(get_name(service)) was not attached to $(get_name(device))"
-        ))
+        throw(ArgumentError("service $(get_name(service)) was not attached to $(get_name(device))"))
     end
 end
 
@@ -80,32 +76,31 @@ function clear_services!(device::Device)
     empty!(services)
 end
 
-#=
-All subtypes of Device define services::Vector{Service}. The values get populated
-with references to existing services. The following functions override JSON encoding to
-replace the devices with their UUIDs. This solves two problems:
 
-1. The information is redundant, consuming unnecessary space. Also, a user could modify
-   information in the JSON file in one place but not the other, which would be very
-   problematic.
-2. The services are stored in an vector of abstract types. JSON doesn't provide a
-   way to encode the actual concrete type, so deserialization would have to infer the type.
-   There is no guessing if the UUIDs are stored instead. The deserialization process can
-   replace the references with actual devices.
-=#
+# All subtypes of Device define services::Vector{Service}. The values get populated
+# with references to existing services. The following functions override JSON encoding to
+# replace the devices with their UUIDs. This solves two problems:
+#
+# 1. The information is redundant, consuming unnecessary space. Also, a user could modify
+#    information in the JSON file in one place but not the other, which would be very
+#    problematic.
+# 2. The services are stored in an vector of abstract types. JSON doesn't provide a
+#    way to encode the actual concrete type, so deserialization would have to infer the type.
+#    There is no guessing if the UUIDs are stored instead. The deserialization process can
+#    replace the references with actual devices.
 
-function JSON2.write(io::IO, device::T) where T <: Device
+function JSON2.write(io::IO, device::T) where {T<:Device}
     return JSON2.write(io, encode_for_json(device))
 end
 
-function JSON2.write(device::T) where T <: Device
+function JSON2.write(device::T) where {T<:Device}
     return JSON2.write(encode_for_json(device))
 end
 
 """
 Encode composed buses and services as UUIDs.
 """
-function encode_for_json(device::T) where T <: Device
+function encode_for_json(device::T) where {T<:Device}
     fields = fieldnames(T)
     vals = []
 
@@ -131,10 +126,10 @@ function IS.convert_type(
     ::Type{T},
     data::NamedTuple,
     component_cache::Dict,
-) where T <: Device
+) where {T<:Device}
     @debug "convert_type" T data
     values = []
-    for (fieldname, fieldtype)  in zip(fieldnames(T), fieldtypes(T))
+    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
         val = getfield(data, fieldname)
         if fieldtype <: Vector{Service}
             services = Service[]

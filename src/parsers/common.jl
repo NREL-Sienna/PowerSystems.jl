@@ -1,20 +1,25 @@
-const GENERATOR_MAPPING_FILE = joinpath(dirname(pathof(PowerSystems)), "parsers",
-                                        "generator_mapping.yaml")
+const GENERATOR_MAPPING_FILE = joinpath(
+    dirname(pathof(PowerSystems)),
+    "parsers",
+    "generator_mapping.yaml",
+)
 
 const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels))
 merge!(
-    STRING2FUEL, Dict(
+    STRING2FUEL,
+    Dict(
         "NG" => NATURAL_GAS::ThermalFuels,
         "NUC" => NUCLEAR::ThermalFuels,
         "GAS" => NATURAL_GAS::ThermalFuels,
         "OIL" => DISTILLATE_FUEL_OIL::ThermalFuels,
         "SYNC_COND" => OTHER::ThermalFuels,
-    )
+    ),
 )
 
 const STRING2PRIMEMOVER = Dict((string(e) => e) for e in instances(PrimeMovers))
 merge!(
-    STRING2PRIMEMOVER, Dict(
+    STRING2PRIMEMOVER,
+    Dict(
         "W2" => WT::PrimeMovers,
         "WIND" => WT::PrimeMovers,
         "PV" => PVe::PrimeMovers,
@@ -27,7 +32,7 @@ merge!(
         "CSP" => CP::PrimeMovers,
         "UN" => OT::PrimeMovers,
         "STORAGE" => BA::PrimeMovers,
-    )
+    ),
 )
 
 """Return a dict where keys are a tuple of input parameters (fuel, unit_type) and values are
@@ -40,7 +45,7 @@ function get_generator_mapping(filename = nothing)
         YAML.load(file)
     end
 
-    mappings = Dict{NamedTuple, DataType}()
+    mappings = Dict{NamedTuple,DataType}()
     for (gen_type, vals) in genmap
         gen = getfield(PowerSystems, Symbol(gen_type))
         for val in vals
@@ -56,7 +61,7 @@ function get_generator_mapping(filename = nothing)
 end
 
 """Return the PowerSystems generator type for this fuel and unit_type."""
-function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType})
+function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple,DataType})
     fuel = uppercase(fuel)
     unit_type = uppercase(unit_type)
     generator = nothing
@@ -97,8 +102,10 @@ function calculate_rating(active_power_max::Float64, reactive_power_max::Float64
     return sqrt(active_power_max^2 + reactive_power_max^2)
 end
 
-function convert_units!(value::Float64,
-                        unit_conversion::NamedTuple{(:From,:To),Tuple{String,String}})
+function convert_units!(
+    value::Float64,
+    unit_conversion::NamedTuple{(:From, :To),Tuple{String,String}},
+)
 
     if unit_conversion.From == "degree" && unit_conversion.To == "radian"
         value = deg2rad(value)

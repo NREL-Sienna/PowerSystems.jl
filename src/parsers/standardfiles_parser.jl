@@ -4,13 +4,16 @@ some data checks.
 
 # Examples
 ```julia
-sys = parse_standard_files("case_file.m", configpath = "custom_validation.json",
-                    bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
-                    load_name_formatter = x->strip(join(x["source_id"], "_")))
+sys = parse_standard_files(
+    "case_file.m",
+    configpath = "custom_validation.json",
+    bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
+    load_name_formatter = x->strip(join(x["source_id"], "_"))
+) -> System
 ```
 
 """
-function parse_standard_files(file::String; kwargs...)::System
+function parse_standard_files(file::String; kwargs...)
 
     # function `parse_file` is in pm_io/common.jl
     data = parse_file(file)

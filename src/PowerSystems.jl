@@ -209,10 +209,22 @@ import UUIDs
 import Base.to_index
 
 import InfrastructureSystems
-import InfrastructureSystems: Components, Deterministic, Probabilistic, Forecast,
-    ScenarioBased, InfrastructureSystemsType, InfrastructureSystemsInternal,
-    FlattenIteratorWrapper, LazyDictFromIterator, DataFormatError, InvalidRange,
-    InvalidValue, get_data, get_horizon, get_initial_time, get_resolution
+import InfrastructureSystems: Components,
+                              Deterministic,
+                              Probabilistic,
+                              Forecast,
+                              ScenarioBased,
+                              InfrastructureSystemsType,
+                              InfrastructureSystemsInternal,
+                              FlattenIteratorWrapper,
+                              LazyDictFromIterator,
+                              DataFormatError,
+                              InvalidRange,
+                              InvalidValue,
+                              get_data,
+                              get_horizon,
+                              get_initial_time,
+                              get_resolution
 
 const IS = InfrastructureSystems
 
@@ -220,11 +232,10 @@ const IS = InfrastructureSystems
 
 using DocStringExtensions
 
-@template (FUNCTIONS, METHODS) =
-    """
-    $(TYPEDSIGNATURES)
-    $(DOCSTRING)
-    """
+@template (FUNCTIONS, METHODS) = """
+                                 $(TYPEDSIGNATURES)
+                                 $(DOCSTRING)
+                                 """
 
 #################################################################################
 # Includes

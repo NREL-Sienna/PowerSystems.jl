@@ -31,12 +31,12 @@ Defaults to the root of the PowerSystems package.
 
 Returns the downloaded folder name.
 """
-function Base.download(::Type{TestData}
-                       ;
-                       folder::AbstractString=joinpath(@__DIR__, "../..") |> abspath,
-                       branch::String="master",
-                       force::Bool=false,
-                      )
+function Base.download(
+    ::Type{TestData};
+    folder::AbstractString = joinpath(@__DIR__, "../..") |> abspath,
+    branch::String = "master",
+    force::Bool = false,
+)
 
     if Sys.iswindows()
         POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.zip"
@@ -49,7 +49,7 @@ function Base.download(::Type{TestData}
         tempfilename = Base.download(POWERSYSTEMSTESTDATA_URL)
         mkpath(directory)
         unzip(os, tempfilename, directory)
-        mv(joinpath(directory, "PowerSystemsTestData-$branch"), data, force=true)
+        mv(joinpath(directory, "PowerSystemsTestData-$branch"), data, force = true)
     end
 
     return data

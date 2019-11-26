@@ -1,10 +1,10 @@
 """Accepts rating as a Float64 and then creates a TwoPartCost."""
-function TwoPartCost(variable_cost::T, args...) where {T <: VarCostArgs}
+function TwoPartCost(variable_cost::T, args...) where {T<:VarCostArgs}
     return TwoPartCost(VariableCost(variable_cost), args...)
 end
 
 """Accepts rating as a Float64 and then creates a ThreePartCost."""
-function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
+function ThreePartCost(variable_cost::T, args...) where {T<:VarCostArgs}
     return ThreePartCost(VariableCost(variable_cost), args...)
 end
 
@@ -34,7 +34,15 @@ function RenewableDispatch(
     op_cost::TwoPartCost,
 )
     tech = TechRenewable(rating, prime_mover, nothing, 1.0)
-    return RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost)
+    return RenewableDispatch(
+        name,
+        available,
+        bus,
+        activepower,
+        reactivepower,
+        tech,
+        op_cost,
+    )
 end
 
 # FIXME: This function name implies that will return a struct named `PowerLoadPF`
@@ -43,7 +51,7 @@ function PowerLoadPF(
     name::String,
     available::Bool,
     bus::Bus,
-    model::Union{Nothing, LoadModel},
+    model::Union{Nothing,LoadModel},
     activepower::Float64,
     maxactivepower::Float64,
     power_factor::Float64,
@@ -58,7 +66,7 @@ function PowerLoadPF(
         activepower,
         reactivepower,
         maxactivepower,
-        maxreactivepower
+        maxreactivepower,
     )
 end
 
@@ -89,12 +97,21 @@ function Line(
         x,
         b,
         rate,
-        (min=-anglelimits, max=anglelimits),
+        (min = -anglelimits, max = anglelimits),
     )
 end
 
 """Allows construction with bus type specified as a string for legacy code."""
-function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basevoltage; ext=Dict{String, Any}())
+function Bus(
+    number,
+    name,
+    bustype::String,
+    angle,
+    voltage,
+    voltagelimits,
+    basevoltage;
+    ext = Dict{String,Any}(),
+)
     return Bus(
         number,
         name,
@@ -109,7 +126,14 @@ function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basev
 end
 
 """Allows construction of a reserve from an iterator."""
-function StaticReserve(name, contributingdevices::IS.FlattenIteratorWrapper, timeframe, requirement, _forecasts, internal)
+function StaticReserve(
+    name,
+    contributingdevices::IS.FlattenIteratorWrapper,
+    timeframe,
+    requirement,
+    _forecasts,
+    internal,
+)
     return StaticReserve(
         name,
         collect(contributingdevices),
