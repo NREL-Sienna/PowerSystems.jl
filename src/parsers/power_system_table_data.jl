@@ -269,15 +269,15 @@ Throws DataFormatError if forecasts with multiple resolutions are detected.
 
 """
 function System(
-                data::PowerSystemTableData;
-                forecast_resolution=nothing,
-                time_series_in_memory=false,
-                runchecks=true,
-               )
+    data::PowerSystemTableData;
+    forecast_resolution = nothing,
+    time_series_in_memory = false,
+    runchecks = true,
+)
     sys = System(
         data.basepower;
         time_series_in_memory = time_series_in_memory,
-        runchecks=runchecks,
+        runchecks = runchecks,
     )
 
     bus_csv_parser!(sys, data)
@@ -678,7 +678,10 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             service = StaticReserve{direction}(reserve.name, reserve.timeframe, 0.0)
         else
             service = VariableReserve{direction}(
-                reserve.name, reserve.timeframe, requirement)
+                reserve.name,
+                reserve.timeframe,
+                requirement,
+            )
         end
 
         add_service!(sys, service, contributing_devices)
