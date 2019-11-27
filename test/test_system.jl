@@ -152,3 +152,12 @@ end
 @testset "Test exported names" begin
     @test IS.validate_exported_names(PowerSystems)
 end
+
+@testset "Test system ext" begin
+    sys = System(100)
+    ext = get_ext(sys)
+    ext["data"] = 2
+    @test get_ext(sys)["data"] == 2
+    clear_ext(sys)
+    @test isempty(get_ext(sys))
+end

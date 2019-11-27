@@ -188,6 +188,7 @@ export get_name
 export to_json
 export check_forecast_consistency
 export validate_forecast_consistency
+export clear_ext
 
 #################################################################################
 # Imports

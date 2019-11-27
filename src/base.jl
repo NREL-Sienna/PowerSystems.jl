@@ -44,6 +44,7 @@ struct System <: PowerSystemType
         bus_numbers = Set{Int}()
         runchecks = get(kwargs, :runchecks, true)
         sys = new(data, basepower, bus_numbers, runchecks, internal)
+        return sys
     end
 end
 
@@ -53,7 +54,8 @@ function System(basepower; kwargs...)
 end
 
 function System(data, basepower; kwargs...)
-    return System(data, basepower, InfrastructureSystemsInternal(); kwargs...)
+    internal = get(kwargs, :internal, InfrastructureSystemsInternal())
+    return System(data, basepower, internal; kwargs...)
 end
 
 """System constructor when components are constructed externally."""
@@ -183,6 +185,16 @@ function System(filename::String)
     check!(sys)
     return sys
 end
+
+"""
+Return a user-modifiable dictionary to store extra information.
+"""
+get_ext(sys::System) = IS.get_ext(sys.internal)
+
+"""
+Clear any value stored in ext.
+"""
+clear_ext(sys::System) = IS.clear_ext(sys.internal)
 
 """
     add_component!(sys::System, component::T; kwargs...) where T <: Component
@@ -1031,11 +1043,11 @@ function encode_for_json(sys::T) where T <: System
     return NamedTuple{Tuple(final_fields)}(vals)
 end
 
-
 function JSON2.read(io::IO, ::Type{System})
     raw = JSON2.read(io, NamedTuple)
     data = IS.deserialize(IS.SystemData, Component, raw.data)
-    sys = System(data, float(raw.basepower); runchecks=raw.runchecks)
+    internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
+    sys = System(data, float(raw.basepower); internal=internal, runchecks=raw.runchecks)
     return sys
 end
 

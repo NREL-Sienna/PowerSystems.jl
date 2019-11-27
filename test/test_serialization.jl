@@ -6,6 +6,8 @@ function validate_serialization(sys::System)
     path = "test_system_serialization.json"
     io = open(path, "w")
     @info "Serializing to $path"
+    sys_ext = get_ext(sys)
+    sys_ext["data"] = 5
     ext_test_bus_name = ""
     try
         IS.prepare_for_serialization!(sys.data, path)
@@ -27,6 +29,8 @@ function validate_serialization(sys::System)
             JSON2.read(file).data.time_series_storage_file
         end
         sys2 = System(path)
+        sys_ext2 = get_ext(sys2)
+        sys_ext2["data"] != 5 && return false
         bus = PSY.get_component(PSY.Bus, sys2, ext_test_bus_name)
         ext = PSY.get_ext(bus)
         ext["test_field"] != 1 && return false
