@@ -243,6 +243,7 @@ Construct a System from PowerSystemTableData data.
 - `forecast_resolution::Union{DateTime, Nothing}=nothing`: only store forecasts that match
   this resolution.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5 file
+- `runchecks::Bool=true`: Validate struct fields.
 
 Throws DataFormatError if forecasts with multiple resolutions are detected.
 - A forecast has a different resolution than others.
@@ -253,8 +254,13 @@ function System(
                 data::PowerSystemTableData;
                 forecast_resolution=nothing,
                 time_series_in_memory=false,
+                runchecks=true,
                )
-    sys = System(data.basepower; time_series_in_memory=time_series_in_memory)
+    sys = System(
+        data.basepower;
+        time_series_in_memory=time_series_in_memory,
+        runchecks=runchecks,
+    )
 
     bus_csv_parser!(sys, data)
     loadzone_csv_parser!(sys, data)
@@ -631,13 +637,25 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             ))
         end
 
+        direction = get_reserve_direction(reserve.direction)
         if isnothing(requirement)
-            service = StaticReserve(reserve.name, reserve.timeframe, 0.0)
+            service = StaticReserve{direction}(reserve.name, reserve.timeframe, 0.0)
         else
-            service = VariableReserve(reserve.name, reserve.timeframe, requirement)
+            service = VariableReserve{direction}(
+                reserve.name, reserve.timeframe, requirement)
         end
 
         add_service!(sys, service, contributing_devices)
+    end
+end
+
+function get_reserve_direction(direction::AbstractString)
+    if direction == "Up"
+        return ReserveUp
+    elseif direction == "Down"
+        return ReserveDown
+    else
+        throw(DataFormatError("invalid reserve direction $direction"))
     end
 end
 

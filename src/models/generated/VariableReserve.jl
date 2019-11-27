@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct VariableReserve <: Reserve
+    mutable struct VariableReserve{T <: ReserveDirection} <: Reserve
         name::String
         timeframe::Float64
         requirement::Float64
@@ -21,7 +21,7 @@ Data Structure for the procurement products for system simulations.
 - `_forecasts::InfrastructureSystems.Forecasts`: component forecasts
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct VariableReserve <: Reserve
+mutable struct VariableReserve{T <: ReserveDirection} <: Reserve
     name::String
     "the relative saturation timeframe"
     timeframe::Float64
@@ -34,17 +34,17 @@ mutable struct VariableReserve <: Reserve
     internal::InfrastructureSystemsInternal
 end
 
-function VariableReserve(name, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    VariableReserve(name, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal(), )
+function VariableReserve{T}(name, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserve(; name, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    VariableReserve(name, timeframe, requirement, ext, _forecasts, )
+function VariableReserve{T}(; name, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, timeframe, requirement, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-function VariableReserve(::Nothing)
-    VariableReserve(;
+function VariableReserve{T}(::Nothing) where T <: ReserveDirection
+    VariableReserve{T}(;
         name="init",
         timeframe=0.0,
         requirement=0.0,

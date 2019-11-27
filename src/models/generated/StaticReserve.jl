@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct StaticReserve <: Reserve
+    mutable struct StaticReserve{T <: ReserveDirection} <: Reserve
         name::String
         timeframe::Float64
         requirement::Float64
@@ -19,7 +19,7 @@ Data Structure for a proportional reserve product for system simulations.
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct StaticReserve <: Reserve
+mutable struct StaticReserve{T <: ReserveDirection} <: Reserve
     name::String
     "the relative saturation timeframe"
     timeframe::Float64
@@ -30,17 +30,17 @@ mutable struct StaticReserve <: Reserve
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserve(name, timeframe, requirement, ext=Dict{String, Any}(), )
-    StaticReserve(name, timeframe, requirement, ext, InfrastructureSystemsInternal(), )
+function StaticReserve{T}(name, timeframe, requirement, ext=Dict{String, Any}(), ) where T <: ReserveDirection
+    StaticReserve{T}(name, timeframe, requirement, ext, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserve(; name, timeframe, requirement, ext=Dict{String, Any}(), )
-    StaticReserve(name, timeframe, requirement, ext, )
+function StaticReserve{T}(; name, timeframe, requirement, ext=Dict{String, Any}(), ) where T <: ReserveDirection
+    StaticReserve{T}(name, timeframe, requirement, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
-function StaticReserve(::Nothing)
-    StaticReserve(;
+function StaticReserve{T}(::Nothing) where T <: ReserveDirection
+    StaticReserve{T}(;
         name="init",
         timeframe=0.0,
         requirement=0.0,

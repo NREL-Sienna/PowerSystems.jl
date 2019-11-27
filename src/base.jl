@@ -452,6 +452,91 @@ function get_components(
     return IS.get_components(T, sys.data)
 end
 
+# The following functions are reimplemented because Reserve subtypes are parameterized and
+# so we cannot auto-discover the types.
+
+function get_components(::Type{Component}, sys::System)
+    return FlattenIteratorWrapper(
+        Component,
+        [
+            IS.get_components(Component, sys.data),
+            get_components(Service, sys),
+        ],
+    )
+end
+
+function get_components(::Type{Service}, sys::System)
+    return FlattenIteratorWrapper(
+        Service,
+        [IS.get_components(x, sys.data) for x in SERVICE_STRUCT_TYPES]
+    )
+end
+
+function get_components(::Type{Reserve}, sys::System)
+    return FlattenIteratorWrapper(
+        Reserve,
+        [IS.get_components(x, sys.data) for x in RESERVE_STRUCT_TYPES]
+    )
+end
+
+function get_components(::Type{StaticReserve}, sys::System)
+    return FlattenIteratorWrapper(
+        StaticReserve,
+        [IS.get_components(x, sys.data) for x in STATIC_RESERVE_STRUCT_TYPES]
+    )
+end
+
+function get_components(::Type{VariableReserve}, sys::System)
+    return FlattenIteratorWrapper(
+        VariableReserve,
+        [IS.get_components(x, sys.data) for x in VARIABLE_RESERVE_STRUCT_TYPES]
+    )
+end
+
+function IS.get_components_by_name(
+    ::Type{Service},
+    data::IS.SystemData,
+    name::AbstractString
+)
+    return _get_components_by_name(SERVICE_STRUCT_TYPES, data, name)
+end
+
+function IS.get_components_by_name(
+    ::Type{Reserve},
+    data::IS.SystemData,
+    name::AbstractString
+)
+    return _get_components_by_name(RESERVE_STRUCT_TYPES, data, name)
+end
+
+function IS.get_components_by_name(
+    ::Type{StaticReserve},
+    data::IS.SystemData,
+    name::AbstractString
+)
+    return _get_components_by_name(STATIC_RESERVE_STRUCT_TYPES, data, name)
+end
+
+function IS.get_components_by_name(
+    ::Type{VariableReserve},
+    data::IS.SystemData,
+    name::AbstractString
+)
+    return _get_components_by_name(VARIABLE_RESERVE_STRUCT_TYPES, data, name)
+end
+
+function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
+    _components = []
+    for subtype in abstract_types
+        component = IS.get_component(subtype, data, name)
+        if !isnothing(component)
+            push!(_components, component)
+        end
+    end
+
+    return _components
+end
+
 """
     get_components_by_name(
                            ::Type{T},
@@ -978,7 +1063,7 @@ function IS.deserialize_components(
 
     # Skip Devices this round because they have Services.
     for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-        c_type = getfield(PowerSystems, Symbol(IS.strip_module_name(string(c_type_sym))))
+        c_type = _get_component_type(c_type_sym)
         (c_type in components_as_uuids || c_type <: Device) && continue
         for component in IS.get_components_raw(IS.SystemData, c_type, raw)
             comp = IS.convert_type(c_type, component, component_cache)
@@ -989,7 +1074,7 @@ function IS.deserialize_components(
 
     # Now get the Devices.
     for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-        c_type = getfield(PowerSystems, Symbol(IS.strip_module_name(string(c_type_sym))))
+        c_type = _get_component_type(c_type_sym)
         if c_type <: Device
             for component in IS.get_components_raw(IS.SystemData, c_type, raw)
                 comp = IS.convert_type(c_type, component, component_cache)
@@ -997,6 +1082,18 @@ function IS.deserialize_components(
             end
         end
     end
+end
+
+function _get_component_type(component_type::Symbol)
+    base_name = IS.strip_module_name(string(component_type))
+    type_name, parameters = IS.separate_type_and_parameter_types(base_name)
+    c_type = getfield(PowerSystems, Symbol(type_name))
+    if !isempty(parameters)
+        parametric_types = [getfield(PowerSystems, Symbol(x)) for x in parameters]
+        c_type = c_type{parametric_types...}
+    end
+
+    return c_type
 end
 
 function JSON2.write(io::IO, component::T) where T <: Component

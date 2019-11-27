@@ -1863,6 +1863,7 @@
     {
         "struct_name": "StaticReserve",
         "docstring": "Data Structure for a proportional reserve product for system simulations.",
+        "parametric": "ReserveDirection",
         "fields": [
             {
                 "null_value": "init",
@@ -1909,6 +1910,7 @@
     {
         "struct_name": "VariableReserve",
         "docstring": "Data Structure for the procurement products for system simulations.",
+        "parametric": "ReserveDirection",
         "fields": [
             {
                 "null_value": "init",
