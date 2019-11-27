@@ -269,7 +269,6 @@ Throws DataFormatError if forecasts with multiple resolutions are detected.
 
 """
 function System(
-<<<<<<< HEAD
                 data::PowerSystemTableData;
                 forecast_resolution=nothing,
                 time_series_in_memory=false,
@@ -277,22 +276,9 @@ function System(
                )
     sys = System(
         data.basepower;
-        time_series_in_memory=time_series_in_memory,
+        time_series_in_memory = time_series_in_memory,
         runchecks=runchecks,
     )
-||||||| merged common ancestors
-                data::PowerSystemTableData;
-                forecast_resolution=nothing,
-                time_series_in_memory=false,
-               )
-    sys = System(data.basepower; time_series_in_memory=time_series_in_memory)
-=======
-    data::PowerSystemTableData;
-    forecast_resolution = nothing,
-    time_series_in_memory = false,
-)
-    sys = System(data.basepower; time_series_in_memory = time_series_in_memory)
->>>>>>> Style and whitespace changes to all files
 
     bus_csv_parser!(sys, data)
     loadzone_csv_parser!(sys, data)
