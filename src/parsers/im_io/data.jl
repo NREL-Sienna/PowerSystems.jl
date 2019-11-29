@@ -30,8 +30,7 @@ function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
 end
 
 "checks if a given network data is a multinetwork"
-ismultinetwork(data::Dict{String,<:Any}) =
-    (haskey(data, "multinetwork") && data["multinetwork"] == true)
+ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
 function im_replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{String})
@@ -42,7 +41,9 @@ function im_replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{
 
     name = get(sn_data, "name", "anonymous")
 
-    mn_data = Dict{String,Any}("nw" => Dict{String,Any}())
+    mn_data = Dict{String,Any}(
+        "nw" => Dict{String,Any}()
+    )
 
     mn_data["multinetwork"] = true
 
@@ -120,7 +121,7 @@ end
 
 "tests if two dicts are equal, up to floating point precision"
 function compare_dict(d1, d2)
-    for (k1, v1) in d1
+    for (k1,v1) in d1
         if !haskey(d2, k1)
             #println(k1)
             return false
@@ -181,3 +182,4 @@ function _compare_numbers(v1, v2)
     end
     return true
 end
+
