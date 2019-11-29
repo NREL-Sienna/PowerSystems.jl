@@ -129,7 +129,7 @@ end
     forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_rt.json")
 
     ## This will fail because the resolutions are different.
-    @test_throws IS.DataFormatError add_forecasts!(sys, forecasts_metadata)
+    @test_throws PowerSystems.DataFormatError add_forecasts!(sys, forecasts_metadata)
 
     ## TODO: need a dataset with same resolution but different horizon.
 

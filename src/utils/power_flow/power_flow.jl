@@ -5,14 +5,14 @@ Calculates the From - To comp[lex power flow (Flow injected at the bus) of branc
 TapTransformer
 
 """
- function flow_val(b::TapTransformer)
+function flow_val(b::TapTransformer)
     Y_t = 1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im)
     c = 1 / PowerSystems.get_tap(b)
     arc = PowerSystems.get_arc(b)
-    V_from = arc.from.voltage*(cos(arc.from.angle)+sin(arc.from.angle)*1im)
-    V_to = arc.to.voltage*(cos(arc.to.angle)+sin(arc.to.angle)*1im)
+    V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
+    V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
     I = (V_from * Y_t * c^2) - (V_to * Y_t * c)
-    flow = V_from*conj(I)
+    flow = V_from * conj(I)
     return flow
 end
 
@@ -26,10 +26,10 @@ Line
 function flow_val(b::Line)
     Y_t = (1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im))
     arc = PowerSystems.get_arc(b)
-    V_from = arc.from.voltage*(cos(arc.from.angle)+sin(arc.from.angle)*1im)
-    V_to = arc.to.voltage*(cos(arc.to.angle)+sin(arc.to.angle)*1im)
-    I = V_from*(Y_t + (1im * PowerSystems.get_b(b).from)) - V_to*Y_t
-    flow = V_from*conj(I)
+    V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
+    V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
+    I = V_from * (Y_t + (1im * PowerSystems.get_b(b).from)) - V_to * Y_t
+    flow = V_from * conj(I)
     return flow
 end
 
@@ -43,10 +43,10 @@ Transformer2W
 function flow_val(b::Transformer2W)
     Y_t = 1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im)
     arc = PowerSystems.get_arc(b)
-    V_from = arc.from.voltage*(cos(arc.from.angle)+sin(arc.from.angle)*1im)
-    V_to = arc.to.voltage*(cos(arc.to.angle)+sin(arc.to.angle)*1im)
-    I = V_from*(Y_t + (1im * PowerSystems.get_primaryshunt(b))) - V_to*Y_t
-    flow = V_from*conj(I)
+    V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
+    V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
+    I = V_from * (Y_t + (1im * PowerSystems.get_primaryshunt(b))) - V_to * Y_t
+    flow = V_from * conj(I)
     return flow
 end
 
@@ -70,16 +70,16 @@ function _write_pf_sol!(sys::System, nl_result)
 
     for (ix, bus) in buses
         if bus.bustype == PowerSystems.REF
-            P_gen = result[2 * ix - 1]
-            Q_gen = result[2 * ix]
+            P_gen = result[2*ix-1]
+            Q_gen = result[2*ix]
             injection_components = get_components(Generator, sys)
             devices = [d for d in injection_components if d.bus == bus]
             generator = devices[1]
             generator.activepower = P_gen
             generator.reactivepower = Q_gen
         elseif bus.bustype == PowerSystems.PQ
-            Q_gen = result[2 * ix - 1]
-            θ = result[2 * ix]
+            Q_gen = result[2*ix-1]
+            θ = result[2*ix]
             injection_components = get_components(Generator, sys)
             devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
@@ -88,8 +88,8 @@ function _write_pf_sol!(sys::System, nl_result)
             end
             bus.angle = θ
         elseif bus.bustype == PowerSystems.PV
-            Vm = result[2 * ix - 1]
-            θ = result[2 * ix]
+            Vm = result[2*ix-1]
+            θ = result[2*ix]
             bus.voltage = Vm
             bus.angle = θ
         end

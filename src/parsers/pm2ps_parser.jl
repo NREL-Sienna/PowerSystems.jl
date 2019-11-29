@@ -12,7 +12,7 @@ sys = PSY.pm2ps_dict(pm_data, configpath = "ACTIVSg25k_validation.json",
                     load_name_formatter = x->strip(join(x["source_id"], "_")))
 ```
 """
-function pm2ps_dict(data::Dict{String, Any}; kwargs...)
+function pm2ps_dict(data::Dict{String,Any}; kwargs...)
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
     end
@@ -43,27 +43,29 @@ end
 """
 Creates a PowerSystems.Bus from a PowerSystems bus dictionary
 """
-function make_bus(bus_dict::Dict{String, Any})
-    bus = Bus(bus_dict["number"],
-                     bus_dict["name"],
-                     bus_dict["bustype"],
-                     bus_dict["angle"],
-                     bus_dict["voltage"],
-                     bus_dict["voltagelimits"],
-                     bus_dict["basevoltage"]
-                     )
-     return bus
- end
+function make_bus(bus_dict::Dict{String,Any})
+    bus = Bus(
+        bus_dict["number"],
+        bus_dict["name"],
+        bus_dict["bustype"],
+        bus_dict["angle"],
+        bus_dict["voltage"],
+        bus_dict["voltagelimits"],
+        bus_dict["basevoltage"],
+    )
+    return bus
+end
 
 function make_bus(bus_name, bus_number, d, bus_types)
-    bus = make_bus(Dict{String, Any}("name" => bus_name ,
-                            "number" => bus_number,
-                            "bustype" => bus_types[d["bus_type"]],
-                            "angle" => d["va"],
-                            "voltage" => d["vm"],
-                            "voltagelimits" => (min=d["vmin"], max=d["vmax"]),
-                            "basevoltage" => d["base_kv"]
-                            ))
+    bus = make_bus(Dict{String,Any}(
+        "name" => bus_name,
+        "number" => bus_number,
+        "bustype" => bus_types[d["bus_type"]],
+        "angle" => d["va"],
+        "voltage" => d["vm"],
+        "voltagelimits" => (min = d["vmin"], max = d["vmax"]),
+        "basevoltage" => d["base_kv"],
+    ))
     return bus
 end
 
@@ -76,19 +78,21 @@ end
 end
 
 function Base.convert(::Type{BusType}, x::MatpowerBusType)
-    map = Dict(MATPOWER_ISOLATED => ISOLATED,
-               MATPOWER_PQ => PQ,
-               MATPOWER_PV => PV,
-               MATPOWER_REF => REF)
+    map = Dict(
+        MATPOWER_ISOLATED => ISOLATED,
+        MATPOWER_PQ => PQ,
+        MATPOWER_PV => PV,
+        MATPOWER_REF => REF,
+    )
     return map[x]
 end
 
 function read_bus!(sys::System, data; kwargs...)
     @info "Reading bus data"
-    bus_number_to_bus = Dict{Int, Bus}()
+    bus_number_to_bus = Dict{Int,Bus}()
 
     bus_types = instances(MatpowerBusType)
-    data = sort(collect(data["bus"]), by = x->parse(Int64, x[1]))
+    data = sort(collect(data["bus"]), by = x -> parse(Int64, x[1]))
 
     if length(data) == 0
         @error "No bus data found" # TODO : need for a model without a bus
@@ -104,27 +108,28 @@ function read_bus!(sys::System, data; kwargs...)
         bus_number = Int(d["bus_i"])
         bus = make_bus(bus_name, bus_number, d, bus_types)
         bus_number_to_bus[bus.number] = bus
-        add_component!(sys, bus; skip_validation=SKIP_PM_VALIDATION)
+        add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
 
     return bus_number_to_bus
 end
 
 function make_load(d, bus; kwargs...)
-    _get_name = get(kwargs, :load_name_formatter, x->strip(join(x["source_id"])))
-    return PowerLoad(;
-        name= _get_name(d),
-        available=true,
+    _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
+    return PowerLoad(
+        ;
+        name = _get_name(d),
+        available = true,
         model = ConstantPower::LoadModel,
-        bus=bus,
-        activepower=d["pd"],
-        reactivepower=d["qd"],
-        maxactivepower=d["pd"],
-        maxreactivepower=d["qd"],
+        bus = bus,
+        activepower = d["pd"],
+        reactivepower = d["qd"],
+        maxactivepower = d["pd"],
+        maxreactivepower = d["qd"],
     )
 end
 
-function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
     if !haskey(data, "load")
         @error "There are no loads in this file"
         return
@@ -136,31 +141,31 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
             bus = bus_number_to_bus[d["load_bus"]]
             load = make_load(d, bus; kwargs...)
 
-            add_component!(sys, load; skip_validation=SKIP_PM_VALIDATION)
+            add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
         end
     end
 end
 
 function make_loadzones(d, bus_l, activepower, reactivepower; kwargs...)
     _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
-    return LoadZones(;
-        number=d["index"],
-        name=_get_name(d),
-        buses=bus_l,
-        maxactivepower=sum(activepower),
-        maxreactivepower=sum(reactivepower),
+    return LoadZones(
+        ;
+        number = d["index"],
+        name = _get_name(d),
+        buses = bus_l,
+        maxactivepower = sum(activepower),
+        maxreactivepower = sum(reactivepower),
     )
 end
 
-function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
     if !haskey(data, "areas")
         @info "There are no Load Zones data in this file"
         return
     end
 
     for (d_key, d) in data["areas"]
-        buses = [bus_number_to_bus[b["bus_i"]] for (b_key, b) in data["bus"]
-                 if b["area"] == d["index"]]
+        buses = [bus_number_to_bus[b["bus_i"]] for (b_key, b) in data["bus"] if b["area"] == d["index"]]
         bus_names = Set{String}()
         for bus in buses
             push!(bus_names, get_name(bus))
@@ -180,38 +185,42 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; k
         d["name"] = get(d, "name", d_key)
 
         load_zones = make_loadzones(d, buses, active_power, reactive_power; kwargs...)
-        add_component!(sys, load_zones; skip_validation=SKIP_PM_VALIDATION)
+        add_component!(sys, load_zones; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
 function make_hydro_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
-    tech = TechHydro(;
-        rating=calculate_rating(d["pmax"], d["qmax"]),
-        primemover=convert(PrimeMovers, d["type"]),
-        activepowerlimits=(min=d["pmin"], max=d["pmax"]),
-        reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
-        ramplimits=(up=ramp_agc / d["mbase"], down=ramp_agc / d["mbase"]),
-        timelimits=nothing,
+    tech = TechHydro(
+        ;
+        rating = calculate_rating(d["pmax"], d["qmax"]),
+        primemover = convert(PrimeMovers, d["type"]),
+        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
+        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
+        ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
+        timelimits = nothing,
     )
 
     curtailcost = TwoPartCost(0.0, 0.0)
 
-    return HydroDispatch(name = gen_name,
-                         available = Bool(d["gen_status"]),
-                         bus = bus,
-                         activepower = d["pg"],
-                         reactivepower = d["qg"],
-                         tech = tech,
-                         op_cost = curtailcost)
+    return HydroDispatch(
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
+        activepower = d["pg"],
+        reactivepower = d["qg"],
+        tech = tech,
+        op_cost = curtailcost,
+    )
 end
 
 function make_tech_renewable(d)
-    tech = TechRenewable(;
-        rating=float(d["pmax"]),
-        primemover=convert(PrimeMovers, d["type"]),
-        reactivepowerlimits=(min=d["qmin"], max=d["qmax"]),
-        powerfactor=1.0,
+    tech = TechRenewable(
+        ;
+        rating = float(d["pmax"]),
+        primemover = convert(PrimeMovers, d["type"]),
+        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
+        powerfactor = 1.0,
     )
 
     return tech
@@ -220,14 +229,15 @@ end
 function make_renewable_dispatch(gen_name, d, bus)
     tech = make_tech_renewable(d)
     cost = TwoPartCost(0.0, 0.0)
-    generator = RenewableDispatch(;
-        name=gen_name,
-        available=Bool(d["gen_status"]),
-        bus=bus,
+    generator = RenewableDispatch(
+        ;
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
         activepower = d["pg"],
         reactivepower = d["qg"],
-        tech=tech,
-        op_cost=cost,
+        tech = tech,
+        op_cost = cost,
     )
 
     return generator
@@ -235,36 +245,21 @@ end
 
 function make_renewable_fix(gen_name, d, bus)
     tech = make_tech_renewable(d)
-    generator = RenewableFix(;
-        name=gen_name,
-        available=Bool(d["gen_status"]),
-        bus=bus,
+    generator = RenewableFix(
+        ;
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
         activepower = d["pg"],
         reactivepower = d["qg"],
-        tech=tech,
+        tech = tech,
     )
 
     return generator
 end
 
 function make_generic_battery(gen_name, d, bus)
-
-    # TODO: placeholder
-    #battery=GenericBattery(;
-    #    name=gen_name,
-    #    available=Bool(d["gen_status"]),
-    #    bus=bus,
-    #    energy=,
-    #    capacity=,
-    #    rating=,
-    #    activepower=,
-    #    inputactivepowerlimits=,
-    #    outputactivepowerlimits=,
-    #    efficiency=,
-    #    reactivepower=,
-    #    reactivepowerlimits=,
-    #)
-    #return battery
+    error("Not implemented yet.")
 end
 
 """
@@ -278,9 +273,13 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         if model == PIECEWISE_LINEAR::GeneratorCostModel
             cost_component = d["cost"]
             power_p = [i for (ix, i) in enumerate(cost_component) if isodd(ix)]
-            cost_p =  [i for (ix, i) in enumerate(cost_component) if iseven(ix)]
+            cost_p = [i for (ix, i) in enumerate(cost_component) if iseven(ix)]
             cost = [(p, c) for (p, c) in zip(cost_p, power_p)]
-            fixed = max(0.0, cost[1][1] - (cost[2][1] - cost[1][1])/(cost[2][2] - cost[1][2])*cost[1][2])
+            fixed = max(
+                0.0,
+                cost[1][1] -
+                (cost[2][1] - cost[1][1]) / (cost[2][2] - cost[1][2]) * cost[1][2],
+            )
             cost = [(c[1] - fixed, c[2]) for c in cost]
         elseif model == POLYNOMIAL::GeneratorCostModel
             if d["ncost"] == 0
@@ -313,7 +312,8 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
     # TODO GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
 
-    tech = TechThermal(;
+    tech = TechThermal(
+        ;
         rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
         primemover = convert(PrimeMovers, d["type"]),
         fuel = convert(ThermalFuels, d["fuel"]),
@@ -322,21 +322,22 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
         timelimits = nothing,
     )
-    op_cost = ThreePartCost(;
-        variable=cost,
-        fixed=fixed,
-        startup=startup,
-        shutdn=shutdn,
+    op_cost = ThreePartCost(
+        ;
+        variable = cost,
+        fixed = fixed,
+        startup = startup,
+        shutdn = shutdn,
     )
 
     thermal_gen = ThermalStandard(
-        name=gen_name,
-        available=Bool(d["gen_status"]),
-        bus=bus,
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
         activepower = d["pg"],
         reactivepower = d["qg"],
-        tech=tech,
-        op_cost=op_cost,
+        tech = tech,
+        op_cost = op_cost,
     )
 
     return thermal_gen
@@ -345,7 +346,7 @@ end
 """
 Transfer generators to ps_dict according to their classification
 """
-function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
     @info "Reading generator data"
 
     if !haskey(data, "gen")
@@ -362,7 +363,8 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         elseif haskey(pm_gen, "name")
             _get_name = _get_pm_dict_name
         elseif haskey(pm_gen, "source_id")
-            _get_name = d -> strip(string(d["source_id"][1]) * "-" * string(d["source_id"][2]) * "-" * string(d["index"]))
+            _get_name = d -> strip(string(d["source_id"][1]) * "-" *
+                                   string(d["source_id"][2]) * "-" * string(d["index"]))
         end
 
         gen_name = _get_name(pm_gen)
@@ -391,7 +393,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
             continue
         end
 
-        add_component!(sys, generator; skip_validation=SKIP_PM_VALIDATION)
+        add_component!(sys, generator; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
@@ -425,72 +427,76 @@ function make_line(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
 
-    return Line(;
-        name=name,
-        available=Bool(d["br_status"]),
+    return Line(
+        ;
+        name = name,
+        available = Bool(d["br_status"]),
         activepower_flow = pf,
         reactivepower_flow = qf,
-        arc=Arc(bus_f, bus_t),
-        r=d["br_r"],
-        x=d["br_x"],
-        b=(from=d["b_fr"], to=d["b_to"]),
-        rate=d["rate_a"],
-        anglelimits=(min=d["angmin"], max=d["angmax"]),
+        arc = Arc(bus_f, bus_t),
+        r = d["br_r"],
+        x = d["br_x"],
+        b = (from = d["b_fr"], to = d["b_to"]),
+        rate = d["rate_a"],
+        anglelimits = (min = d["angmin"], max = d["angmax"]),
     )
 end
 
 function make_transformer_2w(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
-    return Transformer2W(;
-        name=name,
-        available=Bool(d["br_status"]),
+    return Transformer2W(
+        ;
+        name = name,
+        available = Bool(d["br_status"]),
         activepower_flow = pf,
         reactivepower_flow = qf,
-        arc=Arc(bus_f, bus_t),
-        r=d["br_r"],
-        x=d["br_x"],
-        primaryshunt=d["b_fr"],  # TODO: which b ??
-        rate=d["rate_a"],
+        arc = Arc(bus_f, bus_t),
+        r = d["br_r"],
+        x = d["br_x"],
+        primaryshunt = d["b_fr"],  # TODO: which b ??
+        rate = d["rate_a"],
     )
 end
 
 function make_tap_transformer(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
-    return TapTransformer(;
-        name=name,
-        available=Bool(d["br_status"]),
+    return TapTransformer(
+        ;
+        name = name,
+        available = Bool(d["br_status"]),
         activepower_flow = pf,
         reactivepower_flow = qf,
-        arc=Arc(bus_f, bus_t),
-        r=d["br_r"],
-        x=d["br_x"],
-        tap=d["tap"],
-        primaryshunt=d["b_fr"],  # TODO: which b ??
-        rate=d["rate_a"],
+        arc = Arc(bus_f, bus_t),
+        r = d["br_r"],
+        x = d["br_x"],
+        tap = d["tap"],
+        primaryshunt = d["b_fr"],  # TODO: which b ??
+        rate = d["rate_a"],
     )
 end
 
 function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
-    return PhaseShiftingTransformer(;
-        name=name,
-        available=Bool(d["br_status"]),
+    return PhaseShiftingTransformer(
+        ;
+        name = name,
+        available = Bool(d["br_status"]),
         activepower_flow = pf,
         reactivepower_flow = qf,
-        arc=Arc(bus_f, bus_t),
-        r=d["br_r"],
-        x=d["br_x"],
-        tap=d["tap"],
-        primaryshunt=d["b_fr"],  # TODO: which b ??
-        α=alpha,
-        rate=d["rate_a"],
+        arc = Arc(bus_f, bus_t),
+        r = d["br_r"],
+        x = d["br_x"],
+        tap = d["tap"],
+        primaryshunt = d["b_fr"],  # TODO: which b ??
+        α = alpha,
+        rate = d["rate_a"],
     )
 end
 
-function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
@@ -506,25 +512,26 @@ function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwar
         bus_t = bus_number_to_bus[d["t_bus"]]
         value = make_branch(name, d, bus_f, bus_t)
 
-        add_component!(sys, value; skip_validation=SKIP_PM_VALIDATION)
+        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
 function make_dcline(name, d, bus_f, bus_t)
-    return HVDCLine(;
-        name=name,
-        available=Bool(d["br_status"]),
+    return HVDCLine(
+        ;
+        name = name,
+        available = Bool(d["br_status"]),
         activepower_flow = get(d, "pf", 0.0),
-        arc=Arc(bus_f, bus_t),
-        activepowerlimits_from=(min=d["pminf"] , max=d["pmaxf"]),
-        activepowerlimits_to=(min=d["pmint"], max=d["pmaxt"]),
-        reactivepowerlimits_from=(min=d["qminf"], max=d["qmaxf"]),
-        reactivepowerlimits_to=(min=d["qmint"], max=d["qmaxt"]),
-        loss=(l0=d["loss0"], l1 =d["loss1"]),
+        arc = Arc(bus_f, bus_t),
+        activepowerlimits_from = (min = d["pminf"], max = d["pmaxf"]),
+        activepowerlimits_to = (min = d["pmint"], max = d["pmaxt"]),
+        reactivepowerlimits_from = (min = d["qminf"], max = d["qmaxf"]),
+        reactivepowerlimits_to = (min = d["qmint"], max = d["qmaxt"]),
+        loss = (l0 = d["loss0"], l1 = d["loss1"]),
     )
 end
 
-function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
     @info "Reading DC Line data"
     if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
@@ -540,20 +547,21 @@ function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwar
         bus_t = bus_number_to_bus[d["t_bus"]]
 
         dcline = make_dcline(name, d, bus_f, bus_t)
-        add_component!(sys, dcline, skip_validation=SKIP_PM_VALIDATION)
+        add_component!(sys, dcline, skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
 function make_shunt(name, d, bus)
-    return FixedAdmittance(;
-        name=name,
-        available=Bool(d["status"]),
-        bus=bus,
-        Y=(-d["gs"] + d["bs"]im),
+    return FixedAdmittance(
+        ;
+        name = name,
+        available = Bool(d["status"]),
+        bus = bus,
+        Y = (-d["gs"] + d["bs"]im),
     )
 end
 
-function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
@@ -568,6 +576,6 @@ function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         bus = bus_number_to_bus[d["shunt_bus"]]
         shunt = make_shunt(name, d, bus)
 
-        add_component!(sys, shunt; skip_validation=SKIP_PM_VALIDATION)
+        add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
 end

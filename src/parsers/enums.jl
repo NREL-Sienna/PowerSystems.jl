@@ -31,4 +31,3 @@ function get_enum_value(enum, value::String)
 
     return ENUM_MAPPINGS[enum][val]
 end
-

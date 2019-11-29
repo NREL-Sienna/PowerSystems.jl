@@ -209,12 +209,33 @@ import UUIDs
 import Base.to_index
 
 import InfrastructureSystems
-import InfrastructureSystems: Components, Deterministic, Probabilistic, Forecast,
-    ScenarioBased, InfrastructureSystemsType, InfrastructureSystemsInternal,
-    FlattenIteratorWrapper, LazyDictFromIterator, DataFormatError, InvalidRange,
-    InvalidValue
+import InfrastructureSystems: Components,
+                              Deterministic,
+                              Probabilistic,
+                              Forecast,
+                              ScenarioBased,
+                              InfrastructureSystemsType,
+                              InfrastructureSystemsInternal,
+                              FlattenIteratorWrapper,
+                              LazyDictFromIterator,
+                              DataFormatError,
+                              InvalidRange,
+                              InvalidValue,
+                              get_data,
+                              get_horizon,
+                              get_initial_time,
+                              get_resolution
 
 const IS = InfrastructureSystems
+
+#################################################################################
+
+using DocStringExtensions
+
+@template (FUNCTIONS, METHODS) = """
+                                 $(TYPEDSIGNATURES)
+                                 $(DOCSTRING)
+                                 """
 
 #################################################################################
 # Includes
@@ -269,9 +290,6 @@ include("models/dynamic_inverter.jl")
 # Definitions of PowerSystem
 include("base.jl")
 
-#Interfacing with Forecasts
-include("forecasts.jl")
-
 #Data Checks
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")
@@ -292,7 +310,6 @@ include("parsers/enums.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/standardfiles_parser.jl")
-include("parsers/forecast_parser.jl")
 include("parsers/power_system_table_data.jl")
 include("parsers/pm2ps_parser.jl")
 

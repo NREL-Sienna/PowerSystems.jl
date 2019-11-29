@@ -1,4 +1,4 @@
-const VarCostArgs = Union{Float64, NTuple{2,Float64}, Vector{NTuple{2,Float64}}}
+const VarCostArgs = Union{Float64,NTuple{2,Float64},Vector{NTuple{2,Float64}}}
 
 abstract type OperationalCost <: DeviceParameter end
 

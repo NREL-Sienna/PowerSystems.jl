@@ -1,33 +1,35 @@
 
-const POWER_SYSTEM_DESCRIPTOR_FILE = joinpath(dirname(pathof(PowerSystems)),
-                                              "descriptors", "power_system_inputs.json")
+const POWER_SYSTEM_DESCRIPTOR_FILE = joinpath(
+    dirname(pathof(PowerSystems)),
+    "descriptors",
+    "power_system_inputs.json",
+)
 
 struct PowerSystemTableData
     basepower::Float64
-    branch::Union{DataFrames.DataFrame, Nothing}
+    branch::Union{DataFrames.DataFrame,Nothing}
     bus::DataFrames.DataFrame
-    dcline::Union{DataFrames.DataFrame, Nothing}
-    gen::Union{DataFrames.DataFrame, Nothing}
-    load::Union{DataFrames.DataFrame, Nothing}
-    services::Union{DataFrames.DataFrame, Nothing}
-    category_to_df::Dict{InputCategory, DataFrames.DataFrame}
-    timeseries_metadata_file::Union{String, Nothing}
+    dcline::Union{DataFrames.DataFrame,Nothing}
+    gen::Union{DataFrames.DataFrame,Nothing}
+    load::Union{DataFrames.DataFrame,Nothing}
+    services::Union{DataFrames.DataFrame,Nothing}
+    category_to_df::Dict{InputCategory,DataFrames.DataFrame}
+    timeseries_metadata_file::Union{String,Nothing}
     directory::String
     user_descriptors::Dict
     descriptors::Dict
-    generator_mapping::Dict{NamedTuple, DataType}
+    generator_mapping::Dict{NamedTuple,DataType}
 end
 
 function PowerSystemTableData(
-                              data::Dict{String, Any},
-                              directory::String,
-                              user_descriptors::Union{String, Dict},
-                              descriptors::Union{String, Dict},
-                              generator_mapping::Union{String, Dict};
-                              timeseries_metadata_file = joinpath(directory,
-                                                                  "timeseries_pointers")
-                             )
-    category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
+    data::Dict{String,Any},
+    directory::String,
+    user_descriptors::Union{String,Dict},
+    descriptors::Union{String,Dict},
+    generator_mapping::Union{String,Dict};
+    timeseries_metadata_file = joinpath(directory, "timeseries_pointers"),
+)
+    category_to_df = Dict{InputCategory,DataFrames.DataFrame}()
     categories = [
         ("branch", BRANCH::InputCategory),
         ("bus", BUS::InputCategory),
@@ -80,8 +82,16 @@ function PowerSystemTableData(
         generator_mapping = get_generator_mapping(generator_mapping)
     end
 
-    return PowerSystemTableData(basepower, dfs..., category_to_df, timeseries_metadata_file,
-                          directory, user_descriptors, descriptors, generator_mapping)
+    return PowerSystemTableData(
+        basepower,
+        dfs...,
+        category_to_df,
+        timeseries_metadata_file,
+        directory,
+        user_descriptors,
+        descriptors,
+        generator_mapping,
+    )
 end
 
 """
@@ -107,18 +117,17 @@ The general format for data is
 - `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file
 """
 function PowerSystemTableData(
-                              directory::AbstractString,
-                              basepower::Float64,
-                              user_descriptor_file::AbstractString;
-                              descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE,
-                              generator_mapping_file=GENERATOR_MAPPING_FILE,
-                              timeseries_metadata_file = joinpath(directory,
-                                                                  "timeseries_pointers")
-                             )
+    directory::AbstractString,
+    basepower::Float64,
+    user_descriptor_file::AbstractString;
+    descriptor_file = POWER_SYSTEM_DESCRIPTOR_FILE,
+    generator_mapping_file = GENERATOR_MAPPING_FILE,
+    timeseries_metadata_file = joinpath(directory, "timeseries_pointers"),
+)
     files = readdir(directory)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
-    data = Dict{String, Any}()
+    data = Dict{String,Any}()
 
     if length(files) == 0
         error("No files in the folder")
@@ -131,13 +140,13 @@ function PowerSystemTableData(
         try
             if match(REGEX_IS_FOLDER, d_file) != nothing
                 @info "Parsing csv files in $d_file ..."
-                d_file_data = Dict{String, Any}()
+                d_file_data = Dict{String,Any}()
                 for file in readdir(joinpath(directory, d_file))
                     if match(REGEX_DEVICE_TYPE, file) != nothing
                         @info "Parsing csv data in $file ..."
                         encountered_files += 1
                         fpath = joinpath(directory, d_file, file)
-                        raw_data = CSV.File(fpath) |> DataFrames.DataFrame
+                        raw_data = DataFrames.DataFrame(CSV.File(fpath))
                         d_file_data[split(file, r"[.]")[1]] = raw_data
                     end
                 end
@@ -151,12 +160,12 @@ function PowerSystemTableData(
                 @info "Parsing csv data in $d_file ..."
                 encountered_files += 1
                 fpath = joinpath(directory, d_file)
-                raw_data = CSV.File(fpath)|> DataFrames.DataFrame
+                raw_data = DataFrames.DataFrame(CSV.File(fpath))
                 data[split(d_file, r"[.]")[1]] = raw_data
                 @info "Successfully parsed $d_file"
             end
         catch ex
-            @error "Error occurred while parsing $d_file" exception=ex
+            @error "Error occurred while parsing $d_file" exception = ex
             throw(ex)
         end
     end
@@ -164,9 +173,14 @@ function PowerSystemTableData(
         error("No csv files or folders in $directory")
     end
 
-    return PowerSystemTableData(data, directory, user_descriptor_file, descriptor_file,
-                                generator_mapping_file,
-                                timeseries_metadata_file = timeseries_metadata_file)
+    return PowerSystemTableData(
+        data,
+        directory,
+        user_descriptor_file,
+        descriptor_file,
+        generator_mapping_file,
+        timeseries_metadata_file = timeseries_metadata_file,
+    )
 end
 
 """
@@ -174,8 +188,11 @@ Return the custom name stored in the user descriptor file.
 
 Throws DataFormatError if a required value is not found in the file.
 """
-function get_user_field(data::PowerSystemTableData, category::InputCategory,
-                        field::AbstractString)
+function get_user_field(
+    data::PowerSystemTableData,
+    category::InputCategory,
+    field::AbstractString,
+)
     if !haskey(data.user_descriptors, category)
         throw(DataFormatError("Invalid category=$category"))
     end
@@ -186,7 +203,8 @@ function get_user_field(data::PowerSystemTableData, category::InputCategory,
                 return Symbol(item["custom_name"])
             end
         end
-    catch(err)
+    catch
+        (err)
         if err == KeyError
             msg = "Failed to find category=$category field=$field in input descriptors $err"
             throw(DataFormatError(msg))
@@ -222,13 +240,13 @@ making type conversions as necessary.
 
 Refer to the PowerSystems descriptor file for field names that will be created.
 """
-function iterate_rows(data::PowerSystemTableData, category; na_to_nothing=true)
+function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true)
     df = data.category_to_df[category]
     field_infos = _get_field_infos(data, category, names(df))
 
     Channel() do channel
         for row in eachrow(df)
-            obj = _read_data_row(data, row, field_infos; na_to_nothing=na_to_nothing)
+            obj = _read_data_row(data, row, field_infos; na_to_nothing = na_to_nothing)
             put!(channel, obj)
         end
     end
@@ -251,15 +269,15 @@ Throws DataFormatError if forecasts with multiple resolutions are detected.
 
 """
 function System(
-                data::PowerSystemTableData;
-                forecast_resolution=nothing,
-                time_series_in_memory=false,
-                runchecks=true,
-               )
+    data::PowerSystemTableData;
+    forecast_resolution = nothing,
+    time_series_in_memory = false,
+    runchecks = true,
+)
     sys = System(
         data.basepower;
-        time_series_in_memory=time_series_in_memory,
-        runchecks=runchecks,
+        time_series_in_memory = time_series_in_memory,
+        runchecks = runchecks,
     )
 
     bus_csv_parser!(sys, data)
@@ -268,10 +286,10 @@ function System(
 
     # Services and forecasts must be last.
     parsers = (
-       (data.branch, branch_csv_parser!),
-       (data.dcline, dc_branch_csv_parser!),
-       (data.gen, gen_csv_parser!),
-       (data.services, services_csv_parser!),
+        (data.branch, branch_csv_parser!),
+        (data.dcline, dc_branch_csv_parser!),
+        (data.gen, gen_csv_parser!),
+        (data.services, services_csv_parser!),
     )
 
     for (val, parser) in parsers
@@ -281,7 +299,7 @@ function System(
     end
 
     if !isnothing(data.timeseries_metadata_file)
-        add_forecasts!(sys, data.timeseries_metadata_file; resolution=forecast_resolution)
+        add_forecasts!(sys, data.timeseries_metadata_file; resolution = forecast_resolution)
     end
 
     check!(sys)
@@ -298,7 +316,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
         bus_type = get_enum_value(BusType, bus.bus_type)
         number = bus.bus_id
-        voltage_limits = (min=0.95, max=1.05)
+        voltage_limits = (min = 0.95, max = 1.05)
         ps_bus = Bus(
             number,
             bus.name,
@@ -336,7 +354,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
         if branch_type == Line
             b = branch.primary_shunt / 2
-            anglelimits = (min=-π/2, max=π/2) #TODO: add field in CSV
+            anglelimits = (min = -π / 2, max = π / 2) #TODO: add field in CSV
             value = Line(
                 name = branch.name,
                 available = available,
@@ -345,9 +363,9 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
-                b = (from=b, to=b),
+                b = (from = b, to = b),
                 rate = branch.rate,
-                anglelimits = anglelimits
+                anglelimits = anglelimits,
             )
         elseif branch_type == Transformer2W
             value = Transformer2W(
@@ -403,11 +421,11 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
             mw_load = dc_branch.mw_load
 
             #TODO: is there a better way to calculate these?,
-            activepowerlimits_from = (min=-1 * mw_load, max=mw_load)
-            activepowerlimits_to = (min=-1 * mw_load, max=mw_load)
-            reactivepowerlimits_from = (min=0.0, max=0.0)
-            reactivepowerlimits_to = (min=0.0, max=0.0)
-            loss = (l0=0.0, l1=dc_branch.loss) #TODO: Can we infer this from the other data?,
+            activepowerlimits_from = (min = -1 * mw_load, max = mw_load)
+            activepowerlimits_to = (min = -1 * mw_load, max = mw_load)
+            reactivepowerlimits_from = (min = 0.0, max = 0.0)
+            reactivepowerlimits_to = (min = 0.0, max = 0.0)
+            loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
 
             value = HVDCLine(
                 name = dc_branch.name,
@@ -418,21 +436,27 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 activepowerlimits_to = activepowerlimits_to,
                 reactivepowerlimits_from = reactivepowerlimits_from,
                 reactivepowerlimits_to = reactivepowerlimits_to,
-                loss = loss
+                loss = loss,
             )
         else
-            rectifier_taplimits = (min=dc_branch.rectifier_tap_limits_min,
-                                   max=dc_branch.rectifier_tap_limits_max)
+            rectifier_taplimits = (
+                min = dc_branch.rectifier_tap_limits_min,
+                max = dc_branch.rectifier_tap_limits_max,
+            )
             rectifier_xrc = dc_branch.rectifier_xrc #TODO: What is this?,
             rectifier_firingangle = dc_branch.rectifier_firingangle
-            inverter_taplimits = (min=dc_branch.inverter_tap_limits_min,
-                                  max=dc_branch.inverter_tap_limits_max)
+            inverter_taplimits = (
+                min = dc_branch.inverter_tap_limits_min,
+                max = dc_branch.inverter_tap_limits_max,
+            )
             inverter_xrc = dc_branch.inverter_xrc #TODO: What is this?
-            inverter_firingangle = (min=dc_branch.inverter_firing_angle_min,
-                                    max=dc_branch.inverter_firing_angle_max)
+            inverter_firingangle = (
+                min = dc_branch.inverter_firing_angle_min,
+                max = dc_branch.inverter_firing_angle_max,
+            )
             value = VSCDCLine(
                 name = dc_branch.name,
-                available=true,
+                available = true,
                 activepower_flow = pf,
                 arc = connection_points,
                 rectifier_taplimits = rectifier_taplimits,
@@ -512,14 +536,15 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
 
 
         load = PowerLoad(
-                         name = ps_bus.name,
-                         available = true,
-                         bus = ps_bus,
-                         model = ConstantPower::LoadModel,
-                         activepower = active_power,
-                         reactivepower = reactive_power,
-                         maxactivepower = max_active_power,
-                         maxreactivepower = max_reactive_power)
+            name = ps_bus.name,
+            available = true,
+            bus = ps_bus,
+            model = ConstantPower::LoadModel,
+            activepower = active_power,
+            reactivepower = reactive_power,
+            maxactivepower = max_active_power,
+            maxreactivepower = max_reactive_power,
+        )
         add_component!(sys, load)
     end
 end
@@ -534,7 +559,7 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
     area_column = get_user_field(data, BUS::InputCategory, "area")
     if !in(area_column, names(data.bus))
         @warn "Missing Data : no 'area' information for buses, cannot create loads based "
-              "on areas"
+        "on areas"
         return
     end
 
@@ -559,7 +584,13 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
         buses = get_buses(sys, bus_numbers)
         name = string(zone)
         zoneid = zone isa Number ? zone : i # if the zone is text use iteration count for zoneid
-        load_zones = LoadZones(zoneid, name, buses, sum(active_powers), sum(reactive_powers))
+        load_zones = LoadZones(
+            zoneid,
+            name,
+            buses,
+            sum(active_powers),
+            sum(reactive_powers),
+        )
         add_component!(sys, load_zones)
     end
 end
@@ -602,7 +633,11 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
 
     for reserve in iterate_rows(data, RESERVE::InputCategory)
         device_categories = make_array(reserve.eligible_device_categories)
-        device_subcategories = make_array(get(reserve, :eligible_device_subcategories, nothing))
+        device_subcategories = make_array(get(
+            reserve,
+            :eligible_device_subcategories,
+            nothing,
+        ))
         devices = make_array(get(reserve, :contributing_devices, nothing))
         regions = make_array(reserve.eligible_regions)
         requirement = get(reserve, :requirement, nothing)
@@ -615,13 +650,16 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             end
         else
             @info("Adding contributing generators for $(reserve.name) by category")
-            @warn "Adding contributing components by category only supports generators" maxlog=1
+            @warn "Adding contributing components by category only supports generators" maxlog = 1
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 bus_ids = data.bus[!, bus_id_column]
                 sys_gen = get_components_by_name(Generator, sys, gen.name)
                 if length(sys_gen) == 1
                     sys_gen = sys_gen[1]
-                    area = string(data.bus[bus_ids .== get_number(get_bus(sys_gen)), bus_area_column][1])
+                    area = string(data.bus[
+                        bus_ids.==get_number(get_bus(sys_gen)),
+                        bus_area_column,
+                    ][1])
                     if gen.category in device_subcategories && area in regions
                         _add_device!(contributing_devices, device_categories, gen.name)
                     end
@@ -632,9 +670,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         end
 
         if length(contributing_devices) == 0
-            throw(DataFormatError(
-                "did not find contributing devices for service $(reserve.name)"
-            ))
+            throw(DataFormatError("did not find contributing devices for service $(reserve.name)"))
         end
 
         direction = get_reserve_direction(reserve.direction)
@@ -642,7 +678,10 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             service = StaticReserve{direction}(reserve.name, reserve.timeframe, 0.0)
         else
             service = VariableReserve{direction}(
-                reserve.name, reserve.timeframe, requirement)
+                reserve.name,
+                reserve.timeframe,
+                requirement,
+            )
         end
 
         add_service!(sys, service, contributing_devices)
@@ -662,9 +701,11 @@ end
 """Creates a generator of any type."""
 function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     generator = nothing
-    gen_type = get_generator_type(gen.fuel,
-                                      get(gen, :unit_type, nothing),
-                                      data.generator_mapping)
+    gen_type = get_generator_type(
+        gen.fuel,
+        get(gen, :unit_type, nothing),
+        data.generator_mapping,
+    )
 
     if gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
@@ -685,18 +726,29 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     fuel_cost = gen.fuel_price / 1000
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
-    var_cost = [(tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for c in var_cost if !in(nothing, c)]
+    var_cost = [(tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for c in var_cost if !in(
+        nothing,
+        c,
+    )]
     if length(unique(var_cost)) > 1
-        var_cost[2:end] = [(var_cost[i][1] * (var_cost[i][2] - var_cost[i-1][2]) * fuel_cost * data.basepower,
-                            var_cost[i][2]) .* gen.active_power_limits_max
-                        for i in 2:length(var_cost)]
-        var_cost[1] = (var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower, var_cost[1][2]) .*
-                    gen.active_power_limits_max
+        var_cost[2:end] = [(
+            var_cost[i][1] * (var_cost[i][2] - var_cost[i-1][2]) * fuel_cost *
+            data.basepower,
+            var_cost[i][2],
+        ) .* gen.active_power_limits_max for i in 2:length(var_cost)]
+        var_cost[1] = (
+            var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower,
+            var_cost[1][2],
+        ) .* gen.active_power_limits_max
 
-        fixed = max(0.0, var_cost[1][1] - (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]))
+        fixed = max(
+            0.0,
+            var_cost[1][1] -
+            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
+        )
         var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
         for i in 2:length(var_cost)
-            var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
+            var_cost[i] = (var_cost[i-1][1] + var_cost[i][1], var_cost[i][2])
         end
     else
         var_cost = [(0.0, var_cost[1][2]), (1.0, var_cost[1][2])]
@@ -705,18 +757,22 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
 
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
-    active_power_limits = (min=gen.active_power_limits_min,
-                         max=gen.active_power_limits_max)
-    reactive_power_limits = (min=gen.reactive_power_limits_min,
-                             max=gen.reactive_power_limits_max)
+    active_power_limits = (
+        min = gen.active_power_limits_min,
+        max = gen.active_power_limits_max,
+    )
+    reactive_power_limits = (
+        min = gen.reactive_power_limits_min,
+        max = gen.reactive_power_limits_max,
+    )
     tech = TechThermal(
         rating = rating,
         primemover = convert(PrimeMovers, gen.unit_type),
         fuel = convert(ThermalFuels, gen.fuel),
         activepowerlimits = active_power_limits,
         reactivepowerlimits = reactive_power_limits,
-        ramplimits = (up=gen.ramp_limits, down=gen.ramp_limits),
-        timelimits = (up=gen.min_up_time, down=gen.min_down_time),
+        ramplimits = (up = gen.ramp_limits, down = gen.ramp_limits),
+        timelimits = (up = gen.min_up_time, down = gen.min_down_time),
     )
 
     capacity = gen.active_power_limits_max
@@ -733,47 +789,50 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         @warn("No shutdown_cost defined for $(gen.name), setting to 0.0")
         shutdown_cost = 0.0
     end
-    op_cost = ThreePartCost(
-        var_cost,
-        fixed,
-        startup_cost,
-        shutdown_cost
-    )
+    op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
-    return ThermalStandard(gen.name,
-                           available,
-                           bus,
-                           gen.active_power,
-                           gen.reactive_power,
-                           tech,
-                           op_cost)
+    return ThermalStandard(
+        gen.name,
+        available,
+        bus,
+        gen.active_power,
+        gen.reactive_power,
+        tech,
+        op_cost,
+    )
 end
 
 function make_hydro_generator(data::PowerSystemTableData, gen, bus)
     available = true
 
     rating = calculate_rating(gen.active_power_limits_max, gen.reactive_power_limits_max)
-    active_power_limits = (min=gen.active_power_limits_min,
-                           max=gen.active_power_limits_max)
-    reactive_power_limits = (min=gen.reactive_power_limits_min,
-                             max=gen.reactive_power_limits_max)
+    active_power_limits = (
+        min = gen.active_power_limits_min,
+        max = gen.active_power_limits_max,
+    )
+    reactive_power_limits = (
+        min = gen.reactive_power_limits_min,
+        max = gen.reactive_power_limits_max,
+    )
     tech = TechHydro(
         rating,
         convert(PrimeMovers, gen.unit_type),
         active_power_limits,
         reactive_power_limits,
-        (up=gen.ramp_limits, down=gen.ramp_limits),
-        (up=gen.min_down_time, down=gen.min_down_time),
+        (up = gen.ramp_limits, down = gen.ramp_limits),
+        (up = gen.min_down_time, down = gen.min_down_time),
     )
 
     curtailcost = 0.0
-    return HydroDispatch(name = gen.name,
-                         available = available,
-                         bus = bus,
-                         activepower = gen.active_power,
-                         reactivepower = gen.reactive_power,
-                         tech = tech,
-                         op_cost = TwoPartCost(curtailcost, 0.0))
+    return HydroDispatch(
+        name = gen.name,
+        available = available,
+        bus = bus,
+        activepower = gen.active_power,
+        reactivepower = gen.reactive_power,
+        tech = tech,
+        op_cost = TwoPartCost(curtailcost, 0.0),
+    )
 end
 
 function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
@@ -781,11 +840,12 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
     available = true
     rating = gen.active_power_limits_max
 
-    tech = TechRenewable(rating,
-                convert(PrimeMovers, gen.unit_type),
-                (min=gen.reactive_power_limits_min,
-                max=gen.reactive_power_limits_max),
-                1.0)
+    tech = TechRenewable(
+        rating,
+        convert(PrimeMovers, gen.unit_type),
+        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max),
+        1.0,
+    )
     if gen_type == RenewableDispatch
         generator = RenewableDispatch(
             gen.name,
@@ -803,7 +863,8 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             bus,
             gen.active_power,
             gen.reactive_power,
-            tech)
+            tech,
+        )
     else
         error("Unsupported type $gen_type")
     end
@@ -814,15 +875,14 @@ end
 function make_storage(data::PowerSystemTableData, gen, bus)
     available = true
     energy = 0.0
-    capacity = (min=gen.active_power_limits_min,
-                max=gen.active_power_limits_max)
+    capacity = (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     rating = gen.active_power_limits_max
-    input_active_power_limits = (min=0.0, max=gen.active_power_limits_max)
-    output_active_power_limits = (min=0.0, max=gen.active_power_limits_max)
-    efficiency = (in=0.9, out=0.9)
-    reactive_power_limits = (min=0.0, max=0.0)
+    input_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
+    output_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
+    efficiency = (in = 0.9, out = 0.9)
+    reactive_power_limits = (min = 0.0, max = 0.0)
 
-    battery=GenericBattery(
+    battery = GenericBattery(
         name = gen.name,
         available = available,
         bus = bus,
@@ -835,14 +895,14 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         outputactivepowerlimits = output_active_power_limits,
         efficiency = efficiency,
         reactivepower = gen.reactive_power,
-        reactivepowerlimits = reactive_power_limits
+        reactivepowerlimits = reactive_power_limits,
     )
 
     return battery
 end
 
 
-const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
+const CATEGORY_STR_TO_COMPONENT = Dict{String,DataType}(
     "Bus" => Bus,
     "Generator" => Generator,
     "Reserve" => Service,
@@ -863,7 +923,7 @@ function _read_config_file(file_path::String)
     return open(file_path) do io
         data = YAML.load(io)
         # Replace keys with enums.
-        config_data = Dict{InputCategory, Vector}()
+        config_data = Dict{InputCategory,Vector}()
         for (key, val) in data
             # TODO: need to change user_descriptors.yaml to use reserve instead.
             if key == "reserves"
@@ -880,7 +940,7 @@ struct _FieldInfo
     name::String
     custom_name::Symbol
     needs_per_unit_conversion::Bool
-    unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
+    unit_conversion::Union{NamedTuple{(:From, :To),Tuple{String,String}},Nothing}
     # TODO unit, value ranges and options
 end
 
@@ -895,8 +955,8 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
     # Cache whether PowerSystems uses a column's values as system-per-unit.
     # The user's descriptors indicate that the raw data is already system-per-unit or not.
-    per_unit = Dict{String, Bool}()
-    unit = Dict{String, Union{String, Nothing}}()
+    per_unit = Dict{String,Bool}()
+    unit = Dict{String,Union{String,Nothing}}()
     descriptor_names = Vector{String}()
     for descriptor in data.descriptors[category]
         per_unit[descriptor["name"]] = get(descriptor, "system_per_unit", false)
@@ -930,13 +990,17 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
                                       !item["system_per_unit"]
 
                 custom_unit = get(item, "unit", nothing)
-                if !isnothing(unit[name]) && !isnothing(custom_unit) && custom_unit != unit[name]
-                    unit_conversion = (From=custom_unit, To=unit[name])
+                if !isnothing(unit[name]) &&
+                   !isnothing(custom_unit) && custom_unit != unit[name]
+                    unit_conversion = (From = custom_unit, To = unit[name])
                 else
                     unit_conversion = nothing
                 end
 
-                push!(fields, _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion))
+                push!(
+                    fields,
+                    _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion),
+                )
             else
                 # TODO: This should probably be a fatal error. However, the parsing code
                 # doesn't use all the descriptor fields, so skip for now.
@@ -944,7 +1008,8 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
             end
         end
         return fields
-    catch(err)
+    catch
+        (err)
         if err == KeyError
             msg = "Failed to find category=$category field=$field in input descriptors $err"
             throw(DataFormatError(msg))
@@ -958,7 +1023,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 end
 
 """Reads values from dataframe row and performs necessary conversions."""
-function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_nothing=true)
+function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_nothing = true)
     fields = Vector{String}()
     vals = Vector()
     for field_info in field_infos
