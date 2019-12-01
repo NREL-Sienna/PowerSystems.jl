@@ -74,6 +74,27 @@ end
     @test length(get_services(gen)) == 0
 end
 
+@testset "Test has service" begin
+    sys = System(100)
+    bus = Bus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen"
+    add_component!(sys, gen)
+
+    service = StaticReserve{ReserveDown}(nothing)
+    add_service!(sys, service, [gen])
+    @test has_service(gen, service)
+    @test has_service(gen, typeof(service))
+
+    remove_service!(gen, service)
+    @test !has_service(gen, service)
+    @test !has_service(gen, typeof(service))
+end
+
 @testset "Test remove device with service" begin
     sys = System(100)
     bus = Bus(nothing)

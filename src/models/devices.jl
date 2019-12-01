@@ -46,6 +46,22 @@ function has_service(device::Device, service::Service)
 end
 
 """
+    has_service(device::Device, ::Type{T}) where T <:Service
+
+Return true if a service with type T is attached to the device.
+"""
+function has_service(device::Device, ::Type{T}) where T <:Service
+    for _service in get_services(device)
+        if isa(_service, T)
+            return true
+        end
+    end
+
+    return false
+end
+
+
+"""
 Remove service from device if it is attached.
 """
 function _remove_service!(device::Device, service::Service)

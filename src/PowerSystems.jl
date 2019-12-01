@@ -157,6 +157,7 @@ export remove_components!
 export clear_components!
 export add_service!
 export remove_service!
+export has_service
 export get_contributing_devices
 export get_contributing_device_mapping
 export ServiceContributingDevices
