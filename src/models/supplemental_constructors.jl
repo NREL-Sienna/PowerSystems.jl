@@ -1,42 +1,73 @@
 """Accepts rating as a Float64 and then creates a TwoPartCost."""
-function TwoPartCost(variable_cost::T, args...) where {T <: VarCostArgs}
+function TwoPartCost(variable_cost::T, args...) where {T<:VarCostArgs}
     return TwoPartCost(VariableCost(variable_cost), args...)
 end
 
 """Accepts rating as a Float64 and then creates a ThreePartCost."""
-function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
+function ThreePartCost(variable_cost::T, args...) where {T<:VarCostArgs}
     return ThreePartCost(VariableCost(variable_cost), args...)
 end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableFix(name::String, available::Bool, bus::Bus,
-                        activepower::Float64, reactivepower::Float64,
-                        prime_mover::PrimeMovers, rating::Float64)
+function RenewableFix(
+    name::String,
+    available::Bool,
+    bus::Bus,
+    activepower::Float64,
+    reactivepower::Float64,
+    prime_mover::PrimeMovers,
+    rating::Float64,
+)
     tech = TechRenewable(rating, prime_mover, nothing, 1.0)
     RenewableFix(name, available, bus, activepower, reactivepower, tech)
 end
 
 """Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableDispatch(name::String, available::Bool, bus::Bus,
-                           activepower::Float64, reactivepower::Float64,
-                           prime_mover::PrimeMovers, rating::Float64, op_cost::TwoPartCost)
+function RenewableDispatch(
+    name::String,
+    available::Bool,
+    bus::Bus,
+    activepower::Float64,
+    reactivepower::Float64,
+    prime_mover::PrimeMovers,
+    rating::Float64,
+    op_cost::TwoPartCost,
+)
     tech = TechRenewable(rating, prime_mover, nothing, 1.0)
-    return RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost)
+    return RenewableDispatch(
+        name,
+        available,
+        bus,
+        activepower,
+        reactivepower,
+        tech,
+        op_cost,
+    )
 end
 
-function PowerLoadPF(name::String, available::Bool, bus::Bus,
-                     model::Union{Nothing, LoadModel}, activepower::Float64,
-                     maxactivepower::Float64, power_factor::Float64)
+# FIXME: This function name implies that will return a struct named `PowerLoadPF`
+# i.e. `PowerLoadPF` is not a constructor
+function PowerLoadPF(
+    name::String,
+    available::Bool,
+    bus::Bus,
+    model::Union{Nothing,LoadModel},
+    activepower::Float64,
+    maxactivepower::Float64,
+    power_factor::Float64,
+)
     maxreactivepower = maxactivepower * sin(acos(power_factor))
     reactivepower = activepower * sin(acos(power_factor))
-    return PowerLoad(name,
-                     available,
-                     bus,
-                     model,
-                     activepower,
-                     reactivepower,
-                     maxactivepower,
-                     maxreactivepower)
+    return PowerLoad(
+        name,
+        available,
+        bus,
+        model,
+        activepower,
+        reactivepower,
+        maxactivepower,
+        maxreactivepower,
+    )
 end
 
 function PowerLoadPF(::Nothing)
@@ -44,21 +75,71 @@ function PowerLoadPF(::Nothing)
 end
 
 """Accepts anglelimits as a Float64."""
-function Line(name, available::Bool, activepower_flow::Float64,
-    reactivepower_flow::Float64, arc::Arc, r, x, b, rate, anglelimits::Float64)
-    return Line(name, available, activepower_flow, reactivepower_flow, arc::Arc, r, x, b, rate,
-                (min=-anglelimits, max=anglelimits))
+function Line(
+    name,
+    available::Bool,
+    activepower_flow::Float64,
+    reactivepower_flow::Float64,
+    arc::Arc,
+    r,
+    x,
+    b,
+    rate,
+    anglelimits::Float64,
+)
+    return Line(
+        name,
+        available,
+        activepower_flow,
+        reactivepower_flow,
+        arc::Arc,
+        r,
+        x,
+        b,
+        rate,
+        (min = -anglelimits, max = anglelimits),
+    )
 end
 
 """Allows construction with bus type specified as a string for legacy code."""
-function Bus(number, name, bustype::String, angle, voltage, voltagelimits, basevoltage)
-    return Bus(number, name, get_enum_value(BusType, bustype), angle, voltage,
-               voltagelimits, basevoltage, InfrastructureSystemsInternal())
+function Bus(
+    number,
+    name,
+    bustype::String,
+    angle,
+    voltage,
+    voltagelimits,
+    basevoltage;
+    ext = Dict{String,Any}(),
+)
+    return Bus(
+        number,
+        name,
+        get_enum_value(BusType, bustype),
+        angle,
+        voltage,
+        voltagelimits,
+        basevoltage,
+        ext,
+        InfrastructureSystemsInternal(),
+    )
 end
 
 """Allows construction of a reserve from an iterator."""
-function StaticReserve(name, contributingdevices::IS.FlattenIteratorWrapper,
-                       timeframe, requirement, _forecasts, InfrastructureSystemsInternal)
-    return StaticReserve(name, collect(contributingdevices),
-                  timeframe, requirement, _forecasts, InfrastructureSystemsInternal)
+function StaticReserve(
+    name,
+    contributingdevices::IS.FlattenIteratorWrapper,
+    timeframe,
+    requirement,
+    _forecasts,
+    internal,
+)
+    return StaticReserve(
+        name,
+        collect(contributingdevices),
+        timeframe,
+        requirement,
+        _forecasts,
+        internal,
+    )
 end

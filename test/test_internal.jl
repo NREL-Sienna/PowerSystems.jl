@@ -45,5 +45,5 @@ end
 
 @testset "Test internal values" begin
     sys_rts = create_rts_system()
-    @test validate_uuids(sys)
+    @test validate_uuids(sys_rts)
 end

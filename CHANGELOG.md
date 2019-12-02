@@ -1,5 +1,13 @@
 # PowerSystems Change Log
 
+## v0.7.0
+
+- Make codebase consistent with style guide.
+- Add Dynamic Data capabilities.
+- Change use of services and store them inside of devices.
+- Add ext field to devices
+- Add ext field to system
+
 ## v0.6.2
 
 - Downgrade compatible version of CSV to 0.5.13 to avoid tab complete hang.

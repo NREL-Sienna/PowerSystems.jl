@@ -17,7 +17,7 @@ export PowerSystemType
 export Component
 export Device
 export Branch
-export Injection
+export StaticInjection
 export ACBranch
 export Line
 export MonitoredLine
@@ -58,10 +58,77 @@ export InterruptibleLoad
 export Storage
 export GenericBattery
 
+export DynamicGenerator
+#AVR Exports
+export AVR
+export AVRFixed
+export AVRSimple
+export AVRTypeI
+export AVRTypeII
+
+#Machine Exports
+export Machine
+export BaseMachine
+export OneDOneQMachine
+export MarconatoMachine
+export SimpleMarconatoMachine
+export AndersonFouadMachine
+export SimpleAFMachine
+export FullMachine
+export SimpleFullMachine
+
+#PSS Exports
+export PSS
+export PSSFixed
+export PSSFixed
+
+#Shaft Exports
+export SingleMass
+export FiveMassShaft
+
+#TG Exports
+export TurbineGov
+export TGFixed
+export TGTypeI
+export TGTypeII
+
+
+export DynamicInverter
+# Converter Exports
+export Converter
+export AvgCnvFixedDC
+
+# DC Source Exports
+export DCSource
+export FixedDCSource
+
+# Filter Exports
+export Filter
+export LCLFilter
+
+# FrequencyEstimator Exports
+export FrequencyEstimator
+export PLL
+
+# Outer Control Exports
+export OuterControl
+export VirtualInertiaQdroop
+export VirtualInertia
+export ReactivePowerDroop
+
+# VSControl Export
+export VSControl
+export CombinedVIwithVZ
+
+export Source
+
 export Service
 export Reserve
-export ProportionalReserve
+export ReserveDirection
+export ReserveUp
+export ReserveDown
 export StaticReserve
+export VariableReserve
 export Transfer
 
 export PTDF
@@ -88,6 +155,14 @@ export add_component!
 export remove_component!
 export remove_components!
 export clear_components!
+export add_service!
+export remove_service!
+export has_service
+export get_contributing_devices
+export get_contributing_device_mapping
+export ServiceContributingDevices
+export ServiceContributingDevicesKey
+export ServiceContributingDevicesMapping
 export are_forecasts_contiguous
 export generate_initial_times
 export get_component
@@ -114,6 +189,7 @@ export get_name
 export to_json
 export check_forecast_consistency
 export validate_forecast_consistency
+export clear_ext
 
 #################################################################################
 # Imports
@@ -134,12 +210,33 @@ import UUIDs
 import Base.to_index
 
 import InfrastructureSystems
-import InfrastructureSystems: Components, Deterministic, Probabilistic, Forecast,
-    ScenarioBased, InfrastructureSystemsType, InfrastructureSystemsInternal,
-    FlattenIteratorWrapper, LazyDictFromIterator, DataFormatError, InvalidRange,
-    InvalidValue
+import InfrastructureSystems: Components,
+                              Deterministic,
+                              Probabilistic,
+                              Forecast,
+                              ScenarioBased,
+                              InfrastructureSystemsType,
+                              InfrastructureSystemsInternal,
+                              FlattenIteratorWrapper,
+                              LazyDictFromIterator,
+                              DataFormatError,
+                              InvalidRange,
+                              InvalidValue,
+                              get_data,
+                              get_horizon,
+                              get_initial_time,
+                              get_resolution
 
 const IS = InfrastructureSystems
+
+#################################################################################
+
+using DocStringExtensions
+
+@template (FUNCTIONS, METHODS) = """
+                                 $(TYPEDSIGNATURES)
+                                 $(DOCSTRING)
+                                 """
 
 #################################################################################
 # Includes
@@ -155,9 +252,10 @@ abstract type PowerSystemType <: IS.InfrastructureSystemsType end
 abstract type Component <: PowerSystemType end
 # supertype for "devices" (bus, line, etc.)
 abstract type Device <: Component end
-abstract type Injection <: Device end
-# supertype for generation technologies (thermal, renewable, etc.)
-abstract type TechnicalParams <: PowerSystemType end
+abstract type StaticInjection <: Device end
+abstract type DynamicInjection <: Device end
+abstract type DeviceParameter <: PowerSystemType end
+abstract type DynamicComponent <: DeviceParameter end
 
 include("common.jl")
 
@@ -171,20 +269,27 @@ include("models/operational_cost.jl")
 #include("models/network.jl")
 
 # Static types
+include("models/services.jl")
+include("models/reserves.jl")
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
-include("models/services.jl")
+include("models/devices.jl")
+include("models/dynamic_generator_components.jl")
+include("models/dynamic_inverter_components.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
 
+include("models/service_struct_types.jl")
+
+# Dynamic Composed types
+include("models/dynamic_generator.jl")
+include("models/dynamic_inverter.jl")
+
 # Definitions of PowerSystem
 include("base.jl")
-
-#Interfacing with Forecasts
-include("forecasts.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")
@@ -206,7 +311,6 @@ include("parsers/enums.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/standardfiles_parser.jl")
-include("parsers/forecast_parser.jl")
 include("parsers/power_system_table_data.jl")
 include("parsers/pm2ps_parser.jl")
 

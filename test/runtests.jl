@@ -1,6 +1,8 @@
 using Test
 using Logging
 using Dates
+import InteractiveUtils
+
 
 import InfrastructureSystems
 import InfrastructureSystems: Deterministic, Probabilistic, ScenarioBased, Forecast

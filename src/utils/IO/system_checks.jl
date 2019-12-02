@@ -29,17 +29,20 @@ end
 # TODO: Check for islanded Buses
 
 # check for minimum timediff
-function minimumtimestep(forecasts::Array{T})where {T<:Forecast}
+function minimumtimestep(forecasts::Array{T}) where {T<:Forecast}
     if length(forecasts[1].data) > 1
         timeseries = forecasts[1].data
-        n = length(timeseries)-1
+        n = length(timeseries) - 1
         ts = []
         for i in 1:n
-            push!(ts,TimeSeries.timestamp(timeseries)[n+1]-TimeSeries.timestamp(timeseries)[n])
+            push!(
+                ts,
+                TimeSeries.timestamp(timeseries)[n+1] - TimeSeries.timestamp(timeseries)[n],
+            )
         end
         return minimum(ts)
     else
-        ts =Dates.Dates.Minute(1)
+        ts = Dates.Dates.Minute(1)
         return ts
     end
 end

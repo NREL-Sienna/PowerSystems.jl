@@ -6,10 +6,7 @@ include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
 
 makedocs(
     modules = [PowerSystems],
-    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true",
-    assets = [
-        "assets/logo.png"
-    ]),
+    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
     sitename = "PowerSystems.jl",
     authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",
     pages = Any[ # Compat: `Any` for 0.4 compat

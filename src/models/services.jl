@@ -1,6 +1,4 @@
-
 abstract type Service <: Component end
-abstract type Reserve <: Service end
 
 """
 All subtypes of Service define contributingdevices::Vector{Device}. The values get populated
@@ -19,15 +17,15 @@ These functions could be re-defined to accept subtypes of Component or PowerSyst
 This is the minimum amount needed for now.
 """
 
-function JSON2.write(io::IO, service::T) where T <: Service
+function JSON2.write(io::IO, service::T) where {T<:Service}
     return JSON2.write(io, encode_for_json(service))
 end
 
-function JSON2.write(service::T) where T <: Service
+function JSON2.write(service::T) where {T<:Service}
     return JSON2.write(encode_for_json(service))
 end
 
-function encode_for_json(service::T) where T <: Service
+function encode_for_json(service::T) where {T<:Service}
     fields = fieldnames(T)
     vals = []
 
@@ -47,14 +45,10 @@ end
 values for the field contributingdevices as UUIDs, so this will lookup each device in
 devices.
 """
-function IS.convert_type(
-                      ::Type{T},
-                      data::NamedTuple,
-                      devices::Dict,
-                     ) where T <: Service
+function IS.convert_type(::Type{T}, data::NamedTuple, devices::Dict) where {T<:Service}
     @debug T data
     values = []
-    for (fieldname, fieldtype)  in zip(fieldnames(T), fieldtypes(T))
+    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
         val = getfield(data, fieldname)
         if fieldtype <: Vector{<:Device}
             real_devices = []
@@ -73,6 +67,6 @@ function IS.convert_type(
     return T(values...)
 end
 
-function IS.convert_type(::Type{T}, data::Any) where T <: Service
+function IS.convert_type(::Type{T}, data::Any) where {T<:Service}
     error("This form of convert_type is not supported for Services")
 end

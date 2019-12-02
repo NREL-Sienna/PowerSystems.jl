@@ -10,6 +10,8 @@ This file is auto-generated. Do not edit.
         reactivepower::Float64
         tech::Union{Nothing, TechThermal}
         op_cost::ThreePartCost
+        services::Vector{Service}
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -24,6 +26,8 @@ Data Structure for thermal generation technologies.
 - `reactivepower::Float64`
 - `tech::Union{Nothing, TechThermal}`
 - `op_cost::ThreePartCost`
+- `services::Vector{Service}`: Services that this device contributes to
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -35,21 +39,23 @@ mutable struct ThermalStandard <: ThermalGen
     reactivepower::Float64
     tech::Union{Nothing, TechThermal}
     op_cost::ThreePartCost
+    "Services that this device contributes to"
+    services::Vector{Service}
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, InfrastructureSystemsInternal())
+function ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, services, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, _forecasts, )
+function ThermalStandard(; name, available, bus, activepower, reactivepower, tech, op_cost, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, bus, activepower, reactivepower, tech, op_cost, services, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function ThermalStandard(::Nothing)
     ThermalStandard(;
         name="init",
@@ -59,6 +65,8 @@ function ThermalStandard(::Nothing)
         reactivepower=0.0,
         tech=TechThermal(nothing),
         op_cost=ThreePartCost(nothing),
+        services=Device[],
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -77,6 +85,10 @@ get_reactivepower(value::ThermalStandard) = value.reactivepower
 get_tech(value::ThermalStandard) = value.tech
 """Get ThermalStandard op_cost."""
 get_op_cost(value::ThermalStandard) = value.op_cost
+"""Get ThermalStandard services."""
+get_services(value::ThermalStandard) = value.services
+"""Get ThermalStandard ext."""
+get_ext(value::ThermalStandard) = value.ext
 """Get ThermalStandard _forecasts."""
 get__forecasts(value::ThermalStandard) = value._forecasts
 """Get ThermalStandard internal."""

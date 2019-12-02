@@ -25,25 +25,25 @@ jq . system.json
 ```
 jq '.components | keys' system.json
 jq '.components.Devices | keys' system.json
-jq '.components.Devices.Injection | keys' system.json
-jq '.components.Devices.Injection.Generator | keys' system.json
+jq '.components.Devices.StaticInjection | keys' system.json
+jq '.components.Devices.StaticInjection.Generator | keys' system.json
 ```
 
 ## View specific components.
 ```
-jq '.components.Device.Injection.Generator.ThermalGen.ThermalStandard' system.json
-jq '.components.Device.Injection.Generator.ThermalGen.ThermalStandard[0]' system.json
+jq '.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard' system.json
+jq '.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard[0]' system.json
 ```
 
 ## Filter on a parameter.
 ```
-jq '.components.Device.Injection.Generator.ThermalGen.ThermalStandard | .[] | select(.name == "107_CC_1")' system.json
-jq '.components.Device.Injection.Generator.ThermalGen.ThermalStandard | .[] | select(.op_cost.capacity > 3)' system.json
+jq '.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard | .[] | select(.name == "107_CC_1")' system.json
+jq '.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard | .[] | select(.op_cost.capacity > 3)' system.json
 ```
 
 ## Output a table with select fields.
 ```
-jq -r '["name", "econ.capacity"], (.components.Device.Injection.Generator.ThermalGen.ThermalStandard | .[] | [.name, .op_cost.capacity]) | @tsv' system.json
+jq -r '["name", "econ.capacity"], (.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard | .[] | [.name, .op_cost.capacity]) | @tsv' system.json
 ```
 
 ## View the forecast types and initial_time values.

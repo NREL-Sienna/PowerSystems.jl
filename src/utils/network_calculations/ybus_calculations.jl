@@ -4,9 +4,11 @@ struct Ybus{Ax,L<:NTuple{2,Dict}} <: PowerNetworkMatrix{ComplexF64}
     lookup::L
 end
 
-function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
-                b::Line,
-                num_bus::Dict{Int64,Int64})
+function _ybus!(
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    b::Line,
+    num_bus::Dict{Int64,Int64},
+)
 
 
     arc = get_arc(b)
@@ -28,9 +30,11 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
 
 end
 
-function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
-                b::Transformer2W,
-                num_bus::Dict{Int64,Int64})
+function _ybus!(
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    b::Transformer2W,
+    num_bus::Dict{Int64,Int64},
+)
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -49,9 +53,11 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
 
 end
 
-function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
-                b::TapTransformer,
-                num_bus::Dict{Int64,Int64})
+function _ybus!(
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    b::TapTransformer,
+    num_bus::Dict{Int64,Int64},
+)
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -63,7 +69,7 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
 
     Y11 = (Y_t * c^2)
     ybus[bus_from_no, bus_from_no] += Y11
-    Y12 = (-Y_t*c)
+    Y12 = (-Y_t * c)
     ybus[bus_from_no, bus_to_no] += Y12
     #Y21 = Y12
     ybus[bus_to_no, bus_from_no] += Y12
@@ -74,24 +80,26 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
 
 end
 
-function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
-                b::PhaseShiftingTransformer,
-                num_bus::Dict{Int64,Int64})
+function _ybus!(
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    b::PhaseShiftingTransformer,
+    num_bus::Dict{Int64,Int64},
+)
 
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
     bus_to_no = num_bus[arc.to.number]
 
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
-    tap =  (get_tap(b) * exp(get_α(b) * 1im))
-    c_tap =  (get_tap(b) * exp(-1*get_α(b) * 1im))
+    tap = (get_tap(b) * exp(get_α(b) * 1im))
+    c_tap = (get_tap(b) * exp(-1 * get_α(b) * 1im))
     b = get_primaryshunt(b)
 
-    Y11 = (Y_t/abs(tap)^2)
+    Y11 = (Y_t / abs(tap)^2)
     ybus[bus_from_no, bus_from_no] += Y11
-    Y12 = (-Y_t/c_tap)
+    Y12 = (-Y_t / c_tap)
     ybus[bus_from_no, bus_to_no] += Y12
-    Y21 = (-Y_t/tap)
+    Y21 = (-Y_t / tap)
     ybus[bus_to_no, bus_from_no] += Y21
     Y22 = Y_t
     ybus[bus_to_no, bus_to_no] += Y22 + (1im * b)
@@ -100,9 +108,11 @@ function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
 
 end
 
-function _ybus!(ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
-                fa::FixedAdmittance,
-                num_bus::Dict{Int64,Int64})
+function _ybus!(
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    fa::FixedAdmittance,
+    num_bus::Dict{Int64,Int64},
+)
 
     bus = get_bus(fa)
     bus_no = num_bus[get_number(bus)]
@@ -118,14 +128,13 @@ function _buildybus(branches, nodes, fixed_admittances)
     buscount = length(nodes)
     num_bus = Dict{Int64,Int64}()
 
-    for (ix,b) in enumerate(nodes)
+    for (ix, b) in enumerate(nodes)
         num_bus[get_number(b)] = ix
     end
 
     ybus = SparseArrays.spzeros(ComplexF64, buscount, buscount)
 
-    for (ix,b) in enumerate(branches)
-
+    for (ix, b) in enumerate(branches)
         if get_name(b) == "init"
             throw(DataFormatError("The data in Branch is invalid"))
         end

@@ -25,13 +25,20 @@ mutable struct Arc <: Topology
 end
 
 function Arc(from, to, )
-    Arc(from, to, InfrastructureSystemsInternal())
+    Arc(from, to, InfrastructureSystemsInternal(), )
 end
 
 function Arc(; from, to, )
     Arc(from, to, )
 end
 
+# Constructor for demo purposes; non-functional.
+function Arc(::Nothing)
+    Arc(;
+        from=Bus(nothing),
+        to=Bus(nothing),
+    )
+end
 
 """Get Arc from."""
 get_from(value::Arc) = value.from

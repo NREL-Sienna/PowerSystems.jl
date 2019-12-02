@@ -119,7 +119,7 @@ end
                                100.0, nothing, nothing; runchecks=true)
 
     add_component!(sys,Bus(11,"11",PSY.PQ,1,1,(min=.9,max=1.1),123))
-    B = get_components(Bus,sys) |> collect
+    B = collect(get_components(Bus,sys))
     a = Arc(B[1],B[6])
     badline = Line("badline",true,0.01,0.01,a,0.002,0.014,(from = 0.015, to = 0.015),5.0,(min = -1, max = 1))
     @test_logs((:error, r"cannot create Line"), match_mode=:any,
@@ -149,7 +149,7 @@ end
     try
         sys2 = PSY.System(path)
 
-        B = get_components(Bus, sys2) |> collect
+        B = collect(get_components(Bus, sys2))
         a = Arc(B[1], B[6])
         badline = Line("badline", true, 0.01, 0.01, a, 0.002, 0.014,
                        (from = 0.015, to = 0.015), 5.0, (min = -1, max = 1))

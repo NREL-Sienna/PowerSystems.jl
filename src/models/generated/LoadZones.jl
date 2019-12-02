@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
         buses::Vector{Bus}
         maxactivepower::Float64
         maxreactivepower::Float64
+        services::Vector{Service}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -20,6 +21,7 @@ This file is auto-generated. Do not edit.
 - `buses::Vector{Bus}`
 - `maxactivepower::Float64`
 - `maxreactivepower::Float64`
+- `services::Vector{Service}`: Services that this device contributes to
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -29,21 +31,22 @@ mutable struct LoadZones <: Topology
     buses::Vector{Bus}
     maxactivepower::Float64
     maxreactivepower::Float64
+    "Services that this device contributes to"
+    services::Vector{Service}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
-    LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts, InfrastructureSystemsInternal())
+function LoadZones(number, name, buses, maxactivepower, maxreactivepower, services=Device[], _forecasts=InfrastructureSystems.Forecasts(), )
+    LoadZones(number, name, buses, maxactivepower, maxreactivepower, services, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function LoadZones(; number, name, buses, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
-    LoadZones(number, name, buses, maxactivepower, maxreactivepower, _forecasts, )
+function LoadZones(; number, name, buses, maxactivepower, maxreactivepower, services=Device[], _forecasts=InfrastructureSystems.Forecasts(), )
+    LoadZones(number, name, buses, maxactivepower, maxreactivepower, services, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function LoadZones(::Nothing)
     LoadZones(;
         number=0,
@@ -51,6 +54,7 @@ function LoadZones(::Nothing)
         buses=[Bus(nothing)],
         maxactivepower=0.0,
         maxreactivepower=0.0,
+        services=Device[],
         _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -65,6 +69,8 @@ get_buses(value::LoadZones) = value.buses
 get_maxactivepower(value::LoadZones) = value.maxactivepower
 """Get LoadZones maxreactivepower."""
 get_maxreactivepower(value::LoadZones) = value.maxreactivepower
+"""Get LoadZones services."""
+get_services(value::LoadZones) = value.services
 """Get LoadZones _forecasts."""
 get__forecasts(value::LoadZones) = value._forecasts
 """Get LoadZones internal."""

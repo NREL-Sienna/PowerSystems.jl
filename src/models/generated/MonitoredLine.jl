@@ -14,6 +14,8 @@ This file is auto-generated. Do not edit.
         flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
         rate::Float64
         anglelimits::Min_Max
+        services::Vector{Service}
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -32,6 +34,8 @@ This file is auto-generated. Do not edit.
 - `flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}`: TODO: throw warning above max SIL
 - `rate::Float64`: TODO: compare to SIL (warn) (theoretical limit)
 - `anglelimits::Min_Max`
+- `services::Vector{Service}`: Services that this device contributes to
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -52,21 +56,23 @@ mutable struct MonitoredLine <: ACBranch
     "TODO: compare to SIL (warn) (theoretical limit)"
     rate::Float64
     anglelimits::Min_Max
+    "Services that this device contributes to"
+    services::Vector{Service}
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, _forecasts=InfrastructureSystems.Forecasts(), )
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, _forecasts, InfrastructureSystemsInternal())
+function MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, services, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, _forecasts=InfrastructureSystems.Forecasts(), )
-    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, _forecasts, )
+function MonitoredLine(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    MonitoredLine(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, flowlimits, rate, anglelimits, services, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function MonitoredLine(::Nothing)
     MonitoredLine(;
         name="init",
@@ -80,6 +86,8 @@ function MonitoredLine(::Nothing)
         flowlimits=(from_to=0.0, to_from=0.0),
         rate=0.0,
         anglelimits=(min=-1.571, max=1.571),
+        services=Device[],
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -106,6 +114,10 @@ get_flowlimits(value::MonitoredLine) = value.flowlimits
 get_rate(value::MonitoredLine) = value.rate
 """Get MonitoredLine anglelimits."""
 get_anglelimits(value::MonitoredLine) = value.anglelimits
+"""Get MonitoredLine services."""
+get_services(value::MonitoredLine) = value.services
+"""Get MonitoredLine ext."""
+get_ext(value::MonitoredLine) = value.ext
 """Get MonitoredLine _forecasts."""
 get__forecasts(value::MonitoredLine) = value._forecasts
 """Get MonitoredLine internal."""

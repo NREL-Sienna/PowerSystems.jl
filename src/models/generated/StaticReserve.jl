@@ -2,68 +2,59 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct StaticReserve <: Reserve
+    mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
         name::String
-        contributingdevices::Vector{Device}
         timeframe::Float64
         requirement::Float64
-        _forecasts::InfrastructureSystems.Forecasts
+        ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
-Data Structure for the procurement products for system simulations.
+Data Structure for a proportional reserve product for system simulations.
 
 # Arguments
 - `name::String`
-- `contributingdevices::Vector{Device}`: devices from which the product can be procured
 - `timeframe::Float64`: the relative saturation timeframe
-- `requirement::Float64`: the required quantity of the product should be scaled by a Forecast
-- `_forecasts::InfrastructureSystems.Forecasts`: component forecasts
+- `requirement::Float64`: the static value of required reserves
+- `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct StaticReserve <: Reserve
+mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
     name::String
-    "devices from which the product can be procured"
-    contributingdevices::Vector{Device}
     "the relative saturation timeframe"
     timeframe::Float64
-    "the required quantity of the product should be scaled by a Forecast"
+    "the static value of required reserves"
     requirement::Float64
-    "component forecasts"
-    _forecasts::InfrastructureSystems.Forecasts
+    ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserve(name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), )
-    StaticReserve(name, contributingdevices, timeframe, requirement, _forecasts, InfrastructureSystemsInternal())
+function StaticReserve{T}(name, timeframe, requirement, ext=Dict{String, Any}(), ) where T <: ReserveDirection
+    StaticReserve{T}(name, timeframe, requirement, ext, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserve(; name, contributingdevices, timeframe, requirement, _forecasts=InfrastructureSystems.Forecasts(), )
-    StaticReserve(name, contributingdevices, timeframe, requirement, _forecasts, )
+function StaticReserve{T}(; name, timeframe, requirement, ext=Dict{String, Any}(), ) where T <: ReserveDirection
+    StaticReserve{T}(name, timeframe, requirement, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
-
-function StaticReserve(::Nothing)
-    StaticReserve(;
+function StaticReserve{T}(::Nothing) where T <: ReserveDirection
+    StaticReserve{T}(;
         name="init",
-        contributingdevices=[ThermalStandard(nothing)],
         timeframe=0.0,
         requirement=0.0,
-        _forecasts=InfrastructureSystems.Forecasts(),
+        ext=Dict{String, Any}(),
     )
 end
 
 """Get StaticReserve name."""
 get_name(value::StaticReserve) = value.name
-"""Get StaticReserve contributingdevices."""
-get_contributingdevices(value::StaticReserve) = value.contributingdevices
 """Get StaticReserve timeframe."""
 get_timeframe(value::StaticReserve) = value.timeframe
 """Get StaticReserve requirement."""
 get_requirement(value::StaticReserve) = value.requirement
-"""Get StaticReserve _forecasts."""
-get__forecasts(value::StaticReserve) = value._forecasts
+"""Get StaticReserve ext."""
+get_ext(value::StaticReserve) = value.ext
 """Get StaticReserve internal."""
 get_internal(value::StaticReserve) = value.internal

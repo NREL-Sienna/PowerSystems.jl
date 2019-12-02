@@ -1,1 +1,1 @@
-abstract type Storage <: Injection end
+abstract type Storage <: StaticInjection end

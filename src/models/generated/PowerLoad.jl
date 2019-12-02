@@ -11,6 +11,8 @@ This file is auto-generated. Do not edit.
         reactivepower::Float64
         maxactivepower::Float64
         maxreactivepower::Float64
+        services::Vector{Service}
+        ext::Dict{String, Any}
         _forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -26,6 +28,8 @@ Data structure for a static power load.
 - `reactivepower::Float64`
 - `maxactivepower::Float64`
 - `maxreactivepower::Float64`
+- `services::Vector{Service}`: Services that this device contributes to
+- `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -38,21 +42,23 @@ mutable struct PowerLoad <: StaticLoad
     reactivepower::Float64
     maxactivepower::Float64
     maxreactivepower::Float64
+    "Services that this device contributes to"
+    services::Vector{Service}
+    ext::Dict{String, Any}
     _forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, _forecasts, InfrastructureSystemsInternal())
+function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, services, ext, _forecasts, InfrastructureSystemsInternal(), )
 end
 
-function PowerLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, _forecasts=InfrastructureSystems.Forecasts(), )
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, _forecasts, )
+function PowerLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
+    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, services, ext, _forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
-
 function PowerLoad(::Nothing)
     PowerLoad(;
         name="init",
@@ -63,6 +69,8 @@ function PowerLoad(::Nothing)
         reactivepower=0.0,
         maxactivepower=0.0,
         maxreactivepower=0.0,
+        services=Device[],
+        ext=Dict{String, Any}(),
         _forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -83,6 +91,10 @@ get_reactivepower(value::PowerLoad) = value.reactivepower
 get_maxactivepower(value::PowerLoad) = value.maxactivepower
 """Get PowerLoad maxreactivepower."""
 get_maxreactivepower(value::PowerLoad) = value.maxreactivepower
+"""Get PowerLoad services."""
+get_services(value::PowerLoad) = value.services
+"""Get PowerLoad ext."""
+get_ext(value::PowerLoad) = value.ext
 """Get PowerLoad _forecasts."""
 get__forecasts(value::PowerLoad) = value._forecasts
 """Get PowerLoad internal."""

@@ -37,6 +37,11 @@ end
     @test tRenewableDispatch isa PowerSystems.Component
 end
 
+@testset "Source Constructors" begin
+    tSource = Source(nothing)
+    @test tSource isa PowerSystems.Component
+end
+
 @testset "Storage Constructors" begin
     tStorage = GenericBattery(nothing)
     @test tStorage isa PowerSystems.Component
@@ -73,10 +78,10 @@ end
 end
 
 @testset "Service Constructors" begin
-    #tProportionalReserve = ProportionalReserve(nothing)
-    #@test tProportionalReserve isa PowerSystems.Service
-    tStaticReserve = StaticReserve(nothing)
+    tStaticReserve = StaticReserve{ReserveUp}(nothing)
     @test tStaticReserve isa PowerSystems.Service
+    tVariableReserve = VariableReserve{ReserveDown}(nothing)
+    @test tVariableReserve isa PowerSystems.Service
 end
 
 @testset "Forecast Constructors" begin
