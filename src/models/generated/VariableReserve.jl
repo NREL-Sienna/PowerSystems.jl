@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct VariableReserve{T <: ReserveDirection} <: Reserve
+    mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
         name::String
         timeframe::Float64
         requirement::Float64
@@ -21,7 +21,7 @@ Data Structure for the procurement products for system simulations.
 - `_forecasts::InfrastructureSystems.Forecasts`: component forecasts
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct VariableReserve{T <: ReserveDirection} <: Reserve
+mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
     name::String
     "the relative saturation timeframe"
     timeframe::Float64

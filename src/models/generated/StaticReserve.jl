@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct StaticReserve{T <: ReserveDirection} <: Reserve
+    mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
         name::String
         timeframe::Float64
         requirement::Float64
@@ -19,7 +19,7 @@ Data Structure for a proportional reserve product for system simulations.
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct StaticReserve{T <: ReserveDirection} <: Reserve
+mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
     name::String
     "the relative saturation timeframe"
     timeframe::Float64

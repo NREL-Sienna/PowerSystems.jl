@@ -1,5 +1,4 @@
 abstract type Service <: Component end
-abstract type Reserve <: Service end
 
 """
 All subtypes of Service define contributingdevices::Vector{Device}. The values get populated

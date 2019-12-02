@@ -1165,7 +1165,7 @@
                 "null_value": "0.0",
                 "data_type": "Complex{Float64}"
             },
-            { 
+            {
                 "name": "services",
                 "data_type": "Vector{Service}",
                 "comment": "Services that this device contributes to",
@@ -1905,7 +1905,7 @@
                 "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
-        "supertype": "Reserve"
+        "supertype": "Reserve{T}"
     },
     {
         "struct_name": "VariableReserve",
@@ -1954,7 +1954,7 @@
                 "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
-        "supertype": "Reserve"
+        "supertype": "Reserve{T}"
     },
     {
         "struct_name": "Transfer",
