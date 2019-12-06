@@ -534,7 +534,7 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
             throw(DataFormatError("Did not find bus index in Load data $(ps_bus.name)"))
         end
 
-        if (max_active_power != 0.0) | (max_reactive_power != 0.0)
+        if (max_active_power != 0.0) || (max_reactive_power != 0.0)
             load = PowerLoad(
                 name = ps_bus.name,
                 available = true,
