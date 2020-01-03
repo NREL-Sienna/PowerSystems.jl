@@ -1,4 +1,8 @@
-# PowerSystems Change Log
+e# PowerSystems Change Log
+
+## v0.7.1
+
+- Bugfix services removal
 
 ## v0.7.0
 
