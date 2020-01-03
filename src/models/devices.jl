@@ -71,7 +71,7 @@ function _remove_service!(device::Device, service::Service)
     # The expectation is that there won't be many services in each device, and so
     # a faster lookup method is not needed.
     for (i, _service) in enumerate(services)
-        if IS.get_uuid(service) == IS.get_uuid(service)
+        if IS.get_uuid(_service) == IS.get_uuid(service)
             deleteat!(services, i)
             removed = true
             @debug "Removed service $(get_name(service)) from $(get_name(device))"

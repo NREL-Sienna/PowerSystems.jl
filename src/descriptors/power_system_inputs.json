@@ -466,7 +466,8 @@
         {
             "units": "MW",
             "name": "requirement",
-            "description": "Contributing Devices for reserve requirement"
+            "description": "Contributing Devices for reserve requirement",
+            "system_per_unit": true
         },
         {
             "unit": "seconds",
