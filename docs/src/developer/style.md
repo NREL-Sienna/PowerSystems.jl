@@ -13,6 +13,7 @@
 * Read [Julia guidelines for docstrings](https://docs.julialang.org/en/v1/manual/documentation/index.html).
 * Read [BlueStyle](https://github.com/invenia/BlueStyle/) style guide.
 * Consider using a plugin that configures your text editor to use [EditorConfig](https://editorconfig.org/) settings.
+* Consider using [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl).
 
 ## Code Organization
 
