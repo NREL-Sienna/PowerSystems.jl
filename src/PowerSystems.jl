@@ -35,7 +35,6 @@ export Generator
 export HydroGen
 export HydroFix
 export HydroDispatch
-export HydroStorage
 export TechHydro
 
 export RenewableGen
