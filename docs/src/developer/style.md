@@ -3,7 +3,6 @@
 ## Goals
 
 * Define a straightforward set of rules that lead to consistent, readable code.
-* Define a straightforward set of rules that lead to consistent, readable code.
 * Developers focus on producing high quality code, not how to format it.
 
 ## Base
@@ -12,11 +11,6 @@
 [Julia style guide](https://docs.julialang.org/en/v1/manual/style-guide/index.html) as reference.
 * Read [Julia contribution guidelines](https://github.com/JuliaLang/julia/blob/master/CONTRIBUTING.md#general-formatting-guidelines-for-julia-code-contributions), notably its line length limit.
 * Read [Julia guidelines for docstrings](https://docs.julialang.org/en/v1/manual/documentation/index.html).
-* Read [JuMP coding standards](http://www.juliaopt.org/JuMP.jl/dev/style). In particular, note its policies on
-  * [whitespace](http://www.juliaopt.org/JuMP.jl/dev/style/#Whitespace-1)
-  * [return statements](http://www.juliaopt.org/JuMP.jl/dev/style/#Return-statements-1)
-  * [variable names](http://www.juliaopt.org/JuMP.jl/dev/style/#Use-of-underscores-within-names-1).
-* Read [The Zen of Python](https://www.python.org/dev/peps/pep-0020).
 * Read [BlueStyle](https://github.com/invenia/BlueStyle/) style guide.
 * Consider using a plugin that configures your text editor to use [EditorConfig](https://editorconfig.org/) settings.
 
@@ -45,6 +39,7 @@ for i in 1:100
     arr[i] += b[i] * x
     arr[i] += c[i]
     =#
+    nothing
 end
 ```
 
@@ -55,6 +50,7 @@ for i in 1:100
     # arr[i] += a[i] * x^2
     # arr[i] += b[i] * x
     # arr[i] += c[i]
+    nothing
 end
 ```
 
@@ -180,6 +176,9 @@ Bad:
 nodes = [Node(1), Node(2), Node(3), Node(4), Node(5)];
 ```
 
+Prefer a similar rule for Dictionaries, Sets and other data structures.
+Use your judgement when data structures can neatly fit on a single line.
+
 * Do not right-align equal signs when assigning groups of variables. It causes
   unnecessary changes whenever someone adds a new variable with a longer name.
 
@@ -222,3 +221,7 @@ You may _need_ to use `export` when extending functionality of other packages
 that have also exported the same symbol.
 
 All symbols that have `export` **must** have proper docstrings.
+
+# References
+
+* [The Zen of Python](https://www.python.org/dev/peps/pep-0020).
