@@ -445,7 +445,6 @@
             "value_options": [
                 "HydroFix",
                 "HydroDispatch",
-                "HydroStorage",
                 "RenewableFix",
                 "RenewableDispatch",
                 "ThermalStandard"
