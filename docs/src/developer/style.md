@@ -88,8 +88,9 @@ members if no inner constructor is defined.
 
 * Global constants should be written in upper case and be declared `const`.
     - `const UPPER_CASE_VARIABLE = π / 2`
-* If global variables are needed, prefix them with "g_".
-* Don't use [magic numbers](https://en.wikipedia.org/wiki/Magic_number_%28programming%29). Instead, define `const GLOBALS` or `Enums` (Julia @enum).
+* If global variables are needed, prefix them with `g_`.
+* Don't use [magic numbers](https://en.wikipedia.org/wiki/Magic_number_%28programming%29).
+  Instead, define `const GLOBALS` or `Enums` (Julia @enum).
 
 ## One-line Conditionals
 
@@ -117,9 +118,8 @@ Good:
 y = x > 0 ? x : -x
 ```
 
-There are many examples in our codebase that use the form ```<cond> ?
-<statement> : <statement>```.  These can be expressed much more clearly in an
-if/else statement.
+There are many examples in our codebase that use the form `<cond> ? <statement> : <statement>`.
+These may be expressed much more clearly in an if/else statement.
 
 ## Unit Tests
 
@@ -146,12 +146,14 @@ end
 
 Bad:
 
+```julia
 function foo(var1::String,
              var2::String,
              var3::String,
              var6::T) where T <: Number
     println("hello world")
 end
+```
 
 * Surround equal signs with spaces when passing keyword args to a
 function or defining default values in function declarations.
@@ -211,6 +213,7 @@ Good:
 
 ```julia
 abstract type Foo end
+```
 
 ## Exports
 
