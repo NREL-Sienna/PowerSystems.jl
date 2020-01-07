@@ -1306,7 +1306,17 @@
                 "data_type": "TwoPartCost"
             },
             {
-                "name": "storagecapacity",
+                "name": "storage_capacity",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "inflow",
                 "null_value": "0.0",
                 "data_type": "Float64",
                 "valid_range": {
