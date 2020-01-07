@@ -211,6 +211,8 @@ function make_hydro_gen(gen_name, d, bus)
         reactivepower = d["qg"],
         tech = tech,
         op_cost = curtailcost,
+        storagecapacity = 0.0, #TODO: Implement better Solution for this
+        initial_storage = 0.0
     )
 end
 
