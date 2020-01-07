@@ -828,13 +828,15 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
 
     curtailcost = 0.0
     storage_df = data.category_to_df[STORAGE]
-    storagecapacity = nothing
+    storage_capacity = nothing
     initial_storage = nothing
+    inflow = nothing
     for row in eachrow(storage_df)
         row[Symbol("GEN UID")], gen.name
         if row[Symbol("GEN UID")] == gen.name
-            storagecapacity = row[Symbol("Max Volume GWh")]
+            storage_capacity = row[Symbol("Max Volume GWh")]
             initial_storage = row[Symbol("Initial Volume GWh")]
+            inflow = row[Symbol("Inflow Limit GWh")]
             break
         end
     end
@@ -846,7 +848,8 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
         reactivepower = gen.reactive_power,
         tech = tech,
         op_cost = TwoPartCost(curtailcost, 0.0),
-        storagecapacity = storagecapacity,
+        storage_capacity = storage_capacity,
+        inflow = inflow,
         initial_storage = initial_storage
 
     )
