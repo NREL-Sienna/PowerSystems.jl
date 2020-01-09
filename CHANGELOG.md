@@ -1,4 +1,8 @@
-e# PowerSystems Change Log
+PowerSystems Change Log
+
+## v0.8.0
+
+- Updated HydroDispatch and removed HydroStorage
 
 ## v0.7.1
 
