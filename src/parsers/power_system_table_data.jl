@@ -841,6 +841,7 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
         end
     end
     if !isnothing(storage_capacity) && !isnothing(initial_storage) && !isnothing(inflow)
+        @info "Creating HydroDispatch device for $(gen.name)"
         hydro_gen = HydroDispatch(name = gen.name,
                                   available = available,
                                   bus = bus,
@@ -852,6 +853,7 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
                                   inflow = inflow,
                                   initial_storage = initial_storage)
     elseif isnothing(storage_capacity) && isnothing(initial_storage) && isnothing(inflow)
+        @info "Creating HydroFix device for $(gen.name)"
         hydro_gen = HydroFix(name = gen.name,
                              available = available,
                              bus = bus,
