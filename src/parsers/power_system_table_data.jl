@@ -840,19 +840,29 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
             break
         end
     end
-    return HydroDispatch(
-        name = gen.name,
-        available = available,
-        bus = bus,
-        activepower = gen.active_power,
-        reactivepower = gen.reactive_power,
-        tech = tech,
-        op_cost = TwoPartCost(curtailcost, 0.0),
-        storage_capacity = storage_capacity,
-        inflow = inflow,
-        initial_storage = initial_storage
-
-    )
+    if !isnothing(storage_capacity) && !isnothing(initial_storage) && !isnothing(inflow)
+        @info "Creating HydroDispatch device for $(gen.name)"
+        hydro_gen = HydroDispatch(name = gen.name,
+                                  available = available,
+                                  bus = bus,
+                                  activepower = gen.active_power,
+                                  reactivepower = gen.reactive_power,
+                                  tech = tech,
+                                  op_cost = TwoPartCost(curtailcost, 0.0),
+                                  storage_capacity = storage_capacity,
+                                  inflow = inflow,
+                                  initial_storage = initial_storage)
+    elseif isnothing(storage_capacity) && isnothing(initial_storage) && isnothing(inflow)
+        @info "Creating HydroFix device for $(gen.name)"
+        hydro_gen = HydroFix(name = gen.name,
+                             available = available,
+                             bus = bus,
+                             activepower = gen.active_power,
+                             reactivepower = gen.reactive_power,
+                             tech = tech)
+    else
+        error("Cannot determine which Hydro Generator to create")
+    end
 end
 
 function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
