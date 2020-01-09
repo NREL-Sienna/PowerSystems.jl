@@ -17,7 +17,6 @@ include("FixedAdmittance.jl")
 include("PowerLoad.jl")
 include("HydroDispatch.jl")
 include("HydroFix.jl")
-include("HydroStorage.jl")
 include("RenewableDispatch.jl")
 include("RenewableFix.jl")
 include("ThermalStandard.jl")
@@ -152,6 +151,7 @@ export get_fixed
 export get_flowlimits
 export get_from
 export get_fuel
+export get_inflow
 export get_initial_storage
 export get_inputactivepowerlimits
 export get_internal
@@ -208,7 +208,7 @@ export get_services
 export get_shutdn
 export get_startup
 export get_states
-export get_storagecapacity
+export get_storage_capacity
 export get_tap
 export get_tech
 export get_timeframe

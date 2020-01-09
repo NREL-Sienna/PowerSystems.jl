@@ -13,6 +13,7 @@ struct PowerSystemTableData
     gen::Union{DataFrames.DataFrame,Nothing}
     load::Union{DataFrames.DataFrame,Nothing}
     services::Union{DataFrames.DataFrame,Nothing}
+    storage::Union{DataFrames.DataFrame,Nothing}
     category_to_df::Dict{InputCategory,DataFrames.DataFrame}
     timeseries_metadata_file::Union{String,Nothing}
     directory::String
@@ -37,6 +38,7 @@ function PowerSystemTableData(
         ("gen", GENERATOR::InputCategory),
         ("load", LOAD::InputCategory),
         ("reserves", RESERVE::InputCategory),
+        ("storage", STORAGE::InputCategory),
     ]
 
     if !haskey(data, "bus")
@@ -825,6 +827,19 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
     )
 
     curtailcost = 0.0
+    storage_df = data.category_to_df[STORAGE]
+    storage_capacity = nothing
+    initial_storage = nothing
+    inflow = nothing
+    for row in eachrow(storage_df)
+        row[Symbol("GEN UID")], gen.name
+        if row[Symbol("GEN UID")] == gen.name
+            storage_capacity = row[Symbol("Max Volume GWh")]
+            initial_storage = row[Symbol("Initial Volume GWh")]
+            inflow = row[Symbol("Inflow Limit GWh")]
+            break
+        end
+    end
     return HydroDispatch(
         name = gen.name,
         available = available,
@@ -833,6 +848,10 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
         reactivepower = gen.reactive_power,
         tech = tech,
         op_cost = TwoPartCost(curtailcost, 0.0),
+        storage_capacity = storage_capacity,
+        inflow = inflow,
+        initial_storage = initial_storage
+
     )
 end
 

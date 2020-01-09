@@ -118,7 +118,7 @@ hydro_generators5(nodes5) = [
                     ),
                     HydroDispatch("HydroDispatch", true, nodes5[3], 0.0, 0.0,
                         TechHydro(0.600, PowerSystems.HY, (min = 0.0, max = 60.0), (min = 0.0, max = 60.0), (up = 10.0, down = 10.0), nothing),
-                        TwoPartCost(15.0, 0.0))
+                        TwoPartCost(15.0, 0.0), 1.0, 0.2, 0.5)
                     ];
 
 battery5(nodes5) = [GenericBattery(name = "Bat",

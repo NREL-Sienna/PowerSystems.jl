@@ -25,8 +25,6 @@ end
     @test tHydroFix isa PowerSystems.Component
     tHydroDispatch = HydroDispatch(nothing)
     @test tHydroDispatch isa PowerSystems.Component
-    tHydroStorage = HydroStorage(nothing)
-    @test tHydroStorage isa PowerSystems.Component
     tTechRenewable = TechRenewable(nothing)
     @test tTechRenewable isa PowerSystemType
     tRenewableFix = RenewableFix(nothing)

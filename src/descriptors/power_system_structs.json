@@ -1306,6 +1306,36 @@
                 "data_type": "TwoPartCost"
             },
             {
+                "name": "storage_capacity",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "inflow",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "initial_storage",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
                 "name": "services",
                 "data_type": "Vector{Service}",
                 "comment": "Services that this device contributes to",
@@ -1367,94 +1397,6 @@
                 "name": "tech",
                 "null_value": "TechHydro(nothing)",
                 "data_type": "TechHydro"
-            },
-            {
-                "name": "services",
-                "data_type": "Vector{Service}",
-                "comment": "Services that this device contributes to",
-                "null_value": "Device[]",
-                "default": "Device[]"
-            },
-            {
-                "name": "ext",
-                "data_type": "Dict{String, Any}",
-                "null_value": "Dict{String, Any}()",
-                "default": "Dict{String, Any}()"
-            },
-            {
-                "name": "_forecasts",
-                "null_value": "InfrastructureSystems.Forecasts()",
-                "data_type": "InfrastructureSystems.Forecasts",
-                "default": "InfrastructureSystems.Forecasts()"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "HydroGen"
-    },
-    {
-        "struct_name": "HydroStorage",
-        "fields": [
-            {
-                "null_value": "init",
-                "name": "name",
-                "data_type": "String"
-            },
-            {
-                "null_value": "false",
-                "name": "available",
-                "data_type": "Bool"
-            },
-            {
-                "name": "bus",
-                "null_value": "Bus(nothing)",
-                "data_type": "Bus"
-            },
-            {
-                "name": "activepower",
-                "null_value": "0.0",
-                "data_type": "Float64"
-            },
-            {
-                "name": "reactivepower",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": "tech.reactivepowerlimits",
-                "validation_action": "warn"
-            },
-            {
-                "name": "tech",
-                "null_value": "TechHydro(nothing)",
-                "data_type": "TechHydro"
-            },
-            {
-                "name": "op_cost",
-                "null_value": "TwoPartCost(nothing)",
-                "data_type": "TwoPartCost"
-            },
-            {
-                "name": "storagecapacity",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "initial_storage",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
             },
             {
                 "name": "services",
