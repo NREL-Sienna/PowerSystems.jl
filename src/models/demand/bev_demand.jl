@@ -754,7 +754,7 @@ function populate_BEV_demand(data_location :: String, index :: Int64)
     num_el = length(varnames)
     workaround1 = true
     
-    if index < 1 || index > num_el
+    if index < 1
         print("index out of range")
         return []
     else
@@ -824,7 +824,7 @@ function populate_BEV_demand(data_location :: String, start_i:: Int64, end_i:: I
     num_el = length(varnames)
     workaround1 = true
     
-    if start_i < 1 || end_i > num_el
+    if start_i < 1 || end_i > (start_i + num_el-1)
         print("indices out of range")
         return []
     else
@@ -857,9 +857,12 @@ function populate_BEV_demand(data_location :: String) :: Array{BevDemand{Time,St
     num_el = length(varnames)
     
     populated_BEV_demand = Array{BevDemand}(undef,num_el)
-
-    for i in range(1,num_el)
-        populated_BEV_demand[i] = populate_BEV_demand(data_location, i)
+    
+    i = 1
+    for var in varnames
+        index = parse(Int64,(replace(var, "bev" => "")))
+        populated_BEV_demand[i] = populate_BEV_demand(data_location, index)
+        i = i+1
     end
 
     return populated_BEV_demand
