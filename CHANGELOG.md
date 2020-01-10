@@ -1,4 +1,8 @@
-PowerSystems Change Log
+# PowerSystems Change Log
+
+## v0.8.1
+
+- Bugfix TableData HydroStorage
 
 ## v0.8.0
 
