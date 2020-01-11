@@ -826,33 +826,25 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
         (up = gen.min_down_time, down = gen.min_down_time),
     )
 
-    curtailcost = 0.0
     if gen_type == HydroDispatch
-        @debug("Creating $(gen.name) as HydroDispatch")
-        !haskey(data.category_to_df, STORAGE) && throw(DataFormatError("Storage information must defined in storages csv"))
-        storage_df = data.category_to_df[STORAGE]
-        storage_capacity = nothing
-        initial_storage = nothing
-        inflow = nothing
-        for row in eachrow(storage_df)
-            row[Symbol("GEN UID")], gen.name
-            if row[Symbol("GEN UID")] == gen.name
-                storage_capacity = row[Symbol("Max Volume GWh")]
-                initial_storage = row[Symbol("Initial Volume GWh")]
-                inflow = row[Symbol("Inflow Limit GWh")]
-                break
-            end
+        if !haskey(data.category_to_df, STORAGE)
+            throw(DataFormatError("Storage information must defined in storage.csv"))
         end
-        hydro_gen = HydroDispatch(name = gen.name,
-                                  available = available,
-                                  bus = bus,
-                                  activepower = gen.active_power,
-                                  reactivepower = gen.reactive_power,
-                                  tech = tech,
-                                  op_cost = TwoPartCost(curtailcost, 0.0),
-                                  storage_capacity = storage_capacity,
-                                  inflow = inflow,
-                                  initial_storage = initial_storage)
+        @debug("Creating $(gen.name) as HydroDispatch")
+        storage = get_storage_by_generator(data, gen.name)
+        curtailcost = 0.0
+        hydro_gen = HydroDispatch(
+            name = gen.name,
+            available = available,
+            bus = bus,
+            activepower = gen.active_power,
+            reactivepower = gen.reactive_power,
+            tech = tech,
+            op_cost = TwoPartCost(curtailcost, 0.0),
+            storage_capacity = storage.storage_capacity,
+            inflow = storage.inflow_limit,
+            initial_storage = storage.initial_storage,
+        )
     elseif gen_type == HydroFix
         @debug("Creating $(gen.name) as HydroFix")
         hydro_gen = HydroFix(name = gen.name,
@@ -865,6 +857,16 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
         error("Tabular data parser does not currently support $gen_type creation")
     end
     return hydro_gen
+end
+
+function get_storage_by_generator(data::PowerSystemTableData, gen_name::AbstractString)
+    for storage in iterate_rows(data, STORAGE::InputCategory)
+        if storage.generator_name == gen_name
+            return storage
+        end
+    end
+
+    throw(DataFormatError("no storage exists with generator $gen_name"))
 end
 
 function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
@@ -1040,8 +1042,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
             end
         end
         return fields
-    catch
-        (err)
+    catch err
         if err == KeyError
             msg = "Failed to find category=$category field=$field in input descriptors $err"
             throw(DataFormatError(msg))
