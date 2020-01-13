@@ -7,13 +7,6 @@ const POWER_SYSTEM_DESCRIPTOR_FILE = joinpath(
 
 struct PowerSystemTableData
     basepower::Float64
-    branch::Union{DataFrames.DataFrame,Nothing}
-    bus::DataFrames.DataFrame
-    dcline::Union{DataFrames.DataFrame,Nothing}
-    gen::Union{DataFrames.DataFrame,Nothing}
-    load::Union{DataFrames.DataFrame,Nothing}
-    services::Union{DataFrames.DataFrame,Nothing}
-    storage::Union{DataFrames.DataFrame,Nothing}
     category_to_df::Dict{InputCategory,DataFrames.DataFrame}
     timeseries_metadata_file::Union{String,Nothing}
     directory::String
@@ -50,7 +43,6 @@ function PowerSystemTableData(
     end
     basepower = get(data, "basepower", DEFAULT_BASE_MVA)
 
-    dfs = Vector()
     for (label, category) in categories
         val = get(data, label, nothing)
         if isnothing(val)
@@ -58,8 +50,6 @@ function PowerSystemTableData(
         else
             category_to_df[category] = val
         end
-
-        push!(dfs, val)
     end
 
     if !isfile(timeseries_metadata_file)
@@ -86,7 +76,6 @@ function PowerSystemTableData(
 
     return PowerSystemTableData(
         basepower,
-        dfs...,
         category_to_df,
         timeseries_metadata_file,
         directory,
@@ -243,7 +232,7 @@ making type conversions as necessary.
 Refer to the PowerSystems descriptor file for field names that will be created.
 """
 function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true)
-    df = data.category_to_df[category]
+    df = get_dataframe(data, category)
     field_infos = _get_field_infos(data, category, names(df))
 
     Channel() do channel
@@ -288,10 +277,10 @@ function System(
 
     # Services and forecasts must be last.
     parsers = (
-        (data.branch, branch_csv_parser!),
-        (data.dcline, dc_branch_csv_parser!),
-        (data.gen, gen_csv_parser!),
-        (data.services, services_csv_parser!),
+        (get_dataframe(data, BRANCH::InputCategory), branch_csv_parser!),
+        (get_dataframe(data, DC_BRANCH::InputCategory), dc_branch_csv_parser!),
+        (get_dataframe(data, GENERATOR::InputCategory), gen_csv_parser!),
+        (get_dataframe(data, RESERVE::InputCategory), services_csv_parser!),
     )
 
     for (val, parser) in parsers
@@ -559,14 +548,15 @@ Add branches to the System from the raw data.
 
 """
 function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
+    buses = get_dataframe(data, BUS::InputCategory)
     area_column = get_user_field(data, BUS::InputCategory, "area")
-    if !in(area_column, names(data.bus))
+    if !in(area_column, names(buses))
         @warn "Missing Data : no 'area' information for buses, cannot create loads based "
         "on areas"
         return
     end
 
-    zones = unique(data.bus[!, area_column])
+    zones = unique(buses[!, area_column])
     for (i, zone) in enumerate(zones)
         bus_numbers = Set{Int}()
         active_powers = Vector{Float64}()
@@ -655,11 +645,12 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             @info("Adding contributing generators for $(reserve.name) by category")
             @warn "Adding contributing components by category only supports generators" maxlog = 1
             for gen in iterate_rows(data, GENERATOR::InputCategory)
-                bus_ids = data.bus[!, bus_id_column]
+                buses = get_dataframe(data, BUS::InputCategory)
+                bus_ids = buses[!, bus_id_column]
                 sys_gen = get_components_by_name(Generator, sys, gen.name)
                 if length(sys_gen) == 1
                     sys_gen = sys_gen[1]
-                    area = string(data.bus[
+                    area = string(buses[
                         bus_ids.==get_number(get_bus(sys_gen)),
                         bus_area_column,
                     ][1])
