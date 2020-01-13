@@ -712,8 +712,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
 
     if gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
-    elseif gen_type == HydroDispatch
-        generator = make_hydro_generator(data, gen, bus)
+    elseif gen_type <: HydroGen
+        generator = make_hydro_generator(gen_type, data, gen, bus)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, bus)
     elseif gen_type == GenericBattery
@@ -805,7 +805,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     )
 end
 
-function make_hydro_generator(data::PowerSystemTableData, gen, bus)
+function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
     available = true
 
     rating = calculate_rating(gen.active_power_limits_max, gen.reactive_power_limits_max)
@@ -827,21 +827,22 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
     )
 
     curtailcost = 0.0
-    storage_df = data.category_to_df[STORAGE]
-    storage_capacity = nothing
-    initial_storage = nothing
-    inflow = nothing
-    for row in eachrow(storage_df)
-        row[Symbol("GEN UID")], gen.name
-        if row[Symbol("GEN UID")] == gen.name
-            storage_capacity = row[Symbol("Max Volume GWh")]
-            initial_storage = row[Symbol("Initial Volume GWh")]
-            inflow = row[Symbol("Inflow Limit GWh")]
-            break
+    if gen_type == HydroDispatch
+        @debug("Creating $(gen.name) as HydroDispatch")
+        !haskey(data.category_to_df, STORAGE) && throw(DataFormatError("Storage information must defined in storages csv"))
+        storage_df = data.category_to_df[STORAGE]
+        storage_capacity = nothing
+        initial_storage = nothing
+        inflow = nothing
+        for row in eachrow(storage_df)
+            row[Symbol("GEN UID")], gen.name
+            if row[Symbol("GEN UID")] == gen.name
+                storage_capacity = row[Symbol("Max Volume GWh")]
+                initial_storage = row[Symbol("Initial Volume GWh")]
+                inflow = row[Symbol("Inflow Limit GWh")]
+                break
+            end
         end
-    end
-    if !isnothing(storage_capacity) && !isnothing(initial_storage) && !isnothing(inflow)
-        @info "Creating HydroDispatch device for $(gen.name)"
         hydro_gen = HydroDispatch(name = gen.name,
                                   available = available,
                                   bus = bus,
@@ -852,8 +853,8 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
                                   storage_capacity = storage_capacity,
                                   inflow = inflow,
                                   initial_storage = initial_storage)
-    elseif isnothing(storage_capacity) && isnothing(initial_storage) && isnothing(inflow)
-        @info "Creating HydroFix device for $(gen.name)"
+    elseif gen_type == HydroFix
+        @debug("Creating $(gen.name) as HydroFix")
         hydro_gen = HydroFix(name = gen.name,
                              available = available,
                              bus = bus,
@@ -861,8 +862,9 @@ function make_hydro_generator(data::PowerSystemTableData, gen, bus)
                              reactivepower = gen.reactive_power,
                              tech = tech)
     else
-        error("Cannot determine which Hydro Generator to create")
+        error("Tabular data parser does not currently support $gen_type creation")
     end
+    return hydro_gen
 end
 
 function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)

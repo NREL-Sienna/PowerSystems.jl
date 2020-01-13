@@ -27,6 +27,7 @@ merge!(
         "NB" => ST::PrimeMovers,
         "STEAM" => ST::PrimeMovers,
         "HYDRO" => HY::PrimeMovers,
+        "ROR" => HY::PrimeMovers,
         "NUCLEAR" => ST::PrimeMovers,
         "SYNC_COND" => OT::PrimeMovers,
         "CSP" => CP::PrimeMovers,
