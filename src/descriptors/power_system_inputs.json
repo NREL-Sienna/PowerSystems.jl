@@ -514,7 +514,7 @@
         },
         {
             "name": "generator_name",
-            "description": "Generator name"
+            "description": "Generator name associated with storage"
         },
         {
             "name": "bus_id",
