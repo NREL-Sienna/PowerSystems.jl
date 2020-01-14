@@ -14,8 +14,8 @@ This file is auto-generated. Do not edit.
 Parameters of single mass shaft model. Typically represents the rotor mass.
 
 # Arguments
-- `H::Float64`: Rotor inertia constant in MWs/MVA
-- `D::Float64`: Rotor natural damping in pu
+- `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: (0, nothing)
+- `D::Float64`: Rotor natural damping in pu, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

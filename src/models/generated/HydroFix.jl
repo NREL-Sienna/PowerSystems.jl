@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
 - `available::Bool`
 - `bus::Bus`
 - `activepower::Float64`
-- `reactivepower::Float64`
+- `reactivepower::Float64`, validation range: tech.reactivepowerlimits, action if invalid: warn
 - `tech::TechHydro`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`

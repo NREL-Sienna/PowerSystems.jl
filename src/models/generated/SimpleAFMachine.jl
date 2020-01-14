@@ -28,18 +28,18 @@ Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
  If transmission dynamics is considered use the full order Anderson Fouad model.
 
 # Arguments
-- `R::Float64`: Resistance after EMF in machine per unit
-- `Xd::Float64`: Reactance after EMF in d-axis per unit
-- `Xq::Float64`: Reactance after EMF in q-axis per unit
-- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit
-- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit
-- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit
-- `Xq_pp::Float64`: Sub-Transient reactance after EMF in q-axis per unit
-- `Td0_p::Float64`: Time constant of transient d-axis voltage
-- `Tq0_p::Float64`: Time constant of transient q-axis voltage
-- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage
-- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage
-- `MVABase::Float64`: Nominal Capacity in MVA
+- `R::Float64`: Resistance after EMF in machine per unit, validation range: (0, nothing)
+- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: (0, nothing)
+- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: (0, nothing)
+- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
+- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
+- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
+- `Xq_pp::Float64`: Sub-Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
+- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: (0, nothing)
+- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
+- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: (0, nothing)
+- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: (0, nothing)
+- `MVABase::Float64`: Nominal Capacity in MVA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

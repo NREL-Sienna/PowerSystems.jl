@@ -30,19 +30,19 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
  Note that the models are somewhat different (but equivalent) due to the different Park Transformation used in both books.
 
 # Arguments
-- `R::Float64`: Resistance after EMF in machine per unit
-- `R_f::Float64`: Field rotor winding resistance in per unit
-- `R_1d::Float64`:  Damping rotor winding resistance on d-axis in per unit. This value is denoted as RD in Machowski.
-- `R_1q::Float64`: Damping rotor winding resistance on q-axis in per unit. This value is denoted as RQ in Machowski.
-- `L_d::Float64`: Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).
-- `L_q::Float64`: Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.
-- `L_ad::Float64`: Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit
-- `L_aq::Float64`: Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit
-- `L_f1d::Float64`: Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit
-- `L_ff::Float64`: Field rotor winding inductance, in per unit
-- `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit
-- `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit
-- `MVABase::Float64`: Nominal Capacity in MVA
+- `R::Float64`: Resistance after EMF in machine per unit, validation range: (0, nothing)
+- `R_f::Float64`: Field rotor winding resistance in per unit, validation range: (0, nothing)
+- `R_1d::Float64`:  Damping rotor winding resistance on d-axis in per unit. This value is denoted as RD in Machowski., validation range: (0, nothing)
+- `R_1q::Float64`: Damping rotor winding resistance on q-axis in per unit. This value is denoted as RQ in Machowski., validation range: (0, nothing)
+- `L_d::Float64`: Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski)., validation range: (0, nothing)
+- `L_q::Float64`: Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur., validation range: (0, nothing)
+- `L_ad::Float64`: Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit, validation range: (0, nothing)
+- `L_aq::Float64`: Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit, validation range: (0, nothing)
+- `L_f1d::Float64`: Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit, validation range: (0, nothing)
+- `L_ff::Float64`: Field rotor winding inductance, in per unit, validation range: (0, nothing)
+- `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit, validation range: (0, nothing)
+- `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit, validation range: (0, nothing)
+- `MVABase::Float64`: Nominal Capacity in MVA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
@@ -103,14 +103,14 @@ function FullMachine(::Nothing)
         R_f=0,
         R_1d=0,
         R_1q=0,
-        L_d=1,
-        L_q=1,
-        L_ad=2,
-        L_aq=2,
-        L_f1d=1,
-        L_ff=2,
-        L_1d=1,
-        L_1q=1,
+        L_d=1.0,
+        L_q=1.0,
+        L_ad=2.0,
+        L_aq=2.0,
+        L_f1d=1.0,
+        L_ff=2.0,
+        L_1d=1.0,
+        L_1q=1.0,
         MVABase=0,
         ext=Dict{String, Any}(),
     )

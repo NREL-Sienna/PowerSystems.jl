@@ -14,8 +14,8 @@ This file is auto-generated. Do not edit.
 Parameters of an average converter model
 
 # Arguments
-- `v_rated::Float64`: rated voltage
-- `s_rated::Float64`: rated VA
+- `v_rated::Float64`: rated voltage, validation range: (0, nothing)
+- `s_rated::Float64`: rated VA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

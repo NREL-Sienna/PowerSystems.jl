@@ -28,12 +28,12 @@ This file is auto-generated. Do not edit.
 - `activepower_flow::Float64`
 - `reactivepower_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: System per-unit value
-- `x::Float64`: System per-unit value
-- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value
+- `r::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
+- `x::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
+- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: (0, 2), action if invalid: error
 - `flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}`: TODO: throw warning above max SIL
 - `rate::Float64`: TODO: compare to SIL (warn) (theoretical limit)
-- `anglelimits::Min_Max`
+- `anglelimits::Min_Max`, validation range: (-1.571, 1.571), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`

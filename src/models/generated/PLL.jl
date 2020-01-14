@@ -15,9 +15,9 @@ This file is auto-generated. Do not edit.
 Parameters of a Phase-Locked Loop (PLL) for VSM
 
 # Arguments
-- `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec)
-- `kp_pll::Float64`: PLL proportional gain
-- `ki_pll::Float64`: PLL integral gain
+- `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: (0, nothing)
+- `kp_pll::Float64`: PLL proportional gain, validation range: (0, nothing)
+- `ki_pll::Float64`: PLL integral gain, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

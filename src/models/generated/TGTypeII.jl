@@ -17,11 +17,11 @@ This file is auto-generated. Do not edit.
 Parameters of a Turbine Governor Type II.
 
 # Arguments
-- `R::Float64`: Droop parameter
-- `T1::Float64`: Transient gain time constant
-- `T2::Float64`: Power fraction time constant
-- `τ_min::Float64`: Min Power into the Governor
-- `τ_max::Float64`: Max Power into the Governor
+- `R::Float64`: Droop parameter, validation range: (0, nothing)
+- `T1::Float64`: Transient gain time constant, validation range: (0, nothing)
+- `T2::Float64`: Power fraction time constant, validation range: (0, nothing)
+- `τ_min::Float64`: Min Power into the Governor, validation range: (0, nothing)
+- `τ_max::Float64`: Max Power into the Governor, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

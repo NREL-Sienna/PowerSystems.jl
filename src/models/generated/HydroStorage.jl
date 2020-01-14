@@ -25,11 +25,11 @@ This file is auto-generated. Do not edit.
 - `available::Bool`
 - `bus::Bus`
 - `activepower::Float64`
-- `reactivepower::Float64`
+- `reactivepower::Float64`, validation range: tech.reactivepowerlimits, action if invalid: warn
 - `tech::TechHydro`
 - `op_cost::TwoPartCost`
-- `storagecapacity::Float64`
-- `initial_storage::Float64`
+- `storagecapacity::Float64`, validation range: (0, nothing), action if invalid: error
+- `initial_storage::Float64`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`

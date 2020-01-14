@@ -32,24 +32,24 @@ Parameters of 5 mass-spring shaft model.
  steam turbine, Low-Pressure (LP) steam turbine, the Rotor and an Exciter (EX) mover.
 
 # Arguments
-- `H::Float64`: Rotor inertia constant in MWs/MVA
-- `H_hp::Float64`: High pressure turbine inertia constant in MWs/MVA
-- `H_ip::Float64`: Intermediate pressure turbine inertia constant in MWs/MVA
-- `H_lp::Float64`: Low pressure turbine inertia constant in MWs/MVA
-- `H_ex::Float64`:  Exciter inertia constant in MWs/MVA
-- `D::Float64`: Rotor natural damping in pu
-- `D_hp::Float64`: High pressure turbine natural damping in pu
-- `D_ip::Float64`: Intermediate pressure turbine natural damping in pu
-- `D_lp::Float64`: Low pressure turbine natural damping in pu
-- `D_ex::Float64`: Exciter natural damping in pu
-- `D_12::Float64`: High-Intermediate pressure turbine damping
-- `D_23::Float64`: Intermediate-Low pressure turbine damping
-- `D_34::Float64`: Low pressure turbine-Rotor damping
-- `D_45::Float64`: Rotor-Exciter damping
-- `K_hp::Float64`: High pressure turbine angle coefficient
-- `K_ip::Float64`: Intermediate pressure turbine angle coefficient
-- `K_lp::Float64`: Low pressure turbine angle coefficient
-- `K_ex::Float64`: Exciter angle coefficient
+- `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: (0, nothing)
+- `H_hp::Float64`: High pressure turbine inertia constant in MWs/MVA, validation range: (0, nothing)
+- `H_ip::Float64`: Intermediate pressure turbine inertia constant in MWs/MVA, validation range: (0, nothing)
+- `H_lp::Float64`: Low pressure turbine inertia constant in MWs/MVA, validation range: (0, nothing)
+- `H_ex::Float64`:  Exciter inertia constant in MWs/MVA, validation range: (0, nothing)
+- `D::Float64`: Rotor natural damping in pu, validation range: (0, nothing)
+- `D_hp::Float64`: High pressure turbine natural damping in pu, validation range: (0, nothing)
+- `D_ip::Float64`: Intermediate pressure turbine natural damping in pu, validation range: (0, nothing)
+- `D_lp::Float64`: Low pressure turbine natural damping in pu, validation range: (0, nothing)
+- `D_ex::Float64`: Exciter natural damping in pu, validation range: (0, nothing)
+- `D_12::Float64`: High-Intermediate pressure turbine damping, validation range: (0, nothing)
+- `D_23::Float64`: Intermediate-Low pressure turbine damping, validation range: (0, nothing)
+- `D_34::Float64`: Low pressure turbine-Rotor damping, validation range: (0, nothing)
+- `D_45::Float64`: Rotor-Exciter damping, validation range: (0, nothing)
+- `K_hp::Float64`: High pressure turbine angle coefficient, validation range: (0, nothing)
+- `K_ip::Float64`: Intermediate pressure turbine angle coefficient, validation range: (0, nothing)
+- `K_lp::Float64`: Low pressure turbine angle coefficient, validation range: (0, nothing)
+- `K_ex::Float64`: Exciter angle coefficient, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

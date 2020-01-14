@@ -23,17 +23,17 @@ This file is auto-generated. Do not edit.
 Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model
 
 # Arguments
-- `K0::Float64`: Regulator Gain
-- `T1::Float64`: First Pole in s
-- `T2::Float64`: First zero in s
-- `T3::Float64`: First Pole in s
-- `T4::Float64`: First zero in s
-- `Te::Float64`: Field Circuit Time Constant in s
-- `Tr::Float64`: Voltage Measurement Time Constant in s
-- `Vr_max::Float64`: Maximum regulator voltage in pu
-- `Vr_min::Float64`: Minimum regulator voltage in pu
-- `Ae::Float64`: 1st ceiling coefficient
-- `Be::Float64`: 2nd ceiling coefficient
+- `K0::Float64`: Regulator Gain, validation range: (0, nothing)
+- `T1::Float64`: First Pole in s, validation range: (0, nothing)
+- `T2::Float64`: First zero in s, validation range: (0, nothing)
+- `T3::Float64`: First Pole in s, validation range: (0, nothing)
+- `T4::Float64`: First zero in s, validation range: (0, nothing)
+- `Te::Float64`: Field Circuit Time Constant in s, validation range: (0, nothing)
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: (0, nothing)
+- `Vr_max::Float64`: Maximum regulator voltage in pu, validation range: (0, nothing)
+- `Vr_min::Float64`: Minimum regulator voltage in pu, validation range: (0, nothing)
+- `Ae::Float64`: 1st ceiling coefficient, validation range: (0, nothing)
+- `Be::Float64`: 2nd ceiling coefficient, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

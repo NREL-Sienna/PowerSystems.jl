@@ -14,7 +14,7 @@ Parameters of a simple proportional AVR in the derivative of EMF
 i.e. an integrator controller on EMF
 
 # Arguments
-- `Kv::Float64`: Proportional Gain
+- `Kv::Float64`: Proportional Gain, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`: Fixed AVR has 1 states

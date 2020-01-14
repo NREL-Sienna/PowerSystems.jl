@@ -26,10 +26,10 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 - `activepower_flow::Float64`
 - `reactivepower_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: System per-unit value
-- `x::Float64`: System per-unit value
-- `primaryshunt::Float64`: System per-unit value
-- `rate::Union{Nothing, Float64}`
+- `r::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
+- `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
+- `primaryshunt::Float64`: System per-unit value, validation range: (0, 2), action if invalid: error
+- `rate::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`
