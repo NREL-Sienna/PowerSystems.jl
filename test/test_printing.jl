@@ -56,3 +56,6 @@ for forecast in iterate_forecasts(sys)
 end
 
 @test !isempty(summary(sys))
+
+@test isnothing(show(IOBuffer(), "text/plain",
+                     PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS)))

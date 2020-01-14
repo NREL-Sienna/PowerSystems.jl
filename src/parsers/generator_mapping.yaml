@@ -2,6 +2,10 @@
 
 HydroDispatch:
 - {fuel: HYDRO, type: null}
+- {fuel: HYDRO, type: HYDRO}
+
+HydroFix:
+- {fuel: HYDRO, type: ROR}
 
 RenewableDispatch:
 - {fuel: SOLAR, type: PV}

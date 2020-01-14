@@ -37,13 +37,8 @@ function Base.show(io::IO, ::MIME"text/plain", data::PowerSystemTableData)
         println(io, "  timeseries_metadata_file:  $(data.timeseries_metadata_file)")
     end
     println(io, "  basepower:  $(data.basepower)")
-    for field in ("branch", "bus", "dcline", "gen", "load", "services")
+    for (field, df) in data.category_to_df
         print(io, "  $field:  ")
-        val = getfield(data, Symbol(field))
-        if isnothing(val)
-            println(io, "no data")
-        else
-            println(io, "$(summary(val))")
-        end
+        println(io, "$(summary(df))")
     end
 end
