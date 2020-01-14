@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## v0.8.2
+
+- Hydropower data parsing improvements
+
 ## v0.8.1
 
 - Bugfix TableData HydroStorage
