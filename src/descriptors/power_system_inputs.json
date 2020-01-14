@@ -510,11 +510,11 @@
     "storage": [
         {
             "name": "name",
-            "description": "Gen ID associated with storage"
+            "description": "Storage object name"
         },
         {
-            "name": "name",
-            "description": "Storage object name"
+            "name": "generator_name",
+            "description": "Generator name associated with storage"
         },
         {
             "name": "bus_id",
@@ -583,6 +583,21 @@
             "unit": "%",
             "name": "efficiency",
             "description": "Battery Efficiency"
+        },
+        {
+            "unit": "GWh",
+            "name": "storage_capacity",
+            "description": "Storage Capacity"
+        },
+        {
+            "unit": "GWh",
+            "name": "initial_storage",
+            "description": "Initial Storage"
+        },
+        {
+            "unit": "GWh",
+            "name": "inflow_limit",
+            "description": "Inflow Limit"
         }
     ],
     "bus": [
