@@ -20,20 +20,11 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
-CSV = "= 0.5.13"
-DataFrames = "~0.19"
+CSV = "~0.5"
+DataFrames = "~0.20"
 DocStringExtensions = "~0.8"
-InfrastructureSystems = "~0.5"
 JSON = "~0.21"
 JSON2 = "~0.3"
 TimeSeries = "~0.16"
 YAML = "~0.3"
 julia = "^1.2"
-
-[extras]
-NLsolve = "2774e3e8-f4cf-5e23-947b-6d7e65073b56"
-Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-test = ["Test", "Random", "NLsolve"]
