@@ -14,8 +14,8 @@ This file is auto-generated. Do not edit.
 Parameters of a Reactive Power droop controller
 
 # Arguments
-- `kq::Float64`: frequency droop gain
-- `ωf::Float64`: frequency droop gain
+- `kq::Float64`: frequency droop gain, validation range: (0, nothing)
+- `ωf::Float64`: frequency droop gain, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

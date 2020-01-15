@@ -15,7 +15,7 @@ Data Structure for the procurement products for system simulations.
 
 # Arguments
 - `name::String`
-- `timeframe::Float64`: the relative saturation timeframe
+- `timeframe::Float64`: the relative saturation timeframe, validation range: (0, nothing), action if invalid: error
 - `requirement::Float64`: the required quantity of the product should be scaled by a Forecast
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`: component forecasts

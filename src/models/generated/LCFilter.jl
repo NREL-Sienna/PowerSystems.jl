@@ -15,9 +15,9 @@ This file is auto-generated. Do not edit.
 Parameters of a LCL filter outside the converter
 
 # Arguments
-- `lf::Float64`: filter inductance
-- `rf::Float64`: filter resistance
-- `cf::Float64`: filter capacitance
+- `lf::Float64`: filter inductance, validation range: (0, nothing)
+- `rf::Float64`: filter resistance, validation range: (0, nothing)
+- `cf::Float64`: filter capacitance, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

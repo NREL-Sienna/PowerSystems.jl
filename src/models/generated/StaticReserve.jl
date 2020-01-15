@@ -14,8 +14,8 @@ Data Structure for a proportional reserve product for system simulations.
 
 # Arguments
 - `name::String`
-- `timeframe::Float64`: the relative saturation timeframe
-- `requirement::Float64`: the static value of required reserves
+- `timeframe::Float64`: the relative saturation timeframe, validation range: (0, nothing), action if invalid: error
+- `requirement::Float64`: the static value of required reserves, validation range: (0, nothing), action if invalid: error
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """

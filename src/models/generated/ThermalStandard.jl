@@ -22,8 +22,8 @@ Data Structure for thermal generation technologies.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `activepower::Float64`
-- `reactivepower::Float64`
+- `activepower::Float64`, validation range: tech.activepowerlimits, action if invalid: warn
+- `reactivepower::Float64`, validation range: tech.reactivepowerlimits, action if invalid: warn
 - `tech::Union{Nothing, TechThermal}`
 - `op_cost::ThreePartCost`
 - `services::Vector{Service}`: Services that this device contributes to

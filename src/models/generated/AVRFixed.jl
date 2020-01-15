@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
 Parameters of a AVR that returns a fixed voltage to the rotor winding
 
 # Arguments
-- `Emf::Float64`: Fixed voltage to the rotor winding
+- `Emf::Float64`: Fixed voltage to the rotor winding, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: Fixed AVR has no states
 - `n_states::Int64`: Fixed AVR has no states
