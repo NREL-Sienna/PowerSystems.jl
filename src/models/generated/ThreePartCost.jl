@@ -16,8 +16,8 @@ Data Structure Operational Cost Data in Three parts fixed, variable cost and sta
 # Arguments
 - `variable::VariableCost`: variable cost
 - `fixed::Float64`: fixed cost
-- `startup::Float64`: startup cost
-- `shutdn::Float64`: shutdown cost
+- `startup::Float64`: startup cost, validation range: (0, nothing), action if invalid: warn
+- `shutdn::Float64`: shutdown cost, validation range: (0, nothing), action if invalid: warn
 - `_forecasts::InfrastructureSystems.Forecasts`: component forecasts
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """

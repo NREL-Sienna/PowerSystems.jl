@@ -20,9 +20,9 @@ This struct acts as an infinity bus.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `V_R::Float64`: Voltage Source Real Component
-- `V_I::Float64`: Voltage Source Imaginary Component
-- `X_th::Float64`: Source Thevenin impedance
+- `V_R::Float64`: Voltage Source Real Component, validation range: (0, nothing)
+- `V_I::Float64`: Voltage Source Imaginary Component, validation range: (0, nothing)
+- `X_th::Float64`: Source Thevenin impedance, validation range: (0, nothing)
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify

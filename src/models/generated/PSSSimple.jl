@@ -14,8 +14,8 @@ This file is auto-generated. Do not edit.
 Parameters of a PSS that returns a proportional droop voltage to add to the reference for the AVR
 
 # Arguments
-- `K_ω::Float64`: Proportional gain for frequency
-- `K_p::Float64`: Proportional gain for active power
+- `K_ω::Float64`: Proportional gain for frequency, validation range: (0, nothing)
+- `K_p::Float64`: Proportional gain for active power, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

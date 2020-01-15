@@ -16,10 +16,10 @@ This file is auto-generated. Do not edit.
 Parameters of a Virtual Inertia with SRF using VSM for active power controller
 
 # Arguments
-- `Ta::Float64`: VSM inertia constant
-- `kd::Float64`: VSM damping constant
-- `kω::Float64`: frequency droop gain
-- `ωb::Float64`: rated angular frequency
+- `Ta::Float64`: VSM inertia constant, validation range: (0, nothing)
+- `kd::Float64`: VSM damping constant, validation range: (0, nothing)
+- `kω::Float64`: frequency droop gain, validation range: (0, nothing)
+- `ωb::Float64`: rated angular frequency, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

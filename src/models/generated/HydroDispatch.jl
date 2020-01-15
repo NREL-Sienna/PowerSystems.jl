@@ -26,12 +26,12 @@ This file is auto-generated. Do not edit.
 - `available::Bool`
 - `bus::Bus`
 - `activepower::Float64`
-- `reactivepower::Float64`
+- `reactivepower::Float64`, validation range: tech.reactivepowerlimits, action if invalid: warn
 - `tech::TechHydro`
 - `op_cost::TwoPartCost`
-- `storage_capacity::Float64`
-- `inflow::Float64`
-- `initial_storage::Float64`
+- `storage_capacity::Float64`, validation range: (0, nothing), action if invalid: error
+- `inflow::Float64`, validation range: (0, nothing), action if invalid: error
+- `initial_storage::Float64`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`

@@ -1,5 +1,14 @@
 # PowerSystems Change Log
 
+## v0.8.3
+
+- Update package dependencies compatibility
+- Add range to struct docstrings
+
+## v0.8.2
+
+- Hydropower data parsing improvements
+
 ## v0.8.1
 
 - Bugfix TableData HydroStorage

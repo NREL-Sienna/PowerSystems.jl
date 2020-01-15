@@ -22,16 +22,16 @@ This file is auto-generated. Do not edit.
 Parameters of an inner loop controller using virtual impedance, voltage controller and current controller.
 
 # Arguments
-- `kpv::Float64`: voltage controller proportional gain
-- `kiv::Float64`: voltage controller integral gain
-- `kffv::Float64`: Binary variable to enable feed-forward gain of voltage.
-- `rv::Float64`: virtual resistance
-- `lv::Float64`: virtual inductance
-- `kpc::Float64`: current controller proportional gain
-- `kic::Float64`: current controller integral gain
-- `kffi::Float64`: Binary variable to enable feed-forward gain of current
-- `ωad::Float64`: active damping filter cutoff frequency (rad/sec)
-- `kad::Float64`: active damping gain
+- `kpv::Float64`: voltage controller proportional gain, validation range: (0, nothing)
+- `kiv::Float64`: voltage controller integral gain, validation range: (0, nothing)
+- `kffv::Float64`: Binary variable to enable feed-forward gain of voltage., validation range: (0, nothing)
+- `rv::Float64`: virtual resistance, validation range: (0, nothing)
+- `lv::Float64`: virtual inductance, validation range: (0, nothing)
+- `kpc::Float64`: current controller proportional gain, validation range: (0, nothing)
+- `kic::Float64`: current controller integral gain, validation range: (0, nothing)
+- `kffi::Float64`: Binary variable to enable feed-forward gain of current, validation range: (0, nothing)
+- `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: (0, nothing)
+- `kad::Float64`: active damping gain, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

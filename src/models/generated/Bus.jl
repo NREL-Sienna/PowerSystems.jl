@@ -20,10 +20,10 @@ A power-system bus.
 - `number::Int64`: number associated with the bus
 - `name::String`: the name of the bus
 - `bustype::Union{Nothing, BusType}`: bus type
-- `angle::Union{Nothing, Float64}`: angle of the bus in radians
-- `voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage
+- `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: (-1.571, 1.571), action if invalid: error
+- `voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: voltagelimits, action if invalid: warn
 - `voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
-- `basevoltage::Union{Nothing, Float64}`: the base voltage in kV
+- `basevoltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: (0, nothing), action if invalid: error
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """

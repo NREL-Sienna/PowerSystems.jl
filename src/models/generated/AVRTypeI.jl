@@ -23,17 +23,17 @@ This file is auto-generated. Do not edit.
 Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 
 # Arguments
-- `Ka::Float64`: Amplifier Gain
-- `Ke::Float64`: Field circuit integral deviation
-- `Kf::Float64`: Stabilizer Gain in s * pu/pu
-- `Ta::Float64`: Amplifier Time Constant in s
-- `Te::Float64`: Field Circuit Time Constant in s
-- `Tf::Float64`: Stabilizer Time Constant in s
-- `Tr::Float64`: Voltage Measurement Time Constant in s
-- `Vr_max::Float64`: Maximum regulator voltage in pu
-- `Vr_min::Float64`: Minimum regulator voltage in pu
-- `Ae::Float64`: 1st ceiling coefficient
-- `Be::Float64`: 2nd ceiling coefficient
+- `Ka::Float64`: Amplifier Gain, validation range: (0, nothing)
+- `Ke::Float64`: Field circuit integral deviation, validation range: (0, nothing)
+- `Kf::Float64`: Stabilizer Gain in s * pu/pu, validation range: (0, nothing)
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: (0, nothing)
+- `Te::Float64`: Field Circuit Time Constant in s, validation range: (0, nothing)
+- `Tf::Float64`: Stabilizer Time Constant in s, validation range: (0, nothing)
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: (0, nothing)
+- `Vr_max::Float64`: Maximum regulator voltage in pu, validation range: (0, nothing)
+- `Vr_min::Float64`: Minimum regulator voltage in pu, validation range: (0, nothing)
+- `Ae::Float64`: 1st ceiling coefficient, validation range: (0, nothing)
+- `Be::Float64`: 2nd ceiling coefficient, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

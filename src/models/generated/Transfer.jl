@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
 
 # Arguments
 - `name::String`
-- `timeframe::Float64`: the relative saturation timeframe
+- `timeframe::Float64`: the relative saturation timeframe, validation range: (0, nothing), action if invalid: error
 - `requirement::Float64`
 - `ext::Dict{String, Any}`
 - `_forecasts::InfrastructureSystems.Forecasts`

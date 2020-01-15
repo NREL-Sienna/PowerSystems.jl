@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
 Parameters of a PSS that returns a fixed voltage to add to the reference for the AVR
 
 # Arguments
-- `V_pss::Float64`: Fixed voltage stabilization signal
+- `V_pss::Float64`: Fixed voltage stabilization signal, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

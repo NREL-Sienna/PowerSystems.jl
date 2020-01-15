@@ -17,11 +17,11 @@ This file is auto-generated. Do not edit.
 Parameters of a LCL filter outside the converter
 
 # Arguments
-- `lf::Float64`: Series inductance in p.u. of converter filter
-- `rf::Float64`: Series resistance in p.u. of converter filter
-- `cf::Float64`: Shunt capacitance in p.u. of converter filter
-- `lg::Float64`: Series inductance in p.u. of converter filter to the grid
-- `rg::Float64`: Series resistance in p.u. of converter filter to the grid
+- `lf::Float64`: Series inductance in p.u. of converter filter, validation range: (0, nothing)
+- `rf::Float64`: Series resistance in p.u. of converter filter, validation range: (0, nothing)
+- `cf::Float64`: Shunt capacitance in p.u. of converter filter, validation range: (0, nothing)
+- `lg::Float64`: Series inductance in p.u. of converter filter to the grid, validation range: (0, nothing)
+- `rg::Float64`: Series resistance in p.u. of converter filter to the grid, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`

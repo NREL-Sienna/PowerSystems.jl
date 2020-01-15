@@ -29,14 +29,14 @@ Data structure for a generic battery
 - `available::Bool`
 - `bus::Bus`
 - `primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
-- `energy::Float64`: State of Charge of the Battery p.u.-hr
-- `capacity::Min_Max`: Maximum and Minimum storage capacity in p.u.-hr
+- `energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: (0, nothing), action if invalid: error
+- `capacity::Min_Max`: Maximum and Minimum storage capacity in p.u.-hr, validation range: (0, nothing), action if invalid: error
 - `rating::Float64`
 - `activepower::Float64`
-- `inputactivepowerlimits::Min_Max`
-- `outputactivepowerlimits::Min_Max`
-- `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`
-- `reactivepower::Float64`
+- `inputactivepowerlimits::Min_Max`, validation range: (0, nothing), action if invalid: error
+- `outputactivepowerlimits::Min_Max`, validation range: (0, nothing), action if invalid: error
+- `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`, validation range: (0, 1), action if invalid: warn
+- `reactivepower::Float64`, validation range: reactivepowerlimits, action if invalid: warn
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
