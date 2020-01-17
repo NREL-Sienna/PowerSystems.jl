@@ -748,10 +748,6 @@ The ".mat" file is output from EVI-Pro tool.
 """
 function populate_BEV_demand(data_location :: String, index :: Int64)
     file = matopen(data_location)
-    #Keys of all bev saved in file
-    varnames = names(file)
-    # number of data in set
-    num_el = length(varnames)
     workaround1 = true
     
     if index < 1
