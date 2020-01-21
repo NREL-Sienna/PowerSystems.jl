@@ -256,6 +256,9 @@ abstract type DynamicInjection <: Device end
 abstract type DeviceParameter <: PowerSystemType end
 abstract type DynamicComponent <: DeviceParameter end
 
+supports_services(d::Device) = true
+supports_services(d::DynamicInjection) = false
+
 include("common.jl")
 
 # Include utilities
