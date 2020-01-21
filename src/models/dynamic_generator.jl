@@ -30,7 +30,7 @@ mutable struct DynamicGenerator{
         avr::A,
         tg::TG,
         pss::P,
-    ) where {M<:Machine,S<:Shaft,A<:AVR,TG<:TurbineGov,P<:PSS}
+    ) where {M<:Machine, S<:Shaft, A<:AVR, TG<:TurbineGov, P<:PSS}
 
         n_states = (machine.n_states + shaft.n_states + avr.n_states + tg.n_states +
                     pss.n_states)
