@@ -30,6 +30,18 @@ end
                     converter = AvgCnvFixedDC(138.0, #Rated Voltage
                     100.0) #Rated MVA
 
+branch_OMIB = [PSY.Line("Line1", #name
+                     true, #available
+                     0.0, #active power flow initial condition (from-to)
+                     0.0, #reactive power flow initial condition (from-to)
+                     Arc(from=nodes_OMIB[1], to=nodes_OMIB[2]), #Connection between buses
+                     0.01, #resistance in pu
+                     0.05, #reactance in pu
+                     (from=0.0, to=0.0), #susceptance in pu
+                     18.046, #rate in MW
+                     1.04)]  #angle limits (-min and max)
+
+
 dc_source = FixedDCSource(1500.0) #Not in the original data, guessed.
 
 filt = LCLFilter(0.08, #Series inductance lf in pu
@@ -64,7 +76,7 @@ vsc = CombinedVIwithVZ(0.59, #kpv:: Voltage controller proportional gain
                  0.2) #kad:: Active damping gain
 
 test_inverter = DynamicInverter(2, #number
-                       :DARCO, #name
+                       "DARCO", #name
                        nodes_OMIB[1], #bus location
                        1.0, #ω_ref
                        1.02, #V_ref
@@ -79,4 +91,16 @@ test_inverter = DynamicInverter(2, #number
                        filt) #Output Filter
 
     @test test_inverter isa PowerSystems.Component
+
+    sys = PSY.System(100)
+    for bus in nodes_OMIB
+        PSY.add_component!(sys, bus)
+    end
+    for lines in branch_OMIB
+        PSY.add_component!(sys, lines)
+    end
+    PSY.add_component!(sys, test_inverter)
+
+    #@test collect(PSY.get_components(DynamicInverter, sys))[1] == test_inverter
+
 end
