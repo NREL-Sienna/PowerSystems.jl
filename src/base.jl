@@ -1106,10 +1106,12 @@ end
 
 check_for_services_on_addition(sys::System, component::Component) = nothing
 
-function check_for_services_on_addition(sys::System, component::Device)
+function check_for_services_on_addition(sys::System, component::T) where T <: Device
+    !hasfield(T, :services) && return
     if length(get_services(component)) > 0
         throw(ArgumentError("type Device cannot be added with services"))
     end
+    return
 end
 
 """
