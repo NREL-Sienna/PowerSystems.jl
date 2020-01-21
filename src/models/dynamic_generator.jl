@@ -57,3 +57,4 @@ end
 
 get_Sbase(device::DynamicGenerator) = device.machine.s_rated
 get_Vref(device::DynamicGenerator) = device.V_ref
+get_bus(device::DynamicGenerator) = device.bus

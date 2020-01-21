@@ -88,3 +88,4 @@ end
 
 get_inverter_Sbase(device::DynamicInverter) = device.converter.s_rated
 get_inverter_Vref(device::DynamicInverter) = device.V_ref
+get_bus(device::DynamicInverter) = device.bus
