@@ -6,7 +6,7 @@ mutable struct DynamicGenerator{
     P<:PSS,
 } <: DynamicInjection
     number::Int64
-    name::Symbol
+    name::String
     bus::Bus
     ω_ref::Float64
     V_ref::Float64
@@ -20,7 +20,7 @@ mutable struct DynamicGenerator{
     states::Vector{Symbol}
     function DynamicGenerator(
         number::Int64,
-        name::Symbol,
+        name::String,
         bus::Bus,
         ω_ref::Float64,
         V_ref::Float64,
