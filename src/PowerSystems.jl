@@ -284,8 +284,6 @@ include("models/dynamic_inverter_components.jl")
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
 
-include("models/service_struct_types.jl")
-
 # Dynamic Composed types
 include("models/dynamic_generator.jl")
 include("models/dynamic_inverter.jl")
