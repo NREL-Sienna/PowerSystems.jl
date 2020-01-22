@@ -6,6 +6,18 @@ nodes_OMIB= [Bus(1 , #number
                  (min=0.94, max=1.06), #Voltage limits in pu
                  69), #Base voltage in kV
                 Bus(2 , "Bus 2"  , "PV" , 0 , 1.045 , (min=0.94, max=1.06), 69)]
+
+branch_OMIB = [PSY.Line("Line1", #name
+                     true, #available
+                     0.0, #active power flow initial condition (from-to)
+                     0.0, #reactive power flow initial condition (from-to)
+                     Arc(from=nodes_OMIB[1], to=nodes_OMIB[2]), #Connection between buses
+                     0.01, #resistance in pu
+                     0.05, #reactance in pu
+                     (from=0.0, to=0.0), #susceptance in pu
+                     18.046, #rate in MW
+                     1.04)]  #angle limits (-min and max)
+
 @testset "Dynamic Machines" begin
 Basic = BaseMachine(   0.0, #R
                        0.2995, #Xd_p
@@ -197,7 +209,7 @@ oneDoneQ = OneDOneQMachine(0.0, #R
                         615.0)   #MVABase
 
 Gen1AVR = DynamicGenerator(1, #Number
-                 :TestGen,
+                 "TestGen",
                  nodes_OMIB[2],#bus
                  1.0, # ω_ref,
                  1.05,
@@ -210,7 +222,7 @@ Gen1AVR = DynamicGenerator(1, #Number
 @test Gen1AVR isa PowerSystems.Component
 
 Gen1AVRnoAVR = DynamicGenerator(1, #Number
-                 :TestGen,
+                 "TestGen",
                  nodes_OMIB[2],#bus
                  1.0, # ω_ref,
                  1.05,
@@ -223,7 +235,7 @@ Gen1AVRnoAVR = DynamicGenerator(1, #Number
 @test Gen1AVRnoAVR isa PowerSystems.Component
 
 Gen2AVRnoAVR = DynamicGenerator(1, #Number
-                 :TestGen,
+                 "TestGen",
                  nodes_OMIB[2],#bus
                  1.0, # ω_ref,
                  1.02,
@@ -236,7 +248,7 @@ Gen2AVRnoAVR = DynamicGenerator(1, #Number
 @test Gen2AVRnoAVR isa PowerSystems.Component
 
 Gen2AVR = DynamicGenerator(1, #Number
-                 :TestGen,
+                 "TestGen",
                  nodes_OMIB[2],#bus
                  1.0, # ω_ref,
                  1.02,
@@ -247,5 +259,16 @@ Gen2AVR = DynamicGenerator(1, #Number
                  fixed_tg, #tg
                  no_pss)
 @test Gen2AVR isa PowerSystems.Component
+
+sys = PSY.System(100)
+for bus in nodes_OMIB
+    PSY.add_component!(sys, bus)
+end
+for lines in branch_OMIB
+    PSY.add_component!(sys, lines)
+end
+PSY.add_component!(sys, Gen1AVR)
+
+@test collect(PSY.get_components(DynamicGenerator, sys))[1] == Gen1AVR
 
 end

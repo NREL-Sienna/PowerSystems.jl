@@ -1,5 +1,11 @@
 # PowerSystems Change Log
 
+## v0.8.3
+
+- Update DynamicGenerator and DynamicInverter to comply with PSY
+- Change get_components to support parametrized structs
+- Improve testing of dynamic structs
+
 ## v0.8.2
 
 - Update package dependencies compatibility

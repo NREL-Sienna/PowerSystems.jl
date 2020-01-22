@@ -464,79 +464,6 @@ function get_components(::Type{T}, sys::System) where {T<:Component}
     return IS.get_components(T, sys.data)
 end
 
-# The following functions are reimplemented because Reserve subtypes are parameterized and
-# so we cannot auto-discover the types.
-
-function get_components(::Type{Component}, sys::System)
-    return FlattenIteratorWrapper(
-        Component,
-        [
-            IS.get_components(Component, sys.data),
-            get_components(Service, sys),
-        ],
-    )
-end
-
-function get_components(::Type{Service}, sys::System)
-    return FlattenIteratorWrapper(
-        Service,
-        [IS.get_components(x, sys.data) for x in SERVICE_STRUCT_TYPES]
-    )
-end
-
-function get_components(::Type{Reserve}, sys::System)
-    return FlattenIteratorWrapper(
-        Reserve,
-        [IS.get_components(x, sys.data) for x in RESERVE_STRUCT_TYPES]
-    )
-end
-
-function get_components(::Type{StaticReserve}, sys::System)
-    return FlattenIteratorWrapper(
-        StaticReserve,
-        [IS.get_components(x, sys.data) for x in STATIC_RESERVE_STRUCT_TYPES]
-    )
-end
-
-function get_components(::Type{VariableReserve}, sys::System)
-    return FlattenIteratorWrapper(
-        VariableReserve,
-        [IS.get_components(x, sys.data) for x in VARIABLE_RESERVE_STRUCT_TYPES]
-    )
-end
-
-function IS.get_components_by_name(
-    ::Type{Service},
-    data::IS.SystemData,
-    name::AbstractString
-)
-    return _get_components_by_name(SERVICE_STRUCT_TYPES, data, name)
-end
-
-function IS.get_components_by_name(
-    ::Type{Reserve},
-    data::IS.SystemData,
-    name::AbstractString
-)
-    return _get_components_by_name(RESERVE_STRUCT_TYPES, data, name)
-end
-
-function IS.get_components_by_name(
-    ::Type{StaticReserve},
-    data::IS.SystemData,
-    name::AbstractString
-)
-    return _get_components_by_name(STATIC_RESERVE_STRUCT_TYPES, data, name)
-end
-
-function IS.get_components_by_name(
-    ::Type{VariableReserve},
-    data::IS.SystemData,
-    name::AbstractString
-)
-    return _get_components_by_name(VARIABLE_RESERVE_STRUCT_TYPES, data, name)
-end
-
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
     for subtype in abstract_types
@@ -1107,9 +1034,10 @@ end
 check_for_services_on_addition(sys::System, component::Component) = nothing
 
 function check_for_services_on_addition(sys::System, component::Device)
-    if length(get_services(component)) > 0
+    if supports_services(component) && length(get_services(component)) > 0
         throw(ArgumentError("type Device cannot be added with services"))
     end
+    return
 end
 
 """

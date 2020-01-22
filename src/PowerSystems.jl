@@ -256,6 +256,9 @@ abstract type DynamicInjection <: Device end
 abstract type DeviceParameter <: PowerSystemType end
 abstract type DynamicComponent <: DeviceParameter end
 
+supports_services(d::Device) = true
+supports_services(d::DynamicInjection) = false
+
 include("common.jl")
 
 # Include utilities
@@ -280,8 +283,6 @@ include("models/dynamic_inverter_components.jl")
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
-
-include("models/service_struct_types.jl")
 
 # Dynamic Composed types
 include("models/dynamic_generator.jl")

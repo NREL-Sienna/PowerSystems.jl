@@ -9,7 +9,7 @@ mutable struct DynamicInverter{
     F<:Filter,
 } <: DynamicInjection
     number::Int64
-    name::Symbol
+    name::String
     bus::Bus
     ω_ref::Float64
     V_ref::Float64
@@ -24,13 +24,10 @@ mutable struct DynamicInverter{
     filter::F #add MVAbase here
     n_states::Int64
     states::Vector{Symbol}
-    inner_vars::Vector{Float64}
-    local_state_ix::Dict{InverterComponent,Vector{Int64}}
-    input_port_mapping::Dict{InverterComponent,Vector{Int64}}
-
+    ext::Dict{String, Any}
     function DynamicInverter(
         number::Int64,
-        name::Symbol,
+        name::String,
         bus::Bus,
         ω_ref::Float64,
         V_ref::Float64,
@@ -64,7 +61,7 @@ mutable struct DynamicInverter{
             filter.states,
         )
 
-        new{C,O,VC,DC,P,F}(
+        new{C, O, VC, DC, P, F}(
             number,
             name,
             bus,
@@ -81,6 +78,7 @@ mutable struct DynamicInverter{
             filter,
             n_states,
             states,
+            Dict{String, Any}()
         )
 
     end
@@ -88,3 +86,5 @@ end
 
 get_inverter_Sbase(device::DynamicInverter) = device.converter.s_rated
 get_inverter_Vref(device::DynamicInverter) = device.V_ref
+get_bus(device::DynamicInverter) = device.bus
+get_ext(device::DynamicInverter) = device.ext
