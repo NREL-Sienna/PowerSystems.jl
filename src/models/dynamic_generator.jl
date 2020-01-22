@@ -18,6 +18,7 @@ mutable struct DynamicGenerator{
     pss::P
     n_states::Int64
     states::Vector{Symbol}
+    ext::Dict{String, Any}
     function DynamicGenerator(
         number::Int64,
         name::String,
@@ -51,6 +52,7 @@ mutable struct DynamicGenerator{
             pss,
             n_states,
             states,
+            Dict{String, Any}()
         )
     end
 end
@@ -58,3 +60,4 @@ end
 get_Sbase(device::DynamicGenerator) = device.machine.s_rated
 get_Vref(device::DynamicGenerator) = device.V_ref
 get_bus(device::DynamicGenerator) = device.bus
+get_ext(device::DynamicGenerator) = device.ext
