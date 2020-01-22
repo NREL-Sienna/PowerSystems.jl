@@ -101,6 +101,6 @@ test_inverter = DynamicInverter(2, #number
     end
     PSY.add_component!(sys, test_inverter)
 
-    #@test collect(PSY.get_components(DynamicInverter, sys))[1] == test_inverter
+    @test collect(PSY.get_components(DynamicInverter, sys))[1] == test_inverter
 
 end
