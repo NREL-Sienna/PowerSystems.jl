@@ -234,5 +234,5 @@ end
         end
     end
 
-    @test length(PSY.SERVICE_STRUCT_TYPES) == actual_count
+    @test 5 == actual_count
 end
