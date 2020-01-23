@@ -60,8 +60,15 @@ function unzip(::Type{<:BSD}, filename, directory)
 end
 
 function unzip(::Type{Windows}, filename, directory)
-    home = (Base.VERSION < v"0.7-") ? JULIA_HOME : Sys.BINDIR
-    @assert success(`$home/7z x $filename -y -o$directory`) "Unable to extract $filename to $directory"
+    path_7z = if Base.VERSION < v"0.7-"
+        "$JULIA_HOME/7z"
+    else
+        sep = Sys.iswindows() ? ";" : ":"
+        withenv("PATH" => string(joinpath(Sys.BINDIR, "..", "libexec"), sep, Sys.BINDIR, sep, ENV["PATH"])) do
+            Sys.which("7z")
+        end
+    end
+    @assert success(`$path_7z x $filename -y -o$directory`) "Unable to extract $filename to $directory"
 end
 
 end # module UtilsData
