@@ -97,10 +97,13 @@ end
         #@test compare_values_without_uuids(cdmgen.op_cost, mpgen.op_cost)
     end
 
-    cdm_branches = collect(get_components(Branch,cdmsys))
-    @test cdm_branches[2].rate == get_branch(mpsys, cdm_branches[2]).rate
-    @test cdm_branches[6].rate == get_branch(mpsys, cdm_branches[6]).rate
-    @test cdm_branches[120].rate == get_branch(mpsys, cdm_branches[120]).rate
+    cdm_ac_branches = collect(get_components(ACBranch, cdmsys))
+    @test get_rate(cdm_ac_branches[2]) == get_rate(get_branch(mpsys, cdm_ac_branches[2]))
+    @test get_rate(cdm_ac_branches[6]) == get_rate(get_branch(mpsys, cdm_ac_branches[6]))
+    @test get_rate(cdm_ac_branches[120]) == get_rate(get_branch(mpsys, cdm_ac_branches[120]))
+
+    cdm_dc_branches = collect(get_components(DCBranch, cdmsys))
+    @test get_activepowerlimits_from(cdm_dc_branches[1]) == get_activepowerlimits_from(get_branch(mpsys, cdm_dc_branches[1]))
 end
 
 @testset "Test reserve direction" begin
