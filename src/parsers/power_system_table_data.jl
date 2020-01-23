@@ -409,7 +409,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
         pf = get(dc_branch, :pf, 0.0)
 
         if dc_branch.control_mode == "Power"
-            mw_load = dc_branch.mw_load
+            mw_load = dc_branch.mw_load/data.basepower
 
             #TODO: is there a better way to calculate these?,
             activepowerlimits_from = (min = -1 * mw_load, max = mw_load)
