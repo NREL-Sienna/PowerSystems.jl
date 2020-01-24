@@ -21,11 +21,11 @@ following categories are currently supported:
 * reserves.csv
 * storage.csv
 
-These must reside in the directory passed when constructing PowerSystemTableData..
+These must reside in the directory passed when constructing PowerSystemTableData.
 
 ### Customization
-Generate a configuration file from the defaults, which are stored in
-`src/descriptors/power_system_inputs.json`.
+Generate a configuration file (such as `user_descriptors.yaml`) from the
+defaults, which are stored in `src/descriptors/power_system_inputs.json`.
 
 ```
 python ./bin/generate_config_file.py ./user_descriptors.yaml
@@ -44,14 +44,14 @@ column names.
 
 For example, when parsing raw data for a generator the code expects a column
 called `name`. If the raw data instead defines that column as `GEN UID` then
-you can simply change the `custom_name` field under the `generator` category to
+you can change the `custom_name` field under the `generator` category to
 `GEN UID` in your YAML file. 
 
 #### Per-unit conversion
 PowerSystems defines whether it expects a column value to be per-unit in
-`power_system_inputs.json`. If expects per-unit but your values are not per-unit
-then you can set `system_per_unit: false` in `user_descriptors.yaml` and
-PowerSystems will automatically convert the values.
+`power_system_inputs.json`. If it expects per-unit but your values are not
+per-unit then you can set `system_per_unit: false` in `user_descriptors.yaml`
+and PowerSystems will automatically convert the values.
 
 #### Unit conversion
 PowerSystems provides a limited set of unit conversions. For example, if
@@ -66,9 +66,9 @@ for an example.
 
 
 ### Time series data
-PowerSystems requires a metdata file that maps time series data to components in order to be
-able to automatically construct forecasts from raw data files. The following fields are
-required for each time array:
+PowerSystems requires a metadata file that maps components to their time series
+data in order to be able to automatically construct forecasts from raw data
+files. The following fields are required for each time array:
 
 * simulation:  User description of simulation
 * category:  Type of component. Must map to PowerSystems abstract types (Bus,
@@ -90,7 +90,7 @@ for an example.
 PowerSystems supports custom construction of subtypes of the abstract type Generator based
 on `fuel` and `type`. The parsing code detects these fields in the raw data and then
 constructs the concrete type listed in the passed generator mapping file. The default file
-is src/parsers/generator_mapping.yaml. You can override this behavior by specifying your
+is `src/parsers/generator_mapping.yaml`. You can override this behavior by specifying your
 own file when constructing PowerSystemTableData.
 
 ### System creation with custom config files
