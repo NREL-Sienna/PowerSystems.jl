@@ -1,5 +1,11 @@
 # PowerSystems Change Log
 
+## v0.8.4
+
+- Fix 7z error in Julia 1.3 and Windows
+- Bug fix in pu conversion in HVDC Table Data
+- Improve testing
+
 ## v0.8.3
 
 - Update DynamicGenerator and DynamicInverter to comply with PSY
