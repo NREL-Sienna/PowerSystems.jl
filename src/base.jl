@@ -1031,10 +1031,6 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     return buses
 end
 
-function get_ext(sys::System)
-    return get_internal(sys).ext
-end
-
 check_for_services_on_addition(sys::System, component::Component) = nothing
 
 function check_for_services_on_addition(sys::System, component::Device)
