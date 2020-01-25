@@ -86,5 +86,18 @@ end
 
 get_inverter_Sbase(device::DynamicInverter) = device.converter.s_rated
 get_inverter_Vref(device::DynamicInverter) = device.V_ref
+get_number(device::DynamicInverter) = device.number
+get_name(device::DynamicInverter) = device.name
+get_ω_ref(device::DynamicInverter)  = device.ω_ref
+get_V_ref(device::DynamicInverter) = device.V_ref
+get_P_ref(device::DynamicInverter) = device.P_ref
 get_bus(device::DynamicInverter) = device.bus
 get_ext(device::DynamicInverter) = device.ext
+get_states(device::DynamicInverter) = device.states
+get_n_states(device::DynamicInverter) = device.n_states
+get_converter(device::DynamicInverter)  = device.converter
+get_outercontrol(device::DynamicInverter) = device.outercontrol
+get_vscontrol(device::DynamicInverter) = device.vscontrol
+get_dc_source(device::DynamicInverter) = device.dc_source
+get_freq_estimator(device::DynamicInverter) = device.freq_estimator
+get_filter(device::DynamicInverter) = device.filter
