@@ -141,6 +141,8 @@ export Deterministic
 export Probabilistic
 export ScenarioBased
 
+export get_dynamic_components
+
 export make_pf
 export solve_powerflow!
 
@@ -251,15 +253,11 @@ abstract type PowerSystemType <: IS.InfrastructureSystemsType end
 abstract type Component <: PowerSystemType end
 # supertype for "devices" (bus, line, etc.)
 abstract type Device <: Component end
-abstract type StaticInjection <: Device end
-abstract type DynamicInjection <: Device end
 abstract type DeviceParameter <: PowerSystemType end
-abstract type DynamicComponent <: DeviceParameter end
-
-supports_services(d::Device) = true
-supports_services(d::DynamicInjection) = false
 
 include("common.jl")
+include("models/static_models.jl")
+include("models/dynamic_models.jl")
 
 # Include utilities
 include("utils/IO/base_checks.jl")
