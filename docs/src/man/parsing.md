@@ -85,6 +85,14 @@ PowerSystems supports this metadata in either CSV or JSON formats. Refer to
 [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/timeseries_pointers.json)
 for an example.
 
+#### Performance considerations
+By default PowerSystems stores time series data in HDF5 files. It does not keep
+all of the data in memory. This means that every time you access a forecast
+PowerSystems will have to read the data from storage, which will add latency. If
+you know ahead of time that all of your data will fit in memory then you can
+change this behavior by passing `time_series_in_memory = true` when you create
+the System.
+
 
 ### Custom construction of generators
 PowerSystems supports custom construction of subtypes of the abstract type Generator based
@@ -110,7 +118,7 @@ data = PowerSystemTableData(
     timeseries_metadata_file = timeseries_metadata_file,
     generator_mapping_file = generator_mapping_file,
 )
-sys = System(data)
+sys = System(data, time_series_in_memory = true)
 ```
 
 ## MATPOWER / PSS/E
