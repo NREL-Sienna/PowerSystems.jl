@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## v0.8.5
+
+- Add functions to handle DynamicInjection components
+
 ## v0.8.4
 
 - Fix 7z error in Julia 1.3 and Windows
