@@ -34,14 +34,15 @@ System(; kwargs...)
 struct System <: PowerSystemType
     data::IS.SystemData
     basepower::Float64             # [MVA]
+    frequency::Float64
     bus_numbers::Set{Int}
     runchecks::Bool
     internal::IS.InfrastructureSystemsInternal
 
-    function System(data, basepower, internal; kwargs...)
+    function System(data, basepower, internal; frequency = 60.0, kwargs...)
         bus_numbers = Set{Int}()
         runchecks = get(kwargs, :runchecks, true)
-        sys = new(data, basepower, bus_numbers, runchecks, internal)
+        sys = new(data, basepower, frequency, bus_numbers, runchecks, internal)
         return sys
     end
 end
@@ -233,6 +234,16 @@ end
 Return a user-modifiable dictionary to store extra information.
 """
 get_ext(sys::System) = IS.get_ext(sys.internal)
+
+"""
+Return the system's base power.
+"""
+get_basepower(sys::System) = sys.basepower
+
+"""
+Return the system's frequency.
+"""
+get_frequency(sys::System) = sys.frequency
 
 """
 Clear any value stored in ext.
