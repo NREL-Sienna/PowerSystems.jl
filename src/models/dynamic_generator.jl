@@ -58,7 +58,6 @@ mutable struct DynamicGenerator{
 end
 
 get_Sbase(device::DynamicGenerator) = device.machine.s_rated
-get_Vref(device::DynamicGenerator) = device.V_ref
 get_bus(device::DynamicGenerator) = device.bus
 get_states(device::DynamicGenerator) = device.states
 get_n_states(device::DynamicGenerator) = device.n_states
@@ -72,3 +71,4 @@ get_shaft(device::DynamicGenerator) = device.shaft
 get_avr(device::DynamicGenerator) = device.avr
 get_tg(device::DynamicGenerator) = device.tg
 get_pss(device::DynamicGenerator) = device.pss
+get_ext(device::DynamicGenerator) = device.ext
