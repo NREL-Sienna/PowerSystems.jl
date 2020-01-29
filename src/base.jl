@@ -33,9 +33,9 @@ System(; kwargs...)
 """
 struct System <: PowerSystemType
     data::IS.SystemData
-    basepower::Float64             # [MVA]
+    basepower::Float64 # [MVA]
+    frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
-    frequency::Float64
     runchecks::Bool
     internal::IS.InfrastructureSystemsInternal
 
