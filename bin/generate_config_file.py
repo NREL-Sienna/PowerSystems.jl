@@ -13,6 +13,7 @@ import yaml
 
 
 POWER_SYSTEM_DESCRIPTOR_FILE = os.path.join(
+    "src",
     "descriptors",
     "power_system_inputs.json"
 )
