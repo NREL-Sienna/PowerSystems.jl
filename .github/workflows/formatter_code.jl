@@ -4,6 +4,7 @@ for main_path in main_paths
         for f in files
             @show file_path = abspath(root, f)
             occursin("generated", file_path) && continue
+            occursin("descriptors", file_path) && continue
             if isfile(file_path)
                 !occursin(".jl", file_path) && continue
             end
