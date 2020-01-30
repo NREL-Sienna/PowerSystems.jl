@@ -1,5 +1,12 @@
 # PowerSystems Change Log
 
+
+## v0.8.6
+
+- Add missing getter functions for DynamicInverter and DynamicGenerator
+- Add missing getter functions for System fields.
+- Add frequency field to System and DEFAULT_SYSTEM_FREQUENCY
+
 ## v0.8.5
 
 - Add functions to handle DynamicInjection components
