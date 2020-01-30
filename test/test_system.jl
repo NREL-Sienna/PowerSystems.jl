@@ -2,6 +2,7 @@
 @testset "Test functionality of System" begin
     sys = create_rts_system()
     summary(devnull, sys)
+    @test get_frequency(sys) == PSY.DEFAULT_SYSTEM_FREQUENCY
 
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
