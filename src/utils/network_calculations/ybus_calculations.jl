@@ -10,7 +10,6 @@ function _ybus!(
     num_bus::Dict{Int64,Int64},
 )
 
-
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
     bus_to_no = num_bus[arc.to.number]

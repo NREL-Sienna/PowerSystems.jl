@@ -1,10 +1,5 @@
-mutable struct DynamicGenerator{
-    M<:Machine,
-    S<:Shaft,
-    A<:AVR,
-    TG<:TurbineGov,
-    P<:PSS,
-} <: DynamicInjection
+mutable struct DynamicGenerator{M<:Machine,S<:Shaft,A<:AVR,TG<:TurbineGov,P<:PSS} <:
+               DynamicInjection
     number::Int64
     name::String
     bus::Bus
@@ -19,7 +14,7 @@ mutable struct DynamicGenerator{
     pss::P
     n_states::Int64
     states::Vector{Symbol}
-    ext::Dict{String, Any}
+    ext::Dict{String,Any}
     function DynamicGenerator(
         number::Int64,
         name::String,
@@ -33,10 +28,10 @@ mutable struct DynamicGenerator{
         avr::A,
         tg::TG,
         pss::P,
-    ) where {M<:Machine, S<:Shaft, A<:AVR, TG<:TurbineGov, P<:PSS}
+    ) where {M<:Machine,S<:Shaft,A<:AVR,TG<:TurbineGov,P<:PSS}
 
-        n_states = (machine.n_states + shaft.n_states + avr.n_states + tg.n_states +
-                    pss.n_states)
+        n_states =
+            (machine.n_states + shaft.n_states + avr.n_states + tg.n_states + pss.n_states)
 
         states = vcat(machine.states, shaft.states, avr.states, tg.states, pss.states)
 
@@ -55,7 +50,7 @@ mutable struct DynamicGenerator{
             pss,
             n_states,
             states,
-            Dict{String, Any}()
+            Dict{String,Any}(),
         )
     end
 end
@@ -66,7 +61,7 @@ get_states(device::DynamicGenerator) = device.states
 get_n_states(device::DynamicGenerator) = device.n_states
 get_number(device::DynamicGenerator) = device.number
 get_name(device::DynamicGenerator) = device.name
-get_ω_ref(device::DynamicGenerator)  = device.ω_ref
+get_ω_ref(device::DynamicGenerator) = device.ω_ref
 get_V_ref(device::DynamicGenerator) = device.V_ref
 get_P_ref(device::DynamicGenerator) = device.P_ref
 get_Q_ref(device::DynamicGenerator) = device.Q_ref

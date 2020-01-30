@@ -12,7 +12,6 @@ function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     _update_data!(data, new_data)
 end
 
-
 "recursive call of _update_data"
 function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
     for (key, new_v) in new_data
@@ -30,7 +29,8 @@ function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
 end
 
 "checks if a given network data is a multinetwork"
-ismultinetwork(data::Dict{String,<:Any}) = (haskey(data, "multinetwork") && data["multinetwork"] == true)
+ismultinetwork(data::Dict{String,<:Any}) =
+    (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
 function im_replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{String})
@@ -41,9 +41,7 @@ function im_replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{
 
     name = get(sn_data, "name", "anonymous")
 
-    mn_data = Dict{String,Any}(
-        "nw" => Dict{String,Any}()
-    )
+    mn_data = Dict{String,Any}("nw" => Dict{String,Any}())
 
     mn_data["multinetwork"] = true
 
@@ -59,14 +57,12 @@ function im_replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{
 
     mn_data["name"] = "$(count) replicates of $(name)"
 
-    for n in 1:count
+    for n = 1:count
         mn_data["nw"]["$n"] = deepcopy(sn_data_tmp)
     end
 
     return mn_data
 end
-
-
 
 #=
 "Attempts to determine if the given data is a component dictionary"
@@ -103,7 +99,6 @@ function _value2string(v, float_precision::Int)
     return "$(v)"
 end
 
-
 """
 converts a float value into a string of fixed precision
 
@@ -117,11 +112,9 @@ function _float2string(v::AbstractFloat, float_precision::Int)
     return rpad(str, lhs + 1 + float_precision, "0")
 end
 
-
-
 "tests if two dicts are equal, up to floating point precision"
 function compare_dict(d1, d2)
-    for (k1,v1) in d1
+    for (k1, v1) in d1
         if !haskey(d2, k1)
             #println(k1)
             return false
@@ -136,7 +129,7 @@ function compare_dict(d1, d2)
             if length(v1) != length(v2)
                 return false
             end
-            for i in 1:length(v1)
+            for i = 1:length(v1)
                 if isa(v1[i], Number)
                     if !_compare_numbers(v1[i], v2[i])
                         return false
@@ -164,7 +157,6 @@ function compare_dict(d1, d2)
     return true
 end
 
-
 "tests if two numbers are equal, up to floating point precision"
 function _compare_numbers(v1, v2)
     if isnan(v1)
@@ -182,4 +174,3 @@ function _compare_numbers(v1, v2)
     end
     return true
 end
-

@@ -1,7 +1,6 @@
 
 abstract type PowerNetworkMatrix{T} <: AbstractArray{T,2} end
 
-
 #  The container code for PowerNetworkMatrix is based in JuMP's Container in order to
 #  remove the limitations of AxisArrays and the doubts about long term maintenance
 #  https://github.com/JuliaOpt/JuMP.jl/blob/master/src/Containers/DenseAxisArray.jl
@@ -28,7 +27,6 @@ Base.LinearIndices(A::PowerNetworkMatrix) =
 Base.axes(A::PowerNetworkMatrix) = A.axes
 Base.CartesianIndices(A::PowerNetworkMatrix) =
     error("PowerSystems.$(typeof(A)) does not support this operation.")
-
 
 ############
 # Indexing #
@@ -95,7 +93,6 @@ Base.setindex!(A::PowerNetworkMatrix, v, idx...) = A.data[to_index(A, idx...)...
 Base.setindex!(A::PowerNetworkMatrix, v, idx::CartesianIndex) = A.data[idx] = v
 
 Base.IndexStyle(::Type{PowerNetworkMatrix}) = IndexAnyCartesian()
-
 
 ########
 # Keys #
@@ -193,12 +190,12 @@ function Base.show_nd(
     for I in CartesianIndices(tailinds)
         idxs = I.I
         if limit
-            for i in 1:nd
+            for i = 1:nd
                 ii = idxs[i]
                 ind = tailinds[i]
                 if length(ind) > 10
-                    if ii == ind[4] && all(d -> idxs[d] == first(tailinds[d]), 1:i-1)
-                        for j in i+1:nd
+                    if ii == ind[4] && all(d -> idxs[d] == first(tailinds[d]), 1:(i - 1))
+                        for j = (i + 1):nd
                             szj = size(a.data, j + 2)
                             indj = tailinds[j]
                             if szj > 10 && first(indj) + 2 < idxs[j] <= last(indj) - 3
@@ -209,7 +206,7 @@ function Base.show_nd(
                         print(io, "...\n\n")
                         @goto skip
                     end
-                    if ind[3] < ii <= ind[end-3]
+                    if ind[3] < ii <= ind[end - 3]
                         @goto skip
                     end
                 end
@@ -217,8 +214,8 @@ function Base.show_nd(
         end
         if label_slices
             print(io, "[:, :, ")
-            for i in 1:(nd-1)
-                show(io, a.axes[i+2][idxs[i]])
+            for i = 1:(nd - 1)
+                show(io, a.axes[i + 2][idxs[i]])
                 print(io, ", ")
             end
             show(io, a.axes[end][idxs[end]])

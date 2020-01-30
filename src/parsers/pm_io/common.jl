@@ -6,23 +6,27 @@ PowerModels data structure. All fields from PTI files will be imported if
 `import_all` is true (Default: false).
 """
 
-function parse_file(file::String; import_all=false, validate=true)
+function parse_file(file::String; import_all = false, validate = true)
     pm_data = open(file) do io
-        pm_data = parse_file(io; import_all=import_all, validate=validate, filetype=split(lowercase(file), '.')[end])
+        pm_data = parse_file(
+            io;
+            import_all = import_all,
+            validate = validate,
+            filetype = split(lowercase(file), '.')[end],
+        )
     end
     return pm_data
 end
 
-
 "Parses the iostream from a file"
-function parse_file(io::IO; import_all=false, validate=true, filetype="json")
+function parse_file(io::IO; import_all = false, validate = true, filetype = "json")
     if filetype == "m"
-        pm_data = parse_matpower(io, validate=validate)
+        pm_data = parse_matpower(io, validate = validate)
     elseif filetype == "raw"
         @info("The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines")
-        pm_data = parse_psse(io; import_all=import_all, validate=validate)
+        pm_data = parse_psse(io; import_all = import_all, validate = validate)
     elseif filetype == "json"
-        pm_data = parse_json(io; validate=validate)
+        pm_data = parse_json(io; validate = validate)
     else
         @info("Unrecognized filetype")
     end
@@ -32,7 +36,6 @@ function parse_file(io::IO; import_all=false, validate=true, filetype="json")
 
     return pm_data
 end
-
 
 """
 Runs various data quality checks on a PowerModels data dictionary.
@@ -75,6 +78,6 @@ function correct_network_data!(data::Dict{String,<:Any})
         "bus" => mod_bus,
         "gen" => mod_gen,
         "branch" => mod_branch,
-        "dcline" => mod_dcline
+        "dcline" => mod_dcline,
     )
 end

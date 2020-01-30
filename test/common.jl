@@ -1,14 +1,14 @@
 
 const DESCRIPTORS = joinpath(RTS_GMLC_DIR, "user_descriptors.yaml")
 
-function create_rts_system(forecast_resolution=Dates.Hour(1))
+function create_rts_system(forecast_resolution = Dates.Hour(1))
     data = PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS)
-    return System(data; forecast_resolution=forecast_resolution)
+    return System(data; forecast_resolution = forecast_resolution)
 end
 
 """Allows comparison of structs that were created from different parsers which causes them
 to have different UUIDs."""
-function compare_values_without_uuids(x::T, y::T)::Bool where T <: PowerSystemType
+function compare_values_without_uuids(x::T, y::T)::Bool where {T<:PowerSystemType}
     match = true
 
     for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
@@ -52,12 +52,10 @@ names."""
 function get_branch(sys::System, other::Branch)
     for branch in get_components(Branch, sys)
         if lowercase(other.arc.from.name) == lowercase(branch.arc.from.name) &&
-            lowercase(other.arc.to.name) == lowercase(branch.arc.to.name)
+           lowercase(other.arc.to.name) == lowercase(branch.arc.to.name)
             return branch
         end
     end
 
-    error("Did not find branch with buses $(other.arc.from.name) ",
-          "$(other.arc.to.name)")
+    error("Did not find branch with buses $(other.arc.from.name) ", "$(other.arc.to.name)")
 end
-

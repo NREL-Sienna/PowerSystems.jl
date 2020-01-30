@@ -116,8 +116,7 @@ end
 
 function make_load(d, bus; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
-    return PowerLoad(
-        ;
+    return PowerLoad(;
         name = _get_name(d),
         available = true,
         model = ConstantPower::LoadModel,
@@ -148,8 +147,7 @@ end
 
 function make_loadzones(d, bus_l, activepower, reactivepower; kwargs...)
     _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
-    return LoadZones(
-        ;
+    return LoadZones(;
         number = d["index"],
         name = _get_name(d),
         buses = bus_l,
@@ -165,7 +163,10 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kw
     end
 
     for (d_key, d) in data["areas"]
-        buses = [bus_number_to_bus[b["bus_i"]] for (b_key, b) in data["bus"] if b["area"] == d["index"]]
+        buses = [
+            bus_number_to_bus[b["bus_i"]]
+            for (b_key, b) in data["bus"] if b["area"] == d["index"]
+        ]
         bus_names = Set{String}()
         for bus in buses
             push!(bus_names, get_name(bus))
@@ -191,8 +192,7 @@ end
 
 function make_hydro_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
-    tech = TechHydro(
-        ;
+    tech = TechHydro(;
         rating = calculate_rating(d["pmax"], d["qmax"]),
         primemover = convert(PrimeMovers, d["type"]),
         activepowerlimits = (min = d["pmin"], max = d["pmax"]),
@@ -213,13 +213,12 @@ function make_hydro_gen(gen_name, d, bus)
         op_cost = curtailcost,
         storage_capacity = 0.0, #TODO: Implement better Solution for this
         inflow = 0.0,
-        initial_storage = 0.0
+        initial_storage = 0.0,
     )
 end
 
 function make_tech_renewable(d)
-    tech = TechRenewable(
-        ;
+    tech = TechRenewable(;
         rating = float(d["pmax"]),
         primemover = convert(PrimeMovers, d["type"]),
         reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
@@ -232,8 +231,7 @@ end
 function make_renewable_dispatch(gen_name, d, bus)
     tech = make_tech_renewable(d)
     cost = TwoPartCost(0.0, 0.0)
-    generator = RenewableDispatch(
-        ;
+    generator = RenewableDispatch(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -248,8 +246,7 @@ end
 
 function make_renewable_fix(gen_name, d, bus)
     tech = make_tech_renewable(d)
-    generator = RenewableFix(
-        ;
+    generator = RenewableFix(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -281,7 +278,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
             fixed = max(
                 0.0,
                 cost[1][1] -
-                (cost[2][1] - cost[1][1]) / (cost[2][2] - cost[1][2]) * cost[1][2],
+                    (cost[2][1] - cost[1][1]) / (cost[2][2] - cost[1][2]) * cost[1][2],
             )
             cost = [(c[1] - fixed, c[2]) for c in cost]
         elseif model == POLYNOMIAL::GeneratorCostModel
@@ -315,8 +312,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
     # TODO GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
 
-    tech = TechThermal(
-        ;
+    tech = TechThermal(;
         rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
         primemover = convert(PrimeMovers, d["type"]),
         fuel = convert(ThermalFuels, d["fuel"]),
@@ -325,13 +321,8 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
         timelimits = nothing,
     )
-    op_cost = ThreePartCost(
-        ;
-        variable = cost,
-        fixed = fixed,
-        startup = startup,
-        shutdn = shutdn,
-    )
+    op_cost =
+        ThreePartCost(; variable = cost, fixed = fixed, startup = startup, shutdn = shutdn)
 
     thermal_gen = ThermalStandard(
         name = gen_name,
@@ -366,8 +357,14 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs..
         elseif haskey(pm_gen, "name")
             _get_name = _get_pm_dict_name
         elseif haskey(pm_gen, "source_id")
-            _get_name = d -> strip(string(d["source_id"][1]) * "-" *
-                                   string(d["source_id"][2]) * "-" * string(d["index"]))
+            _get_name =
+                d -> strip(
+                    string(d["source_id"][1]) *
+                    "-" *
+                    string(d["source_id"][2]) *
+                    "-" *
+                    string(d["index"]),
+                )
         end
 
         gen_name = _get_name(pm_gen)
@@ -430,8 +427,7 @@ function make_line(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
 
-    return Line(
-        ;
+    return Line(;
         name = name,
         available = Bool(d["br_status"]),
         activepower_flow = pf,
@@ -448,8 +444,7 @@ end
 function make_transformer_2w(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
-    return Transformer2W(
-        ;
+    return Transformer2W(;
         name = name,
         available = Bool(d["br_status"]),
         activepower_flow = pf,
@@ -465,8 +460,7 @@ end
 function make_tap_transformer(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
-    return TapTransformer(
-        ;
+    return TapTransformer(;
         name = name,
         available = Bool(d["br_status"]),
         activepower_flow = pf,
@@ -483,8 +477,7 @@ end
 function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
-    return PhaseShiftingTransformer(
-        ;
+    return PhaseShiftingTransformer(;
         name = name,
         available = Bool(d["br_status"]),
         activepower_flow = pf,
@@ -520,8 +513,7 @@ function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwarg
 end
 
 function make_dcline(name, d, bus_f, bus_t)
-    return HVDCLine(
-        ;
+    return HVDCLine(;
         name = name,
         available = Bool(d["br_status"]),
         activepower_flow = get(d, "pf", 0.0),
@@ -555,8 +547,7 @@ function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwarg
 end
 
 function make_shunt(name, d, bus)
-    return FixedAdmittance(
-        ;
+    return FixedAdmittance(;
         name = name,
         available = Bool(d["status"]),
         bus = bus,

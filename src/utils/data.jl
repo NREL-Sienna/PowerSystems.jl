@@ -64,7 +64,15 @@ function unzip(::Type{Windows}, filename, directory)
         "$JULIA_HOME/7z"
     else
         sep = Sys.iswindows() ? ";" : ":"
-        withenv("PATH" => string(joinpath(Sys.BINDIR, "..", "libexec"), sep, Sys.BINDIR, sep, ENV["PATH"])) do
+        withenv(
+            "PATH" => string(
+                joinpath(Sys.BINDIR, "..", "libexec"),
+                sep,
+                Sys.BINDIR,
+                sep,
+                ENV["PATH"],
+            ),
+        ) do
             Sys.which("7z")
         end
     end

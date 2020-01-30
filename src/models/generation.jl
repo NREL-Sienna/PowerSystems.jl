@@ -5,7 +5,6 @@ abstract type HydroGen <: Generator end
 abstract type RenewableGen <: Generator end
 abstract type ThermalGen <: Generator end
 
-
 function IS.get_limits(
     valid_range::Union{NamedTuple{(:min, :max)},NamedTuple{(:max, :min)}},
     unused::T,

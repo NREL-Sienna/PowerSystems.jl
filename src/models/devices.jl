@@ -50,7 +50,7 @@ end
 
 Return true if a service with type T is attached to the device.
 """
-function has_service(device::Device, ::Type{T}) where T <:Service
+function has_service(device::Device, ::Type{T}) where {T<:Service}
     for _service in get_services(device)
         if isa(_service, T)
             return true
@@ -59,7 +59,6 @@ function has_service(device::Device, ::Type{T}) where T <:Service
 
     return false
 end
-
 
 """
 Remove service from device if it is attached.
@@ -91,7 +90,6 @@ function clear_services!(device::Device)
     services = get_services(device)
     empty!(services)
 end
-
 
 # All subtypes of Device define services::Vector{Service}. The values get populated
 # with references to existing services. The following functions override JSON encoding to

@@ -41,8 +41,14 @@ end
 
 @testset "Test forecast normalization" begin
     component_name = "122_HYDRO_1"
-    timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
-                               "DAY_AHEAD_hydro.csv")
+    timeseries_file = joinpath(
+        DATA_DIR,
+        "forecasts",
+        "RTS_GMLC_forecasts",
+        "gen",
+        "Hydro",
+        "DAY_AHEAD_hydro.csv",
+    )
     timeseries = IS.read_time_series(timeseries_file)[Symbol(component_name)]
     max_value = maximum(TimeSeries.values(timeseries))
 
@@ -85,8 +91,14 @@ end
 @testset "Test single forecast addition" begin
     component_name = "122_HYDRO_1"
     label = "activepower"
-    timeseries_file = joinpath(DATA_DIR, "forecasts", "RTS_GMLC_forecasts", "gen", "Hydro",
-                               "DAY_AHEAD_hydro.csv")
+    timeseries_file = joinpath(
+        DATA_DIR,
+        "forecasts",
+        "RTS_GMLC_forecasts",
+        "gen",
+        "Hydro",
+        "DAY_AHEAD_hydro.csv",
+    )
     timeseries = IS.read_time_series(timeseries_file)[Symbol(component_name)]
 
     # Test with a filename.
@@ -120,7 +132,6 @@ end
     forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_da.json")
     add_forecasts!(sys, forecasts_metadata)
     @test verify_forecasts(sys, 1, 5, 24)
-
 
     # Add the same files.
     # This will fail because the component-label pairs will be duplicated.

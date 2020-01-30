@@ -24,7 +24,7 @@ mutable struct DynamicInverter{
     filter::F #add MVAbase here
     n_states::Int64
     states::Vector{Symbol}
-    ext::Dict{String, Any}
+    ext::Dict{String,Any}
     function DynamicInverter(
         number::Int64,
         name::String,
@@ -49,8 +49,14 @@ mutable struct DynamicInverter{
         F<:Filter,
     }
 
-        n_states = (converter.n_states + outercontrol.n_states + vscontrol.n_states +
-                    dc_source.n_states + freq_estimator.n_states + filter.n_states)
+        n_states = (
+            converter.n_states +
+            outercontrol.n_states +
+            vscontrol.n_states +
+            dc_source.n_states +
+            freq_estimator.n_states +
+            filter.n_states
+        )
 
         states = vcat(
             converter.states,
@@ -61,7 +67,7 @@ mutable struct DynamicInverter{
             filter.states,
         )
 
-        new{C, O, VC, DC, P, F}(
+        new{C,O,VC,DC,P,F}(
             number,
             name,
             bus,
@@ -78,7 +84,7 @@ mutable struct DynamicInverter{
             filter,
             n_states,
             states,
-            Dict{String, Any}()
+            Dict{String,Any}(),
         )
 
     end
@@ -88,7 +94,7 @@ get_inverter_Sbase(device::DynamicInverter) = device.converter.s_rated
 get_inverter_Vref(device::DynamicInverter) = device.V_ref
 get_number(device::DynamicInverter) = device.number
 get_name(device::DynamicInverter) = device.name
-get_ω_ref(device::DynamicInverter)  = device.ω_ref
+get_ω_ref(device::DynamicInverter) = device.ω_ref
 get_V_ref(device::DynamicInverter) = device.V_ref
 get_P_ref(device::DynamicInverter) = device.P_ref
 get_Q_ref(device::DynamicInverter) = device.Q_ref
@@ -96,7 +102,7 @@ get_bus(device::DynamicInverter) = device.bus
 get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states
 get_n_states(device::DynamicInverter) = device.n_states
-get_converter(device::DynamicInverter)  = device.converter
+get_converter(device::DynamicInverter) = device.converter
 get_outercontrol(device::DynamicInverter) = device.outercontrol
 get_vscontrol(device::DynamicInverter) = device.vscontrol
 get_dc_source(device::DynamicInverter) = device.dc_source

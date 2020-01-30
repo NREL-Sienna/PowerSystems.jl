@@ -34,10 +34,11 @@ function minimumtimestep(forecasts::Array{T}) where {T<:Forecast}
         timeseries = forecasts[1].data
         n = length(timeseries) - 1
         ts = []
-        for i in 1:n
+        for i = 1:n
             push!(
                 ts,
-                TimeSeries.timestamp(timeseries)[n+1] - TimeSeries.timestamp(timeseries)[n],
+                TimeSeries.timestamp(timeseries)[n + 1] -
+                TimeSeries.timestamp(timeseries)[n],
             )
         end
         return minimum(ts)

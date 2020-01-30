@@ -59,15 +59,18 @@ end
     tg = RenewableFix(nothing)
     tg.bus = bus
     add_component!(sys, tg)
-    tProbabilisticForecast = PSY.Probabilistic("scalingfactor", Hour(1),
-                                           DateTime("01-01-01"), [0.5, 0.5], 24)
+    tProbabilisticForecast =
+        PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
     add_forecast!(sys, tg, tProbabilisticForecast)
 
     @test validate_serialization(sys)
 end
 
 @testset "Test JSON serialization of ACTIVSg2000 data" begin
-    sys = PowerSystems.parse_standard_files(joinpath(DATA_DIR, "ACTIVSg2000",
-                                                     "ACTIVSg2000.m"))
+    sys = PowerSystems.parse_standard_files(joinpath(
+        DATA_DIR,
+        "ACTIVSg2000",
+        "ACTIVSg2000.m",
+    ))
     validate_serialization(sys)
 end
