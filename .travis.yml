@@ -16,8 +16,7 @@ notifications:
 
 ## uncomment the following lines to allow failures on nightly julia
 ## (tests will run but not make your overall status red)
-matrix:
-  allow_failures:
+allow_failures:
   - julia: nightly
   - os: osx
 
