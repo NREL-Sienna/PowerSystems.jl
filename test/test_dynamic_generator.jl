@@ -214,6 +214,7 @@ Gen1AVR = DynamicGenerator(1, #Number
                  1.0, # ω_ref,
                  1.05,
                  0.4,
+                 0.0,
                  Basic,
                  BaseShaft,
                  proportional_avr, #avr
@@ -227,6 +228,7 @@ Gen1AVRnoAVR = DynamicGenerator(1, #Number
                  1.0, # ω_ref,
                  1.05,
                  0.4,
+                 0.0,
                  Basic,
                  BaseShaft,
                  fixed_avr, #avr
@@ -240,6 +242,7 @@ Gen2AVRnoAVR = DynamicGenerator(1, #Number
                  1.0, # ω_ref,
                  1.02,
                  0.4,
+                 0.0,
                  oneDoneQ,
                  BaseShaft,
                  fixed_avr, #avr
@@ -253,6 +256,7 @@ Gen2AVR = DynamicGenerator(1, #Number
                  1.0, # ω_ref,
                  1.02,
                  0.4,
+                 0.0,
                  oneDoneQ,
                  BaseShaft,
                  proportional_avr, #avr

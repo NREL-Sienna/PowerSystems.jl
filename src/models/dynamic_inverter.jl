@@ -91,6 +91,7 @@ get_name(device::DynamicInverter) = device.name
 get_ω_ref(device::DynamicInverter)  = device.ω_ref
 get_V_ref(device::DynamicInverter) = device.V_ref
 get_P_ref(device::DynamicInverter) = device.P_ref
+get_Q_ref(device::DynamicInverter) = device.Q_ref
 get_bus(device::DynamicInverter) = device.bus
 get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states

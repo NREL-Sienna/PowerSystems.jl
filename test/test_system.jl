@@ -2,6 +2,7 @@
 @testset "Test functionality of System" begin
     sys = create_rts_system()
     summary(devnull, sys)
+    @test get_frequency(sys) == PSY.DEFAULT_SYSTEM_FREQUENCY
 
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
@@ -147,6 +148,11 @@ end
     sys = System(100)
     line = Line(nothing)
     @test_throws(IS.ArgumentError, add_component!(sys, line))
+end
+
+@testset "Test frequency set" begin
+    sys = System(100; frequency = 50.0)
+    @test get_frequency(sys) == 50.0
 end
 
 @testset "Test exported names" begin
