@@ -39,8 +39,9 @@ struct System <: PowerSystemType
     runchecks::Bool
     internal::IS.InfrastructureSystemsInternal
 
-    function System(data, basepower, internal; frequency = 60.0, kwargs...)
+    function System(data, basepower, internal; kwargs...)
         bus_numbers = Set{Int}()
+        frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
         runchecks = get(kwargs, :runchecks, true)
         sys = new(data, basepower, frequency, bus_numbers, runchecks, internal)
         return sys
