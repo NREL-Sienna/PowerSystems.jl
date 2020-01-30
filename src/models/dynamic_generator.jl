@@ -11,6 +11,7 @@ mutable struct DynamicGenerator{
     ω_ref::Float64
     V_ref::Float64
     P_ref::Float64
+    Q_ref::Float64
     machine::M
     shaft::S
     avr::A
@@ -26,6 +27,7 @@ mutable struct DynamicGenerator{
         ω_ref::Float64,
         V_ref::Float64,
         P_ref::Float64,
+        Q_ref::Float64,
         machine::M,
         shaft::S,
         avr::A,
@@ -45,6 +47,7 @@ mutable struct DynamicGenerator{
             ω_ref,
             V_ref,
             P_ref,
+            Q_ref,
             machine,
             shaft,
             avr,
@@ -66,6 +69,7 @@ get_name(device::DynamicGenerator) = device.name
 get_ω_ref(device::DynamicGenerator)  = device.ω_ref
 get_V_ref(device::DynamicGenerator) = device.V_ref
 get_P_ref(device::DynamicGenerator) = device.P_ref
+get_Q_ref(device::DynamicGenerator) = device.Q_ref
 get_machine(device::DynamicGenerator) = device.machine
 get_shaft(device::DynamicGenerator) = device.shaft
 get_avr(device::DynamicGenerator) = device.avr
