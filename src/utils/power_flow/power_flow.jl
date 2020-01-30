@@ -50,7 +50,6 @@ function flow_val(b::Transformer2W)
     return flow
 end
 
-
 function flow_val(b::PhaseShiftingTransformer)
     error("Systems with PhaseShiftingTransformer not supported yet")
     return
@@ -70,16 +69,16 @@ function _write_pf_sol!(sys::System, nl_result)
 
     for (ix, bus) in buses
         if bus.bustype == PowerSystems.REF
-            P_gen = result[2*ix-1]
-            Q_gen = result[2*ix]
+            P_gen = result[2 * ix - 1]
+            Q_gen = result[2 * ix]
             injection_components = get_components(Generator, sys)
             devices = [d for d in injection_components if d.bus == bus]
             generator = devices[1]
             generator.activepower = P_gen
             generator.reactivepower = Q_gen
         elseif bus.bustype == PowerSystems.PQ
-            Q_gen = result[2*ix-1]
-            θ = result[2*ix]
+            Q_gen = result[2 * ix - 1]
+            θ = result[2 * ix]
             injection_components = get_components(Generator, sys)
             devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
@@ -88,8 +87,8 @@ function _write_pf_sol!(sys::System, nl_result)
             end
             bus.angle = θ
         elseif bus.bustype == PowerSystems.PV
-            Vm = result[2*ix-1]
-            θ = result[2*ix]
+            Vm = result[2 * ix - 1]
+            θ = result[2 * ix]
             bus.voltage = Vm
             bus.angle = θ
         end

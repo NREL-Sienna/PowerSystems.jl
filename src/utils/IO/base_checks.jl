@@ -13,11 +13,10 @@ function orderedlimits(
     return limits
 end
 
-
 function getresolution(ts::TimeSeries.TimeArray)
 
     tstamps = TimeSeries.timestamp(ts)
-    timediffs = unique([tstamps[ix] - tstamps[ix-1] for ix in 2:length(tstamps)])
+    timediffs = unique([tstamps[ix] - tstamps[ix - 1] for ix = 2:length(tstamps)])
 
     res = []
 
@@ -45,7 +44,7 @@ end
 """Throws DataFormatError if the array is not in ascending order."""
 function check_ascending_order(array::Array{Int}, name::AbstractString)
     for (i, num) in enumerate(array)
-        if i > 1 && num < array[i-1]
+        if i > 1 && num < array[i - 1]
             throw(DataFormatError("$name Numbers are not in ascending order."))
         end
     end

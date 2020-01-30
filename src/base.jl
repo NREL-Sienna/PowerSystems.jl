@@ -154,8 +154,7 @@ function System(
 end
 
 """System constructor with keyword arguments."""
-function System(
-    ;
+function System(;
     basepower = 100.0,
     buses,
     generators,
@@ -207,7 +206,6 @@ function System(
         kwargs...,
     )
 end
-
 
 """
 Serializes a system to a JSON string.
@@ -381,7 +379,11 @@ function IS.add_forecast!(
 
     if component isa LoadZones
         uuids = Set([IS.get_uuid(x) for x in get_buses(component)])
-        for component_ in (load for load in IS.get_components(ElectricLoad, data) if IS.get_uuid(get_bus(load)) in uuids)
+        for component_ in (
+            load for load in IS.get_components(ElectricLoad, data) if IS.get_uuid(get_bus(
+                load,
+            )) in uuids
+        )
             IS.add_forecast!(data, component_, forecast, ts_data)
         end
     else
@@ -530,10 +532,8 @@ struct ServiceContributingDevices
 end
 
 const ServiceContributingDevicesKey = NamedTuple{(:type, :name),Tuple{DataType,String}}
-const ServiceContributingDevicesMapping = Dict{
-    ServiceContributingDevicesKey,
-    ServiceContributingDevices,
-}
+const ServiceContributingDevicesMapping =
+    Dict{ServiceContributingDevicesKey,ServiceContributingDevices}
 
 """
     get_contributing_device_mapping(sys::System)
@@ -1145,15 +1145,11 @@ function _create_system_data_from_kwargs(; kwargs...)
     runchecks = get(kwargs, :runchecks, true)
     time_series_in_memory = get(kwargs, :time_series_in_memory, false)
     if runchecks
-        validation_descriptor_file = get(
-            kwargs,
-            :configpath,
-            POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE,
-        )
+        validation_descriptor_file =
+            get(kwargs, :configpath, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
     end
 
-    return IS.SystemData(
-        ;
+    return IS.SystemData(;
         validation_descriptor_file = validation_descriptor_file,
         time_series_in_memory = time_series_in_memory,
     )

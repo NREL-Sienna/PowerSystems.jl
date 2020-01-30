@@ -3,8 +3,8 @@ import PowerSystems: LazyDictFromIterator
 
 @testset "PowerSystemTableData parsing" begin
     resolutions = (
-        (resolution=Dates.Minute(5), len=288),
-        (resolution=Dates.Minute(60), len=24),
+        (resolution = Dates.Minute(5), len = 288),
+        (resolution = Dates.Minute(60), len = 24),
     )
 
     for (resolution, len) in resolutions
@@ -21,7 +21,7 @@ end
 end
 
 @testset "consistency between PowerSystemTableData and standardfiles" begin
-    mpsys  = parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    mpsys = parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
     cdmsys = create_rts_system()
 
     mp_iter = get_components(HydroGen, mpsys)
@@ -33,14 +33,16 @@ end
         end
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        tech_dat = (structname = :tech,
-                    fields= (:rating, :activepowerlimits, :reactivepowerlimits, :ramplimits))
-        gen_dat = (structname = nothing,
-                    fields= (:activepower, :reactivepower))
+        tech_dat = (
+            structname = :tech,
+            fields = (:rating, :activepowerlimits, :reactivepowerlimits, :ramplimits),
+        )
+        gen_dat = (structname = nothing, fields = (:activepower, :reactivepower))
         function check_fields(chk_dat)
             for field in chk_dat.fields
                 n = get(chk_dat, :structname, nothing)
-                (cdmd, mpd) = isnothing(n) ? (cdmgen, mpgen) : (getfield(cdmgen,n), getfield(mpgen,n))
+                (cdmd, mpd) = isnothing(n) ? (cdmgen, mpgen) :
+                    (getfield(cdmgen, n), getfield(mpgen, n))
                 cdmgen_val = getfield(cdmd, field)
                 mpgen_val = getfield(mpd, field)
                 if isnothing(cdmgen_val) || isnothing(mpgen_val)
@@ -71,9 +73,14 @@ end
         end
 
         if length(mpgen.op_cost.variable) == 4
-            @test [isapprox(cdmgen.op_cost.variable[i][1],
-                            mpgen.op_cost.variable[i][1], atol= .1)
-                            for i in 1:4] == [true, true, true, true]
+            @test [
+                isapprox(
+                    cdmgen.op_cost.variable[i][1],
+                    mpgen.op_cost.variable[i][1],
+                    atol = 0.1,
+                )
+                for i = 1:4
+            ] == [true, true, true, true]
             #@test compare_values_without_uuids(cdmgen.op_cost, mpgen.op_cost)
         end
     end
@@ -100,10 +107,12 @@ end
     cdm_ac_branches = collect(get_components(ACBranch, cdmsys))
     @test get_rate(cdm_ac_branches[2]) == get_rate(get_branch(mpsys, cdm_ac_branches[2]))
     @test get_rate(cdm_ac_branches[6]) == get_rate(get_branch(mpsys, cdm_ac_branches[6]))
-    @test get_rate(cdm_ac_branches[120]) == get_rate(get_branch(mpsys, cdm_ac_branches[120]))
+    @test get_rate(cdm_ac_branches[120]) ==
+          get_rate(get_branch(mpsys, cdm_ac_branches[120]))
 
     cdm_dc_branches = collect(get_components(DCBranch, cdmsys))
-    @test get_activepowerlimits_from(cdm_dc_branches[1]) == get_activepowerlimits_from(get_branch(mpsys, cdm_dc_branches[1]))
+    @test get_activepowerlimits_from(cdm_dc_branches[1]) ==
+          get_activepowerlimits_from(get_branch(mpsys, cdm_dc_branches[1]))
 end
 
 @testset "Test reserve direction" begin

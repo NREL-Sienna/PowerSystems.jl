@@ -3,7 +3,6 @@ using Logging
 using Dates
 import InteractiveUtils
 
-
 import InfrastructureSystems
 import InfrastructureSystems: Deterministic, Probabilistic, ScenarioBased, Forecast
 const IS = InfrastructureSystems
@@ -32,7 +31,6 @@ LOG_LEVELS = Dict(
 
 include("common.jl")
 
-
 """
 Copied @includetests from https://github.com/ssfrr/TestSetExtensions.jl.
 Ideally, we could import and use TestSetExtensions.  Its functionality was broken by changes
@@ -58,12 +56,14 @@ macro includetests(testarg...)
         rootfile = @__FILE__
         if length(tests) == 0
             tests = readdir(dirname(rootfile))
-            tests = filter(f -> startswith(f, "test_") &&
-                                endswith(f, ".jl") &&
-                                f != basename(rootfile),
-                           tests)
+            tests = filter(
+                f ->
+                        startswith(f, "test_") &&
+                        endswith(f, ".jl") && f != basename(rootfile),
+                tests,
+            )
         else
-            tests = map(f->string(f, ".jl"), tests)
+            tests = map(f -> string(f, ".jl"), tests)
         end
         println()
         for test in tests
@@ -91,8 +91,8 @@ function run_tests()
 
     IS.open_file_logger(LOG_FILE, file_level) do file_logger
         levels = (Logging.Info, Logging.Warn, Logging.Error)
-        multi_logger = IS.MultiLogger([console_logger, file_logger],
-                                      IS.LogEventTracker(levels))
+        multi_logger =
+            IS.MultiLogger([console_logger, file_logger], IS.LogEventTracker(levels))
         global_logger(multi_logger)
 
         # Testing Topological components of the schema

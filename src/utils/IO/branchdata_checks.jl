@@ -20,7 +20,8 @@ function check_angle_limits!(line)
 
     if (line.anglelimits.max / max_limit > 3) || (-1 * line.anglelimits.min / max_limit > 3)
         @warn "The angle limits provided is larger than 3π/2 radians.\n " *
-              "PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog = PS_MAX_LOG
+              "PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog =
+            PS_MAX_LOG
 
         if line.anglelimits.max / max_limit >= 0.99
             line.anglelimits = (
@@ -28,10 +29,8 @@ function check_angle_limits!(line)
                 max = min(line.anglelimits.max * (π / 180), max_limit),
             )
         else
-            line.anglelimits = (
-                min = line.anglelimits.min,
-                max = min(line.anglelimits.max, max_limit),
-            )
+            line.anglelimits =
+                (min = line.anglelimits.min, max = min(line.anglelimits.max, max_limit))
         end
 
         if (-1 * line.anglelimits.min / max_limit > 0.99)
@@ -40,10 +39,8 @@ function check_angle_limits!(line)
                 max = line.anglelimits.max,
             )
         else
-            line.anglelimits = (
-                min = max(line.anglelimits.min, min_limit),
-                max = line.anglelimits.max,
-            )
+            line.anglelimits =
+                (min = max(line.anglelimits.min, min_limit), max = line.anglelimits.max)
         end
     else
 
@@ -91,12 +88,11 @@ function calculate_thermal_limits!(branch, basemva::Float64)
         is_valid = false
 
     elseif get_rate(branch) == 0.0
-        @warn "Data for line rating is not provided, PowerSystems will infer a rate from line parameters" maxlog = PS_MAX_LOG
+        @warn "Data for line rating is not provided, PowerSystems will infer a rate from line parameters" maxlog =
+            PS_MAX_LOG
         if get_anglelimits(branch) == get_anglelimits(Line(nothing))
-            branch.rate = min(
-                calculate_sil(branch, basemva),
-                linerate_calculation(branch),
-            ) / basemva
+            branch.rate =
+                min(calculate_sil(branch, basemva), linerate_calculation(branch)) / basemva
         else
             branch.rate = linerate_calculation(branch) / basemva
         end
@@ -104,7 +100,8 @@ function calculate_thermal_limits!(branch, basemva::Float64)
     elseif get_rate(branch) > linerate_calculation(branch)
         mult = get_rate(branch) / linerate_calculation(branch)
         if mult > 50
-            @warn "Data for line rating is $(mult) times larger than the base MVA for the system" maxlog = PS_MAX_LOG
+            @warn "Data for line rating is $(mult) times larger than the base MVA for the system" maxlog =
+                PS_MAX_LOG
         end
     end
 
@@ -121,7 +118,6 @@ const SIL_STANDARDS = Dict( #from https://neos-guide.org/sites/default/files/lin
     500.0 => (min = 850.0, max = 1075.0),
     765.0 => (min = 2200.0, max = 2300.0),
 )
-
 
 # calculation from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
 function calculate_sil(line, basemva::Float64)
@@ -153,7 +149,8 @@ function check_SIL(line, basemva::Float64)
         # rate outside of expected SIL range
         sil = calculate_sil(line, basemva)
         mult = sil / closestSIL.max
-        @warn "Rate provided for $(line) is $(rate*vrated), $(mult) times larger the expected SIL $(sil) in the range of $(closestSIL)." maxlog = PS_MAX_LOG
+        @warn "Rate provided for $(line) is $(rate*vrated), $(mult) times larger the expected SIL $(sil) in the range of $(closestSIL)." maxlog =
+            PS_MAX_LOG
 
     end
 end

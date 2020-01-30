@@ -1,7 +1,7 @@
 @testset "Test add/remove services" begin
     sys = System(100)
     devices = []
-    for i in 1:2
+    for i = 1:2
         bus = Bus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
@@ -146,7 +146,7 @@ end
     sys = System(100)
     devices = []
     services = []
-    for i in 1:5
+    for i = 1:5
         bus = Bus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i

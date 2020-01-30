@@ -2,12 +2,29 @@
     tBus = Bus(nothing)
     tLoadZones = LoadZones(nothing)
 
-    bus = Bus(1, "test", PowerSystems.SLACK::BusType, 0.0, 0.0, (min=0.0, max=0.0), nothing)
+    bus = Bus(
+        1,
+        "test",
+        PowerSystems.SLACK::BusType,
+        0.0,
+        0.0,
+        (min = 0.0, max = 0.0),
+        nothing,
+    )
     @test PowerSystems.get_bustype(bus) == PowerSystems.REF::BusType
 
-    @test_throws(PowerSystems.DataFormatError,
-                 Bus(1, "test", PowerSystems.ISOLATED::BusType, 0.0, 0.0,
-                     (min=0.0, max=0.0), nothing))
+    @test_throws(
+        PowerSystems.DataFormatError,
+        Bus(
+            1,
+            "test",
+            PowerSystems.ISOLATED::BusType,
+            0.0,
+            0.0,
+            (min = 0.0, max = 0.0),
+            nothing,
+        )
+    )
 end
 
 @testset "Generation Constructors" begin
@@ -84,20 +101,26 @@ end
 
 @testset "Forecast Constructors" begin
     tg = RenewableFix(nothing)
-    forecast_data = PowerSystems.TimeSeries.TimeArray([DateTime("01-01-01"), DateTime("01-01-01")+Hour(1)], [1.0, 1.0])
+    forecast_data = PowerSystems.TimeSeries.TimeArray(
+        [DateTime("01-01-01"), DateTime("01-01-01") + Hour(1)],
+        [1.0, 1.0],
+    )
     #Deterministic Tests
-    tDeterministicForecast = PSY.Deterministic("scalingfactor", Hour(1),DateTime("01-01-01"),24)
+    tDeterministicForecast =
+        PSY.Deterministic("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
     @test tDeterministicForecast isa PowerSystems.Forecast
     tDeterministicForecast = PSY.Deterministic("scalingfactor", forecast_data)
     @test tDeterministicForecast isa PowerSystems.Forecast
     #Probabilistic Tests
-    tProbabilisticForecast = PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"),[0.5, 0.5], 24)
-    @test  tProbabilisticForecast isa PowerSystems.Forecast
+    tProbabilisticForecast =
+        PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
+    @test tProbabilisticForecast isa PowerSystems.Forecast
     tProbabilisticForecast = PSY.Probabilistic("scalingfactor", [1.0], forecast_data)
-    @test  tProbabilisticForecast isa PowerSystems.Forecast
+    @test tProbabilisticForecast isa PowerSystems.Forecast
     #Scenario Tests
-    tScenarioForecast = PSY.ScenarioBased("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
-    @test  tScenarioForecast isa PowerSystems.Forecast
-    tScenarioForecast = PSY.ScenarioBased("scalingfactor",forecast_data)
-    @test  tScenarioForecast isa PowerSystems.Forecast
+    tScenarioForecast =
+        PSY.ScenarioBased("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
+    @test tScenarioForecast isa PowerSystems.Forecast
+    tScenarioForecast = PSY.ScenarioBased("scalingfactor", forecast_data)
+    @test tScenarioForecast isa PowerSystems.Forecast
 end

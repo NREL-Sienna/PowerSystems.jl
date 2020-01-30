@@ -15,10 +15,11 @@
 
     @test isnothing(get_component(ThermalStandard, sys, "not-a-name"))
     @test isempty(get_components_by_name(ThermalGen, sys, "not-a-name"))
-    @test_throws(IS.ArgumentError,
-                 get_component(ThermalGen, sys, "not-a-name"))
-    @test_throws(IS.ArgumentError,
-                 get_components_by_name(ThermalStandard, sys, "not-a-name"))
+    @test_throws(IS.ArgumentError, get_component(ThermalGen, sys, "not-a-name"))
+    @test_throws(
+        IS.ArgumentError,
+        get_components_by_name(ThermalStandard, sys, "not-a-name")
+    )
 
     # Test get_bus* functionality.
     bus_numbers = Vector{Int}()
@@ -34,7 +35,7 @@
 
     buses = PowerSystems.get_buses(sys, Set(bus_numbers))
     sort!(bus_numbers)
-    sort!(buses, by=x -> x.number)
+    sort!(buses, by = x -> x.number)
     @test length(bus_numbers) == length(buses)
     for (bus_number, bus) in zip(bus_numbers, buses)
         @test bus_number == bus.number

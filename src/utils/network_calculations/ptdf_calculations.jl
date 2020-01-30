@@ -18,8 +18,8 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
     A = zeros(Float64, buscount, linecount)
     inv_X = zeros(Float64, linecount, linecount)
 
-   #build incidence matrix
-   #incidence_matrix = A
+    #build incidence matrix
+    #incidence_matrix = A
 
     for (ix, b) in enumerate(branches)
         if isa(b, DCBranch)
@@ -64,7 +64,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
             gemm('N', 'T', inv_X, A[setdiff(1:end, slack_position), :]),
             getri!(B, bipiv),
         )
-        S = hcat(S_[:, 1:slack_position-1], zeros(linecount,), S_[:, slack_position:end])
+        S = hcat(S_[:, 1:(slack_position - 1)], zeros(linecount), S_[:, slack_position:end])
 
     elseif dist_slack[1] != 0.1 && length(dist_slack) == buscount
         @info "Distributed bus"
@@ -75,7 +75,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
             gemm('N', 'T', inv_X, A[setdiff(1:end, slack_position), :]),
             getri!(B, bipiv),
         )
-        S = hcat(S_[:, 1:slack_position-1], zeros(linecount,), S_[:, slack_position:end])
+        S = hcat(S_[:, 1:(slack_position - 1)], zeros(linecount), S_[:, slack_position:end])
         slack_array = dist_slack / sum(dist_slack)
         slack_array = reshape(slack_array, buscount, 1)
         S = S - gemm('N', 'N', gemm('N', 'N', S, slack_array), ones(1, buscount))

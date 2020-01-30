@@ -10,16 +10,19 @@ function _buildlodf(branches, nodes, dist_slack::Array{Float64} = [0.1])
     ptdf, a = PowerSystems._buildptdf(branches, nodes, dist_slack)
     H = gemm('N', 'N', ptdf, a)
     ptdf_denominator = H
-    for iline in 1:linecount
+    for iline = 1:linecount
         if (1.0 - ptdf_denominator[iline, iline]) < 1.0E-06
             ptdf_denominator[iline, iline] = 0.0
         end
     end
-    (Dem, dipiv, dinfo) = getrf!(Matrix{Float64}(LinearAlgebra.I, linecount, linecount) -
-                                 Array(LinearAlgebra.Diagonal(ptdf_denominator)))
+    (Dem, dipiv, dinfo) = getrf!(
+        Matrix{Float64}(LinearAlgebra.I, linecount, linecount) -
+            Array(LinearAlgebra.Diagonal(ptdf_denominator)),
+    )
     lodf = gemm('N', 'N', H, getri!(Dem, dipiv))
-    lodf = lodf - Array(LinearAlgebra.Diagonal(lodf)) -
-           Matrix{Float64}(LinearAlgebra.I, linecount, linecount)
+    lodf =
+        lodf - Array(LinearAlgebra.Diagonal(lodf)) -
+        Matrix{Float64}(LinearAlgebra.I, linecount, linecount)
     return lodf
 end
 
