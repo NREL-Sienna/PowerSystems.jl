@@ -80,3 +80,5 @@ const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE = joinpath(
     "descriptors",
     "power_system_structs.json",
 )
+
+const DEFAULT_SYSTEM_FREQUENCY = 60.0
