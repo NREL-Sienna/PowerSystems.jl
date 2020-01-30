@@ -1,5 +1,6 @@
 ## Documentation: http://docs.travis-ci.org/user/languages/julia/
 language: julia
+codecov: true
 os:
   - linux
   - osx
