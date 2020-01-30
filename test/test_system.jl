@@ -149,6 +149,11 @@ end
     @test_throws(IS.ArgumentError, add_component!(sys, line))
 end
 
+@testset "Test frequency set" begin
+    sys = System(100, frequency = 50.0)
+    @test get_frequency(sys) == 50.0
+end
+
 @testset "Test exported names" begin
     @test IS.validate_exported_names(PowerSystems)
 end
