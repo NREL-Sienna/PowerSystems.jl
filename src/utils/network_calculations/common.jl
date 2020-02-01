@@ -190,12 +190,12 @@ function Base.show_nd(
     for I in CartesianIndices(tailinds)
         idxs = I.I
         if limit
-            for i = 1:nd
+            for i in 1:nd
                 ii = idxs[i]
                 ind = tailinds[i]
                 if length(ind) > 10
                     if ii == ind[4] && all(d -> idxs[d] == first(tailinds[d]), 1:(i - 1))
-                        for j = (i + 1):nd
+                        for j in (i + 1):nd
                             szj = size(a.data, j + 2)
                             indj = tailinds[j]
                             if szj > 10 && first(indj) + 2 < idxs[j] <= last(indj) - 3
@@ -214,7 +214,7 @@ function Base.show_nd(
         end
         if label_slices
             print(io, "[:, :, ")
-            for i = 1:(nd - 1)
+            for i in 1:(nd - 1)
                 show(io, a.axes[i + 2][idxs[i]])
                 print(io, ", ")
             end

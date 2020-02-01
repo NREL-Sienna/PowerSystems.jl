@@ -1,10 +1,10 @@
 import TimeSeries: TimeArray
 
 @testset "Time resolution" begin
-    twomins = TimeArray([DateTime(today()) + Dates.Minute(i * 2) for i = 1:5], ones(5))
-    oneday = TimeArray([DateTime(today()) + Dates.Day(i) for i = 1:5], ones(5))
-    onesec = TimeArray([DateTime(today()) + Dates.Second(i) for i = 1:5], ones(5))
-    onehour = TimeArray([DateTime(today()) + Dates.Hour(i) for i = 1:5], ones(5))
+    twomins = TimeArray([DateTime(today()) + Dates.Minute(i * 2) for i in 1:5], ones(5))
+    oneday = TimeArray([DateTime(today()) + Dates.Day(i) for i in 1:5], ones(5))
+    onesec = TimeArray([DateTime(today()) + Dates.Second(i) for i in 1:5], ones(5))
+    onehour = TimeArray([DateTime(today()) + Dates.Hour(i) for i in 1:5], ones(5))
 
     @test PowerSystems.getresolution(twomins) == Dates.Minute(2)
     @test PowerSystems.getresolution(oneday) == Dates.Day(1)

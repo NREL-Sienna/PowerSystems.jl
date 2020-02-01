@@ -553,7 +553,7 @@ end
 function _rescale_cost_model!(comp::Dict{String,<:Any}, scale::Real)
     if "model" in keys(comp) && "cost" in keys(comp)
         if comp["model"] == 1
-            for i = 1:2:length(comp["cost"])
+            for i in 1:2:length(comp["cost"])
                 comp["cost"][i] = comp["cost"][i] / scale
             end
         elseif comp["model"] == 2
@@ -662,7 +662,7 @@ function _calc_comp_lines(component::Dict{String,<:Any})
     points = component["cost"]
 
     line_data = []
-    for i = 3:2:length(points)
+    for i in 3:2:length(points)
         x1 = points[i - 2]
         y1 = points[i - 1]
         x2 = points[i - 0]
@@ -674,7 +674,7 @@ function _calc_comp_lines(component::Dict{String,<:Any})
         push!(line_data, (slope = m, intercept = b))
     end
 
-    for i = 2:length(line_data)
+    for i in 2:length(line_data)
         if line_data[i - 1].slope > line_data[i].slope
             @info "non-convex pwl function found in points $(component["cost"])\nlines: $(line_data)" maxlog =
                 PS_MAX_LOG
@@ -1023,7 +1023,7 @@ function correct_voltage_angle_differences!(data::Dict{String,<:Any}, default_pa
 
     modified = Set{Int}()
 
-    for c = 1:get(data, "conductors", 1)
+    for c in 1:get(data, "conductors", 1)
         cnd_str = haskey(data, "conductors") ? ", conductor $(c)" : ""
         for (i, branch) in data["branch"]
             angmin = branch["angmin"][c]
@@ -1094,7 +1094,7 @@ function correct_thermal_limits!(data::Dict{String,<:Any})
             end
         end
 
-        for c = 1:get(data, "conductors", 1)
+        for c in 1:get(data, "conductors", 1)
             cnd_str = haskey(data, "conductors") ? ", conductor $(c)" : ""
             if branch["rate_a"][c] <= 0.0
                 theta_max = max(abs(branch["angmin"][c]), abs(branch["angmax"][c]))
@@ -1159,7 +1159,7 @@ function correct_current_limits!(data::Dict{String,<:Any})
             end
         end
 
-        for c = 1:get(data, "conductors", 1)
+        for c in 1:get(data, "conductors", 1)
             cnd_str = haskey(data, "conductors") ? ", conductor $(c)" : ""
             if branch["c_rating_a"][c] <= 0.0
                 theta_max = max(abs(branch["angmin"][c]), abs(branch["angmax"][c]))
@@ -1439,7 +1439,7 @@ function correct_transformer_parameters!(data::Dict{String,<:Any})
             end
             push!(modified, branch["index"])
         else
-            for c = 1:get(data, "conductors", 1)
+            for c in 1:get(data, "conductors", 1)
                 cnd_str = haskey(data, "conductors") ? " on conductor $(c)" : ""
                 if branch["tap"][c] <= 0.0
                     @info("branch found with non-positive tap value of $(branch["tap"][c]), setting a tap to 1.0$(cnd_str)")
@@ -1607,7 +1607,7 @@ function correct_dcline_limits!(data::Dict{String,Any})
 
     modified = Set{Int}()
 
-    for c = 1:get(data, "conductors", 1)
+    for c in 1:get(data, "conductors", 1)
         cnd_str = haskey(data, "conductors") ? ", conductor $(c)" : ""
         for (i, dcline) in data["dcline"]
             if dcline["loss0"][c] < 0.0
@@ -1677,7 +1677,7 @@ function check_voltage_setpoints(data::Dict{String,<:Any})
         error("check_voltage_setpoints does not yet support multinetwork data")
     end
 
-    for c = 1:get(data, "conductors", 1)
+    for c in 1:get(data, "conductors", 1)
         cnd_str = haskey(data, "conductors") ? "conductor $(c) " : ""
         for (i, gen) in data["gen"]
             bus_id = gen["gen_bus"]
@@ -1745,7 +1745,7 @@ function _correct_cost_function!(id, comp, type_name)
 
             modified = _remove_pwl_cost_duplicates!(id, comp, type_name)
 
-            for i = 3:2:length(comp["cost"])
+            for i in 3:2:length(comp["cost"])
                 if comp["cost"][i - 2] >= comp["cost"][i]
                     error("non-increasing x values in pwl cost model on $(type_name) $(id)")
                 end
@@ -1753,7 +1753,7 @@ function _correct_cost_function!(id, comp, type_name)
             if "pmin" in keys(comp) && "pmax" in keys(comp)
                 pmin = sum(comp["pmin"]) # sum supports multi-conductor case
                 pmax = sum(comp["pmax"])
-                for i = 3:2:length(comp["cost"])
+                for i in 3:2:length(comp["cost"])
                     if comp["cost"][i] < pmin || comp["cost"][i] > pmax
                         @info("pwl x value $(comp["cost"][i]) is outside the bounds $(pmin)-$(pmax) on $(type_name) $(id)")
                     end
@@ -1778,7 +1778,7 @@ function _remove_pwl_cost_duplicates!(id, comp, type_name, tolerance = 1e-2)
     @assert comp["model"] == 1
 
     unique_costs = Float64[comp["cost"][1], comp["cost"][2]]
-    for i = 3:2:length(comp["cost"])
+    for i in 3:2:length(comp["cost"])
         x1 = unique_costs[end - 1]
         y1 = unique_costs[end]
         x2 = comp["cost"][i + 0]
@@ -1809,7 +1809,7 @@ function _simplify_pwl_cost!(id, comp, type_name, tolerance = 1e-2)
 
     x2, y2 = 0.0, 0.0
 
-    for i = 3:2:length(comp["cost"])
+    for i in 3:2:length(comp["cost"])
         x1 = comp["cost"][i - 2]
         y1 = comp["cost"][i - 1]
         x2 = comp["cost"][i - 0]
@@ -1855,7 +1855,7 @@ function simplify_cost_terms!(data::Dict{String,<:Any})
             for (i, gen) in network["gen"]
                 if haskey(gen, "model") && gen["model"] == 2
                     ncost = length(gen["cost"])
-                    for j = 1:ncost
+                    for j in 1:ncost
                         if gen["cost"][1] == 0.0
                             gen["cost"] = gen["cost"][2:end]
                         else
@@ -1876,7 +1876,7 @@ function simplify_cost_terms!(data::Dict{String,<:Any})
             for (i, dcline) in network["dcline"]
                 if haskey(dcline, "model") && dcline["model"] == 2
                     ncost = length(dcline["cost"])
-                    for j = 1:ncost
+                    for j in 1:ncost
                         if dcline["cost"][1] == 0.0
                             dcline["cost"] = dcline["cost"][2:end]
                         else
@@ -1912,7 +1912,7 @@ function standardize_cost_terms!(data::Dict{String,<:Any}; order = -1)
             for (i, gen) in network["gen"]
                 if haskey(gen, "model") && gen["model"] == 2
                     max_nonzero_index = 1
-                    for i = 1:length(gen["cost"])
+                    for i in 1:length(gen["cost"])
                         max_nonzero_index = i
                         if gen["cost"][i] != 0.0
                             break
@@ -1930,7 +1930,7 @@ function standardize_cost_terms!(data::Dict{String,<:Any}; order = -1)
             for (i, dcline) in network["dcline"]
                 if haskey(dcline, "model") && dcline["model"] == 2
                     max_nonzero_index = 1
-                    for i = 1:length(dcline["cost"])
+                    for i in 1:length(dcline["cost"])
                         max_nonzero_index = i
                         if dcline["cost"][i] != 0.0
                             break
@@ -1974,10 +1974,10 @@ function _standardize_cost_terms!(
     modified = Set{Int}()
     for (i, comp) in components
         if haskey(comp, "model") && comp["model"] == 2 && length(comp["cost"]) != comp_order
-            std_cost = [0.0 for i = 1:comp_order]
+            std_cost = [0.0 for i in 1:comp_order]
             current_cost = reverse(comp["cost"])
             #println("gen cost: $(comp["cost"])")
-            for i = 1:min(comp_order, length(current_cost))
+            for i in 1:min(comp_order, length(current_cost))
                 std_cost[i] = current_cost[i]
             end
             comp["cost"] = reverse(std_cost)

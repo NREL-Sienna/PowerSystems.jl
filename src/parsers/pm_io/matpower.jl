@@ -1533,7 +1533,7 @@ function _export_cost_data(io::IO, components::Dict{Int,Dict}, prefix::String)
                     "\t",
                     (length(gen["cost"]) / 2),
                 ),
-                for l = 1:length(gen["cost"])
+                for l in 1:length(gen["cost"])
                     print(io, "\t", gen["cost"][l])
                 end
             else
@@ -1546,7 +1546,7 @@ function _export_cost_data(io::IO, components::Dict{Int,Dict}, prefix::String)
                     "\t",
                     length(gen["cost"]),
                 ),
-                for l = 1:length(gen["cost"])
+                for l in 1:length(gen["cost"])
                     print(io, "\t", gen["cost"][l])
                 end
             end

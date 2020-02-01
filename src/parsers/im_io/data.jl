@@ -57,7 +57,7 @@ function im_replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{
 
     mn_data["name"] = "$(count) replicates of $(name)"
 
-    for n = 1:count
+    for n in 1:count
         mn_data["nw"]["$n"] = deepcopy(sn_data_tmp)
     end
 
@@ -129,7 +129,7 @@ function compare_dict(d1, d2)
             if length(v1) != length(v2)
                 return false
             end
-            for i = 1:length(v1)
+            for i in 1:length(v1)
                 if isa(v1[i], Number)
                     if !_compare_numbers(v1[i], v2[i])
                         return false

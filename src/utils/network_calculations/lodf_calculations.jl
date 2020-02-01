@@ -10,7 +10,7 @@ function _buildlodf(branches, nodes, dist_slack::Array{Float64} = [0.1])
     ptdf, a = PowerSystems._buildptdf(branches, nodes, dist_slack)
     H = gemm('N', 'N', ptdf, a)
     ptdf_denominator = H
-    for iline = 1:linecount
+    for iline in 1:linecount
         if (1.0 - ptdf_denominator[iline, iline]) < 1.0E-06
             ptdf_denominator[iline, iline] = 0.0
         end

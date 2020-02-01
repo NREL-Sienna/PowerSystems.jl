@@ -190,9 +190,9 @@ function _parse_matlab_data(lines, index, start_char, end_char)
     end
 
     rows = length(matrix)
-    typed_columns = [_type_array([matrix[r][c] for r = 1:rows]) for c = 1:columns]
-    for r = 1:rows
-        matrix[r] = [typed_columns[c][r] for c = 1:columns]
+    typed_columns = [_type_array([matrix[r][c] for r in 1:rows]) for c in 1:columns]
+    for r in 1:rows
+        matrix[r] = [typed_columns[c][r] for c in 1:columns]
     end
 
     matrix_dict = Dict("name" => matrix_name, "data" => matrix, "line_count" => line_count)

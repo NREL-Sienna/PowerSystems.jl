@@ -1361,7 +1361,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
                 end
 
                 try
-                    for transformer_line = 0:4
+                    for transformer_line in 0:4
                         if transformer_line == 0
                             temp_section = section
                         else

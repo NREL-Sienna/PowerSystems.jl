@@ -79,7 +79,7 @@ end
                     mpgen.op_cost.variable[i][1],
                     atol = 0.1,
                 )
-                for i = 1:4
+                for i in 1:4
             ] == [true, true, true, true]
             #@test compare_values_without_uuids(cdmgen.op_cost, mpgen.op_cost)
         end
