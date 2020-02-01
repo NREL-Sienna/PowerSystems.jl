@@ -8,7 +8,8 @@ for main_path in main_paths
         format(file_path;
             whitespace_ops_in_indices = true,
             remove_extra_newlines = true,
-            verbose = true
+            verbose = true,
+            always_for_in = true,
             )
         end
     end
