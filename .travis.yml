@@ -11,9 +11,7 @@ julia:
 
 ## uncomment the following lines to allow failures on nightly julia
 ## (tests will run but not make your overall status red)
-allow_failures:
-  - julia: nightly
-  - os: osx
+
 
 notifications:
   email: false
@@ -26,13 +24,16 @@ notifications:
 #before_script: # homebrew for mac
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
-
 jobs:
-  include:
+  allow_failures:
+    - julia: nightly
+    - os: osx
+  fast_finish: true
     - stage: "Documentation"
-      julia: 1.2
       os: linux
+      julia: 1.2
       script:
-        - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.add(PackageSpec(path=pwd()));'
-        - julia --project=docs --color=yes -e 'include("docs/make.jl")'
+        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
+                                               Pkg.instantiate()'
+        - julia --project=docs/ docs/make.jl
       after_success: skip
