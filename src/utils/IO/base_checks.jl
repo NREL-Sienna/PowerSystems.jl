@@ -1,5 +1,5 @@
 function orderedlimits(
-    limits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing},
+    limits::Union{NamedTuple{(:min, :max), Tuple{Float64, Float64}}, Nothing},
     limitsname::String,
 )
     if isa(limits, Nothing)
@@ -16,7 +16,7 @@ end
 function getresolution(ts::TimeSeries.TimeArray)
 
     tstamps = TimeSeries.timestamp(ts)
-    timediffs = unique([tstamps[ix] - tstamps[ix - 1] for ix = 2:length(tstamps)])
+    timediffs = unique([tstamps[ix] - tstamps[ix - 1] for ix in 2:length(tstamps)])
 
     res = []
 

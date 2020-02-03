@@ -57,7 +57,7 @@ const _mp_bus_columns = [
     ("mu_vmin", Float64),
 ]
 
-const _mp_bus_name_columns = [("name", Union{String,SubString{String}})]
+const _mp_bus_name_columns = [("name", Union{String, SubString{String}})]
 
 const _mp_gen_columns = [
     ("gen_bus", Int),
@@ -170,7 +170,7 @@ const _mp_switch_columns = [
 function _parse_matpower_string(data_string::String)
     matlab_data, func_name, colnames = parse_matlab_string(data_string, extended = true)
 
-    case = Dict{String,Any}()
+    case = Dict{String, Any}()
 
     if func_name != nothing
         case["name"] = func_name
@@ -349,7 +349,7 @@ function _mp_cost_data(cost_row)
     elseif model == 2
         nr_parameters = ncost
     end
-    cost_data = Dict{String,Any}(
+    cost_data = Dict{String, Any}(
         "model" => check_type(Int, cost_row[1]),
         "startup" => check_type(Float64, cost_row[2]),
         "shutdown" => check_type(Float64, cost_row[3]),
@@ -383,7 +383,7 @@ end
 """
 Converts a Matpower dict into a PowerModels dict
 """
-function _matpower_to_powermodels!(mp_data::Dict{String,<:Any})
+function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
     pm_data = mp_data
 
     # required default values
@@ -423,7 +423,7 @@ function _matpower_to_powermodels!(mp_data::Dict{String,<:Any})
 
     for optional in ["dcline", "load", "shunt", "storage", "switch"]
         if length(pm_data[optional]) == 0
-            pm_data[optional] = Dict{String,Any}()
+            pm_data[optional] = Dict{String, Any}()
         end
     end
 
@@ -437,7 +437,7 @@ Seperates Loads and Shunts in `data` under separate "load" and "shunt" keys in t
 PowerModels data format. Includes references to originating bus via "load_bus"
 and "shunt_bus" keys, respectively.
 """
-function _split_loads_shunts!(data::Dict{String,Any})
+function _split_loads_shunts!(data::Dict{String, Any})
     data["load"] = []
     data["shunt"] = []
 
@@ -447,7 +447,7 @@ function _split_loads_shunts!(data::Dict{String,Any})
         if bus["pd"] != 0.0 || bus["qd"] != 0.0
             append!(
                 data["load"],
-                [Dict{String,Any}(
+                [Dict{String, Any}(
                     "pd" => bus["pd"],
                     "qd" => bus["qd"],
                     "load_bus" => bus["bus_i"],
@@ -462,7 +462,7 @@ function _split_loads_shunts!(data::Dict{String,Any})
         if bus["gs"] != 0.0 || bus["bs"] != 0.0
             append!(
                 data["shunt"],
-                [Dict{String,Any}(
+                [Dict{String, Any}(
                     "gs" => bus["gs"],
                     "bs" => bus["bs"],
                     "shunt_bus" => bus["bus_i"],
@@ -481,7 +481,7 @@ function _split_loads_shunts!(data::Dict{String,Any})
 end
 
 "sets all branch transformer taps to 1.0, to simplify branch models"
-function _mp2pm_branch!(data::Dict{String,Any})
+function _mp2pm_branch!(data::Dict{String, Any})
     branches = [branch for branch in data["branch"]]
     if haskey(data, "ne_branch")
         append!(branches, data["ne_branch"])
@@ -515,7 +515,7 @@ function _mp2pm_branch!(data::Dict{String,Any})
 end
 
 "adds pmin and pmax values at to and from buses"
-function _mp2pm_dcline!(data::Dict{String,Any})
+function _mp2pm_dcline!(data::Dict{String, Any})
     for dcline in data["dcline"]
         pmin = dcline["pmin"]
         pmax = dcline["pmax"]
@@ -566,7 +566,7 @@ function _mp2pm_dcline!(data::Dict{String,Any})
 end
 
 "adds dcline costs, if gen costs exist"
-function _add_dcline_costs!(data::Dict{String,Any})
+function _add_dcline_costs!(data::Dict{String, Any})
     if length(data["gencost"]) > 0 &&
        length(data["dclinecost"]) <= 0 && length(data["dcline"]) > 0
         @info("added zero cost function data for dclines")
@@ -600,7 +600,7 @@ function _add_dcline_costs!(data::Dict{String,Any})
 end
 
 "merges generator cost functions into generator data, if costs exist"
-function _merge_generator_cost_data!(data::Dict{String,Any})
+function _merge_generator_cost_data!(data::Dict{String, Any})
     if haskey(data, "gencost")
         for (i, gencost) in enumerate(data["gencost"])
             gen = data["gen"][i]
@@ -629,7 +629,7 @@ function _merge_generator_cost_data!(data::Dict{String,Any})
 end
 
 "merges bus name data into buses, if names exist"
-function _merge_bus_name_data!(data::Dict{String,Any})
+function _merge_bus_name_data!(data::Dict{String, Any})
     if haskey(data, "bus_name")
         # can assume same length is same as bus
         # this is validated during matpower parsing
@@ -646,7 +646,7 @@ function _merge_bus_name_data!(data::Dict{String,Any})
 end
 
 "merges Matpower tables based on the table extension syntax"
-function _merge_generic_data!(data::Dict{String,Any})
+function _merge_generic_data!(data::Dict{String, Any})
     mp_matrix_names = [name[5:length(name)] for name in _mp_data_names]
 
     key_to_delete = []
@@ -689,7 +689,7 @@ function _merge_generic_data!(data::Dict{String,Any})
 end
 
 "Export power network data in the matpower format"
-function export_matpower(data::Dict{String,Any})
+function export_matpower(data::Dict{String, Any})
     return sprint(export_matpower, data)
 end
 
@@ -711,7 +711,7 @@ function _check_keys(data, keys)
 end
 
 "Export power network data in the matpower format"
-function export_matpower(io::IO, data::Dict{String,Any})
+function export_matpower(io::IO, data::Dict{String, Any})
     data = deepcopy(data)
 
     #convert data to mixed unit
@@ -723,37 +723,37 @@ function export_matpower(io::IO, data::Dict{String,Any})
     standardize_cost_terms!(data)
 
     # create some useful maps and data structures
-    buses = Dict{Int,Dict}()
+    buses = Dict{Int, Dict}()
     for (idx, bus) in data["bus"]
         buses[bus["index"]] = bus
     end
-    generators = Dict{Int,Dict}()
+    generators = Dict{Int, Dict}()
     for (idx, gen) in data["gen"]
         generators[gen["index"]] = gen
     end
-    storage = Dict{Int,Dict}()
+    storage = Dict{Int, Dict}()
     for (idx, strg) in data["storage"]
         storage[strg["index"]] = strg
     end
-    branches = Dict{Int,Dict}()
+    branches = Dict{Int, Dict}()
     for (idx, branch) in data["branch"]
         branches[branch["index"]] = branch
     end
-    dclines = Dict{Int,Dict}()
+    dclines = Dict{Int, Dict}()
     for (idx, dcline) in data["dcline"]
         dclines[dcline["index"]] = dcline
     end
-    ne_branches = Dict{Int,Dict}()
+    ne_branches = Dict{Int, Dict}()
     if haskey(data, "ne_branch")
         for (idx, branch) in data["ne_branch"]
             ne_branches[branch["index"]] = branch
         end
     end
 
-    pd = Dict{Int,Float64}()
-    qd = Dict{Int,Float64}()
-    gs = Dict{Int,Float64}()
-    bs = Dict{Int,Float64}()
+    pd = Dict{Int, Float64}()
+    qd = Dict{Int, Float64}()
+    gs = Dict{Int, Float64}()
+    bs = Dict{Int, Float64}()
 
     # collect all the loads
     for (idx, bus) in sort(data["bus"])
@@ -1420,7 +1420,7 @@ end
 "Export fields of a component type"
 function _export_extra_data(
     io::IO,
-    data::Dict{String,<:Any},
+    data::Dict{String, <:Any},
     component,
     excluded_fields = Set(["index", "source_id"]);
     postfix = "",
@@ -1469,7 +1469,7 @@ function _export_extra_data(
     println(io, "mpc.", component, postfix, " = {")
 
     # sort the data
-    components = Dict{Int,Dict}()
+    components = Dict{Int, Dict}()
     for (idx, c) in data[component]
         components[c["index"]] = c
     end
@@ -1483,11 +1483,11 @@ function _export_extra_data(
 
         for field in included_fields
             print(io, "\t")
-            if isa(c[field], Union{String,SubString})
+            if isa(c[field], Union{String, SubString})
                 print(io, "'")
             end
             print(io, c[field])
-            if isa(c[field], Union{String,SubString})
+            if isa(c[field], Union{String, SubString})
                 print(io, "'")
             end
         end
@@ -1499,7 +1499,7 @@ function _export_extra_data(
 end
 
 "Export cost data"
-function _export_cost_data(io::IO, components::Dict{Int,Dict}, prefix::String)
+function _export_cost_data(io::IO, components::Dict{Int, Dict}, prefix::String)
     if length(components) <= 0
         return
     end
@@ -1533,7 +1533,7 @@ function _export_cost_data(io::IO, components::Dict{Int,Dict}, prefix::String)
                     "\t",
                     (length(gen["cost"]) / 2),
                 ),
-                for l = 1:length(gen["cost"])
+                for l in 1:length(gen["cost"])
                     print(io, "\t", gen["cost"][l])
                 end
             else
@@ -1546,7 +1546,7 @@ function _export_cost_data(io::IO, components::Dict{Int,Dict}, prefix::String)
                     "\t",
                     length(gen["cost"]),
                 ),
-                for l = 1:length(gen["cost"])
+                for l in 1:length(gen["cost"])
                     print(io, "\t", gen["cost"][l])
                 end
             end

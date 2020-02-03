@@ -6,7 +6,7 @@
 Initializes a `bus` of id `id` with default values given in the PSS(R)E
 specification.
 """
-function _init_bus!(bus::Dict{String,Any}, id::Int)
+function _init_bus!(bus::Dict{String, Any}, id::Int)
     bus["bus_i"] = id
     bus["bus_type"] = 1
     bus["area"] = 1
@@ -70,7 +70,7 @@ modified names for the starbus, and "I", "J", "K" and "CKT" come from the
 originating transformer, in the PSS(R)E transformer specification.
 """
 function _create_starbus_from_transformer(pm_data::Dict, transformer::Dict)::Dict
-    starbus = Dict{String,Any}()
+    starbus = Dict{String, Any}()
 
     # transformer starbus ids will be one order of magnitude larger than highest real bus id
     base = convert(Int, 10^ceil(log10(abs(_find_max_bus_id(pm_data)))))
@@ -131,7 +131,7 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["branch"] = []
     if haskey(pti_data, "BRANCH")
         for (i, branch) in enumerate(pti_data["BRANCH"])
-            sub_data = Dict{String,Any}()
+            sub_data = Dict{String, Any}()
 
             sub_data["f_bus"] = pop!(branch, "I")
             sub_data["t_bus"] = pop!(branch, "J")
@@ -184,7 +184,7 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["gen"] = []
     if haskey(pti_data, "GENERATOR")
         for gen in pti_data["GENERATOR"]
-            sub_data = Dict{String,Any}()
+            sub_data = Dict{String, Any}()
 
             sub_data["gen_bus"] = pop!(gen, "I")
             sub_data["gen_status"] = pop!(gen, "STAT")
@@ -224,7 +224,7 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["bus"] = []
     if haskey(pti_data, "BUS")
         for bus in pti_data["BUS"]
-            sub_data = Dict{String,Any}()
+            sub_data = Dict{String, Any}()
 
             sub_data["bus_i"] = bus["I"]
             sub_data["bus_type"] = pop!(bus, "IDE")
@@ -258,7 +258,7 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["load"] = []
     if haskey(pti_data, "LOAD")
         for load in pti_data["LOAD"]
-            sub_data = Dict{String,Any}()
+            sub_data = Dict{String, Any}()
 
             sub_data["load_bus"] = pop!(load, "I")
             sub_data["pd"] = pop!(load, "PL")
@@ -288,7 +288,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     if haskey(pti_data, "FIXED SHUNT")
         for shunt in pti_data["FIXED SHUNT"]
-            sub_data = Dict{String,Any}()
+            sub_data = Dict{String, Any}()
 
             sub_data["shunt_bus"] = pop!(shunt, "I")
             sub_data["gs"] = pop!(shunt, "GL")
@@ -309,7 +309,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         @info("Switched shunt converted to fixed shunt, with default value gs=0.0")
 
         for shunt in pti_data["SWITCHED SHUNT"]
-            sub_data = Dict{String,Any}()
+            sub_data = Dict{String, Any}()
 
             sub_data["shunt_bus"] = pop!(shunt, "I")
             sub_data["gs"] = 0.0
@@ -343,7 +343,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     if haskey(pti_data, "TRANSFORMER")
         for transformer in pti_data["TRANSFORMER"]
             if transformer["K"] == 0  # Two-winding Transformers
-                sub_data = Dict{String,Any}()
+                sub_data = Dict{String, Any}()
 
                 sub_data["f_bus"] = transformer["I"]
                 sub_data["t_bus"] = transformer["J"]
@@ -523,7 +523,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     [Zr_p, Zr_s, Zr_t],
                     [Zx_p, Zx_s, Zx_t],
                 ))
-                    sub_data = Dict{String,Any}()
+                    sub_data = Dict{String, Any}()
 
                     sub_data["f_bus"] = bus_id
                     sub_data["t_bus"] = starbus["bus_i"]
@@ -645,7 +645,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     if haskey(pti_data, "TWO-TERMINAL DC")
         for dcline in pti_data["TWO-TERMINAL DC"]
             @info("Two-Terminal DC lines are supported via a simple *lossless* dc line model approximated by two generators.")
-            sub_data = Dict{String,Any}()
+            sub_data = Dict{String, Any}()
 
             # Unit conversions?
             power_demand = dcline["MDC"] == 1 ? abs(dcline["SETVL"]) :
@@ -717,7 +717,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             # PowerWorld conversion from PTI to matpower seems to create two
             # artificial generators from a VSC, but it is not clear to me how
             # the value of "pg" is determined and adds shunt to the DC-side bus.
-            sub_data = Dict{String,Any}()
+            sub_data = Dict{String, Any}()
 
             # VSC intended to be one or bi-directional?
             sub_data["f_bus"] = pop!(dcside, "IBUS")
@@ -792,7 +792,7 @@ into a format suitable for use internally in PowerModels. Imports all remaining
 data from the PTI file if `import_all` is true (Default: false).
 """
 function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = true)::Dict
-    pm_data = Dict{String,Any}()
+    pm_data = Dict{String, Any}()
 
     rev = pop!(pti_data["CASE IDENTIFICATION"][1], "REV")
 
@@ -836,7 +836,7 @@ function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = tru
     for (k, v) in pm_data
         if isa(v, Array)
             #println("updating $(k)")
-            dict = Dict{String,Any}()
+            dict = Dict{String, Any}()
             for item in v
                 @assert("index" in keys(item))
                 dict[string(item["index"])] = item

@@ -1,12 +1,12 @@
 abstract type InverterComponent <: DynamicComponent end
 
 mutable struct DynamicInverter{
-    C<:Converter,
-    O<:OuterControl,
-    VC<:VSControl,
-    DC<:DCSource,
-    P<:FrequencyEstimator,
-    F<:Filter,
+    C <: Converter,
+    O <: OuterControl,
+    VC <: VSControl,
+    DC <: DCSource,
+    P <: FrequencyEstimator,
+    F <: Filter,
 } <: DynamicInjection
     number::Int64
     name::String
@@ -24,7 +24,7 @@ mutable struct DynamicInverter{
     filter::F #add MVAbase here
     n_states::Int64
     states::Vector{Symbol}
-    ext::Dict{String,Any}
+    ext::Dict{String, Any}
     function DynamicInverter(
         number::Int64,
         name::String,
@@ -41,12 +41,12 @@ mutable struct DynamicInverter{
         freq_estimator::P,
         filter::F,
     ) where {
-        C<:Converter,
-        O<:OuterControl,
-        VC<:VSControl,
-        DC<:DCSource,
-        P<:FrequencyEstimator,
-        F<:Filter,
+        C <: Converter,
+        O <: OuterControl,
+        VC <: VSControl,
+        DC <: DCSource,
+        P <: FrequencyEstimator,
+        F <: Filter,
     }
 
         n_states = (
@@ -67,7 +67,7 @@ mutable struct DynamicInverter{
             filter.states,
         )
 
-        new{C,O,VC,DC,P,F}(
+        new{C, O, VC, DC, P, F}(
             number,
             name,
             bus,
@@ -84,7 +84,7 @@ mutable struct DynamicInverter{
             filter,
             n_states,
             states,
-            Dict{String,Any}(),
+            Dict{String, Any}(),
         )
 
     end

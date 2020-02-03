@@ -1,6 +1,6 @@
 
-struct PTDF{Ax,L<:NTuple{2,Dict}} <: PowerNetworkMatrix{Float64}
-    data::Array{Float64,2}
+struct PTDF{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Float64}
+    data::Array{Float64, 2}
     axes::Ax
     lookup::L
 end
@@ -9,7 +9,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
 
     buscount = length(nodes)
     linecount = length(branches)
-    num_bus = Dict{Int32,Int32}()
+    num_bus = Dict{Int32, Int32}()
 
     for (ix, b) in enumerate(nodes)
         num_bus[get_number(b)] = ix
@@ -82,7 +82,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
 
     elseif length(slack_position) == 0
         @warn("Slack bus not identified in the Bus/Nodes list, can't build PTDF")
-        S = Array{Float64,2}(undef, linecount, buscount)
+        S = Array{Float64, 2}(undef, linecount, buscount)
     end
 
     return S, A

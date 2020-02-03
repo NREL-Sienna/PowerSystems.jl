@@ -1,5 +1,5 @@
 
-function are_type_and_fields_in_output(obj::T) where {T<:Component}
+function are_type_and_fields_in_output(obj::T) where {T <: Component}
     match = true
     normal = repr(obj)
     io = IOBuffer()

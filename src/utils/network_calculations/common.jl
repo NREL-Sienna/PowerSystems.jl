@@ -1,5 +1,5 @@
 
-abstract type PowerNetworkMatrix{T} <: AbstractArray{T,2} end
+abstract type PowerNetworkMatrix{T} <: AbstractArray{T, 2} end
 
 #  The container code for PowerNetworkMatrix is based in JuMP's Container in order to
 #  remove the limitations of AxisArrays and the doubts about long term maintenance
@@ -9,7 +9,7 @@ abstract type PowerNetworkMatrix{T} <: AbstractArray{T,2} end
 #  License, v. 2.0.
 
 function _make_ax_ref(ax::Vector)
-    ref = Dict{eltype(ax),Int}()
+    ref = Dict{eltype(ax), Int}()
     for (ix, el) in enumerate(ax)
         if haskey(ref, el)
             @error("Repeated index element $el. Index sets must have unique elements.")
@@ -98,12 +98,12 @@ Base.IndexStyle(::Type{PowerNetworkMatrix}) = IndexAnyCartesian()
 # Keys #
 ########
 
-struct PowerNetworkMatrixKey{T<:Tuple}
+struct PowerNetworkMatrixKey{T <: Tuple}
     I::T
 end
 Base.getindex(k::PowerNetworkMatrixKey, args...) = getindex(k.I, args...)
 
-struct PowerNetworkMatrixKeys{T<:Tuple}
+struct PowerNetworkMatrixKeys{T <: Tuple}
     product_iter::Base.Iterators.ProductIterator{T}
 end
 Base.length(iter::PowerNetworkMatrixKeys) = length(iter.product_iter)
@@ -158,7 +158,7 @@ end
 _summary(io::IO, A::PowerNetworkMatrix) = println(io, "PowerNetworkMatrix")
 
 function Base.summary(
-    io::IOContext{Base.GenericIOBuffer{Array{UInt8,1}}},
+    io::IOContext{Base.GenericIOBuffer{Array{UInt8, 1}}},
     ::PowerNetworkMatrix,
 )
     println(io, "PowerNetworkMatrix")
@@ -190,12 +190,12 @@ function Base.show_nd(
     for I in CartesianIndices(tailinds)
         idxs = I.I
         if limit
-            for i = 1:nd
+            for i in 1:nd
                 ii = idxs[i]
                 ind = tailinds[i]
                 if length(ind) > 10
                     if ii == ind[4] && all(d -> idxs[d] == first(tailinds[d]), 1:(i - 1))
-                        for j = (i + 1):nd
+                        for j in (i + 1):nd
                             szj = size(a.data, j + 2)
                             indj = tailinds[j]
                             if szj > 10 && first(indj) + 2 < idxs[j] <= last(indj) - 3
@@ -214,7 +214,7 @@ function Base.show_nd(
         end
         if label_slices
             print(io, "[:, :, ")
-            for i = 1:(nd - 1)
+            for i in 1:(nd - 1)
                 show(io, a.axes[i + 2][idxs[i]])
                 print(io, ", ")
             end
@@ -236,5 +236,5 @@ function Base.show(io::IO, array::PowerNetworkMatrix)
 end
 
 Base.to_index(b::Bus) = get_number(b)
-Base.to_index(b::T) where {T<:ACBranch} = get_name(b)
+Base.to_index(b::T) where {T <: ACBranch} = get_name(b)
 Base.to_index(ix::Component...) = to_index.(ix)

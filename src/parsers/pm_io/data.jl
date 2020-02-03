@@ -1,7 +1,7 @@
 # tools for working with a PowerModels data dict structure
 
 ""
-function calc_branch_t(branch::Dict{String,<:Any})
+function calc_branch_t(branch::Dict{String, <:Any})
     tap_ratio = branch["tap"]
     angle_shift = branch["shift"]
 
@@ -12,14 +12,14 @@ function calc_branch_t(branch::Dict{String,<:Any})
 end
 
 ""
-function calc_branch_y(branch::Dict{String,<:Any})
+function calc_branch_y(branch::Dict{String, <:Any})
     y = LinearAlgebra.pinv(branch["br_r"] + im * branch["br_x"])
     g, b = real(y), imag(y)
     return g, b
 end
 
 ""
-function calc_theta_delta_bounds(data::Dict{String,<:Any})
+function calc_theta_delta_bounds(data::Dict{String, <:Any})
     bus_count = length(data["bus"])
     branches = [branch for branch in values(data["branch"])]
     if haskey(data, "ne_branch")
@@ -68,7 +68,7 @@ function calc_theta_delta_bounds(data::Dict{String,<:Any})
 end
 
 ""
-function calc_max_cost_index(data::Dict{String,Any})
+function calc_max_cost_index(data::Dict{String, Any})
     if ismultinetwork(data) # ismultinetwork is in im_io/data.jl
         max_index = 0
         for (i, nw_data) in data["nw"]
@@ -82,7 +82,7 @@ function calc_max_cost_index(data::Dict{String,Any})
 end
 
 ""
-function _calc_max_cost_index(data::Dict{String,<:Any})
+function _calc_max_cost_index(data::Dict{String, <:Any})
     max_index = 0
 
     for (i, gen) in data["gen"]
@@ -256,7 +256,7 @@ achieved by building application specific methods of building multinetwork
 with minimal data replication.
 """
 function replicate(
-    sn_data::Dict{String,<:Any},
+    sn_data::Dict{String, <:Any},
     count::Int;
     global_keys::Set{String} = Set{String}(),
 )
@@ -265,14 +265,14 @@ function replicate(
 end
 
 ""
-function _apply_func!(data::Dict{String,<:Any}, key::String, func)
+function _apply_func!(data::Dict{String, <:Any}, key::String, func)
     if haskey(data, key)
         data[key] = func(data[key]) # multiconductor not supported in PowerSystems
     end
 end
 
 "Transforms network data into per-unit"
-function make_per_unit!(data::Dict{String,<:Any})
+function make_per_unit!(data::Dict{String, <:Any})
     if !haskey(data, "per_unit") || data["per_unit"] == false
         data["per_unit"] = true
         mva_base = data["baseMVA"]
@@ -287,7 +287,7 @@ function make_per_unit!(data::Dict{String,<:Any})
 end
 
 ""
-function _make_per_unit!(data::Dict{String,<:Any}, mva_base::Real)
+function _make_per_unit!(data::Dict{String, <:Any}, mva_base::Real)
     # to be consistent with matpower's opf.flow_lim= 'I' with current magnitude
     # limit defined in MVA at 1 p.u. voltage
     ka_base = mva_base
@@ -411,7 +411,7 @@ function _make_per_unit!(data::Dict{String,<:Any}, mva_base::Real)
 end
 
 "Transforms network data into mixed-units (inverse of per-unit)"
-function make_mixed_units!(data::Dict{String,<:Any})
+function make_mixed_units!(data::Dict{String, <:Any})
     if haskey(data, "per_unit") && data["per_unit"] == true
         data["per_unit"] = false
         mva_base = data["baseMVA"]
@@ -426,7 +426,7 @@ function make_mixed_units!(data::Dict{String,<:Any})
 end
 
 ""
-function _make_mixed_units!(data::Dict{String,<:Any}, mva_base::Real)
+function _make_mixed_units!(data::Dict{String, <:Any}, mva_base::Real)
     # to be consistent with matpower's opf.flow_lim= 'I' with current magnitude
     # limit defined in MVA at 1 p.u. voltage
     ka_base = mva_base
@@ -550,10 +550,10 @@ function _make_mixed_units!(data::Dict{String,<:Any}, mva_base::Real)
 end
 
 ""
-function _rescale_cost_model!(comp::Dict{String,<:Any}, scale::Real)
+function _rescale_cost_model!(comp::Dict{String, <:Any}, scale::Real)
     if "model" in keys(comp) && "cost" in keys(comp)
         if comp["model"] == 1
-            for i = 1:2:length(comp["cost"])
+            for i in 1:2:length(comp["cost"])
                 comp["cost"][i] = comp["cost"][i] / scale
             end
         elseif comp["model"] == 2
@@ -568,12 +568,12 @@ function _rescale_cost_model!(comp::Dict{String,<:Any}, scale::Real)
 end
 
 "computes the generator cost from given network data"
-function calc_gen_cost(data::Dict{String,<:Any})
+function calc_gen_cost(data::Dict{String, <:Any})
     @assert("per_unit" in keys(data) && data["per_unit"])
     @assert(!haskey(data, "conductors"))
 
     if ismultinetwork(data)
-        nw_costs = Dict{String,Any}()
+        nw_costs = Dict{String, Any}()
         for (i, nw_data) in data["nw"]
             nw_costs[i] = _calc_gen_cost(nw_data)
         end
@@ -583,7 +583,7 @@ function calc_gen_cost(data::Dict{String,<:Any})
     end
 end
 
-function _calc_gen_cost(data::Dict{String,<:Any})
+function _calc_gen_cost(data::Dict{String, <:Any})
     cost = 0.0
     for (i, gen) in data["gen"]
         if gen["gen_status"] == 1
@@ -605,12 +605,12 @@ function _calc_gen_cost(data::Dict{String,<:Any})
 end
 
 "computes the dcline cost from given network data"
-function calc_dcline_cost(data::Dict{String,<:Any})
+function calc_dcline_cost(data::Dict{String, <:Any})
     @assert("per_unit" in keys(data) && data["per_unit"])
     @assert(!haskey(data, "conductors"))
 
     if ismultinetwork(data)
-        nw_costs = Dict{String,Any}()
+        nw_costs = Dict{String, Any}()
         for (i, nw_data) in data["nw"]
             nw_costs[i] = _calc_dcline_cost(nw_data)
         end
@@ -620,7 +620,7 @@ function calc_dcline_cost(data::Dict{String,<:Any})
     end
 end
 
-function _calc_dcline_cost(data::Dict{String,<:Any})
+function _calc_dcline_cost(data::Dict{String, <:Any})
     cost = 0.0
     for (i, dcline) in data["dcline"]
         if dcline["br_status"] == 1
@@ -657,12 +657,12 @@ end
 """
 compute lines in m and b from from pwl cost models
 """
-function _calc_comp_lines(component::Dict{String,<:Any})
+function _calc_comp_lines(component::Dict{String, <:Any})
     @assert component["model"] == 1
     points = component["cost"]
 
     line_data = []
-    for i = 3:2:length(points)
+    for i in 3:2:length(points)
         x1 = points[i - 2]
         y1 = points[i - 1]
         x2 = points[i - 0]
@@ -674,7 +674,7 @@ function _calc_comp_lines(component::Dict{String,<:Any})
         push!(line_data, (slope = m, intercept = b))
     end
 
-    for i = 2:length(line_data)
+    for i in 2:length(line_data)
         if line_data[i - 1].slope > line_data[i].slope
             @info "non-convex pwl function found in points $(component["cost"])\nlines: $(line_data)" maxlog =
                 PS_MAX_LOG
@@ -684,7 +684,7 @@ function _calc_comp_lines(component::Dict{String,<:Any})
     return line_data
 end
 
-function _calc_cost_pwl(component::Dict{String,<:Any}, setpoint_id)
+function _calc_cost_pwl(component::Dict{String, <:Any}, setpoint_id)
     comp_lines = _calc_comp_lines(component)
 
     setpoint = component[setpoint_id]
@@ -696,7 +696,7 @@ function _calc_cost_pwl(component::Dict{String,<:Any}, setpoint_id)
     return cost
 end
 
-function _calc_cost_polynomial(component::Dict{String,<:Any}, setpoint_id)
+function _calc_cost_polynomial(component::Dict{String, <:Any}, setpoint_id)
     cost_terms_rev = reverse(component["cost"])
 
     setpoint = component[setpoint_id]
@@ -719,16 +719,16 @@ function _calc_cost_polynomial(component::Dict{String,<:Any}, setpoint_id)
 end
 
 "assumes a vaild ac solution is included in the data and computes the branch flow values"
-function calc_branch_flow_ac(data::Dict{String,<:Any})
+function calc_branch_flow_ac(data::Dict{String, <:Any})
     @assert("per_unit" in keys(data) && data["per_unit"])
     @assert(!haskey(data, "conductors"))
 
     if ismultinetwork(data)
-        nws = Dict{String,Any}()
+        nws = Dict{String, Any}()
         for (i, nw_data) in data["nw"]
             nws[i] = _calc_branch_flow_ac(nw_data)
         end
-        return Dict{String,Any}(
+        return Dict{String, Any}(
             "nw" => nws,
             "per_unit" => data["per_unit"],
             "baseMVA" => data["baseMVA"],
@@ -742,11 +742,11 @@ function calc_branch_flow_ac(data::Dict{String,<:Any})
 end
 
 "helper function for calc_branch_flow_ac"
-function _calc_branch_flow_ac(data::Dict{String,<:Any})
+function _calc_branch_flow_ac(data::Dict{String, <:Any})
     vm = Dict(bus["index"] => bus["vm"] for (i, bus) in data["bus"])
     va = Dict(bus["index"] => bus["va"] for (i, bus) in data["bus"])
 
-    flows = Dict{String,Any}()
+    flows = Dict{String, Any}()
     for (i, branch) in data["branch"]
         if branch["br_status"] != 0
             f_bus = branch["f_bus"]
@@ -794,20 +794,20 @@ function _calc_branch_flow_ac(data::Dict{String,<:Any})
         flows[i] = Dict("pf" => p_fr, "qf" => q_fr, "pt" => p_to, "qt" => q_to)
     end
 
-    return Dict{String,Any}("branch" => flows)
+    return Dict{String, Any}("branch" => flows)
 end
 
 "assumes a vaild dc solution is included in the data and computes the branch flow values"
-function calc_branch_flow_dc(data::Dict{String,<:Any})
+function calc_branch_flow_dc(data::Dict{String, <:Any})
     @assert("per_unit" in keys(data) && data["per_unit"])
     @assert(!haskey(data, "conductors"))
 
     if ismultinetwork(data)
-        nws = Dict{String,Any}()
+        nws = Dict{String, Any}()
         for (i, nw_data) in data["nw"]
             nws[i] = _calc_branch_flow_dc(nw_data)
         end
-        return Dict{String,Any}(
+        return Dict{String, Any}(
             "nw" => nws,
             "per_unit" => data["per_unit"],
             "baseMVA" => data["baseMVA"],
@@ -821,11 +821,11 @@ function calc_branch_flow_dc(data::Dict{String,<:Any})
 end
 
 "helper function for calc_branch_flow_dc"
-function _calc_branch_flow_dc(data::Dict{String,<:Any})
+function _calc_branch_flow_dc(data::Dict{String, <:Any})
     vm = Dict(bus["index"] => bus["vm"] for (i, bus) in data["bus"])
     va = Dict(bus["index"] => bus["va"] for (i, bus) in data["bus"])
 
-    flows = Dict{String,Any}()
+    flows = Dict{String, Any}()
     for (i, branch) in data["branch"]
         if branch["br_status"] != 0
             f_bus = branch["f_bus"]
@@ -841,20 +841,20 @@ function _calc_branch_flow_dc(data::Dict{String,<:Any})
         flows[i] = Dict("pf" => p_fr, "qf" => NaN, "pt" => -p_fr, "qt" => NaN)
     end
 
-    return Dict{String,Any}("branch" => flows)
+    return Dict{String, Any}("branch" => flows)
 end
 
 "assumes a vaild solution is included in the data and computes the power balance at each bus"
-function calc_power_balance(data::Dict{String,<:Any})
+function calc_power_balance(data::Dict{String, <:Any})
     @assert("per_unit" in keys(data) && data["per_unit"]) # may not be strictly required
     @assert(!haskey(data, "conductors"))
 
     if ismultinetwork(data)
-        nws = Dict{String,Any}()
+        nws = Dict{String, Any}()
         for (i, nw_data) in data["nw"]
             nws[i] = _calc_power_balance(nw_data)
         end
-        return Dict{String,Any}(
+        return Dict{String, Any}(
             "nw" => nws,
             "per_unit" => data["per_unit"],
             "baseMVA" => data["baseMVA"],
@@ -868,8 +868,8 @@ function calc_power_balance(data::Dict{String,<:Any})
 end
 
 "helper function for calc_power_balance"
-function _calc_power_balance(data::Dict{String,<:Any})
-    bus_values = Dict(bus["index"] => Dict{String,Float64}() for (i, bus) in data["bus"])
+function _calc_power_balance(data::Dict{String, <:Any})
+    bus_values = Dict(bus["index"] => Dict{String, Float64}() for (i, bus) in data["bus"])
     for (i, bus) in data["bus"]
         bvals = bus_values[bus["index"]]
         bvals["vm"] = bus["vm"]
@@ -970,7 +970,7 @@ function _calc_power_balance(data::Dict{String,<:Any})
         end
     end
 
-    deltas = Dict{String,Any}()
+    deltas = Dict{String, Any}()
     for (i, bus) in data["bus"]
         if bus["bus_type"] != 4
             bvals = bus_values[bus["index"]]
@@ -991,11 +991,11 @@ function _calc_power_balance(data::Dict{String,<:Any})
         deltas[i] = Dict("p_delta" => p_delta, "q_delta" => q_delta)
     end
 
-    return Dict{String,Any}("bus" => deltas)
+    return Dict{String, Any}("bus" => deltas)
 end
 
 ""
-function check_conductors(data::Dict{String,<:Any})
+function check_conductors(data::Dict{String, <:Any})
     if ismultinetwork(data)
         for (i, nw_data) in data["nw"]
             _check_conductors(nw_data)
@@ -1006,14 +1006,14 @@ function check_conductors(data::Dict{String,<:Any})
 end
 
 ""
-function _check_conductors(data::Dict{String,<:Any})
+function _check_conductors(data::Dict{String, <:Any})
     if haskey(data, "conductors") && data["conductors"] < 1
         error("conductor values must be positive integers, given $(data["conductors"])")
     end
 end
 
 "checks that voltage angle differences are within 90 deg., if not tightens"
-function correct_voltage_angle_differences!(data::Dict{String,<:Any}, default_pad = 1.0472)
+function correct_voltage_angle_differences!(data::Dict{String, <:Any}, default_pad = 1.0472)
     if ismultinetwork(data)
         error("check_voltage_angle_differences does not yet support multinetwork data")
     end
@@ -1023,7 +1023,7 @@ function correct_voltage_angle_differences!(data::Dict{String,<:Any}, default_pa
 
     modified = Set{Int}()
 
-    for c = 1:get(data, "conductors", 1)
+    for c in 1:get(data, "conductors", 1)
         cnd_str = haskey(data, "conductors") ? ", conductor $(c)" : ""
         for (i, branch) in data["branch"]
             angmin = branch["angmin"][c]
@@ -1070,7 +1070,7 @@ function correct_voltage_angle_differences!(data::Dict{String,<:Any}, default_pa
 end
 
 "checks that each branch has a reasonable thermal rating-a, if not computes one"
-function correct_thermal_limits!(data::Dict{String,<:Any})
+function correct_thermal_limits!(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("correct_thermal_limits! does not yet support multinetwork data")
     end
@@ -1094,7 +1094,7 @@ function correct_thermal_limits!(data::Dict{String,<:Any})
             end
         end
 
-        for c = 1:get(data, "conductors", 1)
+        for c in 1:get(data, "conductors", 1)
             cnd_str = haskey(data, "conductors") ? ", conductor $(c)" : ""
             if branch["rate_a"][c] <= 0.0
                 theta_max = max(abs(branch["angmin"][c]), abs(branch["angmax"][c]))
@@ -1135,7 +1135,7 @@ function correct_thermal_limits!(data::Dict{String,<:Any})
 end
 
 "checks that each branch has a reasonable current rating-a, if not computes one"
-function correct_current_limits!(data::Dict{String,<:Any})
+function correct_current_limits!(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("correct_current_limits! does not yet support multinetwork data")
     end
@@ -1159,7 +1159,7 @@ function correct_current_limits!(data::Dict{String,<:Any})
             end
         end
 
-        for c = 1:get(data, "conductors", 1)
+        for c in 1:get(data, "conductors", 1)
             cnd_str = haskey(data, "conductors") ? ", conductor $(c)" : ""
             if branch["c_rating_a"][c] <= 0.0
                 theta_max = max(abs(branch["angmin"][c]), abs(branch["angmax"][c]))
@@ -1202,7 +1202,7 @@ function correct_current_limits!(data::Dict{String,<:Any})
 end
 
 "checks that all parallel branches have the same orientation"
-function correct_branch_directions!(data::Dict{String,<:Any})
+function correct_branch_directions!(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("correct_branch_directions! does not yet support multinetwork data")
     end
@@ -1241,7 +1241,7 @@ function correct_branch_directions!(data::Dict{String,<:Any})
 end
 
 "checks that all branches connect two distinct buses"
-function check_branch_loops(data::Dict{String,<:Any})
+function check_branch_loops(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_branch_loops does not yet support multinetwork data")
     end
@@ -1254,7 +1254,7 @@ function check_branch_loops(data::Dict{String,<:Any})
 end
 
 "checks that all buses are unique and other components link to valid buses"
-function check_connectivity(data::Dict{String,<:Any})
+function check_connectivity(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_connectivity does not yet support multinetwork data")
     end
@@ -1320,7 +1320,7 @@ function check_connectivity(data::Dict{String,<:Any})
 end
 
 "checks that active components are not connected to inactive buses, otherwise prints warnings"
-function check_status(data::Dict{String,<:Any})
+function check_status(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_status does not yet support multinetwork data")
     end
@@ -1373,12 +1373,12 @@ function check_status(data::Dict{String,<:Any})
 end
 
 "checks that contains at least one refrence bus"
-function check_reference_bus(data::Dict{String,<:Any})
+function check_reference_bus(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_reference_bus does not yet support multinetwork data")
     end
 
-    ref_buses = Dict{String,Any}()
+    ref_buses = Dict{String, Any}()
     for (k, v) in data["bus"]
         if v["bus_type"] == 3
             ref_buses[k] = v
@@ -1420,7 +1420,7 @@ checks that each branch has a reasonable transformer parameters
 
 this is important because setting tap == 0.0 leads to NaN computations, which are hard to debug
 """
-function correct_transformer_parameters!(data::Dict{String,<:Any})
+function correct_transformer_parameters!(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_transformer_parameters does not yet support multinetwork data")
     end
@@ -1439,7 +1439,7 @@ function correct_transformer_parameters!(data::Dict{String,<:Any})
             end
             push!(modified, branch["index"])
         else
-            for c = 1:get(data, "conductors", 1)
+            for c in 1:get(data, "conductors", 1)
                 cnd_str = haskey(data, "conductors") ? " on conductor $(c)" : ""
                 if branch["tap"][c] <= 0.0
                     @info("branch found with non-positive tap value of $(branch["tap"][c]), setting a tap to 1.0$(cnd_str)")
@@ -1469,7 +1469,7 @@ end
 """
 checks that each storage unit has a reasonable parameters
 """
-function check_storage_parameters(data::Dict{String,Any})
+function check_storage_parameters(data::Dict{String, Any})
     if ismultinetwork(data)
         error("check_storage_parameters does not yet support multinetwork data")
     end
@@ -1533,7 +1533,7 @@ end
 """
 checks that each switch has a reasonable parameters
 """
-function check_switch_parameters(data::Dict{String,<:Any})
+function check_switch_parameters(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_switch_parameters does not yet support multinetwork data")
     end
@@ -1556,7 +1556,7 @@ function check_switch_parameters(data::Dict{String,<:Any})
 end
 
 "checks bus types are consistent with generator connections, if not, fixes them"
-function correct_bus_types!(data::Dict{String,<:Any})
+function correct_bus_types!(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_bus_types does not yet support multinetwork data")
     end
@@ -1597,7 +1597,7 @@ function correct_bus_types!(data::Dict{String,<:Any})
 end
 
 "checks that parameters for dc lines are reasonable"
-function correct_dcline_limits!(data::Dict{String,Any})
+function correct_dcline_limits!(data::Dict{String, Any})
     if ismultinetwork(data)
         error("check_dcline_limits does not yet support multinetwork data")
     end
@@ -1607,7 +1607,7 @@ function correct_dcline_limits!(data::Dict{String,Any})
 
     modified = Set{Int}()
 
-    for c = 1:get(data, "conductors", 1)
+    for c in 1:get(data, "conductors", 1)
         cnd_str = haskey(data, "conductors") ? ", conductor $(c)" : ""
         for (i, dcline) in data["dcline"]
             if dcline["loss0"][c] < 0.0
@@ -1672,12 +1672,12 @@ function correct_dcline_limits!(data::Dict{String,Any})
 end
 
 "throws warnings if generator and dc line voltage setpoints are not consistent with the bus voltage setpoint"
-function check_voltage_setpoints(data::Dict{String,<:Any})
+function check_voltage_setpoints(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_voltage_setpoints does not yet support multinetwork data")
     end
 
-    for c = 1:get(data, "conductors", 1)
+    for c in 1:get(data, "conductors", 1)
         cnd_str = haskey(data, "conductors") ? "conductor $(c) " : ""
         for (i, gen) in data["gen"]
             bus_id = gen["gen_bus"]
@@ -1707,7 +1707,7 @@ function check_voltage_setpoints(data::Dict{String,<:Any})
 end
 
 "throws warnings if cost functions are malformed"
-function correct_cost_functions!(data::Dict{String,<:Any})
+function correct_cost_functions!(data::Dict{String, <:Any})
     if ismultinetwork(data)
         error("check_cost_functions does not yet support multinetwork data")
     end
@@ -1745,7 +1745,7 @@ function _correct_cost_function!(id, comp, type_name)
 
             modified = _remove_pwl_cost_duplicates!(id, comp, type_name)
 
-            for i = 3:2:length(comp["cost"])
+            for i in 3:2:length(comp["cost"])
                 if comp["cost"][i - 2] >= comp["cost"][i]
                     error("non-increasing x values in pwl cost model on $(type_name) $(id)")
                 end
@@ -1753,7 +1753,7 @@ function _correct_cost_function!(id, comp, type_name)
             if "pmin" in keys(comp) && "pmax" in keys(comp)
                 pmin = sum(comp["pmin"]) # sum supports multi-conductor case
                 pmax = sum(comp["pmax"])
-                for i = 3:2:length(comp["cost"])
+                for i in 3:2:length(comp["cost"])
                     if comp["cost"][i] < pmin || comp["cost"][i] > pmax
                         @info("pwl x value $(comp["cost"][i]) is outside the bounds $(pmin)-$(pmax) on $(type_name) $(id)")
                     end
@@ -1778,7 +1778,7 @@ function _remove_pwl_cost_duplicates!(id, comp, type_name, tolerance = 1e-2)
     @assert comp["model"] == 1
 
     unique_costs = Float64[comp["cost"][1], comp["cost"][2]]
-    for i = 3:2:length(comp["cost"])
+    for i in 3:2:length(comp["cost"])
         x1 = unique_costs[end - 1]
         y1 = unique_costs[end]
         x2 = comp["cost"][i + 0]
@@ -1809,7 +1809,7 @@ function _simplify_pwl_cost!(id, comp, type_name, tolerance = 1e-2)
 
     x2, y2 = 0.0, 0.0
 
-    for i = 3:2:length(comp["cost"])
+    for i in 3:2:length(comp["cost"])
         x1 = comp["cost"][i - 2]
         y1 = comp["cost"][i - 1]
         x2 = comp["cost"][i - 0]
@@ -1840,7 +1840,7 @@ function _simplify_pwl_cost!(id, comp, type_name, tolerance = 1e-2)
 end
 
 "trims zeros from higher order cost terms"
-function simplify_cost_terms!(data::Dict{String,<:Any})
+function simplify_cost_terms!(data::Dict{String, <:Any})
     if ismultinetwork(data)
         networks = data["nw"]
     else
@@ -1855,7 +1855,7 @@ function simplify_cost_terms!(data::Dict{String,<:Any})
             for (i, gen) in network["gen"]
                 if haskey(gen, "model") && gen["model"] == 2
                     ncost = length(gen["cost"])
-                    for j = 1:ncost
+                    for j in 1:ncost
                         if gen["cost"][1] == 0.0
                             gen["cost"] = gen["cost"][2:end]
                         else
@@ -1876,7 +1876,7 @@ function simplify_cost_terms!(data::Dict{String,<:Any})
             for (i, dcline) in network["dcline"]
                 if haskey(dcline, "model") && dcline["model"] == 2
                     ncost = length(dcline["cost"])
-                    for j = 1:ncost
+                    for j in 1:ncost
                         if dcline["cost"][1] == 0.0
                             dcline["cost"] = dcline["cost"][2:end]
                         else
@@ -1898,7 +1898,7 @@ function simplify_cost_terms!(data::Dict{String,<:Any})
 end
 
 "ensures all polynomial costs functions have the same number of terms"
-function standardize_cost_terms!(data::Dict{String,<:Any}; order = -1)
+function standardize_cost_terms!(data::Dict{String, <:Any}; order = -1)
     comp_max_order = 1
 
     if ismultinetwork(data)
@@ -1912,7 +1912,7 @@ function standardize_cost_terms!(data::Dict{String,<:Any}; order = -1)
             for (i, gen) in network["gen"]
                 if haskey(gen, "model") && gen["model"] == 2
                     max_nonzero_index = 1
-                    for i = 1:length(gen["cost"])
+                    for i in 1:length(gen["cost"])
                         max_nonzero_index = i
                         if gen["cost"][i] != 0.0
                             break
@@ -1930,7 +1930,7 @@ function standardize_cost_terms!(data::Dict{String,<:Any}; order = -1)
             for (i, dcline) in network["dcline"]
                 if haskey(dcline, "model") && dcline["model"] == 2
                     max_nonzero_index = 1
-                    for i = 1:length(dcline["cost"])
+                    for i in 1:length(dcline["cost"])
                         max_nonzero_index = i
                         if dcline["cost"][i] != 0.0
                             break
@@ -1967,17 +1967,17 @@ end
 
 "ensures all polynomial costs functions have at exactly comp_order terms"
 function _standardize_cost_terms!(
-    components::Dict{String,<:Any},
+    components::Dict{String, <:Any},
     comp_order::Int,
     cost_comp_name::String,
 )
     modified = Set{Int}()
     for (i, comp) in components
         if haskey(comp, "model") && comp["model"] == 2 && length(comp["cost"]) != comp_order
-            std_cost = [0.0 for i = 1:comp_order]
+            std_cost = [0.0 for i in 1:comp_order]
             current_cost = reverse(comp["cost"])
             #println("gen cost: $(comp["cost"])")
-            for i = 1:min(comp_order, length(current_cost))
+            for i in 1:min(comp_order, length(current_cost))
                 std_cost[i] = current_cost[i]
             end
             comp["cost"] = reverse(std_cost)
@@ -2000,7 +2000,7 @@ Works on a PowerModels data dict, so that a it can be used without a GenericPowe
 
 Warning: this implementation has quadratic complexity, in the worst case
 """
-function propagate_topology_status!(data::Dict{String,<:Any})
+function propagate_topology_status!(data::Dict{String, <:Any})
     if ismultinetwork(data)
         for (i, nw_data) in data["nw"]
             _propagate_topology_status!(nw_data)
@@ -2011,7 +2011,7 @@ function propagate_topology_status!(data::Dict{String,<:Any})
 end
 
 ""
-function _propagate_topology_status!(data::Dict{String,<:Any})
+function _propagate_topology_status!(data::Dict{String, <:Any})
     buses = Dict(bus["bus_i"] => bus for (i, bus) in data["bus"])
 
     for (i, load) in data["load"]
@@ -2196,7 +2196,7 @@ end
 """
 determines the largest connected component of the network and turns everything else off
 """
-function select_largest_component(data::Dict{String,Any})
+function select_largest_component(data::Dict{String, Any})
     if ismultinetwork(data)
         for (i, nw_data) in data["nw"]
             _select_largest_component(nw_data)
@@ -2207,7 +2207,7 @@ function select_largest_component(data::Dict{String,Any})
 end
 
 ""
-function _select_largest_component!(data::Dict{String,<:Any})
+function _select_largest_component!(data::Dict{String, <:Any})
     ccs = calc_connected_components(data)
     @info "found $(length(ccs)) components" maxlog = PS_MAX_LOG
 
@@ -2230,7 +2230,7 @@ end
 """
 checks that each connected components has a reference bus, if not, adds one
 """
-function check_reference_buses(data::Dict{String,Any})
+function check_reference_buses(data::Dict{String, Any})
     if ismultinetwork(data)
         for (i, nw_data) in data["nw"]
             _correct_reference_buses!(nw_data)
@@ -2241,7 +2241,7 @@ function check_reference_buses(data::Dict{String,Any})
 end
 
 ""
-function _correct_reference_buses!(data::Dict{String,<:Any})
+function _correct_reference_buses!(data::Dict{String, <:Any})
     bus_lookup = Dict(bus["bus_i"] => bus for (i, bus) in data["bus"])
     bus_gen = bus_gen_lookup(data["gen"], data["bus"])
 
@@ -2296,7 +2296,7 @@ function correct_component_refrence_bus!(component_bus_ids, bus_lookup, componen
 end
 
 "builds a lookup list of what generators are connected to a given bus"
-function bus_gen_lookup(gen_data::Dict{String,<:Any}, bus_data::Dict{String,<:Any})
+function bus_gen_lookup(gen_data::Dict{String, <:Any}, bus_data::Dict{String, <:Any})
     bus_gen = Dict(bus["bus_i"] => [] for (i, bus) in bus_data)
     for (i, gen) in gen_data
         push!(bus_gen[gen["gen_bus"]], gen)
@@ -2305,7 +2305,7 @@ function bus_gen_lookup(gen_data::Dict{String,<:Any}, bus_data::Dict{String,<:An
 end
 
 "builds a lookup list of what loads are connected to a given bus"
-function bus_load_lookup(load_data::Dict{String,<:Any}, bus_data::Dict{String,<:Any})
+function bus_load_lookup(load_data::Dict{String, <:Any}, bus_data::Dict{String, <:Any})
     bus_load = Dict(bus["bus_i"] => [] for (i, bus) in bus_data)
     for (i, load) in load_data
         push!(bus_load[load["load_bus"]], load)
@@ -2314,7 +2314,7 @@ function bus_load_lookup(load_data::Dict{String,<:Any}, bus_data::Dict{String,<:
 end
 
 "builds a lookup list of what shunts are connected to a given bus"
-function bus_shunt_lookup(shunt_data::Dict{String,<:Any}, bus_data::Dict{String,<:Any})
+function bus_shunt_lookup(shunt_data::Dict{String, <:Any}, bus_data::Dict{String, <:Any})
     bus_shunt = Dict(bus["bus_i"] => [] for (i, bus) in bus_data)
     for (i, shunt) in shunt_data
         push!(bus_shunt[shunt["shunt_bus"]], shunt)
@@ -2323,7 +2323,10 @@ function bus_shunt_lookup(shunt_data::Dict{String,<:Any}, bus_data::Dict{String,
 end
 
 "builds a lookup list of what storage is connected to a given bus"
-function bus_storage_lookup(storage_data::Dict{String,<:Any}, bus_data::Dict{String,<:Any})
+function bus_storage_lookup(
+    storage_data::Dict{String, <:Any},
+    bus_data::Dict{String, <:Any},
+)
     bus_storage = Dict(bus["bus_i"] => [] for (i, bus) in bus_data)
     for (i, storage) in storage_data
         push!(bus_storage[storage["shunt_bus"]], storage)
@@ -2335,7 +2338,7 @@ end
 computes the connected components of the network graph
 returns a set of sets of bus ids, each set is a connected component
 """
-function calc_connected_components(data::Dict{String,<:Any}; edges = ["branch", "dcline"])
+function calc_connected_components(data::Dict{String, <:Any}; edges = ["branch", "dcline"])
     if ismultinetwork(data)
         error("connected_components does not yet support multinetwork data")
     end
@@ -2387,7 +2390,7 @@ end
 """
 Move gentype and genfuel fields to be subfields of gen
 """
-function move_genfuel_and_gentype!(data::Dict{String,Any})
+function move_genfuel_and_gentype!(data::Dict{String, Any})
     ngen = length(data["gen"])
 
     toplevkeys = ("genfuel", "gentype")

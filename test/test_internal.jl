@@ -22,7 +22,7 @@ function validate_uuids(obj::T) where {T}
     return result
 end
 
-function validate_uuids(obj::T) where {T<:AbstractArray}
+function validate_uuids(obj::T) where {T <: AbstractArray}
     result = true
     for elem in obj
         if !validate_uuids(elem)
@@ -33,7 +33,7 @@ function validate_uuids(obj::T) where {T<:AbstractArray}
     return result
 end
 
-function validate_uuids(obj::T) where {T<:AbstractDict}
+function validate_uuids(obj::T) where {T <: AbstractDict}
     result = true
     for elem in values(obj)
         if !validate_uuids(elem)

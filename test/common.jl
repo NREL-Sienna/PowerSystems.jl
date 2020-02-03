@@ -8,7 +8,7 @@ end
 
 """Allows comparison of structs that were created from different parsers which causes them
 to have different UUIDs."""
-function compare_values_without_uuids(x::T, y::T)::Bool where {T<:PowerSystemType}
+function compare_values_without_uuids(x::T, y::T)::Bool where {T <: PowerSystemType}
     match = true
 
     for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))

@@ -12,7 +12,7 @@ sys = PSY.pm2ps_dict(pm_data, configpath = "ACTIVSg25k_validation.json",
                     load_name_formatter = x->strip(join(x["source_id"], "_")))
 ```
 """
-function pm2ps_dict(data::Dict{String,Any}; kwargs...)
+function pm2ps_dict(data::Dict{String, Any}; kwargs...)
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
     end
@@ -43,7 +43,7 @@ end
 """
 Creates a PowerSystems.Bus from a PowerSystems bus dictionary
 """
-function make_bus(bus_dict::Dict{String,Any})
+function make_bus(bus_dict::Dict{String, Any})
     bus = Bus(
         bus_dict["number"],
         bus_dict["name"],
@@ -57,7 +57,7 @@ function make_bus(bus_dict::Dict{String,Any})
 end
 
 function make_bus(bus_name, bus_number, d, bus_types)
-    bus = make_bus(Dict{String,Any}(
+    bus = make_bus(Dict{String, Any}(
         "name" => bus_name,
         "number" => bus_number,
         "bustype" => bus_types[d["bus_type"]],
@@ -89,7 +89,7 @@ end
 
 function read_bus!(sys::System, data; kwargs...)
     @info "Reading bus data"
-    bus_number_to_bus = Dict{Int,Bus}()
+    bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusType)
     data = sort(collect(data["bus"]), by = x -> parse(Int64, x[1]))
@@ -128,7 +128,7 @@ function make_load(d, bus; kwargs...)
     )
 end
 
-function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
+function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     if !haskey(data, "load")
         @error "There are no loads in this file"
         return
@@ -156,7 +156,7 @@ function make_loadzones(d, bus_l, activepower, reactivepower; kwargs...)
     )
 end
 
-function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
+function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     if !haskey(data, "areas")
         @info "There are no Load Zones data in this file"
         return
@@ -340,7 +340,7 @@ end
 """
 Transfer generators to ps_dict according to their classification
 """
-function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
+function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading generator data"
 
     if !haskey(data, "gen")
@@ -492,7 +492,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     )
 end
 
-function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
+function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
@@ -526,7 +526,7 @@ function make_dcline(name, d, bus_f, bus_t)
     )
 end
 
-function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
+function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading DC Line data"
     if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
@@ -555,7 +555,7 @@ function make_shunt(name, d, bus)
     )
 end
 
-function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int,Bus}; kwargs...)
+function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
