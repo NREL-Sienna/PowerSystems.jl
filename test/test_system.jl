@@ -46,7 +46,7 @@
     initial_time = initial_times[1]
 
     # Get forecasts with a label and without.
-    components = collect(get_components(HydroDispatch, sys))
+    components = collect(get_components(HydroEnergyReservoir, sys))
     @test !isempty(components)
     component = components[1]
     forecast = get_forecast(Deterministic, component, initial_time, "get_rating")
