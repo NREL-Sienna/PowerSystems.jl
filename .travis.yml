@@ -23,10 +23,11 @@ notifications:
 #  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
 
 jobs:
+  fast_finish: true
   allow_failures:
     - julia: nightly
     - os: osx
-  fast_finish: true
+  include:
     - stage: "Documentation"
       os: linux
       julia: 1.2
