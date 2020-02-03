@@ -33,8 +33,8 @@ export TwoPartCost
 
 export Generator
 export HydroGen
-export HydroFix
 export HydroDispatch
+export HydroEnergyReservoir
 export TechHydro
 
 export RenewableGen
