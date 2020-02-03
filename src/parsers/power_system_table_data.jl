@@ -799,14 +799,14 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
         (up = gen.min_down_time, down = gen.min_down_time),
     )
 
-    if gen_type == HydroDispatch
+    if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
             throw(DataFormatError("Storage information must defined in storage.csv"))
         end
-        @debug("Creating $(gen.name) as HydroDispatch")
+        @debug("Creating $(gen.name) as HydroEnergyReservoir")
         storage = get_storage_by_generator(data, gen.name)
         curtailcost = 0.0
-        hydro_gen = HydroDispatch(
+        hydro_gen = HydroEnergyReservoir(
             name = gen.name,
             available = available,
             bus = bus,
@@ -818,9 +818,9 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
             inflow = storage.inflow_limit,
             initial_storage = storage.initial_storage,
         )
-    elseif gen_type == HydroFix
-        @debug("Creating $(gen.name) as HydroFix")
-        hydro_gen = HydroFix(
+    elseif gen_type == HydroDispatch
+        @debug("Creating $(gen.name) as HydroDispatch")
+        hydro_gen = HydroDispatch(
             name = gen.name,
             available = available,
             bus = bus,
