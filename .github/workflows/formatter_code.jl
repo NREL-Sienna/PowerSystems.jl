@@ -10,6 +10,7 @@ for main_path in main_paths
             remove_extra_newlines = true,
             verbose = true,
             always_for_in = true,
+            whitespace_typedefs = true
             )
         end
     end
