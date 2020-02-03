@@ -1,10 +1,10 @@
 """Accepts rating as a Float64 and then creates a TwoPartCost."""
-function TwoPartCost(variable_cost::T, args...) where {T<:VarCostArgs}
+function TwoPartCost(variable_cost::T, args...) where {T <: VarCostArgs}
     return TwoPartCost(VariableCost(variable_cost), args...)
 end
 
 """Accepts rating as a Float64 and then creates a ThreePartCost."""
-function ThreePartCost(variable_cost::T, args...) where {T<:VarCostArgs}
+function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
     return ThreePartCost(VariableCost(variable_cost), args...)
 end
 
@@ -51,7 +51,7 @@ function PowerLoadPF(
     name::String,
     available::Bool,
     bus::Bus,
-    model::Union{Nothing,LoadModel},
+    model::Union{Nothing, LoadModel},
     activepower::Float64,
     maxactivepower::Float64,
     power_factor::Float64,
@@ -110,7 +110,7 @@ function Bus(
     voltage,
     voltagelimits,
     basevoltage;
-    ext = Dict{String,Any}(),
+    ext = Dict{String, Any}(),
 )
     return Bus(
         number,

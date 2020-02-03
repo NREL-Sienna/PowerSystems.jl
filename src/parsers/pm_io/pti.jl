@@ -562,7 +562,7 @@ function _get_pti_dtypes(field_name::AbstractString)::Array
         ("XAMULT", Float64),
     ]
 
-    dtypes = Dict{String,Array}(
+    dtypes = Dict{String, Array}(
         "BUS" => bus_dtypes,
         "LOAD" => load_dtypes,
         "FIXED SHUNT" => fixed_shunt_dtypes,
@@ -627,7 +627,7 @@ function _get_pti_default(
     component::Dict;
     sub_field = nothing,
 )
-    case_identification = Dict{String,Any}(
+    case_identification = Dict{String, Any}(
         "IC" => 0,
         "SBASE" => 100.0,
         "REV" => 33,
@@ -636,7 +636,7 @@ function _get_pti_default(
         "BASFRQ" => 60,
     )
 
-    bus = Dict{String,Any}(
+    bus = Dict{String, Any}(
         "BASKV" => 0.0,
         "IDE" => 1,
         "AREA" => 1,
@@ -651,7 +651,7 @@ function _get_pti_default(
         "NAME" => "            ",
     )
 
-    load = Dict{String,Any}(
+    load = Dict{String, Any}(
         "ID" => 1,
         "STATUS" => 1,
         "PL" => 0.0,
@@ -688,9 +688,9 @@ function _get_pti_default(
         ),
     )
 
-    fixed_shunt = Dict{String,Any}("ID" => 1, "STATUS" => 1, "GL" => 0.0, "BL" => 0.0)
+    fixed_shunt = Dict{String, Any}("ID" => 1, "STATUS" => 1, "GL" => 0.0, "BL" => 0.0)
 
-    generator = Dict{String,Any}(
+    generator = Dict{String, Any}(
         "ID" => 1,
         "PG" => 0.0,
         "QG" => 0.0,
@@ -727,7 +727,7 @@ function _get_pti_default(
         "WPF" => 1.0,
     )
 
-    branch = Dict{String,Any}(
+    branch = Dict{String, Any}(
         "CKT" => 1,
         "B" => 0.0,
         "RATEA" => 0.0,
@@ -757,7 +757,7 @@ function _get_pti_default(
         "F4" => 1.0,
     )
 
-    transformer = Dict{String,Any}(
+    transformer = Dict{String, Any}(
         "K" => 0,
         "CKT" => 1,
         "CW" => 1,
@@ -872,14 +872,14 @@ function _get_pti_default(
         "CNXA3" => 0.0,
     )
 
-    area_interchange = Dict{String,Any}(
+    area_interchange = Dict{String, Any}(
         "ISW" => 0,
         "PDES" => 0.0,
         "PTOL" => 10.0,
         "ARNAME" => "            ",
     )
 
-    two_terminal_dc = Dict{String,Any}(
+    two_terminal_dc = Dict{String, Any}(
         "MDC" => 0,
         "VCMOD" => 0.0,
         "RCOMP" => 0.0,
@@ -910,7 +910,7 @@ function _get_pti_default(
         "XCAPI" => 0.0,
     )
 
-    vsc_dc = Dict{String,Any}(
+    vsc_dc = Dict{String, Any}(
         "MDC" => 1,
         "O1" => Expr(
             :call,
@@ -927,7 +927,7 @@ function _get_pti_default(
         "F2" => 1.0,
         "F3" => 1.0,
         "F4" => 1.0,
-        "CONVERTER BUSES" => Dict{String,Any}(
+        "CONVERTER BUSES" => Dict{String, Any}(
             "MODE" => 1,
             "ACSET" => 1.0,
             "ALOSS" => 1.0,
@@ -943,7 +943,7 @@ function _get_pti_default(
         ),
     )
 
-    impedance_correction = Dict{String,Any}(
+    impedance_correction = Dict{String, Any}(
         "T1" => 0.0,
         "T2" => 0.0,
         "T3" => 0.0,
@@ -968,11 +968,11 @@ function _get_pti_default(
         "F11" => 0.0,
     )
 
-    multi_term_dc = Dict{String,Any}(
+    multi_term_dc = Dict{String, Any}(
         "MDC" => 0,
         "VCMOD" => 0.0,
         "VCONVN" => 0,
-        "CONV" => Dict{String,Any}(
+        "CONV" => Dict{String, Any}(
             "TR" => 1.0,
             "TAP" => 1.0,
             "TPMX" => 1.5,
@@ -982,7 +982,7 @@ function _get_pti_default(
             "MARG" => 0.0,
             "CNVCOD" => 1,
         ),
-        "DCBS" => Dict{String,Any}(
+        "DCBS" => Dict{String, Any}(
             "IB" => 0.0,
             "AREA" => 1,
             "ZONE" => 1,
@@ -991,18 +991,18 @@ function _get_pti_default(
             "RGRND" => 0.0,
             "OWNER" => 1,
         ),
-        "DCLN" => Dict{String,Any}("DCCKT" => 1, "MET" => 1, "LDC" => 0.0),
+        "DCLN" => Dict{String, Any}("DCCKT" => 1, "MET" => 1, "LDC" => 0.0),
     )
 
-    multi_section = Dict{String,Any}("ID" => "&1", "MET" => 1)
+    multi_section = Dict{String, Any}("ID" => "&1", "MET" => 1)
 
-    zone = Dict{String,Any}("ZONAME" => "            ")
+    zone = Dict{String, Any}("ZONAME" => "            ")
 
-    interarea = Dict{String,Any}("TRID" => 1, "PTRAN" => 0.0)
+    interarea = Dict{String, Any}("TRID" => 1, "PTRAN" => 0.0)
 
-    owner = Dict{String,Any}("OWNAME" => "            ")
+    owner = Dict{String, Any}("OWNAME" => "            ")
 
-    facts = Dict{String,Any}(
+    facts = Dict{String, Any}(
         "J" => 0,
         "MODE" => 1,
         "PDES" => 0.0,
@@ -1024,7 +1024,7 @@ function _get_pti_default(
         "MNAME" => "",
     )
 
-    switched_shunt = Dict{String,Any}(
+    switched_shunt = Dict{String, Any}(
         "MODSW" => 1,
         "ADJM" => 0,
         "STAT" => 1,
@@ -1052,7 +1052,7 @@ function _get_pti_default(
         "B8" => 0.0,
     )
 
-    gne_device = Dict{String,Any}(
+    gne_device = Dict{String, Any}(
         "NTERM" => 1,
         "NREAL" => 0,
         "NINTG" => 0,
@@ -1072,7 +1072,7 @@ function _get_pti_default(
         "CHAR" => "1",
     )
 
-    induction_machine = Dict{String,Any}(
+    induction_machine = Dict{String, Any}(
         "ID" => 1,
         "STAT" => 1,
         "SCODE" => 1,
@@ -1128,7 +1128,7 @@ function _get_pti_default(
         "XAMULT" => 1,
     )
 
-    defaults = Dict{String,Dict}(
+    defaults = Dict{String, Dict}(
         "BUS" => bus,
         "LOAD" => load,
         "FIXED SHUNT" => fixed_shunt,
@@ -1271,10 +1271,10 @@ function _parse_pti_data(data_io::IO, sections::Array)
     skip_sublines = 0
     subsection = ""
 
-    pti_data = Dict{String,Array{Dict}}()
+    pti_data = Dict{String, Array{Dict}}()
 
     section = popfirst!(sections)
-    section_data = Dict{String,Any}()
+    section_data = Dict{String, Any}()
 
     for (line_number, line) in enumerate(data_lines)
         @debug "$line_number: $line"
@@ -1303,7 +1303,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
         else
             if line_number == 4
                 section = popfirst!(sections)
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
             end
 
             if skip_lines > 0
@@ -1322,7 +1322,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
                     "GNE DEVICE",
                 ]
             )
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
                 try
                     _parse_line_element!(section_data, elements, section)
                 catch message
@@ -1349,7 +1349,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
                 end
 
             elseif section == "TRANSFORMER"
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
                 if parse(Int64, _get_line_elements(line)[1][3]) == 0 # two winding transformer
                     winding = "TWO-WINDING"
                     skip_lines = 3
@@ -1383,7 +1383,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
 
             elseif section == "VOLTAGE SOURCE CONVERTER"
                 if length(_get_line_elements(line)[1]) == 11
-                    section_data = Dict{String,Any}()
+                    section_data = Dict{String, Any}()
                     try
                         _parse_line_element!(section_data, elements, section)
                     catch message
@@ -1396,7 +1396,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
                     skip_sublines -= 1
 
                     (elements, comment) = _get_line_elements(line)
-                    subsection_data = Dict{String,Any}()
+                    subsection_data = Dict{String, Any}()
 
                     for (field, dtype) in _get_pti_dtypes("$section SUBLINES")
                         element = popfirst!(elements)
@@ -1423,7 +1423,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
                 end
 
             elseif section == "TWO-TERMINAL DC"
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
                 if length(_get_line_elements(line)[1]) == 12
                     (elements, comment) = _get_line_elements(join(
                         data_lines[line_number:(line_number + 2)],
@@ -1440,7 +1440,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
 
             elseif section == "MULTI-TERMINAL DC"
                 if skip_sublines == 0
-                    section_data = Dict{String,Any}()
+                    section_data = Dict{String, Any}()
                     try
                         _parse_line_element!(section_data, elements, section)
                     catch message
@@ -1465,7 +1465,7 @@ function _parse_pti_data(data_io::IO, sections::Array)
                 if skip_sublines > 0
                     skip_sublines -= 1
 
-                    subsection_data = Dict{String,Any}()
+                    subsection_data = Dict{String, Any}()
 
                     try
                         _parse_line_element!(

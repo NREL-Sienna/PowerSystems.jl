@@ -1,5 +1,10 @@
-mutable struct DynamicGenerator{M<:Machine,S<:Shaft,A<:AVR,TG<:TurbineGov,P<:PSS} <:
-               DynamicInjection
+mutable struct DynamicGenerator{
+    M <: Machine,
+    S <: Shaft,
+    A <: AVR,
+    TG <: TurbineGov,
+    P <: PSS,
+} <: DynamicInjection
     number::Int64
     name::String
     bus::Bus
@@ -14,7 +19,7 @@ mutable struct DynamicGenerator{M<:Machine,S<:Shaft,A<:AVR,TG<:TurbineGov,P<:PSS
     pss::P
     n_states::Int64
     states::Vector{Symbol}
-    ext::Dict{String,Any}
+    ext::Dict{String, Any}
     function DynamicGenerator(
         number::Int64,
         name::String,
@@ -28,14 +33,14 @@ mutable struct DynamicGenerator{M<:Machine,S<:Shaft,A<:AVR,TG<:TurbineGov,P<:PSS
         avr::A,
         tg::TG,
         pss::P,
-    ) where {M<:Machine,S<:Shaft,A<:AVR,TG<:TurbineGov,P<:PSS}
+    ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
 
         n_states =
             (machine.n_states + shaft.n_states + avr.n_states + tg.n_states + pss.n_states)
 
         states = vcat(machine.states, shaft.states, avr.states, tg.states, pss.states)
 
-        new{M,S,A,TG,P}(
+        new{M, S, A, TG, P}(
             number,
             name,
             bus,
@@ -50,7 +55,7 @@ mutable struct DynamicGenerator{M<:Machine,S<:Shaft,A<:AVR,TG<:TurbineGov,P<:PSS
             pss,
             n_states,
             states,
-            Dict{String,Any}(),
+            Dict{String, Any}(),
         )
     end
 end

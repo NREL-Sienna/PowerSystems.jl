@@ -1,13 +1,13 @@
-struct Ybus{Ax,L<:NTuple{2,Dict}} <: PowerNetworkMatrix{ComplexF64}
-    data::SparseArrays.SparseMatrixCSC{ComplexF64,Int64}
+struct Ybus{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{ComplexF64}
+    data::SparseArrays.SparseMatrixCSC{ComplexF64, Int64}
     axes::Ax
     lookup::L
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
     b::Line,
-    num_bus::Dict{Int64,Int64},
+    num_bus::Dict{Int64, Int64},
 )
 
     arc = get_arc(b)
@@ -30,9 +30,9 @@ function _ybus!(
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
     b::Transformer2W,
-    num_bus::Dict{Int64,Int64},
+    num_bus::Dict{Int64, Int64},
 )
 
     arc = get_arc(b)
@@ -53,9 +53,9 @@ function _ybus!(
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
     b::TapTransformer,
-    num_bus::Dict{Int64,Int64},
+    num_bus::Dict{Int64, Int64},
 )
 
     arc = get_arc(b)
@@ -80,9 +80,9 @@ function _ybus!(
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
     b::PhaseShiftingTransformer,
-    num_bus::Dict{Int64,Int64},
+    num_bus::Dict{Int64, Int64},
 )
 
     arc = get_arc(b)
@@ -108,9 +108,9 @@ function _ybus!(
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64,Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
     fa::FixedAdmittance,
-    num_bus::Dict{Int64,Int64},
+    num_bus::Dict{Int64, Int64},
 )
 
     bus = get_bus(fa)
@@ -125,7 +125,7 @@ end
 function _buildybus(branches, nodes, fixed_admittances)
 
     buscount = length(nodes)
-    num_bus = Dict{Int64,Int64}()
+    num_bus = Dict{Int64, Int64}()
 
     for (ix, b) in enumerate(nodes)
         num_bus[get_number(b)] = ix

@@ -1,6 +1,6 @@
 
-struct LODF{Ax,L<:NTuple{2,Dict}} <: PowerNetworkMatrix{Float64}
-    data::Array{Float64,2}
+struct LODF{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Float64}
+    data::Array{Float64, 2}
     axes::Ax
     lookup::L
 end

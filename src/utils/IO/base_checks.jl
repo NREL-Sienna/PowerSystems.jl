@@ -1,5 +1,5 @@
 function orderedlimits(
-    limits::Union{NamedTuple{(:min, :max),Tuple{Float64,Float64}},Nothing},
+    limits::Union{NamedTuple{(:min, :max), Tuple{Float64, Float64}}, Nothing},
     limitsname::String,
 )
     if isa(limits, Nothing)

@@ -16,10 +16,10 @@ end
 function parse_matlab_string(data_string::String; extended = false)
     data_lines = split(data_string, '\n')
 
-    matlab_dict = Dict{String,Any}()
+    matlab_dict = Dict{String, Any}()
     struct_name = nothing
     function_name = nothing
-    column_names = Dict{String,Any}()
+    column_names = Dict{String, Any}()
 
     last_index = length(data_lines)
     index = 1
@@ -103,7 +103,7 @@ function _type_value(value_string::AbstractString)
 end
 
 "Attempts to determine the type of an array of strings extracted from a matlab file"
-function _type_array(string_array::Vector{T}) where {T<:AbstractString}
+function _type_array(string_array::Vector{T}) where {T <: AbstractString}
     value_string = [strip(value_string) for value_string in string_array]
 
     return if any(occursin("'", value_string) for value_string in string_array)

@@ -64,11 +64,11 @@ function System(
     buses::Vector{Bus},
     generators::Vector{<:Generator},
     loads::Vector{<:ElectricLoad},
-    branches::Union{Nothing,Vector{<:Branch}},
-    storage::Union{Nothing,Vector{<:Storage}},
+    branches::Union{Nothing, Vector{<:Branch}},
+    storage::Union{Nothing, Vector{<:Storage}},
     basepower::Float64,
-    services::Union{Nothing,Vector{<:Service}},
-    annex::Union{Nothing,Dict},
+    services::Union{Nothing, Vector{<:Service}},
+    annex::Union{Nothing, Dict},
     ;
     kwargs...,
 )
@@ -270,7 +270,7 @@ generators = [gen1, gen2, gen3]
 foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
 """
-function add_component!(sys::System, component::T; kwargs...) where {T<:Component}
+function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
     check_component_addition(sys, component)
     check_for_services_on_addition(sys, component)
 
@@ -419,7 +419,7 @@ Remove all components of type T from the system.
 
 Throws ArgumentError if the type is not stored.
 """
-function remove_components!(::Type{T}, sys::System) where {T<:Component}
+function remove_components!(::Type{T}, sys::System) where {T <: Component}
     for component in IS.remove_components!(T, sys.data)
         handle_component_removal!(sys, component)
     end
@@ -430,7 +430,7 @@ Remove a component from the system by its value.
 
 Throws ArgumentError if the component is not stored.
 """
-function remove_component!(sys::System, component::T) where {T<:Component}
+function remove_component!(sys::System, component::T) where {T <: Component}
     IS.remove_component!(sys.data, component)
     handle_component_removal!(sys, component)
 end
@@ -444,7 +444,7 @@ function remove_component!(
     ::Type{T},
     sys::System,
     name::AbstractString,
-) where {T<:Component}
+) where {T <: Component}
     component = IS.remove_component!(T, sys.data, name)
     handle_component_removal!(sys, component)
 end
@@ -456,7 +456,7 @@ See [`get_components_by_name`](@ref) if the concrete type is unknown.
 
 Throws ArgumentError if T is not a concrete type.
 """
-function get_component(::Type{T}, sys::System, name::AbstractString) where {T<:Component}
+function get_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
     return IS.get_component(T, sys.data, name)
 end
 
@@ -473,7 +473,7 @@ generators = collect(PowerSystems.get_components(Generator, sys))
 
 See also: [`iterate_components`](@ref)
 """
-function get_components(::Type{T}, sys::System) where {T<:Component}
+function get_components(::Type{T}, sys::System) where {T <: Component}
     # TODO: Verify that return type annotation is not required
     return IS.get_components(T, sys.data)
 end
@@ -508,7 +508,7 @@ function get_components_by_name(
     ::Type{T},
     sys::System,
     name::AbstractString,
-) where {T<:Component}
+) where {T <: Component}
     # TODO: Verify that return type annotation is not required
     return IS.get_components_by_name(T, sys.data, name)
 end
@@ -518,7 +518,7 @@ end
 
 Return a vector of devices contributing to the service.
 """
-function get_contributing_devices(sys::System, service::T) where {T<:Service}
+function get_contributing_devices(sys::System, service::T) where {T <: Service}
     if isnothing(get_component(T, sys, get_name(service)))
         throw(ArgumentError("service $(get_name(service)) is not part of the system"))
     end
@@ -531,9 +531,9 @@ struct ServiceContributingDevices
     contributing_devices::Vector{Device}
 end
 
-const ServiceContributingDevicesKey = NamedTuple{(:type, :name),Tuple{DataType,String}}
+const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
 const ServiceContributingDevicesMapping =
-    Dict{ServiceContributingDevicesKey,ServiceContributingDevices}
+    Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
 
 """
     get_contributing_device_mapping(sys::System)
@@ -582,7 +582,7 @@ function add_forecast!(
     filename::AbstractString,
     component::Component,
     label::AbstractString,
-    scaling_factor::Union{String,Float64} = 1.0,
+    scaling_factor::Union{String, Float64} = 1.0,
 )
     return IS.add_forecast!(sys.data, filename, component, label, scaling_factor)
 end
@@ -598,7 +598,7 @@ function add_forecast!(
     ta::TimeSeries.TimeArray,
     component,
     label,
-    scaling_factor::Union{String,Float64} = 1.0,
+    scaling_factor::Union{String, Float64} = 1.0,
 )
     return IS.add_forecast!(sys.data, ta, component, label, scaling_factor)
 end
@@ -614,7 +614,7 @@ function add_forecast!(
     df::DataFrames.DataFrame,
     component,
     label,
-    scaling_factor::Union{String,Float64} = 1.0,
+    scaling_factor::Union{String, Float64} = 1.0,
 )
     return IS.add_forecast!(sys.data, df, component, label, scaling_factor)
 end
@@ -684,7 +684,7 @@ function generate_initial_times(
     sys::System,
     interval::Dates.Period,
     horizon::Int;
-    initial_time::Union{Nothing,Dates.DateTime} = nothing,
+    initial_time::Union{Nothing, Dates.DateTime} = nothing,
 )
     return IS.generate_initial_times(
         sys.data,
@@ -701,7 +701,7 @@ function generate_initial_times(
     component::IS.InfrastructureSystemsType,
     interval::Dates.Period,
     horizon::Int;
-    initial_time::Union{Nothing,Dates.DateTime} = nothing,
+    initial_time::Union{Nothing, Dates.DateTime} = nothing,
 )
     return IS.generate_initial_times(
         component,
@@ -719,7 +719,7 @@ function get_forecast(
     component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
-) where {T<:Forecast}
+) where {T <: Forecast}
     return IS.get_forecast(T, component, initial_time, label)
 end
 
@@ -732,11 +732,11 @@ function get_forecast(
     initial_time::Dates.DateTime,
     label::AbstractString,
     horizon::Int,
-) where {T<:Forecast}
+) where {T <: Forecast}
     return IS.get_forecast(T, component, initial_time, label, horizon)
 end
 
-function get_forecast_initial_times(::Type{T}, component::Component) where {T<:Forecast}
+function get_forecast_initial_times(::Type{T}, component::Component) where {T <: Forecast}
     return IS.get_forecast_initial_times(T, component)
 end
 
@@ -744,7 +744,7 @@ function get_forecast_initial_times(
     ::Type{T},
     component::Component,
     label::AbstractString,
-) where {T<:Forecast}
+) where {T <: Forecast}
     return IS.get_forecast_initial_times(T, component, label)
 end
 
@@ -752,7 +752,7 @@ function get_forecast_labels(
     ::Type{T},
     component::Component,
     initial_time::Dates.DateTime,
-) where {T<:Forecast}
+) where {T <: Forecast}
     return IS.get_forecast_labels(T, component, initial_time)
 end
 
@@ -850,7 +850,7 @@ function remove_forecast!(
     component::Component,
     initial_time::Dates.DateTime,
     label::String,
-) where {T<:Forecast}
+) where {T <: Forecast}
     return IS.remove_forecast!(T, sys.data, component, initial_time, label)
 end
 
@@ -880,7 +880,7 @@ function JSON2.write(sys::System)
     return JSON2.write(encode_for_json(sys))
 end
 
-function encode_for_json(sys::T) where {T<:System}
+function encode_for_json(sys::T) where {T <: System}
     fields = fieldnames(T)
     final_fields = Vector{Symbol}()
     vals = []
@@ -911,7 +911,7 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
 
     # Maintain a lookup of UUID to component because some component types encode
     # composed types as UUIDs instead of actual types.
-    component_cache = Dict{Base.UUID,Component}()
+    component_cache = Dict{Base.UUID, Component}()
 
     components_as_uuids = [Bus]
     for component_as_uuid in components_as_uuids
@@ -957,18 +957,18 @@ function _get_component_type(component_type::Symbol)
     return c_type
 end
 
-function JSON2.write(io::IO, component::T) where {T<:Component}
+function JSON2.write(io::IO, component::T) where {T <: Component}
     return JSON2.write(io, encode_for_json(component))
 end
 
-function JSON2.write(component::T) where {T<:Component}
+function JSON2.write(component::T) where {T <: Component}
     return JSON2.write(encode_for_json(component))
 end
 
 """
 Encode composed buses as UUIDs.
 """
-function encode_for_json(component::T) where {T<:Component}
+function encode_for_json(component::T) where {T <: Component}
     fields = fieldnames(T)
     vals = []
 
@@ -988,7 +988,7 @@ function IS.convert_type(
     ::Type{T},
     data::NamedTuple,
     component_cache::Dict,
-) where {T<:Component}
+) where {T <: Component}
     @debug T data
     values = []
     for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))

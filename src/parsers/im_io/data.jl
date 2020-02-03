@@ -1,7 +1,7 @@
 export update_data!
 
 "recursively applies new_data to data, overwriting information"
-function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
+function update_data!(data::Dict{String, <:Any}, new_data::Dict{String, <:Any})
     if haskey(data, "per_unit") && haskey(new_data, "per_unit")
         if data["per_unit"] != new_data["per_unit"]
             error("update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
@@ -13,7 +13,7 @@ function update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
 end
 
 "recursive call of _update_data"
-function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
+function _update_data!(data::Dict{String, <:Any}, new_data::Dict{String, <:Any})
     for (key, new_v) in new_data
         if haskey(data, key)
             v = data[key]
@@ -29,11 +29,11 @@ function _update_data!(data::Dict{String,<:Any}, new_data::Dict{String,<:Any})
 end
 
 "checks if a given network data is a multinetwork"
-ismultinetwork(data::Dict{String,<:Any}) =
+ismultinetwork(data::Dict{String, <:Any}) =
     (haskey(data, "multinetwork") && data["multinetwork"] == true)
 
 "Transforms a single network into a multinetwork with several deepcopies of the original network"
-function im_replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{String})
+function im_replicate(sn_data::Dict{String, <:Any}, count::Int, global_keys::Set{String})
     @assert count > 0
     if ismultinetwork(sn_data)
         error("replicate can only be used on single networks")
@@ -41,7 +41,7 @@ function im_replicate(sn_data::Dict{String,<:Any}, count::Int, global_keys::Set{
 
     name = get(sn_data, "name", "anonymous")
 
-    mn_data = Dict{String,Any}("nw" => Dict{String,Any}())
+    mn_data = Dict{String, Any}("nw" => Dict{String, Any}())
 
     mn_data["multinetwork"] = true
 

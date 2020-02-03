@@ -53,28 +53,28 @@ end
 @testset "Test extracting struct info from validation_descriptor vector" begin
     data = [
         Dict(
-            "fields" => Dict{Any,Any}[
+            "fields" => Dict{Any, Any}[
                 Dict(
                     "name" => "curtailpenalty",
-                    "valid_range" => Dict{Any,Any}("max" => nothing, "min" => 0.0),
+                    "valid_range" => Dict{Any, Any}("max" => nothing, "min" => 0.0),
                 ),
                 Dict(
                     "name" => "variablecost",
-                    "valid_range" => Dict{Any,Any}("max" => nothing, "min" => 0.0),
+                    "valid_range" => Dict{Any, Any}("max" => nothing, "min" => 0.0),
                 ),
                 Dict("name" => "internal"),
             ],
             "struct_name" => "EconHydro",
         ),
         Dict(
-            "fields" => Dict{Any,Any}[
+            "fields" => Dict{Any, Any}[
                 Dict(
                     "name" => "curtailpenalty",
-                    "valid_range" => Dict{Any,Any}("max" => nothing, "min" => 0.0),
+                    "valid_range" => Dict{Any, Any}("max" => nothing, "min" => 0.0),
                 ),
                 Dict(
                     "name" => "variablecost",
-                    "valid_range" => Dict{Any,Any}("max" => nothing, "min" => 0.0),
+                    "valid_range" => Dict{Any, Any}("max" => nothing, "min" => 0.0),
                 ),
                 Dict("name" => "internal"),
             ],
@@ -83,15 +83,15 @@ end
     ]
     struct_name = "EconHydro"
     descriptor = IS.get_config_descriptor(data, struct_name)
-    @test descriptor isa Dict{String,Any}
+    @test descriptor isa Dict{String, Any}
     @test haskey(descriptor, "struct_name")
     @test haskey(descriptor, "fields")
     @test descriptor["struct_name"] == struct_name
 end
 
 @testset "Test extracting field info from struct descriptor dictionary" begin
-    config = Dict{Any,Any}(
-        "fields" => Dict{Any,Any}[
+    config = Dict{Any, Any}(
+        "fields" => Dict{Any, Any}[
             Dict("name" => "name", "data_type" => "String"),
             Dict("name" => "available", "data_type" => "Bool"),
             Dict("name" => "bus", "data_type" => "Bus"),
@@ -103,25 +103,25 @@ end
     )
     field_name = "econ"
     field_descriptor = IS.get_field_descriptor(config, field_name)
-    @test field_descriptor isa Dict{Any,Any}
+    @test field_descriptor isa Dict{Any, Any}
     @test haskey(field_descriptor, "name")
     @test field_descriptor["name"] == field_name
 end
 
 @testset "Test retrieving validation action" begin
-    warn_descriptor = Dict{Any,Any}(
+    warn_descriptor = Dict{Any, Any}(
         "name" => "ramplimits",
-        "valid_range" => Dict{Any,Any}("max" => 5, "min" => 0),
+        "valid_range" => Dict{Any, Any}("max" => 5, "min" => 0),
         "validation_action" => "warn",
     )
-    error_descriptor = Dict{Any,Any}(
+    error_descriptor = Dict{Any, Any}(
         "name" => "ramplimits",
-        "valid_range" => Dict{Any,Any}("max" => 5, "min" => 0),
+        "valid_range" => Dict{Any, Any}("max" => 5, "min" => 0),
         "validation_action" => "error",
     )
-    typo_descriptor = Dict{Any,Any}(
+    typo_descriptor = Dict{Any, Any}(
         "name" => "ramplimits",
-        "valid_range" => Dict{Any,Any}("max" => 5, "min" => 0),
+        "valid_range" => Dict{Any, Any}("max" => 5, "min" => 0),
         "validation_action" => "asdfasdfsd",
     )
     @test IS.get_validation_action(warn_descriptor) == IS.validation_warning

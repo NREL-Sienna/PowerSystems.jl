@@ -4,23 +4,23 @@ const POWER_SYSTEM_DESCRIPTOR_FILE =
 
 struct PowerSystemTableData
     basepower::Float64
-    category_to_df::Dict{InputCategory,DataFrames.DataFrame}
-    timeseries_metadata_file::Union{String,Nothing}
+    category_to_df::Dict{InputCategory, DataFrames.DataFrame}
+    timeseries_metadata_file::Union{String, Nothing}
     directory::String
     user_descriptors::Dict
     descriptors::Dict
-    generator_mapping::Dict{NamedTuple,DataType}
+    generator_mapping::Dict{NamedTuple, DataType}
 end
 
 function PowerSystemTableData(
-    data::Dict{String,Any},
+    data::Dict{String, Any},
     directory::String,
-    user_descriptors::Union{String,Dict},
-    descriptors::Union{String,Dict},
-    generator_mapping::Union{String,Dict};
+    user_descriptors::Union{String, Dict},
+    descriptors::Union{String, Dict},
+    generator_mapping::Union{String, Dict};
     timeseries_metadata_file = joinpath(directory, "timeseries_pointers"),
 )
-    category_to_df = Dict{InputCategory,DataFrames.DataFrame}()
+    category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
     categories = [
         ("branch", BRANCH::InputCategory),
         ("bus", BUS::InputCategory),
@@ -115,7 +115,7 @@ function PowerSystemTableData(
     files = readdir(directory)
     REGEX_DEVICE_TYPE = r"(.*?)\.csv"
     REGEX_IS_FOLDER = r"^[A-Za-z]+$"
-    data = Dict{String,Any}()
+    data = Dict{String, Any}()
 
     if length(files) == 0
         error("No files in the folder")
@@ -128,7 +128,7 @@ function PowerSystemTableData(
         try
             if match(REGEX_IS_FOLDER, d_file) != nothing
                 @info "Parsing csv files in $d_file ..."
-                d_file_data = Dict{String,Any}()
+                d_file_data = Dict{String, Any}()
                 for file in readdir(joinpath(directory, d_file))
                     if match(REGEX_DEVICE_TYPE, file) != nothing
                         @info "Parsing csv data in $file ..."
@@ -910,7 +910,7 @@ function make_storage(data::PowerSystemTableData, gen, bus)
     return battery
 end
 
-const CATEGORY_STR_TO_COMPONENT = Dict{String,DataType}(
+const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
     "Bus" => Bus,
     "Generator" => Generator,
     "Reserve" => Service,
@@ -931,7 +931,7 @@ function _read_config_file(file_path::String)
     return open(file_path) do io
         data = YAML.load(io)
         # Replace keys with enums.
-        config_data = Dict{InputCategory,Vector}()
+        config_data = Dict{InputCategory, Vector}()
         for (key, val) in data
             # TODO: need to change user_descriptors.yaml to use reserve instead.
             if key == "reserves"
@@ -948,7 +948,7 @@ struct _FieldInfo
     name::String
     custom_name::Symbol
     needs_per_unit_conversion::Bool
-    unit_conversion::Union{NamedTuple{(:From, :To),Tuple{String,String}},Nothing}
+    unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
     # TODO unit, value ranges and options
 end
 
@@ -963,8 +963,8 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
     # Cache whether PowerSystems uses a column's values as system-per-unit.
     # The user's descriptors indicate that the raw data is already system-per-unit or not.
-    per_unit = Dict{String,Bool}()
-    unit = Dict{String,Union{String,Nothing}}()
+    per_unit = Dict{String, Bool}()
+    unit = Dict{String, Union{String, Nothing}}()
     descriptor_names = Vector{String}()
     for descriptor in data.descriptors[category]
         per_unit[descriptor["name"]] = get(descriptor, "system_per_unit", false)

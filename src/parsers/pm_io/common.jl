@@ -41,11 +41,11 @@ end
 Runs various data quality checks on a PowerModels data dictionary.
 Applies modifications in some cases.  Reports modified component ids.
 """
-function correct_network_data!(data::Dict{String,<:Any})
-    mod_bus = Dict{Symbol,Set{Int}}()
-    mod_gen = Dict{Symbol,Set{Int}}()
-    mod_branch = Dict{Symbol,Set{Int}}()
-    mod_dcline = Dict{Symbol,Set{Int}}()
+function correct_network_data!(data::Dict{String, <:Any})
+    mod_bus = Dict{Symbol, Set{Int}}()
+    mod_gen = Dict{Symbol, Set{Int}}()
+    mod_branch = Dict{Symbol, Set{Int}}()
+    mod_dcline = Dict{Symbol, Set{Int}}()
 
     check_conductors(data)
     check_connectivity(data)

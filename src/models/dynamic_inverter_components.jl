@@ -20,11 +20,11 @@ VirtualInertiaQDroop(A, R)
 *  `A`::Float64 : Active power controller using virtual inertia with VSM
 *  `R`::Float64 : Reactive power controller using reactive power droop
 """
-mutable struct VirtualInertiaQdroop{A<:ActivePowerControl,R<:ReactivePowerControl} <:
+mutable struct VirtualInertiaQdroop{A <: ActivePowerControl, R <: ReactivePowerControl} <:
                OuterControl
     active_power::A
     reactive_power::R
-    ext::Dict{String,Any}
+    ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
     "power system internal reference, do not modify"
@@ -34,8 +34,8 @@ end
 function VirtualInertiaQdroop(
     active_power::A,
     reactive_power::R,
-    ext = Dict{String,Any}(),
-) where {A<:ActivePowerControl,R<:ReactivePowerControl}
+    ext = Dict{String, Any}(),
+) where {A <: ActivePowerControl, R <: ReactivePowerControl}
     VirtualInertiaQdroop(
         active_power,
         reactive_power,
@@ -46,7 +46,7 @@ function VirtualInertiaQdroop(
     )
 end
 
-function VirtualInertiaQdroop(; active_power, reactive_power, ext = Dict{String,Any}())
+function VirtualInertiaQdroop(; active_power, reactive_power, ext = Dict{String, Any}())
     VirtualInertiaQdroop(active_power, reactive_power, ext)
 end
 

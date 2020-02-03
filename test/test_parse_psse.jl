@@ -14,7 +14,7 @@
 
     # Test bad input
     pm_dict = PowerSystems.parse_file(joinpath(PSSE_RAW_DIR, files[1]))
-    pm_dict["bus"] = Dict{String,Any}()
+    pm_dict["bus"] = Dict{String, Any}()
     @test_throws PowerSystems.DataFormatError PowerSystems.pm2ps_dict(pm_dict)
 end
 
