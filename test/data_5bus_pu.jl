@@ -419,8 +419,8 @@ renewable_generators5(nodes5) = [
 ];
 
 hydro_generators5(nodes5) = [
-    HydroFix(
-        "HydroFix",
+    HydroDispatch(
+        "HydroDispatch",
         true,
         nodes5[2],
         0.0,
@@ -434,8 +434,8 @@ hydro_generators5(nodes5) = [
             nothing,
         ),
     ),
-    HydroDispatch(
-        "HydroDispatch",
+    HydroEnergyReservoir(
+        "HydroEnergyReservoir",
         true,
         nodes5[3],
         0.0,
