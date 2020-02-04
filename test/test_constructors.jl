@@ -38,10 +38,10 @@ end
     @test tThermalGen isa PowerSystems.Component
     tTechHydro = TechHydro(nothing)
     @test tTechHydro isa PowerSystemType
-    tHydroFix = HydroFix(nothing)
-    @test tHydroFix isa PowerSystems.Component
     tHydroDispatch = HydroDispatch(nothing)
     @test tHydroDispatch isa PowerSystems.Component
+    tHydroEnergyReservoir = HydroEnergyReservoir(nothing)
+    @test tHydroEnergyReservoir isa PowerSystems.Component
     tTechRenewable = TechRenewable(nothing)
     @test tTechRenewable isa PowerSystemType
     tRenewableFix = RenewableFix(nothing)

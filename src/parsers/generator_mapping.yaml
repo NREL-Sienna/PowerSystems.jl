@@ -1,10 +1,10 @@
 # Parsing code ignores type=null.
 
-HydroDispatch:
+HydroEnergyReservoir:
 - {fuel: HYDRO, type: null}
 - {fuel: HYDRO, type: HYDRO}
 
-HydroFix:
+HydroDispatch:
 - {fuel: HYDRO, type: ROR}
 
 RenewableDispatch:

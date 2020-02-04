@@ -1266,7 +1266,7 @@
         "supertype": "StaticLoad"
     },
     {
-        "struct_name": "HydroDispatch",
+        "struct_name": "HydroEnergyReservoir",
         "fields": [
             {
                 "null_value": "init",
@@ -1364,7 +1364,7 @@
         "supertype": "HydroGen"
     },
     {
-        "struct_name": "HydroFix",
+        "struct_name": "HydroDispatch",
         "fields": [
             {
                 "null_value": "init",

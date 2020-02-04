@@ -103,7 +103,7 @@ end
 
     # Test with a filename.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    component = get_component(HydroDispatch, sys, component_name)
+    component = get_component(HydroEnergyReservoir, sys, component_name)
     add_forecast!(sys, timeseries_file, component, label, 1.0)
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PSY.iterate_forecasts(sys))[1]
@@ -112,7 +112,7 @@ end
 
     # Test with TimeSeries.TimeArray.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    component = get_component(HydroDispatch, sys, component_name)
+    component = get_component(HydroEnergyReservoir, sys, component_name)
     add_forecast!(sys, timeseries, component, label, 1.0)
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PSY.iterate_forecasts(sys))[1]
@@ -120,7 +120,7 @@ end
 
     # Test with DataFrames.DataFrame.
     sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
-    component = get_component(HydroDispatch, sys, component_name)
+    component = get_component(HydroEnergyReservoir, sys, component_name)
     df = DataFrames.DataFrame(timeseries)
     add_forecast!(sys, df, component, label, 1.0)
     verify_forecasts(sys, 1, 1, 24)

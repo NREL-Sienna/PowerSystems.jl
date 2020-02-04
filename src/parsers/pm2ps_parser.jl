@@ -203,7 +203,7 @@ function make_hydro_gen(gen_name, d, bus)
 
     curtailcost = TwoPartCost(0.0, 0.0)
 
-    return HydroDispatch(
+    return HydroEnergyReservoir(
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -377,7 +377,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], genmap)
         if gen_type == ThermalStandard
             generator = make_thermal_gen(gen_name, pm_gen, bus)
-        elseif gen_type == HydroDispatch
+        elseif gen_type == HydroEnergyReservoir
             generator = make_hydro_gen(gen_name, pm_gen, bus)
         elseif gen_type == RenewableDispatch
             generator = make_renewable_dispatch(gen_name, pm_gen, bus)

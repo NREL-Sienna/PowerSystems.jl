@@ -443,8 +443,8 @@
         {
             "name": "generator_category",
             "value_options": [
-                "HydroFix",
                 "HydroDispatch",
+                "HydroEnergyReservoir",
                 "RenewableFix",
                 "RenewableDispatch",
                 "ThermalStandard"
