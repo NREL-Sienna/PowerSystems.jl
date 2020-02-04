@@ -1,5 +1,8 @@
 # PowerSystems Change Log
 
+## 
+
+- Update Hydropower structs naming
 
 ## v0.8.6
 
