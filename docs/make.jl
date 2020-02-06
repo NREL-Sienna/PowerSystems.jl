@@ -8,7 +8,10 @@ const PSYPATH = dirname(pathof(PowerSystems))
 
 makedocs(
     modules = [PowerSystems],
-    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
+    format = Documenter.HTML(
+        prettyurls = get(ENV, "CI", nothing) == "true"),
+        mathengine = Documenter.MathJax(),
+    )
     sitename = "PowerSystems.jl",
     authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",
     pages = Any[ # Compat: `Any` for 0.4 compat
