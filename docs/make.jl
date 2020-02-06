@@ -33,6 +33,5 @@ deploydocs(
     repo = "github.com/NREL/PowerSystems.jl.git",
     branch = "gh-pages",
     target = "build",
-    deps = Deps.pip("pygments", "mkdocs", "python-markdown-math"),
     make = nothing,
 )
