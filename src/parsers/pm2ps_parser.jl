@@ -315,7 +315,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
     tech = TechThermal(;
         rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
         primemover = convert(PrimeMovers, d["type"]),
-        fuel = convert(ThermalFuels, d["fuel"]),
+        fuel = convert(ThermalFuels.ThermalFuel, d["fuel"]),
         activepowerlimits = (min = d["pmin"], max = d["pmax"]),
         reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
         ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),

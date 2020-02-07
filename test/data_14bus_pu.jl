@@ -519,7 +519,7 @@ thermal_generators14(nodes14) = [
         TechThermal(
             2.324,
             PowerSystems.ST,
-            PowerSystems.COAL,
+            ThermalFuels.COAL,
             (min = 0.0, max = 3.332),
             (min = 0.0, max = 0.1),
             nothing,
@@ -536,7 +536,7 @@ thermal_generators14(nodes14) = [
         TechThermal(
             1.4,
             PowerSystems.ST,
-            PowerSystems.COAL,
+            ThermalFuels.COAL,
             (min = 0.0, max = 1.40),
             (min = -0.4, max = 0.5),
             nothing,
@@ -553,7 +553,7 @@ thermal_generators14(nodes14) = [
         TechThermal(
             1.0,
             PowerSystems.ST,
-            PowerSystems.COAL,
+            ThermalFuels.COAL,
             (min = 0.0, max = 1.0),
             (min = 0.0, max = 0.4),
             nothing,
@@ -570,7 +570,7 @@ thermal_generators14(nodes14) = [
         TechThermal(
             1.0,
             PowerSystems.ST,
-            PowerSystems.COAL,
+            ThermalFuels.COAL,
             (min = 0.0, max = 1.0),
             (min = -0.06, max = 0.24),
             nothing,
@@ -587,7 +587,7 @@ thermal_generators14(nodes14) = [
         TechThermal(
             1.0,
             PowerSystems.ST,
-            PowerSystems.COAL,
+            ThermalFuels.COAL,
             (min = 0.0, max = 1.0),
             (min = -0.06, max = 0.24),
             nothing,

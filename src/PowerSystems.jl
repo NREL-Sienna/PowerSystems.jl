@@ -134,6 +134,7 @@ export Ybus
 export LODF
 export GeneratorCostModel
 export BusType
+export ThermalFuels
 
 export Forecast
 export Deterministic

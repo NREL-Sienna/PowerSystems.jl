@@ -20,7 +20,6 @@ end
     REF
     SLACK
 end
-
 @enum LoadModel begin
     ConstantImpedance # Z
     ConstantCurrent   # I
@@ -55,7 +54,9 @@ end
 end
 
 "AER Aggregated Fuel Code From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
-@enum ThermalFuels begin
+baremodule ThermalFuels
+using Base: @enum
+@enum ThermalFuel begin
     COAL # COL    # Anthracite Coal and Bituminous Coal
     WASTE_COAL # WOC    # Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)
     DISTILLATE_FUEL_OIL # DFO # Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4
@@ -70,6 +71,7 @@ end
     WOOD_WASTE # WWW     # Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)
     GEOTHERMAL # GEO     # Geothermal
     OTHER # OTH     # Other
+end
 end
 
 PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))

@@ -222,8 +222,8 @@
             {
                 "name": "fuel",
                 "comment": "PrimeMover Fuel according to EIA 923",
-                "null_value": "OTHER::ThermalFuels",
-                "data_type": "ThermalFuels"
+                "null_value": "ThermalFuels.OTHER",
+                "data_type": "ThermalFuels.ThermalFuel"
             },
             {
                 "name": "activepowerlimits",

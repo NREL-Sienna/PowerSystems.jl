@@ -748,7 +748,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     tech = TechThermal(
         rating = rating,
         primemover = convert(PrimeMovers, gen.unit_type),
-        fuel = convert(ThermalFuels, gen.fuel),
+        fuel = convert(ThermalFuels.ThermalFuel, gen.fuel),
         activepowerlimits = active_power_limits,
         reactivepowerlimits = reactive_power_limits,
         ramplimits = (up = gen.ramp_limits, down = gen.ramp_limits),

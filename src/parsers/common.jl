@@ -1,15 +1,15 @@
 const GENERATOR_MAPPING_FILE =
     joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping.yaml")
 
-const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels))
+const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels.ThermalFuel))
 merge!(
     STRING2FUEL,
     Dict(
-        "NG" => NATURAL_GAS::ThermalFuels,
-        "NUC" => NUCLEAR::ThermalFuels,
-        "GAS" => NATURAL_GAS::ThermalFuels,
-        "OIL" => DISTILLATE_FUEL_OIL::ThermalFuels,
-        "SYNC_COND" => OTHER::ThermalFuels,
+        "NG" => ThermalFuels.NATURAL_GAS,
+        "NUC" => ThermalFuels.NUCLEAR,
+        "GAS" => ThermalFuels.NATURAL_GAS,
+        "OIL" => ThermalFuels.DISTILLATE_FUEL_OIL,
+        "SYNC_COND" => ThermalFuels.OTHER,
     ),
 )
 
@@ -115,12 +115,12 @@ function convert_units!(
     return value
 end
 
-function Base.convert(::Type{ThermalFuels}, fuel::AbstractString)
+function Base.convert(::Type{ThermalFuels.ThermalFuel}, fuel::AbstractString)
     return STRING2FUEL[uppercase(fuel)]
 end
 
-function Base.convert(::Type{ThermalFuels}, fuel::Symbol)
-    return convert(ThermalFuels, string(fuel))
+function Base.convert(::Type{ThermalFuels.ThermalFuel}, fuel::Symbol)
+    return convert(ThermalFuels.ThermalFuel, string(fuel))
 end
 
 function Base.convert(::Type{PrimeMovers}, primemover::AbstractString)
