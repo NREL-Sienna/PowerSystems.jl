@@ -8,10 +8,7 @@ const PSYPATH = dirname(pathof(PowerSystems))
 
 makedocs(
     modules = [PowerSystems],
-    format = Documenter.HTML(
-        prettyurls = get(ENV, "CI", nothing) == "true"),
-        mathengine = Documenter.MathJax(),
-    )
+    format = Documenter.HTML(mathengine = Documenter.MathJax()),
     sitename = "PowerSystems.jl",
     authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",
     pages = Any[ # Compat: `Any` for 0.4 compat
@@ -36,6 +33,5 @@ deploydocs(
     repo = "github.com/NREL/PowerSystems.jl.git",
     branch = "gh-pages",
     target = "build",
-    deps = Deps.pip("pygments", "mkdocs", "python-markdown-math"),
     make = nothing,
 )

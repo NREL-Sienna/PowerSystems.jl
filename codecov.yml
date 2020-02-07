@@ -1,0 +1,34 @@
+codecov:
+  require_ci_to_pass: yes
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+  status:
+    project:                   # measuring the overall project coverage
+      default:                 # context, you can create multiple ones with custom titles
+        enabled: yes           # must be yes|true to enable this status
+        target: auto           # specify the target coverage for each commit status
+                               #   option: "auto" (must increase from parent commit or pull request base)
+                               #   option: "X%" a static target percentage to hit
+        threshold: 5        # allowed to drop X% and still result in a "success" commit status
+        if_not_found: success  # if parent is not found report status as success, error, or failure
+        if_ci_failed: error    # if ci fails report status as success, error, or failure
+    patch:
+      default:
+        target: 70
+
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: no

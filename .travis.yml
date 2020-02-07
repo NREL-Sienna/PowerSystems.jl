@@ -1,6 +1,5 @@
 ## Documentation: http://docs.travis-ci.org/user/languages/julia/
 language: julia
-codecov: true
 os:
   - linux
   - osx
@@ -27,16 +26,6 @@ jobs:
   allow_failures:
     - julia: nightly
     - os: osx
-    - os: windows
-  include:
-    - stage: "Documentation"
-      os: linux
-      julia: 1.3
-      script:
-        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
-                                               Pkg.instantiate()'
-        - julia --project=docs/ docs/make.jl
-      after_success: skip
 after_success: julia -e '
   using Pkg;
   Pkg.add("Coverage");
