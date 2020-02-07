@@ -4,7 +4,6 @@
 #                                                                   #
 #####################################################################
 
-
 """
 A list of data file sections in the order that they appear in a PTI v33 file
 """
@@ -30,7 +29,6 @@ const _pti_sections = [
     "GNE DEVICE",
     "INDUCTION MACHINE",
 ]
-
 
 const _transaction_dtypes = [
     ("IC", Int64),
@@ -548,12 +546,11 @@ const _induction_machine_dtypes = [
     ("XAMULT", Float64),
 ]
 
-
 """
 lookup array of data types for PTI file sections given by
 `field_name`, as enumerated by PSS/E Program Operation Manual.
 """
-const _pti_dtypes = Dict{String,Array}(
+const _pti_dtypes = Dict{String, Array}(
     "BUS" => _bus_dtypes,
     "LOAD" => _load_dtypes,
     "FIXED SHUNT" => _fixed_shunt_dtypes,
@@ -586,8 +583,6 @@ const _pti_dtypes = Dict{String,Array}(
     "GNE DEVICE" => _gne_device_dtypes,
     "INDUCTION MACHINE" => _induction_machine_dtypes,
 )
-
-
 
 const _default_case_identification = Dict(
     "IC" => 0,
@@ -1005,8 +1000,6 @@ const _pti_defaults = Dict(
     "INDUCTION MACHINE" => _default_induction_machine,
 )
 
-
-
 function _correct_nothing_values!(data::Dict)
     if !haskey(data, "BUS")
         return
@@ -1111,8 +1104,6 @@ function _correct_nothing_values!(data::Dict)
     end
 end
 
-
-
 """
 This is an experimental method for parsing elements and setting defaults at the same time.
 It is not currently working but would reduce memory allocations if implemented correctly.
@@ -1123,7 +1114,7 @@ function _parse_elements(
     defaults::Dict,
     section::AbstractString,
 )
-    data = Dict{String,Any}()
+    data = Dict{String, Any}()
 
     if length(elements) > length(dtypes)
         @warn("ignoring $(length(elements) - length(dtypes)) extra values in section $section, only $(length(dtypes)) items are defined")
@@ -1137,7 +1128,7 @@ function _parse_elements(
 
         if dtype == String
             if startswith(element, "'") && endswith(element, "'")
-                data[field] = element[2:end-1]
+                data[field] = element[2:(end - 1)]
             else
                 data[field] = element
             end
@@ -1180,7 +1171,6 @@ function _parse_elements(
 
     return data
 end
-
 
 """
     _parse_line_element!(data, elements, section)
@@ -1232,8 +1222,6 @@ function _parse_line_element!(data::Dict, elements::Array, section::AbstractStri
     end
 end
 
-
-
 const _comment_split = r"(?!\B[\'][^\']*)[\/](?![^\']*[\']\B)"
 const _split_string = r",(?=(?:[^']*'[^']*')*[^']*$)"
 
@@ -1259,7 +1247,6 @@ function _get_line_elements(line::AbstractString)
     return (elements, comment)
 end
 
-
 """
     _parse_pti_data(data_string, sections)
 
@@ -1274,10 +1261,10 @@ function _parse_pti_data(data_io::IO)
     skip_sublines = 0
     subsection = ""
 
-    pti_data = Dict{String,Array{Dict}}()
+    pti_data = Dict{String, Array{Dict}}()
 
     section = popfirst!(sections)
-    section_data = Dict{String,Any}()
+    section_data = Dict{String, Any}()
 
     for (line_number, line) in enumerate(data_lines)
         (elements, comment) = _get_line_elements(line)
@@ -1304,7 +1291,7 @@ function _parse_pti_data(data_io::IO)
         else
             if line_number == 4
                 section = popfirst!(sections)
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
             end
 
             if skip_lines > 0
@@ -1323,7 +1310,7 @@ function _parse_pti_data(data_io::IO)
                     "GNE DEVICE",
                 ]
             )
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
 
                 try
                     _parse_line_element!(section_data, elements, section)
@@ -1351,7 +1338,7 @@ function _parse_pti_data(data_io::IO)
                 end
 
             elseif section == "TRANSFORMER"
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
                 if parse(Int64, _get_line_elements(line)[1][3]) == 0 # two winding transformer
                     winding = "TWO-WINDING"
                     skip_lines = 3
@@ -1363,7 +1350,7 @@ function _parse_pti_data(data_io::IO)
                 end
 
                 try
-                    for transformer_line = 0:4
+                    for transformer_line in 0:4
                         if transformer_line == 0
                             temp_section = section
                         else
@@ -1375,7 +1362,7 @@ function _parse_pti_data(data_io::IO)
                             break
                         else
                             elements =
-                                _get_line_elements(data_lines[line_number+transformer_line])[1]
+                                _get_line_elements(data_lines[line_number + transformer_line])[1]
                             _parse_line_element!(section_data, elements, temp_section)
                         end
                     end
@@ -1385,7 +1372,7 @@ function _parse_pti_data(data_io::IO)
 
             elseif section == "VOLTAGE SOURCE CONVERTER"
                 if length(_get_line_elements(line)[1]) == 11
-                    section_data = Dict{String,Any}()
+                    section_data = Dict{String, Any}()
                     try
                         _parse_line_element!(section_data, elements, section)
                     catch message
@@ -1396,7 +1383,7 @@ function _parse_pti_data(data_io::IO)
 
                 elseif skip_sublines > 0
                     skip_sublines -= 1
-                    subsection_data = Dict{String,Any}()
+                    subsection_data = Dict{String, Any}()
 
                     for (field, dtype) in _pti_dtypes["$section SUBLINES"]
                         element = popfirst!(elements)
@@ -1416,10 +1403,12 @@ function _parse_pti_data(data_io::IO)
                 end
 
             elseif section == "TWO-TERMINAL DC"
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
                 if length(_get_line_elements(line)[1]) == 12
-                    (elements, comment) =
-                        _get_line_elements(join(data_lines[line_number:line_number+2], ','))
+                    (elements, comment) = _get_line_elements(join(
+                        data_lines[line_number:(line_number + 2)],
+                        ',',
+                    ))
                     skip_lines = 2
                 end
 
@@ -1431,7 +1420,7 @@ function _parse_pti_data(data_io::IO)
 
             elseif section == "MULTI-TERMINAL DC"
                 if skip_sublines == 0
-                    section_data = Dict{String,Any}()
+                    section_data = Dict{String, Any}()
                     try
                         _parse_line_element!(section_data, elements, section)
                     catch message
@@ -1456,7 +1445,7 @@ function _parse_pti_data(data_io::IO)
                 if skip_sublines > 0
                     skip_sublines -= 1
 
-                    subsection_data = Dict{String,Any}()
+                    subsection_data = Dict{String, Any}()
                     try
                         _parse_line_element!(
                             subsection_data,
@@ -1519,7 +1508,6 @@ function _parse_pti_data(data_io::IO)
     return pti_data
 end
 
-
 """
     parse_pti(filename::String)
 
@@ -1533,7 +1521,6 @@ function parse_pti(filename::String)::Dict
 
     return pti_data
 end
-
 
 """
     parse_pti(io::IO)
@@ -1554,8 +1541,6 @@ function parse_pti(io::IO)::Dict
 
     return pti_data
 end
-
-
 
 """
     _populate_defaults!(pti_data)
