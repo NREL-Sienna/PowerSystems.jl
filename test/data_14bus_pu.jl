@@ -689,16 +689,7 @@ loads14(nodes14) = [
         0.217,
         0.127,
     ),
-    PowerLoad(
-        "Bus3",
-        true,
-        nodes14[3],
-        LoadModels.ConstantPower,
-        0.942,
-        0.19,
-        0.942,
-        0.19,
-    ),
+    PowerLoad("Bus3", true, nodes14[3], LoadModels.ConstantPower, 0.942, 0.19, 0.942, 0.19),
     PowerLoad(
         "Bus4",
         true,

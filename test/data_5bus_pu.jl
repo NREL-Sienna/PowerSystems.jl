@@ -553,36 +553,9 @@ loadbus4_ts_DA = [
 ]
 
 loads5(nodes5) = [
-    PowerLoad(
-        "Bus2",
-        true,
-        nodes5[2],
-        LoadModels.ConstantPower,
-        3.0,
-        0.9861,
-        3.0,
-        0.9861,
-    ),
-    PowerLoad(
-        "Bus3",
-        true,
-        nodes5[3],
-        LoadModels.ConstantPower,
-        3.0,
-        0.9861,
-        3.0,
-        0.9861,
-    ),
-    PowerLoad(
-        "Bus4",
-        true,
-        nodes5[4],
-        LoadModels.ConstantPower,
-        4.0,
-        1.3147,
-        4.0,
-        1.3147,
-    ),
+    PowerLoad("Bus2", true, nodes5[2], LoadModels.ConstantPower, 3.0, 0.9861, 3.0, 0.9861),
+    PowerLoad("Bus3", true, nodes5[3], LoadModels.ConstantPower, 3.0, 0.9861, 3.0, 0.9861),
+    PowerLoad("Bus4", true, nodes5[4], LoadModels.ConstantPower, 4.0, 1.3147, 4.0, 1.3147),
 ];
 
 interruptible(nodes5) = [InterruptibleLoad(
