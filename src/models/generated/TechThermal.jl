@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct TechThermal <: DeviceParameter
         rating::Float64
-        primemover::PrimeMovers
+        primemover::PrimeMovers.PrimeMover
         fuel::ThermalFuels.ThermalFuel
         activepowerlimits::Min_Max
         reactivepowerlimits::Union{Nothing, Min_Max}
@@ -17,7 +17,7 @@ Data Structure for the technical parameters of thermal generation technologies.
 
 # Arguments
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
-- `primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
+- `primemover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
 - `fuel::ThermalFuels.ThermalFuel`: PrimeMover Fuel according to EIA 923
 - `activepowerlimits::Min_Max`
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
@@ -29,7 +29,7 @@ mutable struct TechThermal <: DeviceParameter
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "PrimeMover Technology according to EIA 923"
-    primemover::PrimeMovers
+    primemover::PrimeMovers.PrimeMover
     "PrimeMover Fuel according to EIA 923"
     fuel::ThermalFuels.ThermalFuel
     activepowerlimits::Min_Max
@@ -52,7 +52,7 @@ end
 function TechThermal(::Nothing)
     TechThermal(;
         rating=0.0,
-        primemover=OT::PrimeMovers,
+        primemover=PrimeMovers.OT,
         fuel=ThermalFuels.OTHER,
         activepowerlimits=(min=0.0, max=0.0),
         reactivepowerlimits=nothing,

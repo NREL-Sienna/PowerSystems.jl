@@ -52,7 +52,7 @@ function Transfer(::Nothing)
 end
 
 """Get Transfer name."""
-get_name(value::Transfer) = value.name
+InfrastructureSystems.get_name(value::Transfer) = value.name
 """Get Transfer timeframe."""
 get_timeframe(value::Transfer) = value.timeframe
 """Get Transfer requirement."""

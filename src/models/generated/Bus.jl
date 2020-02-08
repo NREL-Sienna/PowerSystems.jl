@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
     mutable struct Bus <: Topology
         number::Int64
         name::String
-        bustype::Union{Nothing, BusType}
+        bustype::Union{Nothing, BusTypes.BusType}
         angle::Union{Nothing, Float64}
         voltage::Union{Nothing, Float64}
         voltagelimits::Union{Nothing, Min_Max}
@@ -19,7 +19,7 @@ A power-system bus.
 # Arguments
 - `number::Int64`: number associated with the bus
 - `name::String`: the name of the bus
-- `bustype::Union{Nothing, BusType}`: bus type
+- `bustype::Union{Nothing, BusTypes.BusType}`: bus type
 - `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: (-1.571, 1.571), action if invalid: error
 - `voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: voltagelimits, action if invalid: warn
 - `voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
@@ -33,7 +33,7 @@ mutable struct Bus <: Topology
     "the name of the bus"
     name::String
     "bus type"
-    bustype::Union{Nothing, BusType}
+    bustype::Union{Nothing, BusTypes.BusType}
     "angle of the bus in radians"
     angle::Union{Nothing, Float64}
     "voltage as a multiple of basevoltage"
@@ -87,7 +87,7 @@ end
 """Get Bus number."""
 get_number(value::Bus) = value.number
 """Get Bus name."""
-get_name(value::Bus) = value.name
+InfrastructureSystems.get_name(value::Bus) = value.name
 """Get Bus bustype."""
 get_bustype(value::Bus) = value.bustype
 """Get Bus angle."""

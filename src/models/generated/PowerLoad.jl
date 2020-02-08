@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::Bus
-        model::Union{Nothing, LoadModel}
+        model::Union{Nothing, LoadModels.LoadModel}
         activepower::Float64
         reactivepower::Float64
         maxactivepower::Float64
@@ -23,7 +23,7 @@ Data structure for a static power load.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `model::Union{Nothing, LoadModel}`
+- `model::Union{Nothing, LoadModels.LoadModel}`
 - `activepower::Float64`
 - `reactivepower::Float64`
 - `maxactivepower::Float64`
@@ -37,7 +37,7 @@ mutable struct PowerLoad <: StaticLoad
     name::String
     available::Bool
     bus::Bus
-    model::Union{Nothing, LoadModel}
+    model::Union{Nothing, LoadModels.LoadModel}
     activepower::Float64
     reactivepower::Float64
     maxactivepower::Float64
@@ -76,7 +76,7 @@ function PowerLoad(::Nothing)
 end
 
 """Get PowerLoad name."""
-get_name(value::PowerLoad) = value.name
+InfrastructureSystems.get_name(value::PowerLoad) = value.name
 """Get PowerLoad available."""
 get_available(value::PowerLoad) = value.available
 """Get PowerLoad bus."""

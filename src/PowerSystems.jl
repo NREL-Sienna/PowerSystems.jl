@@ -132,8 +132,11 @@ export Transfer
 export PTDF
 export Ybus
 export LODF
-export GeneratorCostModel
-export BusType
+export GeneratorCostModels
+export AngleUnits
+export BusTypes
+export LoadModels
+export PrimeMovers
 export ThermalFuels
 
 export Forecast
@@ -229,7 +232,8 @@ import InfrastructureSystems:
     get_data,
     get_horizon,
     get_initial_time,
-    get_resolution
+    get_resolution,
+    get_name
 
 const IS = InfrastructureSystems
 

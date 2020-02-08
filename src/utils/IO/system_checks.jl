@@ -16,7 +16,7 @@ end
 function slack_bus_check(buses)
     slack = -9
     for b in buses
-        if b.bustype == REF::BusType
+        if b.bustype == BusTypes.REF
             slack = b.number
             break
         end

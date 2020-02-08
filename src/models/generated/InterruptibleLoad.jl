@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::Bus
-        model::LoadModel
+        model::LoadModels.LoadModel
         activepower::Float64
         reactivepower::Float64
         maxactivepower::Float64
@@ -24,7 +24,7 @@ This file is auto-generated. Do not edit.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `model::LoadModel`
+- `model::LoadModels.LoadModel`
 - `activepower::Float64`
 - `reactivepower::Float64`
 - `maxactivepower::Float64`
@@ -39,7 +39,7 @@ mutable struct InterruptibleLoad <: ControllableLoad
     name::String
     available::Bool
     bus::Bus
-    model::LoadModel
+    model::LoadModels.LoadModel
     activepower::Float64
     reactivepower::Float64
     maxactivepower::Float64
@@ -67,7 +67,7 @@ function InterruptibleLoad(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        model=ConstantPower::LoadModel,
+        model=LoadModels.ConstantPower,
         activepower=0.0,
         reactivepower=0.0,
         maxactivepower=0.0,
@@ -80,7 +80,7 @@ function InterruptibleLoad(::Nothing)
 end
 
 """Get InterruptibleLoad name."""
-get_name(value::InterruptibleLoad) = value.name
+InfrastructureSystems.get_name(value::InterruptibleLoad) = value.name
 """Get InterruptibleLoad available."""
 get_available(value::InterruptibleLoad) = value.available
 """Get InterruptibleLoad bus."""

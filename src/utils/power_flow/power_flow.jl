@@ -68,7 +68,7 @@ function _write_pf_sol!(sys::System, nl_result)
     buses = enumerate(sort(collect(get_components(Bus, sys)), by = x -> get_number(x)))
 
     for (ix, bus) in buses
-        if bus.bustype == PowerSystems.REF
+        if bus.bustype == BusTypes.REF
             P_gen = result[2 * ix - 1]
             Q_gen = result[2 * ix]
             injection_components = get_components(Generator, sys)
@@ -76,7 +76,7 @@ function _write_pf_sol!(sys::System, nl_result)
             generator = devices[1]
             generator.activepower = P_gen
             generator.reactivepower = Q_gen
-        elseif bus.bustype == PowerSystems.PQ
+        elseif bus.bustype == BusTypes.PQ
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
             injection_components = get_components(Generator, sys)
@@ -86,7 +86,7 @@ function _write_pf_sol!(sys::System, nl_result)
                 generator.reactivepower = Q_gen
             end
             bus.angle = θ
-        elseif bus.bustype == PowerSystems.PV
+        elseif bus.bustype == BusTypes.PV
             Vm = result[2 * ix - 1]
             θ = result[2 * ix]
             bus.voltage = Vm

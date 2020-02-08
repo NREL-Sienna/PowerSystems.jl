@@ -48,7 +48,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
 
     end
 
-    slacks = [num_bus[get_number(n)] for n in nodes if get_bustype(n) == REF::BusType]
+    slacks = [num_bus[get_number(n)] for n in nodes if get_bustype(n) == BusTypes.REF]
     slack_position = slacks[1]
     B = gemm(
         'N',

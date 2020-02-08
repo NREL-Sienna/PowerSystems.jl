@@ -180,7 +180,6 @@ export get_maxactivepower
 export get_maxreactivepower
 export get_model
 export get_n_states
-export get_name
 export get_number
 export get_op_cost
 export get_outputactivepowerlimits

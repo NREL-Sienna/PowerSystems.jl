@@ -84,7 +84,7 @@ function HydroEnergyReservoir(::Nothing)
 end
 
 """Get HydroEnergyReservoir name."""
-get_name(value::HydroEnergyReservoir) = value.name
+InfrastructureSystems.get_name(value::HydroEnergyReservoir) = value.name
 """Get HydroEnergyReservoir available."""
 get_available(value::HydroEnergyReservoir) = value.available
 """Get HydroEnergyReservoir bus."""

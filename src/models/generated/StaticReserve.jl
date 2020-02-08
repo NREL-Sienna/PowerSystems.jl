@@ -49,7 +49,7 @@ function StaticReserve{T}(::Nothing) where T <: ReserveDirection
 end
 
 """Get StaticReserve name."""
-get_name(value::StaticReserve) = value.name
+InfrastructureSystems.get_name(value::StaticReserve) = value.name
 """Get StaticReserve timeframe."""
 get_timeframe(value::StaticReserve) = value.timeframe
 """Get StaticReserve requirement."""

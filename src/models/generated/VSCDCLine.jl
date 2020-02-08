@@ -84,7 +84,7 @@ function VSCDCLine(::Nothing)
 end
 
 """Get VSCDCLine name."""
-get_name(value::VSCDCLine) = value.name
+InfrastructureSystems.get_name(value::VSCDCLine) = value.name
 """Get VSCDCLine available."""
 get_available(value::VSCDCLine) = value.available
 """Get VSCDCLine activepower_flow."""

@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::Bus
-        primemover::PrimeMovers
+        primemover::PrimeMovers.PrimeMover
         energy::Float64
         capacity::Min_Max
         rating::Float64
@@ -28,7 +28,7 @@ Data structure for a generic battery
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `primemover::PrimeMovers`: PrimeMover Technology according to EIA 923
+- `primemover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
 - `energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: (0, nothing), action if invalid: error
 - `capacity::Min_Max`: Maximum and Minimum storage capacity in p.u.-hr, validation range: (0, nothing), action if invalid: error
 - `rating::Float64`
@@ -48,7 +48,7 @@ mutable struct GenericBattery <: Storage
     available::Bool
     bus::Bus
     "PrimeMover Technology according to EIA 923"
-    primemover::PrimeMovers
+    primemover::PrimeMovers.PrimeMover
     "State of Charge of the Battery p.u.-hr"
     energy::Float64
     "Maximum and Minimum storage capacity in p.u.-hr"
@@ -82,7 +82,7 @@ function GenericBattery(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        primemover=BA::PrimeMovers,
+        primemover=PrimeMovers.BA,
         energy=0.0,
         capacity=(min=0.0, max=0.0),
         rating=0.0,
@@ -99,7 +99,7 @@ function GenericBattery(::Nothing)
 end
 
 """Get GenericBattery name."""
-get_name(value::GenericBattery) = value.name
+InfrastructureSystems.get_name(value::GenericBattery) = value.name
 """Get GenericBattery available."""
 get_available(value::GenericBattery) = value.available
 """Get GenericBattery bus."""

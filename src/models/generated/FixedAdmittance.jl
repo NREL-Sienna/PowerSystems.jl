@@ -61,7 +61,7 @@ function FixedAdmittance(::Nothing)
 end
 
 """Get FixedAdmittance name."""
-get_name(value::FixedAdmittance) = value.name
+InfrastructureSystems.get_name(value::FixedAdmittance) = value.name
 """Get FixedAdmittance available."""
 get_available(value::FixedAdmittance) = value.available
 """Get FixedAdmittance bus."""

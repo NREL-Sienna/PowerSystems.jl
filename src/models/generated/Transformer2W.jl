@@ -83,7 +83,7 @@ function Transformer2W(::Nothing)
 end
 
 """Get Transformer2W name."""
-get_name(value::Transformer2W) = value.name
+InfrastructureSystems.get_name(value::Transformer2W) = value.name
 """Get Transformer2W available."""
 get_available(value::Transformer2W) = value.available
 """Get Transformer2W activepower_flow."""

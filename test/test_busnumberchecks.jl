@@ -21,7 +21,7 @@ end
     bus1 = Bus(;
         number = number,
         name = "bus100",
-        bustype = PSY.PV::BusType,
+        bustype = BusTypes.PV,
         angle = 1.0,
         voltage = 1.0,
         voltagelimits = (min = -1.0, max = 1.0),
@@ -30,7 +30,7 @@ end
     bus2 = Bus(;
         number = number,
         name = "bus101",
-        bustype = PSY.PV::BusType,
+        bustype = BusTypes.PV,
         angle = 1.0,
         voltage = 1.0,
         voltagelimits = (min = -1.0, max = 1.0),

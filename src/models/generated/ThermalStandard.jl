@@ -72,7 +72,7 @@ function ThermalStandard(::Nothing)
 end
 
 """Get ThermalStandard name."""
-get_name(value::ThermalStandard) = value.name
+InfrastructureSystems.get_name(value::ThermalStandard) = value.name
 """Get ThermalStandard available."""
 get_available(value::ThermalStandard) = value.available
 """Get ThermalStandard bus."""
