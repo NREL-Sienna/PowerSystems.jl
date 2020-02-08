@@ -1,5 +1,10 @@
 # PowerSystems Change Log
 
+## v0.10.0
+
+- Update PTI parsing code from PM and IM
+- Modify user's interface for enums
+
 ## v0.9.1
 
 - Update Struct autogeneration code
