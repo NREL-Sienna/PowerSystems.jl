@@ -70,19 +70,19 @@ function make_bus(bus_name, bus_number, d, bus_types)
 end
 
 # "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
-@enum MatpowerBusType begin
+IS.@scoped_enum MatpowerBusType begin
     MATPOWER_PQ = 1
     MATPOWER_PV = 2
     MATPOWER_REF = 3
     MATPOWER_ISOLATED = 4
 end
 
-function Base.convert(::Type{BusType}, x::MatpowerBusType)
+function Base.convert(::Type{BusTypes.BusType}, x::MatpowerBusTypes.MatpowerBusType)
     map = Dict(
-        MATPOWER_ISOLATED => ISOLATED,
-        MATPOWER_PQ => PQ,
-        MATPOWER_PV => PV,
-        MATPOWER_REF => REF,
+        MatpowerBusTypes.MATPOWER_ISOLATED => BusTypes.ISOLATED,
+        MatpowerBusTypes.MATPOWER_PQ => BusTypes.PQ,
+        MatpowerBusTypes.MATPOWER_PV => BusTypes.PV,
+        MatpowerBusTypes.MATPOWER_REF => BusTypes.REF,
     )
     return map[x]
 end
@@ -91,7 +91,7 @@ function read_bus!(sys::System, data; kwargs...)
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
 
-    bus_types = instances(MatpowerBusType)
+    bus_types = instances(MatpowerBusTypes.MatpowerBusType)
     data = sort(collect(data["bus"]), by = x -> parse(Int64, x[1]))
 
     if length(data) == 0
@@ -119,7 +119,7 @@ function make_load(d, bus; kwargs...)
     return PowerLoad(;
         name = _get_name(d),
         available = true,
-        model = ConstantPower::LoadModel,
+        model = LoadModels.ConstantPower,
         bus = bus,
         activepower = d["pd"],
         reactivepower = d["qd"],
@@ -194,7 +194,7 @@ function make_hydro_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
     tech = TechHydro(;
         rating = calculate_rating(d["pmax"], d["qmax"]),
-        primemover = convert(PrimeMovers, d["type"]),
+        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
         activepowerlimits = (min = d["pmin"], max = d["pmax"]),
         reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
         ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
@@ -220,7 +220,7 @@ end
 function make_tech_renewable(d)
     tech = TechRenewable(;
         rating = float(d["pmax"]),
-        primemover = convert(PrimeMovers, d["type"]),
+        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
         reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
         powerfactor = 1.0,
     )
@@ -269,8 +269,8 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
 """
 function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
     if haskey(d, "model")
-        model = GeneratorCostModel(d["model"])
-        if model == PIECEWISE_LINEAR::GeneratorCostModel
+        model = GeneratorCostModels.GeneratorCostModel(d["model"])
+        if model == GeneratorCostModels.PIECEWISE_LINEAR
             cost_component = d["cost"]
             power_p = [i for (ix, i) in enumerate(cost_component) if isodd(ix)]
             cost_p = [i for (ix, i) in enumerate(cost_component) if iseven(ix)]
@@ -281,7 +281,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
                     (cost[2][1] - cost[1][1]) / (cost[2][2] - cost[1][2]) * cost[1][2],
             )
             cost = [(c[1] - fixed, c[2]) for c in cost]
-        elseif model == POLYNOMIAL::GeneratorCostModel
+        elseif model == GeneratorCostModels.POLYNOMIAL
             if d["ncost"] == 0
                 cost = (0.0, 0.0)
                 fixed = 0.0
@@ -314,8 +314,8 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
 
     tech = TechThermal(;
         rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
-        primemover = convert(PrimeMovers, d["type"]),
-        fuel = convert(ThermalFuels, d["fuel"]),
+        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        fuel = convert(ThermalFuels.ThermalFuel, d["fuel"]),
         activepowerlimits = (min = d["pmin"], max = d["pmax"]),
         reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
         ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),

@@ -90,7 +90,7 @@ function PhaseShiftingTransformer(::Nothing)
 end
 
 """Get PhaseShiftingTransformer name."""
-get_name(value::PhaseShiftingTransformer) = value.name
+InfrastructureSystems.get_name(value::PhaseShiftingTransformer) = value.name
 """Get PhaseShiftingTransformer available."""
 get_available(value::PhaseShiftingTransformer) = value.available
 """Get PhaseShiftingTransformer activepower_flow."""

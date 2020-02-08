@@ -87,7 +87,7 @@ function TapTransformer(::Nothing)
 end
 
 """Get TapTransformer name."""
-get_name(value::TapTransformer) = value.name
+InfrastructureSystems.get_name(value::TapTransformer) = value.name
 """Get TapTransformer available."""
 get_available(value::TapTransformer) = value.available
 """Get TapTransformer activepower_flow."""

@@ -93,7 +93,7 @@ function MonitoredLine(::Nothing)
 end
 
 """Get MonitoredLine name."""
-get_name(value::MonitoredLine) = value.name
+InfrastructureSystems.get_name(value::MonitoredLine) = value.name
 """Get MonitoredLine available."""
 get_available(value::MonitoredLine) = value.available
 """Get MonitoredLine activepower_flow."""

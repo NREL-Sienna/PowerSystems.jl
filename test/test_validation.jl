@@ -206,7 +206,7 @@ end
         runchecks = true,
     )
 
-    add_component!(sys, Bus(11, "11", PSY.PQ, 1, 1, (min = 0.9, max = 1.1), 123))
+    add_component!(sys, Bus(11, "11", BusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123))
     B = collect(get_components(Bus, sys))
     a = Arc(B[1], B[6])
     badline = Line(
@@ -241,7 +241,7 @@ end
         nothing,
     )
 
-    add_component!(sys, Bus(11, "11", PSY.PQ, 1, 1, (min = 0.9, max = 1.1), 123))
+    add_component!(sys, Bus(11, "11", BusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123))
     path, io = mktemp()
     PSY.to_json(sys, path)
     try

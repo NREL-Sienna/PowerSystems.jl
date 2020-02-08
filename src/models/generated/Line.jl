@@ -87,7 +87,7 @@ function Line(::Nothing)
 end
 
 """Get Line name."""
-get_name(value::Line) = value.name
+InfrastructureSystems.get_name(value::Line) = value.name
 """Get Line available."""
 get_available(value::Line) = value.available
 """Get Line activepower_flow."""

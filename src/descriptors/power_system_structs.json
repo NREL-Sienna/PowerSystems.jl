@@ -108,8 +108,8 @@
             {
                 "name": "primemover",
                 "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "HY::PrimeMovers",
-                "data_type": "PrimeMovers"
+                "null_value": "PrimeMovers.HY",
+                "data_type": "PrimeMovers.PrimeMover"
             },
             {
                 "name": "activepowerlimits",
@@ -171,8 +171,8 @@
             {
                 "name": "primemover",
                 "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "OT::PrimeMovers",
-                "data_type": "PrimeMovers"
+                "null_value": "PrimeMovers.OT",
+                "data_type": "PrimeMovers.PrimeMover"
             },
             {
                 "name": "reactivepowerlimits",
@@ -216,14 +216,14 @@
             {
                 "name": "primemover",
                 "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "OT::PrimeMovers",
-                "data_type": "PrimeMovers"
+                "null_value": "PrimeMovers.OT",
+                "data_type": "PrimeMovers.PrimeMover"
             },
             {
                 "name": "fuel",
                 "comment": "PrimeMover Fuel according to EIA 923",
-                "null_value": "OTHER::ThermalFuels",
-                "data_type": "ThermalFuels"
+                "null_value": "ThermalFuels.OTHER",
+                "data_type": "ThermalFuels.ThermalFuel"
             },
             {
                 "name": "activepowerlimits",
@@ -278,6 +278,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "comment": "the name of the bus",
                 "data_type": "String"
             },
@@ -285,7 +286,7 @@
                 "name": "bustype",
                 "comment": "bus type",
                 "null_value": "nothing",
-                "data_type": "Union{Nothing, BusType}"
+                "data_type": "Union{Nothing, BusTypes.BusType}"
             },
             {
                 "name": "angle",
@@ -369,6 +370,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -473,6 +475,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -584,6 +587,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -703,6 +707,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -813,6 +818,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -913,6 +919,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -990,6 +997,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1071,6 +1079,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1085,8 +1094,8 @@
             },
             {
                 "name": "model",
-                "null_value": "ConstantPower::LoadModel",
-                "data_type": "LoadModel"
+                "null_value": "LoadModels.ConstantPower",
+                "data_type": "LoadModels.LoadModel"
             },
             {
                 "name": "activepower",
@@ -1147,6 +1156,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1200,6 +1210,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1215,7 +1226,7 @@
             {
                 "name": "model",
                 "null_value": "nothing",
-                "data_type": "Union{Nothing, LoadModel}"
+                "data_type": "Union{Nothing, LoadModels.LoadModel}"
             },
             {
                 "name": "activepower",
@@ -1271,6 +1282,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1369,6 +1381,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1432,6 +1445,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1499,6 +1513,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1561,6 +1576,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1636,6 +1652,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1682,6 +1699,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1697,8 +1715,8 @@
             {
                 "name": "primemover",
                 "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "BA::PrimeMovers",
-                "data_type": "PrimeMovers"
+                "null_value": "PrimeMovers.BA",
+                "data_type": "PrimeMovers.PrimeMover"
             },
             {
                 "name": "energy",
@@ -1810,6 +1828,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1857,6 +1876,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -1904,6 +1924,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {
@@ -4626,6 +4647,7 @@
             {
                 "null_value": "init",
                 "name": "name",
+                "accessor_module": "InfrastructureSystems",
                 "data_type": "String"
             },
             {

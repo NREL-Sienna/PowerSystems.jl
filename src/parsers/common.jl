@@ -1,35 +1,35 @@
 const GENERATOR_MAPPING_FILE =
     joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping.yaml")
 
-const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels))
+const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels.ThermalFuel))
 merge!(
     STRING2FUEL,
     Dict(
-        "NG" => NATURAL_GAS::ThermalFuels,
-        "NUC" => NUCLEAR::ThermalFuels,
-        "GAS" => NATURAL_GAS::ThermalFuels,
-        "OIL" => DISTILLATE_FUEL_OIL::ThermalFuels,
-        "SYNC_COND" => OTHER::ThermalFuels,
+        "NG" => ThermalFuels.NATURAL_GAS,
+        "NUC" => ThermalFuels.NUCLEAR,
+        "GAS" => ThermalFuels.NATURAL_GAS,
+        "OIL" => ThermalFuels.DISTILLATE_FUEL_OIL,
+        "SYNC_COND" => ThermalFuels.OTHER,
     ),
 )
 
-const STRING2PRIMEMOVER = Dict((string(e) => e) for e in instances(PrimeMovers))
+const STRING2PRIMEMOVER = Dict((string(e) => e) for e in instances(PrimeMovers.PrimeMover))
 merge!(
     STRING2PRIMEMOVER,
     Dict(
-        "W2" => WT::PrimeMovers,
-        "WIND" => WT::PrimeMovers,
-        "PV" => PVe::PrimeMovers,
-        "RTPV" => PVe::PrimeMovers,
-        "NB" => ST::PrimeMovers,
-        "STEAM" => ST::PrimeMovers,
-        "HYDRO" => HY::PrimeMovers,
-        "ROR" => HY::PrimeMovers,
-        "NUCLEAR" => ST::PrimeMovers,
-        "SYNC_COND" => OT::PrimeMovers,
-        "CSP" => CP::PrimeMovers,
-        "UN" => OT::PrimeMovers,
-        "STORAGE" => BA::PrimeMovers,
+        "W2" => PrimeMovers.WT,
+        "WIND" => PrimeMovers.WT,
+        "PV" => PrimeMovers.PVe,
+        "RTPV" => PrimeMovers.PVe,
+        "NB" => PrimeMovers.ST,
+        "STEAM" => PrimeMovers.ST,
+        "HYDRO" => PrimeMovers.HY,
+        "ROR" => PrimeMovers.HY,
+        "NUCLEAR" => PrimeMovers.ST,
+        "SYNC_COND" => PrimeMovers.OT,
+        "CSP" => PrimeMovers.CP,
+        "UN" => PrimeMovers.OT,
+        "STORAGE" => PrimeMovers.BA,
     ),
 )
 
@@ -115,18 +115,18 @@ function convert_units!(
     return value
 end
 
-function Base.convert(::Type{ThermalFuels}, fuel::AbstractString)
+function Base.convert(::Type{ThermalFuels.ThermalFuel}, fuel::AbstractString)
     return STRING2FUEL[uppercase(fuel)]
 end
 
-function Base.convert(::Type{ThermalFuels}, fuel::Symbol)
-    return convert(ThermalFuels, string(fuel))
+function Base.convert(::Type{ThermalFuels.ThermalFuel}, fuel::Symbol)
+    return convert(ThermalFuels.ThermalFuel, string(fuel))
 end
 
-function Base.convert(::Type{PrimeMovers}, primemover::AbstractString)
+function Base.convert(::Type{PrimeMovers.PrimeMover}, primemover::AbstractString)
     return STRING2PRIMEMOVER[uppercase(primemover)]
 end
 
-function Base.convert(::Type{PrimeMovers}, primemover::Symbol)
-    return convert(PrimeMovers, string(primemover))
+function Base.convert(::Type{PrimeMovers.PrimeMover}, primemover::Symbol)
+    return convert(PrimeMovers.PrimeMover, string(primemover))
 end

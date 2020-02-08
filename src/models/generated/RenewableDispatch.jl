@@ -72,7 +72,7 @@ function RenewableDispatch(::Nothing)
 end
 
 """Get RenewableDispatch name."""
-get_name(value::RenewableDispatch) = value.name
+InfrastructureSystems.get_name(value::RenewableDispatch) = value.name
 """Get RenewableDispatch available."""
 get_available(value::RenewableDispatch) = value.available
 """Get RenewableDispatch bus."""

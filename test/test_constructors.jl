@@ -2,28 +2,12 @@
     tBus = Bus(nothing)
     tLoadZones = LoadZones(nothing)
 
-    bus = Bus(
-        1,
-        "test",
-        PowerSystems.SLACK::BusType,
-        0.0,
-        0.0,
-        (min = 0.0, max = 0.0),
-        nothing,
-    )
-    @test PowerSystems.get_bustype(bus) == PowerSystems.REF::BusType
+    bus = Bus(1, "test", BusTypes.SLACK, 0.0, 0.0, (min = 0.0, max = 0.0), nothing)
+    @test PowerSystems.get_bustype(bus) == BusTypes.REF
 
     @test_throws(
         PowerSystems.DataFormatError,
-        Bus(
-            1,
-            "test",
-            PowerSystems.ISOLATED::BusType,
-            0.0,
-            0.0,
-            (min = 0.0, max = 0.0),
-            nothing,
-        )
+        Bus(1, "test", BusTypes.ISOLATED, 0.0, 0.0, (min = 0.0, max = 0.0), nothing)
     )
 end
 

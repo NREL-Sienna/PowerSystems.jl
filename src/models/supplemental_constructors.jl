@@ -15,7 +15,7 @@ function RenewableFix(
     bus::Bus,
     activepower::Float64,
     reactivepower::Float64,
-    prime_mover::PrimeMovers,
+    prime_mover::PrimeMovers.PrimeMover,
     rating::Float64,
 )
     tech = TechRenewable(rating, prime_mover, nothing, 1.0)
@@ -29,7 +29,7 @@ function RenewableDispatch(
     bus::Bus,
     activepower::Float64,
     reactivepower::Float64,
-    prime_mover::PrimeMovers,
+    prime_mover::PrimeMovers.PrimeMover,
     rating::Float64,
     op_cost::TwoPartCost,
 )
@@ -51,7 +51,7 @@ function PowerLoadPF(
     name::String,
     available::Bool,
     bus::Bus,
-    model::Union{Nothing, LoadModel},
+    model::Union{Nothing, LoadModels.LoadModel},
     activepower::Float64,
     maxactivepower::Float64,
     power_factor::Float64,
@@ -115,7 +115,7 @@ function Bus(
     return Bus(
         number,
         name,
-        get_enum_value(BusType, bustype),
+        get_enum_value(BusTypes.BusType, bustype),
         angle,
         voltage,
         voltagelimits,

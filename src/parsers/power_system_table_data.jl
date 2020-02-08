@@ -302,7 +302,7 @@ Add buses to the System from the raw data.
 """
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
-        bus_type = get_enum_value(BusType, bus.bus_type)
+        bus_type = get_enum_value(BusTypes.BusType, bus.bus_type)
         number = bus.bus_id
         voltage_limits = (min = 0.95, max = 1.05)
         ps_bus = Bus(
@@ -527,7 +527,7 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
                 name = ps_bus.name,
                 available = true,
                 bus = ps_bus,
-                model = ConstantPower::LoadModel,
+                model = LoadModels.ConstantPower,
                 activepower = active_power,
                 reactivepower = reactive_power,
                 maxactivepower = max_active_power,
@@ -747,8 +747,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
     tech = TechThermal(
         rating = rating,
-        primemover = convert(PrimeMovers, gen.unit_type),
-        fuel = convert(ThermalFuels, gen.fuel),
+        primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+        fuel = convert(ThermalFuels.ThermalFuel, gen.fuel),
         activepowerlimits = active_power_limits,
         reactivepowerlimits = reactive_power_limits,
         ramplimits = (up = gen.ramp_limits, down = gen.ramp_limits),
@@ -792,7 +792,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
         (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
     tech = TechHydro(
         rating,
-        convert(PrimeMovers, gen.unit_type),
+        convert(PrimeMovers.PrimeMover, gen.unit_type),
         active_power_limits,
         reactive_power_limits,
         (up = gen.ramp_limits, down = gen.ramp_limits),
@@ -851,7 +851,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
 
     tech = TechRenewable(
         rating,
-        convert(PrimeMovers, gen.unit_type),
+        convert(PrimeMovers.PrimeMover, gen.unit_type),
         (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max),
         1.0,
     )
@@ -895,7 +895,7 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         name = gen.name,
         available = available,
         bus = bus,
-        primemover = convert(PrimeMovers, gen.unit_type),
+        primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
         energy = energy,
         capacity = capacity,
         rating = rating,

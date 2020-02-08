@@ -54,7 +54,7 @@ function VariableReserve{T}(::Nothing) where T <: ReserveDirection
 end
 
 """Get VariableReserve name."""
-get_name(value::VariableReserve) = value.name
+InfrastructureSystems.get_name(value::VariableReserve) = value.name
 """Get VariableReserve timeframe."""
 get_timeframe(value::VariableReserve) = value.timeframe
 """Get VariableReserve requirement."""

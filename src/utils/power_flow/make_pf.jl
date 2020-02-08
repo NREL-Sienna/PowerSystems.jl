@@ -65,15 +65,15 @@ function make_pf(system)
 
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
 
-        if b.bustype == REF::BusType
+        if b.bustype == BusTypes.REF
             x0[state_variable_count] = P_GEN_BUS[ix]
             x0[state_variable_count + 1] = Q_GEN_BUS[ix]
             state_variable_count += 2
-        elseif b.bustype == PV::BusType
+        elseif b.bustype == BusTypes.PV
             x0[state_variable_count] = Q_GEN_BUS[ix]
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
-        elseif b.bustype == PQ::BusType
+        elseif b.bustype == BusTypes.PQ
             x0[state_variable_count] = bus_voltage
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
@@ -92,19 +92,19 @@ function make_pf(system)
         for (ix, b) in BUSES
             bus_voltage = get_voltage(b)
             bus_angle = get_angle(b)
-            if b.bustype == REF::BusType
+            if b.bustype == BusTypes.REF
                 # When bustype == REFERENCE Bus, state variables are Active and Reactive Power Generated
                 P_net[ix] = X[2 * ix - 1] - P_LOAD_BUS[ix]
                 Q_net[ix] = X[2 * ix] - Q_LOAD_BUS[ix]
                 Vm[ix] = bus_voltage
                 θ[ix] = bus_angle
-            elseif b.bustype == PV::BusType
+            elseif b.bustype == BusTypes.PV
                 # When bustype == PV Bus, state variables are Reactive Power Generated and Voltage Angle
                 P_net[ix] = P_GEN_BUS[ix] - P_LOAD_BUS[ix]
                 Q_net[ix] = X[2 * ix - 1] - Q_LOAD_BUS[ix]
                 Vm[ix] = bus_voltage
                 θ[ix] = X[2 * ix]
-            elseif b.bustype == PQ::BusType
+            elseif b.bustype == BusTypes.PQ
                 # When bustype == PQ Bus, state variables are Voltage Magnitude and Voltage Angle
                 P_net[ix] = P_GEN_BUS[ix] - P_LOAD_BUS[ix]
                 Q_net[ix] = Q_GEN_BUS[ix] - Q_LOAD_BUS[ix]

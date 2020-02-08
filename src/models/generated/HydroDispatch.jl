@@ -68,7 +68,7 @@ function HydroDispatch(::Nothing)
 end
 
 """Get HydroDispatch name."""
-get_name(value::HydroDispatch) = value.name
+InfrastructureSystems.get_name(value::HydroDispatch) = value.name
 """Get HydroDispatch available."""
 get_available(value::HydroDispatch) = value.available
 """Get HydroDispatch bus."""

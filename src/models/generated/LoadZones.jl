@@ -62,7 +62,7 @@ end
 """Get LoadZones number."""
 get_number(value::LoadZones) = value.number
 """Get LoadZones name."""
-get_name(value::LoadZones) = value.name
+InfrastructureSystems.get_name(value::LoadZones) = value.name
 """Get LoadZones buses."""
 get_buses(value::LoadZones) = value.buses
 """Get LoadZones maxactivepower."""

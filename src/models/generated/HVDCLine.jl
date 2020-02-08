@@ -80,7 +80,7 @@ function HVDCLine(::Nothing)
 end
 
 """Get HVDCLine name."""
-get_name(value::HVDCLine) = value.name
+InfrastructureSystems.get_name(value::HVDCLine) = value.name
 """Get HVDCLine available."""
 get_available(value::HVDCLine) = value.available
 """Get HVDCLine activepower_flow."""

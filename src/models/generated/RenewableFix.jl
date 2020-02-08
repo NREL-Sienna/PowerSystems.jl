@@ -68,7 +68,7 @@ function RenewableFix(::Nothing)
 end
 
 """Get RenewableFix name."""
-get_name(value::RenewableFix) = value.name
+InfrastructureSystems.get_name(value::RenewableFix) = value.name
 """Get RenewableFix available."""
 get_available(value::RenewableFix) = value.available
 """Get RenewableFix bus."""

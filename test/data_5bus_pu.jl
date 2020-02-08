@@ -307,8 +307,8 @@ thermal_generators5(nodes5) = [
         0.010,
         TechThermal(
             0.5,
-            PowerSystems.ST,
-            PowerSystems.COAL,
+            PrimeMovers.ST,
+            ThermalFuels.COAL,
             (min = 0.0, max = 0.40),
             (min = -0.30, max = 0.30),
             nothing,
@@ -324,8 +324,8 @@ thermal_generators5(nodes5) = [
         0.20,
         TechThermal(
             2.2125,
-            PowerSystems.ST,
-            PowerSystems.COAL,
+            PrimeMovers.ST,
+            ThermalFuels.COAL,
             (min = 0.0, max = 1.70),
             (min = -1.275, max = 1.275),
             (up = 0.02, down = 0.02),
@@ -341,8 +341,8 @@ thermal_generators5(nodes5) = [
         1.00,
         TechThermal(
             5.20,
-            PowerSystems.ST,
-            PowerSystems.COAL,
+            PrimeMovers.ST,
+            ThermalFuels.COAL,
             (min = 0.0, max = 5.20),
             (min = -3.90, max = 3.90),
             (up = 0.012, down = 0.012),
@@ -358,8 +358,8 @@ thermal_generators5(nodes5) = [
         0.40,
         TechThermal(
             2.5,
-            PowerSystems.ST,
-            PowerSystems.COAL,
+            PrimeMovers.ST,
+            ThermalFuels.COAL,
             (min = 0.0, max = 2.0),
             (min = -1.5, max = 1.5),
             (up = 0.015, down = 0.015),
@@ -375,8 +375,8 @@ thermal_generators5(nodes5) = [
         1.50,
         TechThermal(
             7.5,
-            PowerSystems.ST,
-            PowerSystems.COAL,
+            PrimeMovers.ST,
+            ThermalFuels.COAL,
             (min = 0.0, max = 6.0),
             (min = -4.50, max = 4.50),
             (up = 0.015, down = 0.015),
@@ -393,7 +393,7 @@ renewable_generators5(nodes5) = [
         nodes5[5],
         0.0,
         0.0,
-        PowerSystems.WT,
+        PrimeMovers.WT,
         1.200,
         TwoPartCost(22.0, 0.0),
     ),
@@ -403,7 +403,7 @@ renewable_generators5(nodes5) = [
         nodes5[4],
         0.0,
         0.0,
-        PowerSystems.WT,
+        PrimeMovers.WT,
         1.200,
         TwoPartCost(22.0, 0.0),
     ),
@@ -413,7 +413,7 @@ renewable_generators5(nodes5) = [
         nodes5[3],
         0.0,
         0.0,
-        TechRenewable(1.20, PowerSystems.WT, (min = -0.800, max = 0.800), 1.0),
+        TechRenewable(1.20, PrimeMovers.WT, (min = -0.800, max = 0.800), 1.0),
         TwoPartCost(22.0, 0.0),
     ),
 ];
@@ -427,7 +427,7 @@ hydro_generators5(nodes5) = [
         0.0,
         TechHydro(
             0.600,
-            PowerSystems.HY,
+            PrimeMovers.HY,
             (min = 0.0, max = 60.0),
             (min = 0.0, max = 60.0),
             nothing,
@@ -442,7 +442,7 @@ hydro_generators5(nodes5) = [
         0.0,
         TechHydro(
             0.600,
-            PowerSystems.HY,
+            PrimeMovers.HY,
             (min = 0.0, max = 60.0),
             (min = 0.0, max = 60.0),
             (up = 10.0, down = 10.0),
@@ -457,7 +457,7 @@ hydro_generators5(nodes5) = [
 
 battery5(nodes5) = [GenericBattery(
     name = "Bat",
-    primemover = PowerSystems.BA,
+    primemover = PrimeMovers.BA,
     available = true,
     bus = nodes5[1],
     energy = 5.0,
@@ -553,43 +553,16 @@ loadbus4_ts_DA = [
 ]
 
 loads5(nodes5) = [
-    PowerLoad(
-        "Bus2",
-        true,
-        nodes5[2],
-        PowerSystems.ConstantPower,
-        3.0,
-        0.9861,
-        3.0,
-        0.9861,
-    ),
-    PowerLoad(
-        "Bus3",
-        true,
-        nodes5[3],
-        PowerSystems.ConstantPower,
-        3.0,
-        0.9861,
-        3.0,
-        0.9861,
-    ),
-    PowerLoad(
-        "Bus4",
-        true,
-        nodes5[4],
-        PowerSystems.ConstantPower,
-        4.0,
-        1.3147,
-        4.0,
-        1.3147,
-    ),
+    PowerLoad("Bus2", true, nodes5[2], LoadModels.ConstantPower, 3.0, 0.9861, 3.0, 0.9861),
+    PowerLoad("Bus3", true, nodes5[3], LoadModels.ConstantPower, 3.0, 0.9861, 3.0, 0.9861),
+    PowerLoad("Bus4", true, nodes5[4], LoadModels.ConstantPower, 4.0, 1.3147, 4.0, 1.3147),
 ];
 
 interruptible(nodes5) = [InterruptibleLoad(
     "IloadBus4",
     true,
     nodes5[4],
-    PowerSystems.ConstantPower,
+    LoadModels.ConstantPower,
     0.10,
     0.0,
     0.10,
