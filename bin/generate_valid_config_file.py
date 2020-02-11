@@ -12,8 +12,6 @@ from collections import OrderedDict
 
 #import yaml
 
-POWER_SYSTEM_DESCRIPTOR_FILE = sys.argv[2]
-
 def read_json_data(filename):
     """Return the JSON data from a file."""
     with open(filename) as fp_in:
@@ -43,7 +41,8 @@ def generate_config(input_file):
         items.append(new_struct)
     return items
 
-def generate_file(output_file, input_file=POWER_SYSTEM_DESCRIPTOR_FILE):
+
+def generate_file(input_file, output_file):
     """Generate validation descriptors from the PowerSystems struct data file."""
     config = generate_config(input_file)
     with open(output_file, "w") as fp_out:
@@ -56,10 +55,18 @@ def generate_file(output_file, input_file=POWER_SYSTEM_DESCRIPTOR_FILE):
 def main():
     """Controls execution."""
     if len(sys.argv) != 3:
-        print("Usage: {} output_file".format(os.path.basename(__file__)))
+        example = "python bin/{} src/descriptors/power_system_structs.json validation.json".format(
+            os.path.basename(__file__)
+        )
+        print("Usage: {} input_file output_file\nExample:  {}".format(
+            os.path.basename(__file__), example)
+        )
         sys.exit(1)
 
-    generate_file(sys.argv[1])
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+    generate_file(input_file, output_file)
+
 
 if __name__ == "__main__":
     main()
