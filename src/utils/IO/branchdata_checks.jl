@@ -56,7 +56,7 @@ function check_angle_limits!(line)
     end
 end
 
-function linerate_calculation(l::Line)
+function linerate_calculation(l::Union{Line, MonitoredLine})
     theta_max = max(abs(l.anglelimits.min), abs(l.anglelimits.max))
     g = l.r / (l.r^2 + l.x^2)
     b = -l.x / (l.r^2 + l.x^2)
