@@ -138,11 +138,11 @@ end
     PSY.convert_component!(MonitoredLine, l, sys)
     @test isnothing(get_component(Line, sys, "4"))
     @test get_name(get_component(MonitoredLine, sys, "4")) == "4"
-    @test_throws ErrorException PSY.convert_component!(
+    @test_throws ErrorException convert_component!(
         Line,
         get_component(MonitoredLine, sys, "4"),
         sys,
     )
-    PSY.convert_component!(Line, get_component(MonitoredLine, sys, "4"), sys, force = true)
+    convert_component!(Line, get_component(MonitoredLine, sys, "4"), sys, force = true)
     @test isnothing(get_component(MonitoredLine, sys, "4"))
 end

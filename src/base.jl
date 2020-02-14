@@ -1180,6 +1180,7 @@ function convert_component!(
         line.services,
         line.ext,
         line._forecasts,
+        line.internal,
     )
     remove_component!(sys, line)
     add_component!(sys, new_line)
@@ -1216,6 +1217,7 @@ function convert_component!(
         line.services,
         line.ext,
         line._forecasts,
+        line.internal,
     )
     remove_component!(sys, line)
     add_component!(sys, new_line)
