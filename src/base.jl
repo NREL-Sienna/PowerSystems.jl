@@ -1154,3 +1154,71 @@ function _create_system_data_from_kwargs(; kwargs...)
         time_series_in_memory = time_series_in_memory,
     )
 end
+
+"""
+Converts a Line component to a MonitoredLine component and replaces the original in the
+system
+"""
+function convert_component!(
+    linetype::Type{MonitoredLine},
+    line::Line,
+    sys::System;
+    kwargs...,
+)
+    new_line = linetype(
+        line.name,
+        line.available,
+        line.activepower_flow,
+        line.reactivepower_flow,
+        line.arc,
+        line.r,
+        line.x,
+        line.b,
+        (from_to = line.rate, to_from = line.rate),
+        line.rate,
+        line.anglelimits,
+        line.services,
+        line.ext,
+        line._forecasts,
+        line.internal,
+    )
+    remove_component!(sys, line)
+    add_component!(sys, new_line)
+end
+
+"""
+Converts a MonitoredLine component to a Line component and replaces the original in the
+system
+"""
+function convert_component!(
+    linetype::Type{Line},
+    line::MonitoredLine,
+    sys::System;
+    kwargs...,
+)
+    force = get(kwargs, :force, false)
+    if force
+        @warn("Possible data loss converting from $(typeof(line)) to $linetype")
+    else
+        error("Possible data loss converting from $(typeof(line)) to $linetype, add `force = true` to convert anyway.")
+    end
+
+    new_line = linetype(
+        line.name,
+        line.available,
+        line.activepower_flow,
+        line.reactivepower_flow,
+        line.arc,
+        line.r,
+        line.x,
+        line.b,
+        line.rate,
+        line.anglelimits,
+        line.services,
+        line.ext,
+        line._forecasts,
+        line.internal,
+    )
+    remove_component!(sys, line)
+    add_component!(sys, new_line)
+end

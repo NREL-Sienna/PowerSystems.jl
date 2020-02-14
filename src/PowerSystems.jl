@@ -196,6 +196,7 @@ export to_json
 export check_forecast_consistency
 export validate_forecast_consistency
 export clear_ext
+export convert_component!
 
 #################################################################################
 # Imports

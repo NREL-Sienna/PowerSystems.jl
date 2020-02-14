@@ -131,3 +131,18 @@ end
         end
     end
 end
+
+@testset "Test component conversion" begin
+    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    l = get_component(Line, sys, "4")
+    PSY.convert_component!(MonitoredLine, l, sys)
+    @test isnothing(get_component(Line, sys, "4"))
+    @test get_name(get_component(MonitoredLine, sys, "4")) == "4"
+    @test_throws ErrorException convert_component!(
+        Line,
+        get_component(MonitoredLine, sys, "4"),
+        sys,
+    )
+    convert_component!(Line, get_component(MonitoredLine, sys, "4"), sys, force = true)
+    @test isnothing(get_component(MonitoredLine, sys, "4"))
+end
