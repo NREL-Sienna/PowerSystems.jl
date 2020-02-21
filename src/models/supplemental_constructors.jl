@@ -109,7 +109,9 @@ function Bus(
     angle,
     voltage,
     voltagelimits,
-    basevoltage;
+    basevoltage,
+    area,
+    load_zone;
     ext = Dict{String, Any}(),
 )
     return Bus(
@@ -120,6 +122,8 @@ function Bus(
         voltage,
         voltagelimits,
         basevoltage,
+        area,
+        load_zone,
         ext,
         InfrastructureSystemsInternal(),
     )

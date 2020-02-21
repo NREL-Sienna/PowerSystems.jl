@@ -3,6 +3,8 @@ include("ThreePartCost.jl")
 include("TechHydro.jl")
 include("TechRenewable.jl")
 include("TechThermal.jl")
+include("Area.jl")
+include("LoadZone.jl")
 include("Bus.jl")
 include("Arc.jl")
 include("Line.jl")
@@ -20,7 +22,6 @@ include("HydroDispatch.jl")
 include("RenewableDispatch.jl")
 include("RenewableFix.jl")
 include("ThermalStandard.jl")
-include("LoadZones.jl")
 include("GenericBattery.jl")
 include("StaticReserve.jl")
 include("VariableReserve.jl")
@@ -135,11 +136,11 @@ export get_activepowerlimits_to
 export get_angle
 export get_anglelimits
 export get_arc
+export get_area
 export get_available
 export get_b
 export get_basevoltage
 export get_bus
-export get_buses
 export get_bustype
 export get_capacity
 export get_cf
@@ -174,6 +175,7 @@ export get_kq
 export get_kω
 export get_lf
 export get_lg
+export get_load_zone
 export get_loss
 export get_lv
 export get_maxactivepower

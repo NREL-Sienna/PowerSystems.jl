@@ -26,6 +26,8 @@ end
         voltage = 1.0,
         voltagelimits = (min = -1.0, max = 1.0),
         basevoltage = 1.0,
+        area = nothing,
+        load_zone = nothing,
     )
     bus2 = Bus(;
         number = number,
@@ -35,6 +37,8 @@ end
         voltage = 1.0,
         voltagelimits = (min = -1.0, max = 1.0),
         basevoltage = 1.0,
+        area = nothing,
+        load_zone = nothing,
     )
 
     add_component!(sys, bus1)

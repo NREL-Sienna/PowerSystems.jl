@@ -10,6 +10,8 @@ This file is auto-generated. Do not edit.
         voltage::Union{Nothing, Float64}
         voltagelimits::Union{Nothing, Min_Max}
         basevoltage::Union{Nothing, Float64}
+        area::Union{Nothing, Area}
+        load_zone::Union{Nothing, LoadZone}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -24,6 +26,8 @@ A power-system bus.
 - `voltage::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: voltagelimits, action if invalid: warn
 - `voltagelimits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
 - `basevoltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: (0, nothing), action if invalid: error
+- `area::Union{Nothing, Area}`: the area containing the bus
+- `load_zone::Union{Nothing, LoadZone}`: the load zone containing the bus
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -42,12 +46,16 @@ mutable struct Bus <: Topology
     voltagelimits::Union{Nothing, Min_Max}
     "the base voltage in kV"
     basevoltage::Union{Nothing, Float64}
+    "the area containing the bus"
+    area::Union{Nothing, Area}
+    "the load zone containing the bus"
+    load_zone::Union{Nothing, LoadZone}
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 
-    function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, internal, )
-        (number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, internal, ) = CheckBusParams(
+    function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext, internal, )
+        (number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext, internal, ) = CheckBusParams(
             number,
             name,
             bustype,
@@ -55,19 +63,21 @@ mutable struct Bus <: Topology
             voltage,
             voltagelimits,
             basevoltage,
+            area,
+            load_zone,
             ext,
             internal,
         )
-        new(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, internal, )
+        new(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext, internal, )
     end
 end
 
-function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext=Dict{String, Any}(), )
-    Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, InfrastructureSystemsInternal(), )
+function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext=Dict{String, Any}(), )
+    Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
 end
 
-function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext=Dict{String, Any}(), )
-    Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, )
+function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext=Dict{String, Any}(), )
+    Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -80,6 +90,8 @@ function Bus(::Nothing)
         voltage=0.0,
         voltagelimits=(min=0.0, max=0.0),
         basevoltage=nothing,
+        area=Area(nothing),
+        load_zone=LoadZone(nothing),
         ext=Dict{String, Any}(),
     )
 end
@@ -98,6 +110,10 @@ get_voltage(value::Bus) = value.voltage
 get_voltagelimits(value::Bus) = value.voltagelimits
 """Get Bus basevoltage."""
 get_basevoltage(value::Bus) = value.basevoltage
+"""Get Bus area."""
+get_area(value::Bus) = value.area
+"""Get Bus load_zone."""
+get_load_zone(value::Bus) = value.load_zone
 """Get Bus ext."""
 get_ext(value::Bus) = value.ext
 """Get Bus internal."""

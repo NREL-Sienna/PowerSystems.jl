@@ -101,7 +101,7 @@ function System(
         end
     end
 
-    load_zones = isnothing(annex) ? nothing : get(annex, :LoadZones, nothing)
+    load_zones = isnothing(annex) ? nothing : get(annex, :LoadZone, nothing)
     if !isnothing(load_zones)
         for lz in load_zones
             try
@@ -377,8 +377,11 @@ function IS.add_forecast!(
         return
     end
 
-    if component isa LoadZones
-        uuids = Set([IS.get_uuid(x) for x in get_buses(component)])
+    if component isa Area
+        uuids = Set{UUIDs.UUID}()
+        for bus in _get_buses(data, component)
+            push!(uuids, IS.get_uuid(bus))
+        end
         for component_ in (
             load for load in IS.get_components(ElectricLoad, data) if IS.get_uuid(get_bus(
                 load,
@@ -559,6 +562,28 @@ function get_contributing_device_mapping(sys::System)
     end
 
     return services
+end
+
+"""
+    get_buses(sys::System, aggregator::AggregationTopology)
+
+Return a vector of buses contained within the AggregationTopology.
+"""
+function get_buses(sys::System, aggregator::AggregationTopology)
+    return _get_buses(sys.data, aggregator)
+end
+
+function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationTopology}
+    accessor_func = get_aggregation_topology_accessor(T)
+    buses = Vector{Bus}()
+    for bus in IS.get_components(Bus, data)
+        _aggregator = accessor_func(bus)
+        if IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
+            push!(buses, bus)
+        end
+    end
+
+    return buses
 end
 
 """

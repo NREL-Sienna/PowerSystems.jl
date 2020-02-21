@@ -1,5 +1,21 @@
 abstract type Topology <: Component end
 
+"""
+Represents a geographical region of system components.
+
+All subtypes must implement the method get_aggregation_topology_accessor.
+"""
+abstract type AggregationTopology <: Topology end
+
+"""
+    get_aggregation_topology_accessor(::Type{T}) where T <: AggregationTopology
+
+Return the method to be called on a Bus to get its AggregationTopology value for this type.
+"""
+function get_aggregation_topology_accessor(::Type{T}) where {T <: AggregationTopology}
+    error("get_aggregation_topology_accessor must be implemented for $T")
+end
+
 function CheckBusParams(
     number,
     name,
@@ -8,6 +24,8 @@ function CheckBusParams(
     voltage,
     voltagelimits,
     basevoltage,
+    area,
+    load_zone,
     ext,
     internal,
 )
@@ -20,5 +38,15 @@ function CheckBusParams(
         end
     end
 
-    return number, name, bustype, angle, voltage, voltagelimits, basevoltage, ext, internal
+    return number,
+    name,
+    bustype,
+    angle,
+    voltage,
+    voltagelimits,
+    basevoltage,
+    area,
+    load_zone,
+    ext,
+    internal
 end
