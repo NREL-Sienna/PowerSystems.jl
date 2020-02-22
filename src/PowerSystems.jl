@@ -325,7 +325,7 @@ include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/standardfiles_parser.jl")
 include("parsers/power_system_table_data.jl")
-include("parsers/pm2ps_parser.jl")
+include("parsers/power_models_data.jl")
 
 # Better printing
 include("utils/print.jl")

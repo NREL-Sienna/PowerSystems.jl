@@ -1,18 +1,31 @@
 
+"""Container for data parsed by PowerModels"""
+struct PowerModelsData
+    data::Dict{String, Any}
+end
+
 """
-Converts a dictionary parsed by PowerModels to a System.
+Constructs PowerModelsData from a raw file.
 Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 Supports kwargs to supply formatters for different device types,
 such as `bus_name_formatter` or `gen_name_formatter`.
 
 # Examples
 ```julia
-sys = PSY.pm2ps_dict(pm_data, configpath = "ACTIVSg25k_validation.json",
-                    bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
-                    load_name_formatter = x->strip(join(x["source_id"], "_")))
+sys = PSY.PowerModelsData(
+    pm_data, configpath = "ACTIVSg25k_validation.json",
+    bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
+    load_name_formatter = x->strip(join(x["source_id"], "_"))
+)
 ```
 """
-function pm2ps_dict(data::Dict{String, Any}; kwargs...)
+function PowerModelsData(file::Union{String, IO}; kwargs...)
+    pm_dict = parse_file(file; kwargs...)
+    return PowerModelsData(pm_dict)
+end
+
+function System(pm_data::PowerModelsData; kwargs...)
+    data = pm_data.data
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
     end
