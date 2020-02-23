@@ -266,7 +266,7 @@
     },
     {
         "struct_name": "Area",
-        "docstring": "A geographic area.",
+        "docstring": "A collection of buses.",
         "fields": [
             {
                 "name": "name",

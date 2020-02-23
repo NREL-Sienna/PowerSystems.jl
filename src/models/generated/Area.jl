@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A geographic area.
+A collection of buses.
 
 # Arguments
 - `name::String`: area name
