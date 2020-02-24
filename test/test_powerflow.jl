@@ -34,7 +34,7 @@ include(joinpath(BASE_DIR, "test", "data_14bus_pu.jl"))
 
 nodes_5 = nodes5()
 nodes_14 = nodes14()
-c_sys14 = System(
+c_sys14() = System(
     nodes_14,
     thermal_generators14(nodes_14),
     loads14(nodes_14),
@@ -45,7 +45,7 @@ c_sys14 = System(
     nothing,
 );
 
-c_sys5_re = System(
+c_sys5_re() = System(
     nodes_5,
     vcat(thermal_generators5(nodes_5), renewable_generators5(nodes_5)),
     loads5(nodes_5),
@@ -58,13 +58,7 @@ c_sys5_re = System(
 
 @testset begin
     using NLsolve
-    pf!, x0 = make_pf(c_sys14)
-    res = NLsolve.nlsolve(pf!, x0)
-    @test res.zero ≈ result rtol = 1e-3
-
-    pf!, x0 = make_pf(c_sys5_re)
-    res = NLsolve.nlsolve(pf!, x0)
-    @test !res.f_converged
-
-    @test solve_powerflow!(c_sys14, nlsolve, method = :newton)n
+    # This is a negative test. The data passed for sys5_re is known to be infeasible.
+    @test !solve_powerflow!(c_sys5_re(), nlsolve)
+    @test solve_powerflow!(c_sys14(), nlsolve, method = :newton)
 end
