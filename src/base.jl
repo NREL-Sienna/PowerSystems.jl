@@ -576,10 +576,9 @@ Return a vector of components with buses in the AggregationTopology.
 function get_components_in_aggregation_topology(
     ::Type{T},
     sys::System,
-    aggregator::U,
-) where {T <: StaticInjection, U <: AggregationTopology}
+    aggregator::AggregationTopology,
+) where {T <: StaticInjection}
     buses = Set{String}((get_name(x) for x in get_buses(sys, aggregator)))
-    accessor_func = get_aggregation_topology_accessor(U)
     components = Vector{T}()
     for component in get_components(T, sys)
         bus = get_bus(component)
