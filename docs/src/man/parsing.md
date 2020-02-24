@@ -126,5 +126,5 @@ The following code will create a System from a MATPOWER or PSS/E file by first
 parsing it with [PowerModels](https://github.com/lanl-ansi/PowerModels.jl).
 
 ```julia
-sys = PowerSystems.parse_standard_files("./case5.m")
+sys = System(PowerSystems.PowerModelsData("./case5.m"))
 ```

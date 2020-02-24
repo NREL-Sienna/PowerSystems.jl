@@ -268,8 +268,8 @@ function System(
         runchecks = runchecks,
     )
 
-    bus_csv_parser!(sys, data)
     loadzone_csv_parser!(sys, data)
+    bus_csv_parser!(sys, data)
     load_csv_parser!(sys, data)
 
     # Services and forecasts must be last.
@@ -297,7 +297,7 @@ end
 """
     bus_csv_parser!(sys::System, bus_raw::DataFrames.DataFrame)
 
-Add buses to the System from the raw data.
+Add buses and areas to the System from the raw data.
 
 """
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
@@ -305,14 +305,24 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
         bus_type = get_enum_value(BusTypes.BusType, bus.bus_type)
         number = bus.bus_id
         voltage_limits = (min = 0.95, max = 1.05)
-        ps_bus = Bus(
-            number,
-            bus.name,
-            bus_type,
-            bus.angle,
-            bus.voltage,
-            voltage_limits,
-            bus.base_voltage,
+
+        area_name = string(bus.area)
+        area = get_component(Area, sys, area_name)
+        if isnothing(area)
+            area = Area(area_name)
+            add_component!(sys, area)
+        end
+
+        ps_bus = Bus(;
+            number = number,
+            name = bus.name,
+            bustype = bus_type,
+            angle = bus.angle,
+            voltage = bus.voltage,
+            voltagelimits = voltage_limits,
+            basevoltage = bus.base_voltage,
+            area = area,
+            load_zone = get_component(LoadZone, sys, string(bus.zone)),
         )
 
         add_component!(sys, ps_bus)
@@ -546,20 +556,19 @@ Add branches to the System from the raw data.
 """
 function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
     buses = get_dataframe(data, BUS::InputCategory)
-    area_column = get_user_field(data, BUS::InputCategory, "area")
-    if !in(area_column, names(buses))
-        @warn "Missing Data : no 'area' information for buses, cannot create loads based "
-        "on areas"
+    zone_column = get_user_field(data, BUS::InputCategory, "zone")
+    if !in(zone_column, names(buses))
+        @warn "Missing Data : no 'zone' information for buses, cannot create loads based on zones"
         return
     end
 
-    zones = unique(buses[!, area_column])
-    for (i, zone) in enumerate(zones)
+    zones = unique(buses[!, zone_column])
+    for zone in zones
         bus_numbers = Set{Int}()
         active_powers = Vector{Float64}()
         reactive_powers = Vector{Float64}()
         for bus in iterate_rows(data, BUS::InputCategory)
-            if bus.area == zone
+            if bus.zone == zone
                 bus_number = bus.bus_id
                 push!(bus_numbers, bus_number)
 
@@ -571,12 +580,9 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
             end
         end
 
-        buses = get_buses(sys, bus_numbers)
         name = string(zone)
-        zoneid = zone isa Number ? zone : i # if the zone is text use iteration count for zoneid
-        load_zones =
-            LoadZones(zoneid, name, buses, sum(active_powers), sum(reactive_powers))
-        add_component!(sys, load_zones)
+        load_zone = LoadZone(name, sum(active_powers), sum(reactive_powers))
+        add_component!(sys, load_zone)
     end
 end
 
@@ -914,7 +920,7 @@ const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
     "Bus" => Bus,
     "Generator" => Generator,
     "Reserve" => Service,
-    "LoadZone" => LoadZones,
+    "LoadZone" => LoadZone,
     "ElectricLoad" => ElectricLoad,
 )
 

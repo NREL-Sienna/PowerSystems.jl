@@ -50,7 +50,7 @@ end
 end
 
 @testset "Test JSON serialization of matpower data" begin
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
 
     # Add a Probabilistic forecast to get coverage serializing it.
     bus = Bus(nothing)
@@ -67,10 +67,7 @@ end
 end
 
 @testset "Test JSON serialization of ACTIVSg2000 data" begin
-    sys = PowerSystems.parse_standard_files(joinpath(
-        DATA_DIR,
-        "ACTIVSg2000",
-        "ACTIVSg2000.m",
-    ))
+    path = joinpath(DATA_DIR, "ACTIVSg2000", "ACTIVSg2000.m")
+    sys = System(PowerSystems.PowerModelsData(path))
     validate_serialization(sys)
 end

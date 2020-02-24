@@ -27,8 +27,10 @@ end
             1.06, #Voltage in pu
             (min = 0.94, max = 1.06), #Voltage limits in pu
             69,
+            nothing,
+            nothing,
         ), #Base voltage in kV
-        Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69),
+        Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
     ]
 
     converter = AvgCnvFixedDC(

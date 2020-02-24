@@ -122,37 +122,36 @@ const SIL_STANDARDS = Dict( #from https://neos-guide.org/sites/default/files/lin
 # calculation from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
 function calculate_sil(line, basemva::Float64)
     arc = get_arc(line)
+    #Assumess voltage at both ends of the arc is the same
     vrated = get_basevoltage(get_to(arc))
-
     zbase = vrated^2 / basemva
     l = get_x(line) / (2 * pi * 60) * zbase
     r = get_r(line) * zbase
     c = sum(get_b(line)) / (2 * pi * 60 * zbase)
+    # A line with no C doesn't allow calculation of SIL
+    isapprox(c, 0.0) && return Inf
     zc = sqrt((r + im * 2 * pi * 60 * l) / (im * 2 * pi * 60 * c))
     sil = vrated^2 / abs(zc)
     return sil
-
 end
 
 function check_SIL(line, basemva::Float64)
-
     arc = get_arc(line)
     vrated = get_basevoltage(get_to(arc))
-
     SIL_levels = collect(keys(SIL_STANDARDS))
     rate = get_rate(line)
     closestV = findmin(abs.(SIL_levels .- vrated))
     closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
 
     #Consisten with Ned Mohan Electric Power Systems: A First Course page 70
-    if !(rate >= 3 * closestSIL.max / vrated)
+    if !(rate >= closestSIL.max / vrated)
         # rate outside of expected SIL range
         sil = calculate_sil(line, basemva)
-        mult = sil / closestSIL.max
-        @warn "Rate provided for $(line) is $(rate*vrated), $(mult) times larger the expected SIL $(sil) in the range of $(closestSIL)." maxlog =
+        @warn "Rate provided for $(line.name) is $(rate*vrated), larger the SIL $(sil) in the range of $(closestSIL)." maxlog =
             PS_MAX_LOG
 
     end
+    return
 end
 
 function check_endpoint_voltages(line)
@@ -160,7 +159,7 @@ function check_endpoint_voltages(line)
     arc = get_arc(line)
     if get_basevoltage(get_from(arc)) != get_basevoltage(get_to(arc))
         is_valid = false
-        @error "Voltage endpoints of $(line) are different, cannot create Line"
+        @error "Voltage endpoints of $(line.name) are different, cannot create Line"
     end
     return is_valid
 end

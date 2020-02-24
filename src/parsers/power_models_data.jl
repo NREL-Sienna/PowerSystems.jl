@@ -1,18 +1,31 @@
 
+"""Container for data parsed by PowerModels"""
+struct PowerModelsData
+    data::Dict{String, Any}
+end
+
 """
-Converts a dictionary parsed by PowerModels to a System.
+Constructs PowerModelsData from a raw file.
 Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 Supports kwargs to supply formatters for different device types,
 such as `bus_name_formatter` or `gen_name_formatter`.
 
 # Examples
 ```julia
-sys = PSY.pm2ps_dict(pm_data, configpath = "ACTIVSg25k_validation.json",
-                    bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
-                    load_name_formatter = x->strip(join(x["source_id"], "_")))
+sys = PSY.PowerModelsData(
+    pm_data, configpath = "ACTIVSg25k_validation.json",
+    bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
+    load_name_formatter = x->strip(join(x["source_id"], "_"))
+)
 ```
 """
-function pm2ps_dict(data::Dict{String, Any}; kwargs...)
+function PowerModelsData(file::Union{String, IO}; kwargs...)
+    pm_dict = parse_file(file; kwargs...)
+    return PowerModelsData(pm_dict)
+end
+
+function System(pm_data::PowerModelsData; kwargs...)
+    data = pm_data.data
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
     end
@@ -52,11 +65,13 @@ function make_bus(bus_dict::Dict{String, Any})
         bus_dict["voltage"],
         bus_dict["voltagelimits"],
         bus_dict["basevoltage"],
+        bus_dict["area"],
+        bus_dict["zone"],
     )
     return bus
 end
 
-function make_bus(bus_name, bus_number, d, bus_types)
+function make_bus(bus_name, bus_number, d, bus_types, area)
     bus = make_bus(Dict{String, Any}(
         "name" => bus_name,
         "number" => bus_number,
@@ -65,7 +80,9 @@ function make_bus(bus_name, bus_number, d, bus_types)
         "voltage" => d["vm"],
         "voltagelimits" => (min = d["vmin"], max = d["vmax"]),
         "basevoltage" => d["base_kv"],
-    ))
+        "area" => area,
+        "zone" => nothing,
+    ),)
     return bus
 end
 
@@ -87,27 +104,49 @@ function Base.convert(::Type{BusTypes.BusType}, x::MatpowerBusTypes.MatpowerBusT
     return map[x]
 end
 
+# Disabling this because not all matpower files define areas even when bus definitions
+# contain area references.
+#function read_area!(sys::System, data; kwargs...)
+#    if !haskey(data, "areas")
+#        @info "There are no Areas in this file"
+#        return
+#    end
+#
+#    for (key, val) in data["areas"]
+#        area = Area(string(val["col_1"]))
+#        add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
+#    end
+#end
+
 function read_bus!(sys::System, data; kwargs...)
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusTypes.MatpowerBusType)
-    data = sort(collect(data["bus"]), by = x -> parse(Int64, x[1]))
+    bus_data = sort(collect(data["bus"]), by = x -> parse(Int64, x[1]))
 
-    if length(data) == 0
+    if isempty(bus_data)
         @error "No bus data found" # TODO : need for a model without a bus
     end
 
     _get_name = get(kwargs, :bus_name_formatter, _get_pm_dict_name)
-
-    for (i, (d_key, d)) in enumerate(data)
+    for (i, (d_key, d)) in enumerate(bus_data)
         # d id the data dict for each bus
         # d_key is bus key
         d["name"] = get(d, "name", string(d["bus_i"]))
         bus_name = _get_name(d)
         bus_number = Int(d["bus_i"])
-        bus = make_bus(bus_name, bus_number, d, bus_types)
+
+        area_name = string(d["area"])
+        area = get_component(Area, sys, area_name)
+        if isnothing(area)
+            area = Area(area_name)
+            add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
+        end
+
+        bus = make_bus(bus_name, bus_number, d, bus_types, area)
         bus_number_to_bus[bus.number] = bus
+
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
 
@@ -145,27 +184,25 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
     end
 end
 
-function make_loadzones(d, bus_l, activepower, reactivepower; kwargs...)
+function make_loadzone(name, activepower, reactivepower; kwargs...)
     _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
-    return LoadZones(;
-        number = d["index"],
-        name = _get_name(d),
-        buses = bus_l,
+    return LoadZone(;
+        name = name,
         maxactivepower = sum(activepower),
         maxreactivepower = sum(reactivepower),
     )
 end
 
 function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    if !haskey(data, "areas")
-        @info "There are no Load Zones data in this file"
-        return
+    zones = Set{Int}()
+    for (i, bus) in data["bus"]
+        push!(zones, bus["zone"])
     end
 
-    for (d_key, d) in data["areas"]
+    for zone in zones
         buses = [
             bus_number_to_bus[b["bus_i"]]
-            for (b_key, b) in data["bus"] if b["area"] == d["index"]
+            for (b_key, b) in data["bus"] if b["zone"] == zone
         ]
         bus_names = Set{String}()
         for bus in buses
@@ -183,10 +220,11 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; k
             end
         end
 
-        d["name"] = get(d, "name", d_key)
-
-        load_zones = make_loadzones(d, buses, active_power, reactive_power; kwargs...)
-        add_component!(sys, load_zones; skip_validation = SKIP_PM_VALIDATION)
+        load_zone = make_loadzone(string(zone), active_power, reactive_power; kwargs...)
+        for bus in buses
+            set_load_zone!(bus, load_zone)
+        end
+        add_component!(sys, load_zone; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 

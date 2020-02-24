@@ -11,7 +11,10 @@ module PowerSystems
 export System
 export Bus
 export Arc
-export LoadZones
+export AggregationTopology
+export Area
+export LoadZone
+export get_aggregation_topology_accessor
 
 export PowerSystemType
 export Component
@@ -149,7 +152,6 @@ export get_dynamic_components
 export make_pf
 export solve_powerflow!
 
-export parse_standard_files
 export parse_file
 export add_forecasts!
 export add_forecast!
@@ -162,6 +164,9 @@ export clear_components!
 export add_service!
 export remove_service!
 export has_service
+export get_buses
+export get_components_in_aggregation_topology
+export get_aggregation_topology_mapping
 export get_contributing_devices
 export get_contributing_device_mapping
 export ServiceContributingDevices
@@ -289,6 +294,7 @@ include("models/dynamic_inverter_components.jl")
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/supplemental_constructors.jl")
+include("models/supplemental_accessors.jl")
 
 # Dynamic Composed types
 include("models/dynamic_generator.jl")
@@ -316,9 +322,8 @@ include("parsers/common.jl")
 include("parsers/enums.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
-include("parsers/standardfiles_parser.jl")
 include("parsers/power_system_table_data.jl")
-include("parsers/pm2ps_parser.jl")
+include("parsers/power_models_data.jl")
 
 # Better printing
 include("utils/print.jl")

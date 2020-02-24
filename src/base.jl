@@ -101,7 +101,7 @@ function System(
         end
     end
 
-    load_zones = isnothing(annex) ? nothing : get(annex, :LoadZones, nothing)
+    load_zones = isnothing(annex) ? nothing : get(annex, :LoadZone, nothing)
     if !isnothing(load_zones)
         for lz in load_zones
             try
@@ -377,8 +377,11 @@ function IS.add_forecast!(
         return
     end
 
-    if component isa LoadZones
-        uuids = Set([IS.get_uuid(x) for x in get_buses(component)])
+    if component isa Area
+        uuids = Set{UUIDs.UUID}()
+        for bus in _get_buses(data, component)
+            push!(uuids, IS.get_uuid(bus))
+        end
         for component_ in (
             load for load in IS.get_components(ElectricLoad, data) if IS.get_uuid(get_bus(
                 load,
@@ -559,6 +562,80 @@ function get_contributing_device_mapping(sys::System)
     end
 
     return services
+end
+
+"""
+    get_components_in_aggregation_topology(
+        ::Type{T},
+        sys::System,
+        aggregator::AggregationTopology,
+    ) where {T <: StaticInjection}
+
+Return a vector of components with buses in the AggregationTopology.
+"""
+function get_components_in_aggregation_topology(
+    ::Type{T},
+    sys::System,
+    aggregator::AggregationTopology,
+) where {T <: StaticInjection}
+    buses = Set{String}((get_name(x) for x in get_buses(sys, aggregator)))
+    components = Vector{T}()
+    for component in get_components(T, sys)
+        bus = get_bus(component)
+        bus_name = get_name(bus)
+        if bus_name in buses
+            push!(components, component)
+        end
+    end
+
+    return components
+end
+
+"""
+    get_aggregation_topology_mapping(::Type{T}, sys::System) where {T<:AggregationTopology}
+
+Return a mapping of AggregationTopology name to vector of buses within it.
+"""
+function get_aggregation_topology_mapping(
+    ::Type{T},
+    sys::System,
+) where {T <: AggregationTopology}
+    mapping = Dict{String, Vector{Bus}}()
+    accessor_func = get_aggregation_topology_accessor(T)
+    for bus in get_components(Bus, sys)
+        aggregator = accessor_func(bus)
+        name = get_name(aggregator)
+        buses = get(mapping, name, nothing)
+        if isnothing(buses)
+            mapping[name] = Vector{Bus}([bus])
+        else
+            push!(buses, bus)
+        end
+    end
+
+    return mapping
+end
+
+"""
+    get_buses(sys::System, aggregator::AggregationTopology)
+
+Return a vector of buses contained within the AggregationTopology.
+"""
+function get_buses(sys::System, aggregator::AggregationTopology)
+    return _get_buses(sys.data, aggregator)
+end
+
+function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationTopology}
+    accessor_func = get_aggregation_topology_accessor(T)
+    buses = Vector{Bus}()
+    for bus in IS.get_components(Bus, data)
+        _aggregator = accessor_func(bus)
+        if IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
+            push!(buses, bus)
+        end
+    end
+
+    return buses
 end
 
 """

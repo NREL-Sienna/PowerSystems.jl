@@ -64,7 +64,7 @@ end
     )
 
     # Test code path where no normalization occurs.
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     add_forecasts!(sys, [metadata])
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PSY.iterate_forecasts(sys))[1]
@@ -72,7 +72,7 @@ end
 
     # Test code path where timeseries is normalized by dividing by the max value.
     metadata.scaling_factor = "Max"
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     add_forecasts!(sys, [metadata])
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PSY.iterate_forecasts(sys))[1]
@@ -81,7 +81,7 @@ end
     # Test code path where timeseries is normalized by dividing by a custom value.
     sf = 95.0
     metadata.scaling_factor = sf
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     add_forecasts!(sys, [metadata])
     verify_forecasts(sys, 1, 1, 24)
     forecast = collect(PSY.iterate_forecasts(sys))[1]
@@ -102,7 +102,7 @@ end
     timeseries = IS.read_time_series(timeseries_file)[Symbol(component_name)]
 
     # Test with a filename.
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
     add_forecast!(sys, timeseries_file, component, label, 1.0)
     verify_forecasts(sys, 1, 1, 24)
@@ -111,7 +111,7 @@ end
     @test TimeSeries.values(get_data(forecast)) == TimeSeries.values(timeseries)
 
     # Test with TimeSeries.TimeArray.
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
     add_forecast!(sys, timeseries, component, label, 1.0)
     verify_forecasts(sys, 1, 1, 24)
@@ -119,7 +119,7 @@ end
     @test TimeSeries.values(get_data(forecast)) == TimeSeries.values(timeseries)
 
     # Test with DataFrames.DataFrame.
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
     df = DataFrames.DataFrame(timeseries)
     add_forecast!(sys, df, component, label, 1.0)
@@ -128,7 +128,7 @@ end
 end
 
 @testset "Forecast data matpower" begin
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
     forecasts_metadata = joinpath(FORECASTS_DIR, "5bus_ts", "timeseries_pointers_da.json")
     add_forecasts!(sys, forecasts_metadata)
     @test verify_forecasts(sys, 1, 5, 24)
@@ -144,7 +144,7 @@ end
 
     ## TODO: need a dataset with same resolution but different horizon.
 
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
     add_forecasts!(sys, forecasts_metadata)
     @test verify_forecasts(sys, 1, 5, 288)
 end

@@ -614,6 +614,10 @@
             "description": "area membership"
         },
         {
+            "name": "zone",
+            "description": "zone membership"
+        },
+        {
             "unit": "kV",
             "name": "base_voltage",
             "description": "Bus voltage rating"

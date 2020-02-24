@@ -21,7 +21,7 @@ end
 end
 
 @testset "consistency between PowerSystemTableData and standardfiles" begin
-    mpsys = parse_standard_files(joinpath(MATPOWER_DIR, "RTS_GMLC.m"))
+    mpsys = System(PSY.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     cdmsys = create_rts_system()
 
     mp_iter = get_components(HydroGen, mpsys)
