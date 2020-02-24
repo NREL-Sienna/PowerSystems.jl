@@ -36,10 +36,10 @@ badfiles = Dict("case30.m" => PSY.InvalidValue)
             @test_logs(
                 (:error, r"cannot create Line"),
                 match_mode = :any,
-                @test_throws(badfiles[f], PowerSystems.pm2ps_dict(pm_dict))
+                @test_throws(badfiles[f], System(PowerSystems.PowerModelsData(pm_dict)))
             )
         else
-            sys = PowerSystems.pm2ps_dict(pm_dict)
+            sys = System(PowerSystems.PowerModelsData(pm_dict))
             @info "Successfully parsed $path to System struct"
         end
     end
@@ -68,10 +68,10 @@ end
             @test_logs(
                 (:error, r"cannot create Line"),
                 match_mode = :any,
-                @test_throws(badfiles[f], PowerSystems.pm2ps_dict(pm_dict))
+                @test_throws(badfiles[f], System(PowerSystems.PowerModelsData(pm_dict)))
             )
         else
-            sys = PowerSystems.pm2ps_dict(pm_dict)
+            sys = System(PowerSystems.PowerModelsData(pm_dict))
             @info "Successfully parsed $path to System struct"
         end
     end
