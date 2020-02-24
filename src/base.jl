@@ -568,8 +568,8 @@ end
     get_components_in_aggregation_topology(
         ::Type{T},
         sys::System,
-        aggregator::U,
-    ) where {T<:StaticInjection, U<:AggregationTopology}
+        aggregator::AggregationTopology,
+    ) where {T <: StaticInjection}
 
 Return a vector of components with buses in the AggregationTopology.
 """
@@ -592,7 +592,7 @@ function get_components_in_aggregation_topology(
 end
 
 """
-    get_aggregation_topology_mapping( ::Type{T}, sys::System) where {T<:AggregationTopology}
+    get_aggregation_topology_mapping(::Type{T}, sys::System) where {T<:AggregationTopology}
 
 Return a mapping of AggregationTopology name to vector of buses within it.
 """
