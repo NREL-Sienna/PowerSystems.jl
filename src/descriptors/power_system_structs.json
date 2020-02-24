@@ -265,6 +265,67 @@
         "supertype": "DeviceParameter"
     },
     {
+        "struct_name": "Area",
+        "docstring": "A collection of buses.",
+        "fields": [
+            {
+                "name": "name",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "area name",
+                "null_value": "init",
+                "data_type": "String"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+	],
+        "supertype": "AggregationTopology"
+    },
+    {
+        "struct_name": "LoadZone",
+        "fields": [
+            {
+                "null_value": "init",
+                "name": "name",
+                "accessor_module": "InfrastructureSystems",
+                "data_type": "String"
+            },
+            {
+                "name": "maxactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "maxreactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
+                "name": "_forecasts",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+        ],
+        "supertype": "AggregationTopology"
+    },
+    {
         "struct_name": "Bus",
         "docstring": "A power-system bus.",
         "inner_constructor_check": "CheckBusParams",
@@ -323,6 +384,18 @@
                     "max": null
                 },
                 "validation_action": "error"
+            },
+            {
+                "name": "area",
+                "comment": "the area containing the bus",
+                "null_value": "Area(nothing)",
+                "data_type": "Union{Nothing, Area}"
+            },
+            {
+                "name": "load_zone",
+                "comment": "the load zone containing the bus",
+                "null_value": "LoadZone(nothing)",
+                "data_type": "Union{Nothing, LoadZone}"
             },
             {
                 "name": "ext",
@@ -1640,57 +1713,6 @@
             }
         ],
         "supertype": "ThermalGen"
-    },
-    {
-        "struct_name": "LoadZones",
-        "fields": [
-            {
-                "name": "number",
-                "null_value": "0",
-                "data_type": "Int64"
-            },
-            {
-                "null_value": "init",
-                "name": "name",
-                "accessor_module": "InfrastructureSystems",
-                "data_type": "String"
-            },
-            {
-                "name": "buses",
-                "null_value": "[Bus(nothing)]",
-                "data_type": "Vector{Bus}"
-            },
-            {
-                "name": "maxactivepower",
-                "null_value": "0.0",
-                "data_type": "Float64"
-            },
-            {
-                "name": "maxreactivepower",
-                "null_value": "0.0",
-                "data_type": "Float64"
-            },
-            {
-                "name": "services",
-                "data_type": "Vector{Service}",
-                "comment": "Services that this device contributes to",
-                "null_value": "Device[]",
-                "default": "Device[]"
-            },
-            {
-                "name": "_forecasts",
-                "null_value": "InfrastructureSystems.Forecasts()",
-                "data_type": "InfrastructureSystems.Forecasts",
-                "default": "InfrastructureSystems.Forecasts()"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "Topology"
     },
     {
         "struct_name": "GenericBattery",
