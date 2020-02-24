@@ -152,7 +152,6 @@ export get_dynamic_components
 export make_pf
 export solve_powerflow!
 
-export parse_standard_files
 export parse_file
 export add_forecasts!
 export add_forecast!
@@ -323,7 +322,6 @@ include("parsers/common.jl")
 include("parsers/enums.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
-include("parsers/standardfiles_parser.jl")
 include("parsers/power_system_table_data.jl")
 include("parsers/power_models_data.jl")
 

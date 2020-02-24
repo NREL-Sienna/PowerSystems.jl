@@ -111,7 +111,7 @@ checksys = false
 end
 
 @testset "Test System constructor from Matpower" begin
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
 end
 
 @testset "Test accessor functions of PowerSystems auto-generated types" begin
@@ -133,7 +133,7 @@ end
 end
 
 @testset "Test component conversion" begin
-    sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
     l = get_component(Line, sys, "4")
     PSY.convert_component!(MonitoredLine, l, sys)
     @test isnothing(get_component(Line, sys, "4"))

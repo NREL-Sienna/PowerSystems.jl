@@ -5,8 +5,7 @@ include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
 include(joinpath(BASE_DIR, "test", "data_14bus_pu.jl"))
 
 # The 5-bus case from PowerModels data is modified to include 2 phase shifters
-pm_data = PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5.m"))
-sys = PowerSystems.System(pm_data)
+sys = PowerSystems.System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5.m")))
 RTS = create_rts_system();
 
 # mixed up ids for data_5bus_pu

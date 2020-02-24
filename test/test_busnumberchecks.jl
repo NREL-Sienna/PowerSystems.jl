@@ -1,7 +1,7 @@
 
 base_dir = dirname(dirname(pathof(PowerSystems)))
 
-sys = PowerSystems.parse_standard_files(joinpath(MATPOWER_DIR, "case5_re.m"))
+sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
 
 @testset "Check bus index" begin
     @test sort([b.number for b in collect(get_components(Bus, sys))]) == [1, 2, 3, 4, 10]
