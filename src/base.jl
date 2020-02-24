@@ -565,6 +565,59 @@ function get_contributing_device_mapping(sys::System)
 end
 
 """
+    get_components_in_aggregation_topology(
+        ::Type{T},
+        sys::System,
+        aggregator::U,
+    ) where {T<:StaticInjection, U<:AggregationTopology}
+
+Return a vector of components with buses in the AggregationTopology.
+"""
+function get_components_in_aggregation_topology(
+    ::Type{T},
+    sys::System,
+    aggregator::U,
+) where {T <: StaticInjection, U <: AggregationTopology}
+    buses = Set{String}((get_name(x) for x in get_buses(sys, aggregator)))
+    accessor_func = get_aggregation_topology_accessor(U)
+    components = Vector{T}()
+    for component in get_components(T, sys)
+        bus = get_bus(component)
+        bus_name = get_name(bus)
+        if bus_name in buses
+            push!(components, component)
+        end
+    end
+
+    return components
+end
+
+"""
+    get_aggregation_topology_mapping( ::Type{T}, sys::System) where {T<:AggregationTopology}
+
+Return a mapping of AggregationTopology name to vector of buses within it.
+"""
+function get_aggregation_topology_mapping(
+    ::Type{T},
+    sys::System,
+) where {T <: AggregationTopology}
+    mapping = Dict{String, Vector{Bus}}()
+    accessor_func = get_aggregation_topology_accessor(T)
+    for bus in get_components(Bus, sys)
+        aggregator = accessor_func(bus)
+        name = get_name(aggregator)
+        buses = get(mapping, name, nothing)
+        if isnothing(buses)
+            mapping[name] = Vector{Bus}([bus])
+        else
+            push!(buses, bus)
+        end
+    end
+
+    return mapping
+end
+
+"""
     get_buses(sys::System, aggregator::AggregationTopology)
 
 Return a vector of buses contained within the AggregationTopology.

@@ -1,13 +1,13 @@
 
 function get_expected_buses(::Type{T}, sys::System) where {T <: AggregationTopology}
-    expected_buses = Dict{String, Vector{Int}}()
+    expected_buses = Dict{String, Vector{String}}()
     for bus in get_components(Bus, sys)
         agg = get_aggregation_topology_accessor(T)(bus)
         name = get_name(agg)
         if !haskey(expected_buses, name)
-            expected_buses[name] = Vector{Int}()
+            expected_buses[name] = Vector{String}()
         end
-        push!(expected_buses[name], get_number(bus))
+        push!(expected_buses[name], get_name(bus))
     end
 
     return expected_buses
@@ -19,16 +19,22 @@ function test_aggregation_topologies(sys::System, expected_areas, expected_zones
 
     areas = collect(get_components(Area, sys))
     @test length(areas) == expected_areas
+    area_mapping = get_aggregation_topology_mapping(Area, sys)
     for area in areas
-        buses = sort!([get_number(x) for x in get_buses(sys, area)])
-        @test buses == sort(expected_buses_by_area[get_name(area)])
+        area_name = get_name(area)
+        buses = sort!([get_name(x) for x in get_buses(sys, area)])
+        @test buses == sort(expected_buses_by_area[area_name])
+        @test buses == sort!([get_name(x) for x in area_mapping[area_name]])
     end
 
     zones = collect(get_components(LoadZone, sys))
+    zone_mapping = get_aggregation_topology_mapping(LoadZone, sys)
     @test length(zones) == expected_zones
     for zone in zones
-        buses = sort!([get_number(x) for x in get_buses(sys, zone)])
-        @test buses == sort(expected_buses_by_zone[get_name(zone)])
+        zone_name = get_name(zone)
+        buses = sort!([get_name(x) for x in get_buses(sys, zone)])
+        @test buses == sort(expected_buses_by_zone[zone_name])
+        @test buses == sort!([get_name(x) for x in zone_mapping[zone_name]])
     end
 end
 
@@ -42,4 +48,17 @@ end
     pm_dict = PowerSystems.parse_file(path)
     sys = PowerSystems.pm2ps_dict(pm_dict)
     test_aggregation_topologies(sys, 3, 21)
+end
+
+@testset "Test get_components_in_aggregation_topology" begin
+    sys = create_rts_system()
+    areas = collect(get_components(Area, sys))
+    @test !isempty(areas)
+    area = areas[1]
+    generators = get_components_in_aggregation_topology(ThermalStandard, sys, area)
+
+    for gen in generators
+        bus = get_bus(gen)
+        @test IS.get_uuid(get_area(bus)) == IS.get_uuid(area)
+    end
 end

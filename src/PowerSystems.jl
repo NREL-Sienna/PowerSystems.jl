@@ -166,6 +166,8 @@ export add_service!
 export remove_service!
 export has_service
 export get_buses
+export get_components_in_aggregation_topology
+export get_aggregation_topology_mapping
 export get_contributing_devices
 export get_contributing_device_mapping
 export ServiceContributingDevices
