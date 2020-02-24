@@ -62,8 +62,9 @@ c_sys5_re = System(
     res = NLsolve.nlsolve(pf!, x0)
     @test res.zero ≈ result rtol = 1e-3
 
-    solve_powerflow!(c_sys14, nlsolve, method = :newton)
     pf!, x0 = make_pf(c_sys5_re)
     res = NLsolve.nlsolve(pf!, x0)
     @test !res.f_converged
+
+    @test solve_powerflow!(c_sys14, nlsolve, method = :newton)n
 end
