@@ -1,4 +1,9 @@
 # PowerSystems Change Log
+
+## v0.11.1
+
+- Change device internal forecasts field name
+
 ## v0.11.0
 
 - Add support for Load Zones and Areas
