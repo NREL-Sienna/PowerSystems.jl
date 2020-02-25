@@ -66,7 +66,7 @@ function Source(::Nothing)
     )
 end
 
-"""Get Source name."""
+
 InfrastructureSystems.get_name(value::Source) = value.name
 """Get Source available."""
 get_available(value::Source) = value.available

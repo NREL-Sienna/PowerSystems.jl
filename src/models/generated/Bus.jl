@@ -98,7 +98,7 @@ end
 
 """Get Bus number."""
 get_number(value::Bus) = value.number
-"""Get Bus name."""
+
 InfrastructureSystems.get_name(value::Bus) = value.name
 """Get Bus bustype."""
 get_bustype(value::Bus) = value.bustype

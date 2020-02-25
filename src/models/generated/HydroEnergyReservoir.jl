@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         initial_storage::Float64
         services::Vector{Service}
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -34,7 +34,7 @@ This file is auto-generated. Do not edit.
 - `initial_storage::Float64`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroEnergyReservoir <: HydroGen
@@ -51,17 +51,18 @@ mutable struct HydroEnergyReservoir <: HydroGen
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services, ext, _forecasts, InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services, ext, _forecasts, )
+function HydroEnergyReservoir(; name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -79,11 +80,11 @@ function HydroEnergyReservoir(::Nothing)
         initial_storage=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get HydroEnergyReservoir name."""
+
 InfrastructureSystems.get_name(value::HydroEnergyReservoir) = value.name
 """Get HydroEnergyReservoir available."""
 get_available(value::HydroEnergyReservoir) = value.available
@@ -107,7 +108,7 @@ get_initial_storage(value::HydroEnergyReservoir) = value.initial_storage
 get_services(value::HydroEnergyReservoir) = value.services
 """Get HydroEnergyReservoir ext."""
 get_ext(value::HydroEnergyReservoir) = value.ext
-"""Get HydroEnergyReservoir _forecasts."""
-get__forecasts(value::HydroEnergyReservoir) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::HydroEnergyReservoir) = value.forecasts
 """Get HydroEnergyReservoir internal."""
 get_internal(value::HydroEnergyReservoir) = value.internal

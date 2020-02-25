@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         timeframe::Float64
         requirement::Float64
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -18,7 +18,7 @@ This file is auto-generated. Do not edit.
 - `timeframe::Float64`: the relative saturation timeframe, validation range: (0, nothing), action if invalid: error
 - `requirement::Float64`
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Transfer <: Service
@@ -27,17 +27,18 @@ mutable struct Transfer <: Service
     timeframe::Float64
     requirement::Float64
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal(), )
+function Transfer(name, timeframe, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, timeframe, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transfer(; name, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, timeframe, requirement, ext, _forecasts, )
+function Transfer(; name, timeframe, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, timeframe, requirement, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -47,11 +48,11 @@ function Transfer(::Nothing)
         timeframe=0.0,
         requirement=0.0,
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get Transfer name."""
+
 InfrastructureSystems.get_name(value::Transfer) = value.name
 """Get Transfer timeframe."""
 get_timeframe(value::Transfer) = value.timeframe
@@ -59,7 +60,7 @@ get_timeframe(value::Transfer) = value.timeframe
 get_requirement(value::Transfer) = value.requirement
 """Get Transfer ext."""
 get_ext(value::Transfer) = value.ext
-"""Get Transfer _forecasts."""
-get__forecasts(value::Transfer) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::Transfer) = value.forecasts
 """Get Transfer internal."""
 get_internal(value::Transfer) = value.internal

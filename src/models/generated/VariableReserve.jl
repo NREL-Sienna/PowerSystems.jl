@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         timeframe::Float64
         requirement::Float64
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -18,7 +18,7 @@ Data Structure for the procurement products for system simulations.
 - `timeframe::Float64`: the relative saturation timeframe, validation range: (0, nothing), action if invalid: error
 - `requirement::Float64`: the required quantity of the product should be scaled by a Forecast
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`: component forecasts
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
@@ -28,18 +28,18 @@ mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
     "the required quantity of the product should be scaled by a Forecast"
     requirement::Float64
     ext::Dict{String, Any}
-    "component forecasts"
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function VariableReserve{T}(name, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
-    VariableReserve{T}(name, timeframe, requirement, ext, _forecasts, InfrastructureSystemsInternal(), )
+function VariableReserve{T}(name, timeframe, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, timeframe, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserve{T}(; name, timeframe, requirement, ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
-    VariableReserve{T}(name, timeframe, requirement, ext, _forecasts, )
+function VariableReserve{T}(; name, timeframe, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, timeframe, requirement, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -49,11 +49,11 @@ function VariableReserve{T}(::Nothing) where T <: ReserveDirection
         timeframe=0.0,
         requirement=0.0,
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get VariableReserve name."""
+
 InfrastructureSystems.get_name(value::VariableReserve) = value.name
 """Get VariableReserve timeframe."""
 get_timeframe(value::VariableReserve) = value.timeframe
@@ -61,7 +61,7 @@ get_timeframe(value::VariableReserve) = value.timeframe
 get_requirement(value::VariableReserve) = value.requirement
 """Get VariableReserve ext."""
 get_ext(value::VariableReserve) = value.ext
-"""Get VariableReserve _forecasts."""
-get__forecasts(value::VariableReserve) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::VariableReserve) = value.forecasts
 """Get VariableReserve internal."""
 get_internal(value::VariableReserve) = value.internal

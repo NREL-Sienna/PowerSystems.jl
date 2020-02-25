@@ -35,7 +35,7 @@ function Area(::Nothing)
     )
 end
 
-"""Get Area name."""
+
 InfrastructureSystems.get_name(value::Area) = value.name
 """Get Area internal."""
 get_internal(value::Area) = value.internal
