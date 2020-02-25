@@ -194,7 +194,7 @@ function System(
             basevoltage = nothing,
             area = Area(nothing),
             load_zone = LoadZone(nothing),
-            ext = Dict{String,Any}(),
+            ext = Dict{String, Any}(),
         ),
     ],
     generators = [ThermalStandard(nothing), RenewableFix(nothing)],
