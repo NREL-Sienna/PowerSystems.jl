@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         rate::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -36,7 +36,7 @@ This file is auto-generated. Do not edit.
 - `rate::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PhaseShiftingTransformer <: ACBranch
@@ -56,17 +56,18 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services, ext, _forecasts, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services, ext, _forecasts, )
+function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -85,11 +86,11 @@ function PhaseShiftingTransformer(::Nothing)
         rate=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get PhaseShiftingTransformer name."""
+
 InfrastructureSystems.get_name(value::PhaseShiftingTransformer) = value.name
 """Get PhaseShiftingTransformer available."""
 get_available(value::PhaseShiftingTransformer) = value.available
@@ -115,7 +116,7 @@ get_rate(value::PhaseShiftingTransformer) = value.rate
 get_services(value::PhaseShiftingTransformer) = value.services
 """Get PhaseShiftingTransformer ext."""
 get_ext(value::PhaseShiftingTransformer) = value.ext
-"""Get PhaseShiftingTransformer _forecasts."""
-get__forecasts(value::PhaseShiftingTransformer) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::PhaseShiftingTransformer) = value.forecasts
 """Get PhaseShiftingTransformer internal."""
 get_internal(value::PhaseShiftingTransformer) = value.internal

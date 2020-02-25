@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         fixed::Float64
         startup::Float64
         shutdn::Float64
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -18,7 +18,7 @@ Data Structure Operational Cost Data in Three parts fixed, variable cost and sta
 - `fixed::Float64`: fixed cost
 - `startup::Float64`: startup cost, validation range: (0, nothing), action if invalid: warn
 - `shutdn::Float64`: shutdown cost, validation range: (0, nothing), action if invalid: warn
-- `_forecasts::InfrastructureSystems.Forecasts`: component forecasts
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ThreePartCost <: OperationalCost
@@ -30,18 +30,18 @@ mutable struct ThreePartCost <: OperationalCost
     startup::Float64
     "shutdown cost"
     shutdn::Float64
-    "component forecasts"
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function ThreePartCost(variable, fixed, startup, shutdn, _forecasts=InfrastructureSystems.Forecasts(), )
-    ThreePartCost(variable, fixed, startup, shutdn, _forecasts, InfrastructureSystemsInternal(), )
+function ThreePartCost(variable, fixed, startup, shutdn, forecasts=InfrastructureSystems.Forecasts(), )
+    ThreePartCost(variable, fixed, startup, shutdn, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThreePartCost(; variable, fixed, startup, shutdn, _forecasts=InfrastructureSystems.Forecasts(), )
-    ThreePartCost(variable, fixed, startup, shutdn, _forecasts, )
+function ThreePartCost(; variable, fixed, startup, shutdn, forecasts=InfrastructureSystems.Forecasts(), )
+    ThreePartCost(variable, fixed, startup, shutdn, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -51,7 +51,7 @@ function ThreePartCost(::Nothing)
         fixed=0.0,
         startup=0.0,
         shutdn=0.0,
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -63,7 +63,7 @@ get_fixed(value::ThreePartCost) = value.fixed
 get_startup(value::ThreePartCost) = value.startup
 """Get ThreePartCost shutdn."""
 get_shutdn(value::ThreePartCost) = value.shutdn
-"""Get ThreePartCost _forecasts."""
-get__forecasts(value::ThreePartCost) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::ThreePartCost) = value.forecasts
 """Get ThreePartCost internal."""
 get_internal(value::ThreePartCost) = value.internal

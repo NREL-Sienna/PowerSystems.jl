@@ -127,7 +127,6 @@ export get_Xq
 export get_Xq_p
 export get_Xq_pp
 export get_Y
-export get__forecasts
 export get_activepower
 export get_activepower_flow
 export get_activepowerlimits
