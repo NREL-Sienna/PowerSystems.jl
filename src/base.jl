@@ -1256,7 +1256,7 @@ function convert_component!(
         line.anglelimits,
         line.services,
         line.ext,
-        line._forecasts,
+        line.forecasts,
         line.internal,
     )
     remove_component!(sys, line)
@@ -1293,7 +1293,7 @@ function convert_component!(
         line.anglelimits,
         line.services,
         line.ext,
-        line._forecasts,
+        line.forecasts,
         line.internal,
     )
     remove_component!(sys, line)

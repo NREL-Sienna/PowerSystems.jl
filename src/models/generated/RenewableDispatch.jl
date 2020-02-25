@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         op_cost::TwoPartCost
         services::Vector{Service}
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -28,7 +28,7 @@ This file is auto-generated. Do not edit.
 - `op_cost::TwoPartCost`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct RenewableDispatch <: RenewableGen
@@ -42,17 +42,18 @@ mutable struct RenewableDispatch <: RenewableGen
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, services, ext, _forecasts, InfrastructureSystemsInternal(), )
+function RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, services, ext, _forecasts, )
+function RenewableDispatch(; name, available, bus, activepower, reactivepower, tech, op_cost, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, tech, op_cost, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -67,11 +68,11 @@ function RenewableDispatch(::Nothing)
         op_cost=TwoPartCost(nothing),
         services=Device[],
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get RenewableDispatch name."""
+
 InfrastructureSystems.get_name(value::RenewableDispatch) = value.name
 """Get RenewableDispatch available."""
 get_available(value::RenewableDispatch) = value.available
@@ -89,7 +90,7 @@ get_op_cost(value::RenewableDispatch) = value.op_cost
 get_services(value::RenewableDispatch) = value.services
 """Get RenewableDispatch ext."""
 get_ext(value::RenewableDispatch) = value.ext
-"""Get RenewableDispatch _forecasts."""
-get__forecasts(value::RenewableDispatch) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::RenewableDispatch) = value.forecasts
 """Get RenewableDispatch internal."""
 get_internal(value::RenewableDispatch) = value.internal

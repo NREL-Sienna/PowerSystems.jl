@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         tech::TechHydro
         services::Vector{Service}
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -26,7 +26,7 @@ This file is auto-generated. Do not edit.
 - `tech::TechHydro`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroDispatch <: HydroGen
@@ -39,17 +39,18 @@ mutable struct HydroDispatch <: HydroGen
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, activepower, reactivepower, tech, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroDispatch(name, available, bus, activepower, reactivepower, tech, services, ext, _forecasts, InfrastructureSystemsInternal(), )
+function HydroDispatch(name, available, bus, activepower, reactivepower, tech, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroDispatch(name, available, bus, activepower, reactivepower, tech, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroDispatch(; name, available, bus, activepower, reactivepower, tech, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    HydroDispatch(name, available, bus, activepower, reactivepower, tech, services, ext, _forecasts, )
+function HydroDispatch(; name, available, bus, activepower, reactivepower, tech, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroDispatch(name, available, bus, activepower, reactivepower, tech, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -63,11 +64,11 @@ function HydroDispatch(::Nothing)
         tech=TechHydro(nothing),
         services=Device[],
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get HydroDispatch name."""
+
 InfrastructureSystems.get_name(value::HydroDispatch) = value.name
 """Get HydroDispatch available."""
 get_available(value::HydroDispatch) = value.available
@@ -83,7 +84,7 @@ get_tech(value::HydroDispatch) = value.tech
 get_services(value::HydroDispatch) = value.services
 """Get HydroDispatch ext."""
 get_ext(value::HydroDispatch) = value.ext
-"""Get HydroDispatch _forecasts."""
-get__forecasts(value::HydroDispatch) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::HydroDispatch) = value.forecasts
 """Get HydroDispatch internal."""
 get_internal(value::HydroDispatch) = value.internal

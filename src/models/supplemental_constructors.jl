@@ -135,7 +135,7 @@ function StaticReserve(
     contributingdevices::IS.FlattenIteratorWrapper,
     timeframe,
     requirement,
-    _forecasts,
+    forecasts,
     internal,
 )
     return StaticReserve(
@@ -143,7 +143,7 @@ function StaticReserve(
         collect(contributingdevices),
         timeframe,
         requirement,
-        _forecasts,
+        forecasts,
         internal,
     )
 end

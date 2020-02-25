@@ -21,8 +21,9 @@
                 "validation_action": "warn"
             },
             {
-                "name": "_forecasts",
-                "comment": "component forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -75,8 +76,9 @@
                 "validation_action": "warn"
             },
             {
-                "name": "_forecasts",
-                "comment": "component forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -311,7 +313,9 @@
                 "default": "Device[]"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -528,7 +532,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -640,7 +646,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -760,7 +768,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -870,7 +880,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -971,7 +983,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1049,7 +1063,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1132,7 +1148,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1209,7 +1227,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1262,7 +1282,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1335,7 +1357,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1434,7 +1458,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1498,7 +1524,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1565,7 +1593,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1628,7 +1658,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1700,7 +1732,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1828,7 +1862,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1925,8 +1961,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
-                "comment": "component forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"
@@ -1972,7 +2009,9 @@
                 "default": "Dict{String, Any}()"
             },
             {
-                "name": "_forecasts",
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
                 "null_value": "InfrastructureSystems.Forecasts()",
                 "data_type": "InfrastructureSystems.Forecasts",
                 "default": "InfrastructureSystems.Forecasts()"

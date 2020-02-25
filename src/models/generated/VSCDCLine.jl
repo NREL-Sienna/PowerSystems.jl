@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         inverter_firing_angle::Min_Max
         services::Vector{Service}
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -34,7 +34,7 @@ As implemented in Milano's Book, Page 397.
 - `inverter_firing_angle::Min_Max`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct VSCDCLine <: DCBranch
@@ -51,17 +51,18 @@ mutable struct VSCDCLine <: DCBranch
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, _forecasts, InfrastructureSystemsInternal(), )
+function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, _forecasts, )
+function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -79,11 +80,11 @@ function VSCDCLine(::Nothing)
         inverter_firing_angle=(min=0.0, max=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get VSCDCLine name."""
+
 InfrastructureSystems.get_name(value::VSCDCLine) = value.name
 """Get VSCDCLine available."""
 get_available(value::VSCDCLine) = value.available
@@ -107,7 +108,7 @@ get_inverter_firing_angle(value::VSCDCLine) = value.inverter_firing_angle
 get_services(value::VSCDCLine) = value.services
 """Get VSCDCLine ext."""
 get_ext(value::VSCDCLine) = value.ext
-"""Get VSCDCLine _forecasts."""
-get__forecasts(value::VSCDCLine) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::VSCDCLine) = value.forecasts
 """Get VSCDCLine internal."""
 get_internal(value::VSCDCLine) = value.internal

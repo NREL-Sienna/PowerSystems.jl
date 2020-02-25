@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         op_cost::TwoPartCost
         services::Vector{Service}
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -32,7 +32,7 @@ This file is auto-generated. Do not edit.
 - `op_cost::TwoPartCost`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct InterruptibleLoad <: ControllableLoad
@@ -48,17 +48,18 @@ mutable struct InterruptibleLoad <: ControllableLoad
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, services, ext, _forecasts, InfrastructureSystemsInternal(), )
+function InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, services, ext, _forecasts, )
+function InterruptibleLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    InterruptibleLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, op_cost, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -75,11 +76,11 @@ function InterruptibleLoad(::Nothing)
         op_cost=TwoPartCost(nothing),
         services=Device[],
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get InterruptibleLoad name."""
+
 InfrastructureSystems.get_name(value::InterruptibleLoad) = value.name
 """Get InterruptibleLoad available."""
 get_available(value::InterruptibleLoad) = value.available
@@ -101,7 +102,7 @@ get_op_cost(value::InterruptibleLoad) = value.op_cost
 get_services(value::InterruptibleLoad) = value.services
 """Get InterruptibleLoad ext."""
 get_ext(value::InterruptibleLoad) = value.ext
-"""Get InterruptibleLoad _forecasts."""
-get__forecasts(value::InterruptibleLoad) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::InterruptibleLoad) = value.forecasts
 """Get InterruptibleLoad internal."""
 get_internal(value::InterruptibleLoad) = value.internal

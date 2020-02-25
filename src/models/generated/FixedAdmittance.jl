@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         Y::Complex{Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
 - `Y::Complex{Float64}`: System per-unit value
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct FixedAdmittance <: ElectricLoad
@@ -34,17 +34,18 @@ mutable struct FixedAdmittance <: ElectricLoad
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function FixedAdmittance(name, available, bus, Y, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    FixedAdmittance(name, available, bus, Y, services, ext, _forecasts, InfrastructureSystemsInternal(), )
+function FixedAdmittance(name, available, bus, Y, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    FixedAdmittance(name, available, bus, Y, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function FixedAdmittance(; name, available, bus, Y, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    FixedAdmittance(name, available, bus, Y, services, ext, _forecasts, )
+function FixedAdmittance(; name, available, bus, Y, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    FixedAdmittance(name, available, bus, Y, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -56,11 +57,11 @@ function FixedAdmittance(::Nothing)
         Y=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get FixedAdmittance name."""
+
 InfrastructureSystems.get_name(value::FixedAdmittance) = value.name
 """Get FixedAdmittance available."""
 get_available(value::FixedAdmittance) = value.available
@@ -72,7 +73,7 @@ get_Y(value::FixedAdmittance) = value.Y
 get_services(value::FixedAdmittance) = value.services
 """Get FixedAdmittance ext."""
 get_ext(value::FixedAdmittance) = value.ext
-"""Get FixedAdmittance _forecasts."""
-get__forecasts(value::FixedAdmittance) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::FixedAdmittance) = value.forecasts
 """Get FixedAdmittance internal."""
 get_internal(value::FixedAdmittance) = value.internal

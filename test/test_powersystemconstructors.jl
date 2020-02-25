@@ -125,7 +125,11 @@ end
         ps_type in types_to_skip && continue
         obj = ps_type(nothing)
         for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
-            func = getfield(PowerSystems, Symbol("get_" * string(field_name)))
+            if field_name == :name || field_name == :forecasts
+                func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
+            else
+                func = getfield(PowerSystems, Symbol("get_" * string(field_name)))
+            end
             val = func(obj)
             @test val isa field_type
         end

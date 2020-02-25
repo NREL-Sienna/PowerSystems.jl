@@ -18,7 +18,7 @@ This file is auto-generated. Do not edit.
         reactivepowerlimits::Union{Nothing, Min_Max}
         services::Vector{Service}
         ext::Dict{String, Any}
-        _forecasts::InfrastructureSystems.Forecasts
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -40,7 +40,7 @@ Data structure for a generic battery
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `_forecasts::InfrastructureSystems.Forecasts`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GenericBattery <: Storage
@@ -63,17 +63,18 @@ mutable struct GenericBattery <: Storage
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    _forecasts::InfrastructureSystems.Forecasts
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, services, ext, _forecasts, InfrastructureSystemsInternal(), )
+function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, services=Device[], ext=Dict{String, Any}(), _forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, services, ext, _forecasts, )
+function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -94,11 +95,11 @@ function GenericBattery(::Nothing)
         reactivepowerlimits=(min=0.0, max=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
-        _forecasts=InfrastructureSystems.Forecasts(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
-"""Get GenericBattery name."""
+
 InfrastructureSystems.get_name(value::GenericBattery) = value.name
 """Get GenericBattery available."""
 get_available(value::GenericBattery) = value.available
@@ -128,7 +129,7 @@ get_reactivepowerlimits(value::GenericBattery) = value.reactivepowerlimits
 get_services(value::GenericBattery) = value.services
 """Get GenericBattery ext."""
 get_ext(value::GenericBattery) = value.ext
-"""Get GenericBattery _forecasts."""
-get__forecasts(value::GenericBattery) = value._forecasts
+
+InfrastructureSystems.get_forecasts(value::GenericBattery) = value.forecasts
 """Get GenericBattery internal."""
 get_internal(value::GenericBattery) = value.internal
