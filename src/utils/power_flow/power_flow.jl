@@ -144,9 +144,9 @@ function solve_powerflow!(sys, nlsolve; args...)
     res = nlsolve(pf!, x0; args...)
     if res.f_converged
         PowerSystems._write_pf_sol!(sys, res)
-        println("PowerFlow solve converged, the results have been stored in the system")
+        @info("PowerFlow solve converged, the results have been stored in the system")
         return res.f_converged
     end
-    println("The powerflow solver returned convergence = $(res.f_converged)")
+    @error("The powerflow solver returned convergence = $(res.f_converged)")
     return res.f_converged
 end
