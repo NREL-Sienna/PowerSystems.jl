@@ -59,6 +59,10 @@ c_sys5_re() = System(
 @testset begin
     using NLsolve
     # This is a negative test. The data passed for sys5_re is known to be infeasible.
-    @test !solve_powerflow!(c_sys5_re(), nlsolve)
+    @test_logs(
+        (:error, "The powerflow solver returned convergence = false"),
+        match_mode = :any,
+        @test !solve_powerflow!(c_sys5_re(), nlsolve)
+    )
     @test solve_powerflow!(c_sys14(), nlsolve, method = :newton)
 end
