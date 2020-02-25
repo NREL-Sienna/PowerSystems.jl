@@ -45,8 +45,7 @@ end
 
 @testset "Test PM areas and load zones" begin
     path = joinpath(DATA_DIR, "matpower", "RTS_GMLC.m")
-    pm_dict = PowerSystems.parse_file(path)
-    sys = PowerSystems.pm2ps_dict(pm_dict)
+    sys = System(PowerSystems.PowerModelsData(path))
     test_aggregation_topologies(sys, 3, 21)
 end
 
