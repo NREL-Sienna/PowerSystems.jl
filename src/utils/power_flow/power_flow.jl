@@ -142,6 +142,11 @@ solve_powerflow!(sys, nlsolve, method = :Newton)
 function solve_powerflow!(sys, nlsolve; args...)
     pf!, x0 = PowerSystems.make_pf(sys)
     res = nlsolve(pf!, x0; args...)
-    PowerSystems._write_pf_sol!(sys, res)
-    return
+    if res.f_converged
+        PowerSystems._write_pf_sol!(sys, res)
+        @info("PowerFlow solve converged, the results have been stored in the system")
+        return res.f_converged
+    end
+    @error("The powerflow solver returned convergence = $(res.f_converged)")
+    return res.f_converged
 end
