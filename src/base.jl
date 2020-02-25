@@ -183,7 +183,20 @@ end
 function System(
     ::Nothing,
     ;
-    buses = [Bus(nothing)],
+    buses = [
+        Bus(;
+            number = 0,
+            name = "init",
+            bustype = BusTypes.REF,
+            angle = 0.0,
+            voltage = 0.0,
+            voltagelimits = (min = 0.0, max = 0.0),
+            basevoltage = nothing,
+            area = Area(nothing),
+            load_zone = LoadZone(nothing),
+            ext = Dict{String,Any}(),
+        ),
+    ],
     generators = [ThermalStandard(nothing), RenewableFix(nothing)],
     loads = [PowerLoad(nothing)],
     branches = nothing,
