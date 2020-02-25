@@ -1,4 +1,9 @@
 # PowerSystems Change Log
+## v0.11.0
+
+- Add support for Load Zones and Areas
+- Add return status for power flows
+- Change behaviour of Matpower and PTI files parsing
 
 ## v0.10.0
 
