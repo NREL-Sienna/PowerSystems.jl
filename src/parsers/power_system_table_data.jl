@@ -43,7 +43,7 @@ function PowerSystemTableData(
     for (label, category) in categories
         val = get(data, label, nothing)
         if isnothing(val)
-            @warn "key '$label' not found in input data, set to nothing"
+            @debug "key '$label' not found in input data, set to nothing"
         else
             category_to_df[category] = val
         end
@@ -638,23 +638,20 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             end
         else
             @info("Adding contributing generators for $(reserve.name) by category")
-            @warn "Adding contributing components by category only supports generators" maxlog =
-                1
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 buses = get_dataframe(data, BUS::InputCategory)
                 bus_ids = buses[!, bus_id_column]
-                sys_gen = get_components_by_name(Generator, sys, gen.name)
-                if length(sys_gen) == 1
-                    sys_gen = sys_gen[1]
-                    area = string(buses[
-                        bus_ids .== get_number(get_bus(sys_gen)),
-                        bus_area_column,
-                    ][1])
-                    if gen.category in device_subcategories && area in regions
-                        _add_device!(contributing_devices, device_categories, gen.name)
-                    end
-                else
-                    @warn "Found $(length(sys_gen)) Generators with name=$(gen.name)"
+                sys_gen = get_component(
+                    get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
+                    sys,
+                    gen.name,
+                )
+                area = string(buses[
+                    bus_ids .== get_number(get_bus(sys_gen)),
+                    bus_area_column,
+                ][1])
+                if gen.category in device_subcategories && area in regions
+                    _add_device!(contributing_devices, device_categories, gen.name)
                 end
             end
         end
@@ -763,16 +760,19 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
 
     capacity = gen.active_power_limits_max
     startup_cost = get(gen, :startup_cost, nothing)
-    if isnothing(startup_cost) && hasfield(typeof(gen), :startup_heat_cold_cost)
-        startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
-    else
-        @warn("No startup_cost defined for $(gen.name), setting to 0.0")
-        startup_cost = 0.0
+    if isnothing(startup_cost)
+        if hasfield(typeof(gen), :startup_heat_cold_cost)
+            startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
+        else
+            startup_cost = 0.0
+            @warn "No startup_cost defined for $(gen.name), setting to $startup_cost" maxlog =
+                5
+        end
     end
 
     shutdown_cost = get(gen, :shutdown_cost, nothing)
     if isnothing(shutdown_cost)
-        @warn("No shutdown_cost defined for $(gen.name), setting to 0.0")
+        @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
         shutdown_cost = 0.0
     end
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
