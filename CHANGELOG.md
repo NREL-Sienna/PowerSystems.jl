@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## v0.11.2
+
+- Reduce warning print for unsupported columns outs when parsing data
+
 ## v0.11.1
 
 - Change device internal forecasts field name
@@ -8,12 +12,12 @@
 
 - Add support for Load Zones and Areas
 - Add return status for power flows
-- Change behaviour of Matpower and PTI files parsing
+- Change behavior of Matpower and PTI files parsing
 
 ## v0.10.0
 
 - Update PTI parsing code from PM and IM
-- Modify user's interface for enums
+- Modify the user's interface for enums
 
 ## v0.9.1
 
@@ -36,7 +40,7 @@
 ## v0.8.4
 
 - Fix 7z error in Julia 1.3 and Windows
-- Bug fix in pu conversion in HVDC Table Data
+- Bugfix in pu conversion in HVDC Table Data
 - Improve testing
 
 ## v0.8.3
@@ -65,24 +69,24 @@
 
 ## v0.7.0
 
-- Make codebase consistent with style guide.
+- Make codebase consistent with the style guides.
 - Add Dynamic Data capabilities.
-- Change use of services and store them inside of devices.
+- Change the use of services and store them inside of devices.
 - Add ext field to devices
-- Add ext field to system
+- Add ext field to the system
 
 ## v0.6.2
 
-- Downgrade compatible version of CSV to 0.5.13 to avoid tab complete hang.
+- Downgrade compatible version of CSV to 0.5.13 to avoid tab-complete hang.
 
 ## v0.6.2
 
 - Bug Fix in docstrings autogeneration code
-- Contigous forecasts function added
+- Contiguous forecasts function added
 
 ## v0.6.1
 
-- Remove bin from auto generation code
+- Remove bin from auto-generation code
 - Updated docstrings
 
 ## v0.6.0
@@ -97,7 +101,7 @@
 
 ## v0.5.1
 
-- Bug fix in generate_initial_times
+- Bugfix in generate_initial_times
 - Bug fixes on SystemTable Data
 
 ## v0.5.0
@@ -109,7 +113,7 @@
 - Fix Parsing bug in Table data #362
 - Enable custom validation descriptors when parsing PSS/E and MATPOWER files
 - Enable multiple loads per bus when parsing PSS/E and MATPOWER files
-- Support multiple generators per bus and non-sequential bus indexing in powerflow
+- Support multiple generators per bus and non-sequential bus indexing in power flow
 
 ## v0.4.2
 
