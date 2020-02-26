@@ -654,6 +654,17 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                     _add_device!(contributing_devices, device_categories, gen.name)
                 end
             end
+
+            unused_categories = setdiff(
+                device_subcategories,
+                get_dataframe(data, GENERATOR::InputCategory)[
+                    !,
+                    get_user_field(data, GENERATOR::InputCategory, "category"),
+                ],
+            )
+            for cat in unused_categories
+                @warn("Device category: $cat not found in generators data; adding contributing devices by category only supported for generator data")
+            end
         end
 
         if length(contributing_devices) == 0
