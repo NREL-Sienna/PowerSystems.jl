@@ -1,9 +1,18 @@
 using Test
 using Logging
 using Dates
+import InteractiveUtils
 
+import InfrastructureSystems
+import InfrastructureSystems: Deterministic, Probabilistic, ScenarioBased, Forecast
+const IS = InfrastructureSystems
 using PowerSystems
+import PowerSystems: PowerSystemTableData
+const PSY = PowerSystems
 
+include(joinpath(@__DIR__, "../src/utils/data.jl"))
+import .UtilsData: TestData
+download(TestData; branch = "master")
 
 BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
 DATA_DIR = joinpath(BASE_DIR, "data")
@@ -11,8 +20,6 @@ FORECASTS_DIR = joinpath(DATA_DIR, "forecasts")
 MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
 PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
 RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
-
-download(PowerSystems.TestData)
 
 LOG_FILE = "power-systems.log"
 LOG_LEVELS = Dict(
@@ -22,6 +29,7 @@ LOG_LEVELS = Dict(
     "Error" => Logging.Error,
 )
 
+include("common.jl")
 
 """
 Copied @includetests from https://github.com/ssfrr/TestSetExtensions.jl.
@@ -48,9 +56,14 @@ macro includetests(testarg...)
         rootfile = @__FILE__
         if length(tests) == 0
             tests = readdir(dirname(rootfile))
-            tests = filter(f->endswith(f, ".jl") && f != basename(rootfile), tests)
+            tests = filter(
+                f ->
+                        startswith(f, "test_") &&
+                        endswith(f, ".jl") && f != basename(rootfile),
+                tests,
+            )
         else
-            tests = map(f->string(f, ".jl"), tests)
+            tests = map(f -> string(f, ".jl"), tests)
         end
         println()
         for test in tests
@@ -76,10 +89,10 @@ function run_tests()
     console_logger = ConsoleLogger(stderr, console_level)
     file_level = get_logging_level("PS_LOG_LEVEL", "Info")
 
-    open_file_logger(LOG_FILE, file_level) do file_logger
+    IS.open_file_logger(LOG_FILE, file_level) do file_logger
         levels = (Logging.Info, Logging.Warn, Logging.Error)
-        multi_logger = MultiLogger([console_logger, file_logger],
-                                   LogEventTracker(levels))
+        multi_logger =
+            IS.MultiLogger([console_logger, file_logger], IS.LogEventTracker(levels))
         global_logger(multi_logger)
 
         # Testing Topological components of the schema
@@ -87,10 +100,8 @@ function run_tests()
             @includetests ARGS
         end
 
-        # TODO: once all known error logs are fixed, add this test:
-        #@test length(get_log_events(multi_logger.tracker, Logging.Error)) == 0
-
-        @info report_log_summary(multi_logger)
+        @test length(IS.get_log_events(multi_logger.tracker, Logging.Error)) == 0
+        @info IS.report_log_summary(multi_logger)
     end
 end
 

@@ -1,7 +1,6 @@
 abstract type Branch <: Device end
+abstract type ACBranch <: Branch end
+abstract type DCBranch <: Branch end
 
-include("./branches/lines.jl")
-include("./branches/transformers.jl")
-include("./branches/dc_lines.jl")
-include("../utils/ybus_calculations.jl")
-include("../utils/ptdf_calculations.jl")
+get_from_bus(b::T) where {T <: Branch} = b.arc.from
+get_to_bus(b::T) where {T <: Branch} = b.arc.to

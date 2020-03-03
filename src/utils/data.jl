@@ -31,25 +31,25 @@ Defaults to the root of the PowerSystems package.
 
 Returns the downloaded folder name.
 """
-function Base.download(::Type{TestData}
-                       ;
-                       folder::AbstractString=joinpath(@__DIR__, "../..") |> abspath,
-                       branch::String="master",
-                       force::Bool=false,
-                      )
+function Base.download(
+    ::Type{TestData};
+    folder::AbstractString = abspath(joinpath(@__DIR__, "../..")),
+    branch::String = "master",
+    force::Bool = false,
+)
 
     if Sys.iswindows()
         POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.zip"
     else
         POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.tar.gz"
     end
-    directory = folder |> normpath |> abspath
+    directory = abspath(normpath(folder))
     data = joinpath(directory, "data")
     if !isdir(data) || force
         tempfilename = Base.download(POWERSYSTEMSTESTDATA_URL)
         mkpath(directory)
         unzip(os, tempfilename, directory)
-        mv(joinpath(directory, "PowerSystemsTestData-$branch"), data, force=true)
+        mv(joinpath(directory, "PowerSystemsTestData-$branch"), data, force = true)
     end
 
     return data
@@ -60,9 +60,23 @@ function unzip(::Type{<:BSD}, filename, directory)
 end
 
 function unzip(::Type{Windows}, filename, directory)
-    home = (Base.VERSION < v"0.7-") ? JULIA_HOME : Sys.BINDIR
-    @assert success(`$home/7z x $filename -y -o$directory`) "Unable to extract $filename to $directory"
+    path_7z = if Base.VERSION < v"0.7-"
+        "$JULIA_HOME/7z"
+    else
+        sep = Sys.iswindows() ? ";" : ":"
+        withenv(
+            "PATH" => string(
+                joinpath(Sys.BINDIR, "..", "libexec"),
+                sep,
+                Sys.BINDIR,
+                sep,
+                ENV["PATH"],
+            ),
+        ) do
+            Sys.which("7z")
+        end
+    end
+    @assert success(`$path_7z x $filename -y -o$directory`) "Unable to extract $filename to $directory"
 end
 
 end # module UtilsData
-

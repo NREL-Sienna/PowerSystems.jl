@@ -1,0 +1,675 @@
+{
+    "dc_branch": [
+        {
+            "name": "name",
+            "description": "Unique ID"
+        },
+        {
+            "name": "connection_points_from",
+            "description": "From Bus ID"
+        },
+        {
+            "name": "connection_points_to",
+            "description": "To Bus ID"
+        },
+        {
+            "name": "activepower_flow",
+            "unit": "MW",
+            "description": "Active power flow"
+        },
+        {
+            "name": "mw_load",
+            "description": "Power demand (MW)",
+            "system_per_unit": true
+        },
+        {
+            "name": "rectifier_firing_angle_max",
+            "unit": "degree",
+            "value_range": [],
+            "description": "Nominal maximum firing angle"
+        },
+        {
+            "name": "rectifier_firing_angle_min",
+            "unit": "degree",
+            "value_range": [],
+            "description": "Minimum steady state firing angle"
+        },
+        {
+            "name": "rectifier_xrc",
+            "unit": "per unit",
+            "description": "Commutating transformer reactance/bridge (ohm)"
+        },
+        {
+            "name": "rectifier_tap_limits_max",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Max tap setting"
+        },
+        {
+            "name": "rectifier_tap_limits_min",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Min tap setting"
+        },
+        {
+            "name": "inverter_firing_angle_max",
+            "unit": "degree",
+            "value_range": [],
+            "description": "Nominal maximum firing angle"
+        },
+        {
+            "name": "inverter_firing_angle_min",
+            "unit": "degree",
+            "value_range": [],
+            "description": "Minimum steady state firing angle"
+        },
+        {
+            "name": "inverter_xrc",
+            "unit": "per unit",
+            "description": "Commutating transformer reactance/bridge (ohm)"
+        },
+        {
+            "name": "inverter_tap_limits_max",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Max tap setting"
+        },
+        {
+            "name": "inverter_tap_limits_min",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Min tap setting"
+        },
+        {
+            "name": "inverter_tap_limits",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Min tap setting"
+        },
+        {
+            "name": "loss",
+            "unit": "%",
+            "description": "Power Losses on the Line"
+        },
+        {
+            "name": "min_active_power_limit_from",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Minimum Active Power Limit"
+        },
+        {
+            "name": "max_active_power_limit_from",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Maximum Active Power Limit"
+        },
+        {
+            "name": "min_active_power_limit_to",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Minimum Active Power Limit"
+        },
+        {
+            "name": "max_active_power_limit_to",
+            "unit": "per unit",
+            "value_range": [],
+            "description": "Maximum Active Power Limit"
+        },
+        {
+            "name": "control_mode",
+            "description": "Control Mode"
+        },
+        {
+            "name": "dc_line_category",
+            "value_options": [
+                "VSCDCLine",
+                "HVDCLine"
+            ],
+            "description": "Type of Struct"
+        }
+    ],
+    "branch": [
+        {
+            "name": "name",
+            "description": "Unique branch ID"
+        },
+        {
+            "name": "connection_points_from",
+            "description": "From Bus ID"
+        },
+        {
+            "name": "connection_points_to",
+            "description": "To Bus ID"
+        },
+        {
+            "unit": "per unit",
+            "name": "r",
+            "description": "Branch resistance p.u."
+        },
+        {
+            "unit": "per unit",
+            "name": "x",
+            "description": "Branch reactance p.u."
+        },
+        {
+            "unit": "per unit",
+            "name": "primary_shunt",
+            "description": "Branch line charging susceptance p.u."
+        },
+        {
+            "unit": "MW",
+            "name": "rate",
+            "description": "Continuous MW flow limit",
+            "system_per_unit": true
+        },
+        {
+            "unit": "radian",
+            "name": "min_angle_limits",
+            "description": "Minimum Angle Limits"
+        },
+        {
+            "unit": "radian",
+            "name": "max_angle_limits",
+            "description": "Continuous MW flow limit"
+        },
+        {
+            "name": "activepower_flow",
+            "unit": "MW",
+            "description": "Active power flow",
+            "system_per_unit": true
+        },
+        {
+            "name": "reactivepower_flow",
+            "unit": "MVAr",
+            "description": "Reactive power flow",
+            "system_per_unit": true
+        },
+        {
+            "name": "tap",
+            "unit": "%",
+            "description": "Transformer winding ratio"
+        },
+        {
+            "name": "branch_category",
+            "value_options": [
+                "Transformers",
+                "Lines"
+            ],
+            "description": "Type of Struct"
+        }
+    ],
+    "generator": [
+        {
+            "name": "name",
+            "description": "Unique generator ID: Concatenated from Bus ID_Unit Type_Gen ID"
+        },
+        {
+            "name": "bus_id",
+            "description": "Connection Bus ID"
+        },
+        {
+            "name": "fuel",
+            "description": "Unit Fuel"
+        },
+        {
+            "name": "fuel_price",
+            "unit": "$/MMBTU",
+            "description": "Fuel Price"
+        },
+        {
+            "unit": "MW",
+            "name": "active_power",
+            "description": "Real power injection setpoint",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "reactive_power",
+            "description": "Reactive power StaticInjection setpoint",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "active_power_limits_max",
+            "description": "Maximum real power StaticInjection (Unit Capacity)",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "active_power_limits_min",
+            "description": "Minimum real power StaticInjection (Unit minimum stable level)",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MVAR",
+            "name": "reactive_power_limits_max",
+            "description": "Maximum reactive power StaticInjection",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MVAR",
+            "name": "reactive_power_limits_min",
+            "description": "Minimum reactive power StaticInjection",
+            "system_per_unit": true
+        },
+        {
+            "unit": "hours",
+            "name": "min_down_time",
+            "description": "Minimum off time required before unit restart"
+        },
+        {
+            "unit": "hours",
+            "name": "min_up_time",
+            "description": "Minimum on time required before unit shutdown"
+        },
+        {
+            "unit": "MW/Min",
+            "name": "ramp_limits",
+            "description": "Maximum ramp up and ramp down rate",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MMBTU",
+            "name": "startup_heat_cold_cost",
+            "description": "Heat required to startup from cold"
+        },
+        {
+            "name": "heat_rate_avg_0",
+            "description": "Heat rate Average 0 TODO"
+        },
+        {
+            "name": "heat_rate_incr_1",
+            "description": "Heat rate Incremental 1 TODO"
+        },
+        {
+            "name": "heat_rate_incr_2",
+            "description": "Heat rate Incremental 2 TODO"
+        },
+        {
+            "name": "heat_rate_incr_3",
+            "description": "Heat rate Incremental 3 TODO"
+        },
+        {
+            "name": "heat_rate_incr_4",
+            "description": "Heat rate Incremental 4 TODO"
+        },
+        {
+            "name": "heat_rate_incr_5",
+            "description": "Heat rate Incremental 5 TODO"
+        },
+        {
+            "name": "heat_rate_incr_6",
+            "description": "Heat rate Incremental 6 TODO"
+        },
+        {
+            "name": "heat_rate_incr_7",
+            "description": "Heat rate Incremental 7 TODO"
+        },
+        {
+            "name": "heat_rate_incr_8",
+            "description": "Heat rate Incremental 8 TODO"
+        },
+        {
+            "name": "heat_rate_incr_9",
+            "description": "Heat rate Incremental 9 TODO"
+        },      {
+            "name": "heat_rate_incr_10",
+            "description": "Heat rate Incremental 10 TODO"
+        },
+        {
+            "name": "heat_rate_incr_11",
+            "description": "Heat rate Incremental 11 TODO"
+        },
+        {
+            "name": "heat_rate_incr_12",
+            "description": "Heat rate Incremental 12 TODO"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_0",
+            "description": "Output point 0 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_1",
+            "description": "Output point 1 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_2",
+            "description": "Output point 2 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_3",
+            "description": "Output point 3 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_4",
+            "description": "Output point 4 on heat rate curve as a percentage of PMax"
+        },{
+            "unit": "%",
+            "name": "output_percent_5",
+            "description": "Output point 5 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_6",
+            "description": "Output point 6 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_7",
+            "description": "Output point 7 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_8",
+            "description": "Output point 8 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_9",
+            "description": "Output point 9 on heat rate curve as a percentage of PMax"
+        },{
+            "unit": "%",
+            "name": "output_percent_10",
+            "description": "Output point 10 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_11",
+            "description": "Output point 11 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "%",
+            "name": "output_percent_12",
+            "description": "Output point 12 on heat rate curve as a percentage of PMax"
+        },
+        {
+            "unit": "MVA",
+            "name": "base_mva",
+            "description": "Unit equivalent circuit base_mva"
+        },
+        {
+            "unit": "$/MW",
+            "name": "variable_cost",
+            "description": "Variable Cost of Generation"
+        },
+        {
+            "unit": "$/MW",
+            "name": "fixed_cost",
+            "description": "Fixed Cost of Generation"
+        },
+        {
+            "unit": "$/start",
+            "name": "startup_cost",
+            "description": "Cost associated with Start-up"
+        },
+        {
+            "unit": "$/start",
+            "name": "shutdown_cost",
+            "description": "Cost associated with Shutdown"
+        },
+        {
+            "unit": "%",
+            "name": "annual_capacity_factor",
+            "description": "Annual Capacity factor for a Unit"
+        },
+        {
+            "unit": "$/MW",
+            "name": "curtailment_cost",
+            "description": "Cost of curtailing production"
+        },
+        {
+            "unit": "$/MW",
+            "name": "interruption_cost",
+            "description": "Cost of Non-served Energy"
+        },
+        {
+            "unit": "%",
+            "name": "power_factor",
+            "description": "Power Factor"
+        },
+        {
+            "name": "unit_type",
+            "description": "Unit Prime Mover Type"
+        },
+        {
+            "name": "category",
+            "description": "Category"
+        },
+        {
+            "name": "generator_category",
+            "value_options": [
+                "HydroDispatch",
+                "HydroEnergyReservoir",
+                "RenewableFix",
+                "RenewableDispatch",
+                "ThermalStandard"
+            ],
+            "description": "Type of Struct"
+        }
+    ],
+    "simulation_objects": [],
+    "reserves": [
+        {
+            "name": "name",
+            "description": "Reserve product name"
+        },
+        {
+            "name": "contributing_devices",
+            "description": "Contributing Devices for reserve requirement"
+        },
+        {
+            "units": "MW",
+            "name": "requirement",
+            "description": "Contributing Devices for reserve requirement",
+            "system_per_unit": true
+        },
+        {
+            "unit": "seconds",
+            "name": "timeframe",
+            "description": "Response time to satisfy reserve requirement"
+        },
+        {
+            "name": "eligible_device_categories",
+            "description": "Eligible Device Categories"
+        },
+        {
+            "name": "eligible_device_subcategories",
+            "description": "Eligible Device SubCategories"
+        },
+        {
+            "name": "eligible_generator_categories",
+            "description": "Eligible Generator Categories"
+        },
+        {
+            "name": "eligible_regions",
+            "description": "Eligible Regions"
+        },
+        {
+            "name": "reserve_category",
+            "value_options": [
+                "StaticReserve",
+                "VariableReserve",
+                "Transfer"
+            ],
+            "description": "Type of Struct"
+        },
+        {
+            "name": "direction",
+            "description": "Direction",
+            "value_options": [
+                "Up",
+                "Down"
+            ]
+        }
+    ],
+    "storage": [
+        {
+            "name": "name",
+            "description": "Storage object name"
+        },
+        {
+            "name": "generator_name",
+            "description": "Generator name associated with storage"
+        },
+        {
+            "name": "bus_id",
+            "description": "Connection Bus ID"
+        },
+        {
+            "name": "energy_level",
+            "unit": "kW/h",
+            "description": "Energy Level setpoint"
+        },
+        {
+            "unit": "MW",
+            "name": "active_power",
+            "description": "Real power injection setpoint",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "reactive_power",
+            "description": "Reactive power StaticInjection setpoint",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "input_power_limits_max",
+            "description": "Maximum real power limit on charging",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "input_power_limits_min",
+            "description": "Minimum real power limit on charging",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "output_active_power_limits_max",
+            "description": "Maximum real power StaticInjection",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "output_active_power_limits_min",
+            "description": "Minimum real power StaticInjection",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MVAR",
+            "name": "reactive_power_limits_max",
+            "description": "Maximum reactive power StaticInjection",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MVAR",
+            "name": "reactive_power_limits_min",
+            "description": "Minimum reactive power StaticInjection",
+            "system_per_unit": true
+        },
+        {
+            "unit": "MW",
+            "name": "rating",
+            "description": "Continuous MW flow limit",
+            "system_per_unit": true
+        },
+        {
+            "unit": "%",
+            "name": "efficiency",
+            "description": "Battery Efficiency"
+        },
+        {
+            "unit": "GWh",
+            "name": "storage_capacity",
+            "description": "Storage Capacity"
+        },
+        {
+            "unit": "GWh",
+            "name": "initial_storage",
+            "description": "Initial Storage"
+        },
+        {
+            "unit": "GWh",
+            "name": "inflow_limit",
+            "description": "Inflow Limit"
+        }
+    ],
+    "bus": [
+        {
+            "name": "bus_id",
+            "description": "Numeric Bus ID"
+        },
+        {
+            "name": "name",
+            "description": "Bus name from RTS-96"
+        },
+        {
+            "name": "area",
+            "description": "area membership"
+        },
+        {
+            "name": "zone",
+            "description": "zone membership"
+        },
+        {
+            "unit": "kV",
+            "name": "base_voltage",
+            "description": "Bus voltage rating"
+        },
+        {
+            "name": "bus_type",
+            "value_options": [
+                "PQ",
+                "PV",
+                "REF"
+            ],
+            "description": "Bus control type"
+        },
+        {
+            "unit": "kV",
+            "name": "voltage",
+            "description": "voltage magnitude setpoint"
+        },
+        {
+            "unit": "radian",
+            "name": "angle",
+            "description": "voltage angle setpoint"
+        },
+        {
+            "unit": "kV",
+            "name": "voltage_limits_min",
+            "description": "Minimum voltage setpoint"
+        },
+        {
+            "unit": "kV",
+            "name": "voltage_limits_max",
+            "description": "Maximum voltage setpoint"
+        },
+        {
+            "unit": "per unit",
+            "name": "mw_shunt_g",
+            "description": "Shunt conductance"
+        },
+        {
+            "unit": "per unit",
+            "name": "mvar_shut_b",
+            "description": "Shunt susceptance"
+        },
+        {
+            "name": "max_active_power",
+            "description": "Maximum Active Power",
+            "system_per_unit": true
+        },
+        {
+            "name": "max_reactive_power",
+            "description": "Maximum Rective Power",
+            "system_per_unit": true
+        }
+    ]
+}
