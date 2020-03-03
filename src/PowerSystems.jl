@@ -274,6 +274,7 @@ include("models/dynamic_models.jl")
 
 # Include utilities
 include("utils/IO/base_checks.jl")
+include("utils/timearray.jl")
 
 # PowerSystems models
 include("models/topological_elements.jl")
