@@ -20,7 +20,7 @@ end
     @trytotest begin
         @test begin
            @info string("Testing using EVIpro dataset \"", EVIPRO_DATA, "\".")
-           bevs = populate_BEV_demand(EVIPRO_DATA)
+           bevs = populate_BEV_demand_legacy(EVIPRO_DATA)
            length(bevs) == 1000
         end
     end
@@ -35,7 +35,7 @@ end
 
 
 function checkcharging(f)
-    bevs = populate_BEV_demand(EVIPRO_DATA)
+    bevs = populate_BEV_demand_legacy(EVIPRO_DATA)
     i = 0
     for bev in bevs
         i += 1
