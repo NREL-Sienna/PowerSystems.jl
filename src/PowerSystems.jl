@@ -152,6 +152,43 @@ export get_dynamic_components
 export make_pf
 export solve_powerflow!
 
+export BevDemand
+export ChargingSegment
+export ChargingPlan
+export Demand
+export Envelope
+export FlexibleDemand
+export InflexibleDemand
+export InterruptibleDemand
+export LocatedDemand
+export LocatedEnvelope
+export MobileDemand
+export StationaryInflexibleDemand
+export TemporalDemand
+export aligntimes
+export batterylevels
+export chargeamounts
+export chargelevels
+export chargerates
+export consumptionamounts
+export consumptionrates
+export demands
+export durations
+export earliestdemands
+export envelope
+export greedydemands
+export latestdemands
+export loads
+export locateddemand
+export locations
+export maxchargerates
+export populate_BEV_demand
+export populate_BEV_demand_legacy
+export shortfall
+export verify
+export verifybattery
+export verifylimits
+
 export parse_file
 export add_forecasts!
 export add_forecast!
@@ -291,6 +328,7 @@ include("models/loads.jl")
 include("models/devices.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
+include("models/demand.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
