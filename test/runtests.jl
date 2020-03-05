@@ -58,8 +58,7 @@ macro includetests(testarg...)
             tests = readdir(dirname(rootfile))
             tests = filter(
                 f ->
-                        startswith(f, "test_") &&
-                        endswith(f, ".jl") && f != basename(rootfile),
+                    startswith(f, "test_") && endswith(f, ".jl") && f != basename(rootfile),
                 tests,
             )
         else
