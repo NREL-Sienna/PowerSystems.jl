@@ -173,9 +173,9 @@ end
     sys = System(100)
     @test_logs (:error, "Model doesn't contain a slack bus") (
         :error,
-        "There are no Buss in the System",
-    ) (:error, "There are no Generators in the System") (
+        "There are no Bus Components in the System",
+    ) (:error, "There are no Generator Components in the System") (
         :error,
-        "There are no ElectricLoads in the System",
+        "There are no ElectricLoad Components in the System",
     ) PSY.check!(sys)
 end
