@@ -47,3 +47,11 @@ function minimumtimestep(forecasts::Array{T}) where {T <: Forecast}
         return ts
     end
 end
+
+function critical_components_check(sys::System)
+    critical_component_types = [Bus, Generator, ElectricLoad]
+    for component_type in critical_component_types
+        components = get_components(component_type, sys)
+        length(components) == 0 && @error("There are no $(component_type)s in the System")
+    end
+end
