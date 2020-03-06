@@ -171,11 +171,7 @@ end
 
 @testset "Test system checks" begin
     sys = System(100)
-    @test_logs (:error, "Model doesn't contain a slack bus") (
-        :error,
-        "There are no Bus Components in the System",
-    ) (:error, "There are no Generator Components in the System") (
-        :error,
-        "There are no ElectricLoad Components in the System",
-    ) PSY.check!(sys)
+    @test_throws InfrastructureSystems.InvalidValue("Critical Componeents are not present.") PSY.check!(
+        sys,
+    )
 end

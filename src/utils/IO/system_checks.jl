@@ -54,8 +54,8 @@ function critical_components_check(sys::System)
     for component_type in critical_component_types
         components = get_components(component_type, sys)
         if length(components) == 0
-            @error("There are no $(component_type) Components in the System")
             missing_critical_components = true
+            @error("There are no $(component_type) Components in the System")
         end
     end
     missing_critical_components &&
