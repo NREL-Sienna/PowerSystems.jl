@@ -393,13 +393,15 @@
                 "name": "area",
                 "comment": "the area containing the bus",
                 "null_value": "Area(nothing)",
-                "data_type": "Union{Nothing, Area}"
+                "data_type": "Union{Nothing, Area}",
+                "default": "nothing"
             },
             {
                 "name": "load_zone",
                 "comment": "the load zone containing the bus",
                 "null_value": "LoadZone(nothing)",
-                "data_type": "Union{Nothing, LoadZone}"
+                "data_type": "Union{Nothing, LoadZone}",
+                "default": "nothing"
             },
             {
                 "name": "ext",

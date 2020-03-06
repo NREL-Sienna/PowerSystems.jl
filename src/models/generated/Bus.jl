@@ -72,11 +72,11 @@ mutable struct Bus <: Topology
     end
 end
 
-function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext=Dict{String, Any}(), )
+function Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
     Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
 end
 
-function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext=Dict{String, Any}(), )
+function Bus(; number, name, bustype, angle, voltage, voltagelimits, basevoltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
     Bus(number, name, bustype, angle, voltage, voltagelimits, basevoltage, area, load_zone, ext, )
 end
 
