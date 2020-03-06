@@ -17,7 +17,7 @@ function _buildlodf(branches, nodes, dist_slack::Array{Float64} = [0.1])
     end
     (Dem, dipiv, dinfo) = getrf!(
         Matrix{Float64}(LinearAlgebra.I, linecount, linecount) -
-            Array(LinearAlgebra.Diagonal(ptdf_denominator)),
+        Array(LinearAlgebra.Diagonal(ptdf_denominator)),
     )
     lodf = gemm('N', 'N', H, getri!(Dem, dipiv))
     lodf =

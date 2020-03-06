@@ -396,9 +396,9 @@ function IS.add_forecast!(
             push!(uuids, IS.get_uuid(bus))
         end
         for component_ in (
-            load for load in IS.get_components(ElectricLoad, data) if IS.get_uuid(get_bus(
-                load,
-            )) in uuids
+            load for
+            load in IS.get_components(ElectricLoad, data) if
+            IS.get_uuid(get_bus(load)) in uuids
         )
             IS.add_forecast!(data, component_, forecast, ts_data)
         end
@@ -960,6 +960,7 @@ function check!(sys::System)
     buses = get_components(Bus, sys)
     slack_bus_check(buses)
     buscheck(buses)
+    critical_components_check(sys)
 end
 
 function JSON2.write(io::IO, sys::System)

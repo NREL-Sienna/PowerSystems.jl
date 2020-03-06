@@ -723,7 +723,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["f_bus"] = pop!(dcside, "IBUS")
             sub_data["t_bus"] = pop!(acside, "IBUS")
             sub_data["br_status"] = pop!(dcline, "MDC") == 0 ||
-                pop!(dcside, "TYPE") == 0 || pop!(acside, "TYPE") == 0 ?
+            pop!(dcside, "TYPE") == 0 || pop!(acside, "TYPE") == 0 ?
                 0 : 1
 
             sub_data["pf"] = 0.0
