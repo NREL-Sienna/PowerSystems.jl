@@ -730,8 +730,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
                 fuel_cost *
                 data.basepower,
                 var_cost[i][2],
-            ) .* gen.active_power_limits_max
-            for i in 2:length(var_cost)
+            ) .* gen.active_power_limits_max for i in 2:length(var_cost)
         ]
         var_cost[1] =
             (
@@ -742,7 +741,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         fixed = max(
             0.0,
             var_cost[1][1] -
-                (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
+            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
         for i in 2:length(var_cost)
