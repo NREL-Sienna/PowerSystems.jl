@@ -1,6 +1,6 @@
 # PowerSystems Change Log
 
-# v0.12.0
+## v0.12.0
 
 - Make LoadZone and Area optional Bus Inputs
 
