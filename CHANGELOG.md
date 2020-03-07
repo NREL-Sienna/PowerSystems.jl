@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+# v0.12.0
+
+- Make LoadZone and Area optional Bus Inputs
+
 ## v0.11.2
 
 - Reduce warning print for unsupported columns outs when parsing data
