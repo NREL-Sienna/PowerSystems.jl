@@ -9,6 +9,7 @@ merge!(
         "NUC" => ThermalFuels.NUCLEAR,
         "GAS" => ThermalFuels.NATURAL_GAS,
         "OIL" => ThermalFuels.DISTILLATE_FUEL_OIL,
+        "DFO" => ThermalFuels.DISTILLATE_FUEL_OIL,
         "SYNC_COND" => ThermalFuels.OTHER,
     ),
 )
