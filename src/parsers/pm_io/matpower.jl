@@ -568,7 +568,8 @@ end
 "adds dcline costs, if gen costs exist"
 function _add_dcline_costs!(data::Dict{String, Any})
     if length(data["gencost"]) > 0 &&
-       length(data["dclinecost"]) <= 0 && length(data["dcline"]) > 0
+       length(data["dclinecost"]) <= 0 &&
+       length(data["dcline"]) > 0
         @info("added zero cost function data for dclines")
         model = data["gencost"][1]["model"]
         if model == 1
@@ -1408,10 +1409,20 @@ function export_matpower(io::IO, data::Dict{String, Any})
 
     # print the extra component data
     for (key, value) in data
-        if key != "bus" && key != "gen" && key != "branch" && key != "load" &&
-           key != "shunt" && key != "storage" && key != "dcline" && key != "ne_branch" &&
-           key != "version" && key != "baseMVA" && key != "per_unit" &&
-           key != "name" && key != "source_type" && key != "source_version"
+        if key != "bus" &&
+           key != "gen" &&
+           key != "branch" &&
+           key != "load" &&
+           key != "shunt" &&
+           key != "storage" &&
+           key != "dcline" &&
+           key != "ne_branch" &&
+           key != "version" &&
+           key != "baseMVA" &&
+           key != "per_unit" &&
+           key != "name" &&
+           key != "source_type" &&
+           key != "source_version"
             _export_extra_data(io, data, key)
         end
     end
@@ -1426,7 +1437,8 @@ function _export_extra_data(
     postfix = "",
 )
     if isa(data[component], Int) ||
-       isa(data[component], Int64) || isa(data[component], Float64)
+       isa(data[component], Int64) ||
+       isa(data[component], Float64)
         println(io, "mpc.", component, " = ", data[component], ";")
         println(io)
         return
