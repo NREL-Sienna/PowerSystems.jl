@@ -1,7 +1,7 @@
 # PowerSystems
 
-[![Build Status](https://travis-ci.com/NREL-SIIP/PowerSystems.jl.svg?branch=master)](https://travis-ci.com/NREL/PowerSystems.jl)
-[![codecov](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL/PowerSystems.jl)
+[![Build Status](https://travis-ci.com/NREL-SIIP/PowerSystems.jl.svg?branch=master)](https://travis-ci.com/NREL-SIIP/PowerSystems.jl)
+[![codecov](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl)
 [![Documentation Build](https://github.com/NREL-SIIP/PowerSystems.jl/workflows/Documentation/badge.svg?)](https://nrel.github.io/PowerSystems.jl/latest)
 [![Gitter](https://badges.gitter.im/NREL/PowerSystems.jl.svg)](https://gitter.im/NREL/PowerSystems.jl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
