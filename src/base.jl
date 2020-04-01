@@ -961,6 +961,7 @@ function check!(sys::System)
     slack_bus_check(buses)
     buscheck(buses)
     critical_components_check(sys)
+    adequacy_check(sys)
 end
 
 function JSON2.write(io::IO, sys::System)
