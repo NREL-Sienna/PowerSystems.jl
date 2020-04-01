@@ -265,13 +265,13 @@ function System(
     forecast_resolution = nothing,
     time_series_in_memory = false,
     runchecks = true,
-    kwargs...
+    kwargs...,
 )
     sys = System(
         data.basepower;
         time_series_in_memory = time_series_in_memory,
         runchecks = runchecks,
-        kwargs...
+        kwargs...,
     )
 
     loadzone_csv_parser!(sys, data)
@@ -767,7 +767,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     ramp = get(gen, :ramp_limits, nothing)
     min_up_time = get(gen, :min_up_time, nothing)
     min_down_time = get(gen, :min_down_time, nothing)
-    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing : (up = min_up_time, down = min_down_time)
+    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
+        (up = min_up_time, down = min_down_time)
     tech = TechThermal(
         rating = rating,
         primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
@@ -819,7 +820,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
     ramp = get(gen, :ramp_limits, nothing)
     min_up_time = get(gen, :min_up_time, nothing)
     min_down_time = get(gen, :min_down_time, nothing)
-    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing : (up = min_up_time, down = min_down_time)
+    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
+        (up = min_up_time, down = min_down_time)
     tech = TechHydro(
         rating,
         convert(PrimeMovers.PrimeMover, gen.unit_type),

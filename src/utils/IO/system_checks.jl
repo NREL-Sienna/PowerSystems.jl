@@ -71,7 +71,9 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 function adequacy_check(sys::System)
     total_gen = sum(get_rating.(get_components(Generator, sys))) * get_basepower(sys)
     @debug "Total System Generation: $total_gen"
-    total_load = sum(get_maxactivepower.(get_components(ElectricLoad, sys))) * get_basepower(sys)
+    total_load =
+        sum(get_maxactivepower.(get_components(ElectricLoad, sys))) * get_basepower(sys)
     @debug "Total System Load: $total_load"
-    total_load > total_gen && @error "System peak load ($total_load) exceeds total generation capability ($total_gen)."
+    total_load > total_gen &&
+    @error "System peak load ($total_load) exceeds total generation capability ($total_gen)."
 end
