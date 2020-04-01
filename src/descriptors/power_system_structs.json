@@ -268,14 +268,33 @@
     },
     {
         "struct_name": "Area",
-        "docstring": "A collection of buses.",
+        "docstring": "A collection of buses for control purposes.",
         "fields": [
             {
+                "null_value": "init",
                 "name": "name",
                 "accessor_module": "InfrastructureSystems",
-                "comment": "area name",
-                "null_value": "init",
                 "data_type": "String"
+            },
+            {
+                "name": "maxactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "default": "0.0"
+            },
+            {
+                "name": "maxreactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "default": "0.0"
+            },
+            {
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
             },
             {
                 "name": "internal",
@@ -288,6 +307,7 @@
     },
     {
         "struct_name": "LoadZone",
+        "docstring": "A collection of buses for electricity price analysis.",
         "fields": [
             {
                 "null_value": "init",
@@ -305,13 +325,7 @@
                 "null_value": "0.0",
                 "data_type": "Float64"
             },
-            {
-                "name": "services",
-                "data_type": "Vector{Service}",
-                "comment": "Services that this device contributes to",
-                "null_value": "Device[]",
-                "default": "Device[]"
-            },
+
             {
                 "name": "forecasts",
                 "accessor_module": "InfrastructureSystems",
