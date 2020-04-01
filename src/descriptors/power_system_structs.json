@@ -258,6 +258,18 @@
                 "validation_action": "error"
             },
             {
+                "name": "participation_factor",
+                "comment": "AGC Participation Factor",
+                "null_value": "0.0",
+                "default": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": 1.0
+                },
+                "validation_action": "error"
+            },
+            {
                 "name": "internal",
                 "comment": "power system internal reference, do not modify",
                 "data_type": "InfrastructureSystemsInternal",

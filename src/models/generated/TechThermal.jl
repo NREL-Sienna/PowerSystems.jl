@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         reactivepowerlimits::Union{Nothing, Min_Max}
         ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+        participation_factor::Float64
         internal::InfrastructureSystemsInternal
     end
 
@@ -23,6 +24,7 @@ Data Structure for the technical parameters of thermal generation technologies.
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
+- `participation_factor::Float64`: AGC Participation Factor, validation range: (0, 1.0), action if invalid: error
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TechThermal <: DeviceParameter
@@ -36,16 +38,18 @@ mutable struct TechThermal <: DeviceParameter
     reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+    "AGC Participation Factor"
+    participation_factor::Float64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
-    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, InfrastructureSystemsInternal(), )
+function TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, participation_factor=0.0, )
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, participation_factor, InfrastructureSystemsInternal(), )
 end
 
-function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
-    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, )
+function TechThermal(; rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, participation_factor=0.0, )
+    TechThermal(rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, participation_factor, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -58,6 +62,7 @@ function TechThermal(::Nothing)
         reactivepowerlimits=nothing,
         ramplimits=nothing,
         timelimits=nothing,
+        participation_factor=0.0,
     )
 end
 
@@ -75,5 +80,7 @@ get_reactivepowerlimits(value::TechThermal) = value.reactivepowerlimits
 get_ramplimits(value::TechThermal) = value.ramplimits
 """Get TechThermal timelimits."""
 get_timelimits(value::TechThermal) = value.timelimits
+"""Get TechThermal participation_factor."""
+get_participation_factor(value::TechThermal) = value.participation_factor
 """Get TechThermal internal."""
 get_internal(value::TechThermal) = value.internal
