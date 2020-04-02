@@ -63,6 +63,8 @@ function critical_components_check(sys::System)
 end
 
 """
+    adequacy_check(sys::System)
+
 Checks the system for sum(generator ratings) >= sum(load ratings).
 
 # Arguments
@@ -76,6 +78,8 @@ function adequacy_check(sys::System)
 end
 
 """
+    total_load_rating(sys::System)
+
 Checks the system for sum(generator ratings) >= sum(load ratings).
 
 # Arguments
@@ -101,7 +105,9 @@ function total_load_rating(sys::System)
 end
 
 """
-total sum of system generator ratings.
+    total_generation_rating(sys::System)
+
+Total sum of system generator ratings.
 
 # Arguments
 - `sys::System`: system
