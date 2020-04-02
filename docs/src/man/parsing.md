@@ -45,7 +45,7 @@ column names.
 For example, when parsing raw data for a generator the code expects a column
 called `name`. If the raw data instead defines that column as `GEN UID` then
 you can change the `custom_name` field under the `generator` category to
-`GEN UID` in your YAML file.
+`GEN UID` in your YAML file. 
 
 #### Per-unit conversion
 PowerSystems defines whether it expects a column value to be per-unit in
@@ -70,16 +70,16 @@ PowerSystems requires a metadata file that maps components to their time series
 data in order to be able to automatically construct forecasts from raw data
 files. The following fields are required for each time array:
 
-* Simulation:  User description of simulation
-* Category:  Type of component. Must map to PowerSystems abstract types (Bus,
+* simulation:  User description of simulation
+* category:  Type of component. Must map to PowerSystems abstract types (Bus,
   ElectricLoad, Generator, LoadZone, Reserve)
-* Object:  Name of component
-* Parameter:  Name of accessor function that can be called on the component to
+* component_name:  Name of component
+* label:  Name of accessor function that can be called on the component to
   retrieve the forecasted value.
-* Scaling Factor:  Controls normalization of the data. Use 1.0 for
+* scaling_factor:  Controls normalization of the data. Use 1.0 for
   pre-normalized data. Use 'Max' to divide the timeseries by the max value in the
   column. Use any float for a custom scaling factor.
-* Data File:  Path to the time series data file
+* data_file:  Path to the time series data file
 
 PowerSystems supports this metadata in either CSV or JSON formats. Refer to
 [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/timeseries_pointers.json)
