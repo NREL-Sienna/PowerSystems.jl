@@ -989,61 +989,51 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
     end
 
     fields = Vector{_FieldInfo}()
-    try
-        for item in data.user_descriptors[category]
-            custom_name = Symbol(item["custom_name"])
-            name = item["name"]
-            if custom_name in df_names
-                if !(name in descriptor_names)
-                    if occursin("heat_rate_", name) || occursin("output_percent_", name)
-                        base = name[(findlast("_", name)[end] + 1):end]
-                        d_name = descriptor_names[occursin.(base, descriptor_names)][end]
-                        per_unit[name] = per_unit[d_name]
-                        unit[name] = unit[d_name]
-                    else
-                        throw(DataFormatError("$name is not defined in $POWER_SYSTEM_DESCRIPTOR_FILE"))
-                    end
-                end
 
-                if !per_unit[name] && get(item, "system_per_unit", false)
-                    throw(DataFormatError("$name cannot be defined as system_per_unit"))
-                end
-
-                needs_pu_conversion =
-                    per_unit[name] &&
-                    haskey(item, "system_per_unit") && !item["system_per_unit"]
-
-                custom_unit = get(item, "unit", nothing)
-                if !isnothing(unit[name]) &&
-                   !isnothing(custom_unit) &&
-                   custom_unit != unit[name]
-                    unit_conversion = (From = custom_unit, To = unit[name])
+    for item in data.user_descriptors[category]
+        custom_name = Symbol(item["custom_name"])
+        name = item["name"]
+        if custom_name in df_names
+            if !(name in descriptor_names)
+                if occursin("heat_rate_", name) || occursin("output_percent_", name)
+                    base = name[(findlast("_", name)[end] + 1):end]
+                    d_name = descriptor_names[occursin.(base, descriptor_names)][end]
+                    per_unit[name] = per_unit[d_name]
+                    unit[name] = unit[d_name]
                 else
-                    unit_conversion = nothing
+                    throw(DataFormatError("$name is not defined in $POWER_SYSTEM_DESCRIPTOR_FILE"))
                 end
-
-                push!(
-                    fields,
-                    _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion),
-                )
-            else
-                # TODO: This should probably be a fatal error. However, the parsing code
-                # doesn't use all the descriptor fields, so skip for now.
-                @warn "User-defined column name $custom_name is not in dataframe."
             end
-        end
-        return fields
-    catch err
-        if err == KeyError
-            msg = "Failed to find category=$category field=$field in input descriptors $err"
-            throw(DataFormatError(msg))
+
+            if !per_unit[name] && get(item, "system_per_unit", false)
+                throw(DataFormatError("$name cannot be defined as system_per_unit"))
+            end
+
+            needs_pu_conversion =
+                per_unit[name] &&
+                haskey(item, "system_per_unit") && !item["system_per_unit"]
+
+            custom_unit = get(item, "unit", nothing)
+            if !isnothing(unit[name]) &&
+               !isnothing(custom_unit) &&
+               custom_unit != unit[name]
+                unit_conversion = (From = custom_unit, To = unit[name])
+            else
+                unit_conversion = nothing
+            end
+
+            push!(
+                fields,
+                _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion),
+            )
         else
-            throw(err)
+            # TODO: This should probably be a fatal error. However, the parsing code
+            # doesn't use all the descriptor fields, so skip for now.
+            @warn "User-defined column name $custom_name is not in dataframe."
         end
     end
 
-    msg = "Failed to find category=$category field=$field in input descriptors"
-    throw(DataFormatError(msg))
+    return fields
 end
 
 """Reads values from dataframe row and performs necessary conversions."""
