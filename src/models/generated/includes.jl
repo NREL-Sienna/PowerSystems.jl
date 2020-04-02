@@ -25,6 +25,7 @@ include("ThermalStandard.jl")
 include("GenericBattery.jl")
 include("StaticReserve.jl")
 include("VariableReserve.jl")
+include("AGC.jl")
 include("Transfer.jl")
 include("AVRFixed.jl")
 include("AVRSimple.jl")
@@ -73,8 +74,10 @@ export get_H_hp
 export get_H_ip
 export get_H_lp
 export get_K0
+export get_K_d
 export get_K_ex
 export get_K_hp
+export get_K_i
 export get_K_ip
 export get_K_lp
 export get_K_p
@@ -139,10 +142,12 @@ export get_area
 export get_available
 export get_b
 export get_basevoltage
+export get_bias
 export get_bus
 export get_bustype
 export get_capacity
 export get_cf
+export get_delta_t
 export get_efficiency
 export get_energy
 export get_eq_p
@@ -184,6 +189,7 @@ export get_n_states
 export get_number
 export get_op_cost
 export get_outputactivepowerlimits
+export get_participation_factor
 export get_powerfactor
 export get_primaryshunt
 export get_primemover
