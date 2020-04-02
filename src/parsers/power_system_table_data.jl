@@ -216,12 +216,9 @@ end
 
 """Return the dataframe for the category."""
 function get_dataframe(data::PowerSystemTableData, category::InputCategory)
-    if !haskey(data.category_to_df, category)
-        @warn("Missing $category data.")
-        return nothing
-    else
-        return data.category_to_df[category]
-    end
+    df = get(data.category_to_df, category, DataFrames.DataFrame())
+    isempty(df) && @warn("Missing $category data.")
+    return df
 end
 
 """

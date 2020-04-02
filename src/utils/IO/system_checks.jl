@@ -69,11 +69,45 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 - `sys::System`: system
 """
 function adequacy_check(sys::System)
-    total_gen = sum(get_rating.(get_components(Generator, sys))) * get_basepower(sys)
-    @debug "Total System Generation: $total_gen"
-    total_load =
-        sum(get_maxactivepower.(get_components(ElectricLoad, sys))) * get_basepower(sys)
+    gen = total_generation_rating(sys)
+    load = total_load_rating(sys)
+    load >
+    gen && @warn "System peak load ($load) exceeds total generation capability ($gen)."
+end
+
+"""
+Checks the system for sum(generator ratings) >= sum(load ratings).
+
+# Arguments
+- `sys::System`: system
+"""
+function total_load_rating(sys::System)
+    basepower = get_basepower(sys)
+    controllable_loads = get_components(ControllableLoad, sys)
+    cl = isempty(controllable_loads) ? 0.0 :
+        sum(get_maxactivepower.(controllable_loads)) * basepower
+    @debug "System has $cl MW of ControllableLoad"
+    static_loads = get_components(StaticLoad, sys)
+    sl = isempty(static_loads) ? 0.0 : sum(get_maxactivepower.(static_loads)) * basepower
+    @debug "System has $sl MW of StaticLoad"
+    # Total load calculation assumes  P = Real(V^2/Y) assuming V=1.0
+    fa_loads = get_components(FixedAdmittance, sys)
+    fa = isempty(fa_loads) ? 0.0 :
+        sum(real.(get_basevoltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
+    @debug "System has $fa MW of FixedAdmittance assuming admittancce values are in P.U."
+    total_load = cl + sl + fa
     @debug "Total System Load: $total_load"
-    total_load > total_gen &&
-    @error "System peak load ($total_load) exceeds total generation capability ($total_gen)."
+    return total_load
+end
+
+"""
+total sum of system generator ratings.
+
+# Arguments
+- `sys::System`: system
+"""
+function total_generation_rating(sys::System)
+    gen = sum(get_rating.(get_components(Generator, sys))) * get_basepower(sys)
+    @debug "Total System Generation: $gen"
+    return gen
 end
