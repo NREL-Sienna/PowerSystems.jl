@@ -2115,7 +2115,8 @@ function _propagate_topology_status!(data::Dict{String, <:Any})
                     #println("bus $(i) active load $(incident_active_load)")
                     #println("bus $(i) active shunt $(incident_active_shunt)")
 
-                    if incident_active_edge == 1 && length(incident_active_gen[i]) == 0 &&
+                    if incident_active_edge == 1 &&
+                       length(incident_active_gen[i]) == 0 &&
                        length(incident_active_load[i]) == 0 &&
                        length(incident_active_shunt[i]) == 0
                         @info "deactivating bus $(i) due to dangling bus without generation and load" maxlog =
@@ -2350,7 +2351,8 @@ function calc_connected_components(data::Dict{String, <:Any}; edges = ["branch",
     for line_type in edges
         for line in values(get(data, line_type, Dict()))
             if get(line, "br_status", 1) != 0 &&
-               line["f_bus"] in active_bus_ids && line["t_bus"] in active_bus_ids
+               line["f_bus"] in active_bus_ids &&
+               line["t_bus"] in active_bus_ids
                 push!(neighbors[line["f_bus"]], line["t_bus"])
                 push!(neighbors[line["t_bus"]], line["f_bus"])
             end

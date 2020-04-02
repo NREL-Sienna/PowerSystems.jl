@@ -1028,7 +1028,8 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
                 custom_unit = get(item, "unit", nothing)
                 if !isnothing(unit[name]) &&
-                   !isnothing(custom_unit) && custom_unit != unit[name]
+                   !isnothing(custom_unit) &&
+                   custom_unit != unit[name]
                     unit_conversion = (From = custom_unit, To = unit[name])
                 else
                     unit_conversion = nothing
