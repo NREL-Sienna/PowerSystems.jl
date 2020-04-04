@@ -113,12 +113,12 @@ export PLL
 
 # Outer Control Exports
 export OuterControl
-export VirtualInertiaQdroop
+export OuterControl
 export VirtualInertia
 export ReactivePowerDroop
 
-# VSControl Export
-export VSControl
+# InnerControl Export
+export InnerControl
 export CombinedVIwithVZ
 
 export Source

@@ -3,7 +3,7 @@ abstract type InverterComponent <: DynamicComponent end
 mutable struct DynamicInverter{
     C <: Converter,
     O <: OuterControl,
-    VC <: VSControl,
+    VC <: InnerControl,
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
@@ -43,7 +43,7 @@ mutable struct DynamicInverter{
     ) where {
         C <: Converter,
         O <: OuterControl,
-        VC <: VSControl,
+        VC <: InnerControl,
         DC <: DCSource,
         P <: FrequencyEstimator,
         F <: Filter,

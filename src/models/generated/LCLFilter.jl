@@ -46,7 +46,7 @@ mutable struct LCLFilter <: Filter
 end
 
 function LCLFilter(lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )
-    LCLFilter(lf, rf, cf, lg, rg, ext, [:id_c, :iq_c, :vd_cap, :vq_cap, :id_o, :iq_o], 6, InfrastructureSystemsInternal(), )
+    LCLFilter(lf, rf, cf, lg, rg, ext, [:id_cnv, :iq_cnv, :vd_filter, :vq_filter, :id_filter, :iq_filter], 6, InfrastructureSystemsInternal(), )
 end
 
 function LCLFilter(; lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )

@@ -15,7 +15,7 @@ Parameters of a Reactive Power droop controller
 
 # Arguments
 - `kq::Float64`: frequency droop gain, validation range: (0, nothing)
-- `ωf::Float64`: frequency droop gain, validation range: (0, nothing)
+- `ωf::Float64`: filter frequency cutoff, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
@@ -24,7 +24,7 @@ Parameters of a Reactive Power droop controller
 mutable struct ReactivePowerDroop <: ReactivePowerControl
     "frequency droop gain"
     kq::Float64
-    "frequency droop gain"
+    "filter frequency cutoff"
     ωf::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
@@ -34,7 +34,7 @@ mutable struct ReactivePowerDroop <: ReactivePowerControl
 end
 
 function ReactivePowerDroop(kq, ωf, ext=Dict{String, Any}(), )
-    ReactivePowerDroop(kq, ωf, ext, [:qm], 1, InfrastructureSystemsInternal(), )
+    ReactivePowerDroop(kq, ωf, ext, [:q_oc], 1, InfrastructureSystemsInternal(), )
 end
 
 function ReactivePowerDroop(; kq, ωf, ext=Dict{String, Any}(), )

@@ -4231,7 +4231,7 @@
         "supertype": "TurbineGov"
     },
     {
-        "struct_name": "AvgCnvFixedDC",
+        "struct_name": "AverageConverter",
         "docstring": "Parameters of an average converter model",
         "fields": [
             {
@@ -4385,7 +4385,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:id_c, :iq_c, :vd_cap, :vq_cap, :id_o, :iq_o]",
+                "internal_default": "[:id_cnv, :iq_cnv, :vd_filter, :vq_filter, :id_filter, :iq_filter]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4465,8 +4465,8 @@
         "supertype": "Filter"
     },
     {
-        "struct_name": "PLL",
-        "docstring": "Parameters of a Phase-Locked Loop (PLL) for VSM",
+        "struct_name": "KauraPLL",
+        "docstring": "Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko. \"Operation of a phase locked loop system under distorted utility conditions.\" IEEE Transactions on Industry applications 33.1 (1997): 58-63.",
         "fields": [
             {
                 "name": "ω_lp",
@@ -4507,7 +4507,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:vpll_d, :vpll_q, :ε_pll, :δθ_pll]",
+                "internal_default": "[:vd_pll, :vq_pll, :ε_pll, :θ_pll]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4578,7 +4578,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:δω_vsm, :δθ_vsm]",
+                "internal_default": "[:ω_oc, :θ_oc]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4612,7 +4612,7 @@
             },
             {
                 "name": "ωf",
-                "comment": "frequency droop gain",
+                "comment": "filter frequency cutoff",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -4629,7 +4629,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:qm]",
+                "internal_default": "[:q_oc]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4648,8 +4648,8 @@
         "supertype": "ReactivePowerControl"
     },
     {
-        "struct_name": "CombinedVIwithVZ",
-        "docstring": "Parameters of an inner loop controller using virtual impedance, voltage controller and current controller.",
+        "struct_name": "CurrentControl",
+        "docstring": "Parameters of an inner loop current control PID using virtual impedance.",
         "fields": [
             {
                 "name": "kpv",
@@ -4760,7 +4760,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:ξ_d, :ξ_q, :γ_d, :γ_q, :ϕ_d, :ϕ_q]",
+                "internal_default": "[:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4776,7 +4776,7 @@
                 "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
-        "supertype": "VSControl"
+        "supertype": "InnerControl"
     },
     {
         "struct_name": "Source",

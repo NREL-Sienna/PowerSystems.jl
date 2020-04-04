@@ -11,9 +11,9 @@
     @test virtual_H isa PowerSystems.DeviceParameter
     Q_control = ReactivePowerDroop(0.2, 1000.0)
     @test Q_control isa PowerSystems.DeviceParameter
-    outer_control = VirtualInertiaQdroop(virtual_H, Q_control)
+    outer_control = OuterControl(virtual_H, Q_control)
     @test outer_control isa PowerSystems.DynamicComponent
-    vsc = CombinedVIwithVZ(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
+    vsc = CurrentControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
     @test vsc isa PowerSystems.DynamicComponent
 end
 
@@ -79,7 +79,7 @@ end
         1000.0,
     ) #ωf:: Reactive power cut-off low pass filter frequency
 
-    outer_control = VirtualInertiaQdroop(virtual_H, Q_control)
+    outer_control = OuterControl(virtual_H, Q_control)
 
     vsc = CombinedVIwithVZ(
         0.59, #kpv:: Voltage controller proportional gain
