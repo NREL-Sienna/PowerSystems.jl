@@ -3,9 +3,8 @@ abstract type Converter <: DynamicInverterComponent end
 abstract type DCSource <: DynamicInverterComponent end
 abstract type Filter <: DynamicInverterComponent end
 abstract type FrequencyEstimator <: DynamicInverterComponent end
-abstract type VSControl <: DynamicInverterComponent end
+abstract type InnerControl <: DynamicInverterComponent end
 
-abstract type OuterControl <: DynamicInverterComponent end
 abstract type ActivePowerControl <: DeviceParameter end
 abstract type ReactivePowerControl <: DeviceParameter end
 
@@ -20,8 +19,7 @@ VirtualInertiaQDroop(A, R)
 *  `A`::Float64 : Active power controller using virtual inertia with VSM
 *  `R`::Float64 : Reactive power controller using reactive power droop
 """
-mutable struct VirtualInertiaQdroop{A <: ActivePowerControl, R <: ReactivePowerControl} <:
-               OuterControl
+mutable struct OuterControl{A <: ActivePowerControl, R <: ReactivePowerControl} <: DynamicInverterComponent
     active_power::A
     reactive_power::R
     ext::Dict{String, Any}
@@ -31,12 +29,12 @@ mutable struct VirtualInertiaQdroop{A <: ActivePowerControl, R <: ReactivePowerC
     internal::InfrastructureSystemsInternal
 end
 
-function VirtualInertiaQdroop(
+function OuterControl(
     active_power::A,
     reactive_power::R,
     ext = Dict{String, Any}(),
 ) where {A <: ActivePowerControl, R <: ReactivePowerControl}
-    VirtualInertiaQdroop(
+    OuterControl(
         active_power,
         reactive_power,
         ext,
@@ -46,13 +44,13 @@ function VirtualInertiaQdroop(
     )
 end
 
-function VirtualInertiaQdroop(; active_power, reactive_power, ext = Dict{String, Any}())
-    VirtualInertiaQdroop(active_power, reactive_power, ext)
+function OuterControl(; active_power, reactive_power, ext = Dict{String, Any}())
+    OuterControl(active_power, reactive_power, ext)
 end
 
-get_active_power(value::VirtualInertiaQdroop) = value.active_power
-get_reactive_power(value::VirtualInertiaQdroop) = value.reactive_power
-get_ext(value::VirtualInertiaQdroop) = value.ext
-get_states(value::VirtualInertiaQdroop) = value.states
-get_n_states(value::VirtualInertiaQdroop) = value.n_states
-get_internal(value::VirtualInertiaQdroop) = value.internal
+get_active_power(value::OuterControl) = value.active_power
+get_reactive_power(value::OuterControl) = value.reactive_power
+get_ext(value::OuterControl) = value.ext
+get_states(value::OuterControl) = value.states
+get_n_states(value::OuterControl) = value.n_states
+get_internal(value::OuterControl) = value.internal
