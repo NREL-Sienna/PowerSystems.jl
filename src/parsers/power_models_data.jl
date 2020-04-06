@@ -230,15 +230,6 @@ end
 
 function make_hydro_gen(gen_name, d, bus)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
-    tech = TechHydro(;
-        rating = calculate_rating(d["pmax"], d["qmax"]),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
-        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
-        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
-        ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
-        timelimits = nothing,
-    )
-
     curtailcost = TwoPartCost(0.0, 0.0)
 
     return HydroEnergyReservoir(
@@ -247,7 +238,12 @@ function make_hydro_gen(gen_name, d, bus)
         bus = bus,
         activepower = d["pg"],
         reactivepower = d["qg"],
-        tech = tech,
+        rating = calculate_rating(d["pmax"], d["qmax"]),
+        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
+        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
+        ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
+        timelimits = nothing,
         op_cost = curtailcost,
         storage_capacity = 0.0, #TODO: Implement better Solution for this
         inflow = 0.0,
@@ -255,19 +251,7 @@ function make_hydro_gen(gen_name, d, bus)
     )
 end
 
-function make_tech_renewable(d)
-    tech = TechRenewable(;
-        rating = float(d["pmax"]),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
-        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
-        powerfactor = 1.0,
-    )
-
-    return tech
-end
-
 function make_renewable_dispatch(gen_name, d, bus)
-    tech = make_tech_renewable(d)
     cost = TwoPartCost(0.0, 0.0)
     generator = RenewableDispatch(;
         name = gen_name,
@@ -275,7 +259,10 @@ function make_renewable_dispatch(gen_name, d, bus)
         bus = bus,
         activepower = d["pg"],
         reactivepower = d["qg"],
-        tech = tech,
+        rating = float(d["pmax"]),
+        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
+        powerfactor = 1.0,
         op_cost = cost,
     )
 
@@ -283,14 +270,15 @@ function make_renewable_dispatch(gen_name, d, bus)
 end
 
 function make_renewable_fix(gen_name, d, bus)
-    tech = make_tech_renewable(d)
     generator = RenewableFix(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
         activepower = d["pg"],
         reactivepower = d["qg"],
-        tech = tech,
+        rating = float(d["pmax"]),
+        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        powerfactor = 1.0,
     )
 
     return generator
@@ -347,28 +335,26 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         shutdn = tmpcost.shutdn
     end
 
-    # TODO GitHub #148: ramp_agc isn't always present. This value may not be correct.
-    ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
+    # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
+    ramp_lim = get(d, "ramp_10", get(d, "ramp_30", d["pmax"]))
 
-    tech = TechThermal(;
-        rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
-        fuel = convert(ThermalFuels.ThermalFuel, d["fuel"]),
-        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
-        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
-        ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
-        timelimits = nothing,
-    )
     op_cost =
         ThreePartCost(; variable = cost, fixed = fixed, startup = startup, shutdn = shutdn)
 
     thermal_gen = ThermalStandard(
         name = gen_name,
-        available = Bool(d["gen_status"]),
+        status = Bool(d["gen_status"]),
+        available = true,
         bus = bus,
         activepower = d["pg"],
         reactivepower = d["qg"],
-        tech = tech,
+        rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
+        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        fuel = convert(ThermalFuels.ThermalFuel, d["fuel"]),
+        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
+        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
+        ramplimits = (up = ramp_lim / d["mbase"], down = ramp_lim / d["mbase"]),
+        timelimits = nothing,
         op_cost = op_cost,
     )
 
