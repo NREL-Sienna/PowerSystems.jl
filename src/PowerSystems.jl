@@ -38,15 +38,12 @@ export Generator
 export HydroGen
 export HydroDispatch
 export HydroEnergyReservoir
-export TechHydro
 
 export RenewableGen
-export TechRenewable
 export RenewableFix
 export RenewableDispatch
 
 export ThermalGen
-export TechThermal
 export ThermalStandard
 
 export ElectricLoad
@@ -97,7 +94,7 @@ export TGTypeII
 export DynamicInverter
 # Converter Exports
 export Converter
-export AvgCnvFixedDC
+export AverageConverter
 
 # DC Source Exports
 export DCSource
@@ -109,17 +106,16 @@ export LCLFilter
 
 # FrequencyEstimator Exports
 export FrequencyEstimator
-export PLL
+export KauraPLL
 
 # Outer Control Exports
-export OuterControl
 export OuterControl
 export VirtualInertia
 export ReactivePowerDroop
 
 # InnerControl Export
 export InnerControl
-export CombinedVIwithVZ
+export CurrentControl
 
 export Source
 
