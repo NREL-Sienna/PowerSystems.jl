@@ -8,7 +8,12 @@ This file is auto-generated. Do not edit.
         bus::Bus
         activepower::Float64
         reactivepower::Float64
-        tech::TechHydro
+        rating::Float64
+        primemover::PrimeMovers.PrimeMover
+        activepowerlimits::Min_Max
+        reactivepowerlimits::Union{Nothing, Min_Max}
+        ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+        timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         op_cost::TwoPartCost
         storage_capacity::Float64
         inflow::Float64
@@ -26,8 +31,13 @@ This file is auto-generated. Do not edit.
 - `available::Bool`
 - `bus::Bus`
 - `activepower::Float64`
-- `reactivepower::Float64`, validation range: tech.reactivepowerlimits, action if invalid: warn
-- `tech::TechHydro`
+- `reactivepower::Float64`, validation range: reactivepowerlimits, action if invalid: warn
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
+- `primemover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
+- `activepowerlimits::Min_Max`
+- `reactivepowerlimits::Union{Nothing, Min_Max}`, action if invalid: warn
+- `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits, validation range: (0, nothing), action if invalid: error
+- `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down time limits, validation range: (0, nothing), action if invalid: error
 - `op_cost::TwoPartCost`
 - `storage_capacity::Float64`, validation range: (0, nothing), action if invalid: error
 - `inflow::Float64`, validation range: (0, nothing), action if invalid: error
@@ -43,7 +53,16 @@ mutable struct HydroEnergyReservoir <: HydroGen
     bus::Bus
     activepower::Float64
     reactivepower::Float64
-    tech::TechHydro
+    "Thermal limited MVA Power Output of the unit. <= Capacity"
+    rating::Float64
+    "PrimeMover Technology according to EIA 923"
+    primemover::PrimeMovers.PrimeMover
+    activepowerlimits::Min_Max
+    reactivepowerlimits::Union{Nothing, Min_Max}
+    "ramp up and ramp down limits"
+    ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+    "ramp up and ramp down time limits"
+    timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     op_cost::TwoPartCost
     storage_capacity::Float64
     inflow::Float64
@@ -57,12 +76,12 @@ mutable struct HydroEnergyReservoir <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, tech, op_cost, storage_capacity, inflow, initial_storage, services, ext, forecasts, )
+function HydroEnergyReservoir(; name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -73,7 +92,12 @@ function HydroEnergyReservoir(::Nothing)
         bus=Bus(nothing),
         activepower=0.0,
         reactivepower=0.0,
-        tech=TechHydro(nothing),
+        rating=0.0,
+        primemover=PrimeMovers.HY,
+        activepowerlimits=(min=0.0, max=0.0),
+        reactivepowerlimits=nothing,
+        ramplimits=nothing,
+        timelimits=nothing,
         op_cost=TwoPartCost(nothing),
         storage_capacity=0.0,
         inflow=0.0,
@@ -94,8 +118,18 @@ get_bus(value::HydroEnergyReservoir) = value.bus
 get_activepower(value::HydroEnergyReservoir) = value.activepower
 """Get HydroEnergyReservoir reactivepower."""
 get_reactivepower(value::HydroEnergyReservoir) = value.reactivepower
-"""Get HydroEnergyReservoir tech."""
-get_tech(value::HydroEnergyReservoir) = value.tech
+"""Get HydroEnergyReservoir rating."""
+get_rating(value::HydroEnergyReservoir) = value.rating
+"""Get HydroEnergyReservoir primemover."""
+get_primemover(value::HydroEnergyReservoir) = value.primemover
+"""Get HydroEnergyReservoir activepowerlimits."""
+get_activepowerlimits(value::HydroEnergyReservoir) = value.activepowerlimits
+"""Get HydroEnergyReservoir reactivepowerlimits."""
+get_reactivepowerlimits(value::HydroEnergyReservoir) = value.reactivepowerlimits
+"""Get HydroEnergyReservoir ramplimits."""
+get_ramplimits(value::HydroEnergyReservoir) = value.ramplimits
+"""Get HydroEnergyReservoir timelimits."""
+get_timelimits(value::HydroEnergyReservoir) = value.timelimits
 """Get HydroEnergyReservoir op_cost."""
 get_op_cost(value::HydroEnergyReservoir) = value.op_cost
 """Get HydroEnergyReservoir storage_capacity."""
