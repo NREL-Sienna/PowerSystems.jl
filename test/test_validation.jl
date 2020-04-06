@@ -91,7 +91,6 @@ Econ fields do not exist for a while already.
     @test descriptor["struct_name"] == struct_name
 end
 
-
 @testset "Test extracting field info from struct descriptor dictionary" begin
     config = Dict{Any, Any}(
         "fields" => Dict{Any, Any}[

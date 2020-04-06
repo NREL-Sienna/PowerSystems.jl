@@ -33,7 +33,17 @@ end
         end
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        gen_dat = (structname = nothing, fields = (:activepower, :reactivepower, :rating, :activepowerlimits, :reactivepowerlimits, :ramplimits))
+        gen_dat = (
+            structname = nothing,
+            fields = (
+                :activepower,
+                :reactivepower,
+                :rating,
+                :activepowerlimits,
+                :reactivepowerlimits,
+                :ramplimits,
+            ),
+        )
         function check_fields(chk_dat)
             for field in chk_dat.fields
                 n = get(chk_dat, :structname, nothing)
