@@ -1,8 +1,5 @@
 include("TwoPartCost.jl")
 include("ThreePartCost.jl")
-include("TechHydro.jl")
-include("TechRenewable.jl")
-include("TechThermal.jl")
 include("Area.jl")
 include("LoadZone.jl")
 include("Bus.jl")
@@ -214,9 +211,9 @@ export get_services
 export get_shutdn
 export get_startup
 export get_states
+export get_status
 export get_storage_capacity
 export get_tap
-export get_tech
 export get_timeframe
 export get_timelimits
 export get_to
