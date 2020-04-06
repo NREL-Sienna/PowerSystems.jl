@@ -1,11 +1,11 @@
 @testset "Inverter Components" begin
-    converter = AvgCnvFixedDC(690.0, 2750000.0) #S_rated goes in Watts
+    converter = AverageConverter(690.0, 2750000.0) #S_rated goes in Watts
     @test converter isa PowerSystems.DynamicComponent
     dc_source = FixedDCSource(600.0) #Not in the original data, guessed.
     @test dc_source isa PowerSystems.DynamicComponent
     filter = LCLFilter(0.08, 0.003, 0.074, 0.2, 0.01)
     @test filter isa PowerSystems.DynamicComponent
-    pll = PLL(500.0, 0.084, 4.69)
+    pll = KauraPLL(500.0, 0.084, 4.69)
     @test pll isa PowerSystems.DynamicComponent
     virtual_H = VirtualInertia(2.0, 400.0, 20.0, 2 * pi * 50.0)
     @test virtual_H isa PowerSystems.DeviceParameter
@@ -33,7 +33,7 @@ end
         Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
     ]
 
-    converter = AvgCnvFixedDC(
+    converter = AverageConverter(
         138.0, #Rated Voltage
         100.0,
     ) #Rated MVA
@@ -61,7 +61,7 @@ end
         0.01,
     ) #Series resistance lg to grid connection (#Step up transformer or similar)
 
-    pll = PLL(
+    pll = KauraPLL(
         500.0, #ω_lp: Cut-off frequency for LowPass filter of PLL filter.
         0.084, #k_p: PLL proportional gain
         4.69,
@@ -81,7 +81,7 @@ end
 
     outer_control = OuterControl(virtual_H, Q_control)
 
-    vsc = CombinedVIwithVZ(
+    vsc = CurrentControl(
         0.59, #kpv:: Voltage controller proportional gain
         736.0, #kiv:: Voltage controller integral gain
         0.0, #kffv:: Binary variable enabling the voltage feed-forward in output of current controllers

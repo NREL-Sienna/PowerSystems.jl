@@ -10,7 +10,7 @@ include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
     @test !isempty(data)
     function find_struct()
         for item in data
-            if item["struct_name"] == "TechThermal"
+            if item["struct_name"] == "ThermalStandard"
                 return true
             end
         end
@@ -50,6 +50,8 @@ end
     @test isempty(sys_no_runchecks.data.validation_descriptors)
 end
 
+#= Disable due to strange implemenation. Needs Review.
+Econ fields do not exist for a while already.
 @testset "Test extracting struct info from validation_descriptor vector" begin
     data = [
         Dict(
@@ -89,24 +91,23 @@ end
     @test descriptor["struct_name"] == struct_name
 end
 
+
 @testset "Test extracting field info from struct descriptor dictionary" begin
     config = Dict{Any, Any}(
         "fields" => Dict{Any, Any}[
             Dict("name" => "name", "data_type" => "String"),
             Dict("name" => "available", "data_type" => "Bool"),
             Dict("name" => "bus", "data_type" => "Bus"),
-            Dict("name" => "tech", "data_type" => "Union{Nothing, TechThermal}"),
-            Dict("name" => "econ", "data_type" => "Union{Nothing, EconThermal}"),
             Dict("name" => "internal", "data_type" => "IS.InfrastructureSystemsInternal"),
         ],
         "struct_name" => "ThermalStandard",
     )
-    field_name = "econ"
     field_descriptor = IS.get_field_descriptor(config, field_name)
     @test field_descriptor isa Dict{Any, Any}
     @test haskey(field_descriptor, "name")
     @test field_descriptor["name"] == field_name
 end
+=#
 
 @testset "Test retrieving validation action" begin
     warn_descriptor = Dict{Any, Any}(
@@ -133,7 +134,7 @@ end
     #test recursive call of validate_fields and a regular valid range
     nodes = nodes5()
     bad_therm_gen_rating = thermal_generators5(nodes)
-    bad_therm_gen_rating[1].tech.rating = -10
+    bad_therm_gen_rating[1].rating = -10
     @test_logs(
         (:error, r"Invalid range"),
         @test_throws(
@@ -171,7 +172,7 @@ end
     #test validating named tuple
     nodes = nodes5()
     bad_therm_gen_ramp_lim = thermal_generators5(nodes)
-    bad_therm_gen_ramp_lim[1].tech.ramplimits = (up = -10, down = -3)
+    bad_therm_gen_ramp_lim[1].ramplimits = (up = -10, down = -3)
     @test_logs(
         (:error, r"Invalid range"),
         match_mode = :any,
