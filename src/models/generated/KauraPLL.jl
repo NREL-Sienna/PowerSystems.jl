@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct PLL <: FrequencyEstimator
+    mutable struct KauraPLL <: FrequencyEstimator
         ω_lp::Float64
         kp_pll::Float64
         ki_pll::Float64
@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of a Phase-Locked Loop (PLL) for VSM
+Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko. "Operation of a phase locked loop system under distorted utility conditions." IEEE Transactions on Industry applications 33.1 (1997): 58-63.
 
 # Arguments
 - `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: (0, nothing)
@@ -23,7 +23,7 @@ Parameters of a Phase-Locked Loop (PLL) for VSM
 - `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct PLL <: FrequencyEstimator
+mutable struct KauraPLL <: FrequencyEstimator
     "PLL low-pass filter frequency (rad/sec)"
     ω_lp::Float64
     "PLL proportional gain"
@@ -37,17 +37,17 @@ mutable struct PLL <: FrequencyEstimator
     internal::InfrastructureSystemsInternal
 end
 
-function PLL(ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )
-    PLL(ω_lp, kp_pll, ki_pll, ext, [:vpll_d, :vpll_q, :ε_pll, :δθ_pll], 4, InfrastructureSystemsInternal(), )
+function KauraPLL(ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )
+    KauraPLL(ω_lp, kp_pll, ki_pll, ext, [:vd_pll, :vq_pll, :ε_pll, :θ_pll], 4, InfrastructureSystemsInternal(), )
 end
 
-function PLL(; ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )
-    PLL(ω_lp, kp_pll, ki_pll, ext, )
+function KauraPLL(; ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )
+    KauraPLL(ω_lp, kp_pll, ki_pll, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
-function PLL(::Nothing)
-    PLL(;
+function KauraPLL(::Nothing)
+    KauraPLL(;
         ω_lp=0,
         kp_pll=0,
         ki_pll=0,
@@ -55,17 +55,17 @@ function PLL(::Nothing)
     )
 end
 
-"""Get PLL ω_lp."""
-get_ω_lp(value::PLL) = value.ω_lp
-"""Get PLL kp_pll."""
-get_kp_pll(value::PLL) = value.kp_pll
-"""Get PLL ki_pll."""
-get_ki_pll(value::PLL) = value.ki_pll
-"""Get PLL ext."""
-get_ext(value::PLL) = value.ext
-"""Get PLL states."""
-get_states(value::PLL) = value.states
-"""Get PLL n_states."""
-get_n_states(value::PLL) = value.n_states
-"""Get PLL internal."""
-get_internal(value::PLL) = value.internal
+"""Get KauraPLL ω_lp."""
+get_ω_lp(value::KauraPLL) = value.ω_lp
+"""Get KauraPLL kp_pll."""
+get_kp_pll(value::KauraPLL) = value.kp_pll
+"""Get KauraPLL ki_pll."""
+get_ki_pll(value::KauraPLL) = value.ki_pll
+"""Get KauraPLL ext."""
+get_ext(value::KauraPLL) = value.ext
+"""Get KauraPLL states."""
+get_states(value::KauraPLL) = value.states
+"""Get KauraPLL n_states."""
+get_n_states(value::KauraPLL) = value.n_states
+"""Get KauraPLL internal."""
+get_internal(value::KauraPLL) = value.internal

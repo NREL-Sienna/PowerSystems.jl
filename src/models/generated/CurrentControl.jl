@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct CombinedVIwithVZ <: VSControl
+    mutable struct CurrentControl <: InnerControl
         kpv::Float64
         kiv::Float64
         kffv::Float64
@@ -19,7 +19,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of an inner loop controller using virtual impedance, voltage controller and current controller.
+Parameters of an inner loop current control PID using virtual impedance.
 
 # Arguments
 - `kpv::Float64`: voltage controller proportional gain, validation range: (0, nothing)
@@ -37,7 +37,7 @@ Parameters of an inner loop controller using virtual impedance, voltage controll
 - `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct CombinedVIwithVZ <: VSControl
+mutable struct CurrentControl <: InnerControl
     "voltage controller proportional gain"
     kpv::Float64
     "voltage controller integral gain"
@@ -65,17 +65,17 @@ mutable struct CombinedVIwithVZ <: VSControl
     internal::InfrastructureSystemsInternal
 end
 
-function CombinedVIwithVZ(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), )
-    CombinedVIwithVZ(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, [:ξ_d, :ξ_q, :γ_d, :γ_q, :ϕ_d, :ϕ_q], 6, InfrastructureSystemsInternal(), )
+function CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), )
+    CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, [:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], 6, InfrastructureSystemsInternal(), )
 end
 
-function CombinedVIwithVZ(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), )
-    CombinedVIwithVZ(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, )
+function CurrentControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), )
+    CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
-function CombinedVIwithVZ(::Nothing)
-    CombinedVIwithVZ(;
+function CurrentControl(::Nothing)
+    CurrentControl(;
         kpv=0,
         kiv=0,
         kffv=0,
@@ -90,31 +90,31 @@ function CombinedVIwithVZ(::Nothing)
     )
 end
 
-"""Get CombinedVIwithVZ kpv."""
-get_kpv(value::CombinedVIwithVZ) = value.kpv
-"""Get CombinedVIwithVZ kiv."""
-get_kiv(value::CombinedVIwithVZ) = value.kiv
-"""Get CombinedVIwithVZ kffv."""
-get_kffv(value::CombinedVIwithVZ) = value.kffv
-"""Get CombinedVIwithVZ rv."""
-get_rv(value::CombinedVIwithVZ) = value.rv
-"""Get CombinedVIwithVZ lv."""
-get_lv(value::CombinedVIwithVZ) = value.lv
-"""Get CombinedVIwithVZ kpc."""
-get_kpc(value::CombinedVIwithVZ) = value.kpc
-"""Get CombinedVIwithVZ kic."""
-get_kic(value::CombinedVIwithVZ) = value.kic
-"""Get CombinedVIwithVZ kffi."""
-get_kffi(value::CombinedVIwithVZ) = value.kffi
-"""Get CombinedVIwithVZ ωad."""
-get_ωad(value::CombinedVIwithVZ) = value.ωad
-"""Get CombinedVIwithVZ kad."""
-get_kad(value::CombinedVIwithVZ) = value.kad
-"""Get CombinedVIwithVZ ext."""
-get_ext(value::CombinedVIwithVZ) = value.ext
-"""Get CombinedVIwithVZ states."""
-get_states(value::CombinedVIwithVZ) = value.states
-"""Get CombinedVIwithVZ n_states."""
-get_n_states(value::CombinedVIwithVZ) = value.n_states
-"""Get CombinedVIwithVZ internal."""
-get_internal(value::CombinedVIwithVZ) = value.internal
+"""Get CurrentControl kpv."""
+get_kpv(value::CurrentControl) = value.kpv
+"""Get CurrentControl kiv."""
+get_kiv(value::CurrentControl) = value.kiv
+"""Get CurrentControl kffv."""
+get_kffv(value::CurrentControl) = value.kffv
+"""Get CurrentControl rv."""
+get_rv(value::CurrentControl) = value.rv
+"""Get CurrentControl lv."""
+get_lv(value::CurrentControl) = value.lv
+"""Get CurrentControl kpc."""
+get_kpc(value::CurrentControl) = value.kpc
+"""Get CurrentControl kic."""
+get_kic(value::CurrentControl) = value.kic
+"""Get CurrentControl kffi."""
+get_kffi(value::CurrentControl) = value.kffi
+"""Get CurrentControl ωad."""
+get_ωad(value::CurrentControl) = value.ωad
+"""Get CurrentControl kad."""
+get_kad(value::CurrentControl) = value.kad
+"""Get CurrentControl ext."""
+get_ext(value::CurrentControl) = value.ext
+"""Get CurrentControl states."""
+get_states(value::CurrentControl) = value.states
+"""Get CurrentControl n_states."""
+get_n_states(value::CurrentControl) = value.n_states
+"""Get CurrentControl internal."""
+get_internal(value::CurrentControl) = value.internal

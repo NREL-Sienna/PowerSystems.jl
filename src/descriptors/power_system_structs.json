@@ -93,192 +93,6 @@
         "supertype": "OperationalCost"
     },
     {
-        "struct_name": "TechHydro",
-        "docstring": "Data Structures for the technical parameters of hydropower generation technologies.",
-        "fields": [
-            {
-                "name": "rating",
-                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "primemover",
-                "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "PrimeMovers.HY",
-                "data_type": "PrimeMovers.PrimeMover"
-            },
-            {
-                "name": "activepowerlimits",
-                "null_value": "(min=0.0, max=0.0)",
-                "data_type": "Min_Max"
-            },
-            {
-                "name": "reactivepowerlimits",
-                "validation_action": "warn",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, Min_Max}"
-            },
-            {
-                "name": "ramplimits",
-                "comment": "ramp up and ramp down limits",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "timelimits",
-                "comment": "ramp up and ramp down time limits",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "DeviceParameter"
-    },
-    {
-        "struct_name": "TechRenewable",
-        "docstring": "Data Structures for the technical parameters of renewable generation technologies.",
-        "fields": [
-            {
-                "name": "rating",
-                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "primemover",
-                "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "PrimeMovers.OT",
-                "data_type": "PrimeMovers.PrimeMover"
-            },
-            {
-                "name": "reactivepowerlimits",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, Min_Max}"
-            },
-            {
-                "name": "powerfactor",
-                "null_value": "1.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": 1
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "DeviceParameter"
-    },
-    {
-        "struct_name": "TechThermal",
-        "docstring": "Data Structure for the technical parameters of thermal generation technologies.",
-        "fields": [
-            {
-                "name": "rating",
-                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "primemover",
-                "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "PrimeMovers.OT",
-                "data_type": "PrimeMovers.PrimeMover"
-            },
-            {
-                "name": "fuel",
-                "comment": "PrimeMover Fuel according to EIA 923",
-                "null_value": "ThermalFuels.OTHER",
-                "data_type": "ThermalFuels.ThermalFuel"
-            },
-            {
-                "name": "activepowerlimits",
-                "null_value": "(min=0.0, max=0.0)",
-                "data_type": "Min_Max"
-            },
-            {
-                "name": "reactivepowerlimits",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, Min_Max}"
-            },
-            {
-                "name": "ramplimits",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "timelimits",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "participation_factor",
-                "comment": "AGC Participation Factor",
-                "null_value": "0.0",
-                "default": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": 1.0
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "DeviceParameter"
-    },
-    {
         "struct_name": "Area",
         "docstring": "A collection of buses for control purposes.",
         "fields": [
@@ -1239,7 +1053,8 @@
             {
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
-                "data_type": "TwoPartCost"
+                "data_type": "TwoPartCost",
+                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
             },
             {
                 "name": "services",
@@ -1429,18 +1244,64 @@
                 "name": "reactivepower",
                 "null_value": "0.0",
                 "data_type": "Float64",
-                "valid_range": "tech.reactivepowerlimits",
+                "valid_range": "reactivepowerlimits",
                 "validation_action": "warn"
             },
+                        {
+                "name": "rating",
+                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
             {
-                "name": "tech",
-                "null_value": "TechHydro(nothing)",
-                "data_type": "TechHydro"
+                "name": "primemover",
+                "comment": "PrimeMover Technology according to EIA 923",
+                "null_value": "PrimeMovers.HY",
+                "data_type": "PrimeMovers.PrimeMover"
+            },
+            {
+                "name": "activepowerlimits",
+                "null_value": "(min=0.0, max=0.0)",
+                "data_type": "Min_Max"
+            },
+            {
+                "name": "reactivepowerlimits",
+                "validation_action": "warn",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, Min_Max}"
+            },
+            {
+                "name": "ramplimits",
+                "comment": "ramp up and ramp down limits",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "timelimits",
+                "comment": "Minimum up and Minimum down time limits in hours",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
             },
             {
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
-                "data_type": "TwoPartCost"
+                "data_type": "TwoPartCost",
+                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
             },
             {
                 "name": "storage_capacity",
@@ -1530,13 +1391,58 @@
                 "name": "reactivepower",
                 "null_value": "0.0",
                 "data_type": "Float64",
-                "valid_range": "tech.reactivepowerlimits",
+                "valid_range": "reactivepowerlimits",
                 "validation_action": "warn"
             },
             {
-                "name": "tech",
-                "null_value": "TechHydro(nothing)",
-                "data_type": "TechHydro"
+                "name": "rating",
+                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "primemover",
+                "comment": "PrimeMover Technology according to EIA 923",
+                "null_value": "PrimeMovers.HY",
+                "data_type": "PrimeMovers.PrimeMover"
+            },
+            {
+                "name": "activepowerlimits",
+                "null_value": "(min=0.0, max=0.0)",
+                "data_type": "Min_Max"
+            },
+            {
+                "name": "reactivepowerlimits",
+                "validation_action": "warn",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, Min_Max}"
+            },
+            {
+                "name": "ramplimits",
+                "comment": "ramp up and ramp down limits",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "timelimits",
+                "comment": "Minimum up and Minimum down time limits in hours",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
             },
             {
                 "name": "services",
@@ -1598,14 +1504,42 @@
                 "data_type": "Float64"
             },
             {
-                "name": "tech",
-                "null_value": "TechRenewable(nothing)",
-                "data_type": "TechRenewable"
+                "name": "rating",
+                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "primemover",
+                "comment": "PrimeMover Technology according to EIA 923",
+                "null_value": "PrimeMovers.OT",
+                "data_type": "PrimeMovers.PrimeMover"
+            },
+            {
+                "name": "reactivepowerlimits",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, Min_Max}"
+            },
+            {
+                "name": "powerfactor",
+                "null_value": "1.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": 1
+            },
+                "validation_action": "error"
             },
             {
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
-                "data_type": "TwoPartCost"
+                "data_type": "TwoPartCost",
+                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
             },
             {
                 "name": "services",
@@ -1668,9 +1602,31 @@
                 "data_type": "Float64"
             },
             {
-                "name": "tech",
-                "null_value": "TechRenewable(nothing)",
-                "data_type": "TechRenewable"
+                "name": "rating",
+                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "primemover",
+                "comment": "PrimeMover Technology according to EIA 923",
+                "null_value": "PrimeMovers.OT",
+                "data_type": "PrimeMovers.PrimeMover"
+            },
+            {
+                "name": "powerfactor",
+                "null_value": "1.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": 1
+                },
+                "validation_action": "error"
             },
             {
                 "name": "services",
@@ -1718,6 +1674,11 @@
                 "data_type": "Bool"
             },
             {
+                "null_value": "false",
+                "name": "status",
+                "data_type": "Bool"
+            },
+            {
                 "name": "bus",
                 "null_value": "Bus(nothing)",
                 "data_type": "Bus"
@@ -1726,20 +1687,69 @@
                 "name": "activepower",
                 "null_value": "0.0",
                 "data_type": "Float64",
-                "valid_range": "tech.activepowerlimits",
+                "valid_range": "activepowerlimits",
                 "validation_action": "warn"
             },
             {
                 "name": "reactivepower",
                 "null_value": "0.0",
                 "data_type": "Float64",
-                "valid_range": "tech.reactivepowerlimits",
+                "valid_range": "reactivepowerlimits",
                 "validation_action": "warn"
             },
             {
-                "name": "tech",
-                "null_value": "TechThermal(nothing)",
-                "data_type": "Union{Nothing, TechThermal}"
+                "name": "rating",
+                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "primemover",
+                "comment": "PrimeMover Technology according to EIA 923",
+                "null_value": "PrimeMovers.OT",
+                "data_type": "PrimeMovers.PrimeMover"
+            },
+            {
+                "name": "fuel",
+                "comment": "PrimeMover Fuel according to EIA 923",
+                "null_value": "ThermalFuels.OTHER",
+                "data_type": "ThermalFuels.ThermalFuel"
+            },
+            {
+                "name": "activepowerlimits",
+                "null_value": "(min=0.0, max=0.0)",
+                "data_type": "Min_Max"
+            },
+            {
+                "name": "reactivepowerlimits",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, Min_Max}"
+            },
+            {
+                "name": "ramplimits",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "timelimits",
+                "comment": "Minimum up and Minimum down time limits in hours",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
             },
             {
                 "name": "op_cost",
@@ -1752,6 +1762,18 @@
                 "comment": "Services that this device contributes to",
                 "null_value": "Device[]",
                 "default": "Device[]"
+            },
+            {
+                "name": "participation_factor",
+                "comment": "AGC Participation Factor",
+                "null_value": "0.0",
+                "default": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": 1.0
+                },
+                "validation_action": "error"
             },
             {
                 "name": "ext",
@@ -4231,7 +4253,7 @@
         "supertype": "TurbineGov"
     },
     {
-        "struct_name": "AvgCnvFixedDC",
+        "struct_name": "AverageConverter",
         "docstring": "Parameters of an average converter model",
         "fields": [
             {
@@ -4385,7 +4407,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:id_c, :iq_c, :vd_cap, :vq_cap, :id_o, :iq_o]",
+                "internal_default": "[:id_cnv, :iq_cnv, :vd_filter, :vq_filter, :id_filter, :iq_filter]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4465,8 +4487,8 @@
         "supertype": "Filter"
     },
     {
-        "struct_name": "PLL",
-        "docstring": "Parameters of a Phase-Locked Loop (PLL) for VSM",
+        "struct_name": "KauraPLL",
+        "docstring": "Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko. \"Operation of a phase locked loop system under distorted utility conditions.\" IEEE Transactions on Industry applications 33.1 (1997): 58-63.",
         "fields": [
             {
                 "name": "ω_lp",
@@ -4507,7 +4529,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:vpll_d, :vpll_q, :ε_pll, :δθ_pll]",
+                "internal_default": "[:vd_pll, :vq_pll, :ε_pll, :θ_pll]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4578,7 +4600,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:δω_vsm, :δθ_vsm]",
+                "internal_default": "[:ω_oc, :θ_oc]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4612,7 +4634,7 @@
             },
             {
                 "name": "ωf",
-                "comment": "frequency droop gain",
+                "comment": "filter frequency cutoff",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -4629,7 +4651,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:qm]",
+                "internal_default": "[:q_oc]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4648,8 +4670,8 @@
         "supertype": "ReactivePowerControl"
     },
     {
-        "struct_name": "CombinedVIwithVZ",
-        "docstring": "Parameters of an inner loop controller using virtual impedance, voltage controller and current controller.",
+        "struct_name": "CurrentControl",
+        "docstring": "Parameters of an inner loop current control PID using virtual impedance.",
         "fields": [
             {
                 "name": "kpv",
@@ -4760,7 +4782,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:ξ_d, :ξ_q, :γ_d, :γ_q, :ϕ_d, :ϕ_q]",
+                "internal_default": "[:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4776,7 +4798,7 @@
                 "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
-        "supertype": "VSControl"
+        "supertype": "InnerControl"
     },
     {
         "struct_name": "Source",

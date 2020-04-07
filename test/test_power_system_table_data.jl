@@ -33,11 +33,17 @@ end
         end
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        tech_dat = (
-            structname = :tech,
-            fields = (:rating, :activepowerlimits, :reactivepowerlimits, :ramplimits),
+        gen_dat = (
+            structname = nothing,
+            fields = (
+                :activepower,
+                :reactivepower,
+                :rating,
+                :activepowerlimits,
+                :reactivepowerlimits,
+                :ramplimits,
+            ),
         )
-        gen_dat = (structname = nothing, fields = (:activepower, :reactivepower))
         function check_fields(chk_dat)
             for field in chk_dat.fields
                 n = get(chk_dat, :structname, nothing)
@@ -53,7 +59,6 @@ end
             end
         end
         check_fields(gen_dat)
-        check_fields(tech_dat)
     end
 
     mp_iter = get_components(ThermalGen, mpsys)
@@ -63,8 +68,8 @@ end
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
         for field in (:activepowerlimits, :reactivepowerlimits, :ramplimits)
-            cdmgen_val = getfield(cdmgen.tech, field)
-            mpgen_val = getfield(mpgen.tech, field)
+            cdmgen_val = getfield(cdmgen, field)
+            mpgen_val = getfield(mpgen, field)
             if isnothing(cdmgen_val) || isnothing(mpgen_val)
                 @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
                 continue
@@ -88,12 +93,12 @@ end
     mp_generators = LazyDictFromIterator(String, RenewableGen, mp_iter, get_name)
     for cdmgen in get_components(RenewableGen, cdmsys)
         mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
-        # TODO
+        # Disabled since data is inconsisten between sources
         #@test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        for field in (:rating, :reactivepowerlimits, :powerfactor)
-            cdmgen_val = getfield(cdmgen.tech, field)
-            mpgen_val = getfield(mpgen.tech, field)
+        for field in (:rating, :powerfactor)
+            cdmgen_val = getfield(cdmgen, field)
+            mpgen_val = getfield(mpgen, field)
             if isnothing(cdmgen_val) || isnothing(mpgen_val)
                 @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
                 continue

@@ -8,43 +8,6 @@ function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
     return ThreePartCost(VariableCost(variable_cost), args...)
 end
 
-"""Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableFix(
-    name::String,
-    available::Bool,
-    bus::Bus,
-    activepower::Float64,
-    reactivepower::Float64,
-    prime_mover::PrimeMovers.PrimeMover,
-    rating::Float64,
-)
-    tech = TechRenewable(rating, prime_mover, nothing, 1.0)
-    RenewableFix(name, available, bus, activepower, reactivepower, tech)
-end
-
-"""Accepts rating as a Float64 and then creates a TechRenewable."""
-function RenewableDispatch(
-    name::String,
-    available::Bool,
-    bus::Bus,
-    activepower::Float64,
-    reactivepower::Float64,
-    prime_mover::PrimeMovers.PrimeMover,
-    rating::Float64,
-    op_cost::TwoPartCost,
-)
-    tech = TechRenewable(rating, prime_mover, nothing, 1.0)
-    return RenewableDispatch(
-        name,
-        available,
-        bus,
-        activepower,
-        reactivepower,
-        tech,
-        op_cost,
-    )
-end
-
 # FIXME: This function name implies that will return a struct named `PowerLoadPF`
 # i.e. `PowerLoadPF` is not a constructor
 function PowerLoadPF(

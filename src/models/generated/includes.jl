@@ -1,8 +1,5 @@
 include("TwoPartCost.jl")
 include("ThreePartCost.jl")
-include("TechHydro.jl")
-include("TechRenewable.jl")
-include("TechThermal.jl")
 include("Area.jl")
 include("LoadZone.jl")
 include("Bus.jl")
@@ -46,14 +43,14 @@ include("FiveMassShaft.jl")
 include("TGFixed.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
-include("AvgCnvFixedDC.jl")
+include("AverageConverter.jl")
 include("FixedDCSource.jl")
 include("LCLFilter.jl")
 include("LCFilter.jl")
-include("PLL.jl")
+include("KauraPLL.jl")
 include("VirtualInertia.jl")
 include("ReactivePowerDroop.jl")
-include("CombinedVIwithVZ.jl")
+include("CurrentControl.jl")
 include("Source.jl")
 
 export get_Ae
@@ -214,9 +211,9 @@ export get_services
 export get_shutdn
 export get_startup
 export get_states
+export get_status
 export get_storage_capacity
 export get_tap
-export get_tech
 export get_timeframe
 export get_timelimits
 export get_to

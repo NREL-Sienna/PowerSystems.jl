@@ -10,7 +10,7 @@ include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
     @test !isempty(data)
     function find_struct()
         for item in data
-            if item["struct_name"] == "TechThermal"
+            if item["struct_name"] == "ThermalStandard"
                 return true
             end
         end
@@ -133,7 +133,7 @@ end
     #test recursive call of validate_fields and a regular valid range
     nodes = nodes5()
     bad_therm_gen_rating = thermal_generators5(nodes)
-    bad_therm_gen_rating[1].tech.rating = -10
+    bad_therm_gen_rating[1].rating = -10
     @test_logs(
         (:error, r"Invalid range"),
         @test_throws(
@@ -171,7 +171,7 @@ end
     #test validating named tuple
     nodes = nodes5()
     bad_therm_gen_ramp_lim = thermal_generators5(nodes)
-    bad_therm_gen_ramp_lim[1].tech.ramplimits = (up = -10, down = -3)
+    bad_therm_gen_ramp_lim[1].ramplimits = (up = -10, down = -3)
     @test_logs(
         (:error, r"Invalid range"),
         match_mode = :any,

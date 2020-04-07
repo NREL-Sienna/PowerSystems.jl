@@ -36,18 +36,12 @@ end
     @test tThreePartCost isa PowerSystemType
     tTwoPartCost = TwoPartCost(nothing)
     @test tTwoPartCost isa PowerSystemType
-    tTechThermal = TechThermal(nothing)
-    @test tTechThermal isa PowerSystemType
     tThermalGen = ThermalStandard(nothing)
     @test tThermalGen isa PowerSystems.Component
-    tTechHydro = TechHydro(nothing)
-    @test tTechHydro isa PowerSystemType
     tHydroDispatch = HydroDispatch(nothing)
     @test tHydroDispatch isa PowerSystems.Component
     tHydroEnergyReservoir = HydroEnergyReservoir(nothing)
     @test tHydroEnergyReservoir isa PowerSystems.Component
-    tTechRenewable = TechRenewable(nothing)
-    @test tTechRenewable isa PowerSystemType
     tRenewableFix = RenewableFix(nothing)
     @test tRenewableFix isa PowerSystems.Component
     tRenewableDispatch = RenewableDispatch(nothing)

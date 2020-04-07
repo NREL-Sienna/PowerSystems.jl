@@ -754,7 +754,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         var_cost = [(0.0, var_cost[1][2]), (1.0, var_cost[1][2])]
         fixed = 0.0
     end
-
+    status = true
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
     active_power_limits =
@@ -766,16 +766,13 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     min_down_time = get(gen, :min_down_time, nothing)
     timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
         (up = min_up_time, down = min_down_time)
-    tech = TechThermal(
-        rating = rating,
-        primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
-        fuel = convert(ThermalFuels.ThermalFuel, gen.fuel),
-        activepowerlimits = active_power_limits,
-        reactivepowerlimits = reactive_power_limits,
-        ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp),
-        timelimits = timelimits,
-    )
-
+    rating = rating
+    primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
+    fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
+    activepowerlimits = active_power_limits
+    reactivepowerlimits = reactive_power_limits
+    ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp)
+    timelimits = timelimits
     capacity = gen.active_power_limits_max
     startup_cost = get(gen, :startup_cost, nothing)
     if isnothing(startup_cost)
@@ -798,17 +795,23 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     return ThermalStandard(
         gen.name,
         available,
+        status,
         bus,
         gen.active_power,
         gen.reactive_power,
-        tech,
+        rating,
+        primemover,
+        fuel,
+        active_power_limits,
+        reactive_power_limits,
+        ramplimits,
+        timelimits,
         op_cost,
     )
 end
 
 function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
     available = true
-
     rating = calculate_rating(gen.active_power_limits_max, gen.reactive_power_limits_max)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
@@ -819,14 +822,6 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
     min_down_time = get(gen, :min_down_time, nothing)
     timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
         (up = min_up_time, down = min_down_time)
-    tech = TechHydro(
-        rating,
-        convert(PrimeMovers.PrimeMover, gen.unit_type),
-        active_power_limits,
-        reactive_power_limits,
-        isnothing(ramp) ? ramp : (up = ramp, down = ramp),
-        timelimits,
-    )
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -841,7 +836,12 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
             bus = bus,
             activepower = gen.active_power,
             reactivepower = gen.reactive_power,
-            tech = tech,
+            primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            rating = rating,
+            activepowerlimits = active_power_limits,
+            reactivepowerlimits = reactive_power_limits,
+            ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp),
+            timelimits = timelimits,
             op_cost = TwoPartCost(curtailcost, 0.0),
             storage_capacity = storage.storage_capacity,
             inflow = storage.inflow_limit,
@@ -855,7 +855,12 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
             bus = bus,
             activepower = gen.active_power,
             reactivepower = gen.reactive_power,
-            tech = tech,
+            rating = rating,
+            primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            activepowerlimits = active_power_limits,
+            reactivepowerlimits = reactive_power_limits,
+            ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp),
+            timelimits = timelimits,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
@@ -877,13 +882,6 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
     generator = nothing
     available = true
     rating = gen.active_power_limits_max
-
-    tech = TechRenewable(
-        rating,
-        convert(PrimeMovers.PrimeMover, gen.unit_type),
-        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max),
-        1.0,
-    )
     if gen_type == RenewableDispatch
         generator = RenewableDispatch(
             gen.name,
@@ -891,7 +889,10 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             bus,
             gen.active_power,
             gen.reactive_power,
-            tech,
+            rating,
+            convert(PrimeMovers.PrimeMover, gen.unit_type),
+            (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max),
+            1.0,
             TwoPartCost(0.0, 0.0),
         )
     elseif gen_type == RenewableFix
@@ -901,7 +902,9 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             bus,
             gen.active_power,
             gen.reactive_power,
-            tech,
+            rating,
+            convert(PrimeMovers.PrimeMover, gen.unit_type),
+            1.0,
         )
     else
         error("Unsupported type $gen_type")
