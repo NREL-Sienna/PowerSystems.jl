@@ -4,7 +4,6 @@ This file is auto-generated. Do not edit.
 """
     mutable struct Transfer <: Service
         name::String
-        timeframe::Float64
         requirement::Float64
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
@@ -15,7 +14,6 @@ This file is auto-generated. Do not edit.
 
 # Arguments
 - `name::String`
-- `timeframe::Float64`: the relative saturation timeframe, validation range: (0, nothing), action if invalid: error
 - `requirement::Float64`
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -23,8 +21,6 @@ This file is auto-generated. Do not edit.
 """
 mutable struct Transfer <: Service
     name::String
-    "the relative saturation timeframe"
-    timeframe::Float64
     requirement::Float64
     ext::Dict{String, Any}
     "internal forecast storage"
@@ -33,19 +29,18 @@ mutable struct Transfer <: Service
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, timeframe, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, timeframe, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
+function Transfer(name, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transfer(; name, timeframe, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, timeframe, requirement, ext, forecasts, )
+function Transfer(; name, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, requirement, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
 function Transfer(::Nothing)
     Transfer(;
         name="init",
-        timeframe=0.0,
         requirement=0.0,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
@@ -54,8 +49,6 @@ end
 
 
 InfrastructureSystems.get_name(value::Transfer) = value.name
-"""Get Transfer timeframe."""
-get_timeframe(value::Transfer) = value.timeframe
 """Get Transfer requirement."""
 get_requirement(value::Transfer) = value.requirement
 """Get Transfer ext."""

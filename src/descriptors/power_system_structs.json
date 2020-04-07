@@ -258,6 +258,18 @@
                 "validation_action": "error"
             },
             {
+                "name": "participation_factor",
+                "comment": "AGC Participation Factor",
+                "null_value": "0.0",
+                "default": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": 1.0
+                },
+                "validation_action": "error"
+            },
+            {
                 "name": "internal",
                 "comment": "power system internal reference, do not modify",
                 "data_type": "InfrastructureSystemsInternal",
@@ -268,14 +280,33 @@
     },
     {
         "struct_name": "Area",
-        "docstring": "A collection of buses.",
+        "docstring": "A collection of buses for control purposes.",
         "fields": [
             {
+                "null_value": "init",
                 "name": "name",
                 "accessor_module": "InfrastructureSystems",
-                "comment": "area name",
-                "null_value": "init",
                 "data_type": "String"
+            },
+            {
+                "name": "maxactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "default": "0.0"
+            },
+            {
+                "name": "maxreactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "default": "0.0"
+            },
+            {
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
             },
             {
                 "name": "internal",
@@ -288,6 +319,7 @@
     },
     {
         "struct_name": "LoadZone",
+        "docstring": "A collection of buses for electricity price analysis.",
         "fields": [
             {
                 "null_value": "init",
@@ -305,13 +337,7 @@
                 "null_value": "0.0",
                 "data_type": "Float64"
             },
-            {
-                "name": "services",
-                "data_type": "Vector{Service}",
-                "comment": "Services that this device contributes to",
-                "null_value": "Device[]",
-                "default": "Device[]"
-            },
+
             {
                 "name": "forecasts",
                 "accessor_module": "InfrastructureSystems",
@@ -393,13 +419,15 @@
                 "name": "area",
                 "comment": "the area containing the bus",
                 "null_value": "Area(nothing)",
-                "data_type": "Union{Nothing, Area}"
+                "data_type": "Union{Nothing, Area}",
+                "default": "nothing"
             },
             {
                 "name": "load_zone",
                 "comment": "the load zone containing the bus",
                 "null_value": "LoadZone(nothing)",
-                "data_type": "Union{Nothing, LoadZone}"
+                "data_type": "Union{Nothing, LoadZone}",
+                "default": "nothing"
             },
             {
                 "name": "ext",
@@ -1978,7 +2006,7 @@
         "supertype": "Reserve{T}"
     },
     {
-        "struct_name": "Transfer",
+        "struct_name": "AGC",
         "fields": [
             {
                 "null_value": "init",
@@ -1987,15 +2015,64 @@
                 "data_type": "String"
             },
             {
-                "name": "timeframe",
-                "comment": "the relative saturation timeframe",
+                "name": "bias",
                 "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
+                "data_type": "Float64"
+            },
+            {
+                "name": "K_p",
+                "comment": "PID Proportional Constant",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "K_i",
+                "comment": "PID Integral Constant",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "K_d",
+                "comment": "PID Derrivative Constant",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "delta_t",
+                "comment": "PID Discretization period [Seconds]",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+                        {
+                "name": "area",
+                "comment": "the area controlled by the AGC",
+                "null_value": "Area(nothing)",
+                "data_type": "Union{Nothing, Area}",
+                "default": "nothing"
+            },
+            {
+                "name": "ext",
+                "data_type": "Dict{String, Any}",
+                "null_value": "Dict{String, Any}()",
+                "default": "Dict{String, Any}()"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+        ],
+        "supertype": "Service"
+    },
+    {
+        "struct_name": "Transfer",
+        "fields": [
+            {
+                "null_value": "init",
+                "name": "name",
+                "accessor_module": "InfrastructureSystems",
+                "data_type": "String"
             },
             {
                 "name": "requirement",

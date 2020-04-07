@@ -168,3 +168,10 @@ end
     clear_ext(sys)
     @test isempty(get_ext(sys))
 end
+
+@testset "Test system checks" begin
+    sys = System(100)
+    @test_throws InfrastructureSystems.InvalidValue("Critical Componeents are not present.") PSY.check!(
+        sys,
+    )
+end

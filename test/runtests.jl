@@ -58,8 +58,7 @@ macro includetests(testarg...)
             tests = readdir(dirname(rootfile))
             tests = filter(
                 f ->
-                        startswith(f, "test_") &&
-                        endswith(f, ".jl") && f != basename(rootfile),
+                    startswith(f, "test_") && endswith(f, ".jl") && f != basename(rootfile),
                 tests,
             )
         else
@@ -100,7 +99,7 @@ function run_tests()
             @includetests ARGS
         end
 
-        @test length(IS.get_log_events(multi_logger.tracker, Logging.Error)) == 0
+        @test length(IS.get_log_events(multi_logger.tracker, Logging.Error)) == 2
         @info IS.report_log_summary(multi_logger)
     end
 end

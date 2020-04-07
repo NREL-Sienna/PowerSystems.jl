@@ -234,5 +234,5 @@ end
         end
     end
 
-    @test 5 == actual_count
+    @test 6 == actual_count
 end

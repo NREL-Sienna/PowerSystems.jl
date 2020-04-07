@@ -30,7 +30,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/NREL/PowerSystems.jl.git",
+    repo = "github.com/NREL-SIIP/PowerSystems.jl.git",
     branch = "gh-pages",
     target = "build",
     make = nothing,

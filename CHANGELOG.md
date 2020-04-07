@@ -1,5 +1,16 @@
 # PowerSystems Change Log
 
+## v0.13.0
+
+- Change uses of Load Zone and Area
+- Add AGC service
+- Remove unnecessary fields in transfer service
+- Add participation factor field in TechThermal
+
+## v0.12.0
+
+- Make LoadZone and Area optional Bus Inputs
+
 ## v0.11.2
 
 - Reduce warning print for unsupported columns outs when parsing data
@@ -78,9 +89,6 @@
 ## v0.6.2
 
 - Downgrade compatible version of CSV to 0.5.13 to avoid tab-complete hang.
-
-## v0.6.2
-
 - Bug Fix in docstrings autogeneration code
 - Contiguous forecasts function added
 

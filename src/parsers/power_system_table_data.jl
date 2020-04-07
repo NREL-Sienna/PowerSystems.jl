@@ -216,8 +216,9 @@ end
 
 """Return the dataframe for the category."""
 function get_dataframe(data::PowerSystemTableData, category::InputCategory)
-    @assert haskey(data.category_to_df, category)
-    return data.category_to_df[category]
+    df = get(data.category_to_df, category, DataFrames.DataFrame())
+    isempty(df) && @warn("Missing $category data.")
+    return df
 end
 
 """
@@ -261,11 +262,13 @@ function System(
     forecast_resolution = nothing,
     time_series_in_memory = false,
     runchecks = true,
+    kwargs...,
 )
     sys = System(
         data.basepower;
         time_series_in_memory = time_series_in_memory,
         runchecks = runchecks,
+        kwargs...,
     )
 
     loadzone_csv_parser!(sys, data)
@@ -730,8 +733,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
                 fuel_cost *
                 data.basepower,
                 var_cost[i][2],
-            ) .* gen.active_power_limits_max
-            for i in 2:length(var_cost)
+            ) .* gen.active_power_limits_max for i in 2:length(var_cost)
         ]
         var_cost[1] =
             (
@@ -742,7 +744,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         fixed = max(
             0.0,
             var_cost[1][1] -
-                (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
+            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
         for i in 2:length(var_cost)
@@ -759,14 +761,19 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     reactive_power_limits =
         (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
+    ramp = get(gen, :ramp_limits, nothing)
+    min_up_time = get(gen, :min_up_time, nothing)
+    min_down_time = get(gen, :min_down_time, nothing)
+    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
+        (up = min_up_time, down = min_down_time)
     tech = TechThermal(
         rating = rating,
         primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
         fuel = convert(ThermalFuels.ThermalFuel, gen.fuel),
         activepowerlimits = active_power_limits,
         reactivepowerlimits = reactive_power_limits,
-        ramplimits = (up = gen.ramp_limits, down = gen.ramp_limits),
-        timelimits = (up = gen.min_up_time, down = gen.min_down_time),
+        ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp),
+        timelimits = timelimits,
     )
 
     capacity = gen.active_power_limits_max
@@ -807,13 +814,18 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     reactive_power_limits =
         (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
+    ramp = get(gen, :ramp_limits, nothing)
+    min_up_time = get(gen, :min_up_time, nothing)
+    min_down_time = get(gen, :min_down_time, nothing)
+    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
+        (up = min_up_time, down = min_down_time)
     tech = TechHydro(
         rating,
         convert(PrimeMovers.PrimeMover, gen.unit_type),
         active_power_limits,
         reactive_power_limits,
-        (up = gen.ramp_limits, down = gen.ramp_limits),
-        (up = gen.min_down_time, down = gen.min_down_time),
+        isnothing(ramp) ? ramp : (up = ramp, down = ramp),
+        timelimits,
     )
 
     if gen_type == HydroEnergyReservoir
@@ -990,60 +1002,51 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
     end
 
     fields = Vector{_FieldInfo}()
-    try
-        for item in data.user_descriptors[category]
-            custom_name = Symbol(item["custom_name"])
-            name = item["name"]
-            if custom_name in df_names
-                if !(name in descriptor_names)
-                    if occursin("heat_rate_", name) || occursin("output_percent_", name)
-                        base = name[(findlast("_", name)[end] + 1):end]
-                        d_name = descriptor_names[occursin.(base, descriptor_names)][end]
-                        per_unit[name] = per_unit[d_name]
-                        unit[name] = unit[d_name]
-                    else
-                        throw(DataFormatError("$name is not defined in $POWER_SYSTEM_DESCRIPTOR_FILE"))
-                    end
-                end
 
-                if !per_unit[name] && get(item, "system_per_unit", false)
-                    throw(DataFormatError("$name cannot be defined as system_per_unit"))
-                end
-
-                needs_pu_conversion =
-                    per_unit[name] &&
-                    haskey(item, "system_per_unit") && !item["system_per_unit"]
-
-                custom_unit = get(item, "unit", nothing)
-                if !isnothing(unit[name]) &&
-                   !isnothing(custom_unit) && custom_unit != unit[name]
-                    unit_conversion = (From = custom_unit, To = unit[name])
+    for item in data.user_descriptors[category]
+        custom_name = Symbol(item["custom_name"])
+        name = item["name"]
+        if custom_name in df_names
+            if !(name in descriptor_names)
+                if occursin("heat_rate_", name) || occursin("output_percent_", name)
+                    base = name[(findlast("_", name)[end] + 1):end]
+                    d_name = descriptor_names[occursin.(base, descriptor_names)][end]
+                    per_unit[name] = per_unit[d_name]
+                    unit[name] = unit[d_name]
                 else
-                    unit_conversion = nothing
+                    throw(DataFormatError("$name is not defined in $POWER_SYSTEM_DESCRIPTOR_FILE"))
                 end
-
-                push!(
-                    fields,
-                    _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion),
-                )
-            else
-                # TODO: This should probably be a fatal error. However, the parsing code
-                # doesn't use all the descriptor fields, so skip for now.
-                @warn "User-defined column name $custom_name is not in dataframe."
             end
-        end
-        return fields
-    catch err
-        if err == KeyError
-            msg = "Failed to find category=$category field=$field in input descriptors $err"
-            throw(DataFormatError(msg))
+
+            if !per_unit[name] && get(item, "system_per_unit", false)
+                throw(DataFormatError("$name cannot be defined as system_per_unit"))
+            end
+
+            needs_pu_conversion =
+                per_unit[name] &&
+                haskey(item, "system_per_unit") && !item["system_per_unit"]
+
+            custom_unit = get(item, "unit", nothing)
+            if !isnothing(unit[name]) &&
+               !isnothing(custom_unit) &&
+               custom_unit != unit[name]
+                unit_conversion = (From = custom_unit, To = unit[name])
+            else
+                unit_conversion = nothing
+            end
+
+            push!(
+                fields,
+                _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion),
+            )
         else
-            throw(err)
+            # TODO: This should probably be a fatal error. However, the parsing code
+            # doesn't use all the descriptor fields, so skip for now.
+            @warn "User-defined column name $custom_name is not in dataframe."
         end
     end
 
-    msg = "Failed to find category=$category field=$field in input descriptors"
-    throw(DataFormatError(msg))
+    return fields
 end
 
 """Reads values from dataframe row and performs necessary conversions."""
