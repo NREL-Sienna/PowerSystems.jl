@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## v0.14.1
+
+- Update InfrastructureSystems dependency
+
 ## v0.14.0
 
 - Update names and contents of Dynamic Structs, RenewableGen, HydroGen and ThermalGen
