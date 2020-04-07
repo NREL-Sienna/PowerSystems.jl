@@ -3,7 +3,7 @@ abstract type InverterComponent <: DynamicComponent end
 mutable struct DynamicInverter{
     C <: Converter,
     O <: OuterControl,
-    VC <: InnerControl,
+    IC <: InnerControl,
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
@@ -17,8 +17,8 @@ mutable struct DynamicInverter{
     Q_ref::Float64
     MVABase::Float64
     converter::C
-    outercontrol::O
-    vscontrol::VC
+    outer_control::O
+    inner_control::IC
     dc_source::DC
     freq_estimator::P
     filter::F #add MVAbase here
@@ -35,15 +35,15 @@ mutable struct DynamicInverter{
         Q_ref::Float64,
         MVABase::Float64,
         converter::C,
-        outercontrol::O,
-        vscontrol::VC,
+        outer_control::O,
+        inner_control::IC,
         dc_source::DC,
         freq_estimator::P,
         filter::F,
     ) where {
         C <: Converter,
         O <: OuterControl,
-        VC <: InnerControl,
+        IC <: InnerControl,
         DC <: DCSource,
         P <: FrequencyEstimator,
         F <: Filter,
@@ -51,8 +51,8 @@ mutable struct DynamicInverter{
 
         n_states = (
             converter.n_states +
-            outercontrol.n_states +
-            vscontrol.n_states +
+            outer_control.n_states +
+            inner_control.n_states +
             dc_source.n_states +
             freq_estimator.n_states +
             filter.n_states
@@ -60,14 +60,14 @@ mutable struct DynamicInverter{
 
         states = vcat(
             converter.states,
-            outercontrol.states,
-            vscontrol.states,
+            outer_control.states,
+            inner_control.states,
             dc_source.states,
             freq_estimator.states,
             filter.states,
         )
 
-        new{C, O, VC, DC, P, F}(
+        new{C, O, IC, DC, P, F}(
             number,
             name,
             bus,
@@ -77,8 +77,8 @@ mutable struct DynamicInverter{
             Q_ref,
             MVABase,
             converter,
-            outercontrol,
-            vscontrol,
+            outer_control,
+            inner_control,
             dc_source,
             freq_estimator,
             filter,
@@ -103,8 +103,8 @@ get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states
 get_n_states(device::DynamicInverter) = device.n_states
 get_converter(device::DynamicInverter) = device.converter
-get_outercontrol(device::DynamicInverter) = device.outercontrol
-get_vscontrol(device::DynamicInverter) = device.vscontrol
+get_outer_control(device::DynamicInverter) = device.outer_control
+get_inner_control(device::DynamicInverter) = device.inner_control
 get_dc_source(device::DynamicInverter) = device.dc_source
 get_freq_estimator(device::DynamicInverter) = device.freq_estimator
 get_filter(device::DynamicInverter) = device.filter
