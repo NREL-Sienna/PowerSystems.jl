@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## v0.14.0
+
+- Update names and contents of Dynamic Structs, RenewableGen, HydroGen and ThermalGen
+
 ## v0.13.1
 
 - Update CSV dependency to v0.6
