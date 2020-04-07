@@ -29,7 +29,7 @@ This file is auto-generated. Do not edit.
 - `reactivepower::Float64`
 - `maxactivepower::Float64`
 - `maxreactivepower::Float64`
-- `op_cost::TwoPartCost`
+- `op_cost::TwoPartCost`: Operation Cost of Generation [TwoPartCost](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -44,6 +44,7 @@ mutable struct InterruptibleLoad <: ControllableLoad
     reactivepower::Float64
     maxactivepower::Float64
     maxreactivepower::Float64
+    "Operation Cost of Generation [TwoPartCost](@ref)"
     op_cost::TwoPartCost
     "Services that this device contributes to"
     services::Vector{Service}

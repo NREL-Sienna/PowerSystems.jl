@@ -31,7 +31,7 @@ This file is auto-generated. Do not edit.
 - `primemover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `powerfactor::Float64`, validation range: (0, 1), action if invalid: error
-- `op_cost::TwoPartCost`
+- `op_cost::TwoPartCost`: Operation Cost of Generation [TwoPartCost](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -49,6 +49,7 @@ mutable struct RenewableDispatch <: RenewableGen
     primemover::PrimeMovers.PrimeMover
     reactivepowerlimits::Union{Nothing, Min_Max}
     powerfactor::Float64
+    "Operation Cost of Generation [TwoPartCost](@ref)"
     op_cost::TwoPartCost
     "Services that this device contributes to"
     services::Vector{Service}

@@ -33,7 +33,7 @@ This file is auto-generated. Do not edit.
 - `activepowerlimits::Min_Max`
 - `reactivepowerlimits::Union{Nothing, Min_Max}`, action if invalid: warn
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits, validation range: (0, nothing), action if invalid: error
-- `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down time limits, validation range: (0, nothing), action if invalid: error
+- `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -53,7 +53,7 @@ mutable struct HydroDispatch <: HydroGen
     reactivepowerlimits::Union{Nothing, Min_Max}
     "ramp up and ramp down limits"
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    "ramp up and ramp down time limits"
+    "Minimum up and Minimum down time limits in hours"
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Services that this device contributes to"
     services::Vector{Service}

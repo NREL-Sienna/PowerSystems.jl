@@ -1053,7 +1053,8 @@
             {
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
-                "data_type": "TwoPartCost"
+                "data_type": "TwoPartCost",
+                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
             },
             {
                 "name": "services",
@@ -1287,7 +1288,7 @@
             },
             {
                 "name": "timelimits",
-                "comment": "ramp up and ramp down time limits",
+                "comment": "Minimum up and Minimum down time limits in hours",
                 "null_value": "nothing",
                 "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
                 "valid_range": {
@@ -1299,7 +1300,8 @@
             {
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
-                "data_type": "TwoPartCost"
+                "data_type": "TwoPartCost",
+                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
             },
             {
                 "name": "storage_capacity",
@@ -1433,7 +1435,7 @@
             },
             {
                 "name": "timelimits",
-                "comment": "ramp up and ramp down time limits",
+                "comment": "Minimum up and Minimum down time limits in hours",
                 "null_value": "nothing",
                 "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
                 "valid_range": {
@@ -1536,7 +1538,8 @@
             {
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
-                "data_type": "TwoPartCost"
+                "data_type": "TwoPartCost",
+                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
             },
             {
                 "name": "services",
@@ -1739,6 +1742,7 @@
             },
             {
                 "name": "timelimits",
+                "comment": "Minimum up and Minimum down time limits in hours",
                 "null_value": "nothing",
                 "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
                 "valid_range": {
