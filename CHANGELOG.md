@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## v0.13.1
+
+- Update CSV dependency to v0.6
+
 ## v0.13.0
 
 - Change uses of Load Zone and Area
