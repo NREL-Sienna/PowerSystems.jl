@@ -1027,7 +1027,8 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
             needs_pu_conversion =
                 per_unit[name] &&
-                haskey(item, "system_per_unit") && !item["system_per_unit"]
+                haskey(item, "system_per_unit") &&
+                !item["system_per_unit"]
 
             custom_unit = get(item, "unit", nothing)
             if !isnothing(unit[name]) &&
