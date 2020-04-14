@@ -1679,12 +1679,6 @@
                 "data_type": "Bool"
             },
             {
-                "null_value": "Inf",
-                "name": "time_at_status",
-                "data_type": "Float64",
-                "default": "Inf"
-            },
-            {
                 "name": "bus",
                 "null_value": "Bus(nothing)",
                 "data_type": "Bus"
@@ -1780,6 +1774,12 @@
                     "max": 1.0
                 },
                 "validation_action": "error"
+            },
+            {
+                "null_value": "Inf",
+                "name": "time_at_status",
+                "data_type": "Float64",
+                "default": "Inf"
             },
             {
                 "name": "ext",

@@ -6,7 +6,6 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         status::Bool
-        time_at_status::Float64
         bus::Bus
         activepower::Float64
         reactivepower::Float64
@@ -20,6 +19,7 @@ This file is auto-generated. Do not edit.
         op_cost::ThreePartCost
         services::Vector{Service}
         participation_factor::Float64
+        time_at_status::Float64
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -31,7 +31,6 @@ Data Structure for thermal generation technologies.
 - `name::String`
 - `available::Bool`
 - `status::Bool`
-- `time_at_status::Float64`
 - `bus::Bus`
 - `activepower::Float64`, validation range: activepowerlimits, action if invalid: warn
 - `reactivepower::Float64`, validation range: reactivepowerlimits, action if invalid: warn
@@ -45,6 +44,7 @@ Data Structure for thermal generation technologies.
 - `op_cost::ThreePartCost`
 - `services::Vector{Service}`: Services that this device contributes to
 - `participation_factor::Float64`: AGC Participation Factor, validation range: (0, 1.0), action if invalid: error
+- `time_at_status::Float64`
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -53,7 +53,6 @@ mutable struct ThermalStandard <: ThermalGen
     name::String
     available::Bool
     status::Bool
-    time_at_status::Float64
     bus::Bus
     activepower::Float64
     reactivepower::Float64
@@ -73,6 +72,7 @@ mutable struct ThermalStandard <: ThermalGen
     services::Vector{Service}
     "AGC Participation Factor"
     participation_factor::Float64
+    time_at_status::Float64
     ext::Dict{String, Any}
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts
@@ -80,12 +80,12 @@ mutable struct ThermalStandard <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, time_at_status=Inf, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, time_at_status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=Inf, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, time_at_status, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, time_at_status=Inf, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, time_at_status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, ext, forecasts, )
+function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=Inf, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, time_at_status, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -94,7 +94,6 @@ function ThermalStandard(::Nothing)
         name="init",
         available=false,
         status=false,
-        time_at_status=Inf,
         bus=Bus(nothing),
         activepower=0.0,
         reactivepower=0.0,
@@ -108,6 +107,7 @@ function ThermalStandard(::Nothing)
         op_cost=ThreePartCost(nothing),
         services=Device[],
         participation_factor=0.0,
+        time_at_status=Inf,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -119,8 +119,6 @@ InfrastructureSystems.get_name(value::ThermalStandard) = value.name
 get_available(value::ThermalStandard) = value.available
 """Get ThermalStandard status."""
 get_status(value::ThermalStandard) = value.status
-"""Get ThermalStandard time_at_status."""
-get_time_at_status(value::ThermalStandard) = value.time_at_status
 """Get ThermalStandard bus."""
 get_bus(value::ThermalStandard) = value.bus
 """Get ThermalStandard activepower."""
@@ -147,6 +145,8 @@ get_op_cost(value::ThermalStandard) = value.op_cost
 get_services(value::ThermalStandard) = value.services
 """Get ThermalStandard participation_factor."""
 get_participation_factor(value::ThermalStandard) = value.participation_factor
+"""Get ThermalStandard time_at_status."""
+get_time_at_status(value::ThermalStandard) = value.time_at_status
 """Get ThermalStandard ext."""
 get_ext(value::ThermalStandard) = value.ext
 
