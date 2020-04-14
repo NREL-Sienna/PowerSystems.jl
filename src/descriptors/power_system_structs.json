@@ -1680,8 +1680,9 @@
             },
             {
                 "null_value": "Inf",
-                "name": "timeatstatus",
-                "data_type": "Float64"
+                "name": "time_at_status",
+                "data_type": "Float64",
+                "default": "Inf"
             },
             {
                 "name": "bus",
