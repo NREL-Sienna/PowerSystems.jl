@@ -6,6 +6,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         status::Bool
+        timeatstatus::Float64
         bus::Bus
         activepower::Float64
         reactivepower::Float64
@@ -30,6 +31,7 @@ Data Structure for thermal generation technologies.
 - `name::String`
 - `available::Bool`
 - `status::Bool`
+- `timeatstatus::Float64`
 - `bus::Bus`
 - `activepower::Float64`, validation range: activepowerlimits, action if invalid: warn
 - `reactivepower::Float64`, validation range: reactivepowerlimits, action if invalid: warn
@@ -51,6 +53,7 @@ mutable struct ThermalStandard <: ThermalGen
     name::String
     available::Bool
     status::Bool
+    timeatstatus::Float64
     bus::Bus
     activepower::Float64
     reactivepower::Float64
@@ -77,12 +80,12 @@ mutable struct ThermalStandard <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalStandard(name, available, status, timeatstatus, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, timeatstatus, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, ext, forecasts, )
+function ThermalStandard(; name, available, status, timeatstatus, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, timeatstatus, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -91,6 +94,7 @@ function ThermalStandard(::Nothing)
         name="init",
         available=false,
         status=false,
+        timeatstatus=Inf,
         bus=Bus(nothing),
         activepower=0.0,
         reactivepower=0.0,
@@ -115,6 +119,8 @@ InfrastructureSystems.get_name(value::ThermalStandard) = value.name
 get_available(value::ThermalStandard) = value.available
 """Get ThermalStandard status."""
 get_status(value::ThermalStandard) = value.status
+"""Get ThermalStandard timeatstatus."""
+get_timeatstatus(value::ThermalStandard) = value.timeatstatus
 """Get ThermalStandard bus."""
 get_bus(value::ThermalStandard) = value.bus
 """Get ThermalStandard activepower."""

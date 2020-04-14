@@ -214,6 +214,7 @@ export get_states
 export get_status
 export get_storage_capacity
 export get_tap
+export get_timeatstatus
 export get_timeframe
 export get_timelimits
 export get_to

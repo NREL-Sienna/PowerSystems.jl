@@ -1679,6 +1679,11 @@
                 "data_type": "Bool"
             },
             {
+                "null_value": "Inf",
+                "name": "timeatstatus",
+                "data_type": "Float64"
+            },
+            {
                 "name": "bus",
                 "null_value": "Bus(nothing)",
                 "data_type": "Bus"
