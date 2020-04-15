@@ -8,5 +8,5 @@
     @info "Successfully parsed $TAMU_DIR to System struct"
 
     # Test bad input
-    @test_throws PowerSystems.DataFormatError TAMU_System(("")
+    @test_throws PowerSystems.DataFormatError TAMU_System("")
 end
