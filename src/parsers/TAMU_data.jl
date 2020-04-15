@@ -28,7 +28,10 @@ sys = parse_TAMU(
 
 function TAMU_System(TAMU_FOLDER::AbstractString; kwargs...)
     TAMU_CASE = basename(TAMU_FOLDER)
-    pm_data = PowerModelsData(joinpath(TAMU_FOLDER, TAMU_CASE * ".RAW"))
+    raw_file = joinpath(TAMU_FOLDER, TAMU_CASE * ".RAW")
+    !isfile(raw_file) && throw(DataFormatError("Cannot find $raw_file"))
+
+    pm_data = PowerModelsData(raw_file)
 
     bus_name_formatter =
         get(kwargs, :bus_name_formatter, x -> string(x["name"]) * "-" * string(x["index"]))
@@ -51,6 +54,9 @@ function TAMU_System(TAMU_FOLDER::AbstractString; kwargs...)
         TAMU_FOLDER,
         tamu_files[occursin.("_load_time_series_MW.csv", tamu_files)][1],
     ) # currently only adding MW load forecasts
+
+    !isfile(load_file) && throw(DataFormatError("Cannot find $load_file"))
+
     header = String.(split(open(readlines, load_file)[header_row], ","))
     fixed_cols = ["Date", "Time", "Num Load", "Total MW Load", "Total Mvar Load"]
     for l in header

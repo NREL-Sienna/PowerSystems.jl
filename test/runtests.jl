@@ -20,6 +20,7 @@ FORECASTS_DIR = joinpath(DATA_DIR, "forecasts")
 MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
 PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
 RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
+TAMU_DIR = joinpath(DATA_DIR, "ACTIVSg2000")
 
 LOG_FILE = "power-systems.log"
 LOG_LEVELS = Dict(
