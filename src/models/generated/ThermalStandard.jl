@@ -80,11 +80,11 @@ mutable struct ThermalStandard <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=Inf, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITY, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
     ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, time_at_status, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=Inf, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITY, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
     ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, time_at_status, ext, forecasts, )
 end
 
@@ -107,7 +107,7 @@ function ThermalStandard(::Nothing)
         op_cost=ThreePartCost(nothing),
         services=Device[],
         participation_factor=0.0,
-        time_at_status=Inf,
+        time_at_status=INFINITY,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
     )
