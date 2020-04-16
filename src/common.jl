@@ -79,3 +79,5 @@ const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_structs.json")
 
 const DEFAULT_SYSTEM_FREQUENCY = 60.0
+
+const INFINITE_TIME = 1e6
