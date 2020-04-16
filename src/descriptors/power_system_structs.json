@@ -1776,10 +1776,10 @@
                 "validation_action": "error"
             },
             {
-                "null_value": "INFINITY",
+                "null_value": "INFINITE_TIME",
                 "name": "time_at_status",
                 "data_type": "Float64",
-                "default": "INFINITY"
+                "default": "INFINITE_TIME"
             },
             {
                 "name": "ext",
