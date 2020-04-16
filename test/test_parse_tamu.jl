@@ -4,9 +4,9 @@
         error("No test files in the folder")
     end
 
-    sys = TAMU_System(TAMU_DIR)
+    sys = TamuSystem(TAMU_DIR)
     @info "Successfully parsed $TAMU_DIR to System struct"
 
     # Test bad input
-    @test_throws PowerSystems.DataFormatError TAMU_System("")
+    @test_throws PowerSystems.DataFormatError TamuSystem("")
 end

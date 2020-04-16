@@ -198,7 +198,7 @@ export check_forecast_consistency
 export validate_forecast_consistency
 export clear_ext
 export convert_component!
-export TAMU_System
+export TamuSystem
 
 #################################################################################
 # Imports

@@ -1,6 +1,6 @@
 
 """
-    TAMU_System(TAMU_FOLDER::AbstractString;
+    TamuSystem(tamu_folder::AbstractString;
                      kwargs...)
 
 Creates a system from a PSS/e .RAW (v33) load flow case, and an associated .csv with MW load
@@ -17,7 +17,7 @@ folder:
 
 # Examples
 ```julia
-sys = parse_TAMU(
+sys = TamuSystem(
     "./ACTIVSg25k",
     configpath = "ACTIVSg25k_validation.json",
     bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
@@ -26,9 +26,9 @@ sys = parse_TAMU(
 ```
 """
 
-function TAMU_System(TAMU_FOLDER::AbstractString; kwargs...)
-    TAMU_CASE = basename(TAMU_FOLDER)
-    raw_file = joinpath(TAMU_FOLDER, TAMU_CASE * ".RAW")
+function TamuSystem(tamu_folder::AbstractString; kwargs...)
+    TAMU_CASE = basename(tamu_folder)
+    raw_file = joinpath(tamu_folder, TAMU_CASE * ".RAW")
     !isfile(raw_file) && throw(DataFormatError("Cannot find $raw_file"))
 
     pm_data = PowerModelsData(raw_file)
@@ -49,9 +49,9 @@ function TAMU_System(TAMU_FOLDER::AbstractString; kwargs...)
     # add forecasts
     header_row = 2
 
-    tamu_files = readdir(TAMU_FOLDER)
+    tamu_files = readdir(tamu_folder)
     load_file = joinpath(
-        TAMU_FOLDER,
+        tamu_folder,
         tamu_files[occursin.("_load_time_series_MW.csv", tamu_files)][1],
     ) # currently only adding MW load forecasts
 
