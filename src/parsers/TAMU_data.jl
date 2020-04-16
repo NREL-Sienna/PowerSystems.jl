@@ -71,7 +71,7 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
     loads = CSV.read(load_file, skipto = 3, header = fixed_cols)
 
     function parse_datetime_ampm(ds::AbstractString, fmt::Dates.DateFormat)
-        m = match(r"(.*?)\s*(AM|PM)?$"i, ds)
+        m = match(r"(.*)\s(AM|PM)", ds)
         d = Dates.DateTime(m.captures[1], fmt)
         ampm = uppercase(something(m.captures[2], ""))
         d + Dates.Hour(12 * +(ampm == "PM", ampm == "" || Dates.hour(d) != 12, -1))
