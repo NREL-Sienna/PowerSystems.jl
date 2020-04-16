@@ -59,11 +59,13 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
 
     header = String.(split(open(readlines, load_file)[header_row], ","))
     fixed_cols = ["Date", "Time", "Num Load", "Total MW Load", "Total Mvar Load"]
-    for l in header
-        l in fixed_cols && continue
-        lsplit = split(replace(string(l), "#" => ""), " ")
+
+    # value columns have the format "Bus 1001 #1 MW", we want "load_1001_1"
+    for load in header
+        load in fixed_cols && continue
+        lsplit = split(replace(string(load), "#" => ""), " ")
         @assert length(lsplit) == 4
-        push!(fixed_cols, string("load_", join(lsplit[2:3], "_")))
+        push!(fixed_cols, "load_" * join(lsplit[2:3], "_"))
     end
 
     loads = CSV.read(load_file, skipto = 3, header = fixed_cols)
@@ -77,23 +79,22 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
 
     dfmt = Dates.DateFormat("m/dd/yyy H:M:S")
 
-    loads[:timestamp] =
+    loads[!, :timestamp] =
         parse_datetime_ampm.(string.(loads[!, :Date], " ", loads[!, :Time]), dfmt)
 
     for lname in setdiff(
-        Set(names(loads)),
-        Set([
+        names(loads),
+        [
             :timestamp,
             :Date,
             :Time,
             Symbol("Num Load"),
             Symbol("Total MW Load"),
             Symbol("Total Mvar Load"),
-        ]),
+        ],
     )
         c = get_component(PowerLoad, sys, string(lname))
         if !isnothing(c)
-            #@info "adding forecast for load $(lname)"
             add_forecast!(
                 sys,
                 loads[!, [:timestamp, lname]],
