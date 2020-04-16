@@ -20,6 +20,7 @@
         IS.ArgumentError,
         get_components_by_name(ThermalStandard, sys, "not-a-name")
     )
+    @test isempty(get_components(ThermalStandard, sys, x -> (!get_available(x))))
 
     # Test get_bus* functionality.
     bus_numbers = Vector{Int}()
