@@ -477,12 +477,6 @@ function get_component(::Type{T}, sys::System, name::AbstractString) where {T <:
 end
 
 """
-    get_components(
-                   ::Type{T},
-                   sys::System,
-                   filter_func::Union{Nothing, Function} = nothing,
-                  ) where T <: Component
-
 Returns an iterator of components. T can be concrete or abstract.
 Call collect on the result if an array is desired.
 
@@ -499,7 +493,7 @@ Call collect on the result if an array is desired.
 ```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
-iter = PowerSystems.get_components(Generator, sys, x->(get_available(x)))
+iter = PowerSystems.get_components(Generator, sys, x->(PowerSystems.get_available(x)))
 generators = collect(PowerSystems.get_components(Generator, sys))
 ```
 
