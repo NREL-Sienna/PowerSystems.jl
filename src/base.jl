@@ -480,15 +480,6 @@ end
 Returns an iterator of components. T can be concrete or abstract.
 Call collect on the result if an array is desired.
 
-# Arguments
-- `T`: component type
-- `sys::System`: System
-- `filter_func::Union{Nothing, Function} = nothing`: Optional function that accepts an component
-   of type T and returns a Bool. Apply this function to each component and only return components
-   where the result is true
-Returns an iterator of components. T can be concrete or abstract.
-Call collect on the result if an array is desired.
-
 # Examples
 ```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
