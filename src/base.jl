@@ -487,18 +487,32 @@ end
 Returns an iterator of components. T can be concrete or abstract.
 Call collect on the result if an array is desired.
 
+# Arguments
+- `T`: component type
+- `sys::System`: System
+- `filter_func::Union{Nothing, Function} = nothing`: Optional function that accepts an component
+   of type T and returns a Bool. Apply this function to each component and only return components
+   where the result is true
+Returns an iterator of components. T can be concrete or abstract.
+Call collect on the result if an array is desired.
+
 # Examples
 ```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
+iter = PowerSystems.get_components(Generator, sys, x->(PowerSystems.get_available(x)))
 generators = collect(PowerSystems.get_components(Generator, sys))
 ```
 
 See also: [`iterate_components`](@ref)
 """
-function get_components(::Type{T}, sys::System) where {T <: Component}
+function get_components(
+    ::Type{T},
+    sys::System,
+    filter_func::Union{Nothing, Function} = nothing,
+) where {T <: Component}
     # TODO: Verify that return type annotation is not required
-    return IS.get_components(T, sys.data)
+    return IS.get_components(T, sys.data, filter_func)
 end
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)

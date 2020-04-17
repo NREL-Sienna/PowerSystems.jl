@@ -318,6 +318,6 @@ end
     end
     PSY.add_component!(sys, Gen1AVR)
 
-    @test collect(PSY.get_components(DynamicGenerator, sys))[1] == Gen1AVR
+    @test collect(get_components(DynamicGenerator, sys))[1] == Gen1AVR
 
 end

@@ -1776,6 +1776,12 @@
                 "validation_action": "error"
             },
             {
+                "null_value": "INFINITE_TIME",
+                "name": "time_at_status",
+                "data_type": "Float64",
+                "default": "INFINITE_TIME"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",

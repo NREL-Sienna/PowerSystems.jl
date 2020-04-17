@@ -1,5 +1,8 @@
 # PowerSystems Change Log
 
+## v0.15.0
+- Add filtering function to get_components
+
 ## v0.14.1
 
 - Update InfrastructureSystems dependency

@@ -11,7 +11,7 @@ function validate_serialization(sys::System)
     ext_test_bus_name = ""
     try
         IS.prepare_for_serialization!(sys.data, path)
-        bus = collect(PSY.get_components(PSY.Bus, sys))[1]
+        bus = collect(get_components(PSY.Bus, sys))[1]
         ext_test_bus_name = PSY.get_name(bus)
         ext = PSY.get_ext(bus)
         ext["test_field"] = 1
