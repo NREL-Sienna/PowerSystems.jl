@@ -27,10 +27,7 @@ end
 
     for f in files[1:1]
         @info "Parsing $f ..."
-        pm_data = PowerSystems.PowerModelsData(joinpath(PM_PSSE_PATH, f))
-        @info "Successfully parsed $f to PowerModels dict"
-
-        sys = System(pm_data)
+        sys = System(joinpath(PM_PSSE_PATH, f))
         @info "Successfully parsed $f to System struct"
     end
 end
