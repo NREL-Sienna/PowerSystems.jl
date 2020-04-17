@@ -7,23 +7,28 @@ end
 """
 Constructs PowerModelsData from a raw file.
 Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
+"""
+function PowerModelsData(file::Union{String, IO}; kwargs...)
+    pm_dict = parse_file(file; kwargs...)
+    pm_data = PowerModelsData(pm_dict)
+    correct_pm_transformer_status!(pm_data)
+    return pm_data
+end
+
+"""
+Constructs a System from PowerModelsData.
 Supports kwargs to supply formatters for different device types,
 such as `bus_name_formatter` or `gen_name_formatter`.
 
 # Examples
 ```julia
-sys = PSY.PowerModelsData(
+sys = System(
     pm_data, configpath = "ACTIVSg25k_validation.json",
     bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
     load_name_formatter = x->strip(join(x["source_id"], "_"))
 )
 ```
 """
-function PowerModelsData(file::Union{String, IO}; kwargs...)
-    pm_dict = parse_file(file; kwargs...)
-    return PowerModelsData(pm_dict)
-end
-
 function System(pm_data::PowerModelsData; kwargs...)
     data = pm_data.data
     if length(data["bus"]) < 1
@@ -44,6 +49,17 @@ function System(pm_data::PowerModelsData; kwargs...)
 
     check!(sys)
     return sys
+end
+
+function correct_pm_transformer_status!(pm_data::PowerModelsData)
+    for (k, branch) in pm_data.data["branch"]
+        if !branch["transformer"] &&
+           pm_data.data["bus"][string(branch["f_bus"])]["base_kv"] !=
+           pm_data.data["bus"][string(branch["t_bus"])]["base_kv"]
+            branch["transformer"] = true
+            @warn "Branch $k endpoints have different voltage levels, converting to transformer."
+        end
+    end
 end
 
 """
@@ -229,7 +245,7 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; k
 end
 
 function make_hydro_gen(gen_name, d, bus)
-    ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", d["pmax"])))
+    ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = TwoPartCost(0.0, 0.0)
 
     return HydroEnergyReservoir(
@@ -336,7 +352,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
     end
 
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
-    ramp_lim = get(d, "ramp_10", get(d, "ramp_30", d["pmax"]))
+    ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
 
     op_cost =
         ThreePartCost(; variable = cost, fixed = fixed, startup = startup, shutdn = shutdn)
@@ -453,7 +469,7 @@ function make_line(name, d, bus_f, bus_t)
 
     return Line(;
         name = name,
-        available = Bool(d["br_status"]),
+        available = d["br_status"] == 1,
         activepower_flow = pf,
         reactivepower_flow = qf,
         arc = Arc(bus_f, bus_t),
@@ -470,7 +486,7 @@ function make_transformer_2w(name, d, bus_f, bus_t)
     qf = get(d, "qf", 0.0)
     return Transformer2W(;
         name = name,
-        available = Bool(d["br_status"]),
+        available = d["br_status"] == 1,
         activepower_flow = pf,
         reactivepower_flow = qf,
         arc = Arc(bus_f, bus_t),
@@ -486,7 +502,7 @@ function make_tap_transformer(name, d, bus_f, bus_t)
     qf = get(d, "qf", 0.0)
     return TapTransformer(;
         name = name,
-        available = Bool(d["br_status"]),
+        available = d["br_status"] == 1,
         activepower_flow = pf,
         reactivepower_flow = qf,
         arc = Arc(bus_f, bus_t),
@@ -503,7 +519,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     qf = get(d, "qf", 0.0)
     return PhaseShiftingTransformer(;
         name = name,
-        available = Bool(d["br_status"]),
+        available = d["br_status"] == 1,
         activepower_flow = pf,
         reactivepower_flow = qf,
         arc = Arc(bus_f, bus_t),
@@ -539,7 +555,7 @@ end
 function make_dcline(name, d, bus_f, bus_t)
     return HVDCLine(;
         name = name,
-        available = Bool(d["br_status"]),
+        available = d["br_status"] == 1,
         activepower_flow = get(d, "pf", 0.0),
         arc = Arc(bus_f, bus_t),
         activepowerlimits_from = (min = d["pminf"], max = d["pmaxf"]),

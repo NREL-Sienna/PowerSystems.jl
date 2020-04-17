@@ -220,6 +220,20 @@ function System(
     )
 end
 
+"""Concstructs a System from a file path ending with .m, .RAW, or .json"""
+function System(file_path::AbstractString; kwargs...)
+    ext = splitext(file_path)[2]
+    if lowercase(ext) in [".m", ".raw"]
+        return System(PowerModelsData(file_path; kwargs...); kwargs...)
+    elseif lowercase(ext) == ".json"
+        sys = IS.from_json(System, file_path)
+        check!(sys)
+        return sys
+    else
+        throw(DataFormatError("$file_path is not a supported file type"))
+    end
+end
+
 """
 Serializes a system to a JSON string.
 """
@@ -233,13 +247,6 @@ Serializes a system an IO stream in JSON.
 """
 function to_json(io::IO, sys::System)
     return IS.to_json(io, sys)
-end
-
-"""Constructs a System from a JSON file."""
-function System(filename::String)
-    sys = IS.from_json(System, filename)
-    check!(sys)
-    return sys
 end
 
 """
