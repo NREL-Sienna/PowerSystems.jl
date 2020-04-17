@@ -1,5 +1,4 @@
 using Documenter, PowerSystems
-using InfrastructureSystems
 const PSYPATH = dirname(pathof(PowerSystems))
 
 # This is commented out because the output is not user-friendly. Deliberation on how to best
@@ -31,7 +30,9 @@ makedocs(
 
 deploydocs(
     repo = "github.com/NREL-SIIP/PowerSystems.jl.git",
-    branch = "gh-pages",
     target = "build",
-    make = nothing,
+    branch = "gh-pages",
+    devbranch = "master",
+    devurl = "dev",
+    versions = ["stable" => "v^", "v#.#"],
 )
