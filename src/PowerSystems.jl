@@ -198,6 +198,7 @@ export check_forecast_consistency
 export validate_forecast_consistency
 export clear_ext
 export convert_component!
+export TamuSystem
 
 #################################################################################
 # Imports
@@ -320,6 +321,7 @@ include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/power_system_table_data.jl")
 include("parsers/power_models_data.jl")
+include("parsers/TAMU_data.jl")
 
 # Better printing
 include("utils/print.jl")
