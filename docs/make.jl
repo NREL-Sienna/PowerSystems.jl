@@ -22,9 +22,9 @@ makedocs(
             "Style Guide" => "developer/style.md",
             "Extending Parsing" => "developer/extending_parsing.md",
         ],
-        "API" => Any[
-            "PowerSystems" => "api/PowerSystems.md"
-        ]
+        #"API" => Any[
+        #    "PowerSystems" => "api/PowerSystems.md"
+        #]
     ]
 )
 
