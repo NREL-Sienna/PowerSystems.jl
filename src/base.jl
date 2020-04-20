@@ -499,12 +499,24 @@ See also: [`iterate_components`](@ref)
 """
 function get_components(
     ::Type{T},
+    sys::System
+) where {T <: Component}
+    # TODO: Verify that return type annotation is not required
+    return IS.get_components(T, sys.data, nothing)
+end
+# These two methods are defined independently instead of  filter_func::Union{Function, Nothing} = nothing
+# because of a documenter error
+# that has no relation with the code https://github.com/JuliaDocs/Documenter.jl/issues/1296
+#
+function get_components(
+    ::Type{T},
     sys::System,
-    filter_func::Union{Nothing, Function} = nothing,
+    filter_func::Function,
 ) where {T <: Component}
     # TODO: Verify that return type annotation is not required
     return IS.get_components(T, sys.data, filter_func)
 end
+
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
