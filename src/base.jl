@@ -497,10 +497,7 @@ generators = collect(PowerSystems.get_components(Generator, sys))
 
 See also: [`iterate_components`](@ref)
 """
-function get_components(
-    ::Type{T},
-    sys::System
-) where {T <: Component}
+function get_components(::Type{T}, sys::System) where {T <: Component}
     # TODO: Verify that return type annotation is not required
     return IS.get_components(T, sys.data, nothing)
 end
@@ -516,7 +513,6 @@ function get_components(
     # TODO: Verify that return type annotation is not required
     return IS.get_components(T, sys.data, filter_func)
 end
-
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
