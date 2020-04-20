@@ -2,6 +2,8 @@
 
 ## v0.15.0
 - Add filtering function to get_components
+- Add Parser for Texas A&M models 
+- Add tiime_at_status field in ThermalStandard
 
 ## v0.14.1
 
