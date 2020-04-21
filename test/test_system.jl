@@ -12,6 +12,7 @@
     generators2 = get_components_by_name(ThermalGen, sys, get_name(generators[1]))
     @test length(generators2) == 1
     @test IS.get_uuid(generators2[1]) == IS.get_uuid(generators[1])
+    @test !has_forecast(generators2[1])
 
     @test isnothing(get_component(ThermalStandard, sys, "not-a-name"))
     @test isempty(get_components_by_name(ThermalGen, sys, "not-a-name"))
