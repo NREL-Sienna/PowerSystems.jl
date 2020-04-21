@@ -175,5 +175,5 @@ end
 
 function has_forecast(d::T) where T <: Device
     !hasfield(T, :forecasts) && return false
-    return isempty(d.forecast)
+    return !isempty(d.forecasts)
 end
