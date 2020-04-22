@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## v0.15.1
+
+- add has_forecasts method
+
 ## v0.15.0
 - Add filtering function to get_components
 - Add Parser for Texas A&M models 
