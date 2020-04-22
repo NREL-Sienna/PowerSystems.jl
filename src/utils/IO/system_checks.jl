@@ -59,7 +59,7 @@ function critical_components_check(sys::System)
         end
     end
     missing_critical_components &&
-    throw(IS.InvalidValue("Critical Componeents are not present."))
+        throw(IS.InvalidValue("Critical Componeents are not present."))
 end
 
 """
@@ -74,7 +74,7 @@ function adequacy_check(sys::System)
     gen = total_generation_rating(sys)
     load = total_load_rating(sys)
     load > gen &&
-    @warn "System peak load ($load) exceeds total generation capability ($gen)."
+        @warn "System peak load ($load) exceeds total generation capability ($gen)."
 end
 
 """

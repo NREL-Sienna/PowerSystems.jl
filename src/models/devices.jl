@@ -173,7 +173,7 @@ function IS.convert_type(::Type{Device}, data::Any)
     error("This form of convert_type is not supported for Devices")
 end
 
-function has_forecast(d::T) where T <: Device
+function has_forecast(d::T) where {T <: Device}
     !hasfield(T, :forecasts) && return false
     return !isempty(d.forecasts)
 end
