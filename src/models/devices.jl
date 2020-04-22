@@ -173,7 +173,6 @@ function IS.convert_type(::Type{Device}, data::Any)
     error("This form of convert_type is not supported for Devices")
 end
 
-function has_forecasts(d::T) where {T <: Component}
-    hasmethod(get_forecast, Tuple{T}) && return false
+function has_forecasts(d::Component)
     return IS.has_forecasts(d)
 end
