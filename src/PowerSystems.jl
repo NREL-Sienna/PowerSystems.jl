@@ -160,7 +160,7 @@ export clear_components!
 export add_service!
 export remove_service!
 export has_service
-export has_forecast
+export has_forecasts
 export get_buses
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
