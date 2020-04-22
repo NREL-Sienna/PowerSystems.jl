@@ -59,7 +59,7 @@ function critical_components_check(sys::System)
         end
     end
     missing_critical_components &&
-        throw(IS.InvalidValue("Critical Componeents are not present."))
+        throw(IS.InvalidValue("Critical Components are not present."))
 end
 
 """

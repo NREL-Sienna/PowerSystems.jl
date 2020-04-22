@@ -173,7 +173,7 @@ end
 
 @testset "Test system checks" begin
     sys = System(100)
-    @test_throws InfrastructureSystems.InvalidValue("Critical Componeents are not present.") PSY.check!(
+    @test_throws InfrastructureSystems.InvalidValue("Critical Components are not present.") PSY.check!(
         sys,
     )
 end
