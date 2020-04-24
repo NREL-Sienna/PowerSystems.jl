@@ -4827,24 +4827,14 @@
                 "data_type": "Bus"
             },
             {
-                "name": "V_R",
-                "comment": "Voltage Source Real Component",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
+                "name": "activepower",
+                "null_value": "0.0",
+                "data_type": "Float64"
             },
             {
-                "name": "V_I",
-                "comment": "Voltage Source Imaginary Component",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
+                "name": "reactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64"
             },
             {
                 "name": "X_th",
