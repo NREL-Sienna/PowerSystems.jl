@@ -201,6 +201,7 @@ export validate_forecast_consistency
 export clear_ext
 export convert_component!
 export TamuSystem
+export PowerModelsData
 
 #################################################################################
 # Imports
