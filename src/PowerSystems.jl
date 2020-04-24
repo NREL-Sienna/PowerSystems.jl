@@ -174,6 +174,7 @@ export generate_initial_times
 export get_component
 export get_components
 export get_components_by_name
+export get_available_components
 export get_forecast_labels
 export get_forecast_initial_times
 export get_forecast_keys
