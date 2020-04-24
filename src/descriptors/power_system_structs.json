@@ -4352,7 +4352,7 @@
     },
     {
         "struct_name": "LCLFilter",
-        "docstring": "Parameters of a LCL filter outside the converter",
+        "docstring": "Parameters of a LCL filter outside the converter, the states are in the grid's reference frame",
         "fields": [
             {
                 "name": "lf",
@@ -4413,7 +4413,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:id_cnv, :iq_cnv, :vd_filter, :vq_filter, :id_filter, :iq_filter]",
+                "internal_default": "[:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
                 "data_type": "Vector{Symbol}"
             },
             {
