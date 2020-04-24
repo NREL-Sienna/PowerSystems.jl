@@ -6,8 +6,8 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::Bus
-        V_R::Float64
-        V_I::Float64
+        activepower::Float64
+        reactivepower::Float64
         X_th::Float64
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -20,8 +20,8 @@ This struct acts as an infinity bus.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `V_R::Float64`: Voltage Source Real Component, validation range: (0, nothing)
-- `V_I::Float64`: Voltage Source Imaginary Component, validation range: (0, nothing)
+- `activepower::Float64`
+- `reactivepower::Float64`
 - `X_th::Float64`: Source Thevenin impedance, validation range: (0, nothing)
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
@@ -31,10 +31,8 @@ mutable struct Source <: StaticInjection
     name::String
     available::Bool
     bus::Bus
-    "Voltage Source Real Component"
-    V_R::Float64
-    "Voltage Source Imaginary Component"
-    V_I::Float64
+    activepower::Float64
+    reactivepower::Float64
     "Source Thevenin impedance"
     X_th::Float64
     "Services that this device contributes to"
@@ -44,12 +42,12 @@ mutable struct Source <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function Source(name, available, bus, V_R, V_I, X_th, services=Device[], ext=Dict{String, Any}(), )
-    Source(name, available, bus, V_R, V_I, X_th, services, ext, InfrastructureSystemsInternal(), )
+function Source(name, available, bus, activepower, reactivepower, X_th, services=Device[], ext=Dict{String, Any}(), )
+    Source(name, available, bus, activepower, reactivepower, X_th, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Source(; name, available, bus, V_R, V_I, X_th, services=Device[], ext=Dict{String, Any}(), )
-    Source(name, available, bus, V_R, V_I, X_th, services, ext, )
+function Source(; name, available, bus, activepower, reactivepower, X_th, services=Device[], ext=Dict{String, Any}(), )
+    Source(name, available, bus, activepower, reactivepower, X_th, services, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -58,8 +56,8 @@ function Source(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        V_R=0,
-        V_I=0,
+        activepower=0.0,
+        reactivepower=0.0,
         X_th=0,
         services=Device[],
         ext=Dict{String, Any}(),
@@ -72,10 +70,10 @@ InfrastructureSystems.get_name(value::Source) = value.name
 get_available(value::Source) = value.available
 """Get Source bus."""
 get_bus(value::Source) = value.bus
-"""Get Source V_R."""
-get_V_R(value::Source) = value.V_R
-"""Get Source V_I."""
-get_V_I(value::Source) = value.V_I
+"""Get Source activepower."""
+get_activepower(value::Source) = value.activepower
+"""Get Source reactivepower."""
+get_reactivepower(value::Source) = value.reactivepower
 """Get Source X_th."""
 get_X_th(value::Source) = value.X_th
 """Get Source services."""
