@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## v0.15.2
+
+- add get_available_components method
+
 ## v0.15.1
 
 - add has_forecasts method
