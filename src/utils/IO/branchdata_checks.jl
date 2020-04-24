@@ -143,11 +143,11 @@ function check_SIL(line, basemva::Float64)
     closestV = findmin(abs.(SIL_levels .- vrated))
     closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
 
-    #Consisten with Ned Mohan Electric Power Systems: A First Course page 70
-    if !(rate >= closestSIL.max / vrated)
+    # Assuming that the rate is in pu
+    if !(rate >= closestSIL.max / basemva)
         # rate outside of expected SIL range
         sil = calculate_sil(line, basemva)
-        @warn "Rate provided for $(line.name) is $(rate*vrated), larger the SIL $(sil) in the range of $(closestSIL)." maxlog =
+        @warn "Rate provided for $(line.name) is larger than the SIL $(sil) in the range of $(closestSIL)." maxlog =
             PS_MAX_LOG
 
     end
