@@ -551,7 +551,7 @@ end
 
 
 """
-    gets_components_availability. Requires type T to have the method get_available implemented
+    gets components availability. Requires type T to have the method get_available implemented
 """
 
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
