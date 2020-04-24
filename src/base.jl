@@ -549,6 +549,15 @@ function get_components_by_name(
     return IS.get_components_by_name(T, sys.data, name)
 end
 
+
+"""
+    gets_components_availability. Requires type T to have the method get_available implemented
+"""
+
+function get_available_components(::Type{T}, sys::System) where {T <: Component}
+    return get_components(T, sys, x -> get_available(x))
+end
+
 """
     get_contributing_devices(sys::System, service::Service)
 
