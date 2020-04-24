@@ -64,19 +64,19 @@ function _update_branch_flow!(sys::System)
 end
 
 function _write_pf_sol!(sys::System, nl_result)
-    result = nl_result.zero
+    result = round.(nl_result.zero; digits = 7)
     buses = enumerate(sort(collect(get_components(Bus, sys)), by = x -> get_number(x)))
 
     for (ix, bus) in buses
         if bus.bustype == BusTypes.REF
             P_gen = result[2 * ix - 1]
             Q_gen = result[2 * ix]
-            injection_components = get_components(Generator, sys)
-            devices = [d for d in injection_components if d.bus == bus]
+            injection = get_components(StaticInjection, sys)
+            devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
             generator = devices[1]
             generator.activepower = P_gen
             generator.reactivepower = Q_gen
-        elseif bus.bustype == BusTypes.PQ
+        elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
             injection_components = get_components(Generator, sys)
@@ -86,7 +86,7 @@ function _write_pf_sol!(sys::System, nl_result)
                 generator.reactivepower = Q_gen
             end
             bus.angle = θ
-        elseif bus.bustype == BusTypes.PV
+        elseif bus.bustype == BusTypes.PQ
             Vm = result[2 * ix - 1]
             θ = result[2 * ix]
             bus.voltage = Vm
@@ -134,14 +134,16 @@ Arguments available for `nlsolve`:
 using NLsolve
 solve_powerflow!(sys, nlsolve)
 # Passing NLsolve arguments
-solve_powerflow!(sys, nlsolve, method = :Newton)
+solve_powerflow!(sys, nlsolve, method = :newton)
 
 ```
 
 """
 function solve_powerflow!(sys, nlsolve; args...)
     pf!, x0 = PowerSystems.make_pf(sys)
+    @show x0
     res = nlsolve(pf!, x0; args...)
+    @info(res)
     if res.f_converged
         PowerSystems._write_pf_sol!(sys, res)
         @info("PowerFlow solve converged, the results have been stored in the system")
