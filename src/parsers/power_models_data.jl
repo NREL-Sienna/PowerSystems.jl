@@ -30,6 +30,7 @@ sys = System(
 ```
 """
 function System(pm_data::PowerModelsData; kwargs...)
+    runchecks = get(kwargs, :runchecks, true)
     data = pm_data.data
     if length(data["bus"]) < 1
         throw(DataFormatError("There are no buses in this file."))
@@ -47,7 +48,11 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
 
-    check!(sys)
+
+    if runchecks
+        check!(sys)
+    end
+
     return sys
 end
 
