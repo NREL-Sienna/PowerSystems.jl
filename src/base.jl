@@ -550,6 +550,14 @@ function get_components_by_name(
 end
 
 """
+    gets components availability. Requires type T to have the method get_available implemented
+"""
+
+function get_available_components(::Type{T}, sys::System) where {T <: Component}
+    return get_components(T, sys, x -> get_available(x))
+end
+
+"""
     get_contributing_devices(sys::System, service::Service)
 
 Return a vector of devices contributing to the service.
