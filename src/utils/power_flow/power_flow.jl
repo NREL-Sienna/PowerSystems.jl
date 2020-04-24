@@ -141,7 +141,6 @@ solve_powerflow!(sys, nlsolve, method = :newton)
 """
 function solve_powerflow!(sys, nlsolve; args...)
     pf!, x0 = PowerSystems.make_pf(sys)
-    @show x0
     res = nlsolve(pf!, x0; args...)
     @info(res)
     if res.f_converged
