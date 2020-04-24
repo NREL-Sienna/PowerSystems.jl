@@ -549,7 +549,6 @@ function get_components_by_name(
     return IS.get_components_by_name(T, sys.data, name)
 end
 
-
 """
     gets components availability. Requires type T to have the method get_available implemented
 """
