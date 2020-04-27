@@ -73,7 +73,8 @@ function make_pf(system)
         if b.bustype == BusTypes.REF
             injection_components_ = get_components(StaticInjection, system)
             injection_components = (d for d in injection_components_ if d.bus == b)
-            isempty(injection_components) && throw(IS.ConflictingInputsError("The slack bus does not have any injection component. Power Flow can not proceed"))
+            isempty(injection_components) &&
+                throw(IS.ConflictingInputsError("The slack bus does not have any injection component. Power Flow can not proceed"))
             x0[state_variable_count] = P_GEN_BUS[ix]
             x0[state_variable_count + 1] = Q_GEN_BUS[ix]
             state_variable_count += 2

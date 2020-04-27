@@ -47,12 +47,9 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_branch!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
-
-
     if runchecks
         check!(sys)
     end
-
     return sys
 end
 
