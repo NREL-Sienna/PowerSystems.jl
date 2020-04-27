@@ -4352,7 +4352,7 @@
     },
     {
         "struct_name": "LCLFilter",
-        "docstring": "Parameters of a LCL filter outside the converter",
+        "docstring": "Parameters of a LCL filter outside the converter, the states are in the grid's reference frame",
         "fields": [
             {
                 "name": "lf",
@@ -4413,7 +4413,7 @@
             {
                 "name": "states",
                 "comment": "",
-                "internal_default": "[:id_cnv, :iq_cnv, :vd_filter, :vq_filter, :id_filter, :iq_filter]",
+                "internal_default": "[:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
                 "data_type": "Vector{Symbol}"
             },
             {
@@ -4827,24 +4827,14 @@
                 "data_type": "Bus"
             },
             {
-                "name": "V_R",
-                "comment": "Voltage Source Real Component",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
+                "name": "activepower",
+                "null_value": "0.0",
+                "data_type": "Float64"
             },
             {
-                "name": "V_I",
-                "comment": "Voltage Source Imaginary Component",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
+                "name": "reactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64"
             },
             {
                 "name": "X_th",

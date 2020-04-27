@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of a LCL filter outside the converter
+Parameters of a LCL filter outside the converter, the states are in the grid's reference frame
 
 # Arguments
 - `lf::Float64`: Series inductance in p.u. of converter filter, validation range: (0, nothing)
@@ -46,7 +46,7 @@ mutable struct LCLFilter <: Filter
 end
 
 function LCLFilter(lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )
-    LCLFilter(lf, rf, cf, lg, rg, ext, [:id_cnv, :iq_cnv, :vd_filter, :vq_filter, :id_filter, :iq_filter], 6, InfrastructureSystemsInternal(), )
+    LCLFilter(lf, rf, cf, lg, rg, ext, [:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 6, InfrastructureSystemsInternal(), )
 end
 
 function LCLFilter(; lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )

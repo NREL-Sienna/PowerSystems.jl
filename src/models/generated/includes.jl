@@ -114,8 +114,6 @@ export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
 export get_Ts
-export get_V_I
-export get_V_R
 export get_V_pss
 export get_Vr_max
 export get_Vr_min

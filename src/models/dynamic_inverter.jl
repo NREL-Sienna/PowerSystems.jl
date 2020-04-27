@@ -25,6 +25,7 @@ mutable struct DynamicInverter{
     n_states::Int64
     states::Vector{Symbol}
     ext::Dict{String, Any}
+    internal::InfrastructureSystemsInternal
     function DynamicInverter(
         number::Int64,
         name::String,
@@ -40,6 +41,7 @@ mutable struct DynamicInverter{
         dc_source::DC,
         freq_estimator::P,
         filter::F,
+        ext::Dict{String, Any} = Dict{String, Any}(),
     ) where {
         C <: Converter,
         O <: OuterControl,
@@ -84,10 +86,54 @@ mutable struct DynamicInverter{
             filter,
             n_states,
             states,
-            Dict{String, Any}(),
+            ext,
+            InfrastructureSystemsInternal(),
         )
 
     end
+end
+
+function DynamicInverter(;
+    number::Int64,
+    name::String,
+    bus::Bus,
+    ω_ref::Float64,
+    V_ref::Float64,
+    P_ref::Float64,
+    Q_ref::Float64,
+    MVABase::Float64,
+    converter::C,
+    outer_control::O,
+    inner_control::IC,
+    dc_source::DC,
+    freq_estimator::P,
+    filter::F,
+    ext::Dict{String, Any} = Dict{String, Any}(),
+) where {
+    C <: Converter,
+    O <: OuterControl,
+    IC <: InnerControl,
+    DC <: DCSource,
+    P <: FrequencyEstimator,
+    F <: Filter,
+}
+    DynamicInverter(
+        number,
+        name,
+        bus,
+        ω_ref,
+        V_ref,
+        P_ref,
+        Q_ref,
+        MVABase,
+        converter,
+        outer_control,
+        inner_control,
+        dc_source,
+        freq_estimator,
+        filter,
+        ext,
+    )
 end
 
 get_inverter_Sbase(device::DynamicInverter) = device.converter.s_rated

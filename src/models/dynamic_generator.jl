@@ -15,11 +15,12 @@ mutable struct DynamicGenerator{
     machine::M
     shaft::S
     avr::A
-    tg::TG
+    prime_mover::TG
     pss::P
     n_states::Int64
     states::Vector{Symbol}
     ext::Dict{String, Any}
+    internal::InfrastructureSystemsInternal
     function DynamicGenerator(
         number::Int64,
         name::String,
@@ -31,14 +32,21 @@ mutable struct DynamicGenerator{
         machine::M,
         shaft::S,
         avr::A,
-        tg::TG,
+        prime_mover::TG,
         pss::P,
+        ext::Dict{String, Any} = Dict{String, Any}(),
     ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
 
-        n_states =
-            (machine.n_states + shaft.n_states + avr.n_states + tg.n_states + pss.n_states)
+        n_states = (
+            machine.n_states +
+            shaft.n_states +
+            avr.n_states +
+            prime_mover.n_states +
+            pss.n_states
+        )
 
-        states = vcat(machine.states, shaft.states, avr.states, tg.states, pss.states)
+        states =
+            vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
 
         new{M, S, A, TG, P}(
             number,
@@ -51,13 +59,46 @@ mutable struct DynamicGenerator{
             machine,
             shaft,
             avr,
-            tg,
+            prime_mover,
             pss,
             n_states,
             states,
-            Dict{String, Any}(),
+            ext,
+            InfrastructureSystemsInternal(),
         )
     end
+end
+
+function DynamicGenerator(;
+    number::Int64,
+    name::String,
+    bus::Bus,
+    ω_ref::Float64,
+    V_ref::Float64,
+    P_ref::Float64,
+    Q_ref::Float64,
+    machine::M,
+    shaft::S,
+    avr::A,
+    prime_mover::TG,
+    pss::P,
+    ext::Dict{String, Any} = Dict{String, Any}(),
+) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
+    DynamicGenerator(
+        number,
+        name,
+        bus,
+        ω_ref,
+        V_ref,
+        P_ref,
+        Q_ref,
+        machine,
+        shaft,
+        avr,
+        prime_mover,
+        pss,
+        ext,
+    )
 end
 
 get_Sbase(device::DynamicGenerator) = device.machine.s_rated
@@ -73,6 +114,6 @@ get_Q_ref(device::DynamicGenerator) = device.Q_ref
 get_machine(device::DynamicGenerator) = device.machine
 get_shaft(device::DynamicGenerator) = device.shaft
 get_avr(device::DynamicGenerator) = device.avr
-get_tg(device::DynamicGenerator) = device.tg
+get_prime_mover(device::DynamicGenerator) = device.prime_mover
 get_pss(device::DynamicGenerator) = device.pss
 get_ext(device::DynamicGenerator) = device.ext

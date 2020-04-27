@@ -6,6 +6,10 @@ function _get_load_data(sys::System, b::Bus)
         if !isa(l, FixedAdmittance) && (l.bus == b)
             activepower += get_activepower(l)
             reactivepower += get_reactivepower(l)
+        elseif isa(l, FixedAdmittance) && (l.bus == b)
+            # Assume v rated = 1.0
+            activepower += real(get_Y(l))
+            reactivepower += imag(get_Y(l))
         end
     end
     return activepower, reactivepower
@@ -56,7 +60,7 @@ function make_pf(system)
         bus_voltage = get_voltage(b)::Float64
         P_GEN_BUS[ix] = 0.0
         Q_GEN_BUS[ix] = 0.0
-        for gen in get_components(Generator, system)
+        for gen in get_components(StaticInjection, system, d -> !isa(d, ElectricLoad))
             if gen.bus == b
                 P_GEN_BUS[ix] += get_activepower(gen)
                 Q_GEN_BUS[ix] += get_reactivepower(gen)
@@ -66,6 +70,9 @@ function make_pf(system)
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
 
         if b.bustype == BusTypes.REF
+            injection_components = get_components(StaticInjection, system, d -> d.bus == b)
+            isempty(injection_components) &&
+                throw(IS.ConflictingInputsError("The slack bus does not have any injection component. Power Flow can not proceed"))
             x0[state_variable_count] = P_GEN_BUS[ix]
             x0[state_variable_count + 1] = Q_GEN_BUS[ix]
             state_variable_count += 2
@@ -83,7 +90,6 @@ function make_pf(system)
     @assert state_variable_count - 1 == N_BUS * 2
 
     function pf!(F, X)
-
         P_net = Vector{Float64}(undef, N_BUS)
         Q_net = Vector{Float64}(undef, N_BUS)
         Vm = Vector{Float64}(undef, N_BUS)
