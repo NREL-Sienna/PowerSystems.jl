@@ -60,8 +60,7 @@ function make_pf(system)
         bus_voltage = get_voltage(b)::Float64
         P_GEN_BUS[ix] = 0.0
         Q_GEN_BUS[ix] = 0.0
-        for gen in get_components(StaticInjection, system)
-            isa(gen, ElectricLoad) && continue
+        for gen in get_components(StaticInjection, system, d -> !isa(d, ElectricLoad))
             if gen.bus == b
                 P_GEN_BUS[ix] += get_activepower(gen)
                 Q_GEN_BUS[ix] += get_reactivepower(gen)
@@ -71,8 +70,7 @@ function make_pf(system)
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
 
         if b.bustype == BusTypes.REF
-            injection_components_ = get_components(StaticInjection, system)
-            injection_components = (d for d in injection_components_ if d.bus == b)
+            injection_components = get_components(StaticInjection, system, d -> d.bus == b)
             isempty(injection_components) &&
                 throw(IS.ConflictingInputsError("The slack bus does not have any injection component. Power Flow can not proceed"))
             x0[state_variable_count] = P_GEN_BUS[ix]
