@@ -1,5 +1,11 @@
 # PowerSystems Change Log
 
+## 0.16.0
+
+- Changes to DynamicInverter and DynamicGenerator structs
+- Bugfix in solve_powerflow!
+- add option to set store location of hdf5 file
+
 ## v0.15.2
 
 - add get_available_components method
