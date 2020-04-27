@@ -37,10 +37,16 @@ mutable struct DynamicGenerator{
         ext::Dict{String, Any} = Dict{String, Any}(),
     ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
 
-        n_states =
-            (machine.n_states + shaft.n_states + avr.n_states + prime_mover.n_states + pss.n_states)
+        n_states = (
+            machine.n_states +
+            shaft.n_states +
+            avr.n_states +
+            prime_mover.n_states +
+            pss.n_states
+        )
 
-        states = vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
+        states =
+            vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
 
         new{M, S, A, TG, P}(
             number,
