@@ -93,6 +93,11 @@ you know ahead of time that all of your data will fit in memory then you can
 change this behavior by passing `time_series_in_memory = true` when you create
 the System.
 
+If the time series data is stored in HDF5 then PowerSystems will use the tmp filesystem by
+default. You can change this by passing `time_series_directory = X` when you create the
+System. This is required if the time series data is larger than the amount of tmp space
+available.
+
 
 ### Custom construction of generators
 PowerSystems supports custom construction of subtypes of the abstract type Generator based

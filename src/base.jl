@@ -498,9 +498,9 @@ generators = collect(PowerSystems.get_components(Generator, sys))
 See also: [`iterate_components`](@ref)
 """
 function get_components(::Type{T}, sys::System) where {T <: Component}
-    # TODO: Verify that return type annotation is not required
     return IS.get_components(T, sys.data, nothing)
 end
+
 # These two methods are defined independently instead of  filter_func::Union{Function, Nothing} = nothing
 # because of a documenter error
 # that has no relation with the code https://github.com/JuliaDocs/Documenter.jl/issues/1296
@@ -510,7 +510,6 @@ function get_components(
     sys::System,
     filter_func::Function,
 ) where {T <: Component}
-    # TODO: Verify that return type annotation is not required
     return IS.get_components(T, sys.data, filter_func)
 end
 
@@ -545,7 +544,6 @@ function get_components_by_name(
     sys::System,
     name::AbstractString,
 ) where {T <: Component}
-    # TODO: Verify that return type annotation is not required
     return IS.get_components_by_name(T, sys.data, name)
 end
 
@@ -1264,6 +1262,7 @@ function _create_system_data_from_kwargs(; kwargs...)
     validation_descriptor_file = nothing
     runchecks = get(kwargs, :runchecks, true)
     time_series_in_memory = get(kwargs, :time_series_in_memory, false)
+    time_series_directory = get(kwargs, :time_series_directory, nothing)
     if runchecks
         validation_descriptor_file =
             get(kwargs, :configpath, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
@@ -1272,6 +1271,7 @@ function _create_system_data_from_kwargs(; kwargs...)
     return IS.SystemData(;
         validation_descriptor_file = validation_descriptor_file,
         time_series_in_memory = time_series_in_memory,
+        time_series_directory = time_series_directory,
     )
 end
 
