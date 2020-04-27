@@ -250,6 +250,7 @@ Construct a System from PowerSystemTableData data.
 - `forecast_resolution::Union{DateTime, Nothing}=nothing`: only store forecasts that match
   this resolution.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5 file
+- `time_series_directory=nothing`: Store time series data in directory instead of tmpfs
 - `runchecks::Bool=true`: Validate struct fields.
 
 Throws DataFormatError if forecasts with multiple resolutions are detected.
@@ -261,12 +262,14 @@ function System(
     data::PowerSystemTableData;
     forecast_resolution = nothing,
     time_series_in_memory = false,
+    time_series_directory = nothing,
     runchecks = true,
     kwargs...,
 )
     sys = System(
         data.basepower;
         time_series_in_memory = time_series_in_memory,
+        time_series_directory = time_series_directory,
         runchecks = runchecks,
         kwargs...,
     )
