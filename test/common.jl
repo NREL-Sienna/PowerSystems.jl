@@ -169,7 +169,6 @@ function create_system_with_dynamic_inverter()
         filt,
     ) #Output Filter
 
-
     sys = System(100)
     for bus in nodes_OMIB
         add_component!(sys, bus)

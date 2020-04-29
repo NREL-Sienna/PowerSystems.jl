@@ -46,8 +46,7 @@ function DynamicGenerator(
         prime_mover.n_states +
         pss.n_states
     )
-    states =
-        vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
+    states = vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
 
     return DynamicGenerator{M, S, A, TG, P}(
         number,
