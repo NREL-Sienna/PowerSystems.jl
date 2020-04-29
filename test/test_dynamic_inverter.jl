@@ -34,20 +34,20 @@ end
     ]
 
     battery = GenericBattery(
-    name = "Battery",
-    primemover = PrimeMovers.BA,
-    available = true,
-    bus = nodes_OMIB[2],
-    energy = 5.0,
-    capacity = (min = 5.0, max = 100.0),
-    rating = 0.0275, #Value in per_unit of the system
-    activepower = 0.01375,
-    inputactivepowerlimits = (min = 0.0, max = 50.0),
-    outputactivepowerlimits = (min = 0.0, max = 50.0),
-    reactivepower = 0.0,
-    reactivepowerlimits = (min = -50.0, max = 50.0),
-    efficiency = (in = 0.80, out = 0.90),
-)
+        name = "Battery",
+        primemover = PrimeMovers.BA,
+        available = true,
+        bus = nodes_OMIB[2],
+        energy = 5.0,
+        capacity = (min = 5.0, max = 100.0),
+        rating = 0.0275, #Value in per_unit of the system
+        activepower = 0.01375,
+        inputactivepowerlimits = (min = 0.0, max = 50.0),
+        outputactivepowerlimits = (min = 0.0, max = 50.0),
+        reactivepower = 0.0,
+        reactivepowerlimits = (min = -50.0, max = 50.0),
+        efficiency = (in = 0.80, out = 0.90),
+    )
     converter = AverageConverter(
         138.0, #Rated Voltage
         100.0,

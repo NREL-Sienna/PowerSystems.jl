@@ -14,21 +14,21 @@ nodes_OMIB = [
 ]
 
 gen = ThermalStandard(
-        "TestGen",
-        true,
-        true,
-        nodes_OMIB[2],
-        0.40,
-        0.010,
-        0.5,
-        PrimeMovers.ST,
-        ThermalFuels.COAL,
-        (min = 0.0, max = 0.40),
-        (min = -0.30, max = 0.30),
-        nothing,
-        nothing,
-        ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
-    )
+    "TestGen",
+    true,
+    true,
+    nodes_OMIB[2],
+    0.40,
+    0.010,
+    0.5,
+    PrimeMovers.ST,
+    ThermalFuels.COAL,
+    (min = 0.0, max = 0.40),
+    (min = -0.30, max = 0.30),
+    nothing,
+    nothing,
+    ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
+)
 
 branch_OMIB = [Line(
     "Line1", #name
