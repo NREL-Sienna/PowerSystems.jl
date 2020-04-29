@@ -26,8 +26,6 @@ mutable struct OuterControl{A <: ActivePowerControl, R <: ReactivePowerControl} 
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
 function OuterControl(
@@ -41,7 +39,6 @@ function OuterControl(
         ext,
         vcat(active_power.states, reactive_power.states),
         active_power.n_states + reactive_power.n_states,
-        InfrastructureSystemsInternal(),
     )
 end
 
@@ -54,4 +51,3 @@ get_reactive_power(value::OuterControl) = value.reactive_power
 get_ext(value::OuterControl) = value.ext
 get_states(value::OuterControl) = value.states
 get_n_states(value::OuterControl) = value.n_states
-get_internal(value::OuterControl) = value.internal

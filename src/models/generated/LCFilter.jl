@@ -9,7 +9,6 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
-        internal::InfrastructureSystemsInternal
     end
 
 Parameters of a LCL filter outside the converter
@@ -21,7 +20,6 @@ Parameters of a LCL filter outside the converter
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct LCFilter <: Filter
     "filter inductance"
@@ -33,12 +31,10 @@ mutable struct LCFilter <: Filter
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
 function LCFilter(lf, rf, cf, ext=Dict{String, Any}(), )
-    LCFilter(lf, rf, cf, ext, [:id_o, :iq_o], 4, InfrastructureSystemsInternal(), )
+    LCFilter(lf, rf, cf, ext, [:id_o, :iq_o], 4, )
 end
 
 function LCFilter(; lf, rf, cf, ext=Dict{String, Any}(), )
@@ -67,5 +63,3 @@ get_ext(value::LCFilter) = value.ext
 get_states(value::LCFilter) = value.states
 """Get LCFilter n_states."""
 get_n_states(value::LCFilter) = value.n_states
-"""Get LCFilter internal."""
-get_internal(value::LCFilter) = value.internal

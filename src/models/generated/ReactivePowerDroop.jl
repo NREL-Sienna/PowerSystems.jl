@@ -8,7 +8,6 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
-        internal::InfrastructureSystemsInternal
     end
 
 Parameters of a Reactive Power droop controller
@@ -19,7 +18,6 @@ Parameters of a Reactive Power droop controller
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ReactivePowerDroop <: ReactivePowerControl
     "frequency droop gain"
@@ -29,12 +27,10 @@ mutable struct ReactivePowerDroop <: ReactivePowerControl
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
 function ReactivePowerDroop(kq, ωf, ext=Dict{String, Any}(), )
-    ReactivePowerDroop(kq, ωf, ext, [:q_oc], 1, InfrastructureSystemsInternal(), )
+    ReactivePowerDroop(kq, ωf, ext, [:q_oc], 1, )
 end
 
 function ReactivePowerDroop(; kq, ωf, ext=Dict{String, Any}(), )
@@ -60,5 +56,3 @@ get_ext(value::ReactivePowerDroop) = value.ext
 get_states(value::ReactivePowerDroop) = value.states
 """Get ReactivePowerDroop n_states."""
 get_n_states(value::ReactivePowerDroop) = value.n_states
-"""Get ReactivePowerDroop internal."""
-get_internal(value::ReactivePowerDroop) = value.internal

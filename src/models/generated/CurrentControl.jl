@@ -16,7 +16,6 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
-        internal::InfrastructureSystemsInternal
     end
 
 Parameters of an inner loop current control PID using virtual impedance.
@@ -35,7 +34,6 @@ Parameters of an inner loop current control PID using virtual impedance.
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct CurrentControl <: InnerControl
     "voltage controller proportional gain"
@@ -61,12 +59,10 @@ mutable struct CurrentControl <: InnerControl
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
 function CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), )
-    CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, [:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], 6, InfrastructureSystemsInternal(), )
+    CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, [:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], 6, )
 end
 
 function CurrentControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), )
@@ -116,5 +112,3 @@ get_ext(value::CurrentControl) = value.ext
 get_states(value::CurrentControl) = value.states
 """Get CurrentControl n_states."""
 get_n_states(value::CurrentControl) = value.n_states
-"""Get CurrentControl internal."""
-get_internal(value::CurrentControl) = value.internal

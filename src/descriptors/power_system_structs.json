@@ -4299,12 +4299,6 @@
                 "comment": "",
                 "internal_default": 0,
                 "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
         "supertype": "Converter"
@@ -4421,12 +4415,6 @@
                 "comment": "",
                 "internal_default": 6,
                 "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
         "supertype": "Filter"
@@ -4482,12 +4470,6 @@
                 "comment": "",
                 "internal_default": 4,
                 "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
         "supertype": "Filter"
@@ -4543,12 +4525,6 @@
                 "comment": "",
                 "internal_default": 4,
                 "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
         "supertype": "FrequencyEstimator"
@@ -4614,12 +4590,6 @@
                 "comment": "",
                 "internal_default": 2,
                 "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
         "supertype": "ActivePowerControl"
@@ -4665,12 +4635,6 @@
                 "comment": "",
                 "internal_default": 1,
                 "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
         "supertype": "ReactivePowerControl"
@@ -4796,12 +4760,6 @@
                 "comment": "",
                 "internal_default": 6,
                 "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
             }
         ],
         "supertype": "InnerControl"

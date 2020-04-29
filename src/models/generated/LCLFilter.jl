@@ -11,7 +11,6 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
-        internal::InfrastructureSystemsInternal
     end
 
 Parameters of a LCL filter outside the converter, the states are in the grid's reference frame
@@ -25,7 +24,6 @@ Parameters of a LCL filter outside the converter, the states are in the grid's r
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct LCLFilter <: Filter
     "Series inductance in p.u. of converter filter"
@@ -41,12 +39,10 @@ mutable struct LCLFilter <: Filter
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
 function LCLFilter(lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )
-    LCLFilter(lf, rf, cf, lg, rg, ext, [:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 6, InfrastructureSystemsInternal(), )
+    LCLFilter(lf, rf, cf, lg, rg, ext, [:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 6, )
 end
 
 function LCLFilter(; lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )
@@ -81,5 +77,3 @@ get_ext(value::LCLFilter) = value.ext
 get_states(value::LCLFilter) = value.states
 """Get LCLFilter n_states."""
 get_n_states(value::LCLFilter) = value.n_states
-"""Get LCLFilter internal."""
-get_internal(value::LCLFilter) = value.internal

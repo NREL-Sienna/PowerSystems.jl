@@ -10,7 +10,6 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
-        internal::InfrastructureSystemsInternal
     end
 
 Parameters of a Virtual Inertia with SRF using VSM for active power controller
@@ -23,7 +22,6 @@ Parameters of a Virtual Inertia with SRF using VSM for active power controller
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct VirtualInertia <: ActivePowerControl
     "VSM inertia constant"
@@ -37,12 +35,10 @@ mutable struct VirtualInertia <: ActivePowerControl
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
 function VirtualInertia(Ta, kd, kω, ωb, ext=Dict{String, Any}(), )
-    VirtualInertia(Ta, kd, kω, ωb, ext, [:ω_oc, :θ_oc], 2, InfrastructureSystemsInternal(), )
+    VirtualInertia(Ta, kd, kω, ωb, ext, [:ω_oc, :θ_oc], 2, )
 end
 
 function VirtualInertia(; Ta, kd, kω, ωb, ext=Dict{String, Any}(), )
@@ -74,5 +70,3 @@ get_ext(value::VirtualInertia) = value.ext
 get_states(value::VirtualInertia) = value.states
 """Get VirtualInertia n_states."""
 get_n_states(value::VirtualInertia) = value.n_states
-"""Get VirtualInertia internal."""
-get_internal(value::VirtualInertia) = value.internal
