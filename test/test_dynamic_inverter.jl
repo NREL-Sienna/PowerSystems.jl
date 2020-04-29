@@ -33,12 +33,27 @@ end
         Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
     ]
 
+    battery = GenericBattery(
+        name = "Battery",
+        primemover = PrimeMovers.BA,
+        available = true,
+        bus = nodes_OMIB[2],
+        energy = 5.0,
+        capacity = (min = 5.0, max = 100.0),
+        rating = 0.0275, #Value in per_unit of the system
+        activepower = 0.01375,
+        inputactivepowerlimits = (min = 0.0, max = 50.0),
+        outputactivepowerlimits = (min = 0.0, max = 50.0),
+        reactivepower = 0.0,
+        reactivepowerlimits = (min = -50.0, max = 50.0),
+        efficiency = (in = 0.80, out = 0.90),
+    )
     converter = AverageConverter(
         138.0, #Rated Voltage
         100.0,
     ) #Rated MVA
 
-    branch_OMIB = [PSY.Line(
+    branch_OMIB = [Line(
         "Line1", #name
         true, #available
         0.0, #active power flow initial condition (from-to)
@@ -113,14 +128,15 @@ end
 
     @test test_inverter isa PowerSystems.Component
 
-    sys = PSY.System(100)
+    sys = System(100)
     for bus in nodes_OMIB
-        PSY.add_component!(sys, bus)
+        add_component!(sys, bus)
     end
     for lines in branch_OMIB
-        PSY.add_component!(sys, lines)
+        add_component!(sys, lines)
     end
-    PSY.add_component!(sys, test_inverter)
+    add_component!(sys, battery)
+    add_component!(sys, test_inverter)
 
     @test collect(get_components(DynamicInverter, sys))[1] == test_inverter
 

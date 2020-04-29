@@ -13,7 +13,24 @@ nodes_OMIB = [
     Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
 ]
 
-branch_OMIB = [PSY.Line(
+gen = ThermalStandard(
+    "TestGen",
+    true,
+    true,
+    nodes_OMIB[2],
+    0.40,
+    0.010,
+    0.5,
+    PrimeMovers.ST,
+    ThermalFuels.COAL,
+    (min = 0.0, max = 0.40),
+    (min = -0.30, max = 0.30),
+    nothing,
+    nothing,
+    ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
+)
+
+branch_OMIB = [Line(
     "Line1", #name
     true, #available
     0.0, #active power flow initial condition (from-to)
@@ -309,14 +326,15 @@ end
     )
     @test Gen2AVR isa PowerSystems.Component
 
-    sys = PSY.System(100)
+    sys = System(100)
     for bus in nodes_OMIB
-        PSY.add_component!(sys, bus)
+        add_component!(sys, bus)
     end
     for lines in branch_OMIB
-        PSY.add_component!(sys, lines)
+        add_component!(sys, lines)
     end
-    PSY.add_component!(sys, Gen1AVR)
+    add_component!(sys, gen)
+    add_component!(sys, Gen1AVR)
 
     @test collect(get_components(DynamicGenerator, sys))[1] == Gen1AVR
 
