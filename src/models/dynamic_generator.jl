@@ -21,52 +21,52 @@ mutable struct DynamicGenerator{
     states::Vector{Symbol}
     ext::Dict{String, Any}
     internal::InfrastructureSystemsInternal
-    function DynamicGenerator(
-        number::Int64,
-        name::String,
-        bus::Bus,
-        ω_ref::Float64,
-        V_ref::Float64,
-        P_ref::Float64,
-        Q_ref::Float64,
-        machine::M,
-        shaft::S,
-        avr::A,
-        prime_mover::TG,
-        pss::P,
-        ext::Dict{String, Any} = Dict{String, Any}(),
-    ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
+end
 
-        n_states = (
-            machine.n_states +
-            shaft.n_states +
-            avr.n_states +
-            prime_mover.n_states +
-            pss.n_states
-        )
+function DynamicGenerator(
+    number::Int64,
+    name::String,
+    bus::Bus,
+    ω_ref::Float64,
+    V_ref::Float64,
+    P_ref::Float64,
+    Q_ref::Float64,
+    machine::M,
+    shaft::S,
+    avr::A,
+    prime_mover::TG,
+    pss::P,
+    ext::Dict{String, Any} = Dict{String, Any}(),
+) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
 
-        states =
-            vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
+    n_states = (
+        machine.n_states +
+        shaft.n_states +
+        avr.n_states +
+        prime_mover.n_states +
+        pss.n_states
+    )
+    states =
+        vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
 
-        new{M, S, A, TG, P}(
-            number,
-            name,
-            bus,
-            ω_ref,
-            V_ref,
-            P_ref,
-            Q_ref,
-            machine,
-            shaft,
-            avr,
-            prime_mover,
-            pss,
-            n_states,
-            states,
-            ext,
-            InfrastructureSystemsInternal(),
-        )
-    end
+    return DynamicGenerator{M, S, A, TG, P}(
+        number,
+        name,
+        bus,
+        ω_ref,
+        V_ref,
+        P_ref,
+        Q_ref,
+        machine,
+        shaft,
+        avr,
+        prime_mover,
+        pss,
+        n_states,
+        states,
+        ext,
+        InfrastructureSystemsInternal(),
+    )
 end
 
 function DynamicGenerator(;
