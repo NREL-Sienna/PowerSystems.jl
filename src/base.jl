@@ -1225,6 +1225,13 @@ function handle_component_removal!(sys::System, service::Service)
     end
 end
 
+function handle_component_removal!(sys::System, value::T) where T <: AggregationTopology
+    for device in get_components(Bus, sys)
+        get_aggregation_topology_accessor(T)(device) == value
+        _remove_aggregration_topology!(device, value)
+    end
+end
+
 """
 Return a sorted vector of bus numbers in the system.
 """
