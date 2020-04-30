@@ -1999,6 +1999,11 @@
                 "data_type": "String"
             },
             {
+                "null_value": "false",
+                "name": "available",
+                "data_type": "Bool"
+            },
+            {
                 "name": "timeframe",
                 "comment": "the relative saturation timeframe",
                 "null_value": "0.0",
