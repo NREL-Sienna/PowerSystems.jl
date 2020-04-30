@@ -177,7 +177,6 @@ export get_components_by_name
 export get_available_components
 export get_forecast_labels
 export get_forecast_initial_times
-export get_forecast_keys
 export get_forecast
 export get_forecast_values
 export get_forecasts_horizon
