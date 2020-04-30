@@ -54,6 +54,19 @@
     forecast = get_forecast(Deterministic, component, initial_time, "get_rating")
     @test forecast isa Deterministic
 
+    # Test all versions of get_forecast_values()
+    values1 = get_forecast_values(component, forecast)
+    values2 = get_forecast_values(Deterministic, component, initial_time, "get_rating")
+    @test values1 == values2
+    values3 = get_forecast_values(
+        Deterministic,
+        component,
+        initial_time,
+        "get_rating",
+        get_horizon(forecast),
+    )
+    @test values1 == values3
+
     horizon = get_forecasts_horizon(sys)
     @test horizon == 24
     @test get_forecasts_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")

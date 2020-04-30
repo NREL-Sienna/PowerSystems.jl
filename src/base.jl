@@ -828,6 +828,13 @@ function generate_initial_times(
 end
 
 """
+    get_forecast(
+        ::Type{T},
+        component::Component,
+        initial_time::Dates.DateTime,
+        label::AbstractString,
+    ) where {T <: Forecast}
+
 Return a forecast for the entire time series range stored for these parameters.
 """
 function get_forecast(
@@ -840,6 +847,14 @@ function get_forecast(
 end
 
 """
+    get_forecast(
+        ::Type{T},
+        component::IS.InfrastructureSystemsType,
+        initial_time::Dates.DateTime,
+        label::AbstractString,
+        horizon::Int,
+    ) where {T <: Forecast}
+
 Return a forecast for a subset of the time series range stored for these parameters.
 """
 function get_forecast(
@@ -873,8 +888,47 @@ function get_forecast_labels(
 end
 
 """
+    get_forecast_values(
+        ::Type{T},
+        component::Component,
+        initial_time::Dates.DateTime,
+        label::AbstractString,
+    ) where {T <: Forecast}
+
 Return a TimeSeries.TimeArray where the forecast data has been multiplied by the forecasted
 component field.
+"""
+function get_forecast_values(
+    ::Type{T},
+    component::Component,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+) where {T <: Forecast}
+    return IS.get_forecast_values(T, PowerSystems, component, initial_time, label)
+end
+
+"""
+    get_forecast_values(
+        ::Type{T},
+        component::IS.InfrastructureSystemsType,
+        initial_time::Dates.DateTime,
+        label::AbstractString,
+        horizon::Int,
+    ) where {T <: Forecast}
+"""
+function get_forecast_values(
+    ::Type{T},
+    component::IS.InfrastructureSystemsType,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+    horizon::Int,
+) where {T <: Forecast}
+    forecast = get_forecast(T, component, initial_time, label, horizon)
+    return IS.get_forecast_values(PowerSystems, component, forecast)
+end
+
+"""
+    get_forecast_values(component::Component, forecast::Forecast)
 """
 function get_forecast_values(component::Component, forecast::Forecast)
     return IS.get_forecast_values(PowerSystems, component, forecast)
