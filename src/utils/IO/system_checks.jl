@@ -67,10 +67,10 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 - `sys::System`: system
 """
 function adequacy_check(sys::System)
-    gen = total_generation_rating(sys)
+    gen = total_capacity_rating(sys)
     load = total_load_rating(sys)
     load > gen &&
-        @warn "System peak load ($load) exceeds total generation capability ($gen)."
+        @warn "System peak load ($load) exceeds total capacity capability ($gen)."
 end
 
 """
@@ -101,14 +101,14 @@ function total_load_rating(sys::System)
 end
 
 """
-    total_generation_rating(sys::System)
+    total_capacity_rating(sys::System)
 
-Total sum of system generator and storage ratings.
+Sum of system generator and storage ratings.
 
 # Arguments
 - `sys::System`: system
 """
-function total_generation_rating(sys::System)
+function total_capacity_rating(sys::System)
     total = 0
     for component_type in (Generator, Storage)
         components = get_components(Generator, sys)
@@ -119,6 +119,6 @@ function total_generation_rating(sys::System)
         end
     end
 
-    @debug "Total System Generation: $total"
+    @debug "Total System capacity: $total"
     return total
 end
