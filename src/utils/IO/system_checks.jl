@@ -103,18 +103,22 @@ end
 """
     total_generation_rating(sys::System)
 
-Total sum of system generator ratings.
+Total sum of system generator and storage ratings.
 
 # Arguments
 - `sys::System`: system
 """
 function total_generation_rating(sys::System)
-    generators = get_components(Generator, sys)
-    if isempty(generators)
-        return 0
+    total = 0
+    for component_type in (Generator, Storage)
+        components = get_components(Generator, sys)
+        if !isempty(components)
+            component_total = sum(get_rating.(components)) * get_basepower(sys)
+            @debug "total rating for $component_type = $component_total"
+            total += component_total
+        end
     end
 
-    gen = sum(get_rating.(generators)) * get_basepower(sys)
-    @debug "Total System Generation: $gen"
-    return gen
+    @debug "Total System Generation: $total"
+    return total
 end
