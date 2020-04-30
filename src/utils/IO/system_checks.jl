@@ -69,8 +69,7 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 function adequacy_check(sys::System)
     gen = total_capacity_rating(sys)
     load = total_load_rating(sys)
-    load > gen &&
-        @warn "System peak load ($load) exceeds total capacity capability ($gen)."
+    load > gen && @warn "System peak load ($load) exceeds total capacity capability ($gen)."
 end
 
 """
