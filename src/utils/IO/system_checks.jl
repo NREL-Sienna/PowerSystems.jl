@@ -49,17 +49,13 @@ function minimumtimestep(forecasts::Array{T}) where {T <: Forecast}
 end
 
 function critical_components_check(sys::System)
-    missing_critical_components = false
     critical_component_types = [Bus, Generator, ElectricLoad]
     for component_type in critical_component_types
         components = get_components(component_type, sys)
         if length(components) == 0
-            missing_critical_components = true
-            @error("There are no $(component_type) Components in the System")
+            @warn "There are no $(component_type) Components in the System"
         end
     end
-    missing_critical_components &&
-        throw(IS.InvalidValue("Critical Components are not present."))
 end
 
 """
@@ -113,7 +109,12 @@ Total sum of system generator ratings.
 - `sys::System`: system
 """
 function total_generation_rating(sys::System)
-    gen = sum(get_rating.(get_components(Generator, sys))) * get_basepower(sys)
+    generators = get_components(Generator, sys)
+    if isempty(generators)
+        return 0
+    end
+
+    gen = sum(get_rating.(generators)) * get_basepower(sys)
     @debug "Total System Generation: $gen"
     return gen
 end
