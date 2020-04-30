@@ -4,6 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct Transfer <: Service
         name::String
+        available::Bool
         requirement::Float64
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
@@ -14,6 +15,7 @@ This file is auto-generated. Do not edit.
 
 # Arguments
 - `name::String`
+- `available::Bool`
 - `requirement::Float64`
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -21,6 +23,7 @@ This file is auto-generated. Do not edit.
 """
 mutable struct Transfer <: Service
     name::String
+    available::Bool
     requirement::Float64
     ext::Dict{String, Any}
     "internal forecast storage"
@@ -29,18 +32,19 @@ mutable struct Transfer <: Service
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
+function Transfer(name, available, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, available, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transfer(; name, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, requirement, ext, forecasts, )
+function Transfer(; name, available, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transfer(name, available, requirement, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
 function Transfer(::Nothing)
     Transfer(;
         name="init",
+        available=false,
         requirement=0.0,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
@@ -49,6 +53,8 @@ end
 
 
 InfrastructureSystems.get_name(value::Transfer) = value.name
+"""Get Transfer available."""
+get_available(value::Transfer) = value.available
 """Get Transfer requirement."""
 get_requirement(value::Transfer) = value.requirement
 """Get Transfer ext."""

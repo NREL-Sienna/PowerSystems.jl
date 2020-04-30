@@ -2113,6 +2113,11 @@
                 "data_type": "String"
             },
             {
+                "null_value": "false",
+                "name": "available",
+                "data_type": "Bool"
+            },
+            {
                 "name": "requirement",
                 "null_value": "0.0",
                 "data_type": "Float64"
