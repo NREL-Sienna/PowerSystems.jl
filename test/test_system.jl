@@ -145,6 +145,10 @@ end
     @assert length(get_components(typeof(gen), sys)) > 0
     remove_components!(typeof(gen), sys)
     @test_throws(IS.ArgumentError, remove_components!(typeof(gen), sys))
+
+    remove_components!(Area, sys)
+    @test isempty(get_components(Area, sys))
+    @test isnothing(get_area(collect(get_components(Bus, sys))[1]))
 end
 
 @testset "Test missing Arc bus" begin
