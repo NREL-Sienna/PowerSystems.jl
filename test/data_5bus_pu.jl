@@ -570,6 +570,7 @@ interruptible(nodes5) = [InterruptibleLoad(
 
 reserve5(thermal_generators5) = [VariableReserve{ReserveUp}(
     "test_reserve",
+    true,
     0.6,
     maximum([gen.activepowerlimits[:max] for gen in thermal_generators5]),
 )]

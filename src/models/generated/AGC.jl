@@ -4,6 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct AGC <: Service
         name::String
+        available::Bool
         bias::Float64
         K_p::Float64
         K_i::Float64
@@ -18,6 +19,7 @@ This file is auto-generated. Do not edit.
 
 # Arguments
 - `name::String`
+- `available::Bool`
 - `bias::Float64`
 - `K_p::Float64`: PID Proportional Constant
 - `K_i::Float64`: PID Integral Constant
@@ -29,6 +31,7 @@ This file is auto-generated. Do not edit.
 """
 mutable struct AGC <: Service
     name::String
+    available::Bool
     bias::Float64
     "PID Proportional Constant"
     K_p::Float64
@@ -45,18 +48,19 @@ mutable struct AGC <: Service
     internal::InfrastructureSystemsInternal
 end
 
-function AGC(name, bias, K_p, K_i, K_d, delta_t, area=nothing, ext=Dict{String, Any}(), )
-    AGC(name, bias, K_p, K_i, K_d, delta_t, area, ext, InfrastructureSystemsInternal(), )
+function AGC(name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, ext=Dict{String, Any}(), )
+    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, ext, InfrastructureSystemsInternal(), )
 end
 
-function AGC(; name, bias, K_p, K_i, K_d, delta_t, area=nothing, ext=Dict{String, Any}(), )
-    AGC(name, bias, K_p, K_i, K_d, delta_t, area, ext, )
+function AGC(; name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, ext=Dict{String, Any}(), )
+    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
 function AGC(::Nothing)
     AGC(;
         name="init",
+        available=false,
         bias=0.0,
         K_p=0.0,
         K_i=0.0,
@@ -69,6 +73,8 @@ end
 
 
 InfrastructureSystems.get_name(value::AGC) = value.name
+"""Get AGC available."""
+get_available(value::AGC) = value.available
 """Get AGC bias."""
 get_bias(value::AGC) = value.bias
 """Get AGC K_p."""
