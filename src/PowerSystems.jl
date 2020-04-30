@@ -199,6 +199,8 @@ export check_forecast_consistency
 export validate_forecast_consistency
 export clear_ext
 export convert_component!
+export set_area!
+export set_load_zone!
 export TamuSystem
 export PowerModelsData
 
