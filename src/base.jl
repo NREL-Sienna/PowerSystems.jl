@@ -1012,6 +1012,7 @@ end
 """
     get_forecast_values(component::Component, forecast::Forecast)
 """
+function get_forecast_values(component::Component, forecast::Forecast)
     return IS.get_forecast_values(PowerSystems, component, forecast)
 end
 
