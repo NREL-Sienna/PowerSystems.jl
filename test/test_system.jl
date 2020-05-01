@@ -190,7 +190,7 @@ end
 
 @testset "Test system checks" begin
     sys = System(100)
-    @test_throws InfrastructureSystems.InvalidValue("Critical Components are not present.") PSY.check!(
+    @test_logs (:warn, r"There are no .* Components in the System") match_mode = :any PSY.check!(
         sys,
     )
 end

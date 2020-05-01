@@ -49,17 +49,13 @@ function minimumtimestep(forecasts::Array{T}) where {T <: Forecast}
 end
 
 function critical_components_check(sys::System)
-    missing_critical_components = false
     critical_component_types = [Bus, Generator, ElectricLoad]
     for component_type in critical_component_types
         components = get_components(component_type, sys)
         if length(components) == 0
-            missing_critical_components = true
-            @error("There are no $(component_type) Components in the System")
+            @warn "There are no $(component_type) Components in the System"
         end
     end
-    missing_critical_components &&
-        throw(IS.InvalidValue("Critical Components are not present."))
 end
 
 """
@@ -71,10 +67,9 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 - `sys::System`: system
 """
 function adequacy_check(sys::System)
-    gen = total_generation_rating(sys)
+    gen = total_capacity_rating(sys)
     load = total_load_rating(sys)
-    load > gen &&
-        @warn "System peak load ($load) exceeds total generation capability ($gen)."
+    load > gen && @warn "System peak load ($load) exceeds total capacity capability ($gen)."
 end
 
 """
@@ -105,15 +100,24 @@ function total_load_rating(sys::System)
 end
 
 """
-    total_generation_rating(sys::System)
+    total_capacity_rating(sys::System)
 
-Total sum of system generator ratings.
+Sum of system generator and storage ratings.
 
 # Arguments
 - `sys::System`: system
 """
-function total_generation_rating(sys::System)
-    gen = sum(get_rating.(get_components(Generator, sys))) * get_basepower(sys)
-    @debug "Total System Generation: $gen"
-    return gen
+function total_capacity_rating(sys::System)
+    total = 0
+    for component_type in (Generator, Storage)
+        components = get_components(Generator, sys)
+        if !isempty(components)
+            component_total = sum(get_rating.(components)) * get_basepower(sys)
+            @debug "total rating for $component_type = $component_total"
+            total += component_total
+        end
+    end
+
+    @debug "Total System capacity: $total"
+    return total
 end
