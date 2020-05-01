@@ -177,7 +177,6 @@ export get_components_by_name
 export get_available_components
 export get_forecast_labels
 export get_forecast_initial_times
-export get_forecast_keys
 export get_forecast
 export get_forecast_values
 export get_forecasts_horizon
@@ -200,6 +199,8 @@ export check_forecast_consistency
 export validate_forecast_consistency
 export clear_ext
 export convert_component!
+export set_area!
+export set_load_zone!
 export TamuSystem
 export PowerModelsData
 
