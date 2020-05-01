@@ -9,7 +9,6 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
-        internal::InfrastructureSystemsInternal
     end
 
 Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko. "Operation of a phase locked loop system under distorted utility conditions." IEEE Transactions on Industry applications 33.1 (1997): 58-63.
@@ -21,7 +20,6 @@ Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Bla
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct KauraPLL <: FrequencyEstimator
     "PLL low-pass filter frequency (rad/sec)"
@@ -33,12 +31,10 @@ mutable struct KauraPLL <: FrequencyEstimator
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
 function KauraPLL(ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )
-    KauraPLL(ω_lp, kp_pll, ki_pll, ext, [:vd_pll, :vq_pll, :ε_pll, :θ_pll], 4, InfrastructureSystemsInternal(), )
+    KauraPLL(ω_lp, kp_pll, ki_pll, ext, [:vd_pll, :vq_pll, :ε_pll, :θ_pll], 4, )
 end
 
 function KauraPLL(; ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )
@@ -67,5 +63,3 @@ get_ext(value::KauraPLL) = value.ext
 get_states(value::KauraPLL) = value.states
 """Get KauraPLL n_states."""
 get_n_states(value::KauraPLL) = value.n_states
-"""Get KauraPLL internal."""
-get_internal(value::KauraPLL) = value.internal

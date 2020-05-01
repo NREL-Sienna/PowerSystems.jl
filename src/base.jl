@@ -1230,15 +1230,9 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
 end
 
 function _get_component_type(component_type::Symbol)
-    base_name = IS.strip_module_name(string(component_type))
-    type_name, parameters = IS.separate_type_and_parameter_types(base_name)
-    c_type = getfield(PowerSystems, Symbol(type_name))
-    if !isempty(parameters)
-        parametric_types = [getfield(PowerSystems, Symbol(x)) for x in parameters]
-        c_type = c_type{parametric_types...}
-    end
-
-    return c_type
+    # This function will ensure that `component_type` contains a valid type expression,
+    # so it should be safe to eval.
+    return eval(IS.parse_serialized_type(component_type))
 end
 
 function JSON2.write(io::IO, component::T) where {T <: Component}

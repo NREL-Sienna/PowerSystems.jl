@@ -22,13 +22,21 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
         end
     end
 
-    for field in fields
-        if isnothing(getfield(obj, field)) || field == :internal
+    for (fieldname, fieldtype) in zip(fields, fieldtypes(T))
+        if isnothing(getfield(obj, fieldname)) ||
+           fieldtype <: IS.InfrastructureSystemsInternal
             continue
         end
+        if fieldtype <: IS.InfrastructureSystemsType ||
+           fieldtype <: IS.Forecasts ||
+           fieldtype <: Vector{<:Service}
+            expected = string(fieldtype)
+        else
+            expected = string(getfield(obj, fieldname))
+        end
 
-        if !occursin(string(getfield(obj, field)), custom)
-            @error "field's value is not in custom output" field custom
+        if !occursin(expected, custom)
+            @error "field's value is not in custom output" fieldname custom
             match = false
         end
     end

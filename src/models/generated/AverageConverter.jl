@@ -8,7 +8,6 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
-        internal::InfrastructureSystemsInternal
     end
 
 Parameters of an average converter model
@@ -19,7 +18,6 @@ Parameters of an average converter model
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AverageConverter <: Converter
     "rated voltage"
@@ -29,12 +27,10 @@ mutable struct AverageConverter <: Converter
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
 function AverageConverter(v_rated, s_rated, ext=Dict{String, Any}(), )
-    AverageConverter(v_rated, s_rated, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
+    AverageConverter(v_rated, s_rated, ext, Vector{Symbol}(), 0, )
 end
 
 function AverageConverter(; v_rated, s_rated, ext=Dict{String, Any}(), )
@@ -60,5 +56,3 @@ get_ext(value::AverageConverter) = value.ext
 get_states(value::AverageConverter) = value.states
 """Get AverageConverter n_states."""
 get_n_states(value::AverageConverter) = value.n_states
-"""Get AverageConverter internal."""
-get_internal(value::AverageConverter) = value.internal
