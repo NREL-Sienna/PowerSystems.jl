@@ -40,6 +40,9 @@ struct System <: PowerSystemType
     internal::IS.InfrastructureSystemsInternal
 
     function System(data, basepower, internal; kwargs...)
+        # Note to devs: if you add parameters to kwargs then consider whether they need
+        # special handling in the deserialization function in this file.
+        # See JSON2.read for System.
         bus_numbers = Set{Int}()
         frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
         runchecks = get(kwargs, :runchecks, true)
@@ -1182,9 +1185,18 @@ end
 
 function JSON2.read(io::IO, ::Type{System})
     raw = JSON2.read(io, NamedTuple)
+
+    # Read any field that is defined in System but optional for the constructors and not
+    # already handled here.
+    handled = (:data, :basepower, :bus_numbers, :internal)
+    kwargs = Dict{Symbol, Any}()
+    for field in setdiff(propertynames(raw), handled)
+        kwargs[field] = getproperty(raw, field)
+    end
+
     data = IS.deserialize(IS.SystemData, Component, raw.data)
     internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
-    sys = System(data, float(raw.basepower); internal = internal, runchecks = raw.runchecks)
+    sys = System(data, float(raw.basepower); internal = internal, kwargs...)
     return sys
 end
 
