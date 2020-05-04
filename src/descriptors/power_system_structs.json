@@ -1988,6 +1988,54 @@
         "supertype": "Reserve{T}"
     },
     {
+        "struct_name": "ORDC",
+        "docstring": "Data Structure for a operating reserve with demand curve product for system simulations.",
+        "parametric": "ReserveDirection",
+        "fields": [
+            {
+                "null_value": "init",
+                "name": "name",
+                "accessor_module": "InfrastructureSystems",
+                "data_type": "String"
+            },
+            {
+                "null_value": "false",
+                "name": "available",
+                "data_type": "Bool"
+            },
+            {
+                "name": "timeframe",
+                "comment": "the relative saturation timeframe",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "op_cost",
+                "null_value": "TwoPartCost(nothing)",
+                "data_type": "TwoPartCost",
+                "comment": "Cost for providing reserves  [TwoPartCost](@ref)"
+            },
+            {
+                "name": "ext",
+                "data_type": "Dict{String, Any}",
+                "null_value": "Dict{String, Any}()",
+                "default": "Dict{String, Any}()"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+        ],
+        "supertype": "Reserve{T}"
+    },
+    {
         "struct_name": "VariableReserve",
         "docstring": "Data Structure for the procurement products for system simulations.",
         "parametric": "ReserveDirection",
