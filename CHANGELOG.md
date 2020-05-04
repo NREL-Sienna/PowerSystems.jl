@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## 0.17.1
+
+- Fix bug with frequency de-serialization
+
 ## 0.17.0
 
 - Fix Serialization of DynamicInverter
