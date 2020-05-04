@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct ORDC{T <: ReserveDirection} <: Reserve{T}
+    mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
         name::String
         available::Bool
         timeframe::Float64
@@ -21,7 +21,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct ORDC{T <: ReserveDirection} <: Reserve{T}
+mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     name::String
     available::Bool
     "the relative saturation timeframe"
@@ -33,17 +33,17 @@ mutable struct ORDC{T <: ReserveDirection} <: Reserve{T}
     internal::InfrastructureSystemsInternal
 end
 
-function ORDC{T}(name, available, timeframe, op_cost, ext=Dict{String, Any}(), ) where T <: ReserveDirection
-    ORDC{T}(name, available, timeframe, op_cost, ext, InfrastructureSystemsInternal(), )
+function ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext=Dict{String, Any}(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext, InfrastructureSystemsInternal(), )
 end
 
-function ORDC{T}(; name, available, timeframe, op_cost, ext=Dict{String, Any}(), ) where T <: ReserveDirection
-    ORDC{T}(name, available, timeframe, op_cost, ext, )
+function ReserveDemandCurve{T}(; name, available, timeframe, op_cost, ext=Dict{String, Any}(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
-function ORDC{T}(::Nothing) where T <: ReserveDirection
-    ORDC{T}(;
+function ReserveDemandCurve{T}(::Nothing) where T <: ReserveDirection
+    ReserveDemandCurve{T}(;
         name="init",
         available=false,
         timeframe=0.0,
@@ -53,14 +53,14 @@ function ORDC{T}(::Nothing) where T <: ReserveDirection
 end
 
 
-InfrastructureSystems.get_name(value::ORDC) = value.name
-"""Get ORDC available."""
-get_available(value::ORDC) = value.available
-"""Get ORDC timeframe."""
-get_timeframe(value::ORDC) = value.timeframe
-"""Get ORDC op_cost."""
-get_op_cost(value::ORDC) = value.op_cost
-"""Get ORDC ext."""
-get_ext(value::ORDC) = value.ext
-"""Get ORDC internal."""
-get_internal(value::ORDC) = value.internal
+InfrastructureSystems.get_name(value::ReserveDemandCurve) = value.name
+"""Get ReserveDemandCurve available."""
+get_available(value::ReserveDemandCurve) = value.available
+"""Get ReserveDemandCurve timeframe."""
+get_timeframe(value::ReserveDemandCurve) = value.timeframe
+"""Get ReserveDemandCurve op_cost."""
+get_op_cost(value::ReserveDemandCurve) = value.op_cost
+"""Get ReserveDemandCurve ext."""
+get_ext(value::ReserveDemandCurve) = value.ext
+"""Get ReserveDemandCurve internal."""
+get_internal(value::ReserveDemandCurve) = value.internal

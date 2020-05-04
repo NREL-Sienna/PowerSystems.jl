@@ -1988,7 +1988,7 @@
         "supertype": "Reserve{T}"
     },
     {
-        "struct_name": "ORDC",
+        "struct_name": "ReserveDemandCurve",
         "docstring": "Data Structure for a operating reserve with demand curve product for system simulations.",
         "parametric": "ReserveDirection",
         "fields": [
