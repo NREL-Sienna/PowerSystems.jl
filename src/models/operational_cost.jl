@@ -33,7 +33,7 @@ function slopes(vc::PowerSystems.VariableCost{Vector{NTuple{2, Float64}}})
         end
         slopes[ix] = (component[1] - previous[1]) / (component[2] - previous[2])
         previous = component
-        slopes[ix] < previous && @debug("Non-convex cost function")
+        slopes[ix] < slopes[ix - 1] && @debug("Non-convex cost function")
     end
     return slopes
 end
