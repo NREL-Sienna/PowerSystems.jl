@@ -6,13 +6,21 @@ mutable struct VariableCost{T}
     cost::T
 end
 
-get_cost(vc::PowerSystems.VariableCost) = vc.cost
-Base.length(vc::PowerSystems.VariableCost) = length(vc.cost)
-Base.getindex(vc::PowerSystems.VariableCost, ix::Int64) = getindex(vc.cost, ix)
+get_cost(vc::VariableCost) = vc.cost
+Base.length(vc::VariableCost) = length(vc.cost)
+Base.getindex(vc::VariableCost, ix::Int64) = getindex(vc.cost, ix)
 
-function break_point_upperbounds(vc::PowerSystems.VariableCost{Vector{NTuple{2, Float64}}})
+function get_breakpoint_upperbounds(vc::VariableCost{T}) where {T}
+    throw(ArgumentError("Method not supported for VariableCost using $(T)"))
+end
+
+function get_slopes(vc::VariableCost{T}) where {T}
+    throw(ArgumentError("Method not supported for VariableCost using $(T)"))
+end
+
+function get_breakpoint_upperbounds(vc::VariableCost{Vector{NTuple{2, Float64}}})
     bp_ubs = Vector{Float64}(undef, length(vc))
-    for (ix, component) in enumerate(PowerSystems.get_cost(vc))
+    for (ix, component) in enumerate(get_cost(vc))
         if ix == 1
             bp_ubs[ix] = component[2]
             continue
@@ -22,18 +30,19 @@ function break_point_upperbounds(vc::PowerSystems.VariableCost{Vector{NTuple{2, 
     return bp_ubs
 end
 
-function slopes(vc::PowerSystems.VariableCost{Vector{NTuple{2, Float64}}})
+function get_slopes(vc::VariableCost{Vector{NTuple{2, Float64}}})
     slopes = Vector{Float64}(undef, length(vc))
     previous = (0.0, 0.0)
-    for (ix, component) in enumerate(PowerSystems.get_cost(vc))
+    for (ix, component) in enumerate(get_cost(vc))
         if ix == 1
             slopes[ix] = component[1] / component[2]
             previous = component
             continue
         end
-        slopes[ix] = (component[1] - previous[1]) / (component[2] - previous[2])
+        @show previous[1] - component[1], previous[2] - component[2]
+        slopes[ix] = (previous[1] - component[1]) / (previous[2] - component[2])
         previous = component
-        slopes[ix] < slopes[ix - 1] && @debug("Non-convex cost function")
+        slopes[ix] < slopes[ix - 1] && @warn("Non-convex cost function")
     end
     return slopes
 end
