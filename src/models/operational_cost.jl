@@ -39,7 +39,6 @@ function get_slopes(vc::VariableCost{Vector{NTuple{2, Float64}}})
             previous = component
             continue
         end
-        @show previous[1] - component[1], previous[2] - component[2]
         slopes[ix] = (previous[1] - component[1]) / (previous[2] - component[2])
         previous = component
         slopes[ix] < slopes[ix - 1] && @warn("Non-convex cost function")
