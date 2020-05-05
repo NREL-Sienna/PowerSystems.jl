@@ -207,7 +207,7 @@ end
         VariableReserve{ReserveUp}(nothing),
         VariableReserve{ReserveDown}(nothing),
         ReserveDemandCurve{ReserveUp}(nothing),
-        ReserveDemandCurve{ReserveDown}(nothing)
+        ReserveDemandCurve{ReserveDown}(nothing),
     )
 
     for reserve in reserves
@@ -225,7 +225,6 @@ end
     @test length(get_components(ReserveDemandCurve{ReserveUp}, sys)) == 1
     @test length(get_components(ReserveDemandCurve{ReserveDown}, sys)) == 1
 end
-
 
 @testset "Test struct type collections" begin
     concrete_types = IS.get_all_concrete_subtypes(Service)

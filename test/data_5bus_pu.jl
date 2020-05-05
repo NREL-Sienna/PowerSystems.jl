@@ -579,7 +579,7 @@ ordc5() = [ReserveDemandCurve{ReserveUp}(
     "test_ordc",
     true,
     0.6,
-    TwoPartCost([(0.0, 9000.0), (0.2, 6000.0), (0.4, 500.0), (0.6, 10.0), (0.8, 0.0)],0.0)
+    TwoPartCost([(0.0, 9000.0), (0.2, 6000.0), (0.4, 500.0), (0.6, 10.0), (0.8, 0.0)], 0.0),
 )]
 
 Iload_timeseries_DA = [
