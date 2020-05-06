@@ -18,6 +18,12 @@ function get_slopes(vc::VariableCost{T}) where {T}
     throw(ArgumentError("Method not supported for VariableCost using $(T)"))
 end
 
+"""
+    get_breakpoint_upperbounds(vc::VariableCost{Vector{NTuple{2, Float64}}})
+
+Calculates the upper bounds of a variable cost function represented as a collection of piece-wise linear segments.
+
+"""
 function get_breakpoint_upperbounds(vc::VariableCost{Vector{NTuple{2, Float64}}})
     bp_ubs = Vector{Float64}(undef, length(vc))
     for (ix, component) in enumerate(get_cost(vc))
@@ -30,6 +36,12 @@ function get_breakpoint_upperbounds(vc::VariableCost{Vector{NTuple{2, Float64}}}
     return bp_ubs
 end
 
+"""
+    get_slopes(vc::VariableCost{Vector{NTuple{2, Float64}}})
+
+Calculates the slopes for the variable cost represented as a piece wise linear cost function. This function returns n - slopes for n - piecewise linear elements in the function. The first element of the function corresponds to the average cost at the minimum operating point. If your formulation uses n -1 slopes, you can disregard the first component of the array.
+
+"""
 function get_slopes(vc::VariableCost{Vector{NTuple{2, Float64}}})
     slopes = Vector{Float64}(undef, length(vc))
     previous = (0.0, 0.0)
