@@ -109,3 +109,30 @@ get_ext(value::Transformer2W) = value.ext
 InfrastructureSystems.get_forecasts(value::Transformer2W) = value.forecasts
 """Get Transformer2W internal."""
 get_internal(value::Transformer2W) = value.internal
+
+
+InfrastructureSystems.set_name(value::Transformer2W, val) = value.name = val
+"""Set Transformer2W available."""
+set_available(value::Transformer2W, val) = value.available = val
+"""Set Transformer2W activepower_flow."""
+set_activepower_flow(value::Transformer2W, val) = value.activepower_flow = val
+"""Set Transformer2W reactivepower_flow."""
+set_reactivepower_flow(value::Transformer2W, val) = value.reactivepower_flow = val
+"""Set Transformer2W arc."""
+set_arc(value::Transformer2W, val) = value.arc = val
+"""Set Transformer2W r."""
+set_r(value::Transformer2W, val) = value.r = val
+"""Set Transformer2W x."""
+set_x(value::Transformer2W, val) = value.x = val
+"""Set Transformer2W primaryshunt."""
+set_primaryshunt(value::Transformer2W, val) = value.primaryshunt = val
+"""Set Transformer2W rate."""
+set_rate(value::Transformer2W, val) = value.rate = val
+"""Set Transformer2W services."""
+set_services(value::Transformer2W, val) = value.services = val
+"""Set Transformer2W ext."""
+set_ext(value::Transformer2W, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::Transformer2W, val) = value.forecasts = val
+"""Set Transformer2W internal."""
+set_internal(value::Transformer2W, val) = value.internal = val

@@ -147,3 +147,42 @@ get_ext(value::HydroEnergyReservoir) = value.ext
 InfrastructureSystems.get_forecasts(value::HydroEnergyReservoir) = value.forecasts
 """Get HydroEnergyReservoir internal."""
 get_internal(value::HydroEnergyReservoir) = value.internal
+
+
+InfrastructureSystems.set_name(value::HydroEnergyReservoir, val) = value.name = val
+"""Set HydroEnergyReservoir available."""
+set_available(value::HydroEnergyReservoir, val) = value.available = val
+"""Set HydroEnergyReservoir bus."""
+set_bus(value::HydroEnergyReservoir, val) = value.bus = val
+"""Set HydroEnergyReservoir activepower."""
+set_activepower(value::HydroEnergyReservoir, val) = value.activepower = val
+"""Set HydroEnergyReservoir reactivepower."""
+set_reactivepower(value::HydroEnergyReservoir, val) = value.reactivepower = val
+"""Set HydroEnergyReservoir rating."""
+set_rating(value::HydroEnergyReservoir, val) = value.rating = val
+"""Set HydroEnergyReservoir primemover."""
+set_primemover(value::HydroEnergyReservoir, val) = value.primemover = val
+"""Set HydroEnergyReservoir activepowerlimits."""
+set_activepowerlimits(value::HydroEnergyReservoir, val) = value.activepowerlimits = val
+"""Set HydroEnergyReservoir reactivepowerlimits."""
+set_reactivepowerlimits(value::HydroEnergyReservoir, val) = value.reactivepowerlimits = val
+"""Set HydroEnergyReservoir ramplimits."""
+set_ramplimits(value::HydroEnergyReservoir, val) = value.ramplimits = val
+"""Set HydroEnergyReservoir timelimits."""
+set_timelimits(value::HydroEnergyReservoir, val) = value.timelimits = val
+"""Set HydroEnergyReservoir op_cost."""
+set_op_cost(value::HydroEnergyReservoir, val) = value.op_cost = val
+"""Set HydroEnergyReservoir storage_capacity."""
+set_storage_capacity(value::HydroEnergyReservoir, val) = value.storage_capacity = val
+"""Set HydroEnergyReservoir inflow."""
+set_inflow(value::HydroEnergyReservoir, val) = value.inflow = val
+"""Set HydroEnergyReservoir initial_storage."""
+set_initial_storage(value::HydroEnergyReservoir, val) = value.initial_storage = val
+"""Set HydroEnergyReservoir services."""
+set_services(value::HydroEnergyReservoir, val) = value.services = val
+"""Set HydroEnergyReservoir ext."""
+set_ext(value::HydroEnergyReservoir, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::HydroEnergyReservoir, val) = value.forecasts = val
+"""Set HydroEnergyReservoir internal."""
+set_internal(value::HydroEnergyReservoir, val) = value.internal = val

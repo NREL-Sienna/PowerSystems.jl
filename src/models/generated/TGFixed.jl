@@ -56,3 +56,14 @@ get_states(value::TGFixed) = value.states
 get_n_states(value::TGFixed) = value.n_states
 """Get TGFixed internal."""
 get_internal(value::TGFixed) = value.internal
+
+"""Set TGFixed efficiency."""
+set_efficiency(value::TGFixed, val) = value.efficiency = val
+"""Set TGFixed ext."""
+set_ext(value::TGFixed, val) = value.ext = val
+"""Set TGFixed states."""
+set_states(value::TGFixed, val) = value.states = val
+"""Set TGFixed n_states."""
+set_n_states(value::TGFixed, val) = value.n_states = val
+"""Set TGFixed internal."""
+set_internal(value::TGFixed, val) = value.internal = val

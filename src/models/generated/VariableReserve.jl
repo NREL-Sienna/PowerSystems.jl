@@ -71,3 +71,18 @@ get_ext(value::VariableReserve) = value.ext
 InfrastructureSystems.get_forecasts(value::VariableReserve) = value.forecasts
 """Get VariableReserve internal."""
 get_internal(value::VariableReserve) = value.internal
+
+
+InfrastructureSystems.set_name(value::VariableReserve, val) = value.name = val
+"""Set VariableReserve available."""
+set_available(value::VariableReserve, val) = value.available = val
+"""Set VariableReserve timeframe."""
+set_timeframe(value::VariableReserve, val) = value.timeframe = val
+"""Set VariableReserve requirement."""
+set_requirement(value::VariableReserve, val) = value.requirement = val
+"""Set VariableReserve ext."""
+set_ext(value::VariableReserve, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::VariableReserve, val) = value.forecasts = val
+"""Set VariableReserve internal."""
+set_internal(value::VariableReserve, val) = value.internal = val

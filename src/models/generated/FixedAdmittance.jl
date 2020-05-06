@@ -77,3 +77,20 @@ get_ext(value::FixedAdmittance) = value.ext
 InfrastructureSystems.get_forecasts(value::FixedAdmittance) = value.forecasts
 """Get FixedAdmittance internal."""
 get_internal(value::FixedAdmittance) = value.internal
+
+
+InfrastructureSystems.set_name(value::FixedAdmittance, val) = value.name = val
+"""Set FixedAdmittance available."""
+set_available(value::FixedAdmittance, val) = value.available = val
+"""Set FixedAdmittance bus."""
+set_bus(value::FixedAdmittance, val) = value.bus = val
+"""Set FixedAdmittance Y."""
+set_Y(value::FixedAdmittance, val) = value.Y = val
+"""Set FixedAdmittance services."""
+set_services(value::FixedAdmittance, val) = value.services = val
+"""Set FixedAdmittance ext."""
+set_ext(value::FixedAdmittance, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::FixedAdmittance, val) = value.forecasts = val
+"""Set FixedAdmittance internal."""
+set_internal(value::FixedAdmittance, val) = value.internal = val

@@ -46,3 +46,10 @@ get_from(value::Arc) = value.from
 get_to(value::Arc) = value.to
 """Get Arc internal."""
 get_internal(value::Arc) = value.internal
+
+"""Set Arc from."""
+set_from(value::Arc, val) = value.from = val
+"""Set Arc to."""
+set_to(value::Arc, val) = value.to = val
+"""Set Arc internal."""
+set_internal(value::Arc, val) = value.internal = val

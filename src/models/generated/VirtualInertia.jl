@@ -70,3 +70,18 @@ get_ext(value::VirtualInertia) = value.ext
 get_states(value::VirtualInertia) = value.states
 """Get VirtualInertia n_states."""
 get_n_states(value::VirtualInertia) = value.n_states
+
+"""Set VirtualInertia Ta."""
+set_Ta(value::VirtualInertia, val) = value.Ta = val
+"""Set VirtualInertia kd."""
+set_kd(value::VirtualInertia, val) = value.kd = val
+"""Set VirtualInertia kω."""
+set_kω(value::VirtualInertia, val) = value.kω = val
+"""Set VirtualInertia ωb."""
+set_ωb(value::VirtualInertia, val) = value.ωb = val
+"""Set VirtualInertia ext."""
+set_ext(value::VirtualInertia, val) = value.ext = val
+"""Set VirtualInertia states."""
+set_states(value::VirtualInertia, val) = value.states = val
+"""Set VirtualInertia n_states."""
+set_n_states(value::VirtualInertia, val) = value.n_states = val

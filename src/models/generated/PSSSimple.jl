@@ -62,3 +62,16 @@ get_states(value::PSSSimple) = value.states
 get_n_states(value::PSSSimple) = value.n_states
 """Get PSSSimple internal."""
 get_internal(value::PSSSimple) = value.internal
+
+"""Set PSSSimple K_ω."""
+set_K_ω(value::PSSSimple, val) = value.K_ω = val
+"""Set PSSSimple K_p."""
+set_K_p(value::PSSSimple, val) = value.K_p = val
+"""Set PSSSimple ext."""
+set_ext(value::PSSSimple, val) = value.ext = val
+"""Set PSSSimple states."""
+set_states(value::PSSSimple, val) = value.states = val
+"""Set PSSSimple n_states."""
+set_n_states(value::PSSSimple, val) = value.n_states = val
+"""Set PSSSimple internal."""
+set_internal(value::PSSSimple, val) = value.internal = val

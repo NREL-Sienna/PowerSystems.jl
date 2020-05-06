@@ -107,3 +107,30 @@ get_ext(value::InterruptibleLoad) = value.ext
 InfrastructureSystems.get_forecasts(value::InterruptibleLoad) = value.forecasts
 """Get InterruptibleLoad internal."""
 get_internal(value::InterruptibleLoad) = value.internal
+
+
+InfrastructureSystems.set_name(value::InterruptibleLoad, val) = value.name = val
+"""Set InterruptibleLoad available."""
+set_available(value::InterruptibleLoad, val) = value.available = val
+"""Set InterruptibleLoad bus."""
+set_bus(value::InterruptibleLoad, val) = value.bus = val
+"""Set InterruptibleLoad model."""
+set_model(value::InterruptibleLoad, val) = value.model = val
+"""Set InterruptibleLoad activepower."""
+set_activepower(value::InterruptibleLoad, val) = value.activepower = val
+"""Set InterruptibleLoad reactivepower."""
+set_reactivepower(value::InterruptibleLoad, val) = value.reactivepower = val
+"""Set InterruptibleLoad maxactivepower."""
+set_maxactivepower(value::InterruptibleLoad, val) = value.maxactivepower = val
+"""Set InterruptibleLoad maxreactivepower."""
+set_maxreactivepower(value::InterruptibleLoad, val) = value.maxreactivepower = val
+"""Set InterruptibleLoad op_cost."""
+set_op_cost(value::InterruptibleLoad, val) = value.op_cost = val
+"""Set InterruptibleLoad services."""
+set_services(value::InterruptibleLoad, val) = value.services = val
+"""Set InterruptibleLoad ext."""
+set_ext(value::InterruptibleLoad, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::InterruptibleLoad, val) = value.forecasts = val
+"""Set InterruptibleLoad internal."""
+set_internal(value::InterruptibleLoad, val) = value.internal = val

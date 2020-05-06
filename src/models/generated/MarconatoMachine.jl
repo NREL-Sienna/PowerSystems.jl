@@ -149,3 +149,42 @@ get_states(value::MarconatoMachine) = value.states
 get_n_states(value::MarconatoMachine) = value.n_states
 """Get MarconatoMachine internal."""
 get_internal(value::MarconatoMachine) = value.internal
+
+"""Set MarconatoMachine R."""
+set_R(value::MarconatoMachine, val) = value.R = val
+"""Set MarconatoMachine Xd."""
+set_Xd(value::MarconatoMachine, val) = value.Xd = val
+"""Set MarconatoMachine Xq."""
+set_Xq(value::MarconatoMachine, val) = value.Xq = val
+"""Set MarconatoMachine Xd_p."""
+set_Xd_p(value::MarconatoMachine, val) = value.Xd_p = val
+"""Set MarconatoMachine Xq_p."""
+set_Xq_p(value::MarconatoMachine, val) = value.Xq_p = val
+"""Set MarconatoMachine Xd_pp."""
+set_Xd_pp(value::MarconatoMachine, val) = value.Xd_pp = val
+"""Set MarconatoMachine Xq_pp."""
+set_Xq_pp(value::MarconatoMachine, val) = value.Xq_pp = val
+"""Set MarconatoMachine Td0_p."""
+set_Td0_p(value::MarconatoMachine, val) = value.Td0_p = val
+"""Set MarconatoMachine Tq0_p."""
+set_Tq0_p(value::MarconatoMachine, val) = value.Tq0_p = val
+"""Set MarconatoMachine Td0_pp."""
+set_Td0_pp(value::MarconatoMachine, val) = value.Td0_pp = val
+"""Set MarconatoMachine Tq0_pp."""
+set_Tq0_pp(value::MarconatoMachine, val) = value.Tq0_pp = val
+"""Set MarconatoMachine T_AA."""
+set_T_AA(value::MarconatoMachine, val) = value.T_AA = val
+"""Set MarconatoMachine MVABase."""
+set_MVABase(value::MarconatoMachine, val) = value.MVABase = val
+"""Set MarconatoMachine ext."""
+set_ext(value::MarconatoMachine, val) = value.ext = val
+"""Set MarconatoMachine γd."""
+set_γd(value::MarconatoMachine, val) = value.γd = val
+"""Set MarconatoMachine γq."""
+set_γq(value::MarconatoMachine, val) = value.γq = val
+"""Set MarconatoMachine states."""
+set_states(value::MarconatoMachine, val) = value.states = val
+"""Set MarconatoMachine n_states."""
+set_n_states(value::MarconatoMachine, val) = value.n_states = val
+"""Set MarconatoMachine internal."""
+set_internal(value::MarconatoMachine, val) = value.internal = val

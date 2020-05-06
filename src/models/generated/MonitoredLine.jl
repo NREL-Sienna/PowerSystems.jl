@@ -123,3 +123,34 @@ get_ext(value::MonitoredLine) = value.ext
 InfrastructureSystems.get_forecasts(value::MonitoredLine) = value.forecasts
 """Get MonitoredLine internal."""
 get_internal(value::MonitoredLine) = value.internal
+
+
+InfrastructureSystems.set_name(value::MonitoredLine, val) = value.name = val
+"""Set MonitoredLine available."""
+set_available(value::MonitoredLine, val) = value.available = val
+"""Set MonitoredLine activepower_flow."""
+set_activepower_flow(value::MonitoredLine, val) = value.activepower_flow = val
+"""Set MonitoredLine reactivepower_flow."""
+set_reactivepower_flow(value::MonitoredLine, val) = value.reactivepower_flow = val
+"""Set MonitoredLine arc."""
+set_arc(value::MonitoredLine, val) = value.arc = val
+"""Set MonitoredLine r."""
+set_r(value::MonitoredLine, val) = value.r = val
+"""Set MonitoredLine x."""
+set_x(value::MonitoredLine, val) = value.x = val
+"""Set MonitoredLine b."""
+set_b(value::MonitoredLine, val) = value.b = val
+"""Set MonitoredLine flowlimits."""
+set_flowlimits(value::MonitoredLine, val) = value.flowlimits = val
+"""Set MonitoredLine rate."""
+set_rate(value::MonitoredLine, val) = value.rate = val
+"""Set MonitoredLine anglelimits."""
+set_anglelimits(value::MonitoredLine, val) = value.anglelimits = val
+"""Set MonitoredLine services."""
+set_services(value::MonitoredLine, val) = value.services = val
+"""Set MonitoredLine ext."""
+set_ext(value::MonitoredLine, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::MonitoredLine, val) = value.forecasts = val
+"""Set MonitoredLine internal."""
+set_internal(value::MonitoredLine, val) = value.internal = val

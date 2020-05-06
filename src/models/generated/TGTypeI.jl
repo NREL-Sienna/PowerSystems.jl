@@ -104,3 +104,28 @@ get_states(value::TGTypeI) = value.states
 get_n_states(value::TGTypeI) = value.n_states
 """Get TGTypeI internal."""
 get_internal(value::TGTypeI) = value.internal
+
+"""Set TGTypeI R."""
+set_R(value::TGTypeI, val) = value.R = val
+"""Set TGTypeI Ts."""
+set_Ts(value::TGTypeI, val) = value.Ts = val
+"""Set TGTypeI Tc."""
+set_Tc(value::TGTypeI, val) = value.Tc = val
+"""Set TGTypeI T3."""
+set_T3(value::TGTypeI, val) = value.T3 = val
+"""Set TGTypeI T4."""
+set_T4(value::TGTypeI, val) = value.T4 = val
+"""Set TGTypeI T5."""
+set_T5(value::TGTypeI, val) = value.T5 = val
+"""Set TGTypeI P_min."""
+set_P_min(value::TGTypeI, val) = value.P_min = val
+"""Set TGTypeI P_max."""
+set_P_max(value::TGTypeI, val) = value.P_max = val
+"""Set TGTypeI ext."""
+set_ext(value::TGTypeI, val) = value.ext = val
+"""Set TGTypeI states."""
+set_states(value::TGTypeI, val) = value.states = val
+"""Set TGTypeI n_states."""
+set_n_states(value::TGTypeI, val) = value.n_states = val
+"""Set TGTypeI internal."""
+set_internal(value::TGTypeI, val) = value.internal = val

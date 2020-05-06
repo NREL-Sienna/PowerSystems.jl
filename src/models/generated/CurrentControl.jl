@@ -112,3 +112,30 @@ get_ext(value::CurrentControl) = value.ext
 get_states(value::CurrentControl) = value.states
 """Get CurrentControl n_states."""
 get_n_states(value::CurrentControl) = value.n_states
+
+"""Set CurrentControl kpv."""
+set_kpv(value::CurrentControl, val) = value.kpv = val
+"""Set CurrentControl kiv."""
+set_kiv(value::CurrentControl, val) = value.kiv = val
+"""Set CurrentControl kffv."""
+set_kffv(value::CurrentControl, val) = value.kffv = val
+"""Set CurrentControl rv."""
+set_rv(value::CurrentControl, val) = value.rv = val
+"""Set CurrentControl lv."""
+set_lv(value::CurrentControl, val) = value.lv = val
+"""Set CurrentControl kpc."""
+set_kpc(value::CurrentControl, val) = value.kpc = val
+"""Set CurrentControl kic."""
+set_kic(value::CurrentControl, val) = value.kic = val
+"""Set CurrentControl kffi."""
+set_kffi(value::CurrentControl, val) = value.kffi = val
+"""Set CurrentControl ωad."""
+set_ωad(value::CurrentControl, val) = value.ωad = val
+"""Set CurrentControl kad."""
+set_kad(value::CurrentControl, val) = value.kad = val
+"""Set CurrentControl ext."""
+set_ext(value::CurrentControl, val) = value.ext = val
+"""Set CurrentControl states."""
+set_states(value::CurrentControl, val) = value.states = val
+"""Set CurrentControl n_states."""
+set_n_states(value::CurrentControl, val) = value.n_states = val

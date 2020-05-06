@@ -115,3 +115,32 @@ get_ext(value::Line) = value.ext
 InfrastructureSystems.get_forecasts(value::Line) = value.forecasts
 """Get Line internal."""
 get_internal(value::Line) = value.internal
+
+
+InfrastructureSystems.set_name(value::Line, val) = value.name = val
+"""Set Line available."""
+set_available(value::Line, val) = value.available = val
+"""Set Line activepower_flow."""
+set_activepower_flow(value::Line, val) = value.activepower_flow = val
+"""Set Line reactivepower_flow."""
+set_reactivepower_flow(value::Line, val) = value.reactivepower_flow = val
+"""Set Line arc."""
+set_arc(value::Line, val) = value.arc = val
+"""Set Line r."""
+set_r(value::Line, val) = value.r = val
+"""Set Line x."""
+set_x(value::Line, val) = value.x = val
+"""Set Line b."""
+set_b(value::Line, val) = value.b = val
+"""Set Line rate."""
+set_rate(value::Line, val) = value.rate = val
+"""Set Line anglelimits."""
+set_anglelimits(value::Line, val) = value.anglelimits = val
+"""Set Line services."""
+set_services(value::Line, val) = value.services = val
+"""Set Line ext."""
+set_ext(value::Line, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::Line, val) = value.forecasts = val
+"""Set Line internal."""
+set_internal(value::Line, val) = value.internal = val

@@ -55,3 +55,14 @@ get_states(value::PSSFixed) = value.states
 get_n_states(value::PSSFixed) = value.n_states
 """Get PSSFixed internal."""
 get_internal(value::PSSFixed) = value.internal
+
+"""Set PSSFixed V_pss."""
+set_V_pss(value::PSSFixed, val) = value.V_pss = val
+"""Set PSSFixed ext."""
+set_ext(value::PSSFixed, val) = value.ext = val
+"""Set PSSFixed states."""
+set_states(value::PSSFixed, val) = value.states = val
+"""Set PSSFixed n_states."""
+set_n_states(value::PSSFixed, val) = value.n_states = val
+"""Set PSSFixed internal."""
+set_internal(value::PSSFixed, val) = value.internal = val

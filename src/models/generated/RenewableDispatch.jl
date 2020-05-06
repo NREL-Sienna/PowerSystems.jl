@@ -115,3 +115,32 @@ get_ext(value::RenewableDispatch) = value.ext
 InfrastructureSystems.get_forecasts(value::RenewableDispatch) = value.forecasts
 """Get RenewableDispatch internal."""
 get_internal(value::RenewableDispatch) = value.internal
+
+
+InfrastructureSystems.set_name(value::RenewableDispatch, val) = value.name = val
+"""Set RenewableDispatch available."""
+set_available(value::RenewableDispatch, val) = value.available = val
+"""Set RenewableDispatch bus."""
+set_bus(value::RenewableDispatch, val) = value.bus = val
+"""Set RenewableDispatch activepower."""
+set_activepower(value::RenewableDispatch, val) = value.activepower = val
+"""Set RenewableDispatch reactivepower."""
+set_reactivepower(value::RenewableDispatch, val) = value.reactivepower = val
+"""Set RenewableDispatch rating."""
+set_rating(value::RenewableDispatch, val) = value.rating = val
+"""Set RenewableDispatch primemover."""
+set_primemover(value::RenewableDispatch, val) = value.primemover = val
+"""Set RenewableDispatch reactivepowerlimits."""
+set_reactivepowerlimits(value::RenewableDispatch, val) = value.reactivepowerlimits = val
+"""Set RenewableDispatch powerfactor."""
+set_powerfactor(value::RenewableDispatch, val) = value.powerfactor = val
+"""Set RenewableDispatch op_cost."""
+set_op_cost(value::RenewableDispatch, val) = value.op_cost = val
+"""Set RenewableDispatch services."""
+set_services(value::RenewableDispatch, val) = value.services = val
+"""Set RenewableDispatch ext."""
+set_ext(value::RenewableDispatch, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::RenewableDispatch, val) = value.forecasts = val
+"""Set RenewableDispatch internal."""
+set_internal(value::RenewableDispatch, val) = value.internal = val

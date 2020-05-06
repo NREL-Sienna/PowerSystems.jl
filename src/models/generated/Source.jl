@@ -82,3 +82,22 @@ get_services(value::Source) = value.services
 get_ext(value::Source) = value.ext
 """Get Source internal."""
 get_internal(value::Source) = value.internal
+
+
+InfrastructureSystems.set_name(value::Source, val) = value.name = val
+"""Set Source available."""
+set_available(value::Source, val) = value.available = val
+"""Set Source bus."""
+set_bus(value::Source, val) = value.bus = val
+"""Set Source activepower."""
+set_activepower(value::Source, val) = value.activepower = val
+"""Set Source reactivepower."""
+set_reactivepower(value::Source, val) = value.reactivepower = val
+"""Set Source X_th."""
+set_X_th(value::Source, val) = value.X_th = val
+"""Set Source services."""
+set_services(value::Source, val) = value.services = val
+"""Set Source ext."""
+set_ext(value::Source, val) = value.ext = val
+"""Set Source internal."""
+set_internal(value::Source, val) = value.internal = val

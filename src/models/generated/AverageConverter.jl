@@ -56,3 +56,14 @@ get_ext(value::AverageConverter) = value.ext
 get_states(value::AverageConverter) = value.states
 """Get AverageConverter n_states."""
 get_n_states(value::AverageConverter) = value.n_states
+
+"""Set AverageConverter v_rated."""
+set_v_rated(value::AverageConverter, val) = value.v_rated = val
+"""Set AverageConverter s_rated."""
+set_s_rated(value::AverageConverter, val) = value.s_rated = val
+"""Set AverageConverter ext."""
+set_ext(value::AverageConverter, val) = value.ext = val
+"""Set AverageConverter states."""
+set_states(value::AverageConverter, val) = value.states = val
+"""Set AverageConverter n_states."""
+set_n_states(value::AverageConverter, val) = value.n_states = val
