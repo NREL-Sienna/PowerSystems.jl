@@ -126,6 +126,7 @@ export ReserveUp
 export ReserveDown
 export StaticReserve
 export VariableReserve
+export ReserveDemandCurve
 export Transfer
 
 export PTDF

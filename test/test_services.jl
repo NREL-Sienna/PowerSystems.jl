@@ -206,6 +206,8 @@ end
         StaticReserve{ReserveDown}(nothing),
         VariableReserve{ReserveUp}(nothing),
         VariableReserve{ReserveDown}(nothing),
+        ReserveDemandCurve{ReserveUp}(nothing),
+        ReserveDemandCurve{ReserveDown}(nothing),
     )
 
     for reserve in reserves
@@ -220,6 +222,8 @@ end
     @test length(get_components(StaticReserve{ReserveDown}, sys)) == 1
     @test length(get_components(VariableReserve{ReserveUp}, sys)) == 1
     @test length(get_components(VariableReserve{ReserveDown}, sys)) == 1
+    @test length(get_components(ReserveDemandCurve{ReserveUp}, sys)) == 1
+    @test length(get_components(ReserveDemandCurve{ReserveDown}, sys)) == 1
 end
 
 @testset "Test struct type collections" begin
@@ -234,5 +238,5 @@ end
         end
     end
 
-    @test 6 == actual_count
+    @test 8 == actual_count
 end
