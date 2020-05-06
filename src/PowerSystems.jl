@@ -33,6 +33,9 @@ export PhaseShiftingTransformer
 
 export ThreePartCost
 export TwoPartCost
+export VariableCost
+export get_slopes
+export get_breakpoint_upperbounds
 
 export Generator
 export HydroGen
