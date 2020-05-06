@@ -1,5 +1,10 @@
 # PowerSystems Change Log
 
+## 0.17.2
+
+- Add DemandCurveReserve
+- Add functions to manipilate pwl cost functions
+
 ## 0.17.1
 
 - Fix bug with frequency de-serialization
