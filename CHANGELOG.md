@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## 0.17.3
+
+- Add getter function support for generated structs
+
 ## 0.17.2
 
 - Add DemandCurveReserve
