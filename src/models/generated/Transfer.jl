@@ -65,14 +65,14 @@ InfrastructureSystems.get_forecasts(value::Transfer) = value.forecasts
 get_internal(value::Transfer) = value.internal
 
 
-InfrastructureSystems.set_name(value::Transfer, val) = value.name = val
+InfrastructureSystems.set_name!(value::Transfer, val) = value.name = val
 """Set Transfer available."""
-set_available(value::Transfer, val) = value.available = val
+set_available!(value::Transfer, val) = value.available = val
 """Set Transfer requirement."""
-set_requirement(value::Transfer, val) = value.requirement = val
+set_requirement!(value::Transfer, val) = value.requirement = val
 """Set Transfer ext."""
-set_ext(value::Transfer, val) = value.ext = val
+set_ext!(value::Transfer, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts(value::Transfer, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::Transfer, val) = value.forecasts = val
 """Set Transfer internal."""
-set_internal(value::Transfer, val) = value.internal = val
+set_internal!(value::Transfer, val) = value.internal = val

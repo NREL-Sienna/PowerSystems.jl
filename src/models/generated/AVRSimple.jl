@@ -59,12 +59,12 @@ get_n_states(value::AVRSimple) = value.n_states
 get_internal(value::AVRSimple) = value.internal
 
 """Set AVRSimple Kv."""
-set_Kv(value::AVRSimple, val) = value.Kv = val
+set_Kv!(value::AVRSimple, val) = value.Kv = val
 """Set AVRSimple ext."""
-set_ext(value::AVRSimple, val) = value.ext = val
+set_ext!(value::AVRSimple, val) = value.ext = val
 """Set AVRSimple states."""
-set_states(value::AVRSimple, val) = value.states = val
+set_states!(value::AVRSimple, val) = value.states = val
 """Set AVRSimple n_states."""
-set_n_states(value::AVRSimple, val) = value.n_states = val
+set_n_states!(value::AVRSimple, val) = value.n_states = val
 """Set AVRSimple internal."""
-set_internal(value::AVRSimple, val) = value.internal = val
+set_internal!(value::AVRSimple, val) = value.internal = val

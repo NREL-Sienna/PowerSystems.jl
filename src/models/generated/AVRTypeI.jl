@@ -127,32 +127,32 @@ get_n_states(value::AVRTypeI) = value.n_states
 get_internal(value::AVRTypeI) = value.internal
 
 """Set AVRTypeI Ka."""
-set_Ka(value::AVRTypeI, val) = value.Ka = val
+set_Ka!(value::AVRTypeI, val) = value.Ka = val
 """Set AVRTypeI Ke."""
-set_Ke(value::AVRTypeI, val) = value.Ke = val
+set_Ke!(value::AVRTypeI, val) = value.Ke = val
 """Set AVRTypeI Kf."""
-set_Kf(value::AVRTypeI, val) = value.Kf = val
+set_Kf!(value::AVRTypeI, val) = value.Kf = val
 """Set AVRTypeI Ta."""
-set_Ta(value::AVRTypeI, val) = value.Ta = val
+set_Ta!(value::AVRTypeI, val) = value.Ta = val
 """Set AVRTypeI Te."""
-set_Te(value::AVRTypeI, val) = value.Te = val
+set_Te!(value::AVRTypeI, val) = value.Te = val
 """Set AVRTypeI Tf."""
-set_Tf(value::AVRTypeI, val) = value.Tf = val
+set_Tf!(value::AVRTypeI, val) = value.Tf = val
 """Set AVRTypeI Tr."""
-set_Tr(value::AVRTypeI, val) = value.Tr = val
+set_Tr!(value::AVRTypeI, val) = value.Tr = val
 """Set AVRTypeI Vr_max."""
-set_Vr_max(value::AVRTypeI, val) = value.Vr_max = val
+set_Vr_max!(value::AVRTypeI, val) = value.Vr_max = val
 """Set AVRTypeI Vr_min."""
-set_Vr_min(value::AVRTypeI, val) = value.Vr_min = val
+set_Vr_min!(value::AVRTypeI, val) = value.Vr_min = val
 """Set AVRTypeI Ae."""
-set_Ae(value::AVRTypeI, val) = value.Ae = val
+set_Ae!(value::AVRTypeI, val) = value.Ae = val
 """Set AVRTypeI Be."""
-set_Be(value::AVRTypeI, val) = value.Be = val
+set_Be!(value::AVRTypeI, val) = value.Be = val
 """Set AVRTypeI ext."""
-set_ext(value::AVRTypeI, val) = value.ext = val
+set_ext!(value::AVRTypeI, val) = value.ext = val
 """Set AVRTypeI states."""
-set_states(value::AVRTypeI, val) = value.states = val
+set_states!(value::AVRTypeI, val) = value.states = val
 """Set AVRTypeI n_states."""
-set_n_states(value::AVRTypeI, val) = value.n_states = val
+set_n_states!(value::AVRTypeI, val) = value.n_states = val
 """Set AVRTypeI internal."""
-set_internal(value::AVRTypeI, val) = value.internal = val
+set_internal!(value::AVRTypeI, val) = value.internal = val

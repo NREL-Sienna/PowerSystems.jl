@@ -59,12 +59,12 @@ InfrastructureSystems.get_forecasts(value::Area) = value.forecasts
 get_internal(value::Area) = value.internal
 
 
-InfrastructureSystems.set_name(value::Area, val) = value.name = val
+InfrastructureSystems.set_name!(value::Area, val) = value.name = val
 """Set Area maxactivepower."""
-set_maxactivepower(value::Area, val) = value.maxactivepower = val
+set_maxactivepower!(value::Area, val) = value.maxactivepower = val
 """Set Area maxreactivepower."""
-set_maxreactivepower(value::Area, val) = value.maxreactivepower = val
+set_maxreactivepower!(value::Area, val) = value.maxreactivepower = val
 
-InfrastructureSystems.set_forecasts(value::Area, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::Area, val) = value.forecasts = val
 """Set Area internal."""
-set_internal(value::Area, val) = value.internal = val
+set_internal!(value::Area, val) = value.internal = val

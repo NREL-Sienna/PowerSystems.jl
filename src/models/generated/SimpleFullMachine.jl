@@ -158,40 +158,40 @@ get_n_states(value::SimpleFullMachine) = value.n_states
 get_internal(value::SimpleFullMachine) = value.internal
 
 """Set SimpleFullMachine R."""
-set_R(value::SimpleFullMachine, val) = value.R = val
+set_R!(value::SimpleFullMachine, val) = value.R = val
 """Set SimpleFullMachine R_f."""
-set_R_f(value::SimpleFullMachine, val) = value.R_f = val
+set_R_f!(value::SimpleFullMachine, val) = value.R_f = val
 """Set SimpleFullMachine R_1d."""
-set_R_1d(value::SimpleFullMachine, val) = value.R_1d = val
+set_R_1d!(value::SimpleFullMachine, val) = value.R_1d = val
 """Set SimpleFullMachine R_1q."""
-set_R_1q(value::SimpleFullMachine, val) = value.R_1q = val
+set_R_1q!(value::SimpleFullMachine, val) = value.R_1q = val
 """Set SimpleFullMachine L_d."""
-set_L_d(value::SimpleFullMachine, val) = value.L_d = val
+set_L_d!(value::SimpleFullMachine, val) = value.L_d = val
 """Set SimpleFullMachine L_q."""
-set_L_q(value::SimpleFullMachine, val) = value.L_q = val
+set_L_q!(value::SimpleFullMachine, val) = value.L_q = val
 """Set SimpleFullMachine L_ad."""
-set_L_ad(value::SimpleFullMachine, val) = value.L_ad = val
+set_L_ad!(value::SimpleFullMachine, val) = value.L_ad = val
 """Set SimpleFullMachine L_aq."""
-set_L_aq(value::SimpleFullMachine, val) = value.L_aq = val
+set_L_aq!(value::SimpleFullMachine, val) = value.L_aq = val
 """Set SimpleFullMachine L_f1d."""
-set_L_f1d(value::SimpleFullMachine, val) = value.L_f1d = val
+set_L_f1d!(value::SimpleFullMachine, val) = value.L_f1d = val
 """Set SimpleFullMachine L_ff."""
-set_L_ff(value::SimpleFullMachine, val) = value.L_ff = val
+set_L_ff!(value::SimpleFullMachine, val) = value.L_ff = val
 """Set SimpleFullMachine L_1d."""
-set_L_1d(value::SimpleFullMachine, val) = value.L_1d = val
+set_L_1d!(value::SimpleFullMachine, val) = value.L_1d = val
 """Set SimpleFullMachine L_1q."""
-set_L_1q(value::SimpleFullMachine, val) = value.L_1q = val
+set_L_1q!(value::SimpleFullMachine, val) = value.L_1q = val
 """Set SimpleFullMachine MVABase."""
-set_MVABase(value::SimpleFullMachine, val) = value.MVABase = val
+set_MVABase!(value::SimpleFullMachine, val) = value.MVABase = val
 """Set SimpleFullMachine ext."""
-set_ext(value::SimpleFullMachine, val) = value.ext = val
+set_ext!(value::SimpleFullMachine, val) = value.ext = val
 """Set SimpleFullMachine inv_d_fluxlink."""
-set_inv_d_fluxlink(value::SimpleFullMachine, val) = value.inv_d_fluxlink = val
+set_inv_d_fluxlink!(value::SimpleFullMachine, val) = value.inv_d_fluxlink = val
 """Set SimpleFullMachine inv_q_fluxlink."""
-set_inv_q_fluxlink(value::SimpleFullMachine, val) = value.inv_q_fluxlink = val
+set_inv_q_fluxlink!(value::SimpleFullMachine, val) = value.inv_q_fluxlink = val
 """Set SimpleFullMachine states."""
-set_states(value::SimpleFullMachine, val) = value.states = val
+set_states!(value::SimpleFullMachine, val) = value.states = val
 """Set SimpleFullMachine n_states."""
-set_n_states(value::SimpleFullMachine, val) = value.n_states = val
+set_n_states!(value::SimpleFullMachine, val) = value.n_states = val
 """Set SimpleFullMachine internal."""
-set_internal(value::SimpleFullMachine, val) = value.internal = val
+set_internal!(value::SimpleFullMachine, val) = value.internal = val

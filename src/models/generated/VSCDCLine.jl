@@ -114,30 +114,30 @@ InfrastructureSystems.get_forecasts(value::VSCDCLine) = value.forecasts
 get_internal(value::VSCDCLine) = value.internal
 
 
-InfrastructureSystems.set_name(value::VSCDCLine, val) = value.name = val
+InfrastructureSystems.set_name!(value::VSCDCLine, val) = value.name = val
 """Set VSCDCLine available."""
-set_available(value::VSCDCLine, val) = value.available = val
+set_available!(value::VSCDCLine, val) = value.available = val
 """Set VSCDCLine activepower_flow."""
-set_activepower_flow(value::VSCDCLine, val) = value.activepower_flow = val
+set_activepower_flow!(value::VSCDCLine, val) = value.activepower_flow = val
 """Set VSCDCLine arc."""
-set_arc(value::VSCDCLine, val) = value.arc = val
+set_arc!(value::VSCDCLine, val) = value.arc = val
 """Set VSCDCLine rectifier_taplimits."""
-set_rectifier_taplimits(value::VSCDCLine, val) = value.rectifier_taplimits = val
+set_rectifier_taplimits!(value::VSCDCLine, val) = value.rectifier_taplimits = val
 """Set VSCDCLine rectifier_xrc."""
-set_rectifier_xrc(value::VSCDCLine, val) = value.rectifier_xrc = val
+set_rectifier_xrc!(value::VSCDCLine, val) = value.rectifier_xrc = val
 """Set VSCDCLine rectifier_firing_angle."""
-set_rectifier_firing_angle(value::VSCDCLine, val) = value.rectifier_firing_angle = val
+set_rectifier_firing_angle!(value::VSCDCLine, val) = value.rectifier_firing_angle = val
 """Set VSCDCLine inverter_taplimits."""
-set_inverter_taplimits(value::VSCDCLine, val) = value.inverter_taplimits = val
+set_inverter_taplimits!(value::VSCDCLine, val) = value.inverter_taplimits = val
 """Set VSCDCLine inverter_xrc."""
-set_inverter_xrc(value::VSCDCLine, val) = value.inverter_xrc = val
+set_inverter_xrc!(value::VSCDCLine, val) = value.inverter_xrc = val
 """Set VSCDCLine inverter_firing_angle."""
-set_inverter_firing_angle(value::VSCDCLine, val) = value.inverter_firing_angle = val
+set_inverter_firing_angle!(value::VSCDCLine, val) = value.inverter_firing_angle = val
 """Set VSCDCLine services."""
-set_services(value::VSCDCLine, val) = value.services = val
+set_services!(value::VSCDCLine, val) = value.services = val
 """Set VSCDCLine ext."""
-set_ext(value::VSCDCLine, val) = value.ext = val
+set_ext!(value::VSCDCLine, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts(value::VSCDCLine, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::VSCDCLine, val) = value.forecasts = val
 """Set VSCDCLine internal."""
-set_internal(value::VSCDCLine, val) = value.internal = val
+set_internal!(value::VSCDCLine, val) = value.internal = val

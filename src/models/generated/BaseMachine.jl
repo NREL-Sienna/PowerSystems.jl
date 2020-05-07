@@ -78,18 +78,18 @@ get_n_states(value::BaseMachine) = value.n_states
 get_internal(value::BaseMachine) = value.internal
 
 """Set BaseMachine R."""
-set_R(value::BaseMachine, val) = value.R = val
+set_R!(value::BaseMachine, val) = value.R = val
 """Set BaseMachine Xd_p."""
-set_Xd_p(value::BaseMachine, val) = value.Xd_p = val
+set_Xd_p!(value::BaseMachine, val) = value.Xd_p = val
 """Set BaseMachine eq_p."""
-set_eq_p(value::BaseMachine, val) = value.eq_p = val
+set_eq_p!(value::BaseMachine, val) = value.eq_p = val
 """Set BaseMachine MVABase."""
-set_MVABase(value::BaseMachine, val) = value.MVABase = val
+set_MVABase!(value::BaseMachine, val) = value.MVABase = val
 """Set BaseMachine ext."""
-set_ext(value::BaseMachine, val) = value.ext = val
+set_ext!(value::BaseMachine, val) = value.ext = val
 """Set BaseMachine states."""
-set_states(value::BaseMachine, val) = value.states = val
+set_states!(value::BaseMachine, val) = value.states = val
 """Set BaseMachine n_states."""
-set_n_states(value::BaseMachine, val) = value.n_states = val
+set_n_states!(value::BaseMachine, val) = value.n_states = val
 """Set BaseMachine internal."""
-set_internal(value::BaseMachine, val) = value.internal = val
+set_internal!(value::BaseMachine, val) = value.internal = val

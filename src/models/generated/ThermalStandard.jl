@@ -155,42 +155,42 @@ InfrastructureSystems.get_forecasts(value::ThermalStandard) = value.forecasts
 get_internal(value::ThermalStandard) = value.internal
 
 
-InfrastructureSystems.set_name(value::ThermalStandard, val) = value.name = val
+InfrastructureSystems.set_name!(value::ThermalStandard, val) = value.name = val
 """Set ThermalStandard available."""
-set_available(value::ThermalStandard, val) = value.available = val
+set_available!(value::ThermalStandard, val) = value.available = val
 """Set ThermalStandard status."""
-set_status(value::ThermalStandard, val) = value.status = val
+set_status!(value::ThermalStandard, val) = value.status = val
 """Set ThermalStandard bus."""
-set_bus(value::ThermalStandard, val) = value.bus = val
+set_bus!(value::ThermalStandard, val) = value.bus = val
 """Set ThermalStandard activepower."""
-set_activepower(value::ThermalStandard, val) = value.activepower = val
+set_activepower!(value::ThermalStandard, val) = value.activepower = val
 """Set ThermalStandard reactivepower."""
-set_reactivepower(value::ThermalStandard, val) = value.reactivepower = val
+set_reactivepower!(value::ThermalStandard, val) = value.reactivepower = val
 """Set ThermalStandard rating."""
-set_rating(value::ThermalStandard, val) = value.rating = val
+set_rating!(value::ThermalStandard, val) = value.rating = val
 """Set ThermalStandard primemover."""
-set_primemover(value::ThermalStandard, val) = value.primemover = val
+set_primemover!(value::ThermalStandard, val) = value.primemover = val
 """Set ThermalStandard fuel."""
-set_fuel(value::ThermalStandard, val) = value.fuel = val
+set_fuel!(value::ThermalStandard, val) = value.fuel = val
 """Set ThermalStandard activepowerlimits."""
-set_activepowerlimits(value::ThermalStandard, val) = value.activepowerlimits = val
+set_activepowerlimits!(value::ThermalStandard, val) = value.activepowerlimits = val
 """Set ThermalStandard reactivepowerlimits."""
-set_reactivepowerlimits(value::ThermalStandard, val) = value.reactivepowerlimits = val
+set_reactivepowerlimits!(value::ThermalStandard, val) = value.reactivepowerlimits = val
 """Set ThermalStandard ramplimits."""
-set_ramplimits(value::ThermalStandard, val) = value.ramplimits = val
+set_ramplimits!(value::ThermalStandard, val) = value.ramplimits = val
 """Set ThermalStandard timelimits."""
-set_timelimits(value::ThermalStandard, val) = value.timelimits = val
+set_timelimits!(value::ThermalStandard, val) = value.timelimits = val
 """Set ThermalStandard op_cost."""
-set_op_cost(value::ThermalStandard, val) = value.op_cost = val
+set_op_cost!(value::ThermalStandard, val) = value.op_cost = val
 """Set ThermalStandard services."""
-set_services(value::ThermalStandard, val) = value.services = val
+set_services!(value::ThermalStandard, val) = value.services = val
 """Set ThermalStandard participation_factor."""
-set_participation_factor(value::ThermalStandard, val) = value.participation_factor = val
+set_participation_factor!(value::ThermalStandard, val) = value.participation_factor = val
 """Set ThermalStandard time_at_status."""
-set_time_at_status(value::ThermalStandard, val) = value.time_at_status = val
+set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 """Set ThermalStandard ext."""
-set_ext(value::ThermalStandard, val) = value.ext = val
+set_ext!(value::ThermalStandard, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts(value::ThermalStandard, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::ThermalStandard, val) = value.forecasts = val
 """Set ThermalStandard internal."""
-set_internal(value::ThermalStandard, val) = value.internal = val
+set_internal!(value::ThermalStandard, val) = value.internal = val
