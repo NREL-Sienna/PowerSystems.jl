@@ -64,3 +64,16 @@ get_requirement(value::StaticReserve) = value.requirement
 get_ext(value::StaticReserve) = value.ext
 """Get StaticReserve internal."""
 get_internal(value::StaticReserve) = value.internal
+
+
+InfrastructureSystems.set_name(value::StaticReserve, val) = value.name = val
+"""Set StaticReserve available."""
+set_available(value::StaticReserve, val) = value.available = val
+"""Set StaticReserve timeframe."""
+set_timeframe(value::StaticReserve, val) = value.timeframe = val
+"""Set StaticReserve requirement."""
+set_requirement(value::StaticReserve, val) = value.requirement = val
+"""Set StaticReserve ext."""
+set_ext(value::StaticReserve, val) = value.ext = val
+"""Set StaticReserve internal."""
+set_internal(value::StaticReserve, val) = value.internal = val

@@ -57,3 +57,14 @@ get_maxreactivepower(value::LoadZone) = value.maxreactivepower
 InfrastructureSystems.get_forecasts(value::LoadZone) = value.forecasts
 """Get LoadZone internal."""
 get_internal(value::LoadZone) = value.internal
+
+
+InfrastructureSystems.set_name(value::LoadZone, val) = value.name = val
+"""Set LoadZone maxactivepower."""
+set_maxactivepower(value::LoadZone, val) = value.maxactivepower = val
+"""Set LoadZone maxreactivepower."""
+set_maxreactivepower(value::LoadZone, val) = value.maxreactivepower = val
+
+InfrastructureSystems.set_forecasts(value::LoadZone, val) = value.forecasts = val
+"""Set LoadZone internal."""
+set_internal(value::LoadZone, val) = value.internal = val

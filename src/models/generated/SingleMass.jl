@@ -62,3 +62,16 @@ get_states(value::SingleMass) = value.states
 get_n_states(value::SingleMass) = value.n_states
 """Get SingleMass internal."""
 get_internal(value::SingleMass) = value.internal
+
+"""Set SingleMass H."""
+set_H(value::SingleMass, val) = value.H = val
+"""Set SingleMass D."""
+set_D(value::SingleMass, val) = value.D = val
+"""Set SingleMass ext."""
+set_ext(value::SingleMass, val) = value.ext = val
+"""Set SingleMass states."""
+set_states(value::SingleMass, val) = value.states = val
+"""Set SingleMass n_states."""
+set_n_states(value::SingleMass, val) = value.n_states = val
+"""Set SingleMass internal."""
+set_internal(value::SingleMass, val) = value.internal = val

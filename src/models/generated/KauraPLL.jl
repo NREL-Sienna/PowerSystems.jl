@@ -63,3 +63,16 @@ get_ext(value::KauraPLL) = value.ext
 get_states(value::KauraPLL) = value.states
 """Get KauraPLL n_states."""
 get_n_states(value::KauraPLL) = value.n_states
+
+"""Set KauraPLL ω_lp."""
+set_ω_lp(value::KauraPLL, val) = value.ω_lp = val
+"""Set KauraPLL kp_pll."""
+set_kp_pll(value::KauraPLL, val) = value.kp_pll = val
+"""Set KauraPLL ki_pll."""
+set_ki_pll(value::KauraPLL, val) = value.ki_pll = val
+"""Set KauraPLL ext."""
+set_ext(value::KauraPLL, val) = value.ext = val
+"""Set KauraPLL states."""
+set_states(value::KauraPLL, val) = value.states = val
+"""Set KauraPLL n_states."""
+set_n_states(value::KauraPLL, val) = value.n_states = val

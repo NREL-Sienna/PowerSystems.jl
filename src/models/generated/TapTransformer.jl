@@ -115,3 +115,32 @@ get_ext(value::TapTransformer) = value.ext
 InfrastructureSystems.get_forecasts(value::TapTransformer) = value.forecasts
 """Get TapTransformer internal."""
 get_internal(value::TapTransformer) = value.internal
+
+
+InfrastructureSystems.set_name(value::TapTransformer, val) = value.name = val
+"""Set TapTransformer available."""
+set_available(value::TapTransformer, val) = value.available = val
+"""Set TapTransformer activepower_flow."""
+set_activepower_flow(value::TapTransformer, val) = value.activepower_flow = val
+"""Set TapTransformer reactivepower_flow."""
+set_reactivepower_flow(value::TapTransformer, val) = value.reactivepower_flow = val
+"""Set TapTransformer arc."""
+set_arc(value::TapTransformer, val) = value.arc = val
+"""Set TapTransformer r."""
+set_r(value::TapTransformer, val) = value.r = val
+"""Set TapTransformer x."""
+set_x(value::TapTransformer, val) = value.x = val
+"""Set TapTransformer primaryshunt."""
+set_primaryshunt(value::TapTransformer, val) = value.primaryshunt = val
+"""Set TapTransformer tap."""
+set_tap(value::TapTransformer, val) = value.tap = val
+"""Set TapTransformer rate."""
+set_rate(value::TapTransformer, val) = value.rate = val
+"""Set TapTransformer services."""
+set_services(value::TapTransformer, val) = value.services = val
+"""Set TapTransformer ext."""
+set_ext(value::TapTransformer, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::TapTransformer, val) = value.forecasts = val
+"""Set TapTransformer internal."""
+set_internal(value::TapTransformer, val) = value.internal = val

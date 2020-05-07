@@ -57,3 +57,14 @@ get_states(value::AVRFixed) = value.states
 get_n_states(value::AVRFixed) = value.n_states
 """Get AVRFixed internal."""
 get_internal(value::AVRFixed) = value.internal
+
+"""Set AVRFixed Emf."""
+set_Emf(value::AVRFixed, val) = value.Emf = val
+"""Set AVRFixed ext."""
+set_ext(value::AVRFixed, val) = value.ext = val
+"""Set AVRFixed states."""
+set_states(value::AVRFixed, val) = value.states = val
+"""Set AVRFixed n_states."""
+set_n_states(value::AVRFixed, val) = value.n_states = val
+"""Set AVRFixed internal."""
+set_internal(value::AVRFixed, val) = value.internal = val

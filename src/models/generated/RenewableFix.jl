@@ -102,3 +102,28 @@ get_ext(value::RenewableFix) = value.ext
 InfrastructureSystems.get_forecasts(value::RenewableFix) = value.forecasts
 """Get RenewableFix internal."""
 get_internal(value::RenewableFix) = value.internal
+
+
+InfrastructureSystems.set_name(value::RenewableFix, val) = value.name = val
+"""Set RenewableFix available."""
+set_available(value::RenewableFix, val) = value.available = val
+"""Set RenewableFix bus."""
+set_bus(value::RenewableFix, val) = value.bus = val
+"""Set RenewableFix activepower."""
+set_activepower(value::RenewableFix, val) = value.activepower = val
+"""Set RenewableFix reactivepower."""
+set_reactivepower(value::RenewableFix, val) = value.reactivepower = val
+"""Set RenewableFix rating."""
+set_rating(value::RenewableFix, val) = value.rating = val
+"""Set RenewableFix primemover."""
+set_primemover(value::RenewableFix, val) = value.primemover = val
+"""Set RenewableFix powerfactor."""
+set_powerfactor(value::RenewableFix, val) = value.powerfactor = val
+"""Set RenewableFix services."""
+set_services(value::RenewableFix, val) = value.services = val
+"""Set RenewableFix ext."""
+set_ext(value::RenewableFix, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::RenewableFix, val) = value.forecasts = val
+"""Set RenewableFix internal."""
+set_internal(value::RenewableFix, val) = value.internal = val

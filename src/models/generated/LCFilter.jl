@@ -63,3 +63,16 @@ get_ext(value::LCFilter) = value.ext
 get_states(value::LCFilter) = value.states
 """Get LCFilter n_states."""
 get_n_states(value::LCFilter) = value.n_states
+
+"""Set LCFilter lf."""
+set_lf(value::LCFilter, val) = value.lf = val
+"""Set LCFilter rf."""
+set_rf(value::LCFilter, val) = value.rf = val
+"""Set LCFilter cf."""
+set_cf(value::LCFilter, val) = value.cf = val
+"""Set LCFilter ext."""
+set_ext(value::LCFilter, val) = value.ext = val
+"""Set LCFilter states."""
+set_states(value::LCFilter, val) = value.states = val
+"""Set LCFilter n_states."""
+set_n_states(value::LCFilter, val) = value.n_states = val

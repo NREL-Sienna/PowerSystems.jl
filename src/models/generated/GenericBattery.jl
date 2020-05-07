@@ -133,3 +133,38 @@ get_ext(value::GenericBattery) = value.ext
 InfrastructureSystems.get_forecasts(value::GenericBattery) = value.forecasts
 """Get GenericBattery internal."""
 get_internal(value::GenericBattery) = value.internal
+
+
+InfrastructureSystems.set_name(value::GenericBattery, val) = value.name = val
+"""Set GenericBattery available."""
+set_available(value::GenericBattery, val) = value.available = val
+"""Set GenericBattery bus."""
+set_bus(value::GenericBattery, val) = value.bus = val
+"""Set GenericBattery primemover."""
+set_primemover(value::GenericBattery, val) = value.primemover = val
+"""Set GenericBattery energy."""
+set_energy(value::GenericBattery, val) = value.energy = val
+"""Set GenericBattery capacity."""
+set_capacity(value::GenericBattery, val) = value.capacity = val
+"""Set GenericBattery rating."""
+set_rating(value::GenericBattery, val) = value.rating = val
+"""Set GenericBattery activepower."""
+set_activepower(value::GenericBattery, val) = value.activepower = val
+"""Set GenericBattery inputactivepowerlimits."""
+set_inputactivepowerlimits(value::GenericBattery, val) = value.inputactivepowerlimits = val
+"""Set GenericBattery outputactivepowerlimits."""
+set_outputactivepowerlimits(value::GenericBattery, val) = value.outputactivepowerlimits = val
+"""Set GenericBattery efficiency."""
+set_efficiency(value::GenericBattery, val) = value.efficiency = val
+"""Set GenericBattery reactivepower."""
+set_reactivepower(value::GenericBattery, val) = value.reactivepower = val
+"""Set GenericBattery reactivepowerlimits."""
+set_reactivepowerlimits(value::GenericBattery, val) = value.reactivepowerlimits = val
+"""Set GenericBattery services."""
+set_services(value::GenericBattery, val) = value.services = val
+"""Set GenericBattery ext."""
+set_ext(value::GenericBattery, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts(value::GenericBattery, val) = value.forecasts = val
+"""Set GenericBattery internal."""
+set_internal(value::GenericBattery, val) = value.internal = val

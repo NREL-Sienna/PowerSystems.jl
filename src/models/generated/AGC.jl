@@ -91,3 +91,24 @@ get_area(value::AGC) = value.area
 get_ext(value::AGC) = value.ext
 """Get AGC internal."""
 get_internal(value::AGC) = value.internal
+
+
+InfrastructureSystems.set_name(value::AGC, val) = value.name = val
+"""Set AGC available."""
+set_available(value::AGC, val) = value.available = val
+"""Set AGC bias."""
+set_bias(value::AGC, val) = value.bias = val
+"""Set AGC K_p."""
+set_K_p(value::AGC, val) = value.K_p = val
+"""Set AGC K_i."""
+set_K_i(value::AGC, val) = value.K_i = val
+"""Set AGC K_d."""
+set_K_d(value::AGC, val) = value.K_d = val
+"""Set AGC delta_t."""
+set_delta_t(value::AGC, val) = value.delta_t = val
+"""Set AGC area."""
+set_area(value::AGC, val) = value.area = val
+"""Set AGC ext."""
+set_ext(value::AGC, val) = value.ext = val
+"""Set AGC internal."""
+set_internal(value::AGC, val) = value.internal = val

@@ -154,3 +154,42 @@ get_states(value::FullMachine) = value.states
 get_n_states(value::FullMachine) = value.n_states
 """Get FullMachine internal."""
 get_internal(value::FullMachine) = value.internal
+
+"""Set FullMachine R."""
+set_R(value::FullMachine, val) = value.R = val
+"""Set FullMachine R_f."""
+set_R_f(value::FullMachine, val) = value.R_f = val
+"""Set FullMachine R_1d."""
+set_R_1d(value::FullMachine, val) = value.R_1d = val
+"""Set FullMachine R_1q."""
+set_R_1q(value::FullMachine, val) = value.R_1q = val
+"""Set FullMachine L_d."""
+set_L_d(value::FullMachine, val) = value.L_d = val
+"""Set FullMachine L_q."""
+set_L_q(value::FullMachine, val) = value.L_q = val
+"""Set FullMachine L_ad."""
+set_L_ad(value::FullMachine, val) = value.L_ad = val
+"""Set FullMachine L_aq."""
+set_L_aq(value::FullMachine, val) = value.L_aq = val
+"""Set FullMachine L_f1d."""
+set_L_f1d(value::FullMachine, val) = value.L_f1d = val
+"""Set FullMachine L_ff."""
+set_L_ff(value::FullMachine, val) = value.L_ff = val
+"""Set FullMachine L_1d."""
+set_L_1d(value::FullMachine, val) = value.L_1d = val
+"""Set FullMachine L_1q."""
+set_L_1q(value::FullMachine, val) = value.L_1q = val
+"""Set FullMachine MVABase."""
+set_MVABase(value::FullMachine, val) = value.MVABase = val
+"""Set FullMachine ext."""
+set_ext(value::FullMachine, val) = value.ext = val
+"""Set FullMachine inv_d_fluxlink."""
+set_inv_d_fluxlink(value::FullMachine, val) = value.inv_d_fluxlink = val
+"""Set FullMachine inv_q_fluxlink."""
+set_inv_q_fluxlink(value::FullMachine, val) = value.inv_q_fluxlink = val
+"""Set FullMachine states."""
+set_states(value::FullMachine, val) = value.states = val
+"""Set FullMachine n_states."""
+set_n_states(value::FullMachine, val) = value.n_states = val
+"""Set FullMachine internal."""
+set_internal(value::FullMachine, val) = value.internal = val
