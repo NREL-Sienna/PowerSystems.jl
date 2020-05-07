@@ -58,12 +58,12 @@ get_states(value::ReactivePowerDroop) = value.states
 get_n_states(value::ReactivePowerDroop) = value.n_states
 
 """Set ReactivePowerDroop kq."""
-set_kq(value::ReactivePowerDroop, val) = value.kq = val
+set_kq!(value::ReactivePowerDroop, val) = value.kq = val
 """Set ReactivePowerDroop ωf."""
-set_ωf(value::ReactivePowerDroop, val) = value.ωf = val
+set_ωf!(value::ReactivePowerDroop, val) = value.ωf = val
 """Set ReactivePowerDroop ext."""
-set_ext(value::ReactivePowerDroop, val) = value.ext = val
+set_ext!(value::ReactivePowerDroop, val) = value.ext = val
 """Set ReactivePowerDroop states."""
-set_states(value::ReactivePowerDroop, val) = value.states = val
+set_states!(value::ReactivePowerDroop, val) = value.states = val
 """Set ReactivePowerDroop n_states."""
-set_n_states(value::ReactivePowerDroop, val) = value.n_states = val
+set_n_states!(value::ReactivePowerDroop, val) = value.n_states = val

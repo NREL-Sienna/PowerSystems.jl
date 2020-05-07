@@ -178,46 +178,46 @@ get_n_states(value::FiveMassShaft) = value.n_states
 get_internal(value::FiveMassShaft) = value.internal
 
 """Set FiveMassShaft H."""
-set_H(value::FiveMassShaft, val) = value.H = val
+set_H!(value::FiveMassShaft, val) = value.H = val
 """Set FiveMassShaft H_hp."""
-set_H_hp(value::FiveMassShaft, val) = value.H_hp = val
+set_H_hp!(value::FiveMassShaft, val) = value.H_hp = val
 """Set FiveMassShaft H_ip."""
-set_H_ip(value::FiveMassShaft, val) = value.H_ip = val
+set_H_ip!(value::FiveMassShaft, val) = value.H_ip = val
 """Set FiveMassShaft H_lp."""
-set_H_lp(value::FiveMassShaft, val) = value.H_lp = val
+set_H_lp!(value::FiveMassShaft, val) = value.H_lp = val
 """Set FiveMassShaft H_ex."""
-set_H_ex(value::FiveMassShaft, val) = value.H_ex = val
+set_H_ex!(value::FiveMassShaft, val) = value.H_ex = val
 """Set FiveMassShaft D."""
-set_D(value::FiveMassShaft, val) = value.D = val
+set_D!(value::FiveMassShaft, val) = value.D = val
 """Set FiveMassShaft D_hp."""
-set_D_hp(value::FiveMassShaft, val) = value.D_hp = val
+set_D_hp!(value::FiveMassShaft, val) = value.D_hp = val
 """Set FiveMassShaft D_ip."""
-set_D_ip(value::FiveMassShaft, val) = value.D_ip = val
+set_D_ip!(value::FiveMassShaft, val) = value.D_ip = val
 """Set FiveMassShaft D_lp."""
-set_D_lp(value::FiveMassShaft, val) = value.D_lp = val
+set_D_lp!(value::FiveMassShaft, val) = value.D_lp = val
 """Set FiveMassShaft D_ex."""
-set_D_ex(value::FiveMassShaft, val) = value.D_ex = val
+set_D_ex!(value::FiveMassShaft, val) = value.D_ex = val
 """Set FiveMassShaft D_12."""
-set_D_12(value::FiveMassShaft, val) = value.D_12 = val
+set_D_12!(value::FiveMassShaft, val) = value.D_12 = val
 """Set FiveMassShaft D_23."""
-set_D_23(value::FiveMassShaft, val) = value.D_23 = val
+set_D_23!(value::FiveMassShaft, val) = value.D_23 = val
 """Set FiveMassShaft D_34."""
-set_D_34(value::FiveMassShaft, val) = value.D_34 = val
+set_D_34!(value::FiveMassShaft, val) = value.D_34 = val
 """Set FiveMassShaft D_45."""
-set_D_45(value::FiveMassShaft, val) = value.D_45 = val
+set_D_45!(value::FiveMassShaft, val) = value.D_45 = val
 """Set FiveMassShaft K_hp."""
-set_K_hp(value::FiveMassShaft, val) = value.K_hp = val
+set_K_hp!(value::FiveMassShaft, val) = value.K_hp = val
 """Set FiveMassShaft K_ip."""
-set_K_ip(value::FiveMassShaft, val) = value.K_ip = val
+set_K_ip!(value::FiveMassShaft, val) = value.K_ip = val
 """Set FiveMassShaft K_lp."""
-set_K_lp(value::FiveMassShaft, val) = value.K_lp = val
+set_K_lp!(value::FiveMassShaft, val) = value.K_lp = val
 """Set FiveMassShaft K_ex."""
-set_K_ex(value::FiveMassShaft, val) = value.K_ex = val
+set_K_ex!(value::FiveMassShaft, val) = value.K_ex = val
 """Set FiveMassShaft ext."""
-set_ext(value::FiveMassShaft, val) = value.ext = val
+set_ext!(value::FiveMassShaft, val) = value.ext = val
 """Set FiveMassShaft states."""
-set_states(value::FiveMassShaft, val) = value.states = val
+set_states!(value::FiveMassShaft, val) = value.states = val
 """Set FiveMassShaft n_states."""
-set_n_states(value::FiveMassShaft, val) = value.n_states = val
+set_n_states!(value::FiveMassShaft, val) = value.n_states = val
 """Set FiveMassShaft internal."""
-set_internal(value::FiveMassShaft, val) = value.internal = val
+set_internal!(value::FiveMassShaft, val) = value.internal = val

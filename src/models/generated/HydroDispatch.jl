@@ -124,32 +124,32 @@ InfrastructureSystems.get_forecasts(value::HydroDispatch) = value.forecasts
 get_internal(value::HydroDispatch) = value.internal
 
 
-InfrastructureSystems.set_name(value::HydroDispatch, val) = value.name = val
+InfrastructureSystems.set_name!(value::HydroDispatch, val) = value.name = val
 """Set HydroDispatch available."""
-set_available(value::HydroDispatch, val) = value.available = val
+set_available!(value::HydroDispatch, val) = value.available = val
 """Set HydroDispatch bus."""
-set_bus(value::HydroDispatch, val) = value.bus = val
+set_bus!(value::HydroDispatch, val) = value.bus = val
 """Set HydroDispatch activepower."""
-set_activepower(value::HydroDispatch, val) = value.activepower = val
+set_activepower!(value::HydroDispatch, val) = value.activepower = val
 """Set HydroDispatch reactivepower."""
-set_reactivepower(value::HydroDispatch, val) = value.reactivepower = val
+set_reactivepower!(value::HydroDispatch, val) = value.reactivepower = val
 """Set HydroDispatch rating."""
-set_rating(value::HydroDispatch, val) = value.rating = val
+set_rating!(value::HydroDispatch, val) = value.rating = val
 """Set HydroDispatch primemover."""
-set_primemover(value::HydroDispatch, val) = value.primemover = val
+set_primemover!(value::HydroDispatch, val) = value.primemover = val
 """Set HydroDispatch activepowerlimits."""
-set_activepowerlimits(value::HydroDispatch, val) = value.activepowerlimits = val
+set_activepowerlimits!(value::HydroDispatch, val) = value.activepowerlimits = val
 """Set HydroDispatch reactivepowerlimits."""
-set_reactivepowerlimits(value::HydroDispatch, val) = value.reactivepowerlimits = val
+set_reactivepowerlimits!(value::HydroDispatch, val) = value.reactivepowerlimits = val
 """Set HydroDispatch ramplimits."""
-set_ramplimits(value::HydroDispatch, val) = value.ramplimits = val
+set_ramplimits!(value::HydroDispatch, val) = value.ramplimits = val
 """Set HydroDispatch timelimits."""
-set_timelimits(value::HydroDispatch, val) = value.timelimits = val
+set_timelimits!(value::HydroDispatch, val) = value.timelimits = val
 """Set HydroDispatch services."""
-set_services(value::HydroDispatch, val) = value.services = val
+set_services!(value::HydroDispatch, val) = value.services = val
 """Set HydroDispatch ext."""
-set_ext(value::HydroDispatch, val) = value.ext = val
+set_ext!(value::HydroDispatch, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts(value::HydroDispatch, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::HydroDispatch, val) = value.forecasts = val
 """Set HydroDispatch internal."""
-set_internal(value::HydroDispatch, val) = value.internal = val
+set_internal!(value::HydroDispatch, val) = value.internal = val

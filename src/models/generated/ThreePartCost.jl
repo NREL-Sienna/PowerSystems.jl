@@ -69,14 +69,14 @@ InfrastructureSystems.get_forecasts(value::ThreePartCost) = value.forecasts
 get_internal(value::ThreePartCost) = value.internal
 
 """Set ThreePartCost variable."""
-set_variable(value::ThreePartCost, val) = value.variable = val
+set_variable!(value::ThreePartCost, val) = value.variable = val
 """Set ThreePartCost fixed."""
-set_fixed(value::ThreePartCost, val) = value.fixed = val
+set_fixed!(value::ThreePartCost, val) = value.fixed = val
 """Set ThreePartCost startup."""
-set_startup(value::ThreePartCost, val) = value.startup = val
+set_startup!(value::ThreePartCost, val) = value.startup = val
 """Set ThreePartCost shutdn."""
-set_shutdn(value::ThreePartCost, val) = value.shutdn = val
+set_shutdn!(value::ThreePartCost, val) = value.shutdn = val
 
-InfrastructureSystems.set_forecasts(value::ThreePartCost, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::ThreePartCost, val) = value.forecasts = val
 """Set ThreePartCost internal."""
-set_internal(value::ThreePartCost, val) = value.internal = val
+set_internal!(value::ThreePartCost, val) = value.internal = val

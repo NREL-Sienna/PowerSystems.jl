@@ -138,34 +138,34 @@ get_n_states(value::SimpleAFMachine) = value.n_states
 get_internal(value::SimpleAFMachine) = value.internal
 
 """Set SimpleAFMachine R."""
-set_R(value::SimpleAFMachine, val) = value.R = val
+set_R!(value::SimpleAFMachine, val) = value.R = val
 """Set SimpleAFMachine Xd."""
-set_Xd(value::SimpleAFMachine, val) = value.Xd = val
+set_Xd!(value::SimpleAFMachine, val) = value.Xd = val
 """Set SimpleAFMachine Xq."""
-set_Xq(value::SimpleAFMachine, val) = value.Xq = val
+set_Xq!(value::SimpleAFMachine, val) = value.Xq = val
 """Set SimpleAFMachine Xd_p."""
-set_Xd_p(value::SimpleAFMachine, val) = value.Xd_p = val
+set_Xd_p!(value::SimpleAFMachine, val) = value.Xd_p = val
 """Set SimpleAFMachine Xq_p."""
-set_Xq_p(value::SimpleAFMachine, val) = value.Xq_p = val
+set_Xq_p!(value::SimpleAFMachine, val) = value.Xq_p = val
 """Set SimpleAFMachine Xd_pp."""
-set_Xd_pp(value::SimpleAFMachine, val) = value.Xd_pp = val
+set_Xd_pp!(value::SimpleAFMachine, val) = value.Xd_pp = val
 """Set SimpleAFMachine Xq_pp."""
-set_Xq_pp(value::SimpleAFMachine, val) = value.Xq_pp = val
+set_Xq_pp!(value::SimpleAFMachine, val) = value.Xq_pp = val
 """Set SimpleAFMachine Td0_p."""
-set_Td0_p(value::SimpleAFMachine, val) = value.Td0_p = val
+set_Td0_p!(value::SimpleAFMachine, val) = value.Td0_p = val
 """Set SimpleAFMachine Tq0_p."""
-set_Tq0_p(value::SimpleAFMachine, val) = value.Tq0_p = val
+set_Tq0_p!(value::SimpleAFMachine, val) = value.Tq0_p = val
 """Set SimpleAFMachine Td0_pp."""
-set_Td0_pp(value::SimpleAFMachine, val) = value.Td0_pp = val
+set_Td0_pp!(value::SimpleAFMachine, val) = value.Td0_pp = val
 """Set SimpleAFMachine Tq0_pp."""
-set_Tq0_pp(value::SimpleAFMachine, val) = value.Tq0_pp = val
+set_Tq0_pp!(value::SimpleAFMachine, val) = value.Tq0_pp = val
 """Set SimpleAFMachine MVABase."""
-set_MVABase(value::SimpleAFMachine, val) = value.MVABase = val
+set_MVABase!(value::SimpleAFMachine, val) = value.MVABase = val
 """Set SimpleAFMachine ext."""
-set_ext(value::SimpleAFMachine, val) = value.ext = val
+set_ext!(value::SimpleAFMachine, val) = value.ext = val
 """Set SimpleAFMachine states."""
-set_states(value::SimpleAFMachine, val) = value.states = val
+set_states!(value::SimpleAFMachine, val) = value.states = val
 """Set SimpleAFMachine n_states."""
-set_n_states(value::SimpleAFMachine, val) = value.n_states = val
+set_n_states!(value::SimpleAFMachine, val) = value.n_states = val
 """Set SimpleAFMachine internal."""
-set_internal(value::SimpleAFMachine, val) = value.internal = val
+set_internal!(value::SimpleAFMachine, val) = value.internal = val

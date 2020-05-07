@@ -6,7 +6,7 @@ function validate_serialization(sys::System)
     cd(test_dir)
 
     try
-        path = "test_system_serialization.json"
+        path = joinpath(test_dir, "test_system_serialization.json")
         io = open(path, "w")
         @info "Serializing to $path"
         sys_ext = get_ext(sys)
