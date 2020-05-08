@@ -25,8 +25,12 @@ Calculates the upper bounds of a variable cost function represented as a collect
 
 """
 function get_breakpoint_upperbounds(vc::VariableCost{Vector{NTuple{2, Float64}}})
+    return get_breakpoint_upperbounds(get_cost(vc))
+end
+
+function get_breakpoint_upperbounds(vc::Vector{NTuple{2, Float64}})
     bp_ubs = Vector{Float64}(undef, length(vc))
-    for (ix, component) in enumerate(get_cost(vc))
+    for (ix, component) in enumerate(vc)
         if ix == 1
             bp_ubs[ix] = component[2]
             continue
@@ -43,11 +47,15 @@ Calculates the slopes for the variable cost represented as a piece wise linear c
 
 """
 function get_slopes(vc::VariableCost{Vector{NTuple{2, Float64}}})
+    return get_slopes(get_cost(vc))
+end
+
+function get_slopes(vc::Vector{NTuple{2, Float64}})
     slopes = Vector{Float64}(undef, length(vc))
-    previous = (0.0, 0.0)
-    for (ix, component) in enumerate(get_cost(vc))
+    # previous = (0.0, 0.0)
+    for (ix, component) in enumerate(vc)
         if ix == 1
-            slopes[ix] = component[1] / component[2]
+            # slopes[ix] = component[1] / component[2]
             previous = component
             continue
         end
