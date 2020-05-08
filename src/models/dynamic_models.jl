@@ -17,6 +17,7 @@ end
 
 function get_dynamic_components(device::T) where {T <: DynamicInjection}
     return (
-        getfield(device, x) for (x, y) in zip(fieldnames(T), fieldtypes(T)) if y <: DynamicComponent
+        getfield(device, x) for
+        (x, y) in zip(fieldnames(T), fieldtypes(T)) if y <: DynamicComponent
     )
 end
