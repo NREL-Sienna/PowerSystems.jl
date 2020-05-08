@@ -152,10 +152,17 @@ function create_system_with_dynamic_inverter()
         0.2,
     ) #kad:: Active damping gain
 
+    sys = System(100)
+    for bus in nodes_OMIB
+        add_component!(sys, bus)
+    end
+    for lines in branch_OMIB
+        add_component!(sys, lines)
+    end
+    add_component!(sys, battery)
+
     test_inverter = DynamicInverter(
-        2, #number
-        "DARCO", #name
-        nodes_OMIB[1], #bus location
+        battery,
         1.0, #ω_ref
         1.02, #V_ref
         0.5, #P_ref
@@ -169,14 +176,6 @@ function create_system_with_dynamic_inverter()
         filt,
     ) #Output Filter
 
-    sys = System(100)
-    for bus in nodes_OMIB
-        add_component!(sys, bus)
-    end
-    for lines in branch_OMIB
-        add_component!(sys, lines)
-    end
-    add_component!(sys, battery)
     add_component!(sys, test_inverter)
 
     return sys

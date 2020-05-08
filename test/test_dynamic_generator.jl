@@ -13,7 +13,7 @@ nodes_OMIB = [
     Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
 ]
 
-gen = ThermalStandard(
+static_gen = ThermalStandard(
     "TestGen",
     true,
     true,
@@ -263,9 +263,7 @@ end
     )   #MVABase
 
     Gen1AVR = DynamicGenerator(
-        1, #Number
-        "TestGen",
-        nodes_OMIB[2],#bus
+        static_gen,
         1.0, # ω_ref,
         1.05,
         0.4,
@@ -279,9 +277,7 @@ end
     @test Gen1AVR isa PowerSystems.Component
 
     Gen1AVRnoAVR = DynamicGenerator(
-        1, #Number
-        "TestGen",
-        nodes_OMIB[2],#bus
+        static_gen,
         1.0, # ω_ref,
         1.05,
         0.4,
@@ -295,9 +291,7 @@ end
     @test Gen1AVRnoAVR isa PowerSystems.Component
 
     Gen2AVRnoAVR = DynamicGenerator(
-        1, #Number
-        "TestGen",
-        nodes_OMIB[2],#bus
+        static_gen,
         1.0, # ω_ref,
         1.02,
         0.4,
@@ -311,9 +305,7 @@ end
     @test Gen2AVRnoAVR isa PowerSystems.Component
 
     Gen2AVR = DynamicGenerator(
-        1, #Number
-        "TestGen",
-        nodes_OMIB[2],#bus
+        static_gen,
         1.0, # ω_ref,
         1.02,
         0.4,
@@ -333,9 +325,31 @@ end
     for lines in branch_OMIB
         add_component!(sys, lines)
     end
-    add_component!(sys, gen)
+
+    # Rule: The static injector must be part of the system.
+    @test_throws ArgumentError add_component!(sys, Gen1AVR)
+
+    add_component!(sys, static_gen)
+    @test isnothing(get_dynamic_injector(static_gen))
+
     add_component!(sys, Gen1AVR)
+    dynamics = collect(get_components(DynamicGenerator, sys))
+    @test length(dynamics) == 1
+    @test dynamics[1] == Gen1AVR
+    @test get_dynamic_injector(static_gen) == Gen1AVR
 
-    @test collect(get_components(DynamicGenerator, sys))[1] == Gen1AVR
+    ## Rule: Can't add a dynamic injector when it's static injector is attached to another.
+    @test_throws ArgumentError add_component!(sys, Gen2AVR)
 
+    remove_component!(sys, Gen1AVR)
+    @test isnothing(get_dynamic_injector(static_gen))
+    add_component!(sys, Gen2AVR)
+    @test get_dynamic_injector(static_gen) == Gen2AVR
+
+    # Rule: Can't set the pair injector if the current injector is already set.
+    @test_throws ArgumentError set_dynamic_injector!(static_gen, Gen1AVR)
+    @test_throws ArgumentError set_static_injector!(Gen2AVR, static_gen)
+
+    # Rule: Can't remove a static injector if it is attached to a dynamic injector.
+    @test_throws ArgumentError remove_component!(sys, static_gen)
 end

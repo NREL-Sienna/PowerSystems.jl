@@ -5,9 +5,7 @@ mutable struct DynamicGenerator{
     TG <: TurbineGov,
     P <: PSS,
 } <: DynamicInjection
-    number::Int64
-    name::String
-    bus::Bus
+    static_injector::Union{Nothing, Generator}
     ω_ref::Float64
     V_ref::Float64
     P_ref::Float64
@@ -24,9 +22,7 @@ mutable struct DynamicGenerator{
 end
 
 function DynamicGenerator(
-    number::Int64,
-    name::String,
-    bus::Bus,
+    static_injector::Generator,
     ω_ref::Float64,
     V_ref::Float64,
     P_ref::Float64,
@@ -49,9 +45,7 @@ function DynamicGenerator(
     states = vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
 
     return DynamicGenerator{M, S, A, TG, P}(
-        number,
-        name,
-        bus,
+        static_injector,
         ω_ref,
         V_ref,
         P_ref,
@@ -69,9 +63,7 @@ function DynamicGenerator(
 end
 
 function DynamicGenerator(;
-    number::Int64,
-    name::String,
-    bus::Bus,
+    static_injector::Generator,
     ω_ref::Float64,
     V_ref::Float64,
     P_ref::Float64,
@@ -84,9 +76,7 @@ function DynamicGenerator(;
     ext::Dict{String, Any} = Dict{String, Any}(),
 ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
     DynamicGenerator(
-        number,
-        name,
-        bus,
+        static_injector,
         ω_ref,
         V_ref,
         P_ref,
@@ -100,12 +90,11 @@ function DynamicGenerator(;
     )
 end
 
+IS.get_name(device::DynamicGenerator) = get_name(device.static_injector)
+get_bus(device::DynamicGenerator) = get_bus(device.static_injector)
 get_Sbase(device::DynamicGenerator) = device.machine.s_rated
-get_bus(device::DynamicGenerator) = device.bus
 get_states(device::DynamicGenerator) = device.states
 get_n_states(device::DynamicGenerator) = device.n_states
-get_number(device::DynamicGenerator) = device.number
-get_name(device::DynamicGenerator) = device.name
 get_ω_ref(device::DynamicGenerator) = device.ω_ref
 get_V_ref(device::DynamicGenerator) = device.V_ref
 get_P_ref(device::DynamicGenerator) = device.P_ref
@@ -115,4 +104,5 @@ get_shaft(device::DynamicGenerator) = device.shaft
 get_avr(device::DynamicGenerator) = device.avr
 get_prime_mover(device::DynamicGenerator) = device.prime_mover
 get_pss(device::DynamicGenerator) = device.pss
+get_static_injector(device::DynamicGenerator) = device.static_injector
 get_ext(device::DynamicGenerator) = device.ext

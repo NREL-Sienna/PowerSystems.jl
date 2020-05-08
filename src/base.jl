@@ -477,6 +477,7 @@ Remove a component from the system by its value.
 Throws ArgumentError if the component is not stored.
 """
 function remove_component!(sys::System, component::T) where {T <: Component}
+    check_component_removal(sys, component)
     IS.remove_component!(sys.data, component)
     handle_component_removal!(sys, component)
 end
@@ -588,6 +589,10 @@ Gets components availability. Requires type T to have the method get_available i
 
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
     return get_components(T, sys, x -> get_available(x))
+end
+
+function is_attached(component::T, sys::System) where {T <: Component}
+    return !isnothing(get_component(T, sys, get_name(component)))
 end
 
 """
@@ -1229,13 +1234,31 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
         end
     end
 
-    # Now get the Devices.
+    # Now get the Devices, except for dynamic injectors. They have to wait until static
+    # injectors are added.
     for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
         c_type = _get_component_type(c_type_sym)
-        if c_type <: Device
+        if c_type <: Device && !(c_type <: DynamicInjection)
             for component in IS.get_components_raw(IS.SystemData, c_type, raw)
                 comp = IS.convert_type(c_type, component, component_cache)
                 IS.add_component!(data, comp)
+                component_cache[IS.get_uuid(comp)] = comp
+            end
+        end
+    end
+
+    # Now add the dynamic injectors.
+    for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
+        c_type = _get_component_type(c_type_sym)
+        if c_type <: Union{Nothing, DynamicInjection}
+            for component in IS.get_components_raw(IS.SystemData, c_type, raw)
+                comp = IS.convert_type(c_type, component, component_cache)
+                IS.add_component!(data, comp)
+                # Now attach this injector its static counterpart.
+                # This normally happens in add_component!(System) but we don't have a
+                # system yet.
+                static_injector = get_static_injector(comp)
+                set_dynamic_injector!(static_injector, comp)
             end
         end
     end
@@ -1357,6 +1380,11 @@ a subtype then whatever is added in handle_component_addition! must be checked h
 check_component_addition(sys::System, component::Component) = nothing
 
 """
+Throws ArgumentError if a PowerSystems rule blocks removal from the system.
+"""
+check_component_removal(sys::System, component::Component) = nothing
+
+"""
 Refer to docstring for check_component_addition!
 """
 handle_component_addition!(sys::System, component::Component) = nothing
@@ -1376,10 +1404,34 @@ function check_component_addition(sys::System, bus::Bus)
     end
 end
 
+function check_component_addition(sys::System, dynamic_injector::DynamicInjection)
+    static_injector = get_static_injector(dynamic_injector)
+    if !is_attached(static_injector, sys)
+        name = get_name(static_injector)
+        throw(ArgumentError("static injector $name is not part of the system"))
+    end
+
+    if !isnothing(get_dynamic_injector(static_injector))
+        name = get_name(static_injector)
+        throw(ArgumentError("static injector $name already has a dynamic injector"))
+    end
+end
+
+function check_component_removal(sys::System, static_injector::StaticInjection)
+    if !isnothing(get_dynamic_injector(static_injector))
+        name = get_name(static_injector)
+        throw(ArgumentError("$name cannot be removed with an attached dynamic injector"))
+    end
+end
+
 function handle_component_addition!(sys::System, bus::Bus)
     number = get_number(bus)
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
+end
+
+function handle_component_addition!(sys::System, dynamic_injector::DynamicInjection)
+    set_dynamic_injector!(get_static_injector(dynamic_injector), dynamic_injector)
 end
 
 """
@@ -1395,6 +1447,10 @@ function handle_component_removal!(sys::System, device::Device)
     # This may have to be refactored if handle_component_removal! needs to be implemented
     # for a subtype.
     clear_services!(device)
+end
+
+function handle_component_removal!(sys::System, component::DynamicInjection)
+    set_dynamic_injector!(get_static_injector(component), nothing)
 end
 
 function handle_component_removal!(sys::System, service::Service)
@@ -1441,6 +1497,44 @@ function IS.compare_values(x::System, y::System)
     if !IS.compare_values(x.data, y.data)
         @debug "SystemData values do not match"
         match = false
+    end
+
+    return match
+end
+
+function IS.compare_values(x::T, y::T) where {T <: Union{StaticInjection, DynamicInjection}}
+    # Must implement this method because a device of one of these subtypes might have a
+    # reference to its counterpart, and vice versa, and so infinite recursion will occur
+    # in the default function.
+    match = true
+    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
+        val1 = getfield(x, fieldname)
+        val2 = getfield(y, fieldname)
+        if val1 isa StaticInjection || val2 isa DynamicInjection
+            uuid1 = IS.get_uuid(val1)
+            uuid2 = IS.get_uuid(val2)
+            if uuid1 != uuid2
+                @debug "values do not match" T fieldname uuid1 uuid2
+                match = false
+                break
+            end
+        elseif !isempty(fieldnames(typeof(val1)))
+            if !IS.compare_values(val1, val2)
+                @debug "values do not match" T fieldname val1 val2
+                match = false
+                break
+            end
+        elseif val1 isa AbstractArray
+            if !IS.compare_values(val1, val2)
+                match = false
+            end
+        else
+            if val1 != val2
+                @debug "values do not match" T fieldname val1 val2
+                match = false
+                break
+            end
+        end
     end
 
     return match

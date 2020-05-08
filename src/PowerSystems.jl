@@ -60,6 +60,7 @@ export InterruptibleLoad
 export Storage
 export GenericBattery
 
+export DynamicInjection
 export DynamicGenerator
 #AVR Exports
 export AVR
@@ -207,6 +208,8 @@ export set_area!
 export set_load_zone!
 export TamuSystem
 export PowerModelsData
+export set_dynamic_injector!
+export set_static_injector!
 
 #################################################################################
 # Imports
@@ -276,6 +279,7 @@ abstract type DeviceParameter <: PowerSystemType end
 include("common.jl")
 include("models/static_models.jl")
 include("models/dynamic_models.jl")
+include("models/injection.jl")
 
 # Include utilities
 include("utils/IO/base_checks.jl")
@@ -298,12 +302,13 @@ include("models/dynamic_inverter_components.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
-include("models/supplemental_constructors.jl")
-include("models/supplemental_accessors.jl")
 
 # Dynamic Composed types
 include("models/dynamic_generator.jl")
 include("models/dynamic_inverter.jl")
+
+include("models/supplemental_constructors.jl")
+include("models/supplemental_accessors.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
