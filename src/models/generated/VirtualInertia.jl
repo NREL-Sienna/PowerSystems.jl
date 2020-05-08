@@ -72,16 +72,16 @@ get_states(value::VirtualInertia) = value.states
 get_n_states(value::VirtualInertia) = value.n_states
 
 """Set VirtualInertia Ta."""
-set_Ta!(value::VirtualInertia, val) = value.Ta = val
+set_Ta!(value::VirtualInertia, val::Float64) = value.Ta = val
 """Set VirtualInertia kd."""
-set_kd!(value::VirtualInertia, val) = value.kd = val
+set_kd!(value::VirtualInertia, val::Float64) = value.kd = val
 """Set VirtualInertia kω."""
-set_kω!(value::VirtualInertia, val) = value.kω = val
+set_kω!(value::VirtualInertia, val::Float64) = value.kω = val
 """Set VirtualInertia ωb."""
-set_ωb!(value::VirtualInertia, val) = value.ωb = val
+set_ωb!(value::VirtualInertia, val::Float64) = value.ωb = val
 """Set VirtualInertia ext."""
-set_ext!(value::VirtualInertia, val) = value.ext = val
+set_ext!(value::VirtualInertia, val::Dict{String, Any}) = value.ext = val
 """Set VirtualInertia states."""
-set_states!(value::VirtualInertia, val) = value.states = val
+set_states!(value::VirtualInertia, val::Vector{Symbol}) = value.states = val
 """Set VirtualInertia n_states."""
-set_n_states!(value::VirtualInertia, val) = value.n_states = val
+set_n_states!(value::VirtualInertia, val::Int64) = value.n_states = val

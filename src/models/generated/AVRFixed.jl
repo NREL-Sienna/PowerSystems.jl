@@ -59,12 +59,12 @@ get_n_states(value::AVRFixed) = value.n_states
 get_internal(value::AVRFixed) = value.internal
 
 """Set AVRFixed Emf."""
-set_Emf!(value::AVRFixed, val) = value.Emf = val
+set_Emf!(value::AVRFixed, val::Float64) = value.Emf = val
 """Set AVRFixed ext."""
-set_ext!(value::AVRFixed, val) = value.ext = val
+set_ext!(value::AVRFixed, val::Dict{String, Any}) = value.ext = val
 """Set AVRFixed states."""
-set_states!(value::AVRFixed, val) = value.states = val
+set_states!(value::AVRFixed, val::Vector{Symbol}) = value.states = val
 """Set AVRFixed n_states."""
-set_n_states!(value::AVRFixed, val) = value.n_states = val
+set_n_states!(value::AVRFixed, val::Int64) = value.n_states = val
 """Set AVRFixed internal."""
-set_internal!(value::AVRFixed, val) = value.internal = val
+set_internal!(value::AVRFixed, val::InfrastructureSystemsInternal) = value.internal = val

@@ -109,28 +109,28 @@ InfrastructureSystems.get_forecasts(value::InterruptibleLoad) = value.forecasts
 get_internal(value::InterruptibleLoad) = value.internal
 
 
-InfrastructureSystems.set_name!(value::InterruptibleLoad, val) = value.name = val
+InfrastructureSystems.set_name!(value::InterruptibleLoad, val::String) = value.name = val
 """Set InterruptibleLoad available."""
-set_available!(value::InterruptibleLoad, val) = value.available = val
+set_available!(value::InterruptibleLoad, val::Bool) = value.available = val
 """Set InterruptibleLoad bus."""
-set_bus!(value::InterruptibleLoad, val) = value.bus = val
+set_bus!(value::InterruptibleLoad, val::Bus) = value.bus = val
 """Set InterruptibleLoad model."""
-set_model!(value::InterruptibleLoad, val) = value.model = val
+set_model!(value::InterruptibleLoad, val::LoadModels.LoadModel) = value.model = val
 """Set InterruptibleLoad activepower."""
-set_activepower!(value::InterruptibleLoad, val) = value.activepower = val
+set_activepower!(value::InterruptibleLoad, val::Float64) = value.activepower = val
 """Set InterruptibleLoad reactivepower."""
-set_reactivepower!(value::InterruptibleLoad, val) = value.reactivepower = val
+set_reactivepower!(value::InterruptibleLoad, val::Float64) = value.reactivepower = val
 """Set InterruptibleLoad maxactivepower."""
-set_maxactivepower!(value::InterruptibleLoad, val) = value.maxactivepower = val
+set_maxactivepower!(value::InterruptibleLoad, val::Float64) = value.maxactivepower = val
 """Set InterruptibleLoad maxreactivepower."""
-set_maxreactivepower!(value::InterruptibleLoad, val) = value.maxreactivepower = val
+set_maxreactivepower!(value::InterruptibleLoad, val::Float64) = value.maxreactivepower = val
 """Set InterruptibleLoad op_cost."""
-set_op_cost!(value::InterruptibleLoad, val) = value.op_cost = val
+set_op_cost!(value::InterruptibleLoad, val::TwoPartCost) = value.op_cost = val
 """Set InterruptibleLoad services."""
-set_services!(value::InterruptibleLoad, val) = value.services = val
+set_services!(value::InterruptibleLoad, val::Vector{Service}) = value.services = val
 """Set InterruptibleLoad ext."""
-set_ext!(value::InterruptibleLoad, val) = value.ext = val
+set_ext!(value::InterruptibleLoad, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::InterruptibleLoad, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::InterruptibleLoad, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set InterruptibleLoad internal."""
-set_internal!(value::InterruptibleLoad, val) = value.internal = val
+set_internal!(value::InterruptibleLoad, val::InfrastructureSystemsInternal) = value.internal = val

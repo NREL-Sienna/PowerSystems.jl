@@ -125,32 +125,32 @@ InfrastructureSystems.get_forecasts(value::MonitoredLine) = value.forecasts
 get_internal(value::MonitoredLine) = value.internal
 
 
-InfrastructureSystems.set_name!(value::MonitoredLine, val) = value.name = val
+InfrastructureSystems.set_name!(value::MonitoredLine, val::String) = value.name = val
 """Set MonitoredLine available."""
-set_available!(value::MonitoredLine, val) = value.available = val
+set_available!(value::MonitoredLine, val::Bool) = value.available = val
 """Set MonitoredLine activepower_flow."""
-set_activepower_flow!(value::MonitoredLine, val) = value.activepower_flow = val
+set_activepower_flow!(value::MonitoredLine, val::Float64) = value.activepower_flow = val
 """Set MonitoredLine reactivepower_flow."""
-set_reactivepower_flow!(value::MonitoredLine, val) = value.reactivepower_flow = val
+set_reactivepower_flow!(value::MonitoredLine, val::Float64) = value.reactivepower_flow = val
 """Set MonitoredLine arc."""
-set_arc!(value::MonitoredLine, val) = value.arc = val
+set_arc!(value::MonitoredLine, val::Arc) = value.arc = val
 """Set MonitoredLine r."""
-set_r!(value::MonitoredLine, val) = value.r = val
+set_r!(value::MonitoredLine, val::Float64) = value.r = val
 """Set MonitoredLine x."""
-set_x!(value::MonitoredLine, val) = value.x = val
+set_x!(value::MonitoredLine, val::Float64) = value.x = val
 """Set MonitoredLine b."""
-set_b!(value::MonitoredLine, val) = value.b = val
+set_b!(value::MonitoredLine, val::NamedTuple{(:from, :to), Tuple{Float64, Float64}}) = value.b = val
 """Set MonitoredLine flowlimits."""
-set_flowlimits!(value::MonitoredLine, val) = value.flowlimits = val
+set_flowlimits!(value::MonitoredLine, val::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}) = value.flowlimits = val
 """Set MonitoredLine rate."""
-set_rate!(value::MonitoredLine, val) = value.rate = val
+set_rate!(value::MonitoredLine, val::Float64) = value.rate = val
 """Set MonitoredLine anglelimits."""
-set_anglelimits!(value::MonitoredLine, val) = value.anglelimits = val
+set_anglelimits!(value::MonitoredLine, val::Min_Max) = value.anglelimits = val
 """Set MonitoredLine services."""
-set_services!(value::MonitoredLine, val) = value.services = val
+set_services!(value::MonitoredLine, val::Vector{Service}) = value.services = val
 """Set MonitoredLine ext."""
-set_ext!(value::MonitoredLine, val) = value.ext = val
+set_ext!(value::MonitoredLine, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::MonitoredLine, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::MonitoredLine, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set MonitoredLine internal."""
-set_internal!(value::MonitoredLine, val) = value.internal = val
+set_internal!(value::MonitoredLine, val::InfrastructureSystemsInternal) = value.internal = val

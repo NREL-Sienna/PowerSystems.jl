@@ -104,26 +104,26 @@ InfrastructureSystems.get_forecasts(value::RenewableFix) = value.forecasts
 get_internal(value::RenewableFix) = value.internal
 
 
-InfrastructureSystems.set_name!(value::RenewableFix, val) = value.name = val
+InfrastructureSystems.set_name!(value::RenewableFix, val::String) = value.name = val
 """Set RenewableFix available."""
-set_available!(value::RenewableFix, val) = value.available = val
+set_available!(value::RenewableFix, val::Bool) = value.available = val
 """Set RenewableFix bus."""
-set_bus!(value::RenewableFix, val) = value.bus = val
+set_bus!(value::RenewableFix, val::Bus) = value.bus = val
 """Set RenewableFix activepower."""
-set_activepower!(value::RenewableFix, val) = value.activepower = val
+set_activepower!(value::RenewableFix, val::Float64) = value.activepower = val
 """Set RenewableFix reactivepower."""
-set_reactivepower!(value::RenewableFix, val) = value.reactivepower = val
+set_reactivepower!(value::RenewableFix, val::Float64) = value.reactivepower = val
 """Set RenewableFix rating."""
-set_rating!(value::RenewableFix, val) = value.rating = val
+set_rating!(value::RenewableFix, val::Float64) = value.rating = val
 """Set RenewableFix primemover."""
-set_primemover!(value::RenewableFix, val) = value.primemover = val
+set_primemover!(value::RenewableFix, val::PrimeMovers.PrimeMover) = value.primemover = val
 """Set RenewableFix powerfactor."""
-set_powerfactor!(value::RenewableFix, val) = value.powerfactor = val
+set_powerfactor!(value::RenewableFix, val::Float64) = value.powerfactor = val
 """Set RenewableFix services."""
-set_services!(value::RenewableFix, val) = value.services = val
+set_services!(value::RenewableFix, val::Vector{Service}) = value.services = val
 """Set RenewableFix ext."""
-set_ext!(value::RenewableFix, val) = value.ext = val
+set_ext!(value::RenewableFix, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::RenewableFix, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::RenewableFix, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set RenewableFix internal."""
-set_internal!(value::RenewableFix, val) = value.internal = val
+set_internal!(value::RenewableFix, val::InfrastructureSystemsInternal) = value.internal = val

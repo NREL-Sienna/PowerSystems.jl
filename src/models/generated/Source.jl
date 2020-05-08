@@ -84,20 +84,20 @@ get_ext(value::Source) = value.ext
 get_internal(value::Source) = value.internal
 
 
-InfrastructureSystems.set_name!(value::Source, val) = value.name = val
+InfrastructureSystems.set_name!(value::Source, val::String) = value.name = val
 """Set Source available."""
-set_available!(value::Source, val) = value.available = val
+set_available!(value::Source, val::Bool) = value.available = val
 """Set Source bus."""
-set_bus!(value::Source, val) = value.bus = val
+set_bus!(value::Source, val::Bus) = value.bus = val
 """Set Source activepower."""
-set_activepower!(value::Source, val) = value.activepower = val
+set_activepower!(value::Source, val::Float64) = value.activepower = val
 """Set Source reactivepower."""
-set_reactivepower!(value::Source, val) = value.reactivepower = val
+set_reactivepower!(value::Source, val::Float64) = value.reactivepower = val
 """Set Source X_th."""
-set_X_th!(value::Source, val) = value.X_th = val
+set_X_th!(value::Source, val::Float64) = value.X_th = val
 """Set Source services."""
-set_services!(value::Source, val) = value.services = val
+set_services!(value::Source, val::Vector{Service}) = value.services = val
 """Set Source ext."""
-set_ext!(value::Source, val) = value.ext = val
+set_ext!(value::Source, val::Dict{String, Any}) = value.ext = val
 """Set Source internal."""
-set_internal!(value::Source, val) = value.internal = val
+set_internal!(value::Source, val::InfrastructureSystemsInternal) = value.internal = val

@@ -79,18 +79,18 @@ InfrastructureSystems.get_forecasts(value::FixedAdmittance) = value.forecasts
 get_internal(value::FixedAdmittance) = value.internal
 
 
-InfrastructureSystems.set_name!(value::FixedAdmittance, val) = value.name = val
+InfrastructureSystems.set_name!(value::FixedAdmittance, val::String) = value.name = val
 """Set FixedAdmittance available."""
-set_available!(value::FixedAdmittance, val) = value.available = val
+set_available!(value::FixedAdmittance, val::Bool) = value.available = val
 """Set FixedAdmittance bus."""
-set_bus!(value::FixedAdmittance, val) = value.bus = val
+set_bus!(value::FixedAdmittance, val::Bus) = value.bus = val
 """Set FixedAdmittance Y."""
-set_Y!(value::FixedAdmittance, val) = value.Y = val
+set_Y!(value::FixedAdmittance, val::Complex{Float64}) = value.Y = val
 """Set FixedAdmittance services."""
-set_services!(value::FixedAdmittance, val) = value.services = val
+set_services!(value::FixedAdmittance, val::Vector{Service}) = value.services = val
 """Set FixedAdmittance ext."""
-set_ext!(value::FixedAdmittance, val) = value.ext = val
+set_ext!(value::FixedAdmittance, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::FixedAdmittance, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::FixedAdmittance, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set FixedAdmittance internal."""
-set_internal!(value::FixedAdmittance, val) = value.internal = val
+set_internal!(value::FixedAdmittance, val::InfrastructureSystemsInternal) = value.internal = val
