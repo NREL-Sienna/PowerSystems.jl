@@ -14,6 +14,7 @@ This file is auto-generated. Do not edit.
         powerfactor::Float64
         op_cost::TwoPartCost
         services::Vector{Service}
+        dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -33,6 +34,7 @@ This file is auto-generated. Do not edit.
 - `powerfactor::Float64`, validation range: (0, 1), action if invalid: error
 - `op_cost::TwoPartCost`: Operation Cost of Generation [TwoPartCost](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -53,6 +55,8 @@ mutable struct RenewableDispatch <: RenewableGen
     op_cost::TwoPartCost
     "Services that this device contributes to"
     services::Vector{Service}
+    "corresponding dynamic injection device"
+    dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts
@@ -60,12 +64,12 @@ mutable struct RenewableDispatch <: RenewableGen
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function RenewableDispatch(; name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services, ext, forecasts, )
+function RenewableDispatch(; name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -82,6 +86,7 @@ function RenewableDispatch(::Nothing)
         powerfactor=1.0,
         op_cost=TwoPartCost(nothing),
         services=Device[],
+        dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -109,6 +114,8 @@ get_powerfactor(value::RenewableDispatch) = value.powerfactor
 get_op_cost(value::RenewableDispatch) = value.op_cost
 """Get RenewableDispatch services."""
 get_services(value::RenewableDispatch) = value.services
+"""Get RenewableDispatch dynamic_injector."""
+get_dynamic_injector(value::RenewableDispatch) = value.dynamic_injector
 """Get RenewableDispatch ext."""
 get_ext(value::RenewableDispatch) = value.ext
 
