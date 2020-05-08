@@ -265,9 +265,6 @@ end
     Gen1AVR = DynamicGenerator(
         static_gen,
         1.0, # ω_ref,
-        1.05,
-        0.4,
-        0.0,
         Basic,
         BaseShaft,
         proportional_avr, #avr
@@ -275,13 +272,13 @@ end
         no_pss,
     )
     @test Gen1AVR isa PowerSystems.Component
+    @test get_V_ref(Gen1AVR) == 1.045
+    @test get_P_ref(Gen1AVR) == 0.40
+    @test get_Q_ref(Gen1AVR) == 0.010
 
     Gen1AVRnoAVR = DynamicGenerator(
         static_gen,
         1.0, # ω_ref,
-        1.05,
-        0.4,
-        0.0,
         Basic,
         BaseShaft,
         fixed_avr, #avr
@@ -293,9 +290,6 @@ end
     Gen2AVRnoAVR = DynamicGenerator(
         static_gen,
         1.0, # ω_ref,
-        1.02,
-        0.4,
-        0.0,
         oneDoneQ,
         BaseShaft,
         fixed_avr, #avr
@@ -307,9 +301,6 @@ end
     Gen2AVR = DynamicGenerator(
         static_gen,
         1.0, # ω_ref,
-        1.02,
-        0.4,
-        0.0,
         oneDoneQ,
         BaseShaft,
         proportional_avr, #avr

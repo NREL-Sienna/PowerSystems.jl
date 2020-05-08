@@ -210,6 +210,9 @@ export TamuSystem
 export PowerModelsData
 export set_dynamic_injector!
 export set_static_injector!
+export get_V_ref
+export get_P_ref
+export get_Q_ref
 
 #################################################################################
 # Imports

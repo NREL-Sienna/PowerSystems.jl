@@ -164,9 +164,6 @@ function create_system_with_dynamic_inverter()
     test_inverter = DynamicInverter(
         battery,
         1.0, #ω_ref
-        1.02, #V_ref
-        0.5, #P_ref
-        0.0, #Q_ref
         100.0, #MVABase
         converter, #Converter
         outer_control, #OuterControl
@@ -176,6 +173,9 @@ function create_system_with_dynamic_inverter()
         filt,
     ) #Output Filter
 
+    @test get_V_ref(test_inverter) == 1.045
+    @test get_P_ref(test_inverter) == 0.01375
+    @test get_Q_ref(test_inverter) == 0.0
     add_component!(sys, test_inverter)
 
     return sys

@@ -7,9 +7,6 @@ mutable struct DynamicGenerator{
 } <: DynamicInjection
     static_injector::Union{Nothing, Generator}
     ω_ref::Float64
-    V_ref::Float64
-    P_ref::Float64
-    Q_ref::Float64
     machine::M
     shaft::S
     avr::A
@@ -24,9 +21,6 @@ end
 function DynamicGenerator(
     static_injector::Generator,
     ω_ref::Float64,
-    V_ref::Float64,
-    P_ref::Float64,
-    Q_ref::Float64,
     machine::M,
     shaft::S,
     avr::A,
@@ -47,9 +41,6 @@ function DynamicGenerator(
     return DynamicGenerator{M, S, A, TG, P}(
         static_injector,
         ω_ref,
-        V_ref,
-        P_ref,
-        Q_ref,
         machine,
         shaft,
         avr,
@@ -65,9 +56,6 @@ end
 function DynamicGenerator(;
     static_injector::Generator,
     ω_ref::Float64,
-    V_ref::Float64,
-    P_ref::Float64,
-    Q_ref::Float64,
     machine::M,
     shaft::S,
     avr::A,
@@ -75,19 +63,7 @@ function DynamicGenerator(;
     pss::P,
     ext::Dict{String, Any} = Dict{String, Any}(),
 ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
-    DynamicGenerator(
-        static_injector,
-        ω_ref,
-        V_ref,
-        P_ref,
-        Q_ref,
-        machine,
-        shaft,
-        avr,
-        prime_mover,
-        pss,
-        ext,
-    )
+    DynamicGenerator(static_injector, ω_ref, machine, shaft, avr, prime_mover, pss, ext)
 end
 
 IS.get_name(device::DynamicGenerator) = get_name(device.static_injector)
@@ -96,9 +72,9 @@ get_Sbase(device::DynamicGenerator) = device.machine.s_rated
 get_states(device::DynamicGenerator) = device.states
 get_n_states(device::DynamicGenerator) = device.n_states
 get_ω_ref(device::DynamicGenerator) = device.ω_ref
-get_V_ref(device::DynamicGenerator) = device.V_ref
-get_P_ref(device::DynamicGenerator) = device.P_ref
-get_Q_ref(device::DynamicGenerator) = device.Q_ref
+get_V_ref(device::DynamicGenerator) = get_voltage(get_bus(device))
+get_P_ref(device::DynamicGenerator) = get_activepower(device.static_injector)
+get_Q_ref(device::DynamicGenerator) = get_reactivepower(device.static_injector)
 get_machine(device::DynamicGenerator) = device.machine
 get_shaft(device::DynamicGenerator) = device.shaft
 get_avr(device::DynamicGenerator) = device.avr

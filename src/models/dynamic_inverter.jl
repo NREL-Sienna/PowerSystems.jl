@@ -10,9 +10,6 @@ mutable struct DynamicInverter{
 } <: DynamicInjection
     static_injector::Union{Nothing, StaticInjection}
     ω_ref::Float64
-    V_ref::Float64
-    P_ref::Float64
-    Q_ref::Float64
     MVABase::Float64
     converter::C
     outer_control::O
@@ -29,9 +26,6 @@ end
 function DynamicInverter(
     static_injector::StaticInjection,
     ω_ref::Float64,
-    V_ref::Float64,
-    P_ref::Float64,
-    Q_ref::Float64,
     MVABase::Float64,
     converter::C,
     outer_control::O,
@@ -70,9 +64,6 @@ function DynamicInverter(
     return DynamicInverter{C, O, IC, DC, P, F}(
         static_injector,
         ω_ref,
-        V_ref,
-        P_ref,
-        Q_ref,
         MVABase,
         converter,
         outer_control,
@@ -90,9 +81,6 @@ end
 function DynamicInverter(;
     static_injector::StaticInjection,
     ω_ref::Float64,
-    V_ref::Float64,
-    P_ref::Float64,
-    Q_ref::Float64,
     MVABase::Float64,
     converter::C,
     outer_control::O,
@@ -112,9 +100,6 @@ function DynamicInverter(;
     DynamicInverter(
         static_injector,
         ω_ref,
-        V_ref,
-        P_ref,
-        Q_ref,
         MVABase,
         converter,
         outer_control,
@@ -131,9 +116,9 @@ get_bus(device::DynamicInverter) = get_bus(device.static_injector)
 get_inverter_Sbase(device::DynamicInverter) = device.converter.s_rated
 get_inverter_Vref(device::DynamicInverter) = device.V_ref
 get_ω_ref(device::DynamicInverter) = device.ω_ref
-get_V_ref(device::DynamicInverter) = device.V_ref
-get_P_ref(device::DynamicInverter) = device.P_ref
-get_Q_ref(device::DynamicInverter) = device.Q_ref
+get_V_ref(device::DynamicInverter) = get_voltage(get_bus(device))
+get_P_ref(device::DynamicInverter) = get_activepower(device.static_injector)
+get_Q_ref(device::DynamicInverter) = get_reactivepower(device.static_injector)
 get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states
 get_n_states(device::DynamicInverter) = device.n_states
