@@ -51,14 +51,17 @@ function get_slopes(vc::VariableCost{Vector{NTuple{2, Float64}}})
 end
 
 function get_slopes(vc::Vector{NTuple{2, Float64}})
-    slopes = Vector{Float64}(undef, length(vc) - 1)
-    previous = vc[1]
-    for (ix, component) in enumerate(vc[2:end])
+    slopes = Vector{Float64}(undef, length(vc))
+    previous = (0.0, 0.0)
+    for (ix, component) in enumerate(vc)
+        if ix == 1
+            slopes[ix] = component[1] / component[2]
+            previous = component
+            continue
+        end
         slopes[ix] = (previous[1] - component[1]) / (previous[2] - component[2])
         previous = component
-        if ix != 1
-            slopes[ix] < slopes[ix - 1] && @warn("Non-convex cost function")
-        end
+        slopes[ix] < slopes[ix - 1] && @warn("Non-convex cost function")
     end
     return slopes
 end
