@@ -15,11 +15,7 @@ function get_static_component(device::T) where {T <: DynamicInjection}
 end
 
 function get_dynamic_components(device::T) where {T <: DynamicInjection}
-    components_set = Set()
-    for field in fieldnames(T)
-        if fieldtype(T, field) <: DynamicComponent
-            push!(components_set, getfield(device, field))
-        end
-    end
-    return components_set
+    return (
+        getfield(device, x) for (x, y) in zip(fieldnames(T), fieldtypes(T)) if y <: DynamicComponent
+    )
 end

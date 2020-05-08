@@ -352,4 +352,6 @@ end
 
     # Rule: Can't remove a static injector if it is attached to a dynamic injector.
     @test_throws ArgumentError remove_component!(sys, static_gen)
+
+    @test length(collect(get_dynamic_components(Gen2AVR))) == 5
 end
