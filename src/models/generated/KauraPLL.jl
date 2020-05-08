@@ -65,14 +65,14 @@ get_states(value::KauraPLL) = value.states
 get_n_states(value::KauraPLL) = value.n_states
 
 """Set KauraPLL ω_lp."""
-set_ω_lp!(value::KauraPLL, val) = value.ω_lp = val
+set_ω_lp!(value::KauraPLL, val::Float64) = value.ω_lp = val
 """Set KauraPLL kp_pll."""
-set_kp_pll!(value::KauraPLL, val) = value.kp_pll = val
+set_kp_pll!(value::KauraPLL, val::Float64) = value.kp_pll = val
 """Set KauraPLL ki_pll."""
-set_ki_pll!(value::KauraPLL, val) = value.ki_pll = val
+set_ki_pll!(value::KauraPLL, val::Float64) = value.ki_pll = val
 """Set KauraPLL ext."""
-set_ext!(value::KauraPLL, val) = value.ext = val
+set_ext!(value::KauraPLL, val::Dict{String, Any}) = value.ext = val
 """Set KauraPLL states."""
-set_states!(value::KauraPLL, val) = value.states = val
+set_states!(value::KauraPLL, val::Vector{Symbol}) = value.states = val
 """Set KauraPLL n_states."""
-set_n_states!(value::KauraPLL, val) = value.n_states = val
+set_n_states!(value::KauraPLL, val::Int64) = value.n_states = val

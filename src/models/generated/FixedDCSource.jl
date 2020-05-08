@@ -57,12 +57,12 @@ get_n_states(value::FixedDCSource) = value.n_states
 get_internal(value::FixedDCSource) = value.internal
 
 """Set FixedDCSource voltage."""
-set_voltage!(value::FixedDCSource, val) = value.voltage = val
+set_voltage!(value::FixedDCSource, val::Float64) = value.voltage = val
 """Set FixedDCSource ext."""
-set_ext!(value::FixedDCSource, val) = value.ext = val
+set_ext!(value::FixedDCSource, val::Dict{String, Any}) = value.ext = val
 """Set FixedDCSource states."""
-set_states!(value::FixedDCSource, val) = value.states = val
+set_states!(value::FixedDCSource, val::Vector{Symbol}) = value.states = val
 """Set FixedDCSource n_states."""
-set_n_states!(value::FixedDCSource, val) = value.n_states = val
+set_n_states!(value::FixedDCSource, val::Int64) = value.n_states = val
 """Set FixedDCSource internal."""
-set_internal!(value::FixedDCSource, val) = value.internal = val
+set_internal!(value::FixedDCSource, val::InfrastructureSystemsInternal) = value.internal = val

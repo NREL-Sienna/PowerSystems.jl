@@ -154,40 +154,40 @@ get_n_states(value::SimpleMarconatoMachine) = value.n_states
 get_internal(value::SimpleMarconatoMachine) = value.internal
 
 """Set SimpleMarconatoMachine R."""
-set_R!(value::SimpleMarconatoMachine, val) = value.R = val
+set_R!(value::SimpleMarconatoMachine, val::Float64) = value.R = val
 """Set SimpleMarconatoMachine Xd."""
-set_Xd!(value::SimpleMarconatoMachine, val) = value.Xd = val
+set_Xd!(value::SimpleMarconatoMachine, val::Float64) = value.Xd = val
 """Set SimpleMarconatoMachine Xq."""
-set_Xq!(value::SimpleMarconatoMachine, val) = value.Xq = val
+set_Xq!(value::SimpleMarconatoMachine, val::Float64) = value.Xq = val
 """Set SimpleMarconatoMachine Xd_p."""
-set_Xd_p!(value::SimpleMarconatoMachine, val) = value.Xd_p = val
+set_Xd_p!(value::SimpleMarconatoMachine, val::Float64) = value.Xd_p = val
 """Set SimpleMarconatoMachine Xq_p."""
-set_Xq_p!(value::SimpleMarconatoMachine, val) = value.Xq_p = val
+set_Xq_p!(value::SimpleMarconatoMachine, val::Float64) = value.Xq_p = val
 """Set SimpleMarconatoMachine Xd_pp."""
-set_Xd_pp!(value::SimpleMarconatoMachine, val) = value.Xd_pp = val
+set_Xd_pp!(value::SimpleMarconatoMachine, val::Float64) = value.Xd_pp = val
 """Set SimpleMarconatoMachine Xq_pp."""
-set_Xq_pp!(value::SimpleMarconatoMachine, val) = value.Xq_pp = val
+set_Xq_pp!(value::SimpleMarconatoMachine, val::Float64) = value.Xq_pp = val
 """Set SimpleMarconatoMachine Td0_p."""
-set_Td0_p!(value::SimpleMarconatoMachine, val) = value.Td0_p = val
+set_Td0_p!(value::SimpleMarconatoMachine, val::Float64) = value.Td0_p = val
 """Set SimpleMarconatoMachine Tq0_p."""
-set_Tq0_p!(value::SimpleMarconatoMachine, val) = value.Tq0_p = val
+set_Tq0_p!(value::SimpleMarconatoMachine, val::Float64) = value.Tq0_p = val
 """Set SimpleMarconatoMachine Td0_pp."""
-set_Td0_pp!(value::SimpleMarconatoMachine, val) = value.Td0_pp = val
+set_Td0_pp!(value::SimpleMarconatoMachine, val::Float64) = value.Td0_pp = val
 """Set SimpleMarconatoMachine Tq0_pp."""
-set_Tq0_pp!(value::SimpleMarconatoMachine, val) = value.Tq0_pp = val
+set_Tq0_pp!(value::SimpleMarconatoMachine, val::Float64) = value.Tq0_pp = val
 """Set SimpleMarconatoMachine T_AA."""
-set_T_AA!(value::SimpleMarconatoMachine, val) = value.T_AA = val
+set_T_AA!(value::SimpleMarconatoMachine, val::Float64) = value.T_AA = val
 """Set SimpleMarconatoMachine MVABase."""
-set_MVABase!(value::SimpleMarconatoMachine, val) = value.MVABase = val
+set_MVABase!(value::SimpleMarconatoMachine, val::Float64) = value.MVABase = val
 """Set SimpleMarconatoMachine ext."""
-set_ext!(value::SimpleMarconatoMachine, val) = value.ext = val
+set_ext!(value::SimpleMarconatoMachine, val::Dict{String, Any}) = value.ext = val
 """Set SimpleMarconatoMachine γd."""
-set_γd!(value::SimpleMarconatoMachine, val) = value.γd = val
+set_γd!(value::SimpleMarconatoMachine, val::Float64) = value.γd = val
 """Set SimpleMarconatoMachine γq."""
-set_γq!(value::SimpleMarconatoMachine, val) = value.γq = val
+set_γq!(value::SimpleMarconatoMachine, val::Float64) = value.γq = val
 """Set SimpleMarconatoMachine states."""
-set_states!(value::SimpleMarconatoMachine, val) = value.states = val
+set_states!(value::SimpleMarconatoMachine, val::Vector{Symbol}) = value.states = val
 """Set SimpleMarconatoMachine n_states."""
-set_n_states!(value::SimpleMarconatoMachine, val) = value.n_states = val
+set_n_states!(value::SimpleMarconatoMachine, val::Int64) = value.n_states = val
 """Set SimpleMarconatoMachine internal."""
-set_internal!(value::SimpleMarconatoMachine, val) = value.internal = val
+set_internal!(value::SimpleMarconatoMachine, val::InfrastructureSystemsInternal) = value.internal = val

@@ -102,26 +102,26 @@ InfrastructureSystems.get_forecasts(value::PowerLoad) = value.forecasts
 get_internal(value::PowerLoad) = value.internal
 
 
-InfrastructureSystems.set_name!(value::PowerLoad, val) = value.name = val
+InfrastructureSystems.set_name!(value::PowerLoad, val::String) = value.name = val
 """Set PowerLoad available."""
-set_available!(value::PowerLoad, val) = value.available = val
+set_available!(value::PowerLoad, val::Bool) = value.available = val
 """Set PowerLoad bus."""
-set_bus!(value::PowerLoad, val) = value.bus = val
+set_bus!(value::PowerLoad, val::Bus) = value.bus = val
 """Set PowerLoad model."""
-set_model!(value::PowerLoad, val) = value.model = val
+set_model!(value::PowerLoad, val::Union{Nothing, LoadModels.LoadModel}) = value.model = val
 """Set PowerLoad activepower."""
-set_activepower!(value::PowerLoad, val) = value.activepower = val
+set_activepower!(value::PowerLoad, val::Float64) = value.activepower = val
 """Set PowerLoad reactivepower."""
-set_reactivepower!(value::PowerLoad, val) = value.reactivepower = val
+set_reactivepower!(value::PowerLoad, val::Float64) = value.reactivepower = val
 """Set PowerLoad maxactivepower."""
-set_maxactivepower!(value::PowerLoad, val) = value.maxactivepower = val
+set_maxactivepower!(value::PowerLoad, val::Float64) = value.maxactivepower = val
 """Set PowerLoad maxreactivepower."""
-set_maxreactivepower!(value::PowerLoad, val) = value.maxreactivepower = val
+set_maxreactivepower!(value::PowerLoad, val::Float64) = value.maxreactivepower = val
 """Set PowerLoad services."""
-set_services!(value::PowerLoad, val) = value.services = val
+set_services!(value::PowerLoad, val::Vector{Service}) = value.services = val
 """Set PowerLoad ext."""
-set_ext!(value::PowerLoad, val) = value.ext = val
+set_ext!(value::PowerLoad, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::PowerLoad, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::PowerLoad, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set PowerLoad internal."""
-set_internal!(value::PowerLoad, val) = value.internal = val
+set_internal!(value::PowerLoad, val::InfrastructureSystemsInternal) = value.internal = val
