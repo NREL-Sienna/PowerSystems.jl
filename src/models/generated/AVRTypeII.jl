@@ -127,32 +127,32 @@ get_n_states(value::AVRTypeII) = value.n_states
 get_internal(value::AVRTypeII) = value.internal
 
 """Set AVRTypeII K0."""
-set_K0(value::AVRTypeII, val) = value.K0 = val
+set_K0!(value::AVRTypeII, val) = value.K0 = val
 """Set AVRTypeII T1."""
-set_T1(value::AVRTypeII, val) = value.T1 = val
+set_T1!(value::AVRTypeII, val) = value.T1 = val
 """Set AVRTypeII T2."""
-set_T2(value::AVRTypeII, val) = value.T2 = val
+set_T2!(value::AVRTypeII, val) = value.T2 = val
 """Set AVRTypeII T3."""
-set_T3(value::AVRTypeII, val) = value.T3 = val
+set_T3!(value::AVRTypeII, val) = value.T3 = val
 """Set AVRTypeII T4."""
-set_T4(value::AVRTypeII, val) = value.T4 = val
+set_T4!(value::AVRTypeII, val) = value.T4 = val
 """Set AVRTypeII Te."""
-set_Te(value::AVRTypeII, val) = value.Te = val
+set_Te!(value::AVRTypeII, val) = value.Te = val
 """Set AVRTypeII Tr."""
-set_Tr(value::AVRTypeII, val) = value.Tr = val
+set_Tr!(value::AVRTypeII, val) = value.Tr = val
 """Set AVRTypeII Vr_max."""
-set_Vr_max(value::AVRTypeII, val) = value.Vr_max = val
+set_Vr_max!(value::AVRTypeII, val) = value.Vr_max = val
 """Set AVRTypeII Vr_min."""
-set_Vr_min(value::AVRTypeII, val) = value.Vr_min = val
+set_Vr_min!(value::AVRTypeII, val) = value.Vr_min = val
 """Set AVRTypeII Ae."""
-set_Ae(value::AVRTypeII, val) = value.Ae = val
+set_Ae!(value::AVRTypeII, val) = value.Ae = val
 """Set AVRTypeII Be."""
-set_Be(value::AVRTypeII, val) = value.Be = val
+set_Be!(value::AVRTypeII, val) = value.Be = val
 """Set AVRTypeII ext."""
-set_ext(value::AVRTypeII, val) = value.ext = val
+set_ext!(value::AVRTypeII, val) = value.ext = val
 """Set AVRTypeII states."""
-set_states(value::AVRTypeII, val) = value.states = val
+set_states!(value::AVRTypeII, val) = value.states = val
 """Set AVRTypeII n_states."""
-set_n_states(value::AVRTypeII, val) = value.n_states = val
+set_n_states!(value::AVRTypeII, val) = value.n_states = val
 """Set AVRTypeII internal."""
-set_internal(value::AVRTypeII, val) = value.internal = val
+set_internal!(value::AVRTypeII, val) = value.internal = val

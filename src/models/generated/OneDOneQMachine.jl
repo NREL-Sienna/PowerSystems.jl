@@ -109,26 +109,26 @@ get_n_states(value::OneDOneQMachine) = value.n_states
 get_internal(value::OneDOneQMachine) = value.internal
 
 """Set OneDOneQMachine R."""
-set_R(value::OneDOneQMachine, val) = value.R = val
+set_R!(value::OneDOneQMachine, val) = value.R = val
 """Set OneDOneQMachine Xd."""
-set_Xd(value::OneDOneQMachine, val) = value.Xd = val
+set_Xd!(value::OneDOneQMachine, val) = value.Xd = val
 """Set OneDOneQMachine Xq."""
-set_Xq(value::OneDOneQMachine, val) = value.Xq = val
+set_Xq!(value::OneDOneQMachine, val) = value.Xq = val
 """Set OneDOneQMachine Xd_p."""
-set_Xd_p(value::OneDOneQMachine, val) = value.Xd_p = val
+set_Xd_p!(value::OneDOneQMachine, val) = value.Xd_p = val
 """Set OneDOneQMachine Xq_p."""
-set_Xq_p(value::OneDOneQMachine, val) = value.Xq_p = val
+set_Xq_p!(value::OneDOneQMachine, val) = value.Xq_p = val
 """Set OneDOneQMachine Td0_p."""
-set_Td0_p(value::OneDOneQMachine, val) = value.Td0_p = val
+set_Td0_p!(value::OneDOneQMachine, val) = value.Td0_p = val
 """Set OneDOneQMachine Tq0_p."""
-set_Tq0_p(value::OneDOneQMachine, val) = value.Tq0_p = val
+set_Tq0_p!(value::OneDOneQMachine, val) = value.Tq0_p = val
 """Set OneDOneQMachine MVABase."""
-set_MVABase(value::OneDOneQMachine, val) = value.MVABase = val
+set_MVABase!(value::OneDOneQMachine, val) = value.MVABase = val
 """Set OneDOneQMachine ext."""
-set_ext(value::OneDOneQMachine, val) = value.ext = val
+set_ext!(value::OneDOneQMachine, val) = value.ext = val
 """Set OneDOneQMachine states."""
-set_states(value::OneDOneQMachine, val) = value.states = val
+set_states!(value::OneDOneQMachine, val) = value.states = val
 """Set OneDOneQMachine n_states."""
-set_n_states(value::OneDOneQMachine, val) = value.n_states = val
+set_n_states!(value::OneDOneQMachine, val) = value.n_states = val
 """Set OneDOneQMachine internal."""
-set_internal(value::OneDOneQMachine, val) = value.internal = val
+set_internal!(value::OneDOneQMachine, val) = value.internal = val

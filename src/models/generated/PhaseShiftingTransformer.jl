@@ -122,32 +122,32 @@ InfrastructureSystems.get_forecasts(value::PhaseShiftingTransformer) = value.for
 get_internal(value::PhaseShiftingTransformer) = value.internal
 
 
-InfrastructureSystems.set_name(value::PhaseShiftingTransformer, val) = value.name = val
+InfrastructureSystems.set_name!(value::PhaseShiftingTransformer, val) = value.name = val
 """Set PhaseShiftingTransformer available."""
-set_available(value::PhaseShiftingTransformer, val) = value.available = val
+set_available!(value::PhaseShiftingTransformer, val) = value.available = val
 """Set PhaseShiftingTransformer activepower_flow."""
-set_activepower_flow(value::PhaseShiftingTransformer, val) = value.activepower_flow = val
+set_activepower_flow!(value::PhaseShiftingTransformer, val) = value.activepower_flow = val
 """Set PhaseShiftingTransformer reactivepower_flow."""
-set_reactivepower_flow(value::PhaseShiftingTransformer, val) = value.reactivepower_flow = val
+set_reactivepower_flow!(value::PhaseShiftingTransformer, val) = value.reactivepower_flow = val
 """Set PhaseShiftingTransformer arc."""
-set_arc(value::PhaseShiftingTransformer, val) = value.arc = val
+set_arc!(value::PhaseShiftingTransformer, val) = value.arc = val
 """Set PhaseShiftingTransformer r."""
-set_r(value::PhaseShiftingTransformer, val) = value.r = val
+set_r!(value::PhaseShiftingTransformer, val) = value.r = val
 """Set PhaseShiftingTransformer x."""
-set_x(value::PhaseShiftingTransformer, val) = value.x = val
+set_x!(value::PhaseShiftingTransformer, val) = value.x = val
 """Set PhaseShiftingTransformer primaryshunt."""
-set_primaryshunt(value::PhaseShiftingTransformer, val) = value.primaryshunt = val
+set_primaryshunt!(value::PhaseShiftingTransformer, val) = value.primaryshunt = val
 """Set PhaseShiftingTransformer tap."""
-set_tap(value::PhaseShiftingTransformer, val) = value.tap = val
+set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 """Set PhaseShiftingTransformer α."""
-set_α(value::PhaseShiftingTransformer, val) = value.α = val
+set_α!(value::PhaseShiftingTransformer, val) = value.α = val
 """Set PhaseShiftingTransformer rate."""
-set_rate(value::PhaseShiftingTransformer, val) = value.rate = val
+set_rate!(value::PhaseShiftingTransformer, val) = value.rate = val
 """Set PhaseShiftingTransformer services."""
-set_services(value::PhaseShiftingTransformer, val) = value.services = val
+set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 """Set PhaseShiftingTransformer ext."""
-set_ext(value::PhaseShiftingTransformer, val) = value.ext = val
+set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts(value::PhaseShiftingTransformer, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::PhaseShiftingTransformer, val) = value.forecasts = val
 """Set PhaseShiftingTransformer internal."""
-set_internal(value::PhaseShiftingTransformer, val) = value.internal = val
+set_internal!(value::PhaseShiftingTransformer, val) = value.internal = val

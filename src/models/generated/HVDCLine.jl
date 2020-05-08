@@ -108,28 +108,28 @@ InfrastructureSystems.get_forecasts(value::HVDCLine) = value.forecasts
 get_internal(value::HVDCLine) = value.internal
 
 
-InfrastructureSystems.set_name(value::HVDCLine, val) = value.name = val
+InfrastructureSystems.set_name!(value::HVDCLine, val) = value.name = val
 """Set HVDCLine available."""
-set_available(value::HVDCLine, val) = value.available = val
+set_available!(value::HVDCLine, val) = value.available = val
 """Set HVDCLine activepower_flow."""
-set_activepower_flow(value::HVDCLine, val) = value.activepower_flow = val
+set_activepower_flow!(value::HVDCLine, val) = value.activepower_flow = val
 """Set HVDCLine arc."""
-set_arc(value::HVDCLine, val) = value.arc = val
+set_arc!(value::HVDCLine, val) = value.arc = val
 """Set HVDCLine activepowerlimits_from."""
-set_activepowerlimits_from(value::HVDCLine, val) = value.activepowerlimits_from = val
+set_activepowerlimits_from!(value::HVDCLine, val) = value.activepowerlimits_from = val
 """Set HVDCLine activepowerlimits_to."""
-set_activepowerlimits_to(value::HVDCLine, val) = value.activepowerlimits_to = val
+set_activepowerlimits_to!(value::HVDCLine, val) = value.activepowerlimits_to = val
 """Set HVDCLine reactivepowerlimits_from."""
-set_reactivepowerlimits_from(value::HVDCLine, val) = value.reactivepowerlimits_from = val
+set_reactivepowerlimits_from!(value::HVDCLine, val) = value.reactivepowerlimits_from = val
 """Set HVDCLine reactivepowerlimits_to."""
-set_reactivepowerlimits_to(value::HVDCLine, val) = value.reactivepowerlimits_to = val
+set_reactivepowerlimits_to!(value::HVDCLine, val) = value.reactivepowerlimits_to = val
 """Set HVDCLine loss."""
-set_loss(value::HVDCLine, val) = value.loss = val
+set_loss!(value::HVDCLine, val) = value.loss = val
 """Set HVDCLine services."""
-set_services(value::HVDCLine, val) = value.services = val
+set_services!(value::HVDCLine, val) = value.services = val
 """Set HVDCLine ext."""
-set_ext(value::HVDCLine, val) = value.ext = val
+set_ext!(value::HVDCLine, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts(value::HVDCLine, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::HVDCLine, val) = value.forecasts = val
 """Set HVDCLine internal."""
-set_internal(value::HVDCLine, val) = value.internal = val
+set_internal!(value::HVDCLine, val) = value.internal = val
