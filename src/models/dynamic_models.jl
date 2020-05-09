@@ -4,8 +4,8 @@ abstract type DynamicComponent <: DeviceParameter end
 Abstract type for all dynamic injection types
 
 Subtypes must implement these methods:
-- get_static_injector
-- set_static_injector!
+- [`get_static_injector`](@ref)
+- [`set_static_injector!`](@ref)
 """
 abstract type DynamicInjection <: Device end
 
