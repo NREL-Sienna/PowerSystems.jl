@@ -20,6 +20,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         participation_factor::Float64
         time_at_status::Float64
+        dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -45,6 +46,7 @@ Data Structure for thermal generation technologies.
 - `services::Vector{Service}`: Services that this device contributes to
 - `participation_factor::Float64`: AGC Participation Factor, validation range: (0, 1.0), action if invalid: error
 - `time_at_status::Float64`
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -73,6 +75,8 @@ mutable struct ThermalStandard <: ThermalGen
     "AGC Participation Factor"
     participation_factor::Float64
     time_at_status::Float64
+    "corresponding dynamic injection device"
+    dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts
@@ -80,12 +84,12 @@ mutable struct ThermalStandard <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, time_at_status, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, time_at_status, ext, forecasts, )
+function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -108,6 +112,7 @@ function ThermalStandard(::Nothing)
         services=Device[],
         participation_factor=0.0,
         time_at_status=INFINITE_TIME,
+        dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -147,6 +152,8 @@ get_services(value::ThermalStandard) = value.services
 get_participation_factor(value::ThermalStandard) = value.participation_factor
 """Get ThermalStandard time_at_status."""
 get_time_at_status(value::ThermalStandard) = value.time_at_status
+"""Get ThermalStandard dynamic_injector."""
+get_dynamic_injector(value::ThermalStandard) = value.dynamic_injector
 """Get ThermalStandard ext."""
 get_ext(value::ThermalStandard) = value.ext
 

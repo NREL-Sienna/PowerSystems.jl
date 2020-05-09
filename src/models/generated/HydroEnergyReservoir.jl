@@ -19,6 +19,7 @@ This file is auto-generated. Do not edit.
         inflow::Float64
         initial_storage::Float64
         services::Vector{Service}
+        dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -43,6 +44,7 @@ This file is auto-generated. Do not edit.
 - `inflow::Float64`, validation range: (0, nothing), action if invalid: error
 - `initial_storage::Float64`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -70,6 +72,8 @@ mutable struct HydroEnergyReservoir <: HydroGen
     initial_storage::Float64
     "Services that this device contributes to"
     services::Vector{Service}
+    "corresponding dynamic injection device"
+    dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts
@@ -77,12 +81,12 @@ mutable struct HydroEnergyReservoir <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services, ext, forecasts, )
+function HydroEnergyReservoir(; name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -104,6 +108,7 @@ function HydroEnergyReservoir(::Nothing)
         inflow=0.0,
         initial_storage=0.0,
         services=Device[],
+        dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -141,6 +146,8 @@ get_inflow(value::HydroEnergyReservoir) = value.inflow
 get_initial_storage(value::HydroEnergyReservoir) = value.initial_storage
 """Get HydroEnergyReservoir services."""
 get_services(value::HydroEnergyReservoir) = value.services
+"""Get HydroEnergyReservoir dynamic_injector."""
+get_dynamic_injector(value::HydroEnergyReservoir) = value.dynamic_injector
 """Get HydroEnergyReservoir ext."""
 get_ext(value::HydroEnergyReservoir) = value.ext
 

@@ -1,13 +1,23 @@
 abstract type DynamicComponent <: DeviceParameter end
+
+"""
+Abstract type for all dynamic injection types
+
+Subtypes must implement these methods:
+- [`get_static_injector`](@ref)
+- [`set_static_injector!`](@ref)
+"""
 abstract type DynamicInjection <: Device end
+
 supports_services(d::DynamicInjection) = false
 
+function get_static_injector(device::T) where {T <: DynamicInjection}
+    error("get_static_injector must be implemented for type $T")
+end
+
 function get_dynamic_components(device::T) where {T <: DynamicInjection}
-    components_set = Set()
-    for field in fieldnames(T)
-        if fieldtype(T, field) <: DynamicComponent
-            push!(components_set, getfield(device, field))
-        end
-    end
-    return components_set
+    return (
+        getfield(device, x) for
+        (x, y) in zip(fieldnames(T), fieldtypes(T)) if y <: DynamicComponent
+    )
 end

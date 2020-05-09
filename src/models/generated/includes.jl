@@ -144,6 +144,7 @@ export get_bustype
 export get_capacity
 export get_cf
 export get_delta_t
+export get_dynamic_injector
 export get_efficiency
 export get_energy
 export get_eq_p

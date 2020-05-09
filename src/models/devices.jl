@@ -112,7 +112,7 @@ function JSON2.write(device::T) where {T <: Device}
 end
 
 """
-Encode composed buses and services as UUIDs.
+Encode composed buses, injectors, and services as UUIDs.
 """
 function encode_for_json(device::T) where {T <: Device}
     fields = fieldnames(T)
@@ -122,7 +122,10 @@ function encode_for_json(device::T) where {T <: Device}
         val = getfield(device, name)
         if val isa Vector{Service}
             push!(vals, IS.get_uuid.(val))
-        elseif val isa Bus
+        elseif val isa Bus || (
+            T <: Union{StaticInjection, DynamicInjection} && val isa StaticInjection ||
+            val isa DynamicInjection
+        )
             push!(vals, IS.get_uuid(val))
         else
             push!(vals, val)
@@ -153,10 +156,15 @@ function IS.convert_type(
                 push!(services, service)
             end
             push!(values, services)
-        elseif fieldtype <: Bus
+        elseif fieldtype <: Bus ||
+               (T <: DynamicInjection && fieldtype <: Union{Nothing, StaticInjection})
             uuid = Base.UUID(val.value)
-            bus = component_cache[uuid]
-            push!(values, bus)
+            val = component_cache[uuid]
+            push!(values, val)
+        elseif fieldtype <: Union{Nothing, DynamicInjection}
+            # static dynamic injectors might contain a dynamic injector, which have not
+            # been deserialized yet. Delay this assignment until the end.
+            push!(values, nothing)
         elseif fieldtype <: Component
             # Recurse.
             push!(values, IS.convert_type(fieldtype, val, component_cache))

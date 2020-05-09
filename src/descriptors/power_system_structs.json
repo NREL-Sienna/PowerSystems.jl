@@ -1064,6 +1064,14 @@
                 "default": "Device[]"
             },
             {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1192,6 +1200,14 @@
                 "comment": "Services that this device contributes to",
                 "null_value": "Device[]",
                 "default": "Device[]"
+            },
+            {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
             },
             {
                 "name": "ext",
@@ -1341,6 +1357,14 @@
                 "default": "Device[]"
             },
             {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1452,6 +1476,14 @@
                 "default": "Device[]"
             },
             {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1549,6 +1581,14 @@
                 "default": "Device[]"
             },
             {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1634,6 +1674,14 @@
                 "comment": "Services that this device contributes to",
                 "null_value": "Device[]",
                 "default": "Device[]"
+            },
+            {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
             },
             {
                 "name": "ext",
@@ -1782,6 +1830,14 @@
                 "default": "INFINITE_TIME"
             },
             {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -1910,6 +1966,14 @@
                 "comment": "Services that this device contributes to",
                 "null_value": "Device[]",
                 "default": "Device[]"
+            },
+            {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
             },
             {
                 "name": "ext",

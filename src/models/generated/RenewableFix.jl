@@ -12,6 +12,7 @@ This file is auto-generated. Do not edit.
         primemover::PrimeMovers.PrimeMover
         powerfactor::Float64
         services::Vector{Service}
+        dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -29,6 +30,7 @@ Data Structure for fixed renewable generation technologies.
 - `primemover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
 - `powerfactor::Float64`, validation range: (0, 1), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -46,6 +48,8 @@ mutable struct RenewableFix <: RenewableGen
     powerfactor::Float64
     "Services that this device contributes to"
     services::Vector{Service}
+    "corresponding dynamic injection device"
+    dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts
@@ -53,12 +57,12 @@ mutable struct RenewableFix <: RenewableGen
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableFix(name, available, bus, activepower, reactivepower, rating, primemover, powerfactor, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableFix(name, available, bus, activepower, reactivepower, rating, primemover, powerfactor, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function RenewableFix(name, available, bus, activepower, reactivepower, rating, primemover, powerfactor, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableFix(name, available, bus, activepower, reactivepower, rating, primemover, powerfactor, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function RenewableFix(; name, available, bus, activepower, reactivepower, rating, primemover, powerfactor, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableFix(name, available, bus, activepower, reactivepower, rating, primemover, powerfactor, services, ext, forecasts, )
+function RenewableFix(; name, available, bus, activepower, reactivepower, rating, primemover, powerfactor, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableFix(name, available, bus, activepower, reactivepower, rating, primemover, powerfactor, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -73,6 +77,7 @@ function RenewableFix(::Nothing)
         primemover=PrimeMovers.OT,
         powerfactor=1.0,
         services=Device[],
+        dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -96,6 +101,8 @@ get_primemover(value::RenewableFix) = value.primemover
 get_powerfactor(value::RenewableFix) = value.powerfactor
 """Get RenewableFix services."""
 get_services(value::RenewableFix) = value.services
+"""Get RenewableFix dynamic_injector."""
+get_dynamic_injector(value::RenewableFix) = value.dynamic_injector
 """Get RenewableFix ext."""
 get_ext(value::RenewableFix) = value.ext
 
