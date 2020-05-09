@@ -1,8 +1,10 @@
 # PowerSystems Change Log
 
-## 0.17.3
+## 0.18.0
 
+- Add functions to to get breakpoints and slopes from PWL cost functions
 - Add getter function support for generated structs
+- Enable addition of DynamicInjections to StaticInjection components and associated methods
 
 ## 0.17.2
 
