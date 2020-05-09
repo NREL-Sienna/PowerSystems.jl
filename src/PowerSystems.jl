@@ -259,7 +259,7 @@ const IS = InfrastructureSystems
 using DocStringExtensions
 
 @template (FUNCTIONS, METHODS) = """
-                                 $(TYPEDSIGNATURES)
+                                 $(SIGNATURES)
                                  $(DOCSTRING)
                                  """
 
