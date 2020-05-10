@@ -43,7 +43,7 @@ end
 """
     get_slopes(vc::VariableCost{Vector{NTuple{2, Float64}}})
 
-Calculates the slopes for the variable cost represented as a piece wise linear cost function. This function returns n - slopes for n - piecewise linear elements in the function. The first element of the function corresponds to the average cost at the minimum operating point. If your formulation uses n -1 slopes, you can disregard the first component of the array.
+Calculates the slopes for the variable cost represented as a piece wise linear cost function. This function returns n - slopes for n - piecewise linear elements in the function. The first element of the return array corresponds to the average cost at the minimum operating point. If your formulation uses n -1 slopes, you can disregard the first component of the array.
 
 """
 function get_slopes(vc::VariableCost{Vector{NTuple{2, Float64}}})
@@ -61,7 +61,9 @@ function get_slopes(vc::Vector{NTuple{2, Float64}})
         end
         slopes[ix] = (previous[1] - component[1]) / (previous[2] - component[2])
         previous = component
-        slopes[ix] < slopes[ix - 1] && @warn("Non-convex cost function")
+        # Slope at ix == 1 is the average cost at the min operating point. Comparison
+        # doesn't apply
+        ix > 2 && slopes[ix] <= slopes[ix - 1] && @warn("Non-convex cost function")
     end
     return slopes
 end
