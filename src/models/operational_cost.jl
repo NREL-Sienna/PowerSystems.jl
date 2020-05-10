@@ -35,7 +35,7 @@ function get_breakpoint_upperbounds(vc::Vector{NTuple{2, Float64}})
             bp_ubs[ix] = component[2]
             continue
         end
-        bp_ubs[ix] = component[2] - sum(bp_ubs)
+        bp_ubs[ix] = component[2] - sum(bp_ubs[1:ix-1])
     end
     return bp_ubs
 end
