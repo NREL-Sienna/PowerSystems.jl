@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## 0.18.1
+
+- Remove warning PWL get_slope function
+
 ## 0.18.0
 
 - Add functions to to get breakpoints and slopes from PWL cost functions
