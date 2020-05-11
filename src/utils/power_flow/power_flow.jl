@@ -105,10 +105,10 @@ end
 Solves a the power flow into the system and writes the solution into the relevant structs.
 Updates generators active and reactive power setpoints and branches active and reactive
 power flows (calculated in the From - To direction) (see
-[flow_val](@ref))
+[`flow_val`](@ref))
 
 Requires loading NLsolve.jl to run. Internally it uses the make_pf (see
-[make_pf](@ref)) to create the problem and solve it. As a result it doesn't enforce
+[`make_pf`](@ref)) to create the problem and solve it. As a result it doesn't enforce
 reactivepower limits.
 
 Supports passing NLsolve kwargs in the args. By default shows the solver trace.

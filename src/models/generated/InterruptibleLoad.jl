@@ -30,7 +30,7 @@ This file is auto-generated. Do not edit.
 - `reactivepower::Float64`
 - `maxactivepower::Float64`
 - `maxreactivepower::Float64`
-- `op_cost::TwoPartCost`: Operation Cost of Generation [TwoPartCost](@ref)
+- `op_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -46,7 +46,7 @@ mutable struct InterruptibleLoad <: ControllableLoad
     reactivepower::Float64
     maxactivepower::Float64
     maxreactivepower::Float64
-    "Operation Cost of Generation [TwoPartCost](@ref)"
+    "Operation Cost of Generation [`TwoPartCost`](@ref)"
     op_cost::TwoPartCost
     "Services that this device contributes to"
     services::Vector{Service}
