@@ -130,6 +130,7 @@ export ReserveUp
 export ReserveDown
 export StaticReserve
 export VariableReserve
+export AGC
 export ReserveDemandCurve
 export Transfer
 
