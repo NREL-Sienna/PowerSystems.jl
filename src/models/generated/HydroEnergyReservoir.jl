@@ -39,7 +39,7 @@ This file is auto-generated. Do not edit.
 - `reactivepowerlimits::Union{Nothing, Min_Max}`, action if invalid: warn
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits, validation range: (0, nothing), action if invalid: error
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
-- `op_cost::TwoPartCost`: Operation Cost of Generation [TwoPartCost](@ref)
+- `op_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
 - `storage_capacity::Float64`, validation range: (0, nothing), action if invalid: error
 - `inflow::Float64`, validation range: (0, nothing), action if invalid: error
 - `initial_storage::Float64`, validation range: (0, nothing), action if invalid: error
@@ -65,7 +65,7 @@ mutable struct HydroEnergyReservoir <: HydroGen
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    "Operation Cost of Generation [TwoPartCost](@ref)"
+    "Operation Cost of Generation [`TwoPartCost`](@ref)"
     op_cost::TwoPartCost
     storage_capacity::Float64
     inflow::Float64

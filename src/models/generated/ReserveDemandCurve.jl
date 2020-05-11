@@ -17,7 +17,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 - `name::String`
 - `available::Bool`
 - `timeframe::Float64`: the relative saturation timeframe, validation range: (0, nothing), action if invalid: error
-- `op_cost::TwoPartCost`: Cost for providing reserves  [TwoPartCost](@ref)
+- `op_cost::TwoPartCost`: Cost for providing reserves  [`TwoPartCost`](@ref)
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -26,7 +26,7 @@ mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     available::Bool
     "the relative saturation timeframe"
     timeframe::Float64
-    "Cost for providing reserves  [TwoPartCost](@ref)"
+    "Cost for providing reserves  [`TwoPartCost`](@ref)"
     op_cost::TwoPartCost
     ext::Dict{String, Any}
     "power system internal reference, do not modify"

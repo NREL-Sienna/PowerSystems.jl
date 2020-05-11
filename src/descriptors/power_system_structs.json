@@ -1054,7 +1054,7 @@
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
                 "data_type": "TwoPartCost",
-                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
+                "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
             },
             {
                 "name": "services",
@@ -1317,7 +1317,7 @@
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
                 "data_type": "TwoPartCost",
-                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
+                "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
             },
             {
                 "name": "storage_capacity",
@@ -1571,7 +1571,7 @@
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
                 "data_type": "TwoPartCost",
-                "comment": "Operation Cost of Generation [TwoPartCost](@ref)"
+                "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
             },
             {
                 "name": "services",
@@ -2082,7 +2082,7 @@
                 "name": "op_cost",
                 "null_value": "TwoPartCost(nothing)",
                 "data_type": "TwoPartCost",
-                "comment": "Cost for providing reserves  [TwoPartCost](@ref)"
+                "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
             },
             {
                 "name": "ext",

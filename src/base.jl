@@ -740,7 +740,7 @@ end
 
 Add a forecast to a system from a CSV file.
 
-See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
+See InfrastructureSystems.TimeseriesFileMetadata for description of
 scaling_factor.
 """
 function add_forecast!(
@@ -764,7 +764,7 @@ end
 
 Add a forecast to a system from a TimeSeries.TimeArray.
 
-See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
+See InfrastructureSystems.TimeseriesFileMetadata for description of
 scaling_factor.
 """
 function add_forecast!(
@@ -788,7 +788,7 @@ end
 
 Add a forecast to a system from a DataFrames.DataFrame.
 
-See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of
+See InfrastructureSystems.TimeseriesFileMetadata for description of
 scaling_factor.
 """
 function add_forecast!(
@@ -811,7 +811,7 @@ Return a vector of forecasts from a metadata file.
 - `metadata_file::AbstractString`: path to metadata file
 - `resolution::{Nothing, Dates.Period}`: skip any forecasts that don't match this resolution
 
-See [`InfrastructureSystems.TimeseriesFileMetadata`](@ref) for description of what the file
+See InfrastructureSystems.TimeseriesFileMetadata for description of what the file
 should contain.
 """
 function make_forecasts(sys::System, metadata_file::AbstractString; resolution = nothing)
