@@ -249,16 +249,12 @@ end
         Bus(11, "11", BusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123, nothing, nothing),
     )
     path = joinpath(mktempdir(), "test_validation.json")
-    io = open(path, "w")
-    PSY.to_json(sys, path)
     try
-        to_json(io, sys)
+        PSY.to_json(sys, path)
     catch
-        close(io)
         rm(path)
         rethrow()
     end
-    close(io)
 
     try
         sys2 = PSY.System(path)
