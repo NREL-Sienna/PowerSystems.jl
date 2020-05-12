@@ -13,7 +13,7 @@ function validate_serialization(sys::System)
         sys_ext["data"] = 5
         ext_test_bus_name = ""
         try
-            IS.prepare_for_serialization!(sys.data, path)
+            IS.prepare_for_serialization!(sys.data, path; force = true)
             bus = collect(get_components(PSY.Bus, sys))[1]
             ext_test_bus_name = PSY.get_name(bus)
             ext = PSY.get_ext(bus)
@@ -38,8 +38,6 @@ end
 @testset "Test JSON serialization of CDM data" begin
     sys = create_rts_system()
     @test validate_serialization(sys)
-    text = JSON2.write(sys)
-    @test length(text) > 0
 end
 
 @testset "Test JSON serialization of matpower data" begin

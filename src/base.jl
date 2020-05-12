@@ -229,9 +229,17 @@ function System(file_path::AbstractString; kwargs...)
     if lowercase(ext) in [".m", ".raw"]
         return System(PowerModelsData(file_path; kwargs...); kwargs...)
     elseif lowercase(ext) == ".json"
-        sys = IS.from_json(System, file_path)
-        check!(sys)
-        return sys
+        # File paths in the JSON are relative. Temporarily change to this directory in order
+        # to find all dependent files.
+        orig_dir = pwd()
+        cd(dirname(file_path))
+        try
+            sys = IS.from_json(System, file_path)
+            check!(sys)
+            return sys
+        finally
+            cd(orig_dir)
+        end
     else
         throw(DataFormatError("$file_path is not a supported file type"))
     end
@@ -242,8 +250,8 @@ end
 
 Serializes a system to a JSON string.
 """
-function to_json(sys::System, filename::AbstractString)
-    IS.prepare_for_serialization!(sys.data, filename)
+function to_json(sys::System, filename::AbstractString; force = false)
+    IS.prepare_for_serialization!(sys.data, filename; force = force)
     return IS.to_json(sys, filename)
 end
 
