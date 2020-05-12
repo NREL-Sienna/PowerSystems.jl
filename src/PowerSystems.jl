@@ -130,6 +130,7 @@ export ReserveUp
 export ReserveDown
 export StaticReserve
 export VariableReserve
+export AGC
 export ReserveDemandCurve
 export Transfer
 
@@ -164,6 +165,7 @@ export remove_components!
 export clear_components!
 export add_service!
 export remove_service!
+export clear_services!
 export has_service
 export has_forecasts
 export get_buses
