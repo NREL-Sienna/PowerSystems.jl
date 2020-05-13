@@ -268,6 +268,17 @@ function to_json(io::IO, sys::System)
     return IS.to_json(io, sys)
 end
 
+function Base.deepcopy(sys::System)
+    # We store forecast data in an HDF5 file that would not be copied as part of deepcopy.
+    # The HDF5 file could have data buffered in memory, so we would have to close it, make
+    # a copy, and attach it to a new system.
+    # A simpler solution is to serialize to a tmp dir and deserialize.
+    path = mktempdir()
+    filename = joinpath(path, "sys.json")
+    to_json(sys, filename)
+    return System(filename)
+end
+
 """
 Return a user-modifiable dictionary to store extra information.
 """
