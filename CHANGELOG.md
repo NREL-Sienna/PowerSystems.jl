@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## 0.18.3
+
+- Bug fix in serialization to folder
+
 ## 0.18.2
 
 - Fix potential miscalculation of PWL upper bound limits
