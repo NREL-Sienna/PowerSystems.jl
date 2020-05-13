@@ -232,7 +232,11 @@ function System(file_path::AbstractString; kwargs...)
         # File paths in the JSON are relative. Temporarily change to this directory in order
         # to find all dependent files.
         orig_dir = pwd()
-        cd(dirname(file_path))
+        new_dir = dirname(file_path)
+        if isempty(new_dir)
+            new_dir = "."
+        end
+        cd(new_dir)
         try
             sys = IS.from_json(System, file_path)
             check!(sys)
