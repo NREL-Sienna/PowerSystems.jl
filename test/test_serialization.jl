@@ -67,3 +67,10 @@ end
     sys = create_system_with_dynamic_inverter()
     @test validate_serialization(sys)
 end
+
+@testset "Test deepcopy of a system" begin
+    sys = create_rts_system()
+    sys2 = deepcopy(sys)
+    clear_forecasts!(sys2)
+    @test !isempty(collect(PSY.iterate_forecasts(sys)))
+end
