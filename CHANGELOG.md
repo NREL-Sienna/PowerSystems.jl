@@ -1,5 +1,9 @@
 # PowerSystems Change Log
 
+## 0.18.4
+
+- Add deepcopy method for system
+
 ## 0.18.3
 
 - Bug fix in serialization to folder
