@@ -122,6 +122,16 @@ function Base.convert(::Type{BusTypes.BusType}, x::MatpowerBusTypes.MatpowerBusT
     return map[x]
 end
 
+function Base.convert(::Type{MatpowerBusTypes.MatpowerBusType}, x::BusTypes.BusType)
+    map = Dict(
+        BusTypes.ISOLATED => MatpowerBusTypes.MATPOWER_ISOLATED,
+        BusTypes.PQ => MatpowerBusTypes.MATPOWER_PQ,
+        BusTypes.PV => MatpowerBusTypes.MATPOWER_PV,
+        BusTypes.REF => MatpowerBusTypes.MATPOWER_REF,
+    )
+    return map[x]
+end
+
 # Disabling this because not all matpower files define areas even when bus definitions
 # contain area references.
 #function read_area!(sys::System, data; kwargs...)
