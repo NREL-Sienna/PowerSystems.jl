@@ -238,7 +238,7 @@ function System(file_path::AbstractString; kwargs...)
         end
         cd(new_dir)
         try
-            sys = IS.from_json(System, file_path)
+            sys = IS.from_json(System, basename(file_path))
             check!(sys)
             return sys
         finally
