@@ -328,7 +328,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             voltagelimits = voltage_limits,
             basevoltage = bus.base_voltage,
             area = area,
-            load_zone = get_component(LoadZone, sys, string(bus.zone)),
+            load_zone = get_component(LoadZone, sys, _zone_to_name(bus.zone)),
         )
 
         add_component!(sys, ps_bus)
@@ -586,8 +586,7 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
             end
         end
 
-        name = string(zone)
-        load_zone = LoadZone(name, sum(active_powers), sum(reactive_powers))
+        load_zone = LoadZone(_zone_to_name(zone), sum(active_powers), sum(reactive_powers))
         add_component!(sys, load_zone)
     end
 end
@@ -1091,3 +1090,5 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
 
     return NamedTuple{Tuple(Symbol.(fields))}(vals)
 end
+
+_zone_to_name(zone_as_float) = string(Int(round(zone_as_float)))
