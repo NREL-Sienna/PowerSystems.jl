@@ -2,6 +2,7 @@ using Test
 using Logging
 using Dates
 import InteractiveUtils
+import JSON
 
 import InfrastructureSystems
 import InfrastructureSystems: Deterministic, Probabilistic, ScenarioBased, Forecast
@@ -9,11 +10,12 @@ const IS = InfrastructureSystems
 using PowerSystems
 import PowerSystems: PowerSystemTableData
 const PSY = PowerSystems
+import CTM
 
-import Aqua
-Aqua.test_unbound_args(PowerSystems)
-Aqua.test_undefined_exports(PowerSystems)
-Aqua.test_ambiguities(PowerSystems)
+#import Aqua
+#Aqua.test_unbound_args(PowerSystems)
+#Aqua.test_undefined_exports(PowerSystems)
+#Aqua.test_ambiguities(PowerSystems)
 
 include(joinpath(@__DIR__, "../src/utils/data.jl"))
 import .UtilsData: TestData

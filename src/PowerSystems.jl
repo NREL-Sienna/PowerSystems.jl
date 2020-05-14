@@ -216,6 +216,9 @@ export get_V_ref
 export get_P_ref
 export get_Q_ref
 
+# API handlers
+export list_buses
+
 #################################################################################
 # Imports
 
@@ -233,6 +236,7 @@ import CSV
 import YAML
 import UUIDs
 import Base.to_index
+import CTM
 
 import InfrastructureSystems
 import InfrastructureSystems:
@@ -317,6 +321,9 @@ include("models/supplemental_accessors.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+
+# API handlers
+include("api/list_buses.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")
