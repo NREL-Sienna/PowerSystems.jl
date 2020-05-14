@@ -2,7 +2,9 @@
 # TODO: filter by fields
 
 function list_buses(sys::System)
-    return JSON2.write(collect(make_ctm_bus(x) for x in get_components(Bus, sys)))
+    buses = collect(make_ctm_bus(x) for x in get_components(Bus, sys))
+    sort!(buses, by = x -> x.index)
+    return JSON2.write(buses)
 end
 
 function get_ctm_buses(sys::System)
