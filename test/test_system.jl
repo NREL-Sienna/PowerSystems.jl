@@ -16,7 +16,6 @@
 
     @test isnothing(get_component(ThermalStandard, sys, "not-a-name"))
     @test isempty(get_components_by_name(ThermalGen, sys, "not-a-name"))
-    @test_throws(IS.ArgumentError, get_component(ThermalGen, sys, "not-a-name"))
     @test_throws(
         IS.ArgumentError,
         get_components_by_name(ThermalStandard, sys, "not-a-name")
