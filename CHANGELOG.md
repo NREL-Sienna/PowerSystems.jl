@@ -1,5 +1,10 @@
 # PowerSystems Change Log
 
+## 0.19.0
+
+- Update for IS 0.9 
+- Change behaviour of get_component
+
 ## 0.18.5
 
 - Bug fix for serialization
