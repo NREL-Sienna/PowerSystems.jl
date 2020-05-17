@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
         timeframe::Float64
         op_cost::TwoPartCost
         ext::Dict{String, Any}
+        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -19,6 +20,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 - `timeframe::Float64`: the relative saturation timeframe, validation range: (0, nothing), action if invalid: error
 - `op_cost::TwoPartCost`: Cost for providing reserves  [`TwoPartCost`](@ref)
 - `ext::Dict{String, Any}`
+- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
@@ -29,16 +31,18 @@ mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     "Cost for providing reserves  [`TwoPartCost`](@ref)"
     op_cost::TwoPartCost
     ext::Dict{String, Any}
+    "internal forecast storage"
+    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext=Dict{String, Any}(), ) where T <: ReserveDirection
-    ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext, InfrastructureSystemsInternal(), )
+function ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ReserveDemandCurve{T}(; name, available, timeframe, op_cost, ext=Dict{String, Any}(), ) where T <: ReserveDirection
-    ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext, )
+function ReserveDemandCurve{T}(; name, available, timeframe, op_cost, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(name, available, timeframe, op_cost, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -49,6 +53,7 @@ function ReserveDemandCurve{T}(::Nothing) where T <: ReserveDirection
         timeframe=0.0,
         op_cost=TwoPartCost(nothing),
         ext=Dict{String, Any}(),
+        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -62,18 +67,22 @@ get_timeframe(value::ReserveDemandCurve) = value.timeframe
 get_op_cost(value::ReserveDemandCurve) = value.op_cost
 """Get ReserveDemandCurve ext."""
 get_ext(value::ReserveDemandCurve) = value.ext
+
+InfrastructureSystems.get_forecasts(value::ReserveDemandCurve) = value.forecasts
 """Get ReserveDemandCurve internal."""
 get_internal(value::ReserveDemandCurve) = value.internal
 
 
-InfrastructureSystems.set_name!(value::ReserveDemandCurve, val::String) = value.name = val
+InfrastructureSystems.set_name!(value::ReserveDemandCurve, val) = value.name = val
 """Set ReserveDemandCurve available."""
-set_available!(value::ReserveDemandCurve, val::Bool) = value.available = val
+set_available!(value::ReserveDemandCurve, val) = value.available = val
 """Set ReserveDemandCurve timeframe."""
-set_timeframe!(value::ReserveDemandCurve, val::Float64) = value.timeframe = val
+set_timeframe!(value::ReserveDemandCurve, val) = value.timeframe = val
 """Set ReserveDemandCurve op_cost."""
-set_op_cost!(value::ReserveDemandCurve, val::TwoPartCost) = value.op_cost = val
+set_op_cost!(value::ReserveDemandCurve, val) = value.op_cost = val
 """Set ReserveDemandCurve ext."""
-set_ext!(value::ReserveDemandCurve, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::ReserveDemandCurve, val) = value.ext = val
+
+InfrastructureSystems.set_forecasts!(value::ReserveDemandCurve, val) = value.forecasts = val
 """Set ReserveDemandCurve internal."""
-set_internal!(value::ReserveDemandCurve, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::ReserveDemandCurve, val) = value.internal = val
