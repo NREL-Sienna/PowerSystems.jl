@@ -1,6 +1,22 @@
 
 const SKIP_PM_VALIDATION = false
 
+const SYSTEM_KWARGS = Set((
+    :branch_name_formatter,
+    :bus_name_formatter,
+    :config_path,
+    :frequency,
+    :gen_name_formatter,
+    :genmap_file,
+    :internal,
+    :load_name_formatter,
+    :load_zone_formatter,
+    :runchecks,
+    :shunt_name_formatter,
+    :time_series_directory,
+    :time_series_in_memory,
+))
+
 """
 System
 
@@ -43,6 +59,12 @@ struct System <: PowerSystemType
         # Note to devs: if you add parameters to kwargs then consider whether they need
         # special handling in the deserialization function in this file.
         # See JSON2.read for System.
+
+        # Implement a strict check here to make sure that SYSTEM_KWARGS can be used
+        # elsewhere.
+        unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
+        !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
+
         bus_numbers = Set{Int}()
         frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
         runchecks = get(kwargs, :runchecks, true)
@@ -227,7 +249,8 @@ end
 function System(file_path::AbstractString; kwargs...)
     ext = splitext(file_path)[2]
     if lowercase(ext) in [".m", ".raw"]
-        return System(PowerModelsData(file_path; kwargs...); kwargs...)
+        pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
+        return System(PowerModelsData(file_path; pm_kwargs...); kwargs...)
     elseif lowercase(ext) == ".json"
         # File paths in the JSON are relative. Temporarily change to this directory in order
         # to find all dependent files.
