@@ -111,7 +111,8 @@ checksys = false
 end
 
 @testset "Test System constructor from Matpower" begin
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
+    # Include a System kwarg to make sure it doesn't get forwarded to PM functions.
+    sys = System(joinpath(MATPOWER_DIR, "case5_re.m"); runchecks = true)
 end
 
 @testset "Test accessor functions of PowerSystems auto-generated types" begin
