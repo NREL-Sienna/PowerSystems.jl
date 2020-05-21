@@ -14,6 +14,5 @@ function IS.get_limits(
     return (min = valid_range.min, max = valid_range.max, zero = 0.0)
 end
 
-get_rating(gen::Generator) = get_rating(get_tech(gen))
-get_active_power_limits_min(gen::Generator) = get_activepowerlimits(get_tech(gen)).min
-get_active_power_limits_max(gen::Generator) = get_activepowerlimits(get_tech(gen)).max
+get_active_power_limits_min(gen::Generator) = get_activepowerlimits(gen).min
+get_active_power_limits_max(gen::Generator) = get_activepowerlimits(gen).max
