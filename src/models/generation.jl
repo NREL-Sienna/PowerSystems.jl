@@ -13,6 +13,3 @@ function IS.get_limits(
     # e.g. "valid_range": {"min":-1.571, "max":1.571}.
     return (min = valid_range.min, max = valid_range.max, zero = 0.0)
 end
-
-get_active_power_limits_min(gen::Generator) = get_activepowerlimits(gen).min
-get_active_power_limits_max(gen::Generator) = get_activepowerlimits(gen).max
