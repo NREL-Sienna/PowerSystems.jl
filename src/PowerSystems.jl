@@ -148,7 +148,7 @@ export Forecast
 export Deterministic
 export Probabilistic
 export ScenarioBased
-export CostCoefficient
+export PiecewiseFunction
 
 export get_dynamic_components
 
@@ -242,7 +242,7 @@ import InfrastructureSystems:
     Probabilistic,
     Forecast,
     ScenarioBased,
-    CostCoefficient,
+    PiecewiseFunction,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
     FlattenIteratorWrapper,
