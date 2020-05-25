@@ -1,5 +1,6 @@
 include("TwoPartCost.jl")
 include("ThreePartCost.jl")
+include("PGLIBCost.jl")
 include("Area.jl")
 include("LoadZone.jl")
 include("Bus.jl")
@@ -19,6 +20,7 @@ include("HydroDispatch.jl")
 include("RenewableDispatch.jl")
 include("RenewableFix.jl")
 include("ThermalStandard.jl")
+include("ThermalPGLIB.jl")
 include("GenericBattery.jl")
 include("StaticReserve.jl")
 include("ReserveDemandCurve.jl")
@@ -183,11 +185,13 @@ export get_maxactivepower
 export get_maxreactivepower
 export get_model
 export get_n_states
+export get_no_load
 export get_number
 export get_op_cost
 export get_outputactivepowerlimits
 export get_participation_factor
 export get_powerfactor
+export get_powertrajectory
 export get_primaryshunt
 export get_primemover
 export get_r
@@ -209,6 +213,7 @@ export get_rv
 export get_s_rated
 export get_services
 export get_shutdn
+export get_starttimelimits
 export get_startup
 export get_states
 export get_status
