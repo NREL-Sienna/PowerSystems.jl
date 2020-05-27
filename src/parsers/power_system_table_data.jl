@@ -188,7 +188,7 @@ function get_user_field(
     try
         for item in data.user_descriptors[category]
             if item["name"] == field
-                return Symbol(item["custom_name"])
+                return item["custom_name"]
             end
         end
     catch
