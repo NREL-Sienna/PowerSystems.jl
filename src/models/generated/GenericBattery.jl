@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
         reactivepower::Float64
         reactivepowerlimits::Union{Nothing, Min_Max}
-        machine_basepower::Float64
+        basepower::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -40,7 +40,7 @@ Data structure for a generic battery
 - `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`, validation range: (0, 1), action if invalid: warn
 - `reactivepower::Float64`, validation range: reactivepowerlimits, action if invalid: warn
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
-- `machine_basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -65,7 +65,7 @@ mutable struct GenericBattery <: Storage
     reactivepower::Float64
     reactivepowerlimits::Union{Nothing, Min_Max}
     "Base power of the unit in MVA"
-    machine_basepower::Float64
+    basepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -77,12 +77,12 @@ mutable struct GenericBattery <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, machine_basepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, machine_basepower, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, basepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, basepower, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, machine_basepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, machine_basepower, services, dynamic_injector, ext, forecasts, )
+function GenericBattery(; name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, basepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    GenericBattery(name, available, bus, primemover, energy, capacity, rating, activepower, inputactivepowerlimits, outputactivepowerlimits, efficiency, reactivepower, reactivepowerlimits, basepower, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -101,7 +101,7 @@ function GenericBattery(::Nothing)
         efficiency=(in=0.0, out=0.0),
         reactivepower=0.0,
         reactivepowerlimits=(min=0.0, max=0.0),
-        machine_basepower=0.0,
+        basepower=0.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -135,8 +135,8 @@ get_efficiency(value::GenericBattery) = value.efficiency
 get_reactivepower(value::GenericBattery) = value.reactivepower
 """Get GenericBattery reactivepowerlimits."""
 get_reactivepowerlimits(value::GenericBattery) = value.reactivepowerlimits
-"""Get GenericBattery machine_basepower."""
-get_machine_basepower(value::GenericBattery) = value.machine_basepower
+"""Get GenericBattery basepower."""
+get_basepower(value::GenericBattery) = value.basepower
 """Get GenericBattery services."""
 get_services(value::GenericBattery) = value.services
 """Get GenericBattery dynamic_injector."""
@@ -174,8 +174,8 @@ set_efficiency!(value::GenericBattery, val::NamedTuple{(:in, :out), Tuple{Float6
 set_reactivepower!(value::GenericBattery, val::Float64) = value.reactivepower = val
 """Set GenericBattery reactivepowerlimits."""
 set_reactivepowerlimits!(value::GenericBattery, val::Union{Nothing, Min_Max}) = value.reactivepowerlimits = val
-"""Set GenericBattery machine_basepower."""
-set_machine_basepower!(value::GenericBattery, val::Float64) = value.machine_basepower = val
+"""Set GenericBattery basepower."""
+set_basepower!(value::GenericBattery, val::Float64) = value.basepower = val
 """Set GenericBattery services."""
 set_services!(value::GenericBattery, val::Vector{Service}) = value.services = val
 """Set GenericBattery ext."""

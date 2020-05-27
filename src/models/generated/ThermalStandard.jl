@@ -17,7 +17,7 @@ This file is auto-generated. Do not edit.
         ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         op_cost::ThreePartCost
-        machine_basepower::Float64
+        basepower::Float64
         services::Vector{Service}
         participation_factor::Float64
         time_at_status::Float64
@@ -44,7 +44,7 @@ Data Structure for thermal generation technologies.
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `op_cost::ThreePartCost`
-- `machine_basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `participation_factor::Float64`: AGC Participation Factor, validation range: (0, 1.0), action if invalid: error
 - `time_at_status::Float64`
@@ -73,7 +73,7 @@ mutable struct ThermalStandard <: ThermalGen
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     op_cost::ThreePartCost
     "Base power of the unit in MVA"
-    machine_basepower::Float64
+    basepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "AGC Participation Factor"
@@ -88,12 +88,12 @@ mutable struct ThermalStandard <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, machine_basepower, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, machine_basepower, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, machine_basepower, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, machine_basepower, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, )
+function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -113,7 +113,7 @@ function ThermalStandard(::Nothing)
         ramplimits=nothing,
         timelimits=nothing,
         op_cost=ThreePartCost(nothing),
-        machine_basepower=0.0,
+        basepower=0.0,
         services=Device[],
         participation_factor=0.0,
         time_at_status=INFINITE_TIME,
@@ -151,8 +151,8 @@ get_ramplimits(value::ThermalStandard) = value.ramplimits
 get_timelimits(value::ThermalStandard) = value.timelimits
 """Get ThermalStandard op_cost."""
 get_op_cost(value::ThermalStandard) = value.op_cost
-"""Get ThermalStandard machine_basepower."""
-get_machine_basepower(value::ThermalStandard) = value.machine_basepower
+"""Get ThermalStandard basepower."""
+get_basepower(value::ThermalStandard) = value.basepower
 """Get ThermalStandard services."""
 get_services(value::ThermalStandard) = value.services
 """Get ThermalStandard participation_factor."""
@@ -196,8 +196,8 @@ set_ramplimits!(value::ThermalStandard, val::Union{Nothing, NamedTuple{(:up, :do
 set_timelimits!(value::ThermalStandard, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.timelimits = val
 """Set ThermalStandard op_cost."""
 set_op_cost!(value::ThermalStandard, val::ThreePartCost) = value.op_cost = val
-"""Set ThermalStandard machine_basepower."""
-set_machine_basepower!(value::ThermalStandard, val::Float64) = value.machine_basepower = val
+"""Set ThermalStandard basepower."""
+set_basepower!(value::ThermalStandard, val::Float64) = value.basepower = val
 """Set ThermalStandard services."""
 set_services!(value::ThermalStandard, val::Vector{Service}) = value.services = val
 """Set ThermalStandard participation_factor."""

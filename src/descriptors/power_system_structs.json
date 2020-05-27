@@ -1320,7 +1320,7 @@
                 "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
             },
             {
-                "name": "machine_basepower",
+                "name": "basepower",
                 "comment": "Base power of the unit in MVA",
                 "null_value": "0.0",
                 "data_type": "Float64",
@@ -1480,7 +1480,7 @@
                 "validation_action": "error"
             },
             {
-                "name": "machine_basepower",
+                "name": "basepower",
                 "comment": "Base power of the unit in MVA",
                 "null_value": "0.0",
                 "data_type": "Float64",
@@ -1596,7 +1596,7 @@
                 "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
             },
             {
-                "name": "machine_basepower",
+                "name": "basepower",
                 "comment": "Base power of the unit in MVA",
                 "null_value": "0.0",
                 "data_type": "Float64",
@@ -1702,7 +1702,7 @@
                 "validation_action": "error"
             },
             {
-                "name": "machine_basepower",
+                "name": "basepower",
                 "comment": "Base power of the unit in MVA",
                 "null_value": "0.0",
                 "data_type": "Float64",
@@ -1849,7 +1849,7 @@
                 "data_type": "ThreePartCost"
             },
             {
-                "name": "machine_basepower",
+                "name": "basepower",
                 "comment": "Base power of the unit in MVA",
                 "null_value": "0.0",
                 "data_type": "Float64",
@@ -2016,7 +2016,7 @@
                 "data_type": "Union{Nothing, Min_Max}"
             },
             {
-                "name": "machine_basepower",
+                "name": "basepower",
                 "comment": "Base power of the unit in MVA",
                 "null_value": "0.0",
                 "data_type": "Float64",

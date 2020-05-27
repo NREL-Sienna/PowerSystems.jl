@@ -137,6 +137,7 @@ export get_arc
 export get_area
 export get_available
 export get_b
+export get_basepower
 export get_basevoltage
 export get_bias
 export get_bus
@@ -179,7 +180,6 @@ export get_lg
 export get_load_zone
 export get_loss
 export get_lv
-export get_machine_basepower
 export get_maxactivepower
 export get_maxreactivepower
 export get_model
@@ -316,6 +316,7 @@ export set_arc!
 export set_area!
 export set_available!
 export set_b!
+export set_basepower!
 export set_basevoltage!
 export set_bias!
 export set_bus!
@@ -358,7 +359,6 @@ export set_lg!
 export set_load_zone!
 export set_loss!
 export set_lv!
-export set_machine_basepower!
 export set_maxactivepower!
 export set_maxreactivepower!
 export set_model!

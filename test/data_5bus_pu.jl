@@ -477,7 +477,7 @@ battery5(nodes5) = [GenericBattery(
     efficiency = (in = 0.80, out = 0.90),
     reactivepower = 0.0,
     reactivepowerlimits = (min = -50.0, max = 50.0),
-    machine_basepower = 100.0,
+    basepower = 100.0,
 )];
 
 loadbus2_ts_DA = [

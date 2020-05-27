@@ -798,7 +798,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         shutdown_cost = 0.0
     end
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
-    machine_basepower = gen.base_mva
+    basepower = gen.base_mva
 
     return ThermalStandard(
         gen.name,
@@ -815,7 +815,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         ramplimits,
         timelimits,
         op_cost,
-        machine_basepower,
+        basepower,
     )
 end
 
@@ -831,7 +831,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
     min_down_time = get(gen, :min_down_time, nothing)
     timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
         (up = min_up_time, down = min_down_time)
-    machine_basepower = gen.base_mva
+    basepower = gen.base_mva
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -853,7 +853,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
             ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp),
             timelimits = timelimits,
             op_cost = TwoPartCost(curtailcost, 0.0),
-            machine_basepower = machine_basepower,
+            basepower = basepower,
             storage_capacity = storage.storage_capacity,
             inflow = storage.inflow_limit,
             initial_storage = storage.initial_storage,
@@ -872,7 +872,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
             reactivepowerlimits = reactive_power_limits,
             ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp),
             timelimits = timelimits,
-            machine_basepower = machine_basepower,
+            basepower = basepower,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
@@ -951,7 +951,7 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         efficiency = efficiency,
         reactivepower = gen.reactive_power,
         reactivepowerlimits = reactive_power_limits,
-        machine_basepower = gen.base_mva,
+        basepower = gen.base_mva,
     )
 
     return battery

@@ -940,5 +940,5 @@ battery14(nodes14) = [GenericBattery(
     reactivepower = 0.0,
     reactivepowerlimits = (min = -50.0, max = 50.0),
     efficiency = (in = 0.80, out = 0.90),
-    machine_basepower = 100.0,
+    basepower = 100.0,
 )]
