@@ -232,7 +232,6 @@ Refer to the PowerSystems descriptor file for field names that will be created.
 function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true)
     df = get_dataframe(data, category)
     field_infos = _get_field_infos(data, category, names(df))
-
     Channel() do channel
         for row in eachrow(df)
             obj = _read_data_row(data, row, field_infos; na_to_nothing = na_to_nothing)
@@ -985,7 +984,7 @@ end
 """Stores user-customized information for required dataframe columns."""
 struct _FieldInfo
     name::String
-    custom_name::Symbol
+    custom_name::String
     needs_per_unit_conversion::Bool
     unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
     # TODO unit, value ranges and options
@@ -1014,7 +1013,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
     fields = Vector{_FieldInfo}()
 
     for item in data.user_descriptors[category]
-        custom_name = Symbol(item["custom_name"])
+        custom_name = item["custom_name"]
         name = item["name"]
         if custom_name in df_names
             if !(name in descriptor_names)
@@ -1084,10 +1083,8 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             value = convert_units!(value, field_info.unit_conversion)
         end
         # TODO: validate ranges and option lists
-
         push!(fields, field_info.name)
         push!(vals, value)
     end
-
     return NamedTuple{Tuple(Symbol.(fields))}(vals)
 end
