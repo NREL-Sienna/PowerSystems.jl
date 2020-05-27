@@ -299,7 +299,7 @@ function make_renewable_fix(gen_name, d, bus)
         rating = float(d["pmax"]),
         primemover = convert(PrimeMovers.PrimeMover, d["type"]),
         powerfactor = 1.0,
-        machine_basepower = d["mbase"]
+        machine_basepower = d["mbase"],
     )
 
     return generator
