@@ -1,6 +1,6 @@
 import JSON2
 
-function validate_serialization(sys::System)
+function validate_serialization(sys::System; time_series_read_only = false)
     test_dir = mktempdir()
     orig_dir = pwd()
     cd(test_dir)
@@ -23,21 +23,31 @@ function validate_serialization(sys::System)
             close(io)
         end
 
-        sys2 = System(path)
+        sys2 = System(path; time_series_read_only = time_series_read_only)
         sys_ext2 = get_ext(sys2)
         sys_ext2["data"] != 5 && return false
         bus = PSY.get_component(PSY.Bus, sys2, ext_test_bus_name)
         ext = PSY.get_ext(bus)
         ext["test_field"] != 1 && return false
-        return IS.compare_values(sys, sys2)
+        return sys2, IS.compare_values(sys, sys2)
     finally
         cd(orig_dir)
     end
 end
 
-@testset "Test JSON serialization of CDM data" begin
+@testset "Test JSON serialization of RTS data with mutable time series" begin
     sys = create_rts_system()
-    @test validate_serialization(sys)
+    sys2, result = validate_serialization(sys; time_series_read_only = false)
+    @test result
+    clear_forecasts!(sys2)
+end
+
+@testset "Test JSON serialization of RTS data with immutable time series" begin
+    sys = create_rts_system()
+    sys2, result = validate_serialization(sys; time_series_read_only = true)
+    @test result
+    @test_throws ErrorException clear_forecasts!(sys2)
+    # Full error checking is done in IS.
 end
 
 @testset "Test JSON serialization of matpower data" begin
@@ -54,18 +64,21 @@ end
         PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
     add_forecast!(sys, tg, tProbabilisticForecast)
 
-    @test validate_serialization(sys)
+    _, result = validate_serialization(sys)
+    @test result
 end
 
 @testset "Test JSON serialization of ACTIVSg2000 data" begin
     path = joinpath(DATA_DIR, "ACTIVSg2000", "ACTIVSg2000.m")
     sys = System(PowerSystems.PowerModelsData(path))
-    validate_serialization(sys)
+    _, result = validate_serialization(sys)
+    @test result
 end
 
 @testset "Test JSON serialization of dynamic inverter" begin
     sys = create_system_with_dynamic_inverter()
-    @test validate_serialization(sys)
+    _, result = validate_serialization(sys)
+    @test result
 end
 
 @testset "Test deepcopy of a system" begin
