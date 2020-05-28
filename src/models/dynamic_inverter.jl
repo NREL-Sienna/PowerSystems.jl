@@ -119,6 +119,7 @@ get_ω_ref(device::DynamicInverter) = device.ω_ref
 get_V_ref(device::DynamicInverter) = get_voltage(get_bus(device))
 get_P_ref(device::DynamicInverter) = get_activepower(device.static_injector)
 get_Q_ref(device::DynamicInverter) = get_reactivepower(device.static_injector)
+get_basepower(device::DynamicGenerator) = get_basepower(device.static_injector)
 get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states
 get_n_states(device::DynamicInverter) = device.n_states
