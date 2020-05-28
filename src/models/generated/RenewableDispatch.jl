@@ -13,6 +13,7 @@ This file is auto-generated. Do not edit.
         reactivepowerlimits::Union{Nothing, Min_Max}
         powerfactor::Float64
         op_cost::TwoPartCost
+        basepower::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -33,6 +34,7 @@ This file is auto-generated. Do not edit.
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `powerfactor::Float64`, validation range: (0, 1), action if invalid: error
 - `op_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
+- `basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -53,6 +55,8 @@ mutable struct RenewableDispatch <: RenewableGen
     powerfactor::Float64
     "Operation Cost of Generation [`TwoPartCost`](@ref)"
     op_cost::TwoPartCost
+    "Base power of the unit in MVA"
+    basepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -64,12 +68,12 @@ mutable struct RenewableDispatch <: RenewableGen
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, basepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, basepower, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function RenewableDispatch(; name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, services, dynamic_injector, ext, forecasts, )
+function RenewableDispatch(; name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, basepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, activepower, reactivepower, rating, primemover, reactivepowerlimits, powerfactor, op_cost, basepower, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -85,6 +89,7 @@ function RenewableDispatch(::Nothing)
         reactivepowerlimits=nothing,
         powerfactor=1.0,
         op_cost=TwoPartCost(nothing),
+        basepower=0.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -112,6 +117,8 @@ get_reactivepowerlimits(value::RenewableDispatch) = value.reactivepowerlimits
 get_powerfactor(value::RenewableDispatch) = value.powerfactor
 """Get RenewableDispatch op_cost."""
 get_op_cost(value::RenewableDispatch) = value.op_cost
+"""Get RenewableDispatch basepower."""
+get_basepower(value::RenewableDispatch) = value.basepower
 """Get RenewableDispatch services."""
 get_services(value::RenewableDispatch) = value.services
 """Get RenewableDispatch dynamic_injector."""
@@ -143,6 +150,8 @@ set_reactivepowerlimits!(value::RenewableDispatch, val::Union{Nothing, Min_Max})
 set_powerfactor!(value::RenewableDispatch, val::Float64) = value.powerfactor = val
 """Set RenewableDispatch op_cost."""
 set_op_cost!(value::RenewableDispatch, val::TwoPartCost) = value.op_cost = val
+"""Set RenewableDispatch basepower."""
+set_basepower!(value::RenewableDispatch, val::Float64) = value.basepower = val
 """Set RenewableDispatch services."""
 set_services!(value::RenewableDispatch, val::Vector{Service}) = value.services = val
 """Set RenewableDispatch ext."""

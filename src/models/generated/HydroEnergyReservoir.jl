@@ -15,6 +15,7 @@ This file is auto-generated. Do not edit.
         ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         op_cost::TwoPartCost
+        basepower::Float64
         storage_capacity::Float64
         inflow::Float64
         initial_storage::Float64
@@ -40,6 +41,7 @@ This file is auto-generated. Do not edit.
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits, validation range: (0, nothing), action if invalid: error
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `op_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
+- `basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
 - `storage_capacity::Float64`, validation range: (0, nothing), action if invalid: error
 - `inflow::Float64`, validation range: (0, nothing), action if invalid: error
 - `initial_storage::Float64`, validation range: (0, nothing), action if invalid: error
@@ -67,6 +69,8 @@ mutable struct HydroEnergyReservoir <: HydroGen
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Operation Cost of Generation [`TwoPartCost`](@ref)"
     op_cost::TwoPartCost
+    "Base power of the unit in MVA"
+    basepower::Float64
     storage_capacity::Float64
     inflow::Float64
     initial_storage::Float64
@@ -81,12 +85,12 @@ mutable struct HydroEnergyReservoir <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, storage_capacity, inflow, initial_storage, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, storage_capacity, inflow, initial_storage, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, storage_capacity, inflow, initial_storage, services, dynamic_injector, ext, forecasts, )
+function HydroEnergyReservoir(; name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, storage_capacity, inflow, initial_storage, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, activepower, reactivepower, rating, primemover, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, storage_capacity, inflow, initial_storage, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -104,6 +108,7 @@ function HydroEnergyReservoir(::Nothing)
         ramplimits=nothing,
         timelimits=nothing,
         op_cost=TwoPartCost(nothing),
+        basepower=0.0,
         storage_capacity=0.0,
         inflow=0.0,
         initial_storage=0.0,
@@ -138,6 +143,8 @@ get_ramplimits(value::HydroEnergyReservoir) = value.ramplimits
 get_timelimits(value::HydroEnergyReservoir) = value.timelimits
 """Get HydroEnergyReservoir op_cost."""
 get_op_cost(value::HydroEnergyReservoir) = value.op_cost
+"""Get HydroEnergyReservoir basepower."""
+get_basepower(value::HydroEnergyReservoir) = value.basepower
 """Get HydroEnergyReservoir storage_capacity."""
 get_storage_capacity(value::HydroEnergyReservoir) = value.storage_capacity
 """Get HydroEnergyReservoir inflow."""
@@ -179,6 +186,8 @@ set_ramplimits!(value::HydroEnergyReservoir, val::Union{Nothing, NamedTuple{(:up
 set_timelimits!(value::HydroEnergyReservoir, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.timelimits = val
 """Set HydroEnergyReservoir op_cost."""
 set_op_cost!(value::HydroEnergyReservoir, val::TwoPartCost) = value.op_cost = val
+"""Set HydroEnergyReservoir basepower."""
+set_basepower!(value::HydroEnergyReservoir, val::Float64) = value.basepower = val
 """Set HydroEnergyReservoir storage_capacity."""
 set_storage_capacity!(value::HydroEnergyReservoir, val::Float64) = value.storage_capacity = val
 """Set HydroEnergyReservoir inflow."""

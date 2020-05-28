@@ -90,6 +90,7 @@ function create_system_with_dynamic_inverter()
         reactivepower = 0.0,
         reactivepowerlimits = (min = -50.0, max = 50.0),
         efficiency = (in = 0.80, out = 0.90),
+        basepower = 100.0,
     )
     converter = AverageConverter(
         138.0, #Rated Voltage

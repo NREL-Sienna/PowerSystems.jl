@@ -137,6 +137,7 @@ export get_arc
 export get_area
 export get_available
 export get_b
+export get_basepower
 export get_basevoltage
 export get_bias
 export get_bus
@@ -315,6 +316,7 @@ export set_arc!
 export set_area!
 export set_available!
 export set_b!
+export set_basepower!
 export set_basevoltage!
 export set_bias!
 export set_bus!
