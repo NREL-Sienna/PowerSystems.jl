@@ -178,6 +178,7 @@ export get_kq
 export get_kω
 export get_lf
 export get_lg
+export get_load_response
 export get_load_zone
 export get_loss
 export get_lv
@@ -357,6 +358,7 @@ export set_kq!
 export set_kω!
 export set_lf!
 export set_lg!
+export set_load_response!
 export set_load_zone!
 export set_loss!
 export set_lv!
