@@ -1321,7 +1321,7 @@
             },
             {
                 "name": "basepower",
-                "comment": "Base power of the unit in MVA",
+                "comment": "Base power of the unit in system base per unit",
                 "null_value": "0.0",
                 "data_type": "Float64",
                 "valid_range": {
@@ -1481,7 +1481,7 @@
             },
             {
                 "name": "basepower",
-                "comment": "Base power of the unit in MVA",
+                "comment": "Base power of the unit in system base per unit",
                 "null_value": "0.0",
                 "data_type": "Float64",
                 "valid_range": {
@@ -1597,7 +1597,7 @@
             },
             {
                 "name": "basepower",
-                "comment": "Base power of the unit in MVA",
+                "comment": "Base power of the unit in system base per unit",
                 "null_value": "0.0",
                 "data_type": "Float64",
                 "valid_range": {
@@ -1703,7 +1703,7 @@
             },
             {
                 "name": "basepower",
-                "comment": "Base power of the unit in MVA",
+                "comment": "Base power of the unit in system base per unit",
                 "null_value": "0.0",
                 "data_type": "Float64",
                 "valid_range": {
@@ -1850,7 +1850,7 @@
             },
             {
                 "name": "basepower",
-                "comment": "Base power of the unit in MVA",
+                "comment": "Base power of the unit in system base per unit",
                 "null_value": "0.0",
                 "data_type": "Float64",
                 "valid_range": {
@@ -2017,7 +2017,7 @@
             },
             {
                 "name": "basepower",
-                "comment": "Base power of the unit in MVA",
+                "comment": "Base power of the unit in system base per unit",
                 "null_value": "0.0",
                 "data_type": "Float64",
                 "valid_range": {

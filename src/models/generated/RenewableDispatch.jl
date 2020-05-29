@@ -34,7 +34,7 @@ This file is auto-generated. Do not edit.
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `powerfactor::Float64`, validation range: (0, 1), action if invalid: error
 - `op_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
-- `basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `basepower::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -55,7 +55,7 @@ mutable struct RenewableDispatch <: RenewableGen
     powerfactor::Float64
     "Operation Cost of Generation [`TwoPartCost`](@ref)"
     op_cost::TwoPartCost
-    "Base power of the unit in MVA"
+    "Base power of the unit in system base per unit"
     basepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}

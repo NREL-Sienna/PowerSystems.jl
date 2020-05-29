@@ -44,7 +44,7 @@ Data Structure for thermal generation technologies.
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `op_cost::ThreePartCost`
-- `basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `basepower::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `participation_factor::Float64`: AGC Participation Factor, validation range: (0, 1.0), action if invalid: error
 - `time_at_status::Float64`
@@ -72,7 +72,7 @@ mutable struct ThermalStandard <: ThermalGen
     "Minimum up and Minimum down time limits in hours"
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     op_cost::ThreePartCost
-    "Base power of the unit in MVA"
+    "Base power of the unit in system base per unit"
     basepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}

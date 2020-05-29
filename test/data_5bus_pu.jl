@@ -314,7 +314,7 @@ thermal_generators5(nodes5) = [
         nothing,
         nothing,
         ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
-        100.0,
+        1.0,
     ),
     ThermalStandard(
         "Park City",
@@ -331,7 +331,7 @@ thermal_generators5(nodes5) = [
         (up = 0.02, down = 0.02),
         (up = 2.0, down = 1.0),
         ThreePartCost((0.0, 1500.0), 0.0, 1.5, 0.75),
-        100.0,
+        1.0,
     ),
     ThermalStandard(
         "Solitude",
@@ -348,7 +348,7 @@ thermal_generators5(nodes5) = [
         (up = 0.012, down = 0.012),
         (up = 3.0, down = 2.0),
         ThreePartCost((0.0, 3000.0), 0.0, 3.0, 1.5),
-        100.0,
+        1.0,
     ),
     ThermalStandard(
         "Sundance",
@@ -365,7 +365,7 @@ thermal_generators5(nodes5) = [
         (up = 0.015, down = 0.015),
         (up = 2.0, down = 1.0),
         ThreePartCost((0.0, 4000.0), 0.0, 4.0, 2.0),
-        100.0,
+        1.0,
     ),
     ThermalStandard(
         "Brighton",
@@ -382,7 +382,7 @@ thermal_generators5(nodes5) = [
         (up = 0.015, down = 0.015),
         (up = 5.0, down = 3.0),
         ThreePartCost((0.0, 1000.0), 0.0, 1.5, 0.75),
-        100.0,
+        1.0,
     ),
 ];
 
@@ -398,7 +398,7 @@ renewable_generators5(nodes5) = [
         (min = 0.0, max = 0.0),
         1.0,
         TwoPartCost(22.0, 0.0),
-        100.0,
+        1.0,
     ),
     RenewableDispatch(
         "WindBusB",
@@ -411,7 +411,7 @@ renewable_generators5(nodes5) = [
         (min = 0.0, max = 0.0),
         1.0,
         TwoPartCost(22.0, 0.0),
-        100.0,
+        1.0,
     ),
     RenewableDispatch(
         "WindBusC",
@@ -424,7 +424,7 @@ renewable_generators5(nodes5) = [
         (min = -0.800, max = 0.800),
         1.0,
         TwoPartCost(22.0, 0.0),
-        100.0,
+        1.0,
     ),
 ];
 
@@ -441,7 +441,7 @@ hydro_generators5(nodes5) = [
         (min = 0.0, max = 60.0),
         nothing,
         nothing,
-        100.0,
+        1.0,
     ),
     HydroEnergyReservoir(
         "HydroEnergyReservoir",
@@ -456,7 +456,7 @@ hydro_generators5(nodes5) = [
         (up = 10.0, down = 10.0),
         nothing,
         TwoPartCost(15.0, 0.0),
-        100.0,
+        1.0,
         1.0,
         0.2,
         0.5,
@@ -477,7 +477,7 @@ battery5(nodes5) = [GenericBattery(
     efficiency = (in = 0.80, out = 0.90),
     reactivepower = 0.0,
     reactivepowerlimits = (min = -50.0, max = 50.0),
-    basepower = 100.0,
+    basepower = 1.0,
 )];
 
 loadbus2_ts_DA = [
