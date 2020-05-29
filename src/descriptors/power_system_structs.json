@@ -115,6 +115,12 @@
                 "default": "0.0"
             },
             {
+                "name": "load_response",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "default": "0.0"
+            },
+            {
                 "name": "forecasts",
                 "accessor_module": "InfrastructureSystems",
                 "comment": "internal forecast storage",
