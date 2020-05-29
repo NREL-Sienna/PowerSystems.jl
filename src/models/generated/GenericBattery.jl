@@ -40,7 +40,7 @@ Data structure for a generic battery
 - `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`, validation range: (0, 1), action if invalid: warn
 - `reactivepower::Float64`, validation range: reactivepowerlimits, action if invalid: warn
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
-- `basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `basepower::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -64,7 +64,7 @@ mutable struct GenericBattery <: Storage
     efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
     reactivepower::Float64
     reactivepowerlimits::Union{Nothing, Min_Max}
-    "Base power of the unit in MVA"
+    "Base power of the unit in system base per unit"
     basepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}

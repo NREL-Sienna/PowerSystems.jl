@@ -30,7 +30,7 @@ Data Structure for fixed renewable generation technologies.
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
 - `primemover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
 - `powerfactor::Float64`, validation range: (0, 1), action if invalid: error
-- `basepower::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `basepower::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -48,7 +48,7 @@ mutable struct RenewableFix <: RenewableGen
     "PrimeMover Technology according to EIA 923"
     primemover::PrimeMovers.PrimeMover
     powerfactor::Float64
-    "Base power of the unit in MVA"
+    "Base power of the unit in system base per unit"
     basepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}
