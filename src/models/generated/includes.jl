@@ -189,7 +189,6 @@ export get_n_states
 export get_number
 export get_op_cost
 export get_outputactivepowerlimits
-export get_participation_factor
 export get_powerfactor
 export get_primaryshunt
 export get_primemover
@@ -369,7 +368,6 @@ export set_n_states!
 export set_number!
 export set_op_cost!
 export set_outputactivepowerlimits!
-export set_participation_factor!
 export set_powerfactor!
 export set_primaryshunt!
 export set_primemover!
