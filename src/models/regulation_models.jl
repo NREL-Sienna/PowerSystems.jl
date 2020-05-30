@@ -1,4 +1,4 @@
-struct RegulationDevice{T <: StaticInjection}
+mutable struct RegulationDevice{T <: StaticInjection} <: Component
     device::T
     droop::Float64
     participation_factor::Float64
