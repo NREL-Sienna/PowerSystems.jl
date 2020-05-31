@@ -2258,12 +2258,19 @@
                 "null_value": "0.0",
                 "data_type": "Float64"
             },
-                        {
+            {
                 "name": "area",
                 "comment": "the area controlled by the AGC",
                 "null_value": "Area(nothing)",
                 "data_type": "Union{Nothing, Area}",
                 "default": "nothing"
+            },
+            {
+                "name": "initial_ace",
+                "comment": "PID Discretization period [Seconds]",
+                "default": "0.0",
+                "null_value": "0.0",
+                "data_type": "Float64"
             },
             {
                 "name": "ext",

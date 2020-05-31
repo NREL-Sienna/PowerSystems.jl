@@ -19,7 +19,7 @@ end
 
 function RegulationDevice(
     device::T;
-    droop::Float64 = 0.0,
+    droop::Float64 = Inf,
     participation_factor::Float64 = 0.0,
     reserve_limit::Float64 = 0.0,
     inertia::Float64 = 0.0,

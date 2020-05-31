@@ -11,6 +11,7 @@ This file is auto-generated. Do not edit.
         K_d::Float64
         delta_t::Float64
         area::Union{Nothing, Area}
+        initial_ace::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -26,6 +27,7 @@ This file is auto-generated. Do not edit.
 - `K_d::Float64`: PID Derrivative Constant
 - `delta_t::Float64`: PID Discretization period [Seconds]
 - `area::Union{Nothing, Area}`: the area controlled by the AGC
+- `initial_ace::Float64`: PID Discretization period [Seconds]
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -43,17 +45,19 @@ mutable struct AGC <: Service
     delta_t::Float64
     "the area controlled by the AGC"
     area::Union{Nothing, Area}
+    "PID Discretization period [Seconds]"
+    initial_ace::Float64
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function AGC(name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, ext=Dict{String, Any}(), )
-    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, ext, InfrastructureSystemsInternal(), )
+function AGC(name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initial_ace=0.0, ext=Dict{String, Any}(), )
+    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, ext, InfrastructureSystemsInternal(), )
 end
 
-function AGC(; name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, ext=Dict{String, Any}(), )
-    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, ext, )
+function AGC(; name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initial_ace=0.0, ext=Dict{String, Any}(), )
+    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -67,6 +71,7 @@ function AGC(::Nothing)
         K_d=0.0,
         delta_t=0.0,
         area=Area(nothing),
+        initial_ace=0.0,
         ext=Dict{String, Any}(),
     )
 end
@@ -87,6 +92,8 @@ get_K_d(value::AGC) = value.K_d
 get_delta_t(value::AGC) = value.delta_t
 """Get AGC area."""
 get_area(value::AGC) = value.area
+"""Get AGC initial_ace."""
+get_initial_ace(value::AGC) = value.initial_ace
 """Get AGC ext."""
 get_ext(value::AGC) = value.ext
 """Get AGC internal."""
@@ -108,6 +115,8 @@ set_K_d!(value::AGC, val::Float64) = value.K_d = val
 set_delta_t!(value::AGC, val::Float64) = value.delta_t = val
 """Set AGC area."""
 set_area!(value::AGC, val::Union{Nothing, Area}) = value.area = val
+"""Set AGC initial_ace."""
+set_initial_ace!(value::AGC, val::Float64) = value.initial_ace = val
 """Set AGC ext."""
 set_ext!(value::AGC, val::Dict{String, Any}) = value.ext = val
 """Set AGC internal."""

@@ -155,6 +155,7 @@ export get_flowlimits
 export get_from
 export get_fuel
 export get_inflow
+export get_initial_ace
 export get_initial_storage
 export get_inputactivepowerlimits
 export get_internal
@@ -334,6 +335,7 @@ export set_flowlimits!
 export set_from!
 export set_fuel!
 export set_inflow!
+export set_initial_ace!
 export set_initial_storage!
 export set_inputactivepowerlimits!
 export set_internal!
