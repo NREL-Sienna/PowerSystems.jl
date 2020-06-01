@@ -15,6 +15,7 @@ const SYSTEM_KWARGS = Set((
     :shunt_name_formatter,
     :time_series_directory,
     :time_series_in_memory,
+    :time_series_read_only,
 ))
 
 """
@@ -261,7 +262,12 @@ function System(file_path::AbstractString; kwargs...)
         end
         cd(new_dir)
         try
-            sys = IS.from_json(System, basename(file_path))
+            time_series_read_only = get(kwargs, :time_series_read_only, false)
+            sys = deserialize(
+                System,
+                basename(file_path);
+                time_series_read_only = time_series_read_only,
+            )
             check!(sys)
             return sys
         finally
@@ -1236,21 +1242,31 @@ function encode_for_json(sys::T) where {T <: System}
     return NamedTuple{Tuple(final_fields)}(vals)
 end
 
-function JSON2.read(io::IO, ::Type{System})
-    raw = JSON2.read(io, NamedTuple)
+function deserialize(
+    ::Type{System},
+    filename::AbstractString;
+    time_series_read_only = false,
+)
+    return open(filename) do io
+        raw = JSON2.read(io, NamedTuple)
 
-    # Read any field that is defined in System but optional for the constructors and not
-    # already handled here.
-    handled = (:data, :basepower, :bus_numbers, :internal)
-    kwargs = Dict{Symbol, Any}()
-    for field in setdiff(propertynames(raw), handled)
-        kwargs[field] = getproperty(raw, field)
+        # Read any field that is defined in System but optional for the constructors and not
+        # already handled here.
+        handled = (:data, :basepower, :bus_numbers, :internal)
+        kwargs = Dict{Symbol, Any}()
+        for field in setdiff(propertynames(raw), handled)
+            kwargs[field] = getproperty(raw, field)
+        end
+
+        data = IS.deserialize(
+            IS.SystemData,
+            Component,
+            raw.data;
+            time_series_read_only = time_series_read_only,
+        )
+        internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
+        sys = System(data, float(raw.basepower); internal = internal, kwargs...)
     end
-
-    data = IS.deserialize(IS.SystemData, Component, raw.data)
-    internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
-    sys = System(data, float(raw.basepower); internal = internal, kwargs...)
-    return sys
 end
 
 function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::NamedTuple)

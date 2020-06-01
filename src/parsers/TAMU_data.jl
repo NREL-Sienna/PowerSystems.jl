@@ -97,7 +97,7 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
         if !isnothing(c)
             add_forecast!(
                 sys,
-                loads[!, [:timestamp, lname]],
+                loads[!, ["timestamp", lname]],
                 c,
                 "get_maxactivepower",
                 Float64(maximum(loads[!, lname])),
