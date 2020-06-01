@@ -188,7 +188,7 @@ function get_user_field(
     try
         for item in data.user_descriptors[category]
             if item["name"] == field
-                return Symbol(item["custom_name"])
+                return item["custom_name"]
             end
         end
     catch
@@ -232,7 +232,6 @@ Refer to the PowerSystems descriptor file for field names that will be created.
 function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true)
     df = get_dataframe(data, category)
     field_infos = _get_field_infos(data, category, names(df))
-
     Channel() do channel
         for row in eachrow(df)
             obj = _read_data_row(data, row, field_infos; na_to_nothing = na_to_nothing)
@@ -800,6 +799,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         shutdown_cost = 0.0
     end
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
+    basepower = gen.base_mva
+    sys_basepower = data.basepower
 
     return ThermalStandard(
         gen.name,
@@ -816,6 +817,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         ramplimits,
         timelimits,
         op_cost,
+        basepower / sys_basepower,
     )
 end
 
@@ -930,6 +932,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
     min_down_time = get(gen, :min_down_time, nothing)
     timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
         (up = min_up_time, down = min_down_time)
+    basepower = gen.base_mva
+    sys_basepower = data.basepower
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -951,6 +955,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
             ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp),
             timelimits = timelimits,
             op_cost = TwoPartCost(curtailcost, 0.0),
+            basepower = basepower / sys_basepower,
             storage_capacity = storage.storage_capacity,
             inflow = storage.inflow_limit,
             initial_storage = storage.initial_storage,
@@ -969,6 +974,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, bus)
             reactivepowerlimits = reactive_power_limits,
             ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp),
             timelimits = timelimits,
+            basepower = basepower / sys_basepower,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
@@ -1002,6 +1008,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max),
             1.0,
             TwoPartCost(0.0, 0.0),
+            gen.base_mva / data.basepower,
         )
     elseif gen_type == RenewableFix
         generator = RenewableFix(
@@ -1013,6 +1020,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             rating,
             convert(PrimeMovers.PrimeMover, gen.unit_type),
             1.0,
+            gen.base_mva / data.basepower,
         )
     else
         error("Unsupported type $gen_type")
@@ -1045,6 +1053,7 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         efficiency = efficiency,
         reactivepower = gen.reactive_power,
         reactivepowerlimits = reactive_power_limits,
+        basepower = gen.base_mva / data.basepower,
     )
 
     return battery
@@ -1086,7 +1095,7 @@ end
 """Stores user-customized information for required dataframe columns."""
 struct _FieldInfo
     name::String
-    custom_name::Symbol
+    custom_name::String
     needs_per_unit_conversion::Bool
     unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
     # TODO unit, value ranges and options
@@ -1115,7 +1124,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
     fields = Vector{_FieldInfo}()
 
     for item in data.user_descriptors[category]
-        custom_name = Symbol(item["custom_name"])
+        custom_name = item["custom_name"]
         name = item["name"]
         if custom_name in df_names
             if !(name in descriptor_names)
@@ -1185,10 +1194,8 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             value = convert_units!(value, field_info.unit_conversion)
         end
         # TODO: validate ranges and option lists
-
         push!(fields, field_info.name)
         push!(vals, value)
     end
-
     return NamedTuple{Tuple(Symbol.(fields))}(vals)
 end

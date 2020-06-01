@@ -246,7 +246,7 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; k
     end
 end
 
-function make_hydro_gen(gen_name, d, bus)
+function make_hydro_gen(gen_name, d, bus, sys_mbase)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = TwoPartCost(0.0, 0.0)
 
@@ -263,13 +263,14 @@ function make_hydro_gen(gen_name, d, bus)
         ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
         timelimits = nothing,
         op_cost = curtailcost,
+        basepower = d["mbase"] / sys_mbase,
         storage_capacity = 0.0, #TODO: Implement better Solution for this
         inflow = 0.0,
         initial_storage = 0.0,
     )
 end
 
-function make_renewable_dispatch(gen_name, d, bus)
+function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
     cost = TwoPartCost(0.0, 0.0)
     generator = RenewableDispatch(;
         name = gen_name,
@@ -282,12 +283,13 @@ function make_renewable_dispatch(gen_name, d, bus)
         reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
         powerfactor = 1.0,
         op_cost = cost,
+        basepower = d["mbase"] / sys_mbase,
     )
 
     return generator
 end
 
-function make_renewable_fix(gen_name, d, bus)
+function make_renewable_fix(gen_name, d, bus, sys_mbase)
     generator = RenewableFix(;
         name = gen_name,
         available = Bool(d["gen_status"]),
@@ -297,6 +299,7 @@ function make_renewable_fix(gen_name, d, bus)
         rating = float(d["pmax"]),
         primemover = convert(PrimeMovers.PrimeMover, d["type"]),
         powerfactor = 1.0,
+        basepower = d["mbase"] / sys_mbase,
     )
 
     return generator
@@ -311,7 +314,7 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
     c(p) = c_n*p^n+...+c_1p+c_0
     c_o is stored in the  field in of the Econ Struct
 """
-function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
+function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase::Number)
     if haskey(d, "model")
         model = GeneratorCostModels.GeneratorCostModel(d["model"])
         if model == GeneratorCostModels.PIECEWISE_LINEAR
@@ -374,6 +377,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus)
         ramplimits = (up = ramp_lim / d["mbase"], down = ramp_lim / d["mbase"]),
         timelimits = nothing,
         op_cost = op_cost,
+        basepower = d["mbase"] / sys_mbase,
     )
 
     return thermal_gen
@@ -392,6 +396,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
 
     genmap_file = get(kwargs, :genmap_file, nothing)
     genmap = get_generator_mapping(genmap_file)
+    sys_mbase = data["baseMVA"]
 
     for (name, pm_gen) in data["gen"]
         if haskey(kwargs, :gen_name_formatter)
@@ -418,13 +423,13 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
 
         gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], genmap)
         if gen_type == ThermalStandard
-            generator = make_thermal_gen(gen_name, pm_gen, bus)
+            generator = make_thermal_gen(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == HydroEnergyReservoir
-            generator = make_hydro_gen(gen_name, pm_gen, bus)
+            generator = make_hydro_gen(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableDispatch
-            generator = make_renewable_dispatch(gen_name, pm_gen, bus)
+            generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableFix
-            generator = make_renewable_fix(gen_name, pm_gen, bus)
+            generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == GenericBattery
             @warn "Skipping GenericBattery"
             continue

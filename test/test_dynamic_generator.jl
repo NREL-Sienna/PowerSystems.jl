@@ -28,6 +28,7 @@ static_gen = ThermalStandard(
     nothing,
     nothing,
     ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
+    1.0,
 )
 
 branch_OMIB = [Line(

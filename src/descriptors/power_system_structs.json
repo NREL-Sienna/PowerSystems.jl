@@ -1376,6 +1376,17 @@
                 "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
             },
             {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
+            },
+            {
                 "name": "storage_capacity",
                 "null_value": "0.0",
                 "data_type": "Float64",
@@ -1525,6 +1536,17 @@
                 "validation_action": "error"
             },
             {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
+            },
+            {
                 "name": "services",
                 "data_type": "Vector{Service}",
                 "comment": "Services that this device contributes to",
@@ -1630,6 +1652,17 @@
                 "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
             },
             {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
+            },
+            {
                 "name": "services",
                 "data_type": "Vector{Service}",
                 "comment": "Services that this device contributes to",
@@ -1723,6 +1756,17 @@
                     "max": 1
                 },
                 "validation_action": "error"
+            },
+            {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
             },
             {
                 "name": "services",
@@ -1859,6 +1903,17 @@
                 "name": "op_cost",
                 "null_value": "ThreePartCost(nothing)",
                 "data_type": "ThreePartCost"
+            },
+            {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
             },
             {
                 "name": "services",
@@ -2196,6 +2251,17 @@
                 "name": "reactivepowerlimits",
                 "null_value": "(min=0.0, max=0.0)",
                 "data_type": "Union{Nothing, Min_Max}"
+            },
+            {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
             },
             {
                 "name": "services",

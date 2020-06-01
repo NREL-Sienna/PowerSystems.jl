@@ -75,6 +75,7 @@ get_ω_ref(device::DynamicGenerator) = device.ω_ref
 get_V_ref(device::DynamicGenerator) = get_voltage(get_bus(device))
 get_P_ref(device::DynamicGenerator) = get_activepower(device.static_injector)
 get_Q_ref(device::DynamicGenerator) = get_reactivepower(device.static_injector)
+get_basepower(device::DynamicGenerator) = get_basepower(device.static_injector)
 get_machine(device::DynamicGenerator) = device.machine
 get_shaft(device::DynamicGenerator) = device.shaft
 get_avr(device::DynamicGenerator) = device.avr
