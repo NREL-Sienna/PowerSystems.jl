@@ -10,7 +10,6 @@ This file is auto-generated. Do not edit.
         Xq_p::Float64
         Td0_p::Float64
         Tq0_p::Float64
-        MVABase::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -30,7 +29,6 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
 - `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: (0, nothing)
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
-- `MVABase::Float64`: Nominal Capacity in MVA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
@@ -51,8 +49,6 @@ mutable struct OneDOneQMachine <: Machine
     Td0_p::Float64
     "Time constant of transient q-axis voltage"
     Tq0_p::Float64
-    "Nominal Capacity in MVA"
-    MVABase::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
@@ -60,12 +56,12 @@ mutable struct OneDOneQMachine <: Machine
     internal::InfrastructureSystemsInternal
 end
 
-function OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, MVABase, ext=Dict{String, Any}(), )
-    OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, MVABase, ext, [:eq_p, :ed_p], 2, InfrastructureSystemsInternal(), )
+function OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext=Dict{String, Any}(), )
+    OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext, [:eq_p, :ed_p], 2, InfrastructureSystemsInternal(), )
 end
 
-function OneDOneQMachine(; R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, MVABase, ext=Dict{String, Any}(), )
-    OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, MVABase, ext, )
+function OneDOneQMachine(; R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext=Dict{String, Any}(), )
+    OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -78,7 +74,6 @@ function OneDOneQMachine(::Nothing)
         Xq_p=0,
         Td0_p=0,
         Tq0_p=0,
-        MVABase=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -97,8 +92,6 @@ get_Xq_p(value::OneDOneQMachine) = value.Xq_p
 get_Td0_p(value::OneDOneQMachine) = value.Td0_p
 """Get OneDOneQMachine Tq0_p."""
 get_Tq0_p(value::OneDOneQMachine) = value.Tq0_p
-"""Get OneDOneQMachine MVABase."""
-get_MVABase(value::OneDOneQMachine) = value.MVABase
 """Get OneDOneQMachine ext."""
 get_ext(value::OneDOneQMachine) = value.ext
 """Get OneDOneQMachine states."""
@@ -122,8 +115,6 @@ set_Xq_p!(value::OneDOneQMachine, val::Float64) = value.Xq_p = val
 set_Td0_p!(value::OneDOneQMachine, val::Float64) = value.Td0_p = val
 """Set OneDOneQMachine Tq0_p."""
 set_Tq0_p!(value::OneDOneQMachine, val::Float64) = value.Tq0_p = val
-"""Set OneDOneQMachine MVABase."""
-set_MVABase!(value::OneDOneQMachine, val::Float64) = value.MVABase = val
 """Set OneDOneQMachine ext."""
 set_ext!(value::OneDOneQMachine, val::Dict{String, Any}) = value.ext = val
 """Set OneDOneQMachine states."""

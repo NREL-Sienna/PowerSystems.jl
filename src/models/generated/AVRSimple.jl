@@ -4,6 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct AVRSimple <: AVR
         Kv::Float64
+        V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -15,6 +16,7 @@ i.e. an integrator controller on EMF
 
 # Arguments
 - `Kv::Float64`: Proportional Gain, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`: Fixed AVR has 1 states
@@ -23,6 +25,8 @@ i.e. an integrator controller on EMF
 mutable struct AVRSimple <: AVR
     "Proportional Gain"
     Kv::Float64
+    "Reference Voltage Set-point"
+    V_ref::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
     "Fixed AVR has 1 states"
@@ -31,24 +35,27 @@ mutable struct AVRSimple <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function AVRSimple(Kv, ext=Dict{String, Any}(), )
-    AVRSimple(Kv, ext, [:Vf], 1, InfrastructureSystemsInternal(), )
+function AVRSimple(Kv, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRSimple(Kv, V_ref, ext, [:Vf], 1, InfrastructureSystemsInternal(), )
 end
 
-function AVRSimple(; Kv, ext=Dict{String, Any}(), )
-    AVRSimple(Kv, ext, )
+function AVRSimple(; Kv, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRSimple(Kv, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
 function AVRSimple(::Nothing)
     AVRSimple(;
         Kv=0,
+        V_ref=0,
         ext=Dict{String, Any}(),
     )
 end
 
 """Get AVRSimple Kv."""
 get_Kv(value::AVRSimple) = value.Kv
+"""Get AVRSimple V_ref."""
+get_V_ref(value::AVRSimple) = value.V_ref
 """Get AVRSimple ext."""
 get_ext(value::AVRSimple) = value.ext
 """Get AVRSimple states."""
@@ -60,6 +67,8 @@ get_internal(value::AVRSimple) = value.internal
 
 """Set AVRSimple Kv."""
 set_Kv!(value::AVRSimple, val::Float64) = value.Kv = val
+"""Set AVRSimple V_ref."""
+set_V_ref!(value::AVRSimple, val::Float64) = value.V_ref = val
 """Set AVRSimple ext."""
 set_ext!(value::AVRSimple, val::Dict{String, Any}) = value.ext = val
 """Set AVRSimple states."""

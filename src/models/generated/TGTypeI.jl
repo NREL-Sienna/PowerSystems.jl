@@ -11,6 +11,7 @@ This file is auto-generated. Do not edit.
         T5::Float64
         P_min::Float64
         P_max::Float64
+        P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -28,6 +29,7 @@ Parameters of a Turbine Governor Type I.
 - `T5::Float64`: Reheat time constant, validation range: (0, nothing)
 - `P_min::Float64`: Min Power into the Governor, validation range: (0, nothing)
 - `P_max::Float64`: Max Power into the Governor, validation range: (0, nothing)
+- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
@@ -50,6 +52,8 @@ mutable struct TGTypeI <: TurbineGov
     P_min::Float64
     "Max Power into the Governor"
     P_max::Float64
+    "Reference Power Set-point"
+    P_ref::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
@@ -57,12 +61,12 @@ mutable struct TGTypeI <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, ext=Dict{String, Any}(), )
-    TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, ext, [:x_g1, :x_g2, :x_g3], 3, InfrastructureSystemsInternal(), )
+function TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, P_ref, ext, [:x_g1, :x_g2, :x_g3], 3, InfrastructureSystemsInternal(), )
 end
 
-function TGTypeI(; R, Ts, Tc, T3, T4, T5, P_min, P_max, ext=Dict{String, Any}(), )
-    TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, ext, )
+function TGTypeI(; R, Ts, Tc, T3, T4, T5, P_min, P_max, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,6 +80,7 @@ function TGTypeI(::Nothing)
         T5=0,
         P_min=0,
         P_max=0,
+        P_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -96,6 +101,8 @@ get_T5(value::TGTypeI) = value.T5
 get_P_min(value::TGTypeI) = value.P_min
 """Get TGTypeI P_max."""
 get_P_max(value::TGTypeI) = value.P_max
+"""Get TGTypeI P_ref."""
+get_P_ref(value::TGTypeI) = value.P_ref
 """Get TGTypeI ext."""
 get_ext(value::TGTypeI) = value.ext
 """Get TGTypeI states."""
@@ -121,6 +128,8 @@ set_T5!(value::TGTypeI, val::Float64) = value.T5 = val
 set_P_min!(value::TGTypeI, val::Float64) = value.P_min = val
 """Set TGTypeI P_max."""
 set_P_max!(value::TGTypeI, val::Float64) = value.P_max = val
+"""Set TGTypeI P_ref."""
+set_P_ref!(value::TGTypeI, val::Float64) = value.P_ref = val
 """Set TGTypeI ext."""
 set_ext!(value::TGTypeI, val::Dict{String, Any}) = value.ext = val
 """Set TGTypeI states."""

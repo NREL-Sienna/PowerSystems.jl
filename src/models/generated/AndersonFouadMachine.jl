@@ -14,7 +14,6 @@ This file is auto-generated. Do not edit.
         Tq0_p::Float64
         Td0_pp::Float64
         Tq0_pp::Float64
-        MVABase::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -35,7 +34,6 @@ Parameters of 6-states synchronous machine: Anderson-Fouad model
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: (0, nothing)
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: (0, nothing)
-- `MVABase::Float64`: Nominal Capacity in MVA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
@@ -64,8 +62,6 @@ mutable struct AndersonFouadMachine <: Machine
     Td0_pp::Float64
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
-    "Nominal Capacity in MVA"
-    MVABase::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
@@ -73,12 +69,12 @@ mutable struct AndersonFouadMachine <: Machine
     internal::InfrastructureSystemsInternal
 end
 
-function AndersonFouadMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, MVABase, ext=Dict{String, Any}(), )
-    AndersonFouadMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, MVABase, ext, [:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp], 6, InfrastructureSystemsInternal(), )
+function AndersonFouadMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext=Dict{String, Any}(), )
+    AndersonFouadMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext, [:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp], 6, InfrastructureSystemsInternal(), )
 end
 
-function AndersonFouadMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, MVABase, ext=Dict{String, Any}(), )
-    AndersonFouadMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, MVABase, ext, )
+function AndersonFouadMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext=Dict{String, Any}(), )
+    AndersonFouadMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -95,7 +91,6 @@ function AndersonFouadMachine(::Nothing)
         Tq0_p=0,
         Td0_pp=0,
         Tq0_pp=0,
-        MVABase=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -122,8 +117,6 @@ get_Tq0_p(value::AndersonFouadMachine) = value.Tq0_p
 get_Td0_pp(value::AndersonFouadMachine) = value.Td0_pp
 """Get AndersonFouadMachine Tq0_pp."""
 get_Tq0_pp(value::AndersonFouadMachine) = value.Tq0_pp
-"""Get AndersonFouadMachine MVABase."""
-get_MVABase(value::AndersonFouadMachine) = value.MVABase
 """Get AndersonFouadMachine ext."""
 get_ext(value::AndersonFouadMachine) = value.ext
 """Get AndersonFouadMachine states."""
@@ -155,8 +148,6 @@ set_Tq0_p!(value::AndersonFouadMachine, val::Float64) = value.Tq0_p = val
 set_Td0_pp!(value::AndersonFouadMachine, val::Float64) = value.Td0_pp = val
 """Set AndersonFouadMachine Tq0_pp."""
 set_Tq0_pp!(value::AndersonFouadMachine, val::Float64) = value.Tq0_pp = val
-"""Set AndersonFouadMachine MVABase."""
-set_MVABase!(value::AndersonFouadMachine, val::Float64) = value.MVABase = val
 """Set AndersonFouadMachine ext."""
 set_ext!(value::AndersonFouadMachine, val::Dict{String, Any}) = value.ext = val
 """Set AndersonFouadMachine states."""
