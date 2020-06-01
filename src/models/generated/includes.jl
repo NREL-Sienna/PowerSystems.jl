@@ -116,6 +116,7 @@ export get_Tr
 export get_Ts
 export get_V_pss
 export get_V_ref
+export get_Vf
 export get_Vr_max
 export get_Vr_min
 export get_X_th
@@ -294,6 +295,7 @@ export set_Tr!
 export set_Ts!
 export set_V_pss!
 export set_V_ref!
+export set_Vf!
 export set_Vr_max!
 export set_Vr_min!
 export set_X_th!

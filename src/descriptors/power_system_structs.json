@@ -2333,10 +2333,9 @@
         "docstring": "Parameters of a AVR that returns a fixed voltage to the rotor winding",
         "fields": [
             {
-                "name": "V_ref",
-                "comment": "Reference Voltage Set-point",
+                "name": "Vf",
+                "comment": "Fixed voltage field applied to the rotor winding",
                 "null_value": 0,
-                "default": "1.0",
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,

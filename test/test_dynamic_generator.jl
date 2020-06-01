@@ -190,7 +190,7 @@ end
     proportional_avr = AVRSimple(5000.0) #Kv
     @test proportional_avr isa PowerSystems.DynamicComponent
 
-    fixed_avr = AVRFixed(1.05) #V_ref
+    fixed_avr = AVRFixed(1.05) #Vf
     @test fixed_avr isa PowerSystems.DynamicComponent
 
     typeI_avr = AVRTypeI(
@@ -237,7 +237,7 @@ end
         2.0,
     ) #D
 
-    fixed_avr = AVRFixed(1.05) #Emf
+    fixed_avr = AVRFixed(1.05) #Vf
 
     proportional_avr = AVRSimple(5000.0) #Kv
 
