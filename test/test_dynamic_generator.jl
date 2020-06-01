@@ -49,8 +49,7 @@ branch_OMIB = [Line(
         0.0, #R
         0.2995, #Xd_p
         1.05, #eq_p
-        615.0,
-    )  #MVABase
+    ) 
     @test Basic isa PowerSystems.DynamicComponent
 
     oneDoneQ = OneDOneQMachine(
@@ -61,8 +60,7 @@ branch_OMIB = [Line(
         0.04, #Xq_p
         7.4, #Td0_p
         0.033, #Tq0_p
-        615.0,
-    )   #MVABase
+    )   
     @test oneDoneQ isa PowerSystems.DynamicComponent
 
     AndersonFouad = AndersonFouadMachine(
@@ -77,8 +75,7 @@ branch_OMIB = [Line(
         0.01, #Tq0_p #Data not available in Milano: Used 0.01
         0.03, #Td0_pp
         0.033, #Tq0_pp
-        615.0,
-    ) #MVABase
+    ) 
     @test AndersonFouad isa PowerSystems.DynamicComponent
 
     KundurMachine = SimpleFullMachine(
@@ -94,8 +91,7 @@ branch_OMIB = [Line(
         1.825, #L_ff
         0.1713, #L_1d or L_D in Machowski
         0.7525, #L_1q or L_Q in Machowski
-        555.0,
-    ) #MVABase
+    ) 
     @test KundurMachine isa PowerSystems.DynamicComponent
 
     KundurFullMachine = FullMachine(
@@ -112,8 +108,7 @@ branch_OMIB = [Line(
         1.825, #L_ff
         0.1713, #L_1d or L_D in Machowski
         0.7525, #L_1q or L_Q in Machowski
-        555.0,
-    ) #MVABase
+    ) 
     @test KundurFullMachine isa PowerSystems.DynamicComponent
 
     Mach2_benchmark = OneDOneQMachine(
@@ -124,8 +119,7 @@ branch_OMIB = [Line(
         0.25, #Xq_p
         5.89, #Td0_p
         0.6, #Tq0_p
-        100.0,
-    )   #MVABase
+    )   
     @test Mach2_benchmark isa PowerSystems.DynamicComponent
 end
 
@@ -178,7 +172,7 @@ end
         0.0, #T4
         50.0, #T5
         0.3, #P_min
-        1.2,
+        1.2, 
     ) #P_max
     @test typeI_tg isa PowerSystems.DynamicComponent
 
@@ -187,7 +181,7 @@ end
         0.3, #T1
         0.1, #T2
         1.0, #τ_max
-        0.1,
+        0.1, 
     ) #τ_min
     @test typeII_tg isa PowerSystems.DynamicComponent
 end
@@ -196,7 +190,7 @@ end
     proportional_avr = AVRSimple(5000.0) #Kv
     @test proportional_avr isa PowerSystems.DynamicComponent
 
-    fixed_avr = AVRFixed(1.05) #Emf
+    fixed_avr = AVRFixed(1.05) #V_ref
     @test fixed_avr isa PowerSystems.DynamicComponent
 
     typeI_avr = AVRTypeI(
@@ -225,7 +219,7 @@ end
         5.0, #Vrmax
         -5.0, #Vrmin
         0.0039, #Ae - 1st ceiling coefficient
-        1.555,
+        1.555, 
     ) #Be - 2nd ceiling coefficient
     @test gen2_avr_benchmark isa PowerSystems.DynamicComponent
 end
@@ -236,8 +230,7 @@ end
         0.0, #R
         0.2995, #Xd_p
         1.05, #eq_p
-        615.0,
-    )  #MVABase
+    ) 
 
     BaseShaft = SingleMass(
         5.148, #H
@@ -260,8 +253,7 @@ end
         0.04, #Xq_p
         7.4, #Td0_p
         0.033, #Tq0_p
-        615.0,
-    )   #MVABase
+    )   
 
     Gen1AVR = DynamicGenerator(
         static_gen,
