@@ -15,7 +15,6 @@ This file is auto-generated. Do not edit.
         Td0_pp::Float64
         Tq0_pp::Float64
         T_AA::Float64
-        MVABase::Float64
         ext::Dict{String, Any}
         γd::Float64
         γq::Float64
@@ -39,7 +38,6 @@ Parameters of 6-states synchronous machine: Marconato model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: (0, nothing)
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: (0, nothing)
 - `T_AA::Float64`: Time constant of d-axis additional leakage, validation range: (0, nothing)
-- `MVABase::Float64`: Nominal Capacity in MVA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `γd::Float64`
 - `γq::Float64`
@@ -72,8 +70,6 @@ mutable struct MarconatoMachine <: Machine
     Tq0_pp::Float64
     "Time constant of d-axis additional leakage"
     T_AA::Float64
-    "Nominal Capacity in MVA"
-    MVABase::Float64
     ext::Dict{String, Any}
     γd::Float64
     γq::Float64
@@ -83,12 +79,12 @@ mutable struct MarconatoMachine <: Machine
     internal::InfrastructureSystemsInternal
 end
 
-function MarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, MVABase, ext=Dict{String, Any}(), )
-    MarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, MVABase, ext, ((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p), ((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p), [:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp], 6, InfrastructureSystemsInternal(), )
+function MarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext=Dict{String, Any}(), )
+    MarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext, ((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p), ((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p), [:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp], 6, InfrastructureSystemsInternal(), )
 end
 
-function MarconatoMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, MVABase, ext=Dict{String, Any}(), )
-    MarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, MVABase, ext, )
+function MarconatoMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext=Dict{String, Any}(), )
+    MarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -106,7 +102,6 @@ function MarconatoMachine(::Nothing)
         Td0_pp=0,
         Tq0_pp=0,
         T_AA=0,
-        MVABase=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -135,8 +130,6 @@ get_Td0_pp(value::MarconatoMachine) = value.Td0_pp
 get_Tq0_pp(value::MarconatoMachine) = value.Tq0_pp
 """Get MarconatoMachine T_AA."""
 get_T_AA(value::MarconatoMachine) = value.T_AA
-"""Get MarconatoMachine MVABase."""
-get_MVABase(value::MarconatoMachine) = value.MVABase
 """Get MarconatoMachine ext."""
 get_ext(value::MarconatoMachine) = value.ext
 """Get MarconatoMachine γd."""
@@ -174,8 +167,6 @@ set_Td0_pp!(value::MarconatoMachine, val::Float64) = value.Td0_pp = val
 set_Tq0_pp!(value::MarconatoMachine, val::Float64) = value.Tq0_pp = val
 """Set MarconatoMachine T_AA."""
 set_T_AA!(value::MarconatoMachine, val::Float64) = value.T_AA = val
-"""Set MarconatoMachine MVABase."""
-set_MVABase!(value::MarconatoMachine, val::Float64) = value.MVABase = val
 """Set MarconatoMachine ext."""
 set_ext!(value::MarconatoMachine, val::Dict{String, Any}) = value.ext = val
 """Set MarconatoMachine γd."""

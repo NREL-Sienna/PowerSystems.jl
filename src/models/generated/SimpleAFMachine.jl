@@ -14,7 +14,6 @@ This file is auto-generated. Do not edit.
         Tq0_p::Float64
         Td0_pp::Float64
         Tq0_pp::Float64
-        MVABase::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -39,7 +38,6 @@ Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: (0, nothing)
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: (0, nothing)
-- `MVABase::Float64`: Nominal Capacity in MVA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
@@ -68,8 +66,6 @@ mutable struct SimpleAFMachine <: Machine
     Td0_pp::Float64
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
-    "Nominal Capacity in MVA"
-    MVABase::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
@@ -77,12 +73,12 @@ mutable struct SimpleAFMachine <: Machine
     internal::InfrastructureSystemsInternal
 end
 
-function SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, MVABase, ext=Dict{String, Any}(), )
-    SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, MVABase, ext, [:eq_p, :ed_p, :eq_pp, :ed_pp], 4, InfrastructureSystemsInternal(), )
+function SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext=Dict{String, Any}(), )
+    SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext, [:eq_p, :ed_p, :eq_pp, :ed_pp], 4, InfrastructureSystemsInternal(), )
 end
 
-function SimpleAFMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, MVABase, ext=Dict{String, Any}(), )
-    SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, MVABase, ext, )
+function SimpleAFMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext=Dict{String, Any}(), )
+    SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -99,7 +95,6 @@ function SimpleAFMachine(::Nothing)
         Tq0_p=0,
         Td0_pp=0,
         Tq0_pp=0,
-        MVABase=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -126,8 +121,6 @@ get_Tq0_p(value::SimpleAFMachine) = value.Tq0_p
 get_Td0_pp(value::SimpleAFMachine) = value.Td0_pp
 """Get SimpleAFMachine Tq0_pp."""
 get_Tq0_pp(value::SimpleAFMachine) = value.Tq0_pp
-"""Get SimpleAFMachine MVABase."""
-get_MVABase(value::SimpleAFMachine) = value.MVABase
 """Get SimpleAFMachine ext."""
 get_ext(value::SimpleAFMachine) = value.ext
 """Get SimpleAFMachine states."""
@@ -159,8 +152,6 @@ set_Tq0_p!(value::SimpleAFMachine, val::Float64) = value.Tq0_p = val
 set_Td0_pp!(value::SimpleAFMachine, val::Float64) = value.Td0_pp = val
 """Set SimpleAFMachine Tq0_pp."""
 set_Tq0_pp!(value::SimpleAFMachine, val::Float64) = value.Tq0_pp = val
-"""Set SimpleAFMachine MVABase."""
-set_MVABase!(value::SimpleAFMachine, val::Float64) = value.MVABase = val
 """Set SimpleAFMachine ext."""
 set_ext!(value::SimpleAFMachine, val::Dict{String, Any}) = value.ext = val
 """Set SimpleAFMachine states."""
