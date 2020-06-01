@@ -859,7 +859,7 @@ function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_coln
         fixed = 0.0
     end
     no_load_cost = var_cost[1][1]
-    var_cost = VariableCost([(c - no_load_cost, pp) for (c,pp) in var_cost])
+    var_cost = VariableCost([(c - no_load_cost, pp) for (c, pp) in var_cost])
     status = true
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
@@ -874,12 +874,12 @@ function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_coln
         (up = min_up_time, down = min_down_time)
     lag_hot = get(gen, :hot_start_time, 0.0)
     lag_warm = get(gen, :warm_start_time, 0.0)
-    lag_cold =  get(gen, :cold_start_time, 0.0)
+    lag_cold = get(gen, :cold_start_time, 0.0)
     startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
     start_types = sum(values(startup_timelimits) .> 0.0)
     startup_ramp = get(gen, :startup_ramp, 0.0)
     shutdown_ramp = get(gen, :shutdown_ramp, 0.0)
-    power_trajectory = (startup=startup_ramp, shutdown=shutdown_ramp)
+    power_trajectory = (startup = startup_ramp, shutdown = shutdown_ramp)
     rating = rating
     primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
     fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
