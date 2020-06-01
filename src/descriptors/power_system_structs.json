@@ -2157,6 +2157,14 @@
                 "default": "Dict{String, Any}()"
             },
             {
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
                 "name": "internal",
                 "comment": "power system internal reference, do not modify",
                 "data_type": "InfrastructureSystemsInternal",
