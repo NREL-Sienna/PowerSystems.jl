@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         variable::VariableCost
         no_load::Float64
         fixed::Float64
-        startup::Float64
+        startup::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shutdn::Float64
         forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -18,7 +18,7 @@ Data Structure Operational Cost Data in Three parts fixed, variable cost and sta
 - `variable::VariableCost`: variable cost
 - `no_load::Float64`: no load cost
 - `fixed::Float64`: fixed cost
-- `startup::Float64`: startup cost, validation range: (0, nothing), action if invalid: warn
+- `startup::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: startup cost
 - `shutdn::Float64`: shutdown cost, validation range: (0, nothing), action if invalid: warn
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -31,7 +31,7 @@ mutable struct PGLIBCost <: OperationalCost
     "fixed cost"
     fixed::Float64
     "startup cost"
-    startup::Float64
+    startup::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
     "shutdown cost"
     shutdn::Float64
     "internal forecast storage"
@@ -54,7 +54,7 @@ function PGLIBCost(::Nothing)
         variable=VariableCost((0.0, 0.0)),
         no_load=0.0,
         fixed=0.0,
-        startup=0.0,
+        startup=(hot = Inf, warm = Inf,cold = Inf),
         shutdn=0.0,
         forecasts=InfrastructureSystems.Forecasts(),
     )
@@ -82,7 +82,7 @@ set_no_load!(value::PGLIBCost, val::Float64) = value.no_load = val
 """Set PGLIBCost fixed."""
 set_fixed!(value::PGLIBCost, val::Float64) = value.fixed = val
 """Set PGLIBCost startup."""
-set_startup!(value::PGLIBCost, val::Float64) = value.startup = val
+set_startup!(value::PGLIBCost, val::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}) = value.startup = val
 """Set PGLIBCost shutdn."""
 set_shutdn!(value::PGLIBCost, val::Float64) = value.shutdn = val
 

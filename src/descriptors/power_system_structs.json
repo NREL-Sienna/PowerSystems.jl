@@ -117,13 +117,8 @@
             {
                 "name": "startup",
                 "comment": "startup cost",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "warn"
+                "null_value": "(hot = Inf, warm = Inf,cold = Inf)",
+                "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
             },
             {
                 "name": "shutdn",
@@ -2004,7 +1999,7 @@
                 "validation_action": "error"
             },
             {
-                "name": "powertrajectory",
+                "name": "power_trajectory",
                 "null_value": "nothing",
                 "data_type": "Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}",
                 "valid_range": {
@@ -2025,13 +2020,19 @@
                 "validation_action": "error"
             },
             {
-                "name": "starttimelimits",
+                "name": "start_time_limits",
                 "comment": " Time limits for startup based on turbine temperature in hours",
                 "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:cold, :warm, :hot), Tuple{Float64, Float64, Float64}}}",
+                "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
+            },
+            {
+                "name": "start_types",
+                "comment": " Number of startup based on turbine temperature",
+                "null_value": "1",
+                "data_type": "Int",
                 "valid_range": {
-                    "min": 0,
-                    "max": null
+                    "min": 1,
+                    "max": 3
                 },
                 "validation_action": "error"
             },
@@ -2060,8 +2061,8 @@
                 "validation_action": "error"
             },
             {
-                "null_value": "INFINITE_TIME",
                 "name": "time_at_status",
+                "null_value": "INFINITE_TIME",
                 "data_type": "Float64",
                 "default": "INFINITE_TIME"
             },

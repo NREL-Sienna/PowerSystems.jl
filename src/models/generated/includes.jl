@@ -190,8 +190,8 @@ export get_number
 export get_op_cost
 export get_outputactivepowerlimits
 export get_participation_factor
+export get_power_trajectory
 export get_powerfactor
-export get_powertrajectory
 export get_primaryshunt
 export get_primemover
 export get_r
@@ -213,7 +213,8 @@ export get_rv
 export get_s_rated
 export get_services
 export get_shutdn
-export get_starttimelimits
+export get_start_time_limits
+export get_start_types
 export get_startup
 export get_states
 export get_status

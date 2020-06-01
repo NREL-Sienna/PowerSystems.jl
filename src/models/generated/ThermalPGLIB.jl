@@ -15,9 +15,10 @@ This file is auto-generated. Do not edit.
         activepowerlimits::Min_Max
         reactivepowerlimits::Union{Nothing, Min_Max}
         ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        powertrajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}
+        power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}
         timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        starttimelimits::Union{Nothing, NamedTuple{(:cold, :warm, :hot), Tuple{Float64, Float64, Float64}}}
+        start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}
+        start_types::Int
         op_cost::PGLIBCost
         services::Vector{Service}
         participation_factor::Float64
@@ -43,9 +44,10 @@ Data Structure for thermal generation technologies.
 - `activepowerlimits::Min_Max`
 - `reactivepowerlimits::Union{Nothing, Min_Max}`
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
-- `powertrajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
+- `power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
-- `starttimelimits::Union{Nothing, NamedTuple{(:cold, :warm, :hot), Tuple{Float64, Float64, Float64}}}`:  Time limits for startup based on turbine temperature in hours, validation range: (0, nothing), action if invalid: error
+- `start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}`:  Time limits for startup based on turbine temperature in hours
+- `start_types::Int`:  Number of startup based on turbine temperature, validation range: (1, 3), action if invalid: error
 - `op_cost::PGLIBCost`
 - `services::Vector{Service}`: Services that this device contributes to
 - `participation_factor::Float64`: AGC Participation Factor, validation range: (0, 1.0), action if invalid: error
@@ -71,11 +73,13 @@ mutable struct ThermalPGLIB <: ThermalGen
     activepowerlimits::Min_Max
     reactivepowerlimits::Union{Nothing, Min_Max}
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    powertrajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}
+    power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     " Time limits for startup based on turbine temperature in hours"
-    starttimelimits::Union{Nothing, NamedTuple{(:cold, :warm, :hot), Tuple{Float64, Float64, Float64}}}
+    start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}
+    " Number of startup based on turbine temperature"
+    start_types::Int
     op_cost::PGLIBCost
     "Services that this device contributes to"
     services::Vector{Service}
@@ -91,12 +95,12 @@ mutable struct ThermalPGLIB <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, powertrajectory, timelimits, starttimelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, powertrajectory, timelimits, starttimelimits, op_cost, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalPGLIB(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, powertrajectory, timelimits, starttimelimits, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, powertrajectory, timelimits, starttimelimits, op_cost, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, )
+function ThermalPGLIB(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -114,9 +118,10 @@ function ThermalPGLIB(::Nothing)
         activepowerlimits=(min=0.0, max=0.0),
         reactivepowerlimits=nothing,
         ramplimits=nothing,
-        powertrajectory=nothing,
+        power_trajectory=nothing,
         timelimits=nothing,
-        starttimelimits=nothing,
+        start_time_limits=nothing,
+        start_types=1,
         op_cost=PGLIBCost(nothing),
         services=Device[],
         participation_factor=0.0,
@@ -151,12 +156,14 @@ get_activepowerlimits(value::ThermalPGLIB) = value.activepowerlimits
 get_reactivepowerlimits(value::ThermalPGLIB) = value.reactivepowerlimits
 """Get ThermalPGLIB ramplimits."""
 get_ramplimits(value::ThermalPGLIB) = value.ramplimits
-"""Get ThermalPGLIB powertrajectory."""
-get_powertrajectory(value::ThermalPGLIB) = value.powertrajectory
+"""Get ThermalPGLIB power_trajectory."""
+get_power_trajectory(value::ThermalPGLIB) = value.power_trajectory
 """Get ThermalPGLIB timelimits."""
 get_timelimits(value::ThermalPGLIB) = value.timelimits
-"""Get ThermalPGLIB starttimelimits."""
-get_starttimelimits(value::ThermalPGLIB) = value.starttimelimits
+"""Get ThermalPGLIB start_time_limits."""
+get_start_time_limits(value::ThermalPGLIB) = value.start_time_limits
+"""Get ThermalPGLIB start_types."""
+get_start_types(value::ThermalPGLIB) = value.start_types
 """Get ThermalPGLIB op_cost."""
 get_op_cost(value::ThermalPGLIB) = value.op_cost
 """Get ThermalPGLIB services."""
@@ -198,12 +205,14 @@ set_activepowerlimits!(value::ThermalPGLIB, val::Min_Max) = value.activepowerlim
 set_reactivepowerlimits!(value::ThermalPGLIB, val::Union{Nothing, Min_Max}) = value.reactivepowerlimits = val
 """Set ThermalPGLIB ramplimits."""
 set_ramplimits!(value::ThermalPGLIB, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.ramplimits = val
-"""Set ThermalPGLIB powertrajectory."""
-set_powertrajectory!(value::ThermalPGLIB, val::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}) = value.powertrajectory = val
+"""Set ThermalPGLIB power_trajectory."""
+set_power_trajectory!(value::ThermalPGLIB, val::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}) = value.power_trajectory = val
 """Set ThermalPGLIB timelimits."""
 set_timelimits!(value::ThermalPGLIB, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.timelimits = val
-"""Set ThermalPGLIB starttimelimits."""
-set_starttimelimits!(value::ThermalPGLIB, val::Union{Nothing, NamedTuple{(:cold, :warm, :hot), Tuple{Float64, Float64, Float64}}}) = value.starttimelimits = val
+"""Set ThermalPGLIB start_time_limits."""
+set_start_time_limits!(value::ThermalPGLIB, val::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}) = value.start_time_limits = val
+"""Set ThermalPGLIB start_types."""
+set_start_types!(value::ThermalPGLIB, val::Int) = value.start_types = val
 """Set ThermalPGLIB op_cost."""
 set_op_cost!(value::ThermalPGLIB, val::PGLIBCost) = value.op_cost = val
 """Set ThermalPGLIB services."""
