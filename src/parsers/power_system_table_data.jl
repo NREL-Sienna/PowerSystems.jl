@@ -711,6 +711,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
 
     if gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
+    elseif gen_type == ThermalPGLIB
+        generator = make_thermal_generator_pglib(data, gen, cost_colnames, bus)
     elseif gen_type <: HydroGen
         generator = make_hydro_generator(gen_type, data, gen, bus)
     elseif gen_type <: RenewableGen
@@ -813,6 +815,105 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         reactive_power_limits,
         ramplimits,
         timelimits,
+        op_cost,
+    )
+end
+
+function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_colnames, bus)
+    fuel_cost = gen.fuel_price / 1000
+
+    var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
+    var_cost = [
+        (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2])))
+        for c in var_cost if !in(nothing, c)
+    ]
+    if length(unique(var_cost)) > 1
+        var_cost[2:end] = [
+            (
+                var_cost[i][1] *
+                (var_cost[i][2] - var_cost[i - 1][2]) *
+                fuel_cost *
+                data.basepower,
+                var_cost[i][2],
+            ) .* gen.active_power_limits_max for i in 2:length(var_cost)
+        ]
+        var_cost[1] =
+            (
+                var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower,
+                var_cost[1][2],
+            ) .* gen.active_power_limits_max
+
+        fixed = max(
+            0.0,
+            var_cost[1][1] -
+            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
+        )
+        var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
+        for i in 2:length(var_cost)
+            var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
+        end
+    else
+        var_cost = [(0.0, var_cost[1][2]), (1.0, var_cost[1][2])]
+        fixed = 0.0
+    end
+    no_load_cost = var_cost[1][1]
+    var_cost = VariableCost([(c - no_load_cost, pp) for (c,pp) in var_cost])
+    status = true
+    available = true
+    rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
+    active_power_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    reactive_power_limits =
+        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
+    ramp = get(gen, :ramp_limits, nothing)
+    min_up_time = get(gen, :min_up_time, nothing)
+    min_down_time = get(gen, :min_down_time, nothing)
+    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
+        (up = min_up_time, down = min_down_time)
+    lag_hot = get(gen, :hot_start_time, 0.0)
+    lag_warm = get(gen, :warm_start_time, 0.0)
+    lag_cold =  get(gen, :cold_start_time, 0.0)
+    startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
+    start_types = sum(values(startup_timelimits) .> 0.0)
+    startup_ramp = get(gen, :startup_ramp, 0.0)
+    shutdown_ramp = get(gen, :shutdown_ramp, 0.0)
+    power_trajectory = (startup=startup_ramp, shutdown=shutdown_ramp)
+    rating = rating
+    primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
+    fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
+    activepowerlimits = active_power_limits
+    reactivepowerlimits = reactive_power_limits
+    ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp)
+    capacity = gen.active_power_limits_max
+    hot_start_cost = get(gen, :hot_start_cost, 0.0)
+    warm_start_cost = get(gen, :warm_start_cost, 0.0)
+    cold_start_cost = get(gen, :cold_start_cost, 0.0)
+    startup_cost = (hot = hot_start_cost, warm = warm_start_cost, cold = cold_start_cost)
+
+    shutdown_cost = get(gen, :shutdown_cost, nothing)
+    if isnothing(shutdown_cost)
+        @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
+        shutdown_cost = 0.0
+    end
+    op_cost = PGLIBCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
+
+    return ThermalPGLIB(
+        gen.name,
+        available,
+        status,
+        bus,
+        gen.active_power,
+        gen.reactive_power,
+        rating,
+        primemover,
+        fuel,
+        active_power_limits,
+        reactive_power_limits,
+        ramplimits,
+        power_trajectory,
+        timelimits,
+        startup_timelimits,
+        start_types,
         op_cost,
     )
 end
