@@ -464,8 +464,7 @@
         },
         {
             "name": "status_at_start",
-            "description": "State of the generator at the start of the simulation",
-            "system_per_unit": true
+            "description": "State of the generator at the start of the simulation"
         },
         {
             "name": "time_at_status",
