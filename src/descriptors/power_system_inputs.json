@@ -454,15 +454,18 @@
         },
         {
             "name": "startup_ramp",
-            "description": "Startup ramp capability"
+            "description": "Startup ramp capability",
+            "system_per_unit": true
         },
         {
             "name": "shutdown_ramp",
-            "description": "Shutdown ramp capability"
+            "description": "Shutdown ramp capability",
+            "system_per_unit": true
         },
         {
             "name": "status_at_start",
-            "description": "State of the generator at the start of the simulation"
+            "description": "State of the generator at the start of the simulation",
+            "system_per_unit": true
         },
         {
             "name": "time_at_status",
