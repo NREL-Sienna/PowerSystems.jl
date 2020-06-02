@@ -859,8 +859,6 @@ function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_coln
         fixed = 0.0
     end
     no_load_cost = var_cost[1][1]
-    var_cost = VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost][2:end])
-    status = true
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
     active_power_limits =
@@ -899,24 +897,25 @@ function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_coln
     end
     op_cost = PGLIBCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
-    return ThermalPGLIB(
-        gen.name,
-        available,
-        status,
-        bus,
-        gen.active_power,
-        gen.reactive_power,
-        rating,
-        primemover,
-        fuel,
-        active_power_limits,
-        reactive_power_limits,
-        ramplimits,
-        power_trajectory,
-        timelimits,
-        startup_timelimits,
-        start_types,
-        op_cost,
+    return ThermalPGLIB(;
+        name = gen.name,
+        available = available,
+        status = gen.status_at_start,
+        bus = bus,
+        activepower = gen.active_power,
+        reactivepower = gen.reactive_power,
+        rating = rating,
+        primemover = primemover,
+        fuel = fuel,
+        activepowerlimits = active_power_limits,
+        reactivepowerlimits = reactive_power_limits,
+        ramplimits = ramplimits,
+        power_trajectory = power_trajectory,
+        timelimits = timelimits,
+        start_time_limits = startup_timelimits,
+        start_types = start_types,
+        op_cost = op_cost,
+        time_at_status = gen.time_at_status,
     )
 end
 
