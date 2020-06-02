@@ -1435,6 +1435,14 @@ function check_for_services_on_addition(sys::System, component::Device)
     return
 end
 
+# Needed because get_services returns the services of the underlying struct
+function check_for_services_on_addition(sys::System, component::RegulationDevice)
+    for d in get_services(component)
+        isa(d, AGC) && throw(ArgumentError("type Device cannot be added with services"))
+    end
+    return
+end
+
 """
 Throws ArgumentError if a PowerSystems rule blocks addition to the system.
 

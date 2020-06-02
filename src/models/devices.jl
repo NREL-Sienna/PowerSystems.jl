@@ -17,6 +17,29 @@ function add_service!(device::Device, service::Service)
     @debug "Add $service to $(get_name(device))"
 end
 
+function add_service!(device::Device, service::AGC)
+    if !isa(device, RegulationDevice)
+        throw(IS.ConflictingInputsError("AGC service can only accept contributing devices of type RegulationDevice"))
+    end
+
+    device_bus_area = get_area(get_bus(device))
+    service_area = get_area(service)
+    if !(IS.get_uuid(device_bus_area) == IS.get_uuid(service_area))
+        throw(IS.ConflictingInputsError("Device $(get_name(device)) is not located in the regulation control area"))
+    end
+
+    services = get_services(device)
+    for _service in services
+        if IS.get_uuid(service) == IS.get_uuid(_service)
+            throw(ArgumentError("service $(get_name(service)) is already attached to $(get_name(device))"))
+        end
+    end
+
+    push!(services, service)
+    @debug "Add $service to $(get_name(device))"
+end
+
+
 """
     remove_service!(device::Device, service::Service)
 
@@ -50,7 +73,7 @@ end
 
 Return true if a service with type T is attached to the device.
 """
-function has_service(device::Device, ::Type{T}) where {T <: Service}
+function has_service(device::Device, ::Type{T}) where {T<:Service}
     for _service in get_services(device)
         if isa(_service, T)
             return true
@@ -103,18 +126,18 @@ end
 #    There is no guessing if the UUIDs are stored instead. The deserialization process can
 #    replace the references with actual devices.
 
-function JSON2.write(io::IO, device::T) where {T <: Device}
+function JSON2.write(io::IO, device::T) where {T<:Device}
     return JSON2.write(io, encode_for_json(device))
 end
 
-function JSON2.write(device::T) where {T <: Device}
+function JSON2.write(device::T) where {T<:Device}
     return JSON2.write(encode_for_json(device))
 end
 
 """
 Encode composed buses, injectors, and services as UUIDs.
 """
-function encode_for_json(device::T) where {T <: Device}
+function encode_for_json(device::T) where {T<:Device}
     fields = fieldnames(T)
     vals = []
 
@@ -123,7 +146,7 @@ function encode_for_json(device::T) where {T <: Device}
         if val isa Vector{Service}
             push!(vals, IS.get_uuid.(val))
         elseif val isa Bus || (
-            T <: Union{StaticInjection, DynamicInjection} && val isa StaticInjection ||
+            T <: Union{StaticInjection,DynamicInjection} && val isa StaticInjection ||
             val isa DynamicInjection
         )
             push!(vals, IS.get_uuid(val))
@@ -143,7 +166,7 @@ function IS.convert_type(
     ::Type{T},
     data::NamedTuple,
     component_cache::Dict,
-) where {T <: Device}
+) where {T<:Device}
     @debug "convert_type" T data
     values = []
     for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
@@ -157,11 +180,11 @@ function IS.convert_type(
             end
             push!(values, services)
         elseif fieldtype <: Bus ||
-               (T <: DynamicInjection && fieldtype <: Union{Nothing, StaticInjection})
+               (T <: DynamicInjection && fieldtype <: Union{Nothing,StaticInjection})
             uuid = Base.UUID(val.value)
             val = component_cache[uuid]
             push!(values, val)
-        elseif fieldtype <: Union{Nothing, DynamicInjection}
+        elseif fieldtype <: Union{Nothing,DynamicInjection}
             # static dynamic injectors might contain a dynamic injector, which have not
             # been deserialized yet. Delay this assignment until the end.
             push!(values, nothing)
