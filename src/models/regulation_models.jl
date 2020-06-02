@@ -1,4 +1,4 @@
-mutable struct RegulationDevice{T <: StaticInjection} <: Component
+mutable struct RegulationDevice{T<:StaticInjection} <: Device
     device::T
     droop::Float64
     participation_factor::Float64
@@ -11,7 +11,7 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Component
         participation_factor::Float64,
         reserve_limit::Float64,
         inertia::Float64,
-    ) where {T <: StaticInjection}
+    ) where {T<:StaticInjection}
         IS.@forward((RegulationDevice{T}, :device), T)
         new{T}(device, droop, participation_factor, reserve_limit, inertia)
     end
@@ -23,7 +23,7 @@ function RegulationDevice(
     participation_factor::Float64 = 0.0,
     reserve_limit::Float64 = 0.0,
     inertia::Float64 = 0.0,
-) where {T <: StaticInjection}
+) where {T<:StaticInjection}
     return RegulationDevice(device, droop, participation_factor, reserve_limit, inertia)
 end
 
