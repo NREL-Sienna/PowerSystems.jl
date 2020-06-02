@@ -1278,54 +1278,57 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
     # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
 
-    components_as_uuids = [Bus]
-    for component_as_uuid in components_as_uuids
-        for component in IS.get_components_raw(IS.SystemData, component_as_uuid, raw)
-            comp = IS.convert_type(component_as_uuid, component)
-            IS.add_component!(data, comp)
-            component_cache[IS.get_uuid(comp)] = comp
+    # Add each type to this as we parse.
+    parsed_types = Set()
+
+    function is_matching_type(x, types)
+        for t in types
+            x <: t && return true
         end
+        return false
     end
 
-    # Skip Devices this round because they have Services.
-    for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-        c_type = _get_component_type(c_type_sym)
-        (c_type in components_as_uuids || c_type <: Device) && continue
-        for component in IS.get_components_raw(IS.SystemData, c_type, raw)
-            comp = IS.convert_type(c_type, component, component_cache)
-            IS.add_component!(data, comp)
-            component_cache[IS.get_uuid(comp)] = comp
-        end
-    end
-
-    # Now get the Devices, except for dynamic injectors. They have to wait until static
-    # injectors are added.
-    for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-        c_type = _get_component_type(c_type_sym)
-        if c_type <: Device && !(c_type <: DynamicInjection)
+    function deserialize_and_add!(;
+        skip_types = nothing,
+        include_types = nothing,
+        post_add_func = nothing,
+    )
+        for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
+            c_type = _get_component_type(c_type_sym)
+            c_type in parsed_types && continue
+            if !isnothing(skip_types) && is_matching_type(c_type, skip_types)
+                continue
+            end
+            if !isnothing(include_types) && !is_matching_type(c_type, include_types)
+                continue
+            end
             for component in IS.get_components_raw(IS.SystemData, c_type, raw)
                 comp = IS.convert_type(c_type, component, component_cache)
                 IS.add_component!(data, comp)
                 component_cache[IS.get_uuid(comp)] = comp
+                if !isnothing(post_add_func)
+                    post_add_func(comp)
+                end
             end
+            push!(parsed_types, c_type)
         end
     end
 
-    # Now add the dynamic injectors.
-    for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-        c_type = _get_component_type(c_type_sym)
-        if c_type <: Union{Nothing, DynamicInjection}
-            for component in IS.get_components_raw(IS.SystemData, c_type, raw)
-                comp = IS.convert_type(c_type, component, component_cache)
-                IS.add_component!(data, comp)
-                # Now attach this injector its static counterpart.
-                # This normally happens in add_component!(System) but we don't have a
-                # system yet.
-                static_injector = get_static_injector(comp)
-                set_dynamic_injector!(static_injector, comp)
-            end
-        end
-    end
+    # Bus and AGC have an Area. Devices have buses.
+    deserialize_and_add!(; include_types = [Area])
+    deserialize_and_add!(; include_types = [AGC])
+    deserialize_and_add!(; include_types = [Bus])
+    # Devices have services, skip one round.
+    deserialize_and_add!(; skip_types = [Device])
+    # DynamicInjection has to follow StaticInjection.
+    deserialize_and_add!(; include_types = [Device], skip_types = [DynamicInjection])
+    deserialize_and_add!(;
+        include_types = [DynamicInjection],
+        post_add_func = dynamic_injector -> begin
+            static_injector = get_static_injector(dynamic_injector)
+            set_dynamic_injector!(static_injector, dynamic_injector)
+        end,
+    )
 end
 
 function _get_component_type(component_type::Symbol)

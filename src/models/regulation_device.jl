@@ -5,7 +5,7 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
     reserve_limit::Float64
     inertia::Float64
 
-    function RegulationDevice(
+    function RegulationDevice{T}(
         device::T,
         droop::Float64,
         participation_factor::Float64,
@@ -24,9 +24,11 @@ function RegulationDevice(
     reserve_limit::Float64 = 0.0,
     inertia::Float64 = 0.0,
 ) where {T <: StaticInjection}
-    return RegulationDevice(device, droop, participation_factor, reserve_limit, inertia)
+    return RegulationDevice{T}(device, droop, participation_factor, reserve_limit, inertia)
 end
 
+IS.get_name(value::RegulationDevice) = IS.get_name(value.device)
+IS.get_uuid(value::RegulationDevice) = IS.get_uuid(value.device)
 get_droop(value::RegulationDevice) = value.droop
 get_participation_factor(value::RegulationDevice) = value.participation_factor
 get_reserve_limit(value::RegulationDevice) = value.reserve_limit
