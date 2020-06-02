@@ -311,13 +311,15 @@ include("models/reserves.jl")
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
-include("models/devices.jl")
 include("models/regulation_models.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
+
+#Methods for devices
+include("models/devices.jl")
 
 # Dynamic Composed types
 include("models/dynamic_generator.jl")
