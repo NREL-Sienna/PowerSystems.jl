@@ -41,7 +41,7 @@ function make_pf(system)
     tempYb = Ybus(get_components(ACBranch, system), buses)
     a = collect(1:N_BUS)
     Yb = Ybus(tempYb.data, (a, a), (_make_ax_ref(a), _make_ax_ref(a)))
-    I, J, V = SparseArrays.findnz(Yb[:,:])
+    I, J, V = SparseArrays.findnz(Yb[:, :])
     neighbors = [Set{Int}([i]) for i in 1:N_BUS]
     for nz in eachindex(V)
         push!(neighbors[I[nz]], J[nz])
@@ -135,11 +135,17 @@ function make_pf(system)
                 gb = real(Yb[ix_f, ix_t])
                 bb = imag(Yb[ix_f, ix_t])
                 #(iszero(gb) && iszero(bb)) && continue
-                S_re += Vm[ix_f] * Vm[ix_t] * (gb * cos(θ[ix_f] - θ[ix_t]) + bb * sin(θ[ix_f] - θ[ix_t]))
-                S_im += Vm[ix_f] * Vm[ix_t] * (gb * sin(θ[ix_f] - θ[ix_t]) - bb * cos(θ[ix_f] - θ[ix_t]))
+                S_re +=
+                    Vm[ix_f] *
+                    Vm[ix_t] *
+                    (gb * cos(θ[ix_f] - θ[ix_t]) + bb * sin(θ[ix_f] - θ[ix_t]))
+                S_im +=
+                    Vm[ix_f] *
+                    Vm[ix_t] *
+                    (gb * sin(θ[ix_f] - θ[ix_t]) - bb * cos(θ[ix_f] - θ[ix_t]))
             end
-            F[2*ix_f - 1] = S_re
-            F[2*ix_f] = S_im
+            F[2 * ix_f - 1] = S_re
+            F[2 * ix_f] = S_im
             #state_count += 2
         end
 
