@@ -23,6 +23,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         participation_factor::Float64
         time_at_status::Float64
+        must_run::Bool
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
@@ -52,6 +53,7 @@ Data Structure for thermal generation technologies.
 - `services::Vector{Service}`: Services that this device contributes to
 - `participation_factor::Float64`: AGC Participation Factor, validation range: (0, 1.0), action if invalid: error
 - `time_at_status::Float64`
+- `must_run::Bool`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -86,6 +88,7 @@ mutable struct ThermalPGLIB <: ThermalGen
     "AGC Participation Factor"
     participation_factor::Float64
     time_at_status::Float64
+    must_run::Bool
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
@@ -95,12 +98,12 @@ mutable struct ThermalPGLIB <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services, participation_factor, time_at_status, must_run, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalPGLIB(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services, participation_factor, time_at_status, dynamic_injector, ext, forecasts, )
+function ThermalPGLIB(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalPGLIB(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, services, participation_factor, time_at_status, must_run, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -126,6 +129,7 @@ function ThermalPGLIB(::Nothing)
         services=Device[],
         participation_factor=0.0,
         time_at_status=INFINITE_TIME,
+        must_run=false,
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
@@ -172,6 +176,8 @@ get_services(value::ThermalPGLIB) = value.services
 get_participation_factor(value::ThermalPGLIB) = value.participation_factor
 """Get ThermalPGLIB time_at_status."""
 get_time_at_status(value::ThermalPGLIB) = value.time_at_status
+"""Get ThermalPGLIB must_run."""
+get_must_run(value::ThermalPGLIB) = value.must_run
 """Get ThermalPGLIB dynamic_injector."""
 get_dynamic_injector(value::ThermalPGLIB) = value.dynamic_injector
 """Get ThermalPGLIB ext."""
@@ -221,6 +227,8 @@ set_services!(value::ThermalPGLIB, val::Vector{Service}) = value.services = val
 set_participation_factor!(value::ThermalPGLIB, val::Float64) = value.participation_factor = val
 """Set ThermalPGLIB time_at_status."""
 set_time_at_status!(value::ThermalPGLIB, val::Float64) = value.time_at_status = val
+"""Set ThermalPGLIB must_run."""
+set_must_run!(value::ThermalPGLIB, val::Bool) = value.must_run = val
 """Set ThermalPGLIB ext."""
 set_ext!(value::ThermalPGLIB, val::Dict{String, Any}) = value.ext = val
 

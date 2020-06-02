@@ -185,6 +185,7 @@ export get_lv
 export get_maxactivepower
 export get_maxreactivepower
 export get_model
+export get_must_run
 export get_n_states
 export get_no_load
 export get_number
@@ -368,6 +369,7 @@ export set_lv!
 export set_maxactivepower!
 export set_maxreactivepower!
 export set_model!
+export set_must_run!
 export set_n_states!
 export set_no_load!
 export set_number!

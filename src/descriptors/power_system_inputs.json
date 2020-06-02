@@ -483,6 +483,10 @@
             "description": "Cost for Hot of ThermalGen"
         },
         {
+            "name": "must_run",
+            "description": "Boolean that idicates if ThermalGen must be online always"
+        },
+        {
             "name": "generator_category",
             "value_options": [
                 "HydroDispatch",

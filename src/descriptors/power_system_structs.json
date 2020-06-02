@@ -2122,6 +2122,12 @@
                 "default": "INFINITE_TIME"
             },
             {
+                "name": "must_run",
+                "null_value": "false",
+                "data_type": "Bool",
+                "default": "false"
+            },
+            {
                 "name": "dynamic_injector",
                 "data_type": "Union{Nothing, DynamicInjection}",
                 "comment": "corresponding dynamic injection device",

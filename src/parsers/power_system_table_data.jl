@@ -917,6 +917,7 @@ function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_coln
         start_types = start_types,
         op_cost = op_cost,
         time_at_status = gen.time_at_status,
+        must_run = gen.must_run,
     )
 end
 
