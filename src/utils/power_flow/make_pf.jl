@@ -41,6 +41,12 @@ function make_pf(system)
     tempYb = Ybus(get_components(ACBranch, system), buses)
     a = collect(1:N_BUS)
     Yb = Ybus(tempYb.data, (a, a), (_make_ax_ref(a), _make_ax_ref(a)))
+    I, J, V = SparseArrays.findnz(Yb[:,:])
+    neighbors = [Set{Int}([i]) for i in 1:N_BUS]
+    for nz in eachindex(V)
+        push!(neighbors[I[nz]], J[nz])
+        push!(neighbors[J[nz]], I[nz])
+    end
     x0 = zeros(N_BUS * 2)
 
     # Use vectors to cache data for closure
@@ -60,6 +66,7 @@ function make_pf(system)
         bus_voltage = get_voltage(b)::Float64
         P_GEN_BUS[ix] = 0.0
         Q_GEN_BUS[ix] = 0.0
+        get_ext(b)["neighbors"] = neighbors[ix]
         for gen in get_components(StaticInjection, system, d -> !isa(d, ElectricLoad))
             if gen.bus == b
                 P_GEN_BUS[ix] += get_activepower(gen)
@@ -89,7 +96,7 @@ function make_pf(system)
 
     @assert state_variable_count - 1 == N_BUS * 2
 
-    function pf!(F, X)
+    function pf!(F::Vector{Float64}, X::Vector{Float64})
         P_net = Vector{Float64}(undef, N_BUS)
         Q_net = Vector{Float64}(undef, N_BUS)
         Vm = Vector{Float64}(undef, N_BUS)
@@ -120,21 +127,23 @@ function make_pf(system)
         end
 
         # F is active and reactive power balance equations at all buses
-        state_count = 1
+        #state_count = 1
         for (ix_f, bf) in BUSES
-            S = -P_net[ix_f] + -Q_net[ix_f]im
-            V_f = Vm[ix_f] * (cos(θ[ix_f]) + sin(θ[ix_f])im)
-            for (ix_t, bt) in BUSES
-                iszero(Yb[ix_f, ix_t]::ComplexF64) && continue
-                V_t = Vm[ix_t] * (cos(θ[ix_t]) + sin(θ[ix_t])im)
-                S += V_f * conj(V_t) * conj(Yb[ix_f, ix_t]::ComplexF64)
+            S_re = -P_net[ix_f]
+            S_im = -Q_net[ix_f]
+            for ix_t in get_ext(bf)["neighbors"]
+                gb = real(Yb[ix_f, ix_t])
+                bb = imag(Yb[ix_f, ix_t])
+                #(iszero(gb) && iszero(bb)) && continue
+                S_re += Vm[ix_f] * Vm[ix_t] * (gb * cos(θ[ix_f] - θ[ix_t]) + bb * sin(θ[ix_f] - θ[ix_t]))
+                S_im += Vm[ix_f] * Vm[ix_t] * (gb * sin(θ[ix_f] - θ[ix_t]) - bb * cos(θ[ix_f] - θ[ix_t]))
             end
-            F[state_count] = real(S)
-            F[state_count + 1] = imag(S)
-            state_count += 2
+            F[2*ix_f - 1] = S_re
+            F[2*ix_f] = S_im
+            #state_count += 2
         end
 
-        return F
+        #return F
 
     end
 
