@@ -369,10 +369,12 @@ export set_maxactivepower!
 export set_maxreactivepower!
 export set_model!
 export set_n_states!
+export set_no_load!
 export set_number!
 export set_op_cost!
 export set_outputactivepowerlimits!
 export set_participation_factor!
+export set_power_trajectory!
 export set_powerfactor!
 export set_primaryshunt!
 export set_primemover!
@@ -395,6 +397,8 @@ export set_rv!
 export set_s_rated!
 export set_services!
 export set_shutdn!
+export set_start_time_limits!
+export set_start_types!
 export set_startup!
 export set_states!
 export set_status!
