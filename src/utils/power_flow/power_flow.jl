@@ -158,8 +158,6 @@ solve_powerflow!(sys, nlsolve, method = :newton)
 
 """
 function solve_powerflow!(system::System; args...)
-    to = TimerOutput()
-    @timeit to "Startup" begin
     buses = sort(collect(get_components(Bus, system)), by = x -> get_number(x))
     N_BUS = length(buses)
 
@@ -185,7 +183,6 @@ function solve_powerflow!(system::System; args...)
     Q_net = fill(0.0, N_BUS)
     Vm = fill(0.0, N_BUS)
     θ = fill(0.0, N_BUS)
-
 
     state_variable_count = 1
 
@@ -228,10 +225,8 @@ function solve_powerflow!(system::System; args...)
 
     @assert state_variable_count - 1 == N_BUS * 2
     bus_types = get_bustype.(buses)
-    end
 
     function pf!(F::Vector{Float64}, X::Vector{Float64})
-        @timeit to "Update X" begin
         @inbounds for (ix, b) in enumerate(bus_types)
             if b == BusTypes.REF
                 # When bustype == REFERENCE Bus, state variables are Active and Reactive Power Generated
@@ -250,9 +245,7 @@ function solve_powerflow!(system::System; args...)
                 θ[ix] = X[2 * ix]
             end
         end
-    end
 
-    @timeit to "Update F" begin
         # F is active and reactive power balance equations at all buses
         @inbounds for ix_f in a
             S_re = -P_net[ix_f]
@@ -273,15 +266,14 @@ function solve_powerflow!(system::System; args...)
             F[2 * ix_f] = S_im
         end
     end
-    end
 
     res = NLsolve.nlsolve(pf!, x0, show_trace = true)
     @info(res)
     if res.f_converged
-        PowerSystems._write_pf_sol!(system, res)
+        #PowerSystems._write_pf_sol!(system, res)
         @info("PowerFlow solve converged, the results have been stored in the system")
-        return res.f_converged, to
+        return res.f_converged
     end
     @error("The powerflow solver returned convergence = $(res.f_converged)")
-    return res.f_converged, to
+    return res.f_converged
 end
