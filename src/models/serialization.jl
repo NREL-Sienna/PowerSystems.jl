@@ -19,23 +19,23 @@ function JSON2.read(io::IO, ::Type{VariableCost})
     return VariableCost(variable)
 end
 
-# Enables serialization for AGC. Stores Area as a UUID.
+const COMPOSED_COMPONENTS = (Area, Bus, LoadZone)
 
-function JSON2.write(io::IO, service::AGC)
-    return JSON2.write(io, encode_for_json(service))
+function JSON2.write(io::IO, component::T) where {T <: Component}
+    return JSON2.write(io, encode_components_with_uuids(component, COMPOSED_COMPONENTS))
 end
 
-function JSON2.write(service::AGC)
-    return JSON2.write(encode_for_json(service))
+function JSON2.write(component::T) where {T <: Component}
+    return JSON2.write(encode_components_with_uuids(component, COMPOSED_COMPONENTS))
 end
 
-function encode_for_json(service::AGC)
-    fields = fieldnames(AGC)
+function encode_components_with_uuids(component::T, types_as_uuids) where {T}
+    fields = fieldnames(T)
     vals = []
 
     for name in fields
-        val = getfield(service, name)
-        if val isa Area
+        val = getfield(component, name)
+        if mapreduce(x -> val isa x, |, types_as_uuids)
             push!(vals, IS.get_uuid(val))
         else
             push!(vals, val)
@@ -45,29 +45,34 @@ function encode_for_json(service::AGC)
     return NamedTuple{fields}(vals)
 end
 
-"""
-Create an AGC object by decoding the data that was in JSON. This data stores the
-value for the Area as a UUID, so this will lookup each device in devices.
-"""
-function IS.convert_type(::Type{AGC}, data::NamedTuple, devices::Dict)
+# Default JSON conversion for Component to handle composed components stored as UUIDs.
+# Keep in sync with COMPOSED_COMPONENTS.
+
+function IS.convert_type(
+    ::Type{T},
+    data::NamedTuple,
+    component_cache::Dict,
+) where {T <: Component}
+    @debug T data
     values = []
-    for (fieldname, fieldtype) in zip(fieldnames(AGC), fieldtypes(AGC))
+    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
         val = getfield(data, fieldname)
-        if fieldtype <: Union{Nothing, Area}
-            if !isnothing(val)
-                uuid = Base.UUID(val.value)
-                val = devices[uuid]
-            end
-            push!(values, val)
+        if !isnothing(val) && (
+            fieldtype <: Union{Nothing, Area} ||
+            fieldtype <: Union{Nothing, LoadZone} ||
+            fieldtype <: Bus
+        )
+            uuid = Base.UUID(val.value)
+            component = component_cache[uuid]
+            push!(values, component)
+        elseif fieldtype <: Component
+            # Recurse.
+            push!(values, IS.convert_type(fieldtype, val, component_cache))
         else
             obj = IS.convert_type(fieldtype, val)
             push!(values, obj)
         end
     end
 
-    return AGC(values...)
-end
-
-function IS.convert_type(::Type{AGC}, data::Any)
-    error("This form of convert_type is not supported for Services")
+    return T(values...)
 end

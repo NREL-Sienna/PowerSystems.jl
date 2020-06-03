@@ -238,14 +238,14 @@
             {
                 "name": "area",
                 "comment": "the area containing the bus",
-                "null_value": "Area(nothing)",
+                "null_value": "nothing",
                 "data_type": "Union{Nothing, Area}",
                 "default": "nothing"
             },
             {
                 "name": "load_zone",
                 "comment": "the load zone containing the bus",
-                "null_value": "LoadZone(nothing)",
+                "null_value": "nothing",
                 "data_type": "Union{Nothing, LoadZone}",
                 "default": "nothing"
             },

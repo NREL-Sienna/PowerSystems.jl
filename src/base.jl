@@ -218,8 +218,8 @@ function System(
             voltage = 0.0,
             voltagelimits = (min = 0.0, max = 0.0),
             basevoltage = nothing,
-            area = Area(nothing),
-            load_zone = LoadZone(nothing),
+            area = nothing,
+            load_zone = nothing,
             ext = Dict{String, Any}(),
         ),
     ],
@@ -1314,14 +1314,18 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
         end
     end
 
-    # Bus and AGC have an Area. Devices have buses.
-    deserialize_and_add!(; include_types = [Area])
+    # Run in order based on type composition.
+    deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     # Devices have services, skip one round.
     deserialize_and_add!(; skip_types = [Device])
     # DynamicInjection has to follow StaticInjection.
-    deserialize_and_add!(; include_types = [Device], skip_types = [DynamicInjection])
+    deserialize_and_add!(;
+        include_types = [Device],
+        skip_types = [DynamicInjection, RegulationDevice],
+    )
+    deserialize_and_add!(; include_types = [RegulationDevice])
     deserialize_and_add!(;
         include_types = [DynamicInjection],
         post_add_func = dynamic_injector -> begin
@@ -1335,58 +1339,6 @@ function _get_component_type(component_type::Symbol)
     # This function will ensure that `component_type` contains a valid type expression,
     # so it should be safe to eval.
     return eval(IS.parse_serialized_type(component_type))
-end
-
-function JSON2.write(io::IO, component::T) where {T <: Component}
-    return JSON2.write(io, encode_for_json(component))
-end
-
-function JSON2.write(component::T) where {T <: Component}
-    return JSON2.write(encode_for_json(component))
-end
-
-"""
-Encode composed buses as UUIDs.
-"""
-function encode_for_json(component::T) where {T <: Component}
-    fields = fieldnames(T)
-    vals = []
-
-    for name in fields
-        val = getfield(component, name)
-        if val isa Bus
-            push!(vals, IS.get_uuid(val))
-        else
-            push!(vals, val)
-        end
-    end
-
-    return NamedTuple{fields}(vals)
-end
-
-function IS.convert_type(
-    ::Type{T},
-    data::NamedTuple,
-    component_cache::Dict,
-) where {T <: Component}
-    @debug T data
-    values = []
-    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
-        val = getfield(data, fieldname)
-        if fieldtype <: Bus
-            uuid = Base.UUID(val.value)
-            bus = component_cache[uuid]
-            push!(values, bus)
-        elseif fieldtype <: Component
-            # Recurse.
-            push!(values, IS.convert_type(fieldtype, val, component_cache))
-        else
-            obj = IS.convert_type(fieldtype, val)
-            push!(values, obj)
-        end
-    end
-
-    return T(values...)
 end
 
 """
@@ -1476,6 +1428,24 @@ function check_component_addition(sys::System, bus::Bus)
     number = get_number(bus)
     if number in sys.bus_numbers
         throw(ArgumentError("bus number $number is already stored in the system"))
+    end
+
+    bus_area = get_area(bus)
+    if !isnothing(bus_area)
+        name = get_name(bus_area)
+        area = get_component(Area, sys, name)
+        if isnothing(area)
+            throw(ArgumentError("bus area $name is not stored in the system"))
+        end
+    end
+
+    bus_load_zone = get_load_zone(bus)
+    if !isnothing(bus_load_zone)
+        name = get_name(bus_load_zone)
+        load_zone = get_component(LoadZone, sys, get_name(bus_load_zone))
+        if isnothing(load_zone)
+            throw(ArgumentError("bus load_zone $name is not stored in the system"))
+        end
     end
 end
 
