@@ -598,7 +598,7 @@ function make_shunt(name, d, bus)
         name = name,
         available = Bool(d["status"]),
         bus = bus,
-        Y = (-d["gs"] + d["bs"]im),
+        Y = (-d["gs"] - d["bs"]im),
     )
 end
 
