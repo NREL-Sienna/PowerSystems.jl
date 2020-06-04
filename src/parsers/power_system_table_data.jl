@@ -859,7 +859,7 @@ function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_coln
         fixed = 0.0
     end
     no_load_cost = var_cost[1][1]
-    var_cost = VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost][2:end])
+    var_cost = VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
     active_power_limits =
