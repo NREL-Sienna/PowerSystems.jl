@@ -1479,6 +1479,11 @@ function handle_component_addition!(sys::System, dynamic_injector::DynamicInject
     set_dynamic_injector!(get_static_injector(dynamic_injector), dynamic_injector)
 end
 
+function handle_component_addition!(sys::System, component::RegulationDevice)
+    component.device = deepcopy(component.device)
+    component.device.internal = IS.InfrastructureSystemsInternal()
+end
+
 """
 Throws ArgumentError if the bus number is not stored in the system.
 """
