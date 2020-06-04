@@ -1645,11 +1645,12 @@ function convert_component!(
         line.anglelimits,
         line.services,
         line.ext,
-        line.forecasts,
-        line.internal,
+        InfrastructureSystems.Forecasts(),
+        InfrastructureSystemsInternal(),
     )
-    remove_component!(sys, line)
     add_component!(sys, new_line)
+    IS.copy_forecasts!(line, new_line)
+    remove_component!(sys, line)
 end
 
 """
@@ -1682,9 +1683,10 @@ function convert_component!(
         line.anglelimits,
         line.services,
         line.ext,
-        line.forecasts,
-        line.internal,
+        InfrastructureSystems.Forecasts(),
+        InfrastructureSystemsInternal(),
     )
-    remove_component!(sys, line)
     add_component!(sys, new_line)
+    IS.copy_forecasts!(line, new_line)
+    remove_component!(sys, line)
 end
