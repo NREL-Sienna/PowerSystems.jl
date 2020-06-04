@@ -856,6 +856,26 @@ function add_forecast!(
 end
 
 """
+Efficiently add all forecasts in one component to another by copying the underlying
+references.
+
+# Arguments
+- `src::InfrastructureSystemsType`: Source component
+- `dst::InfrastructureSystemsType`: Destination component
+- `label_mapping::Dict = nothing`: Optionally map src labels to different dst labels.
+  If provided and src has a forecast with a label not present in label_mapping, that
+  forecast will not copied. If label_mapping is nothing then all forecasts will be copied
+  with src's labels.
+"""
+function copy_forecasts!(
+    src::InfrastructureSystemsType,
+    dst::InfrastructureSystemsType,
+    label_mapping::Union{Nothing, Dict{String, String}} = nothing,
+)
+    IS.copy_forecasts!(src, dst, label_mapping)
+end
+
+"""
     make_forecasts(sys::System, metadata_file::AbstractString; resolution = nothing)
 
 Return a vector of forecasts from a metadata file.
@@ -1646,10 +1666,11 @@ function convert_component!(
         line.services,
         line.ext,
         InfrastructureSystems.Forecasts(),
-        InfrastructureSystemsInternal(),
+        line.internal,
     )
+    IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
-    IS.copy_forecasts!(line, new_line)
+    copy_forecasts!(line, new_line)
     remove_component!(sys, line)
 end
 
@@ -1684,9 +1705,10 @@ function convert_component!(
         line.services,
         line.ext,
         InfrastructureSystems.Forecasts(),
-        InfrastructureSystemsInternal(),
+        line.internal,
     )
+    IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
-    IS.copy_forecasts!(line, new_line)
+    copy_forecasts!(line, new_line)
     remove_component!(sys, line)
 end
