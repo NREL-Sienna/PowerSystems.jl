@@ -5052,11 +5052,19 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
+            "max": 1.0
+          }
+        },
+        {
+          "name": "reserve_limit_dn",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
             "max": null
           }
         },
         {
-          "name": "reserve_limit",
+          "name": "reserve_limit_up",
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
