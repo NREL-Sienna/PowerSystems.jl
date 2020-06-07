@@ -30,6 +30,8 @@ include("AVRSimple.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
 include("BaseMachine.jl")
+include("GENROU.jl")
+include("GENSAL.jl")
 include("AndersonFouadMachine.jl")
 include("FullMachine.jl")
 include("MarconatoMachine.jl")
@@ -98,6 +100,8 @@ export get_R
 export get_R_1d
 export get_R_1q
 export get_R_f
+export get_S1_0
+export get_S1_2
 export get_T1
 export get_T2
 export get_T3
@@ -123,6 +127,7 @@ export get_X_th
 export get_Xd
 export get_Xd_p
 export get_Xd_pp
+export get_Xl
 export get_Xq
 export get_Xq_p
 export get_Xq_pp
@@ -277,6 +282,8 @@ export set_R!
 export set_R_1d!
 export set_R_1q!
 export set_R_f!
+export set_S1_0!
+export set_S1_2!
 export set_T1!
 export set_T2!
 export set_T3!
@@ -302,6 +309,7 @@ export set_X_th!
 export set_Xd!
 export set_Xd_p!
 export set_Xd_pp!
+export set_Xl!
 export set_Xq!
 export set_Xq_p!
 export set_Xq_pp!
