@@ -263,7 +263,7 @@ end
         if get_area(get_bus(g)) != control_area
             continue
         end
-        t = RegulationDevice(g, participation_factor = 1.0, droop = 0.04)
+        t = RegulationDevice(g, participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
         add_component!(sys, t)
         push!(contributing_devices, t)
     end

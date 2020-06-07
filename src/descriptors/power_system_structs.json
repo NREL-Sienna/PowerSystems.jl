@@ -5049,11 +5049,7 @@
         },
         {
           "name": "participation_factor",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": 1.0
-          }
+          "data_type": "NamedTuple{(:up, :dn), Tuple{Float64, Float64}}"
         },
         {
           "name": "reserve_limit_dn",
@@ -5073,6 +5069,14 @@
         },
         {
           "name": "inertia",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "cost",
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
