@@ -221,10 +221,12 @@ export get_Q_ref
 export set_droop!
 export set_participation_factor!
 export set_inertia!
-export set_reserve_limit!
+export set_reserve_limit_up!
+export set_reserve_limit_dn!
 export get_droop
 export get_inertia
-export get_reserve_limit
+export get_reserve_limit_up
+export get_reserve_limit_dn
 export get_participation_factor
 
 #################################################################################
