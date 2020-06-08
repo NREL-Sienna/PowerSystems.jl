@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
         T2::Float64
         τ_min::Float64
         τ_max::Float64
+        P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -22,6 +23,7 @@ Parameters of a Turbine Governor Type II.
 - `T2::Float64`: Power fraction time constant, validation range: (0, nothing)
 - `τ_min::Float64`: Min Power into the Governor, validation range: (0, nothing)
 - `τ_max::Float64`: Max Power into the Governor, validation range: (0, nothing)
+- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
@@ -38,6 +40,8 @@ mutable struct TGTypeII <: TurbineGov
     τ_min::Float64
     "Max Power into the Governor"
     τ_max::Float64
+    "Reference Power Set-point"
+    P_ref::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
@@ -45,12 +49,12 @@ mutable struct TGTypeII <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function TGTypeII(R, T1, T2, τ_min, τ_max, ext=Dict{String, Any}(), )
-    TGTypeII(R, T1, T2, τ_min, τ_max, ext, [:xg], 1, InfrastructureSystemsInternal(), )
+function TGTypeII(R, T1, T2, τ_min, τ_max, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeII(R, T1, T2, τ_min, τ_max, P_ref, ext, [:xg], 1, InfrastructureSystemsInternal(), )
 end
 
-function TGTypeII(; R, T1, T2, τ_min, τ_max, ext=Dict{String, Any}(), )
-    TGTypeII(R, T1, T2, τ_min, τ_max, ext, )
+function TGTypeII(; R, T1, T2, τ_min, τ_max, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeII(R, T1, T2, τ_min, τ_max, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -61,6 +65,7 @@ function TGTypeII(::Nothing)
         T2=0,
         τ_min=0,
         τ_max=0,
+        P_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -75,6 +80,8 @@ get_T2(value::TGTypeII) = value.T2
 get_τ_min(value::TGTypeII) = value.τ_min
 """Get TGTypeII τ_max."""
 get_τ_max(value::TGTypeII) = value.τ_max
+"""Get TGTypeII P_ref."""
+get_P_ref(value::TGTypeII) = value.P_ref
 """Get TGTypeII ext."""
 get_ext(value::TGTypeII) = value.ext
 """Get TGTypeII states."""
@@ -94,6 +101,8 @@ set_T2!(value::TGTypeII, val::Float64) = value.T2 = val
 set_τ_min!(value::TGTypeII, val::Float64) = value.τ_min = val
 """Set TGTypeII τ_max."""
 set_τ_max!(value::TGTypeII, val::Float64) = value.τ_max = val
+"""Set TGTypeII P_ref."""
+set_P_ref!(value::TGTypeII, val::Float64) = value.P_ref = val
 """Set TGTypeII ext."""
 set_ext!(value::TGTypeII, val::Dict{String, Any}) = value.ext = val
 """Set TGTypeII states."""

@@ -2400,6 +2400,14 @@
                 "default": "Dict{String, Any}()"
             },
             {
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
                 "name": "internal",
                 "comment": "power system internal reference, do not modify",
                 "data_type": "InfrastructureSystemsInternal",
@@ -2576,8 +2584,8 @@
         "docstring": "Parameters of a AVR that returns a fixed voltage to the rotor winding",
         "fields": [
             {
-                "name": "Emf",
-                "comment": "Fixed voltage to the rotor winding",
+                "name": "Vf",
+                "comment": "Fixed voltage field applied to the rotor winding",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -2621,6 +2629,17 @@
                 "name": "Kv",
                 "comment": "Proportional Gain",
                 "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "V_ref",
+                "comment": "Reference Voltage Set-point",
+                "null_value": 0,
+                "default": "1.0",
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -2769,6 +2788,17 @@
                 }
             },
             {
+                "name": "V_ref",
+                "comment": "Reference Voltage Set-point",
+                "null_value": 0,
+                "default": "1.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -2910,6 +2940,17 @@
                 }
             },
             {
+                "name": "V_ref",
+                "comment": "Reference Voltage Set-point",
+                "null_value": 0,
+                "default": "1.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -2963,16 +3004,6 @@
             {
                 "name": "eq_p",
                 "comment": "Fixed EMF behind the impedance",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "MVABase",
-                "comment": "Nominal Capacity in MVA",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -3114,16 +3145,6 @@
             {
                 "name": "Tq0_pp",
                 "comment": "Time constant of sub-transient q-axis voltage",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "MVABase",
-                "comment": "Nominal Capacity in MVA",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -3276,16 +3297,6 @@
                 "name": "L_1q",
                 "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
                 "null_value": 1.0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "MVABase",
-                "comment": "Nominal Capacity in MVA",
-                "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -3456,16 +3467,6 @@
                 }
             },
             {
-                "name": "MVABase",
-                "comment": "Nominal Capacity in MVA",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -3571,16 +3572,6 @@
             {
                 "name": "Tq0_p",
                 "comment": "Time constant of transient q-axis voltage",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "MVABase",
-                "comment": "Nominal Capacity in MVA",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -3722,16 +3713,6 @@
             {
                 "name": "Tq0_pp",
                 "comment": "Time constant of sub-transient q-axis voltage",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "MVABase",
-                "comment": "Nominal Capacity in MVA",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -3884,16 +3865,6 @@
                 "name": "L_1q",
                 "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
                 "null_value": 2.0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "MVABase",
-                "comment": "Nominal Capacity in MVA",
-                "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -4056,16 +4027,6 @@
             {
                 "name": "T_AA",
                 "comment": "Time constant of d-axis additional leakage",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "MVABase",
-                "comment": "Nominal Capacity in MVA",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -4481,6 +4442,17 @@
                 }
             },
             {
+                "name": "P_ref",
+                "comment": "Reference Power Set-point",
+                "null_value": 0,
+                "default": "1.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -4592,6 +4564,17 @@
                 }
             },
             {
+                "name": "P_ref",
+                "comment": "Reference Power Set-point",
+                "null_value": 0,
+                "default": "1.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
                 "name": "ext",
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
@@ -4666,6 +4649,17 @@
                 "name": "τ_max",
                 "comment": "Max Power into the Governor",
                 "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "P_ref",
+                "comment": "Reference Power Set-point",
+                "null_value": 0,
+                "default": "1.0",
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -5005,9 +4999,10 @@
                 }
             },
             {
-                "name": "ωb",
-                "comment": "rated angular frequency",
+                "name": "P_ref",
+                "comment": "Reference Power Set-point",
                 "null_value": 0,
+                "default": "1.0",
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,
@@ -5053,6 +5048,17 @@
                 "name": "ωf",
                 "comment": "filter frequency cutoff",
                 "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "V_ref",
+                "comment": "Reference Voltage Set-point",
+                "null_value": 0,
+                "default": "1.0",
                 "data_type": "Float64",
                 "valid_range": {
                     "min": 0,

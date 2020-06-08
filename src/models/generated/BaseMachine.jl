@@ -6,7 +6,6 @@ This file is auto-generated. Do not edit.
         R::Float64
         Xd_p::Float64
         eq_p::Float64
-        MVABase::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -19,7 +18,6 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `R::Float64`: Resistance after EMF in machine per unit, validation range: (0, nothing)
 - `Xd_p::Float64`: Reactance after EMF in machine per unit, validation range: (0, nothing)
 - `eq_p::Float64`: Fixed EMF behind the impedance, validation range: (0, nothing)
-- `MVABase::Float64`: Nominal Capacity in MVA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
@@ -32,8 +30,6 @@ mutable struct BaseMachine <: Machine
     Xd_p::Float64
     "Fixed EMF behind the impedance"
     eq_p::Float64
-    "Nominal Capacity in MVA"
-    MVABase::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
@@ -41,12 +37,12 @@ mutable struct BaseMachine <: Machine
     internal::InfrastructureSystemsInternal
 end
 
-function BaseMachine(R, Xd_p, eq_p, MVABase, ext=Dict{String, Any}(), )
-    BaseMachine(R, Xd_p, eq_p, MVABase, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
+function BaseMachine(R, Xd_p, eq_p, ext=Dict{String, Any}(), )
+    BaseMachine(R, Xd_p, eq_p, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
 end
 
-function BaseMachine(; R, Xd_p, eq_p, MVABase, ext=Dict{String, Any}(), )
-    BaseMachine(R, Xd_p, eq_p, MVABase, ext, )
+function BaseMachine(; R, Xd_p, eq_p, ext=Dict{String, Any}(), )
+    BaseMachine(R, Xd_p, eq_p, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -55,7 +51,6 @@ function BaseMachine(::Nothing)
         R=0,
         Xd_p=0,
         eq_p=0,
-        MVABase=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -66,8 +61,6 @@ get_R(value::BaseMachine) = value.R
 get_Xd_p(value::BaseMachine) = value.Xd_p
 """Get BaseMachine eq_p."""
 get_eq_p(value::BaseMachine) = value.eq_p
-"""Get BaseMachine MVABase."""
-get_MVABase(value::BaseMachine) = value.MVABase
 """Get BaseMachine ext."""
 get_ext(value::BaseMachine) = value.ext
 """Get BaseMachine states."""
@@ -83,8 +76,6 @@ set_R!(value::BaseMachine, val::Float64) = value.R = val
 set_Xd_p!(value::BaseMachine, val::Float64) = value.Xd_p = val
 """Set BaseMachine eq_p."""
 set_eq_p!(value::BaseMachine, val::Float64) = value.eq_p = val
-"""Set BaseMachine MVABase."""
-set_MVABase!(value::BaseMachine, val::Float64) = value.MVABase = val
 """Set BaseMachine ext."""
 set_ext!(value::BaseMachine, val::Dict{String, Any}) = value.ext = val
 """Set BaseMachine states."""
