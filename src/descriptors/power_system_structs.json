@@ -93,7 +93,7 @@
         "supertype": "OperationalCost"
     },
     {
-        "struct_name": "PGLIBCost",
+        "struct_name": "MultiStartCost",
         "docstring": "Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.",
         "fields": [
             {
@@ -1972,7 +1972,7 @@
         "supertype": "ThermalGen"
     },
     {
-        "struct_name": "ThermalPGLIB",
+        "struct_name": "ThermalMultiStart",
         "docstring": "Data Structure for thermal generation technologies.",
         "fields": [
             {
@@ -2093,8 +2093,8 @@
             },
             {
                 "name": "op_cost",
-                "null_value": "PGLIBCost(nothing)",
-                "data_type": "PGLIBCost"
+                "null_value": "MultiStartCost(nothing)",
+                "data_type": "MultiStartCost"
             },
             {
                 "name": "services",
