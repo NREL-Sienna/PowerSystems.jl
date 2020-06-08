@@ -36,7 +36,7 @@ Parameters of 4-states round-rotor synchronous machine: GENROU model
 - `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
 - `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: (0, nothing)
 - `Xl::Float64`: Stator leakage reactance, validation range: (0, nothing)
-- `S1_0::Float64`: Saturation factor at 1 pu flux: S(1.0) = B(|ψ_pp|-A)^2 -> S(1.2) = B(1.2-A)^2, validation range: (0, nothing)
+- `S1_0::Float64`: Saturation factor at 1 pu flux: S(1.0) = B(|ψ_pp|-A)^2 -> S(1.0) = B(1.0-A)^2, validation range: (0, nothing)
 - `S1_2::Float64`: Saturation factor at 1.2 pu flux: S(1.2) = B(|ψ_pp|-A)^2 -> S(1.2) = B(1.2-A)^2, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -70,7 +70,7 @@ mutable struct GENROU <: Machine
     Xd_pp::Float64
     "Stator leakage reactance"
     Xl::Float64
-    "Saturation factor at 1 pu flux: S(1.0) = B(|ψ_pp|-A)^2 -> S(1.2) = B(1.2-A)^2"
+    "Saturation factor at 1 pu flux: S(1.0) = B(|ψ_pp|-A)^2 -> S(1.0) = B(1.0-A)^2"
     S1_0::Float64
     "Saturation factor at 1.2 pu flux: S(1.2) = B(|ψ_pp|-A)^2 -> S(1.2) = B(1.2-A)^2"
     S1_2::Float64
