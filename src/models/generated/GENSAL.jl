@@ -32,8 +32,8 @@ Parameters of 3-states salient-pole synchronous machine: GENSAL model
 - `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
 - `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: (0, nothing)
 - `Xl::Float64`: Stator leakage reactance, validation range: (0, nothing)
-- `S1_0::Float64`: Saturation factor at 1 pu flux: S(1.0) = B(eq_p - A), validation range: (0, nothing)
-- `S1_2::Float64`: Saturation factor at 1.2 pu flux: S(1.2) = B(eq_p - A), validation range: (0, nothing)
+- `S1_0::Float64`: Saturation factor at 1 pu eq_p: S(1.0) = B(eq_p - A) -> S(1.0) = B(1.0 - A)^2, validation range: (0, nothing)
+- `S1_2::Float64`: Saturation factor at 1.2 pu eq_p: S(1.2) = B(eq_p - A) -> S(1.2) = B(1.2 - A)^2, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
@@ -61,9 +61,9 @@ mutable struct GENSAL <: Machine
     Xd_pp::Float64
     "Stator leakage reactance"
     Xl::Float64
-    "Saturation factor at 1 pu flux: S(1.0) = B(eq_p - A)"
+    "Saturation factor at 1 pu eq_p: S(1.0) = B(eq_p - A) -> S(1.0) = B(1.0 - A)^2"
     S1_0::Float64
-    "Saturation factor at 1.2 pu flux: S(1.2) = B(eq_p - A)"
+    "Saturation factor at 1.2 pu eq_p: S(1.2) = B(eq_p - A) -> S(1.2) = B(1.2 - A)^2"
     S1_2::Float64
     ext::Dict{String, Any}
     "The states are:

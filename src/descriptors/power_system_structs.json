@@ -2911,7 +2911,7 @@
             },
             {
                 "name": "S1_0",
-                "comment": "Saturation factor at 1 pu flux: S(1.0) = B(|ψ_pp|-A)",
+                "comment": "Saturation factor at 1 pu flux: S(1.0) = B(|ψ_pp|-A) -> S(1.2) = B(1.2-A)^2",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -2921,7 +2921,7 @@
             },
             {
                 "name": "S1_2",
-                "comment": "Saturation factor at 1.2 pu flux: S(1.2) = B(|ψ_pp|-A)",
+                "comment": "Saturation factor at 1.2 pu flux: S(1.2) = B(|ψ_pp|-A)^2 -> S(1.2) = B(1.2-A)^2",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -3052,7 +3052,7 @@
             },
             {
                 "name": "S1_0",
-                "comment": "Saturation factor at 1 pu flux: S(1.0) = B(eq_p - A)",
+                "comment": "Saturation factor at 1 pu eq_p: S(1.0) = B(eq_p - A) -> S(1.0) = B(1.0 - A)^2",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
@@ -3062,7 +3062,7 @@
             },
             {
                 "name": "S1_2",
-                "comment": "Saturation factor at 1.2 pu flux: S(1.2) = B(eq_p - A)",
+                "comment": "Saturation factor at 1.2 pu eq_p: S(1.2) = B(eq_p - A) -> S(1.2) = B(1.2 - A)^2",
                 "null_value": 0,
                 "data_type": "Float64",
                 "valid_range": {
