@@ -2055,6 +2055,7 @@
             },
             {
                 "name": "power_trajectory",
+                "comment": "Power trajectory the unit will take during the startup and shutdown ramp process",
                 "null_value": "nothing",
                 "data_type": "Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}",
                 "valid_range": {
