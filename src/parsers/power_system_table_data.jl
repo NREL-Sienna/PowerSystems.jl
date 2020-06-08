@@ -710,8 +710,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
 
     if gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
-    elseif gen_type == ThermalPGLIB
-        generator = make_thermal_generator_pglib(data, gen, cost_colnames, bus)
+    elseif gen_type == ThermalMultiStart
+        generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
     elseif gen_type <: HydroGen
         generator = make_hydro_generator(gen_type, data, gen, bus)
     elseif gen_type <: RenewableGen
@@ -821,7 +821,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     )
 end
 
-function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_colnames, bus)
+function make_thermal_generator_multistart(data::PowerSystemTableData, gen, cost_colnames, bus)
     fuel_cost = gen.fuel_price / 1000
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
@@ -896,9 +896,9 @@ function make_thermal_generator_pglib(data::PowerSystemTableData, gen, cost_coln
         @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
         shutdown_cost = 0.0
     end
-    op_cost = PGLIBCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
+    op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
-    return ThermalPGLIB(;
+    return ThermalMultiStart(;
         name = gen.name,
         available = available,
         status = gen.status_at_start,

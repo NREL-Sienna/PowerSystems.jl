@@ -494,7 +494,7 @@
                 "RenewableFix",
                 "RenewableDispatch",
                 "ThermalStandard",
-                "ThermalPGLIB"
+                "ThermalMultiStart"
             ],
             "description": "Type of Struct"
         }
