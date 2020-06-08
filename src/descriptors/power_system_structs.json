@@ -2097,6 +2097,17 @@
                 "data_type": "MultiStartCost"
             },
             {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
+            },
+            {
                 "name": "services",
                 "data_type": "Vector{Service}",
                 "comment": "Services that this device contributes to",
