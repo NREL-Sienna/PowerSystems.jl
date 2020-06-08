@@ -17,6 +17,28 @@ function add_service!(device::Device, service::Service)
     @debug "Add $service to $(get_name(device))"
 end
 
+function add_service!(device::Device, service::AGC)
+    if !isa(device, RegulationDevice)
+        throw(IS.ConflictingInputsError("AGC service can only accept contributing devices of type RegulationDevice"))
+    end
+
+    device_bus_area = get_area(get_bus(device))
+    service_area = get_area(service)
+    if !(IS.get_uuid(device_bus_area) == IS.get_uuid(service_area))
+        throw(IS.ConflictingInputsError("Device $(get_name(device)) is not located in the regulation control area"))
+    end
+
+    services = get_services(device)
+    for _service in services
+        if IS.get_uuid(service) == IS.get_uuid(_service)
+            throw(ArgumentError("service $(get_name(service)) is already attached to $(get_name(device))"))
+        end
+    end
+
+    push!(services, service)
+    @debug "Add $service to $(get_name(device))"
+end
+
 """
     remove_service!(device::Device, service::Service)
 

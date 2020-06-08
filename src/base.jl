@@ -218,8 +218,8 @@ function System(
             voltage = 0.0,
             voltagelimits = (min = 0.0, max = 0.0),
             basevoltage = nothing,
-            area = Area(nothing),
-            load_zone = LoadZone(nothing),
+            area = nothing,
+            load_zone = nothing,
             ext = Dict{String, Any}(),
         ),
     ],
@@ -1298,112 +1298,67 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
     # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
 
-    components_as_uuids = [Bus]
-    for component_as_uuid in components_as_uuids
-        for component in IS.get_components_raw(IS.SystemData, component_as_uuid, raw)
-            comp = IS.convert_type(component_as_uuid, component)
-            IS.add_component!(data, comp)
-            component_cache[IS.get_uuid(comp)] = comp
+    # Add each type to this as we parse.
+    parsed_types = Set()
+
+    function is_matching_type(x, types)
+        for t in types
+            x <: t && return true
         end
+        return false
     end
 
-    # Skip Devices this round because they have Services.
-    for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-        c_type = _get_component_type(c_type_sym)
-        (c_type in components_as_uuids || c_type <: Device) && continue
-        for component in IS.get_components_raw(IS.SystemData, c_type, raw)
-            comp = IS.convert_type(c_type, component, component_cache)
-            IS.add_component!(data, comp)
-            component_cache[IS.get_uuid(comp)] = comp
-        end
-    end
-
-    # Now get the Devices, except for dynamic injectors. They have to wait until static
-    # injectors are added.
-    for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-        c_type = _get_component_type(c_type_sym)
-        if c_type <: Device && !(c_type <: DynamicInjection)
+    function deserialize_and_add!(;
+        skip_types = nothing,
+        include_types = nothing,
+        post_add_func = nothing,
+    )
+        for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
+            c_type = _get_component_type(c_type_sym)
+            c_type in parsed_types && continue
+            if !isnothing(skip_types) && is_matching_type(c_type, skip_types)
+                continue
+            end
+            if !isnothing(include_types) && !is_matching_type(c_type, include_types)
+                continue
+            end
             for component in IS.get_components_raw(IS.SystemData, c_type, raw)
                 comp = IS.convert_type(c_type, component, component_cache)
                 IS.add_component!(data, comp)
                 component_cache[IS.get_uuid(comp)] = comp
+                if !isnothing(post_add_func)
+                    post_add_func(comp)
+                end
             end
+            push!(parsed_types, c_type)
         end
     end
 
-    # Now add the dynamic injectors.
-    for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-        c_type = _get_component_type(c_type_sym)
-        if c_type <: Union{Nothing, DynamicInjection}
-            for component in IS.get_components_raw(IS.SystemData, c_type, raw)
-                comp = IS.convert_type(c_type, component, component_cache)
-                IS.add_component!(data, comp)
-                # Now attach this injector its static counterpart.
-                # This normally happens in add_component!(System) but we don't have a
-                # system yet.
-                static_injector = get_static_injector(comp)
-                set_dynamic_injector!(static_injector, comp)
-            end
-        end
-    end
+    # Run in order based on type composition.
+    deserialize_and_add!(; include_types = [Area, LoadZone])
+    deserialize_and_add!(; include_types = [AGC])
+    deserialize_and_add!(; include_types = [Bus])
+    # Devices have services, skip one round.
+    deserialize_and_add!(; skip_types = [Device])
+    # DynamicInjection has to follow StaticInjection.
+    deserialize_and_add!(;
+        include_types = [Device],
+        skip_types = [DynamicInjection, RegulationDevice],
+    )
+    deserialize_and_add!(; include_types = [RegulationDevice])
+    deserialize_and_add!(;
+        include_types = [DynamicInjection],
+        post_add_func = dynamic_injector -> begin
+            static_injector = get_static_injector(dynamic_injector)
+            set_dynamic_injector!(static_injector, dynamic_injector)
+        end,
+    )
 end
 
 function _get_component_type(component_type::Symbol)
     # This function will ensure that `component_type` contains a valid type expression,
     # so it should be safe to eval.
     return eval(IS.parse_serialized_type(component_type))
-end
-
-function JSON2.write(io::IO, component::T) where {T <: Component}
-    return JSON2.write(io, encode_for_json(component))
-end
-
-function JSON2.write(component::T) where {T <: Component}
-    return JSON2.write(encode_for_json(component))
-end
-
-"""
-Encode composed buses as UUIDs.
-"""
-function encode_for_json(component::T) where {T <: Component}
-    fields = fieldnames(T)
-    vals = []
-
-    for name in fields
-        val = getfield(component, name)
-        if val isa Bus
-            push!(vals, IS.get_uuid(val))
-        else
-            push!(vals, val)
-        end
-    end
-
-    return NamedTuple{fields}(vals)
-end
-
-function IS.convert_type(
-    ::Type{T},
-    data::NamedTuple,
-    component_cache::Dict,
-) where {T <: Component}
-    @debug T data
-    values = []
-    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
-        val = getfield(data, fieldname)
-        if fieldtype <: Bus
-            uuid = Base.UUID(val.value)
-            bus = component_cache[uuid]
-            push!(values, bus)
-        elseif fieldtype <: Component
-            # Recurse.
-            push!(values, IS.convert_type(fieldtype, val, component_cache))
-        else
-            obj = IS.convert_type(fieldtype, val)
-            push!(values, obj)
-        end
-    end
-
-    return T(values...)
 end
 
 """
@@ -1455,6 +1410,14 @@ function check_for_services_on_addition(sys::System, component::Device)
     return
 end
 
+# Needed because get_services returns the services of the underlying struct
+function check_for_services_on_addition(sys::System, component::RegulationDevice)
+    for d in get_services(component)
+        isa(d, AGC) && throw(ArgumentError("type Device cannot be added with services"))
+    end
+    return
+end
+
 """
 Throws ArgumentError if a PowerSystems rule blocks addition to the system.
 
@@ -1486,6 +1449,24 @@ function check_component_addition(sys::System, bus::Bus)
     if number in sys.bus_numbers
         throw(ArgumentError("bus number $number is already stored in the system"))
     end
+
+    bus_area = get_area(bus)
+    if !isnothing(bus_area)
+        name = get_name(bus_area)
+        area = get_component(Area, sys, name)
+        if isnothing(area)
+            throw(ArgumentError("bus area $name is not stored in the system"))
+        end
+    end
+
+    bus_load_zone = get_load_zone(bus)
+    if !isnothing(bus_load_zone)
+        name = get_name(bus_load_zone)
+        load_zone = get_component(LoadZone, sys, get_name(bus_load_zone))
+        if isnothing(load_zone)
+            throw(ArgumentError("bus load_zone $name is not stored in the system"))
+        end
+    end
 end
 
 function check_component_addition(sys::System, dynamic_injector::DynamicInjection)
@@ -1516,6 +1497,11 @@ end
 
 function handle_component_addition!(sys::System, dynamic_injector::DynamicInjection)
     set_dynamic_injector!(get_static_injector(dynamic_injector), dynamic_injector)
+end
+
+function handle_component_addition!(sys::System, component::RegulationDevice)
+    component.device = deepcopy(component.device)
+    component.device.internal = IS.InfrastructureSystemsInternal()
 end
 
 """
