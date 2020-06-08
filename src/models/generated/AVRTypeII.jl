@@ -14,6 +14,7 @@ This file is auto-generated. Do not edit.
         Vr_min::Float64
         Ae::Float64
         Be::Float64
+        V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -34,6 +35,7 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `Vr_min::Float64`: Minimum regulator voltage in pu, validation range: (0, nothing)
 - `Ae::Float64`: 1st ceiling coefficient, validation range: (0, nothing)
 - `Be::Float64`: 2nd ceiling coefficient, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int64`
@@ -62,6 +64,8 @@ mutable struct AVRTypeII <: AVR
     Ae::Float64
     "2nd ceiling coefficient"
     Be::Float64
+    "Reference Voltage Set-point"
+    V_ref::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int64
@@ -69,12 +73,12 @@ mutable struct AVRTypeII <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, ext=Dict{String, Any}(), )
-    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, InfrastructureSystemsInternal(), )
+function AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, InfrastructureSystemsInternal(), )
 end
 
-function AVRTypeII(; K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, ext=Dict{String, Any}(), )
-    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, ext, )
+function AVRTypeII(; K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -91,6 +95,7 @@ function AVRTypeII(::Nothing)
         Vr_min=0,
         Ae=0,
         Be=0,
+        V_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -117,6 +122,8 @@ get_Vr_min(value::AVRTypeII) = value.Vr_min
 get_Ae(value::AVRTypeII) = value.Ae
 """Get AVRTypeII Be."""
 get_Be(value::AVRTypeII) = value.Be
+"""Get AVRTypeII V_ref."""
+get_V_ref(value::AVRTypeII) = value.V_ref
 """Get AVRTypeII ext."""
 get_ext(value::AVRTypeII) = value.ext
 """Get AVRTypeII states."""
@@ -148,6 +155,8 @@ set_Vr_min!(value::AVRTypeII, val::Float64) = value.Vr_min = val
 set_Ae!(value::AVRTypeII, val::Float64) = value.Ae = val
 """Set AVRTypeII Be."""
 set_Be!(value::AVRTypeII, val::Float64) = value.Be = val
+"""Set AVRTypeII V_ref."""
+set_V_ref!(value::AVRTypeII, val::Float64) = value.V_ref = val
 """Set AVRTypeII ext."""
 set_ext!(value::AVRTypeII, val::Dict{String, Any}) = value.ext = val
 """Set AVRTypeII states."""

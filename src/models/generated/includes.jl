@@ -67,7 +67,6 @@ export get_D_ex
 export get_D_hp
 export get_D_ip
 export get_D_lp
-export get_Emf
 export get_H
 export get_H_ex
 export get_H_hp
@@ -94,9 +93,9 @@ export get_L_d
 export get_L_f1d
 export get_L_ff
 export get_L_q
-export get_MVABase
 export get_P_max
 export get_P_min
+export get_P_ref
 export get_R
 export get_R_1d
 export get_R_1q
@@ -118,6 +117,8 @@ export get_Tq0_pp
 export get_Tr
 export get_Ts
 export get_V_pss
+export get_V_ref
+export get_Vf
 export get_Vr_max
 export get_Vr_min
 export get_X_th
@@ -238,7 +239,6 @@ export get_τ_max
 export get_τ_min
 export get_ω_lp
 export get_ωad
-export get_ωb
 export get_ωf
 export set_Ae!
 export set_Be!
@@ -251,7 +251,6 @@ export set_D_ex!
 export set_D_hp!
 export set_D_ip!
 export set_D_lp!
-export set_Emf!
 export set_H!
 export set_H_ex!
 export set_H_hp!
@@ -278,9 +277,9 @@ export set_L_d!
 export set_L_f1d!
 export set_L_ff!
 export set_L_q!
-export set_MVABase!
 export set_P_max!
 export set_P_min!
+export set_P_ref!
 export set_R!
 export set_R_1d!
 export set_R_1q!
@@ -302,6 +301,8 @@ export set_Tq0_pp!
 export set_Tr!
 export set_Ts!
 export set_V_pss!
+export set_V_ref!
+export set_Vf!
 export set_Vr_max!
 export set_Vr_min!
 export set_X_th!
@@ -422,5 +423,4 @@ export set_τ_max!
 export set_τ_min!
 export set_ω_lp!
 export set_ωad!
-export set_ωb!
 export set_ωf!

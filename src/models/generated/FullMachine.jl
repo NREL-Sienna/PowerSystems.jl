@@ -15,7 +15,6 @@ This file is auto-generated. Do not edit.
         L_ff::Float64
         L_1d::Float64
         L_1q::Float64
-        MVABase::Float64
         ext::Dict{String, Any}
         inv_d_fluxlink::Array{Float64,2}
         inv_q_fluxlink::Array{Float64,2}
@@ -42,7 +41,6 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `L_ff::Float64`: Field rotor winding inductance, in per unit, validation range: (0, nothing)
 - `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit, validation range: (0, nothing)
 - `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit, validation range: (0, nothing)
-- `MVABase::Float64`: Nominal Capacity in MVA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
@@ -75,8 +73,6 @@ mutable struct FullMachine <: Machine
     L_1d::Float64
     "Inductance of the q-axis rotor damping circuit, in per unit"
     L_1q::Float64
-    "Nominal Capacity in MVA"
-    MVABase::Float64
     ext::Dict{String, Any}
     "Equations 3.127, 3.130, 3.131 From Kundur"
     inv_d_fluxlink::Array{Float64,2}
@@ -88,12 +84,12 @@ mutable struct FullMachine <: Machine
     internal::InfrastructureSystemsInternal
 end
 
-function FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, MVABase, ext=Dict{String, Any}(), )
-    FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, MVABase, ext, inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]]), inv([[-L_q L_aq]; [-L_aq L_1q]]), [:ψd, :ψq, :ψf, :ψ1d, :ψ1q], 5, InfrastructureSystemsInternal(), )
+function FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext=Dict{String, Any}(), )
+    FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext, inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]]), inv([[-L_q L_aq]; [-L_aq L_1q]]), [:ψd, :ψq, :ψf, :ψ1d, :ψ1q], 5, InfrastructureSystemsInternal(), )
 end
 
-function FullMachine(; R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, MVABase, ext=Dict{String, Any}(), )
-    FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, MVABase, ext, )
+function FullMachine(; R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext=Dict{String, Any}(), )
+    FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -111,7 +107,6 @@ function FullMachine(::Nothing)
         L_ff=2.0,
         L_1d=1.0,
         L_1q=1.0,
-        MVABase=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -140,8 +135,6 @@ get_L_ff(value::FullMachine) = value.L_ff
 get_L_1d(value::FullMachine) = value.L_1d
 """Get FullMachine L_1q."""
 get_L_1q(value::FullMachine) = value.L_1q
-"""Get FullMachine MVABase."""
-get_MVABase(value::FullMachine) = value.MVABase
 """Get FullMachine ext."""
 get_ext(value::FullMachine) = value.ext
 """Get FullMachine inv_d_fluxlink."""
@@ -179,8 +172,6 @@ set_L_ff!(value::FullMachine, val::Float64) = value.L_ff = val
 set_L_1d!(value::FullMachine, val::Float64) = value.L_1d = val
 """Set FullMachine L_1q."""
 set_L_1q!(value::FullMachine, val::Float64) = value.L_1q = val
-"""Set FullMachine MVABase."""
-set_MVABase!(value::FullMachine, val::Float64) = value.MVABase = val
 """Set FullMachine ext."""
 set_ext!(value::FullMachine, val::Dict{String, Any}) = value.ext = val
 """Set FullMachine inv_d_fluxlink."""
