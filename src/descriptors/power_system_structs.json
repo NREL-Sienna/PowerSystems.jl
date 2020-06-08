@@ -94,7 +94,7 @@
     },
     {
         "struct_name": "MultiStartCost",
-        "docstring": "Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.",
+        "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
         "fields": [
             {
                 "name": "variable",
