@@ -892,9 +892,9 @@ function make_thermal_generator_multistart(
     reactivepowerlimits = reactive_power_limits
     ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp)
     capacity = gen.active_power_limits_max
-    hot_start_cost = get(gen, :hot_start_cost, 0.0)
-    warm_start_cost = get(gen, :warm_start_cost, 0.0)
-    cold_start_cost = get(gen, :cold_start_cost, 0.0)
+    hot_start_cost = get(gen, :hot_start_cost, START_COST)
+    warm_start_cost = get(gen, :warm_start_cost, START_COST)
+    cold_start_cost = get(gen, :cold_start_cost, START_COST)
     startup_cost = (hot = hot_start_cost, warm = warm_start_cost, cold = cold_start_cost)
 
     shutdown_cost = get(gen, :shutdown_cost, nothing)

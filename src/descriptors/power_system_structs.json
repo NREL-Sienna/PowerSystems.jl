@@ -117,7 +117,7 @@
             {
                 "name": "startup",
                 "comment": "startup cost",
-                "null_value": "(hot = Inf, warm = Inf,cold = Inf)",
+                "null_value": "(hot = START_COST, warm = START_COST,cold = START_COST)",
                 "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
             },
             {
