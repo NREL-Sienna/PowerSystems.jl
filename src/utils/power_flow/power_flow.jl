@@ -157,7 +157,7 @@ solve_powerflow!(sys, nlsolve, method = :newton)
 ```
 
 """
-function solve_powerflow!(system::System; args...)
+function solve_powerflow!(system::System, nlsolve; args...)
     buses = sort(collect(get_components(Bus, system)), by = x -> get_number(x))
     N_BUS = length(buses)
 
@@ -268,10 +268,10 @@ function solve_powerflow!(system::System; args...)
         end
     end
 
-    res = NLsolve.nlsolve(pf!, x0; args...)
+    res = nlsolve(pf!, x0; args...)
     @info(res)
     if res.f_converged
-        #PowerSystems._write_pf_sol!(system, res)
+        PowerSystems._write_pf_sol!(system, res)
         @info("PowerFlow solve converged, the results have been stored in the system")
         return res.f_converged
     end
