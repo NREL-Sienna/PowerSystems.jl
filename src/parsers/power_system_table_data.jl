@@ -725,11 +725,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     return generator
 end
 
-function calculate_variable_cost(    
-    data::PowerSystemTableData,
-    gen,
-    cost_colnames,
-)
+function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
     fuel_cost = gen.fuel_price / 1000
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
