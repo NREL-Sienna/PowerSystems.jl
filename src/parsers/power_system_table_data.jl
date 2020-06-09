@@ -725,7 +725,11 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     return generator
 end
 
-function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
+function calculate_variable_cost(    
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames,
+)
     fuel_cost = gen.fuel_price / 1000
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
@@ -762,6 +766,12 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         var_cost = [(0.0, var_cost[1][2]), (1.0, var_cost[1][2])]
         fixed = 0.0
     end
+    return var_cost, fixed
+end
+
+function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
+    fuel_cost = gen.fuel_price / 1000
+    var_cost, fixed = calculate_variable_cost(data, gen, cost_colnames)
     status = true
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
@@ -827,42 +837,8 @@ function make_thermal_generator_multistart(
     cost_colnames,
     bus,
 )
+    var_cost, fixed = calculate_variable_cost(data, gen, cost_colnames)
     fuel_cost = gen.fuel_price / 1000
-
-    var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
-    var_cost = [
-        (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2])))
-        for c in var_cost if !in(nothing, c)
-    ]
-    if length(unique(var_cost)) > 1
-        var_cost[2:end] = [
-            (
-                var_cost[i][1] *
-                (var_cost[i][2] - var_cost[i - 1][2]) *
-                fuel_cost *
-                data.basepower,
-                var_cost[i][2],
-            ) .* gen.active_power_limits_max for i in 2:length(var_cost)
-        ]
-        var_cost[1] =
-            (
-                var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower,
-                var_cost[1][2],
-            ) .* gen.active_power_limits_max
-
-        fixed = max(
-            0.0,
-            var_cost[1][1] -
-            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
-        )
-        var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
-        for i in 2:length(var_cost)
-            var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
-        end
-    else
-        var_cost = [(0.0, var_cost[1][2]), (1.0, var_cost[1][2])]
-        fixed = 0.0
-    end
     no_load_cost = var_cost[1][1]
     var_cost =
         VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
