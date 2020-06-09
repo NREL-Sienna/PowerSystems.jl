@@ -221,7 +221,7 @@ function solve_powerflow!(system::System, nlsolve; args...)
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
         else
-            error()
+            throw(ArgumentError("Bustype not recognized"))
         end
     end
 
