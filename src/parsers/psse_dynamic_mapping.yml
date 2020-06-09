@@ -1,0 +1,3 @@
+Machines:
+- {string: GENROU, type: RoundRotorQuadratic}
+- {string: GENSAL, type: SalientPoleQuadratic}
