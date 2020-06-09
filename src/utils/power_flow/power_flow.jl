@@ -220,6 +220,8 @@ function solve_powerflow!(system::System, nlsolve; args...)
             x0[state_variable_count] = bus_voltage
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
+        else
+            error()
         end
     end
 
