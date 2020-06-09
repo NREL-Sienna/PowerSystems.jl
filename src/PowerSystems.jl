@@ -64,6 +64,8 @@ export GenericBattery
 
 export DynamicInjection
 export DynamicGenerator
+export RegulationDevice
+
 #AVR Exports
 export AVR
 export AVRFixed
@@ -218,6 +220,18 @@ export set_static_injector!
 export get_V_ref
 export get_P_ref
 export get_Q_ref
+export set_droop!
+export set_participation_factor!
+export set_inertia!
+export set_reserve_limit_up!
+export set_reserve_limit_dn!
+export set_cost!
+export get_droop
+export get_inertia
+export get_reserve_limit_up
+export get_reserve_limit_dn
+export get_participation_factor
+export get_cost
 
 #################################################################################
 # Imports
@@ -305,12 +319,15 @@ include("models/reserves.jl")
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
-include("models/devices.jl")
+include("models/regulation_device.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
+
+#Methods for devices
+include("models/devices.jl")
 
 # Dynamic Composed types
 include("models/dynamic_generator.jl")

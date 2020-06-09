@@ -22,7 +22,6 @@ This file is auto-generated. Do not edit.
         op_cost::MultiStartCost
         basepower::Float64
         services::Vector{Service}
-        participation_factor::Float64
         time_at_status::Float64
         must_run::Bool
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -53,7 +52,6 @@ Data Structure for thermal generation technologies.
 - `op_cost::MultiStartCost`
 - `basepower::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
-- `participation_factor::Float64`: AGC Participation Factor, validation range: (0, 1.0), action if invalid: error
 - `time_at_status::Float64`
 - `must_run::Bool`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
@@ -90,8 +88,6 @@ mutable struct ThermalMultiStart <: ThermalGen
     basepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}
-    "AGC Participation Factor"
-    participation_factor::Float64
     time_at_status::Float64
     must_run::Bool
     "corresponding dynamic injection device"
@@ -103,12 +99,12 @@ mutable struct ThermalMultiStart <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services, participation_factor, time_at_status, must_run, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services, time_at_status, must_run, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalMultiStart(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services=Device[], participation_factor=0.0, time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services, participation_factor, time_at_status, must_run, dynamic_injector, ext, forecasts, )
+function ThermalMultiStart(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services, time_at_status, must_run, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -133,7 +129,6 @@ function ThermalMultiStart(::Nothing)
         op_cost=MultiStartCost(nothing),
         basepower=0.0,
         services=Device[],
-        participation_factor=0.0,
         time_at_status=INFINITE_TIME,
         must_run=false,
         dynamic_injector=nothing,
@@ -180,8 +175,6 @@ get_op_cost(value::ThermalMultiStart) = value.op_cost
 get_basepower(value::ThermalMultiStart) = value.basepower
 """Get ThermalMultiStart services."""
 get_services(value::ThermalMultiStart) = value.services
-"""Get ThermalMultiStart participation_factor."""
-get_participation_factor(value::ThermalMultiStart) = value.participation_factor
 """Get ThermalMultiStart time_at_status."""
 get_time_at_status(value::ThermalMultiStart) = value.time_at_status
 """Get ThermalMultiStart must_run."""
@@ -233,8 +226,6 @@ set_op_cost!(value::ThermalMultiStart, val::MultiStartCost) = value.op_cost = va
 set_basepower!(value::ThermalMultiStart, val::Float64) = value.basepower = val
 """Set ThermalMultiStart services."""
 set_services!(value::ThermalMultiStart, val::Vector{Service}) = value.services = val
-"""Set ThermalMultiStart participation_factor."""
-set_participation_factor!(value::ThermalMultiStart, val::Float64) = value.participation_factor = val
 """Set ThermalMultiStart time_at_status."""
 set_time_at_status!(value::ThermalMultiStart, val::Float64) = value.time_at_status = val
 """Set ThermalMultiStart must_run."""

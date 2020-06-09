@@ -90,8 +90,8 @@ function Bus(::Nothing)
         voltage=0.0,
         voltagelimits=(min=0.0, max=0.0),
         basevoltage=nothing,
-        area=Area(nothing),
-        load_zone=LoadZone(nothing),
+        area=nothing,
+        load_zone=nothing,
         ext=Dict{String, Any}(),
     )
 end

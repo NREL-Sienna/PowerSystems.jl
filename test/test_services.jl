@@ -240,3 +240,50 @@ end
 
     @test 8 == actual_count
 end
+
+@testset "Test AGC Device and Regulation Services" begin
+    sys = create_rts_system()
+    control_area = get_component(Area, sys, "1")
+    AGC_service = PSY.AGC(
+        name = "AGC_Area1",
+        available = true,
+        bias = 739.0,
+        K_p = 2.5,
+        K_i = 0.1,
+        K_d = 0.0,
+        delta_t = 4,
+        area = control_area,
+    )
+    contributing_devices = Vector{Device}()
+    for g in get_components(
+        ThermalStandard,
+        sys,
+        x -> (x.primemover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
+    )
+        if get_area(get_bus(g)) != control_area
+            continue
+        end
+        t = RegulationDevice(g, participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
+        add_component!(sys, t)
+        push!(contributing_devices, t)
+    end
+    add_service!(sys, AGC_service, contributing_devices)
+
+    for d in contributing_devices
+        @test AGC_service ∈ get_services(d)
+    end
+
+    device_without_regulation =
+        first(get_components(HydroGen, sys, x -> get_area(get_bus(x)) == control_area))
+    @test_throws IS.ConflictingInputsError add_service!(
+        device_without_regulation,
+        AGC_service,
+    )
+
+    device_outside_area_ = get_component(ThermalStandard, sys, "213_CT_1")
+    device_outside_area = RegulationDevice(device_outside_area_)
+    @test_throws IS.ConflictingInputsError add_service!(device_outside_area, AGC_service)
+
+    @test_throws ArgumentError add_service!(contributing_devices[1], AGC_service)
+
+end
