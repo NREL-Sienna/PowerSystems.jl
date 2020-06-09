@@ -185,6 +185,7 @@ function solve_powerflow!(system::System; args...)
     θ = fill(0.0, N_BUS)
 
     state_variable_count = 1
+    sources =  get_components(StaticInjection, system, d -> !isa(d, ElectricLoad))
 
     for (ix, b) in enumerate(buses)
         bus_number = get_number(b)::Int
@@ -193,7 +194,7 @@ function solve_powerflow!(system::System; args...)
         P_GEN_BUS[ix] = 0.0
         Q_GEN_BUS[ix] = 0.0
         get_ext(b)["neighbors"] = neighbors[ix]
-        for gen in get_components(StaticInjection, system, d -> !isa(d, ElectricLoad))
+        for gen in sources
             if gen.bus == b
                 P_GEN_BUS[ix] += get_activepower(gen)
                 Q_GEN_BUS[ix] += get_reactivepower(gen)
