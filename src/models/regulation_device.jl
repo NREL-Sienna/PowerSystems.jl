@@ -14,23 +14,42 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
         reserve_limit_up::Float64,
         reserve_limit_dn::Float64,
         inertia::Float64,
-        cost::Float64
+        cost::Float64,
     ) where {T <: StaticInjection}
         IS.@forward((RegulationDevice{T}, :device), T)
-        new{T}(device, droop, participation_factor, reserve_limit_up, reserve_limit_dn, inertia, cost)
+        new{T}(
+            device,
+            droop,
+            participation_factor,
+            reserve_limit_up,
+            reserve_limit_dn,
+            inertia,
+            cost,
+        )
     end
 end
 
 function RegulationDevice(
     device::T;
     droop::Float64 = Inf,
-    participation_factor::NamedTuple{(:up, :dn), Tuple{Float64, Float64}} = (up = 0.0, dn = 0.0),
+    participation_factor::NamedTuple{(:up, :dn), Tuple{Float64, Float64}} = (
+        up = 0.0,
+        dn = 0.0,
+    ),
     reserve_limit_up::Float64 = 0.0,
     reserve_limit_dn::Float64 = 0.0,
     inertia::Float64 = 0.0,
-    cost::Float64 = 1.0
+    cost::Float64 = 1.0,
 ) where {T <: StaticInjection}
-    return RegulationDevice{T}(device, droop, participation_factor, reserve_limit_up, reserve_limit_dn, inertia, cost)
+    return RegulationDevice{T}(
+        device,
+        droop,
+        participation_factor,
+        reserve_limit_up,
+        reserve_limit_dn,
+        inertia,
+        cost,
+    )
 end
 
 function has_forecasts(d::RegulationDevice)

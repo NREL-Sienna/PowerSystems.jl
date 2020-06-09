@@ -52,6 +52,36 @@ branch_OMIB = [Line(
     )
     @test Basic isa PowerSystems.DynamicComponent
 
+    GENROU = RoundRotorQuadratic(
+        0.0, #R
+        7.4, #Td0_p
+        0.03, #Td0_pp
+        0.06, #Tq0_p
+        0.033, #Tq0_pp
+        0.8979, #Xd
+        0.646, #Xq
+        0.2995, #Xd_p
+        0.646, #Xq_p
+        0.23, #Xd_pp
+        0.1, #Xl
+        (0.1, 0.5), #Se
+    )
+    @test GENROU isa PowerSystems.DynamicComponent
+
+    GENSAL = SalientPoleQuadratic(
+        0.0, #R
+        7.4, #Td0_p
+        0.03, #Td0_pp
+        0.033, #Tq0_pp
+        0.8979, #Xd
+        0.646, #Xq
+        0.2995, #Xd_p
+        0.23, #Xd_pp
+        0.1, #Xl
+        (0.1, 0.5), #Se
+    )
+    @test GENSAL isa PowerSystems.DynamicComponent
+
     oneDoneQ = OneDOneQMachine(
         0.0, #R
         0.8979, #Xd
@@ -336,6 +366,10 @@ end
 
     # Rule: Can't remove a static injector if it is attached to a dynamic injector.
     @test_throws ArgumentError remove_component!(sys, static_gen)
+
+    #Rule: Can't add saturation if Se(1.2) <= Se(1.0)
+    @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.5, 0.1))
+    @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.1, 0.1))
 
     @test length(collect(get_dynamic_components(Gen2AVR))) == 5
 end

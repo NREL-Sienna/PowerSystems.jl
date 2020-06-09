@@ -30,6 +30,8 @@ include("AVRSimple.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
 include("BaseMachine.jl")
+include("RoundRotorQuadratic.jl")
+include("SalientPoleQuadratic.jl")
 include("AndersonFouadMachine.jl")
 include("FullMachine.jl")
 include("MarconatoMachine.jl")
@@ -98,6 +100,7 @@ export get_R
 export get_R_1d
 export get_R_1q
 export get_R_f
+export get_Se
 export get_T1
 export get_T2
 export get_T3
@@ -123,6 +126,7 @@ export get_X_th
 export get_Xd
 export get_Xd_p
 export get_Xd_pp
+export get_Xl
 export get_Xq
 export get_Xq_p
 export get_Xq_pp
@@ -210,6 +214,7 @@ export get_rf
 export get_rg
 export get_rv
 export get_s_rated
+export get_saturation_coeffs
 export get_services
 export get_shutdn
 export get_startup
@@ -278,6 +283,7 @@ export set_R!
 export set_R_1d!
 export set_R_1q!
 export set_R_f!
+export set_Se!
 export set_T1!
 export set_T2!
 export set_T3!
@@ -303,6 +309,7 @@ export set_X_th!
 export set_Xd!
 export set_Xd_p!
 export set_Xd_pp!
+export set_Xl!
 export set_Xq!
 export set_Xq_p!
 export set_Xq_pp!
@@ -390,6 +397,7 @@ export set_rf!
 export set_rg!
 export set_rv!
 export set_s_rated!
+export set_saturation_coeffs!
 export set_services!
 export set_shutdn!
 export set_startup!
