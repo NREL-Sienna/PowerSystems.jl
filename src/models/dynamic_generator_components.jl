@@ -18,7 +18,7 @@ function get_quadratic_saturation(Se::Tuple{Float64, Float64})
         return (0.0, 0.0)
     end
     if Se[2] <= Se[1]
-        throw(InfrastructureSystems.ConflictingInputsError("Se(1.2) <= Se(1.0). Saturation data is inconsistent."))
+        throw(IS.ConflictingInputsError("Se(1.2) <= Se(1.0). Saturation data is inconsistent."))
     end
     A =
         (1.0 / (2.0 * (Se[2] - Se[1]))) * (
