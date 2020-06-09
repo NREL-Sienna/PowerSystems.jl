@@ -227,7 +227,7 @@ function solve_powerflow!(system::System; args...)
     bus_types = get_bustype.(buses)
 
     function pf!(F::Vector{Float64}, X::Vector{Float64})
-        @inbounds for (ix, b) in enumerate(bus_types)
+         for (ix, b) in enumerate(bus_types)
             if b == BusTypes.REF
                 # When bustype == REFERENCE Bus, state variables are Active and Reactive Power Generated
                 P_net[ix] = X[2 * ix - 1] - P_LOAD_BUS[ix]
@@ -247,10 +247,10 @@ function solve_powerflow!(system::System; args...)
         end
 
         # F is active and reactive power balance equations at all buses
-        @inbounds for ix_f in a
+         for ix_f in a
             S_re = -P_net[ix_f]
             S_im = -Q_net[ix_f]
-            @inbounds for ix_t in neighbors[ix_f]
+             for ix_t in neighbors[ix_f]
                 gb = real(Yb[ix_f, ix_t])
                 bb = imag(Yb[ix_f, ix_t])
                 S_re +=
@@ -267,7 +267,7 @@ function solve_powerflow!(system::System; args...)
         end
     end
 
-    res = NLsolve.nlsolve(pf!, x0, show_trace = true)
+    res = NLsolve.nlsolve(pf!, x0; args...)
     @info(res)
     if res.f_converged
         #PowerSystems._write_pf_sol!(system, res)
