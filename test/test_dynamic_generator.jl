@@ -528,5 +528,4 @@ end
     @test get_n_states(GENSAE) == 3
     @test abs(get_saturation_coeffs(GENSAE)[1] - 8.827469119589406) <= 1e-6
     @test abs(get_saturation_coeffs(GENSAE)[2] - 0.1) <= 1e-6
-
 end
