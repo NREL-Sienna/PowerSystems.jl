@@ -68,6 +68,22 @@ branch_OMIB = [Line(
     )
     @test GENROU isa PowerSystems.DynamicComponent
 
+    GENROE = RoundRotorExponential(
+        0.0, #R
+        7.4, #Td0_p
+        0.03, #Td0_pp
+        0.06, #Tq0_p
+        0.033, #Tq0_pp
+        0.8979, #Xd
+        0.646, #Xq
+        0.2995, #Xd_p
+        0.646, #Xq_p
+        0.23, #Xd_pp
+        0.1, #Xl
+        (0.1, 0.5), #Se
+    )
+    @test GENROE isa PowerSystems.DynamicComponent
+
     GENSAL = SalientPoleQuadratic(
         0.0, #R
         7.4, #Td0_p
@@ -81,6 +97,20 @@ branch_OMIB = [Line(
         (0.1, 0.5), #Se
     )
     @test GENSAL isa PowerSystems.DynamicComponent
+
+    GENSAE = SalientPoleQuadratic(
+        0.0, #R
+        7.4, #Td0_p
+        0.03, #Td0_pp
+        0.033, #Tq0_pp
+        0.8979, #Xd
+        0.646, #Xq
+        0.2995, #Xd_p
+        0.23, #Xd_pp
+        0.1, #Xl
+        (0.1, 0.5), #Se
+    )
+    @test GENSAE isa PowerSystems.DynamicComponent
 
     oneDoneQ = OneDOneQMachine(
         0.0, #R
@@ -372,4 +402,131 @@ end
     @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.1, 0.1))
 
     @test length(collect(get_dynamic_components(Gen2AVR))) == 5
+end
+
+@testset "Forward functions" begin
+    GENROU = RoundRotorQuadratic(
+        0.0, #R
+        7.4, #Td0_p
+        0.03, #Td0_pp
+        0.06, #Tq0_p
+        0.033, #Tq0_pp
+        0.8979, #Xd
+        0.646, #Xq
+        0.2995, #Xd_p
+        0.646, #Xq_p
+        0.23, #Xd_pp
+        0.1, #Xl
+        (0.1, 0.5), #Se
+    )
+
+    GENROE = RoundRotorExponential(
+        0.0, #R
+        7.4, #Td0_p
+        0.03, #Td0_pp
+        0.06, #Tq0_p
+        0.033, #Tq0_pp
+        0.8979, #Xd
+        0.646, #Xq
+        0.2995, #Xd_p
+        0.646, #Xq_p
+        0.23, #Xd_pp
+        0.1, #Xl
+        (0.1, 0.5), #Se
+    )
+
+    GENSAL = SalientPoleQuadratic(
+        0.0, #R
+        7.4, #Td0_p
+        0.03, #Td0_pp
+        0.033, #Tq0_pp
+        0.8979, #Xd
+        0.646, #Xq
+        0.2995, #Xd_p
+        0.23, #Xd_pp
+        0.1, #Xl
+        (0.1, 0.5), #Se
+    )
+
+    GENSAE = SalientPoleExponential(
+        0.0, #R
+        7.4, #Td0_p
+        0.03, #Td0_pp
+        0.033, #Tq0_pp
+        0.8979, #Xd
+        0.646, #Xq
+        0.2995, #Xd_p
+        0.23, #Xd_pp
+        0.1, #Xl
+        (0.1, 0.5), #Se
+    )
+
+    #Test GENROU
+    @test get_R(GENROU) == 0.0
+    @test get_Td0_p(GENROU) == 7.4
+    @test get_Td0_pp(GENROU) == 0.03
+    @test get_Tq0_p(GENROU) == 0.06
+    @test get_Tq0_pp(GENROU) == 0.033
+    @test get_Xd(GENROU) == 0.8979
+    @test get_Xq(GENROU) == 0.646
+    @test get_Xd_p(GENROU) == 0.2995
+    @test get_Xq_p(GENROU) == 0.646
+    @test get_Xd_pp(GENROU) == 0.23
+    @test get_Xl(GENROU) == 0.1
+    @test get_Se(GENROU) == (0.1, 0.5)
+    @test get_states(GENROU) == [:eq_p, :ed_p, :ψ_kd, :ψ_kq]
+    @test get_n_states(GENROU) == 4
+    @test abs(get_saturation_coeffs(GENROU)[1] - 0.8381966011250106) <= 1e-6
+    @test abs(get_saturation_coeffs(GENROU)[2] - 3.819660112501054) <= 1e-6
+
+    #Test GENROE
+    @test get_R(GENROE) == 0.0
+    @test get_Td0_p(GENROE) == 7.4
+    @test get_Td0_pp(GENROE) == 0.03
+    @test get_Tq0_p(GENROE) == 0.06
+    @test get_Tq0_pp(GENROE) == 0.033
+    @test get_Xd(GENROE) == 0.8979
+    @test get_Xq(GENROE) == 0.646
+    @test get_Xd_p(GENROE) == 0.2995
+    @test get_Xq_p(GENROE) == 0.646
+    @test get_Xd_pp(GENROE) == 0.23
+    @test get_Xl(GENROE) == 0.1
+    @test get_Se(GENROE) == (0.1, 0.5)
+    @test get_states(GENROE) == [:eq_p, :ed_p, :ψ_kd, :ψ_kq]
+    @test get_n_states(GENROE) == 4
+    @test abs(get_saturation_coeffs(GENROE)[1] - 8.827469119589406) <= 1e-6
+    @test abs(get_saturation_coeffs(GENROE)[2] - 0.1) <= 1e-6
+
+    #Test GENSAL
+    @test get_R(GENSAL) == 0.0
+    @test get_Td0_p(GENSAL) == 7.4
+    @test get_Td0_pp(GENSAL) == 0.03
+    @test get_Tq0_pp(GENSAL) == 0.033
+    @test get_Xd(GENSAL) == 0.8979
+    @test get_Xq(GENSAL) == 0.646
+    @test get_Xd_p(GENSAL) == 0.2995
+    @test get_Xd_pp(GENSAL) == 0.23
+    @test get_Xl(GENSAL) == 0.1
+    @test get_Se(GENSAL) == (0.1, 0.5)
+    @test get_states(GENSAL) == [:eq_p, :ψ_kd, :ψq_pp]
+    @test get_n_states(GENSAL) == 3
+    @test abs(get_saturation_coeffs(GENSAL)[1] - 0.8381966011250106) <= 1e-6
+    @test abs(get_saturation_coeffs(GENSAL)[2] - 3.819660112501054) <= 1e-6
+
+    #Test GENSAE
+    @test get_R(GENSAE) == 0.0
+    @test get_Td0_p(GENSAE) == 7.4
+    @test get_Td0_pp(GENSAE) == 0.03
+    @test get_Tq0_pp(GENSAE) == 0.033
+    @test get_Xd(GENSAE) == 0.8979
+    @test get_Xq(GENSAE) == 0.646
+    @test get_Xd_p(GENSAE) == 0.2995
+    @test get_Xd_pp(GENSAE) == 0.23
+    @test get_Xl(GENSAE) == 0.1
+    @test get_Se(GENSAE) == (0.1, 0.5)
+    @test get_states(GENSAE) == [:eq_p, :ψ_kd, :ψq_pp]
+    @test get_n_states(GENSAE) == 3
+    @test abs(get_saturation_coeffs(GENSAE)[1] - 8.827469119589406) <= 1e-6
+    @test abs(get_saturation_coeffs(GENSAE)[2] - 0.1) <= 1e-6
+    
 end
