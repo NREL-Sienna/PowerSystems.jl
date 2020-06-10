@@ -1500,8 +1500,13 @@ function handle_component_addition!(sys::System, dynamic_injector::DynamicInject
 end
 
 function handle_component_addition!(sys::System, component::RegulationDevice)
-    component.device = deepcopy(component.device)
-    component.device.internal = IS.InfrastructureSystemsInternal()
+    internal_device = deepcopy(component.device)
+    IS.assign_new_uuid!(internal_device)
+    # This clears the container with the forecasts but leaves the time series file alone.
+    # `component.device` still has the forecasts.
+    IS.clear_forecasts!(internal_device)
+    copy_forecasts!(component.device, component)
+    component.device = internal_device
 end
 
 """

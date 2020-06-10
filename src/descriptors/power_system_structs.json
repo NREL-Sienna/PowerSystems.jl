@@ -5613,6 +5613,10 @@
             "min": 0,
             "max": null
           }
+        },
+        {
+          "name": "forecasts",
+          "data_type": "InfrastructureSystems.Forecasts"
         }
       ]
     }
