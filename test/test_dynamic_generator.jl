@@ -53,62 +53,62 @@ branch_OMIB = [Line(
     @test Basic isa PowerSystems.DynamicComponent
 
     GENROU = RoundRotorQuadratic(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.06, #Tq0_p
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.646, #Xq_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0, #R
+        Td0_p = 7.4, #Td0_p
+        Td0_pp = 0.03, #Td0_pp
+        Tq0_p = 0.06, #Tq0_p
+        Tq0_pp = 0.033, #Tq0_pp
+        Xd = 0.8979, #Xd
+        Xq = 0.646, #Xq
+        Xd_p = 0.2995, #Xd_p
+        Xq_p = 0.646, #Xq_p
+        Xd_pp = 0.23, #Xd_pp
+        Xl = 0.1, #Xl
+        Se = (0.1, 0.5), #Se
     )
     @test GENROU isa PowerSystems.DynamicComponent
 
     GENROE = RoundRotorExponential(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.06, #Tq0_p
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.646, #Xq_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0, #R
+        Td0_p = 7.4, #Td0_p
+        Td0_pp = 0.03, #Td0_pp
+        Tq0_p = 0.06, #Tq0_p
+        Tq0_pp = 0.033, #Tq0_pp
+        Xd = 0.8979, #Xd
+        Xq = 0.646, #Xq
+        Xd_p = 0.2995, #Xd_p
+        Xq_p = 0.646, #Xq_p
+        Xd_pp = 0.23, #Xd_pp
+        Xl = 0.1, #Xl
+        Se = (0.1, 0.5), #Se
     )
     @test GENROE isa PowerSystems.DynamicComponent
 
     GENSAL = SalientPoleQuadratic(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0, #R
+        Td0_p = 7.4, #Td0_p
+        Td0_pp = 0.03, #Td0_pp
+        Tq0_pp = 0.033, #Tq0_pp
+        Xd = 0.8979, #Xd
+        Xq = 0.646, #Xq
+        Xd_p = 0.2995, #Xd_p
+        Xd_pp = 0.23, #Xd_pp
+        Xl = 0.1, #Xl
+        Se = (0.1, 0.5), #Se
     )
     @test GENSAL isa PowerSystems.DynamicComponent
 
-    GENSAE = SalientPoleQuadratic(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+    GENSAE = SalientPoleExponential(
+        R = 0.0, #R
+        Td0_p = 7.4, #Td0_p
+        Td0_pp = 0.03, #Td0_pp
+        Tq0_pp = 0.033, #Tq0_pp
+        Xd = 0.8979, #Xd
+        Xq = 0.646, #Xq
+        Xd_p = 0.2995, #Xd_p
+        Xd_pp = 0.23, #Xd_pp
+        Xl = 0.1, #Xl
+        Se = (0.1, 0.5), #Se
     )
     @test GENSAE isa PowerSystems.DynamicComponent
 
@@ -406,59 +406,59 @@ end
 
 @testset "Forward functions" begin
     GENROU = RoundRotorQuadratic(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.06, #Tq0_p
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.646, #Xq_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0, #R
+        Td0_p = 7.4, #Td0_p
+        Td0_pp = 0.03, #Td0_pp
+        Tq0_p = 0.06, #Tq0_p
+        Tq0_pp = 0.033, #Tq0_pp
+        Xd = 0.8979, #Xd
+        Xq = 0.646, #Xq
+        Xd_p = 0.2995, #Xd_p
+        Xq_p = 0.646, #Xq_p
+        Xd_pp = 0.23, #Xd_pp
+        Xl = 0.1, #Xl
+        Se = (0.1, 0.5), #Se
     )
 
     GENROE = RoundRotorExponential(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.06, #Tq0_p
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.646, #Xq_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0, #R
+        Td0_p = 7.4, #Td0_p
+        Td0_pp = 0.03, #Td0_pp
+        Tq0_p = 0.06, #Tq0_p
+        Tq0_pp = 0.033, #Tq0_pp
+        Xd = 0.8979, #Xd
+        Xq = 0.646, #Xq
+        Xd_p = 0.2995, #Xd_p
+        Xq_p = 0.646, #Xq_p
+        Xd_pp = 0.23, #Xd_pp
+        Xl = 0.1, #Xl
+        Se = (0.1, 0.5), #Se
     )
 
     GENSAL = SalientPoleQuadratic(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0, #R
+        Td0_p = 7.4, #Td0_p
+        Td0_pp = 0.03, #Td0_pp
+        Tq0_pp = 0.033, #Tq0_pp
+        Xd = 0.8979, #Xd
+        Xq = 0.646, #Xq
+        Xd_p = 0.2995, #Xd_p
+        Xd_pp = 0.23, #Xd_pp
+        Xl = 0.1, #Xl
+        Se = (0.1, 0.5), #Se
     )
 
     GENSAE = SalientPoleExponential(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0, #R
+        Td0_p = 7.4, #Td0_p
+        Td0_pp = 0.03, #Td0_pp
+        Tq0_pp = 0.033, #Tq0_pp
+        Xd = 0.8979, #Xd
+        Xq = 0.646, #Xq
+        Xd_p = 0.2995, #Xd_p
+        Xd_pp = 0.23, #Xd_pp
+        Xl = 0.1, #Xl
+        Se = (0.1, 0.5), #Se
     )
 
     #Test GENROU
