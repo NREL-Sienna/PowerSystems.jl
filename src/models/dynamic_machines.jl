@@ -80,16 +80,16 @@ end
 
 function SalientPoleQuadratic(::Nothing)
     SalientPoleQuadratic(;
-        R=0.0,
-        Td0_p=0.0,
-        Td0_pp=0.0,
-        Tq0_pp=0.0,
-        Xd=0.0,
-        Xq=0.0,
-        Xd_p=0.0,
-        Xd_pp=0.0,
-        Xl=0.0,
-        Se=(0.0, 0.0),
+        R = 0.0,
+        Td0_p = 0.0,
+        Td0_pp = 0.0,
+        Tq0_pp = 0.0,
+        Xd = 0.0,
+        Xq = 0.0,
+        Xd_p = 0.0,
+        Xd_pp = 0.0,
+        Xl = 0.0,
+        Se = (0.0, 0.0),
     )
 end
 
@@ -128,16 +128,16 @@ end
 
 function SalientPoleExponential(::Nothing)
     SalientPoleExponential(;
-        R=0.0,
-        Td0_p=0.0,
-        Td0_pp=0.0,
-        Tq0_pp=0.0,
-        Xd=0.0,
-        Xq=0.0,
-        Xd_p=0.0,
-        Xd_pp=0.0,
-        Xl=0.0,
-        Se=(0.0, 0.0),
+        R = 0.0,
+        Td0_p = 0.0,
+        Td0_pp = 0.0,
+        Tq0_pp = 0.0,
+        Xd = 0.0,
+        Xq = 0.0,
+        Xd_p = 0.0,
+        Xd_pp = 0.0,
+        Xl = 0.0,
+        Se = (0.0, 0.0),
     )
 end
 
@@ -204,18 +204,18 @@ end
 
 function RoundRotorQuadratic(::Nothing)
     RoundRotorQuadratic(;
-        R=0.0,
-        Td0_p=0.0,
-        Td0_pp=0.0,
-        Tq0_p=0.0,
-        Tq0_pp=0.0,
-        Xd=0.0,
-        Xq=0.0,
-        Xd_p=0.0,
-        Xq_p=0.0,
-        Xd_pp=0.0,
-        Xl=0.0,
-        Se=(0.0, 0.0),
+        R = 0.0,
+        Td0_p = 0.0,
+        Td0_pp = 0.0,
+        Tq0_p = 0.0,
+        Tq0_pp = 0.0,
+        Xd = 0.0,
+        Xq = 0.0,
+        Xd_p = 0.0,
+        Xq_p = 0.0,
+        Xd_pp = 0.0,
+        Xl = 0.0,
+        Se = (0.0, 0.0),
     )
 end
 
@@ -295,18 +295,18 @@ end
 
 function RoundRotorExponential(::Nothing)
     RoundRotorExponential(;
-        R=0.0,
-        Td0_p=0.0,
-        Td0_pp=0.0,
-        Tq0_p=0.0,
-        Tq0_pp=0.0,
-        Xd=0.0,
-        Xq=0.0,
-        Xd_p=0.0,
-        Xq_p=0.0,
-        Xd_pp=0.0,
-        Xl=0.0,
-        Se=(0.0, 0.0),
+        R = 0.0,
+        Td0_p = 0.0,
+        Td0_pp = 0.0,
+        Tq0_p = 0.0,
+        Tq0_pp = 0.0,
+        Xd = 0.0,
+        Xq = 0.0,
+        Xd_p = 0.0,
+        Xq_p = 0.0,
+        Xd_pp = 0.0,
+        Xl = 0.0,
+        Se = (0.0, 0.0),
     )
 end
 
