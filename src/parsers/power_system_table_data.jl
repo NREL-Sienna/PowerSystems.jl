@@ -836,6 +836,7 @@ function make_thermal_generator_multistart(
     var_cost, fixed = calculate_variable_cost(data, gen, cost_colnames)
     fuel_cost = gen.fuel_price / 1000
     no_load_cost = var_cost[1][1]
+    status = get(gen, :status_at_start, true)
     var_cost =
         VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
     available = true
@@ -849,7 +850,7 @@ function make_thermal_generator_multistart(
     min_down_time = get(gen, :min_down_time, nothing)
     timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
         (up = min_up_time, down = min_down_time)
-    lag_hot = get(gen, :hot_start_time, 0.0)
+    lag_hot = get(gen, :hot_start_time, min_down_time)
     lag_warm = get(gen, :warm_start_time, 0.0)
     lag_cold = get(gen, :cold_start_time, 0.0)
     startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
@@ -864,7 +865,16 @@ function make_thermal_generator_multistart(
     reactivepowerlimits = reactive_power_limits
     ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp)
     capacity = gen.active_power_limits_max
-    hot_start_cost = get(gen, :hot_start_cost, START_COST)
+    hot_start_cost = get(gen, :hot_start_cost, get(gen, :startup_cost, nothing))
+    if isnothing(hot_start_cost)
+        if hasfield(typeof(gen), :startup_heat_cold_cost)
+            hot_start_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
+        else
+            hot_start_cost = 0.0
+            @warn "No hot_start_cost or startup_cost defined for $(gen.name), setting to $startup_cost" maxlog =
+                5
+        end
+    end
     warm_start_cost = get(gen, :warm_start_cost, START_COST)
     cold_start_cost = get(gen, :cold_start_cost, START_COST)
     startup_cost = (hot = hot_start_cost, warm = warm_start_cost, cold = cold_start_cost)
@@ -874,12 +884,15 @@ function make_thermal_generator_multistart(
         @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
         shutdown_cost = 0.0
     end
+    time_at_status = get(gen, :time_at_status, INFINITE_TIME)
+    basepower = gen.base_mva
+    sys_basepower = data.basepower
     op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
     return ThermalMultiStart(;
         name = gen.name,
         available = available,
-        status = gen.status_at_start,
+        status = status,
         bus = bus,
         activepower = gen.active_power,
         reactivepower = gen.reactive_power,
@@ -894,8 +907,9 @@ function make_thermal_generator_multistart(
         start_time_limits = startup_timelimits,
         start_types = start_types,
         op_cost = op_cost,
-        time_at_status = gen.time_at_status,
-        must_run = gen.must_run,
+        basepower = basepower / sys_basepower,
+        time_at_status = time_at_status,
+        must_run = get(gen, :must_run, false),
     )
 end
 
