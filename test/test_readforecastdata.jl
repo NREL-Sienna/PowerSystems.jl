@@ -31,7 +31,7 @@ end
     for file in ("timeseries_pointers.json", "timeseries_pointers.csv")
         filename = joinpath(RTS_GMLC_DIR, file)
         forecasts = IS.read_time_series_metadata(filename)
-        @test length(forecasts) == 282
+        @test length(forecasts) == 180
 
         for forecast in forecasts
             @test isfile(forecast.data_file)
