@@ -3040,6 +3040,294 @@
       "supertype": "Machine"
     },
     {
+        "struct_name": "RoundRotorQuadratic",
+        "docstring": "Parameters of 4-states round-rotor synchronous machine with quadratic saturation:\nIEEE Std 1110 §5.3.2 (Model 2.2). GENROU model in PSSE and PSLF.",
+        "fields": [
+            {
+                "name": "R",
+                "comment": "Armature resistance",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Td0_p",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Time constant of transient d-axis voltage",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Td0_pp",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Time constant of sub-transient d-axis voltage",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Tq0_p",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Time constant of transient q-axis voltage",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Tq0_pp",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Time constant of sub-transient q-axis voltage",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xd",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Reactance after EMF in d-axis per unit",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xq",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Reactance after EMF in q-axis per unit",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xd_p",
+                "comment": "Transient reactance after EMF in d-axis per unit",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xq_p",
+                "comment": "Transient reactance after EMF in q-axis per unit",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xd_pp",
+                "comment": "Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xl",
+                "comment": "Stator leakage reactance",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Se",
+                "comment": "Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2",
+                "null_value": "(0.0, 0.0)",
+                "data_type": "Tuple{Float64, Float64}"
+            },
+            {
+                "name": "ext",
+                "data_type": "Dict{String, Any}",
+                "null_value": "Dict{String, Any}()",
+                "default": "Dict{String, Any}()"
+            },
+            {
+                "name": "saturation_coeffs",
+                "comment": "Saturation coefficients of quadratic saturation: (A, B): Se = B(|ψ_pp|-A)^2",
+                "null_value": "(0.0, 0.0)",
+                "data_type": "Tuple{Float64, Float64}",
+                "internal_default": "get_quadratic_saturation(Se)"
+            },
+            {
+                "name": "states",
+                "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\ted_p: d-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψ_kq: flux linkage in the first equivalent damping circuit in the d-axis",
+                "internal_default": "[:eq_p, :ed_p, :ψ_kd, :ψ_kq]",
+                "data_type": "Vector{Symbol}"
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "internal_default": 4,
+                "data_type": "Int64"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+        ],
+        "supertype": "Machine"
+    },
+    {
+        "struct_name": "SalientPoleQuadratic",
+        "docstring": "Parameters of 3-states salient-pole synchronous machine with quadratic saturation:\nIEEE Std 1110 §5.3.1 (Model 2.1). GENSAL model in PSSE and PSLF.",
+        "fields": [
+            {
+                "name": "R",
+                "comment": "Armature resistance",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Td0_p",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Time constant of transient d-axis voltage",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Td0_pp",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Time constant of sub-transient d-axis voltage",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Tq0_pp",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Time constant of sub-transient q-axis voltage",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xd",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Reactance after EMF in d-axis per unit",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xq",
+                "data_type": "Float64",
+                "null_value": 0,
+                "comment": "Reactance after EMF in q-axis per unit",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xd_p",
+                "comment": "Transient reactance after EMF in d-axis per unit",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xd_pp",
+                "comment": "Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Xl",
+                "comment": "Stator leakage reactance",
+                "null_value": 0,
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                }
+            },
+            {
+                "name": "Se",
+                "comment": "Saturation factor at 1 and 1.2 pu flux: Se(eq_p) = B(eq_p-A)^2",
+                "null_value": "(0.0, 0.0)",
+                "data_type": "Tuple{Float64, Float64}"
+            },
+            {
+                "name": "ext",
+                "data_type": "Dict{String, Any}",
+                "null_value": "Dict{String, Any}()",
+                "default": "Dict{String, Any}()"
+            },
+            {
+                "name": "saturation_coeffs",
+                "comment": "Saturation coefficients of quadratic saturation: (A, B): Se = B(eq_p-A)^2",
+                "null_value": "(0.0, 0.0)",
+                "data_type": "Tuple{Float64, Float64}",
+                "internal_default": "get_quadratic_saturation(Se)"
+            },
+            {
+                "name": "states",
+                "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",
+                "internal_default": "[:eq_p, :ψ_kd, :ψq_pp]",
+                "data_type": "Vector{Symbol}"
+            },
+            {
+                "name": "n_states",
+                "comment": "",
+                "internal_default": 3,
+                "data_type": "Int64"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+        ],
+        "supertype": "Machine"
+    },
+    {
       "struct_name": "AndersonFouadMachine",
       "docstring": "Parameters of 6-states synchronous machine: Anderson-Fouad model",
       "fields": [

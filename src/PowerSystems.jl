@@ -76,6 +76,8 @@ export AVRTypeII
 #Machine Exports
 export Machine
 export BaseMachine
+export RoundRotorQuadratic
+export SalientPoleQuadratic
 export OneDOneQMachine
 export MarconatoMachine
 export SimpleMarconatoMachine
