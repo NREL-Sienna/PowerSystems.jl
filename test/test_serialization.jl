@@ -50,6 +50,11 @@ end
         delta_t = 4,
         area = control_area,
     )
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    end_time = Dates.DateTime("2020-01-01T23:00:00")
+    dates = collect(initial_time:Dates.Hour(1):end_time)
+    data = collect(1:24)
+    label = "get_activepower"
     contributing_devices = Vector{Device}()
     for g in get_components(
         ThermalStandard,
@@ -59,6 +64,10 @@ end
         if get_area(get_bus(g)) != control_area
             continue
         end
+        ta = TimeSeries.TimeArray(dates, data, [Symbol(get_name(g))])
+        forecast = IS.Deterministic(label, ta)
+        add_forecast!(sys, g, forecast)
+
         t = RegulationDevice(g, participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
         add_component!(sys, t)
         push!(contributing_devices, t)
@@ -67,6 +76,12 @@ end
 
     sys2, result = validate_serialization(sys; time_series_read_only = false)
     @test result
+
+    # Ensure the forecasts attached to the ThermalStandard got deserialized.
+    for rd in get_components(RegulationDevice, sys2)
+        @test get_forecast(Deterministic, rd, initial_time, label) isa Deterministic
+    end
+
     clear_forecasts!(sys2)
 end
 
