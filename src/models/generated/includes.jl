@@ -1,5 +1,6 @@
 include("TwoPartCost.jl")
 include("ThreePartCost.jl")
+include("MultiStartCost.jl")
 include("Area.jl")
 include("LoadZone.jl")
 include("Bus.jl")
@@ -19,6 +20,7 @@ include("HydroDispatch.jl")
 include("RenewableDispatch.jl")
 include("RenewableFix.jl")
 include("ThermalStandard.jl")
+include("ThermalMultiStart.jl")
 include("GenericBattery.jl")
 include("StaticReserve.jl")
 include("ReserveDemandCurve.jl")
@@ -190,10 +192,13 @@ export get_lv
 export get_maxactivepower
 export get_maxreactivepower
 export get_model
+export get_must_run
 export get_n_states
+export get_no_load
 export get_number
 export get_op_cost
 export get_outputactivepowerlimits
+export get_power_trajectory
 export get_powerfactor
 export get_primaryshunt
 export get_primemover
@@ -217,6 +222,8 @@ export get_s_rated
 export get_saturation_coeffs
 export get_services
 export get_shutdn
+export get_start_time_limits
+export get_start_types
 export get_startup
 export get_states
 export get_status
@@ -373,10 +380,13 @@ export set_lv!
 export set_maxactivepower!
 export set_maxreactivepower!
 export set_model!
+export set_must_run!
 export set_n_states!
+export set_no_load!
 export set_number!
 export set_op_cost!
 export set_outputactivepowerlimits!
+export set_power_trajectory!
 export set_powerfactor!
 export set_primaryshunt!
 export set_primemover!
@@ -400,6 +410,8 @@ export set_s_rated!
 export set_saturation_coeffs!
 export set_services!
 export set_shutdn!
+export set_start_time_limits!
+export set_start_types!
 export set_startup!
 export set_states!
 export set_status!

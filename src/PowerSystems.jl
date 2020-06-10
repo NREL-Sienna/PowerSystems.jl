@@ -34,6 +34,7 @@ export PhaseShiftingTransformer
 export ThreePartCost
 export TwoPartCost
 export VariableCost
+export MultiStartCost
 export get_slopes
 export get_breakpoint_upperbounds
 
@@ -48,6 +49,7 @@ export RenewableDispatch
 
 export ThermalGen
 export ThermalStandard
+export ThermalMultiStart
 
 export ElectricLoad
 export StaticLoad

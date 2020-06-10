@@ -94,49 +94,105 @@
       "supertype": "OperationalCost"
     },
     {
-      "struct_name": "Area",
-      "docstring": "A collection of buses for control purposes.",
-      "fields": [
-        {
-          "null_value": "init",
-          "name": "name",
-          "accessor_module": "InfrastructureSystems",
-          "data_type": "String"
-        },
-        {
-          "name": "maxactivepower",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "default": "0.0"
-        },
-        {
-          "name": "maxreactivepower",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "default": "0.0"
-        },
-        {
-          "name": "load_response",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "default": "0.0"
-        },
-        {
-          "name": "forecasts",
-          "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
-        },
-        {
-          "name": "internal",
-          "comment": "power system internal reference, do not modify",
-          "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
-        }
-      ],
-      "supertype": "AggregationTopology"
+        "struct_name": "MultiStartCost",
+        "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
+        "fields": [
+            {
+                "name": "variable",
+                "comment": "variable cost",
+                "null_value": "VariableCost((0.0, 0.0))",
+                "data_type": "VariableCost"
+            },
+            {
+                "name": "no_load",
+                "comment": "no load cost",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "fixed",
+                "comment": "fixed cost",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "startup",
+                "comment": "startup cost",
+                "null_value": "(hot = START_COST, warm = START_COST,cold = START_COST)",
+                "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
+            },
+            {
+                "name": "shutdn",
+                "comment": "shutdown cost",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
+            },
+            {
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+        ],
+        "supertype": "OperationalCost"
+    },
+    {
+        "struct_name": "Area",
+        "docstring": "A collection of buses for control purposes.",
+        "fields": [
+            {
+                "null_value": "init",
+                "name": "name",
+                "accessor_module": "InfrastructureSystems",
+                "data_type": "String"
+            },
+            {
+                "name": "maxactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "default": "0.0"
+            },
+            {
+                "name": "maxreactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "default": "0.0"
+            },
+            {
+                "name": "load_response",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "default": "0.0"
+            },
+            {
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+	],
+        "supertype": "AggregationTopology"
     },
     {
       "struct_name": "LoadZone",
@@ -1910,153 +1966,340 @@
       "supertype": "ThermalGen"
     },
     {
-      "struct_name": "GenericBattery",
-      "docstring": "Data structure for a generic battery",
-      "fields": [
-        {
-          "null_value": "init",
-          "name": "name",
-          "accessor_module": "InfrastructureSystems",
-          "data_type": "String"
-        },
-        {
-          "null_value": "false",
-          "name": "available",
-          "data_type": "Bool"
-        },
-        {
-          "name": "bus",
-          "null_value": "Bus(nothing)",
-          "data_type": "Bus"
-        },
-        {
-          "name": "primemover",
-          "comment": "PrimeMover Technology according to EIA 923",
-          "null_value": "PrimeMovers.BA",
-          "data_type": "PrimeMovers.PrimeMover"
-        },
-        {
-          "name": "energy",
-          "null_value": "0.0",
-          "comment": "State of Charge of the Battery p.u.-hr",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error"
-        },
-        {
-          "name": "capacity",
-          "null_value": "(min=0.0, max=0.0)",
-          "comment": "Maximum and Minimum storage capacity in p.u.-hr",
-          "data_type": "Min_Max",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error"
-        },
-        {
-          "name": "rating",
-          "null_value": "0.0",
-          "data_type": "Float64"
-        },
-        {
-          "name": "activepower",
-          "null_value": "0.0",
-          "data_type": "Float64"
-        },
-        {
-          "name": "inputactivepowerlimits",
-          "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error"
-        },
-        {
-          "name": "outputactivepowerlimits",
-          "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error"
-        },
-        {
-          "name": "efficiency",
-          "null_value": "(in=0.0, out=0.0)",
-          "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}",
-          "valid_range": {
-            "min": 0,
-            "max": 1
-          },
-          "validation_action": "warn"
-        },
-        {
-          "name": "reactivepower",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": "reactivepowerlimits",
-          "validation_action": "warn"
-        },
-        {
-          "name": "reactivepowerlimits",
-          "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Union{Nothing, Min_Max}"
-        },
-        {
-          "name": "basepower",
-          "comment": "Base power of the unit in system base per unit",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "warn"
-        },
-        {
-          "name": "services",
-          "data_type": "Vector{Service}",
-          "comment": "Services that this device contributes to",
-          "null_value": "Device[]",
-          "default": "Device[]"
-        },
-        {
-          "name": "dynamic_injector",
-          "data_type": "Union{Nothing, DynamicInjection}",
-          "comment": "corresponding dynamic injection device",
-          "null_value": "nothing",
-          "exclude_setter": true,
-          "default": "nothing"
-        },
-        {
-          "name": "ext",
-          "data_type": "Dict{String, Any}",
-          "null_value": "Dict{String, Any}()",
-          "default": "Dict{String, Any}()"
-        },
-        {
-          "name": "forecasts",
-          "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
-        },
-        {
-          "name": "internal",
-          "comment": "power system internal reference, do not modify",
-          "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
-        }
-      ],
-      "supertype": "Storage"
+        "struct_name": "ThermalMultiStart",
+        "docstring": "Data Structure for thermal generation technologies.",
+        "fields": [
+            {
+                "null_value": "init",
+                "name": "name",
+                "accessor_module": "InfrastructureSystems",
+                "data_type": "String"
+            },
+            {
+                "null_value": "false",
+                "name": "available",
+                "data_type": "Bool"
+            },
+            {
+                "null_value": "false",
+                "name": "status",
+                "data_type": "Bool"
+            },
+            {
+                "name": "bus",
+                "null_value": "Bus(nothing)",
+                "data_type": "Bus"
+            },
+            {
+                "name": "activepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": "activepowerlimits",
+                "validation_action": "warn"
+            },
+            {
+                "name": "reactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": "reactivepowerlimits",
+                "validation_action": "warn"
+            },
+            {
+                "name": "rating",
+                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "primemover",
+                "comment": "PrimeMover Technology according to EIA 923",
+                "null_value": "PrimeMovers.OT",
+                "data_type": "PrimeMovers.PrimeMover"
+            },
+            {
+                "name": "fuel",
+                "comment": "PrimeMover Fuel according to EIA 923",
+                "null_value": "ThermalFuels.OTHER",
+                "data_type": "ThermalFuels.ThermalFuel"
+            },
+            {
+                "name": "activepowerlimits",
+                "null_value": "(min=0.0, max=0.0)",
+                "data_type": "Min_Max"
+            },
+            {
+                "name": "reactivepowerlimits",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, Min_Max}"
+            },
+            {
+                "name": "ramplimits",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "power_trajectory",
+                "comment": "Power trajectory the unit will take during the startup and shutdown ramp process",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "timelimits",
+                "comment": "Minimum up and Minimum down time limits in hours",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "start_time_limits",
+                "comment": " Time limits for startup based on turbine temperature in hours",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
+            },
+            {
+                "name": "start_types",
+                "comment": " Number of startup based on turbine temperature",
+                "null_value": "1",
+                "data_type": "Int",
+                "valid_range": {
+                    "min": 1,
+                    "max": 3
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "op_cost",
+                "null_value": "MultiStartCost(nothing)",
+                "data_type": "MultiStartCost"
+            },
+            {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
+                "name": "time_at_status",
+                "null_value": "INFINITE_TIME",
+                "data_type": "Float64",
+                "default": "INFINITE_TIME"
+            },
+            {
+                "name": "must_run",
+                "null_value": "false",
+                "data_type": "Bool",
+                "default": "false"
+            },
+            {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
+            },
+            {
+                "name": "ext",
+                "data_type": "Dict{String, Any}",
+                "null_value": "Dict{String, Any}()",
+                "default": "Dict{String, Any}()"
+            },
+            {
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+        ],
+        "supertype": "ThermalGen"
+    },
+    {
+        "struct_name": "GenericBattery",
+        "docstring": "Data structure for a generic battery",
+        "fields": [
+            {
+                "null_value": "init",
+                "name": "name",
+                "accessor_module": "InfrastructureSystems",
+                "data_type": "String"
+            },
+            {
+                "null_value": "false",
+                "name": "available",
+                "data_type": "Bool"
+            },
+            {
+                "name": "bus",
+                "null_value": "Bus(nothing)",
+                "data_type": "Bus"
+            },
+            {
+                "name": "primemover",
+                "comment": "PrimeMover Technology according to EIA 923",
+                "null_value": "PrimeMovers.BA",
+                "data_type": "PrimeMovers.PrimeMover"
+            },
+            {
+                "name": "energy",
+                "null_value": "0.0",
+                "comment": "State of Charge of the Battery p.u.-hr",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "capacity",
+                "null_value": "(min=0.0, max=0.0)",
+                "comment": "Maximum and Minimum storage capacity in p.u.-hr",
+                "data_type": "Min_Max",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "rating",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "activepower",
+                "null_value": "0.0",
+                "data_type": "Float64"
+            },
+            {
+                "name": "inputactivepowerlimits",
+                "null_value": "(min=0.0, max=0.0)",
+                "data_type": "Min_Max",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "outputactivepowerlimits",
+                "null_value": "(min=0.0, max=0.0)",
+                "data_type": "Min_Max",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "error"
+            },
+            {
+                "name": "efficiency",
+                "null_value": "(in=0.0, out=0.0)",
+                "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}",
+                "valid_range": {
+                    "min": 0,
+                    "max": 1
+                },
+                "validation_action": "warn"
+            },
+            {
+                "name": "reactivepower",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": "reactivepowerlimits",
+                "validation_action": "warn"
+            },
+            {
+                "name": "reactivepowerlimits",
+                "null_value": "(min=0.0, max=0.0)",
+                "data_type": "Union{Nothing, Min_Max}"
+            },
+            {
+                "name": "basepower",
+                "comment": "Base power of the unit in system base per unit",
+                "null_value": "0.0",
+                "data_type": "Float64",
+                "valid_range": {
+                    "min": 0,
+                    "max": null
+                },
+                "validation_action": "warn"
+            },
+            {
+                "name": "services",
+                "data_type": "Vector{Service}",
+                "comment": "Services that this device contributes to",
+                "null_value": "Device[]",
+                "default": "Device[]"
+            },
+            {
+                "name": "dynamic_injector",
+                "data_type": "Union{Nothing, DynamicInjection}",
+                "comment": "corresponding dynamic injection device",
+                "null_value": "nothing",
+                "exclude_setter": true,
+                "default": "nothing"
+            },
+            {
+                "name": "ext",
+                "data_type": "Dict{String, Any}",
+                "null_value": "Dict{String, Any}()",
+                "default": "Dict{String, Any}()"
+            },
+            {
+                "name": "forecasts",
+                "accessor_module": "InfrastructureSystems",
+                "comment": "internal forecast storage",
+                "null_value": "InfrastructureSystems.Forecasts()",
+                "data_type": "InfrastructureSystems.Forecasts",
+                "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()"
+            }
+        ],
+        "supertype": "Storage"
     },
     {
       "struct_name": "StaticReserve",

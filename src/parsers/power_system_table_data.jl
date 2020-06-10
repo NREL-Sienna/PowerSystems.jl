@@ -710,6 +710,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
 
     if gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
+    elseif gen_type == ThermalMultiStart
+        generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
     elseif gen_type <: HydroGen
         generator = make_hydro_generator(gen_type, data, gen, bus)
     elseif gen_type <: RenewableGen
@@ -723,8 +725,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     return generator
 end
 
-function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
-    fuel_cost = gen.fuel_price / 1000
+function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
+    fuel_cost = gen.fuel_price / 1000.0
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
     var_cost = [
@@ -760,6 +762,11 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         var_cost = [(0.0, var_cost[1][2]), (1.0, var_cost[1][2])]
         fixed = 0.0
     end
+    return var_cost, fixed, fuel_cost
+end
+
+function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
+    var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
     status = true
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
@@ -816,6 +823,91 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         timelimits,
         op_cost,
         basepower / sys_basepower,
+    )
+end
+
+function make_thermal_generator_multistart(
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames,
+    bus,
+)
+    var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
+    no_load_cost = var_cost[1][1]
+    status = get(gen, :status_at_start, true)
+    var_cost =
+        VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
+    available = true
+    rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
+    active_power_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    reactive_power_limits =
+        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
+    ramp = get(gen, :ramp_limits, nothing)
+    min_up_time = get(gen, :min_up_time, nothing)
+    min_down_time = get(gen, :min_down_time, nothing)
+    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
+        (up = min_up_time, down = min_down_time)
+    lag_hot = get(gen, :hot_start_time, min_down_time)
+    lag_warm = get(gen, :warm_start_time, 0.0)
+    lag_cold = get(gen, :cold_start_time, 0.0)
+    startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
+    start_types = sum(values(startup_timelimits) .> 0.0)
+    startup_ramp = get(gen, :startup_ramp, 0.0)
+    shutdown_ramp = get(gen, :shutdown_ramp, 0.0)
+    power_trajectory = (startup = startup_ramp, shutdown = shutdown_ramp)
+    rating = rating
+    primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
+    fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
+    activepowerlimits = active_power_limits
+    reactivepowerlimits = reactive_power_limits
+    ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp)
+    capacity = gen.active_power_limits_max
+    hot_start_cost = get(gen, :hot_start_cost, get(gen, :startup_cost, nothing))
+    if isnothing(hot_start_cost)
+        if hasfield(typeof(gen), :startup_heat_cold_cost)
+            hot_start_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
+        else
+            hot_start_cost = 0.0
+            @warn "No hot_start_cost or startup_cost defined for $(gen.name), setting to $startup_cost" maxlog =
+                5
+        end
+    end
+    warm_start_cost = get(gen, :warm_start_cost, START_COST)
+    cold_start_cost = get(gen, :cold_start_cost, START_COST)
+    startup_cost = (hot = hot_start_cost, warm = warm_start_cost, cold = cold_start_cost)
+
+    shutdown_cost = get(gen, :shutdown_cost, nothing)
+    if isnothing(shutdown_cost)
+        @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
+        shutdown_cost = 0.0
+    end
+    time_at_status = get(gen, :time_at_status, INFINITE_TIME)
+    basepower = gen.base_mva
+    sys_basepower = data.basepower
+    op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
+
+    return ThermalMultiStart(;
+        name = gen.name,
+        available = available,
+        status = status,
+        bus = bus,
+        activepower = gen.active_power,
+        reactivepower = gen.reactive_power,
+        rating = rating,
+        primemover = primemover,
+        fuel = fuel,
+        activepowerlimits = active_power_limits,
+        reactivepowerlimits = reactive_power_limits,
+        ramplimits = ramplimits,
+        power_trajectory = power_trajectory,
+        timelimits = timelimits,
+        start_time_limits = startup_timelimits,
+        start_types = start_types,
+        op_cost = op_cost,
+        basepower = basepower / sys_basepower,
+        time_at_status = time_at_status,
+        must_run = get(gen, :must_run, false),
     )
 end
 

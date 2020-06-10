@@ -441,13 +441,60 @@
             "description": "Category"
         },
         {
+            "name": "cold_start_time",
+            "description": "Time before which a Cold start is eligible"
+        },
+        {
+            "name": "warm_start_time",
+            "description": "Time before which a Warm start is eligible"
+        },
+        {
+            "name": "hot_start_time",
+            "description": "Time before which a Hot Start is eligible"
+        },
+        {
+            "name": "startup_ramp",
+            "description": "Startup ramp capability",
+            "system_per_unit": true
+        },
+        {
+            "name": "shutdown_ramp",
+            "description": "Shutdown ramp capability",
+            "system_per_unit": true
+        },
+        {
+            "name": "status_at_start",
+            "description": "State of the generator at the start of the simulation"
+        },
+        {
+            "name": "time_at_status",
+            "description": "Number of hours spent in current state "
+        },
+        {
+            "name": "cold_start_cost",
+            "description": "Cost for Cold start of ThermalGen"
+        },
+        {
+            "name": "warm_start_cost",
+            "description": "Cost for Warm of ThermalGen"
+        },
+        {
+            "name": "hot_start_cost",
+            "description": "Cost for Hot of ThermalGen"
+        },
+        {
+            "name": "must_run",
+            "description": "Boolean that idicates if ThermalGen must be online always"
+        },
+        {
             "name": "generator_category",
             "value_options": [
                 "HydroDispatch",
                 "HydroEnergyReservoir",
                 "RenewableFix",
                 "RenewableDispatch",
-                "ThermalStandard"
+                "ThermalStandard",
+                "ThermalMultiStart"
             ],
             "description": "Type of Struct"
         }

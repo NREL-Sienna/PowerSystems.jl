@@ -8,9 +8,12 @@ import PowerSystems: LazyDictFromIterator
     )
 
     for (resolution, len) in resolutions
-        sys = create_rts_system(resolution)
-        for forecast in iterate_forecasts(sys)
-            @test length(forecast) == len
+        create_func = [create_rts_system, create_rts_multistart_system]
+        for f in create_func
+            sys = f(resolution)
+            for forecast in iterate_forecasts(sys)
+                @test length(forecast) == len
+            end
         end
     end
 end
