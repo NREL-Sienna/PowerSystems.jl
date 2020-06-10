@@ -726,7 +726,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
 end
 
 function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
-    fuel_cost = gen.fuel_price / 1000
+    fuel_cost = gen.fuel_price / 1000.0
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
     var_cost = [
@@ -762,12 +762,11 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
         var_cost = [(0.0, var_cost[1][2]), (1.0, var_cost[1][2])]
         fixed = 0.0
     end
-    return var_cost, fixed
+    return var_cost, fixed, fuel_cost
 end
 
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
-    fuel_cost = gen.fuel_price / 1000
-    var_cost, fixed = calculate_variable_cost(data, gen, cost_colnames)
+    var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
     status = true
     available = true
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
@@ -833,8 +832,7 @@ function make_thermal_generator_multistart(
     cost_colnames,
     bus,
 )
-    var_cost, fixed = calculate_variable_cost(data, gen, cost_colnames)
-    fuel_cost = gen.fuel_price / 1000
+    var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
     no_load_cost = var_cost[1][1]
     status = get(gen, :status_at_start, true)
     var_cost =
