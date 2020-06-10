@@ -74,8 +74,12 @@ export AVRTypeII
 #Machine Exports
 export Machine
 export BaseMachine
+export RoundRotorMachine
+export SalientPoleMachine
 export RoundRotorQuadratic
 export SalientPoleQuadratic
+export RoundRotorExponential
+export SalientPoleExponential
 export OneDOneQMachine
 export MarconatoMachine
 export SimpleMarconatoMachine
@@ -220,6 +224,7 @@ export set_static_injector!
 export get_V_ref
 export get_P_ref
 export get_Q_ref
+export get_saturation_coeffs
 export set_droop!
 export set_participation_factor!
 export set_inertia!
@@ -332,6 +337,7 @@ include("models/devices.jl")
 # Dynamic Composed types
 include("models/dynamic_generator.jl")
 include("models/dynamic_inverter.jl")
+include("models/dynamic_machines.jl")
 
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
