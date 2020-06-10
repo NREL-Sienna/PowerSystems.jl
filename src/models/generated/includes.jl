@@ -32,8 +32,8 @@ include("AVRSimple.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
 include("BaseMachine.jl")
-include("RoundRotorQuadratic.jl")
-include("SalientPoleQuadratic.jl")
+include("RoundRotorMachine.jl")
+include("SalientPoleMachine.jl")
 include("AndersonFouadMachine.jl")
 include("FullMachine.jl")
 include("MarconatoMachine.jl")
@@ -219,7 +219,6 @@ export get_rf
 export get_rg
 export get_rv
 export get_s_rated
-export get_saturation_coeffs
 export get_services
 export get_shutdn
 export get_start_time_limits
@@ -407,7 +406,6 @@ export set_rf!
 export set_rg!
 export set_rv!
 export set_s_rated!
-export set_saturation_coeffs!
 export set_services!
 export set_shutdn!
 export set_start_time_limits!
