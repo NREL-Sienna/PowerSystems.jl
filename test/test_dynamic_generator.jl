@@ -45,254 +45,263 @@ branch_OMIB = [Line(
 )]  #angle limits (-min and max)
 
 @testset "Dynamic Machines" begin
-    Basic = BaseMachine(
-        0.0, #R
-        0.2995, #Xd_p
-        1.05, #eq_p
-    )
+    Basic = BaseMachine(R = 0.0, Xd_p = 0.2995, eq_p = 1.05)
     @test Basic isa PowerSystems.DynamicComponent
 
     GENROU = RoundRotorQuadratic(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.06, #Tq0_p
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.646, #Xq_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0,
+        Td0_p = 7.4,
+        Td0_pp = 0.03,
+        Tq0_p = 0.06,
+        Tq0_pp = 0.033,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xq_p = 0.646,
+        Xd_pp = 0.23,
+        Xl = 0.1,
+        Se = (0.1, 0.5),
     )
     @test GENROU isa PowerSystems.DynamicComponent
 
+    GENROE = RoundRotorExponential(
+        R = 0.0,
+        Td0_p = 7.4,
+        Td0_pp = 0.03,
+        Tq0_p = 0.06,
+        Tq0_pp = 0.033,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xq_p = 0.646,
+        Xd_pp = 0.23,
+        Xl = 0.1,
+        Se = (0.1, 0.5),
+    )
+    @test GENROE isa PowerSystems.DynamicComponent
+
     GENSAL = SalientPoleQuadratic(
-        0.0, #R
-        7.4, #Td0_p
-        0.03, #Td0_pp
-        0.033, #Tq0_pp
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.23, #Xd_pp
-        0.1, #Xl
-        (0.1, 0.5), #Se
+        R = 0.0,
+        Td0_p = 7.4,
+        Td0_pp = 0.03,
+        Tq0_pp = 0.033,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xd_pp = 0.23,
+        Xl = 0.1,
+        Se = (0.1, 0.5),
     )
     @test GENSAL isa PowerSystems.DynamicComponent
 
+    GENSAE = SalientPoleExponential(
+        R = 0.0,
+        Td0_p = 7.4,
+        Td0_pp = 0.03,
+        Tq0_pp = 0.033,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xd_pp = 0.23,
+        Xl = 0.1,
+        Se = (0.1, 0.5),
+    )
+    @test GENSAE isa PowerSystems.DynamicComponent
+
     oneDoneQ = OneDOneQMachine(
-        0.0, #R
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.04, #Xq_p
-        7.4, #Td0_p
-        0.033, #Tq0_p
+        R = 0.0,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xq_p = 0.04,
+        Td0_p = 7.4,
+        Tq0_p = 0.033,
     )
     @test oneDoneQ isa PowerSystems.DynamicComponent
 
     AndersonFouad = AndersonFouadMachine(
-        0.0, #R
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.646, #Xq_p
-        0.23, #Xd_pp
-        0.4, #Xq_pp
-        7.4, #Td0_p
-        0.01, #Tq0_p #Data not available in Milano: Used 0.01
-        0.03, #Td0_pp
-        0.033, #Tq0_pp
+        R = 0.0,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xq_p = 0.646,
+        Xd_pp = 0.23,
+        Xq_pp = 0.4,
+        Td0_p = 7.4,
+        Tq0_p = 0.01, #Data not available in Milano: Used 0.01
+        Td0_pp = 0.03,
+        Tq0_pp = 0.033,
     )
     @test AndersonFouad isa PowerSystems.DynamicComponent
 
     KundurMachine = SimpleFullMachine(
-        0.003, #R on Example 3.1 and 4.1 of Kundur
-        0.0006, #R_f
-        0.0284, #R_1d or RD in Machowski
-        0.0062, #R_1q or RQ on Machowski
-        1.81, #L_d
-        1.76, #L_q
-        1.66, #L_ad or k*M_f or k*M_D in Machowski
-        1.61, #L_aq or k*M_Q in Machowski
-        1.66, #L_f1d or L_fD in Machowski. Assumed to be equal to L_ad
-        1.825, #L_ff
-        0.1713, #L_1d or L_D in Machowski
-        0.7525, #L_1q or L_Q in Machowski
+        R = 0.003, #Example 3.1 and 4.1 of Kundur
+        R_f = 0.0006,
+        R_1d = 0.0284, #RD in Machowski
+        R_1q = 0.0062, #RQ on Machowski
+        L_d = 1.81,
+        L_q = 1.76,
+        L_ad = 1.66, #k*M_f or k*M_D in Machowski
+        L_aq = 1.61, #k*M_Q in Machowski
+        L_f1d = 1.66, #L_fD in Machowski. Assumed to be equal to L_ad
+        L_ff = 1.825,
+        L_1d = 0.1713, #L_D in Machowski
+        L_1q = 0.7525, #L_Q in Machowski
     )
     @test KundurMachine isa PowerSystems.DynamicComponent
 
     KundurFullMachine = FullMachine(
-        0.003, #R on Example 3.1 and 4.1 of Kundur
-        0.0006, #R_f
-        #0.003, #R_f
-        0.0284, #R_1d or RD in Machowski
-        0.0062, #R_1q or RQ on Machowski
-        1.81, #L_d
-        1.76, #L_q
-        1.66, #L_ad or k*M_f or k*M_D in Machowski
-        1.61, #L_aq or k*M_Q in Machowski
-        1.66, #L_f1d or L_fD in Machowski. Assumed to be equal to L_ad
-        1.825, #L_ff
-        0.1713, #L_1d or L_D in Machowski
-        0.7525, #L_1q or L_Q in Machowski
+        R = 0.003, #Example 3.1 and 4.1 of Kundur
+        R_f = 0.0006,
+        R_1d = 0.0284, #RD in Machowski
+        R_1q = 0.0062, #RQ on Machowski
+        L_d = 1.81,
+        L_q = 1.76,
+        L_ad = 1.66, #k*M_f or k*M_D in Machowski
+        L_aq = 1.61, #k*M_Q in Machowski
+        L_f1d = 1.66, #L_fD in Machowski. Assumed to be equal to L_ad
+        L_ff = 1.825,
+        L_1d = 0.1713, #L_D in Machowski
+        L_1q = 0.7525, #L_Q in Machowski
     )
     @test KundurFullMachine isa PowerSystems.DynamicComponent
 
     Mach2_benchmark = OneDOneQMachine(
-        0.0, #R
-        1.3125, #Xd
-        1.2578, #Xq
-        0.1813, #Xd_p
-        0.25, #Xq_p
-        5.89, #Td0_p
-        0.6, #Tq0_p
+        R = 0.0,
+        Xd = 1.3125,
+        Xq = 1.2578,
+        Xd_p = 0.1813,
+        Xq_p = 0.25,
+        Td0_p = 5.89,
+        Tq0_p = 0.6,
     )
     @test Mach2_benchmark isa PowerSystems.DynamicComponent
 end
 
 ################ Shaft Data #####################
 @testset "Dynamic Shaft" begin
-    BaseShaft = SingleMass(
-        5.148, #H
-        2.0,
-    ) #D
+    BaseShaft = SingleMass(H = 5.148, D = 2.0)
     @test BaseShaft isa PowerSystems.DynamicComponent
 
     FiveShaft = FiveMassShaft(
-        5.148,  #H
-        0.3348, #H_hp
-        0.7306, #H_ip
-        0.8154, #H_lp
-        0.0452, #H_ex,
-        2.0,    #D
-        0.5180, #D_hp
-        0.2240, #D_ip
-        0.2240, #D_lp
-        0.1450, #D_ex
-        0.0518, #D_12
-        0.0224, #D_23
-        0.0224, #D_34
-        0.0145, #D_45
-        33.07,  #K_hp
-        28.59,  #K_ip
-        44.68,  #K_lp
-        21.984,
-    ) #K_ex
+        H = 5.148,
+        H_hp = 0.3348,
+        H_ip = 0.7306,
+        H_lp = 0.8154,
+        H_ex = 0.0452,
+        D = 2.0,
+        D_hp = 0.5180,
+        D_ip = 0.2240,
+        D_lp = 0.2240,
+        D_ex = 0.1450,
+        D_12 = 0.0518,
+        D_23 = 0.0224,
+        D_34 = 0.0224,
+        D_45 = 0.0145,
+        K_hp = 33.07,
+        K_ip = 28.59,
+        K_lp = 44.68,
+        K_ex = 21.984,
+    )
     @test FiveShaft isa PowerSystems.DynamicComponent
 end
 
 ################# PSS Data #####################
 @testset "Dynamic PSS" begin
-    no_pss = PSSFixed(0.0)
+    no_pss = PSSFixed(V_pss = 0.0)
     @test no_pss isa PowerSystems.DynamicComponent
 end
 ################ TG Data #####################
 @testset "Dynamic Turbine Governor Constructors" begin
-    fixed_tg = TGFixed(1.0) #eff
+    fixed_tg = TGFixed(efficiency = 1.0)
     @test fixed_tg isa PowerSystems.DynamicComponent
 
     typeI_tg = TGTypeI(
-        0.02, #R
-        0.1, #Ts
-        0.45, #Tc
-        0.0, #T3
-        0.0, #T4
-        50.0, #T5
-        0.3, #P_min
-        1.2,
-    ) #P_max
+        R = 0.02,
+        Ts = 0.1,
+        Tc = 0.45,
+        T3 = 0.0,
+        T4 = 0.0,
+        T5 = 50.0,
+        P_min = 0.3,
+        P_max = 1.2,
+    )
     @test typeI_tg isa PowerSystems.DynamicComponent
 
-    typeII_tg = TGTypeII(
-        0.05, #R
-        0.3, #T1
-        0.1, #T2
-        1.0, #τ_max
-        0.1,
-    ) #τ_min
+    typeII_tg = TGTypeII(R = 0.05, T1 = 0.3, T2 = 0.1, τ_max = 1.0, τ_min = 0.1)
     @test typeII_tg isa PowerSystems.DynamicComponent
 end
 ################ AVR Data #####################
 @testset "Dynamic AVR Constructors" begin
-    proportional_avr = AVRSimple(5000.0) #Kv
+    proportional_avr = AVRSimple(Kv = 5000.0)
     @test proportional_avr isa PowerSystems.DynamicComponent
 
-    fixed_avr = AVRFixed(1.05) #Vf
+    fixed_avr = AVRFixed(Vf = 1.05)
     @test fixed_avr isa PowerSystems.DynamicComponent
 
     typeI_avr = AVRTypeI(
-        200.0, #Ka
-        1.0, #Ke
-        0.0012, #Kf
-        0.02, #Ta
-        0.19, #Te
-        1.0, #Tf
-        0.001, #Tr
-        9.9, #Vr_max
-        0.0, #Vr_min
-        0.0006, #Ae
-        0.9,
+        Ka = 200.0,
+        Ke = 1.0,
+        Kf = 0.0012,
+        Ta = 0.02,
+        Te = 0.19,
+        Tf = 1.0,
+        Tr = 0.001,
+        Vr_max = 9.9,
+        Vr_min = 0.0,
+        Ae = 0.0006,
+        Be = 0.9,
     )
     @test typeI_avr isa PowerSystems.DynamicComponent
 
     gen2_avr_benchmark = AVRTypeII(
-        20.0, #K0 - Gain
-        0.2, #T1 - 1st pole
-        0.063, #T2 - 1st zero
-        0.35, #T3 - 2nd pole
-        0.01, #T4 - 2nd zero
-        0.314, #Te - Field current time constant
-        0.001, #Tr - Measurement time constant
-        5.0, #Vrmax
-        -5.0, #Vrmin
-        0.0039, #Ae - 1st ceiling coefficient
-        1.555,
-    ) #Be - 2nd ceiling coefficient
+        K0 = 20.0,
+        T1 = 0.2,
+        T2 = 0.063,
+        T3 = 0.35,
+        T4 = 0.01,
+        Te = 0.314,
+        Tr = 0.001,
+        Vr_max = 5.0,
+        Vr_min = -5.0,
+        Ae = 0.0039,
+        Be = 1.555,
+    )
     @test gen2_avr_benchmark isa PowerSystems.DynamicComponent
 end
 ######################### Generators ########################
 @testset "Dynamic Generators" begin
     #Components for the test
-    Basic = BaseMachine(
-        0.0, #R
-        0.2995, #Xd_p
-        1.05, #eq_p
-    )
+    Basic = BaseMachine(R = 0.0, Xd_p = 0.2995, eq_p = 1.05)
 
-    BaseShaft = SingleMass(
-        5.148, #H
-        2.0,
-    ) #D
+    BaseShaft = SingleMass(H = 5.148, D = 2.0)
 
-    fixed_avr = AVRFixed(1.05) #Vf
+    fixed_avr = AVRFixed(Vf = 1.05)
 
-    proportional_avr = AVRSimple(5000.0) #Kv
+    proportional_avr = AVRSimple(Kv = 5000.0)
 
-    fixed_tg = TGFixed(1.0) #eff
+    fixed_tg = TGFixed(efficiency = 1.0)
 
-    no_pss = PSSFixed(0.0)
+    no_pss = PSSFixed(V_pss = 0.0)
 
     oneDoneQ = OneDOneQMachine(
-        0.0, #R
-        0.8979, #Xd
-        0.646, #Xq
-        0.2995, #Xd_p
-        0.04, #Xq_p
-        7.4, #Td0_p
-        0.033, #Tq0_p
+        R = 0.0,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xq_p = 0.04,
+        Td0_p = 7.4,
+        Tq0_p = 0.033,
     )
 
     Gen1AVR = DynamicGenerator(
-        static_gen,
-        1.0, # ω_ref,
-        Basic,
-        BaseShaft,
-        proportional_avr, #avr
-        fixed_tg, #tg
-        no_pss,
+        static_injector = static_gen,
+        ω_ref = 1.0,
+        machine = Basic,
+        shaft = BaseShaft,
+        avr = proportional_avr,
+        prime_mover = fixed_tg,
+        pss = no_pss,
     )
     @test Gen1AVR isa PowerSystems.Component
     @test get_V_ref(Gen1AVR) == 1.045
@@ -300,35 +309,35 @@ end
     @test get_Q_ref(Gen1AVR) == 0.010
 
     Gen1AVRnoAVR = DynamicGenerator(
-        static_gen,
-        1.0, # ω_ref,
-        Basic,
-        BaseShaft,
-        fixed_avr, #avr
-        fixed_tg, #tg
-        no_pss,
+        static_injector = static_gen,
+        ω_ref = 1.0,
+        machine = Basic,
+        shaft = BaseShaft,
+        avr = fixed_avr,
+        prime_mover = fixed_tg,
+        pss = no_pss,
     )
     @test Gen1AVRnoAVR isa PowerSystems.Component
 
     Gen2AVRnoAVR = DynamicGenerator(
-        static_gen,
-        1.0, # ω_ref,
-        oneDoneQ,
-        BaseShaft,
-        fixed_avr, #avr
-        fixed_tg, #tg
-        no_pss,
+        static_injector = static_gen,
+        ω_ref = 1.0,
+        machine = oneDoneQ,
+        shaft = BaseShaft,
+        avr = fixed_avr,
+        prime_mover = fixed_tg,
+        pss = no_pss,
     )
     @test Gen2AVRnoAVR isa PowerSystems.Component
 
     Gen2AVR = DynamicGenerator(
-        static_gen,
-        1.0, # ω_ref,
-        oneDoneQ,
-        BaseShaft,
-        proportional_avr, #avr
-        fixed_tg, #tg
-        no_pss,
+        static_injector = static_gen,
+        ω_ref = 1.0,
+        machine = oneDoneQ,
+        shaft = BaseShaft,
+        avr = proportional_avr,
+        prime_mover = fixed_tg,
+        pss = no_pss,
     )
     @test Gen2AVR isa PowerSystems.Component
 
@@ -372,4 +381,130 @@ end
     @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.1, 0.1))
 
     @test length(collect(get_dynamic_components(Gen2AVR))) == 5
+end
+
+@testset "Forward functions" begin
+    GENROU = RoundRotorQuadratic(
+        R = 0.0,
+        Td0_p = 7.4,
+        Td0_pp = 0.03,
+        Tq0_p = 0.06,
+        Tq0_pp = 0.033,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xq_p = 0.646,
+        Xd_pp = 0.23,
+        Xl = 0.1,
+        Se = (0.1, 0.5),
+    )
+
+    GENROE = RoundRotorExponential(
+        R = 0.0,
+        Td0_p = 7.4,
+        Td0_pp = 0.03,
+        Tq0_p = 0.06,
+        Tq0_pp = 0.033,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xq_p = 0.646,
+        Xd_pp = 0.23,
+        Xl = 0.1,
+        Se = (0.1, 0.5),
+    )
+
+    GENSAL = SalientPoleQuadratic(
+        R = 0.0,
+        Td0_p = 7.4,
+        Td0_pp = 0.03,
+        Tq0_pp = 0.033,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xd_pp = 0.23,
+        Xl = 0.1,
+        Se = (0.1, 0.5),
+    )
+
+    GENSAE = SalientPoleExponential(
+        R = 0.0,
+        Td0_p = 7.4,
+        Td0_pp = 0.03,
+        Tq0_pp = 0.033,
+        Xd = 0.8979,
+        Xq = 0.646,
+        Xd_p = 0.2995,
+        Xd_pp = 0.23,
+        Xl = 0.1,
+        Se = (0.1, 0.5),
+    )
+
+    #Test GENROU
+    @test get_R(GENROU) == 0.0
+    @test get_Td0_p(GENROU) == 7.4
+    @test get_Td0_pp(GENROU) == 0.03
+    @test get_Tq0_p(GENROU) == 0.06
+    @test get_Tq0_pp(GENROU) == 0.033
+    @test get_Xd(GENROU) == 0.8979
+    @test get_Xq(GENROU) == 0.646
+    @test get_Xd_p(GENROU) == 0.2995
+    @test get_Xq_p(GENROU) == 0.646
+    @test get_Xd_pp(GENROU) == 0.23
+    @test get_Xl(GENROU) == 0.1
+    @test get_Se(GENROU) == (0.1, 0.5)
+    @test get_states(GENROU) == [:eq_p, :ed_p, :ψ_kd, :ψ_kq]
+    @test get_n_states(GENROU) == 4
+    @test abs(get_saturation_coeffs(GENROU)[1] - 0.8381966011250106) <= 1e-6
+    @test abs(get_saturation_coeffs(GENROU)[2] - 3.819660112501054) <= 1e-6
+
+    #Test GENROE
+    @test get_R(GENROE) == 0.0
+    @test get_Td0_p(GENROE) == 7.4
+    @test get_Td0_pp(GENROE) == 0.03
+    @test get_Tq0_p(GENROE) == 0.06
+    @test get_Tq0_pp(GENROE) == 0.033
+    @test get_Xd(GENROE) == 0.8979
+    @test get_Xq(GENROE) == 0.646
+    @test get_Xd_p(GENROE) == 0.2995
+    @test get_Xq_p(GENROE) == 0.646
+    @test get_Xd_pp(GENROE) == 0.23
+    @test get_Xl(GENROE) == 0.1
+    @test get_Se(GENROE) == (0.1, 0.5)
+    @test get_states(GENROE) == [:eq_p, :ed_p, :ψ_kd, :ψ_kq]
+    @test get_n_states(GENROE) == 4
+    @test abs(get_saturation_coeffs(GENROE)[1] - 8.827469119589406) <= 1e-6
+    @test abs(get_saturation_coeffs(GENROE)[2] - 0.1) <= 1e-6
+
+    #Test GENSAL
+    @test get_R(GENSAL) == 0.0
+    @test get_Td0_p(GENSAL) == 7.4
+    @test get_Td0_pp(GENSAL) == 0.03
+    @test get_Tq0_pp(GENSAL) == 0.033
+    @test get_Xd(GENSAL) == 0.8979
+    @test get_Xq(GENSAL) == 0.646
+    @test get_Xd_p(GENSAL) == 0.2995
+    @test get_Xd_pp(GENSAL) == 0.23
+    @test get_Xl(GENSAL) == 0.1
+    @test get_Se(GENSAL) == (0.1, 0.5)
+    @test get_states(GENSAL) == [:eq_p, :ψ_kd, :ψq_pp]
+    @test get_n_states(GENSAL) == 3
+    @test abs(get_saturation_coeffs(GENSAL)[1] - 0.8381966011250106) <= 1e-6
+    @test abs(get_saturation_coeffs(GENSAL)[2] - 3.819660112501054) <= 1e-6
+
+    #Test GENSAE
+    @test get_R(GENSAE) == 0.0
+    @test get_Td0_p(GENSAE) == 7.4
+    @test get_Td0_pp(GENSAE) == 0.03
+    @test get_Tq0_pp(GENSAE) == 0.033
+    @test get_Xd(GENSAE) == 0.8979
+    @test get_Xq(GENSAE) == 0.646
+    @test get_Xd_p(GENSAE) == 0.2995
+    @test get_Xd_pp(GENSAE) == 0.23
+    @test get_Xl(GENSAE) == 0.1
+    @test get_Se(GENSAE) == (0.1, 0.5)
+    @test get_states(GENSAE) == [:eq_p, :ψ_kd, :ψq_pp]
+    @test get_n_states(GENSAE) == 3
+    @test abs(get_saturation_coeffs(GENSAE)[1] - 8.827469119589406) <= 1e-6
+    @test abs(get_saturation_coeffs(GENSAE)[2] - 0.1) <= 1e-6
 end
