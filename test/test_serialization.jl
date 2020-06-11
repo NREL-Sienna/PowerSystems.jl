@@ -70,6 +70,7 @@ end
 
         t = RegulationDevice(g, participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
         add_component!(sys, t)
+        @test isnothing(get_component(ThermalStandard, sys, get_name(g)))
         push!(contributing_devices, t)
     end
     add_service!(sys, AGC_service, contributing_devices)
