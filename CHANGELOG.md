@@ -1,5 +1,14 @@
 # PowerSystems Change Log
 
+## 0.20.0
+
+- Performance updates to Power Flow. 
+- Remove Make PF function. 
+- Fixin forecast handling of composed structs
+- Update to IS v0.11
+- Add SalientPoleGenerator and RoundRotorGenerator with saturation variants
+- Add regulation device composed with generators
+
 ## 0.19.0
 
 - Update for IS 0.9 
