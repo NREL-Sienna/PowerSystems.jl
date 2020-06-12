@@ -104,13 +104,15 @@ function _get_load_data(sys::System, b::Bus)
     activepower = 0.0
     reactivepower = 0.0
     for l in get_components(ElectricLoad, sys)
-        if !isa(l, FixedAdmittance) && (l.bus == b)
-            activepower += get_activepower(l)
-            reactivepower += get_reactivepower(l)
-        elseif isa(l, FixedAdmittance) && (l.bus == b)
-            # Assume v rated = 1.0
-            activepower += real(get_Y(l))
-            reactivepower += imag(get_Y(l))
+        if (l.bus == b)
+            if isa(l, FixedAdmittance)
+                # Assume v rated = 1.0
+                activepower += real(get_Y(l))
+                reactivepower += imag(get_Y(l))
+            else
+                activepower += get_activepower(l)
+                reactivepower += get_reactivepower(l)
+            end
         end
     end
     return activepower, reactivepower
