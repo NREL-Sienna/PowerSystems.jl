@@ -5603,6 +5603,10 @@
         {
           "name": "forecasts",
           "data_type": "InfrastructureSystems.Forecasts"
+        },
+        {
+          "name": "internal",
+          "data_type": "InfrastructureSystems.InfrastructureSystemsInternal"
         }
       ]
     }
