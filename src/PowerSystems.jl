@@ -154,7 +154,6 @@ export PiecewiseFunction
 
 export get_dynamic_components
 
-export make_pf
 export solve_powerflow!
 
 export parse_file

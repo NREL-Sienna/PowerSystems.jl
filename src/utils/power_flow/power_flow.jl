@@ -124,9 +124,7 @@ Updates generators active and reactive power setpoints and branches active and r
 power flows (calculated in the From - To direction) (see
 [`flow_val`](@ref))
 
-Requires loading NLsolve.jl to run. Internally it uses the make_pf (see
-[`make_pf`](@ref)) to create the problem and solve it. As a result it doesn't enforce
-reactivepower limits.
+Requires loading NLsolve.jl to run.
 
 Supports passing NLsolve kwargs in the args. By default shows the solver trace.
 
