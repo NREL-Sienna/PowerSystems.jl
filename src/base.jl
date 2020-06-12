@@ -1500,8 +1500,8 @@ function handle_component_addition!(sys::System, dynamic_injector::DynamicInject
 end
 
 function handle_component_addition!(sys::System, component::RegulationDevice)
-    component.device = deepcopy(component.device)
-    component.device.internal = IS.InfrastructureSystemsInternal()
+    copy_forecasts!(component.device, component)
+    remove_component!(sys, component.device)
 end
 
 """

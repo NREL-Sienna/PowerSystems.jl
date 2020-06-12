@@ -6,6 +6,8 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
     reserve_limit_dn::Float64
     inertia::Float64
     cost::Float64
+    forecasts::IS.Forecasts
+    internal::IS.InfrastructureSystemsInternal
 
     function RegulationDevice{T}(
         device::T,
@@ -15,7 +17,11 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
         reserve_limit_dn::Float64,
         inertia::Float64,
         cost::Float64,
+        forecasts::IS.Forecasts = IS.Forecasts(),
+        internal::IS.InfrastructureSystemsInternal = IS.InfrastructureSystemsInternal(),
     ) where {T <: StaticInjection}
+        # Note that forecasts are not forwarded to T. They get copied from T in
+        # handle_component_addition!.
         IS.@forward((RegulationDevice{T}, :device), T)
         new{T}(
             device,
@@ -25,6 +31,8 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
             reserve_limit_dn,
             inertia,
             cost,
+            forecasts,
+            internal,
         )
     end
 end
@@ -52,12 +60,10 @@ function RegulationDevice(
     )
 end
 
-function has_forecasts(d::RegulationDevice)
-    return IS.has_forecasts(d.device)
-end
 
+IS.get_forecasts(value::RegulationDevice) = value.forecasts
 IS.get_name(value::RegulationDevice) = IS.get_name(value.device)
-IS.get_uuid(value::RegulationDevice) = IS.get_uuid(value.device)
+get_internal(value::RegulationDevice) = value.internal
 get_droop(value::RegulationDevice) = value.droop
 get_participation_factor(value::RegulationDevice) = value.participation_factor
 get_reserve_limit_up(value::RegulationDevice) = value.reserve_limit_up
@@ -72,3 +78,4 @@ set_reserve_limit_up!(value::RegulationDevice, val::Float64) = value.reserve_lim
 set_reserve_limit_dn!(value::RegulationDevice, val::Float64) = value.reserve_limit_dn = val
 set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
+IS.set_forecasts!(value::RegulationDevice, val::IS.Forecasts) = value.forecasts = val

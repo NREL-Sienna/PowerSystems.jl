@@ -1,5 +1,6 @@
 include("TwoPartCost.jl")
 include("ThreePartCost.jl")
+include("MultiStartCost.jl")
 include("Area.jl")
 include("LoadZone.jl")
 include("Bus.jl")
@@ -19,6 +20,7 @@ include("HydroDispatch.jl")
 include("RenewableDispatch.jl")
 include("RenewableFix.jl")
 include("ThermalStandard.jl")
+include("ThermalMultiStart.jl")
 include("GenericBattery.jl")
 include("StaticReserve.jl")
 include("ReserveDemandCurve.jl")
@@ -30,6 +32,8 @@ include("AVRSimple.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
 include("BaseMachine.jl")
+include("RoundRotorMachine.jl")
+include("SalientPoleMachine.jl")
 include("AndersonFouadMachine.jl")
 include("FullMachine.jl")
 include("MarconatoMachine.jl")
@@ -98,6 +102,7 @@ export get_R
 export get_R_1d
 export get_R_1q
 export get_R_f
+export get_Se
 export get_T1
 export get_T2
 export get_T3
@@ -123,6 +128,7 @@ export get_X_th
 export get_Xd
 export get_Xd_p
 export get_Xd_pp
+export get_Xl
 export get_Xq
 export get_Xq_p
 export get_Xq_pp
@@ -186,10 +192,13 @@ export get_lv
 export get_maxactivepower
 export get_maxreactivepower
 export get_model
+export get_must_run
 export get_n_states
+export get_no_load
 export get_number
 export get_op_cost
 export get_outputactivepowerlimits
+export get_power_trajectory
 export get_powerfactor
 export get_primaryshunt
 export get_primemover
@@ -212,6 +221,8 @@ export get_rv
 export get_s_rated
 export get_services
 export get_shutdn
+export get_start_time_limits
+export get_start_types
 export get_startup
 export get_states
 export get_status
@@ -278,6 +289,7 @@ export set_R!
 export set_R_1d!
 export set_R_1q!
 export set_R_f!
+export set_Se!
 export set_T1!
 export set_T2!
 export set_T3!
@@ -303,6 +315,7 @@ export set_X_th!
 export set_Xd!
 export set_Xd_p!
 export set_Xd_pp!
+export set_Xl!
 export set_Xq!
 export set_Xq_p!
 export set_Xq_pp!
@@ -366,10 +379,13 @@ export set_lv!
 export set_maxactivepower!
 export set_maxreactivepower!
 export set_model!
+export set_must_run!
 export set_n_states!
+export set_no_load!
 export set_number!
 export set_op_cost!
 export set_outputactivepowerlimits!
+export set_power_trajectory!
 export set_powerfactor!
 export set_primaryshunt!
 export set_primemover!
@@ -392,6 +408,8 @@ export set_rv!
 export set_s_rated!
 export set_services!
 export set_shutdn!
+export set_start_time_limits!
+export set_start_types!
 export set_startup!
 export set_states!
 export set_status!
