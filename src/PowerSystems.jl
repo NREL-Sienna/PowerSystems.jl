@@ -162,7 +162,6 @@ export PiecewiseFunction
 
 export get_dynamic_components
 
-export make_pf
 export solve_powerflow!
 
 export parse_file
@@ -358,7 +357,6 @@ include("utils/network_calculations/ptdf_calculations.jl")
 include("utils/network_calculations/lodf_calculations.jl")
 
 #PowerFlow
-include("utils/power_flow/make_pf.jl")
 include("utils/power_flow/power_flow.jl")
 
 # Include Parsing files
