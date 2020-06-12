@@ -60,10 +60,6 @@ function RegulationDevice(
     )
 end
 
-function has_forecasts(d::RegulationDevice)
-    return IS.has_forecasts(d.device)
-end
-
 IS.get_forecasts(value::RegulationDevice) = value.forecasts
 IS.get_name(value::RegulationDevice) = IS.get_name(value.device)
 get_internal(value::RegulationDevice) = value.internal
