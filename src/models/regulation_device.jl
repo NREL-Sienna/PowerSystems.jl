@@ -60,7 +60,6 @@ function RegulationDevice(
     )
 end
 
-
 IS.get_forecasts(value::RegulationDevice) = value.forecasts
 IS.get_name(value::RegulationDevice) = IS.get_name(value.device)
 get_internal(value::RegulationDevice) = value.internal
