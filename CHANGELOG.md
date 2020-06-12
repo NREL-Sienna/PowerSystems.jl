@@ -2,12 +2,15 @@
 
 ## 0.20.0
 
+- Add Support for MultiStart Thermal Generation (a.k.a. PGLIB Model) 
 - Performance updates to Power Flow. 
 - Remove Make PF function. 
 - Fixin forecast handling of composed structs
 - Update to IS v0.11
 - Add SalientPoleGenerator and RoundRotorGenerator with saturation variants
 - Add regulation device composed with generators
+- Add Basepower field to InjectionDevices in system's per unit
+- Add readonly option for seralization of time series
 
 ## 0.19.0
 
