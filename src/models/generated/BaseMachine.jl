@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model
+Parameters of a Classic Machine: GENCLS in PSSE and PSLF
 
 # Arguments
 - `R::Float64`: Resistance after EMF in machine per unit, validation range: (0, nothing)
