@@ -25,7 +25,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1 in PSSE and PSLF
+This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.
+The exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.
+Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1A in PSSE and PSLF
 
 # Arguments
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: (0, nothing)
