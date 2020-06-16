@@ -32,6 +32,7 @@ include("AVRSimple.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
 include("AC1A.jl")
+include("ST1A.jl")
 include("BaseMachine.jl")
 include("RoundRotorMachine.jl")
 include("SalientPoleMachine.jl")
@@ -76,6 +77,7 @@ export get_H_ex
 export get_H_hp
 export get_H_ip
 export get_H_lp
+export get_I_lr
 export get_K0
 export get_K_d
 export get_K_ex
@@ -83,6 +85,7 @@ export get_K_hp
 export get_K_i
 export get_K_ip
 export get_K_lp
+export get_K_lr
 export get_K_p
 export get_K_ω
 export get_Ka
@@ -99,6 +102,7 @@ export get_L_d
 export get_L_f1d
 export get_L_ff
 export get_L_q
+export get_PSS_inputs
 export get_P_max
 export get_P_min
 export get_P_ref
@@ -115,7 +119,9 @@ export get_T5
 export get_T_AA
 export get_Ta
 export get_Tb
+export get_Tb1
 export get_Tc
+export get_Tc1
 export get_Td0_p
 export get_Td0_pp
 export get_Te
@@ -124,10 +130,12 @@ export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
 export get_Ts
+export get_UEL_inputs
 export get_V_pss
 export get_V_ref
 export get_Va_lim
 export get_Vf
+export get_Vi_lim
 export get_Vr_lim
 export get_Vr_max
 export get_Vr_min
@@ -269,6 +277,7 @@ export set_H_ex!
 export set_H_hp!
 export set_H_ip!
 export set_H_lp!
+export set_I_lr!
 export set_K0!
 export set_K_d!
 export set_K_ex!
@@ -276,6 +285,7 @@ export set_K_hp!
 export set_K_i!
 export set_K_ip!
 export set_K_lp!
+export set_K_lr!
 export set_K_p!
 export set_K_ω!
 export set_Ka!
@@ -292,6 +302,7 @@ export set_L_d!
 export set_L_f1d!
 export set_L_ff!
 export set_L_q!
+export set_PSS_inputs!
 export set_P_max!
 export set_P_min!
 export set_P_ref!
@@ -308,7 +319,9 @@ export set_T5!
 export set_T_AA!
 export set_Ta!
 export set_Tb!
+export set_Tb1!
 export set_Tc!
+export set_Tc1!
 export set_Td0_p!
 export set_Td0_pp!
 export set_Te!
@@ -317,10 +330,12 @@ export set_Tq0_p!
 export set_Tq0_pp!
 export set_Tr!
 export set_Ts!
+export set_UEL_inputs!
 export set_V_pss!
 export set_V_ref!
 export set_Va_lim!
 export set_Vf!
+export set_Vi_lim!
 export set_Vr_lim!
 export set_Vr_max!
 export set_Vr_min!

@@ -2980,7 +2980,7 @@
     },
     {
       "struct_name": "AC1A",
-      "docstring": "Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1 in PSSE and PSLF",
+      "docstring": "This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1A in PSSE and PSLF",
       "fields": [
         {
           "name": "Tr",
@@ -3137,6 +3137,208 @@
           "name": "states",
           "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
           "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "",
+          "internal_default": 5,
+          "data_type": "Int64"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "ST1A",
+      "docstring": "This excitation system supplies power through a transformer from the generator terminals and its regulated by a controlled rectifier (via thyristors).\nParameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF",
+      "fields": [
+        {
+          "name": "UEL_inputs",
+          "comment": "Code input for Underexcitization limiter (UEL) entry. Not supported.",
+          "null_value": 1,
+          "data_type": "Int64",
+          "valid_range": {
+            "min": 1,
+            "max": 3
+          }
+        },
+        {
+          "name": "PSS_inputs",
+          "comment": "Code input for Power System Stabilizer (PSS) or (VOS) entry.",
+          "null_value": 1,
+          "data_type": "Int64",
+          "valid_range": {
+            "min": 1,
+            "max": 3
+          }
+        },
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vi_lim",
+          "comment": "Voltage error limits (regulator input) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Tc",
+          "comment": "First regulator denominator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tb",
+          "comment": "First regulator denominator (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tc1",
+          "comment": "Second regulator denominator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+
+        {
+          "name": "Tb1",
+          "comment": "Second regulator denominator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ka",
+          "comment": "Voltage regulator gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ta",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Va_lim",
+          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+
+        {
+          "name": "Vr_lim",
+          "comment": "Limits for exciter output (Vr_min, Vr_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kc",
+          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kf",
+          "comment": "Rate feedback gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tf",
+          "comment": "Rate feedback time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_lr",
+          "comment": "Exciter output current limiter gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "I_lr",
+          "comment": "Exciter output current limit reference",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second lead-lag state,\n\tVa: Regulator output state,\n\tVr3: Feedback output state",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Va, :Vr3]",
           "data_type": "Vector{Symbol}"
         },
         {
