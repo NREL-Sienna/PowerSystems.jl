@@ -40,8 +40,8 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1 in PSSE and PSLF
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: (0, nothing)
 - `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: (0, nothing)
 - `Ke::Float64`: Exciter field proportional constant, validation range: (0, nothing)
-- `E_sat::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (E1, E2)
-- `Se::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (Se(E1), Se(E2))
+- `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
+- `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage: (Vr_min, Vr_max)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
@@ -79,9 +79,9 @@ mutable struct AC1A <: AVR
     Kd::Float64
     "Exciter field proportional constant"
     Ke::Float64
-    "Exciter saturation factor at exciter output voltage: (E1, E2)"
+    "Exciter output voltage for saturation factor: (E1, E2)"
     E_sat::Tuple{Float64, Float64}
-    "Exciter output voltage for saturation factor: (Se(E1), Se(E2))"
+    "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))"
     Se::Tuple{Float64, Float64}
     "Limits for exciter field voltage: (Vr_min, Vr_max)"
     Vr_lim::Tuple{Float64, Float64}

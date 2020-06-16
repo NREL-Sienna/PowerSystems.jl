@@ -3100,13 +3100,13 @@
         },
         {
           "name": "E_sat",
-          "comment": "Exciter saturation factor at exciter output voltage: (E1, E2)",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
         {
           "name": "Se",
-          "comment": "Exciter output voltage for saturation factor: (Se(E1), Se(E2))",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
