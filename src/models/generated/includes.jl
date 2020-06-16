@@ -31,6 +31,7 @@ include("AVRFixed.jl")
 include("AVRSimple.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
+include("AC1A.jl")
 include("BaseMachine.jl")
 include("RoundRotorMachine.jl")
 include("SalientPoleMachine.jl")
@@ -69,6 +70,7 @@ export get_D_ex
 export get_D_hp
 export get_D_ip
 export get_D_lp
+export get_E_sat
 export get_H
 export get_H_ex
 export get_H_hp
@@ -84,6 +86,8 @@ export get_K_lp
 export get_K_p
 export get_K_ω
 export get_Ka
+export get_Kc
+export get_Kd
 export get_Ke
 export get_Kf
 export get_Kv
@@ -110,6 +114,7 @@ export get_T4
 export get_T5
 export get_T_AA
 export get_Ta
+export get_Tb
 export get_Tc
 export get_Td0_p
 export get_Td0_pp
@@ -121,7 +126,9 @@ export get_Tr
 export get_Ts
 export get_V_pss
 export get_V_ref
+export get_Va_lim
 export get_Vf
+export get_Vr_lim
 export get_Vr_max
 export get_Vr_min
 export get_X_th
@@ -256,6 +263,7 @@ export set_D_ex!
 export set_D_hp!
 export set_D_ip!
 export set_D_lp!
+export set_E_sat!
 export set_H!
 export set_H_ex!
 export set_H_hp!
@@ -271,6 +279,8 @@ export set_K_lp!
 export set_K_p!
 export set_K_ω!
 export set_Ka!
+export set_Kc!
+export set_Kd!
 export set_Ke!
 export set_Kf!
 export set_Kv!
@@ -297,6 +307,7 @@ export set_T4!
 export set_T5!
 export set_T_AA!
 export set_Ta!
+export set_Tb!
 export set_Tc!
 export set_Td0_p!
 export set_Td0_pp!
@@ -308,7 +319,9 @@ export set_Tr!
 export set_Ts!
 export set_V_pss!
 export set_V_ref!
+export set_Va_lim!
 export set_Vf!
+export set_Vr_lim!
 export set_Vr_max!
 export set_Vr_min!
 export set_X_th!
