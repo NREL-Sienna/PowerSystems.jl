@@ -122,17 +122,40 @@ end
     # If that isn't appropriate for this type, add it to types_to_skip below.
 
     types_to_skip = (System,)
+    types_to_skip_set = (ThermalMultiStart,)
+    func_to_skip_set = (PowerSystems.set_dynamic_injector!,)
     for ps_type in IS.get_all_concrete_subtypes(PowerSystemType)
         ps_type in types_to_skip && continue
         obj = ps_type(nothing)
         for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
             if field_name == :name || field_name == :forecasts
                 func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
+                _func! = getfield(InfrastructureSystems, Symbol("set_" * string(field_name) * "!"))
             else
                 func = getfield(PowerSystems, Symbol("get_" * string(field_name)))
+                _func! = getfield(PowerSystems, Symbol("set_" * string(field_name) * "!"))
             end
             val = func(obj)
+            if !((ps_type in types_to_skip_set) & (_func! in func_to_skip_set))
+                _func!(obj, val)
+            end
             @test val isa field_type
+            #Test set function for different cases
+            if typeof(val) == Float64 || typeof(val) == Int64
+                if !isnan(val)
+                    aux = val + 1
+                    _func!(obj, aux)
+                    @test func(obj) == aux
+                end
+            elseif typeof(val) == String
+                aux = val * "1"
+                _func!(obj, aux)
+                @test func(obj) == aux
+            elseif typeof(val) == Bool
+                aux = !val
+                _func!(obj, aux)
+                @test func(obj) == aux
+            end
         end
     end
 end
