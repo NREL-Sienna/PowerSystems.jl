@@ -5317,6 +5317,124 @@
       "supertype": "TurbineGov"
     },
     {
+      "struct_name": "GasTG",
+      "docstring": "Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.",
+      "fields": [
+        {
+          "name": "R",
+          "comment": "Speed droop parameter",
+          "null_value": "eps()",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "T1",
+          "comment": "Governor time constant in s",
+          "null_value": "eps()",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "T2",
+          "comment": "Combustion chamber time constant",
+          "null_value": "eps()",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "T3",
+          "comment": "Load limit time constant (exhaust gas measurement time)",
+          "null_value": "eps()",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "AT",
+          "comment": "Ambient temperature load limit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kt",
+          "comment": "Load limit feedback gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_lim",
+          "comment": "Operational control limits on fuel valve opening (V_min, V_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "D_turb",
+          "comment": "Speed damping coefficient of gas turbine rotor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Load_ref",
+          "comment": "Reference Load Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the GAST model are:\n\tx_g1: Fuel valve opening\n\tx_g2: Fuel flow\n\tx_g3: Exhaust temperature load",
+          "internal_default": "[:x_g1, :x_g2, :x_g3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "",
+          "internal_default": 3,
+          "data_type": "Int64"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "TurbineGov"
+    },
+    {
       "struct_name": "TGTypeI",
       "docstring": "Parameters of a Turbine Governor Type I.",
       "fields": [

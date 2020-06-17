@@ -105,6 +105,7 @@ export FiveMassShaft
 #TG Exports
 export TurbineGov
 export TGFixed
+export GasTG
 export TGTypeI
 export TGTypeII
 
