@@ -1,3 +1,10 @@
 abstract type StaticInjection <: Device end
-supports_services(d::Device) = true
+function supports_services(::T) where {T <: Device}
+    return true
+end
+
+function get_services(::Device)
+    return Vector{Service}()
+end
+
 get_dynamic_injector(d::StaticInjection) = nothing
