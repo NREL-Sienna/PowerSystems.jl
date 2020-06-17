@@ -130,7 +130,10 @@ end
         for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
             if field_name == :name || field_name == :forecasts
                 func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
-                _func! = getfield(InfrastructureSystems, Symbol("set_" * string(field_name) * "!"))
+                _func! = getfield(
+                    InfrastructureSystems,
+                    Symbol("set_" * string(field_name) * "!"),
+                )
             else
                 func = getfield(PowerSystems, Symbol("get_" * string(field_name)))
                 _func! = getfield(PowerSystems, Symbol("set_" * string(field_name) * "!"))
