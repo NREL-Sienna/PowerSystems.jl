@@ -28,7 +28,7 @@ function verify_forecasts(sys::System, num_initial_times, num_forecasts, horizon
 end
 
 @testset "Test read_time_series_metadata" begin
-    forecast_number = [259, 282]
+    forecast_number = [260, 282]
     for (ix, file) in enumerate(["timeseries_pointers.json", "timeseries_pointers.csv"])
         filename = joinpath(RTS_GMLC_DIR, file)
         forecasts = IS.read_time_series_metadata(filename)
