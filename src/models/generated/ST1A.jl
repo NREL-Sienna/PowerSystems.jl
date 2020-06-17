@@ -134,7 +134,7 @@ function ST1A(::Nothing)
         Vr_lim=(0.0, 0.0),
         Kc=0,
         Kf=0,
-        Tf=eps(),
+        Tf=0,
         K_lr=0,
         I_lr=0,
         V_ref=0,

@@ -79,10 +79,10 @@ end
 # Constructor for demo purposes; non-functional.
 function GasTG(::Nothing)
     GasTG(;
-        R=eps(),
-        T1=eps(),
-        T2=eps(),
-        T3=eps(),
+        R=0,
+        T1=0,
+        T2=0,
+        T3=0,
         AT=0,
         Kt=0,
         V_lim=(0.0, 0.0),
