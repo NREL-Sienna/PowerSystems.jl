@@ -450,6 +450,7 @@ end
     #Rule: Can't add saturation if Se(1.2) <= Se(1.0)
     @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.5, 0.1))
     @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.1, 0.1))
+    @test_throws IS.ConflictingInputsError PSY.get_avr_saturation((0.2, 0.1), (0.1, 0.1))
 
     @test length(collect(get_dynamic_components(Gen2AVR))) == 5
 end
