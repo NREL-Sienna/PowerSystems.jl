@@ -230,7 +230,20 @@ end
 
     typeII_tg = TGTypeII(R = 0.05, T1 = 0.3, T2 = 0.1, τ_max = 1.0, τ_min = 0.1)
     @test typeII_tg isa PowerSystems.DynamicComponent
+
+    gast_tg = GasTG(
+        R = 0.05,
+        T1 = 0.40,
+        T2 = 0.10,
+        T3 = 2.0,
+        AT = 1.0,
+        Kt = 2.0,
+        V_lim = (0.417, 0.8),
+        D_turb = 0.0,
+    )
+    @test gast_tg isa PowerSystems.DynamicComponent
 end
+
 ################ AVR Data #####################
 @testset "Dynamic AVR Constructors" begin
     proportional_avr = AVRSimple(Kv = 5000.0)
