@@ -682,6 +682,7 @@ function get_contributing_device_mapping(sys::System)
         uuid = IS.get_uuid(service)
         devices = ServiceContributingDevices(service, Vector{Device}())
         for device in get_components(Device, sys)
+            !supports_services(device) && continue
             for _service in get_services(device)
                 if IS.get_uuid(_service) == uuid
                     push!(devices.contributing_devices, device)
