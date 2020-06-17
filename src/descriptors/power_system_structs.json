@@ -3041,10 +3041,10 @@
         {
           "name": "Te",
           "comment": "Exciter field time constant in s",
-          "null_value": 0,
+          "null_value": "eps()",
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
+            "min": "eps()",
             "max": null
           }
         },
@@ -3061,10 +3061,10 @@
         {
           "name": "Tf",
           "comment": "Rate feedback time constant",
-          "null_value": 0,
+          "null_value": "eps()",
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
+            "min": "eps()",
             "max": null
           }
         },
@@ -3126,6 +3126,13 @@
             "min": 0,
             "max": null
           }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
         },
         {
           "name": "ext",
@@ -3217,10 +3224,10 @@
         {
           "name": "Te",
           "comment": "Exciter field time constant in s",
-          "null_value": 0,
+          "null_value": "eps()",
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
+            "min": "eps()",
             "max": null
           }
         },
@@ -3237,10 +3244,10 @@
         {
           "name": "Tf",
           "comment": "Rate feedback time constant",
-          "null_value": 0,
+          "null_value": "eps()",
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
+            "min": "eps()",
             "max": null
           }
         },
@@ -3298,6 +3305,13 @@
           }
         },
         {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
@@ -3329,7 +3343,7 @@
       "docstring": "This excitation system supplies power through a transformer from the generator terminals and its regulated by a controlled rectifier (via thyristors).\nParameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF",
       "fields": [
         {
-          "name": "UEL_inputs",
+          "name": "UEL_flags",
           "comment": "Code input for Underexcitization limiter (UEL) entry. Not supported.",
           "null_value": 1,
           "data_type": "Int64",
@@ -3339,13 +3353,13 @@
           }
         },
         {
-          "name": "PSS_inputs",
+          "name": "PSS_flags",
           "comment": "Code input for Power System Stabilizer (PSS) or (VOS) entry.",
           "null_value": 1,
           "data_type": "Int64",
           "valid_range": {
             "min": 1,
-            "max": 3
+            "max": 2
           }
         },
         {
@@ -3461,10 +3475,10 @@
         {
           "name": "Tf",
           "comment": "Rate feedback time constant in s",
-          "null_value": 0,
+          "null_value": "eps()",
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
+            "min": "eps()",
             "max": null
           }
         },

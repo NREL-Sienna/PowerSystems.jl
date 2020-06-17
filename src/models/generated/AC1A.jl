@@ -19,6 +19,7 @@ This file is auto-generated. Do not edit.
         Se::Tuple{Float64, Float64}
         Vr_lim::Tuple{Float64, Float64}
         V_ref::Float64
+        saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -36,9 +37,9 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1A in PSSE and PSL
 - `Ka::Float64`: Regulator output gain, validation range: (0, nothing)
 - `Ta::Float64`: Regulator output time constant in s, validation range: (0, nothing)
 - `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
-- `Te::Float64`: Exciter field time constant in s, validation range: (0, nothing)
+- `Te::Float64`: Exciter field time constant in s, validation range: (&quot;eps()&quot;, nothing)
 - `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: (0, nothing)
-- `Tf::Float64`: Rate feedback time constant, validation range: (0, nothing)
+- `Tf::Float64`: Rate feedback time constant, validation range: (&quot;eps()&quot;, nothing)
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: (0, nothing)
 - `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: (0, nothing)
 - `Ke::Float64`: Exciter field proportional constant, validation range: (0, nothing)
@@ -46,6 +47,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1A in PSSE and PSL
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage: (Vr_min, Vr_max)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vm: Sensed terminal voltage,
@@ -89,6 +91,8 @@ mutable struct AC1A <: AVR
     Vr_lim::Tuple{Float64, Float64}
     "Reference Voltage Set-point"
     V_ref::Float64
+    "Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x"
+    saturation_coeffs::Tuple{Float64, Float64}
     ext::Dict{String, Any}
     "The states are:
 	Vm: Sensed terminal voltage,
@@ -102,12 +106,12 @@ mutable struct AC1A <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, ext=Dict{String, Any}(), )
-    AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, InfrastructureSystemsInternal(), )
+function AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
+    AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, InfrastructureSystemsInternal(), )
 end
 
-function AC1A(; Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, ext=Dict{String, Any}(), )
-    AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, ext, )
+function AC1A(; Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
+    AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, saturation_coeffs, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -119,9 +123,9 @@ function AC1A(::Nothing)
         Ka=0,
         Ta=0,
         Va_lim=(0.0, 0.0),
-        Te=0,
+        Te=eps(),
         Kf=0,
-        Tf=0,
+        Tf=eps(),
         Kc=0,
         Kd=0,
         Ke=0,
@@ -129,6 +133,7 @@ function AC1A(::Nothing)
         Se=(0.0, 0.0),
         Vr_lim=(0.0, 0.0),
         V_ref=0,
+        saturation_coeffs=(0.0, 0.0),
         ext=Dict{String, Any}(),
     )
 end
@@ -165,6 +170,8 @@ get_Se(value::AC1A) = value.Se
 get_Vr_lim(value::AC1A) = value.Vr_lim
 """Get AC1A V_ref."""
 get_V_ref(value::AC1A) = value.V_ref
+"""Get AC1A saturation_coeffs."""
+get_saturation_coeffs(value::AC1A) = value.saturation_coeffs
 """Get AC1A ext."""
 get_ext(value::AC1A) = value.ext
 """Get AC1A states."""
@@ -206,6 +213,8 @@ set_Se!(value::AC1A, val::Tuple{Float64, Float64}) = value.Se = val
 set_Vr_lim!(value::AC1A, val::Tuple{Float64, Float64}) = value.Vr_lim = val
 """Set AC1A V_ref."""
 set_V_ref!(value::AC1A, val::Float64) = value.V_ref = val
+"""Set AC1A saturation_coeffs."""
+set_saturation_coeffs!(value::AC1A, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
 """Set AC1A ext."""
 set_ext!(value::AC1A, val::Dict{String, Any}) = value.ext = val
 """Set AC1A states."""

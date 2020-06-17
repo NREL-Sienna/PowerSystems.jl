@@ -3,8 +3,8 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct ST1A <: AVR
-        UEL_inputs::Int64
-        PSS_inputs::Int64
+        UEL_flags::Int64
+        PSS_flags::Int64
         Tr::Float64
         Vi_lim::Tuple{Float64, Float64}
         Tc::Float64
@@ -31,8 +31,8 @@ This excitation system supplies power through a transformer from the generator t
 Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF
 
 # Arguments
-- `UEL_inputs::Int64`: Code input for Underexcitization limiter (UEL) entry. Not supported., validation range: (1, 3)
-- `PSS_inputs::Int64`: Code input for Power System Stabilizer (PSS) or (VOS) entry., validation range: (1, 3)
+- `UEL_flags::Int64`: Code input for Underexcitization limiter (UEL) entry. Not supported., validation range: (1, 3)
+- `PSS_flags::Int64`: Code input for Power System Stabilizer (PSS) or (VOS) entry., validation range: (1, 2)
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: (0, nothing)
 - `Vi_lim::Tuple{Float64, Float64}`: Voltage error limits (regulator input) (Vi_min, Vi_max)
 - `Tc::Float64`: First regulator denominator (lead) time constant in s, validation range: (0, nothing)
@@ -45,7 +45,7 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter output (Vr_min, Vr_max)
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: (0, nothing)
 - `Kf::Float64`: Rate feedback gain, validation range: (0, nothing)
-- `Tf::Float64`: Rate feedback time constant in s, validation range: (0, nothing)
+- `Tf::Float64`: Rate feedback time constant in s, validation range: (&quot;eps()&quot;, nothing)
 - `K_lr::Float64`: Exciter output current limiter gain, validation range: (0, nothing)
 - `I_lr::Float64`: Exciter output current limit reference, validation range: (0, nothing)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
@@ -61,9 +61,9 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 """
 mutable struct ST1A <: AVR
     "Code input for Underexcitization limiter (UEL) entry. Not supported."
-    UEL_inputs::Int64
+    UEL_flags::Int64
     "Code input for Power System Stabilizer (PSS) or (VOS) entry."
-    PSS_inputs::Int64
+    PSS_flags::Int64
     "Regulator input filter time constant in s"
     Tr::Float64
     "Voltage error limits (regulator input) (Vi_min, Vi_max)"
@@ -109,19 +109,19 @@ mutable struct ST1A <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function ST1A(UEL_inputs, PSS_inputs, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref=1.0, ext=Dict{String, Any}(), )
-    ST1A(UEL_inputs, PSS_inputs, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref, ext, [:Vm, :Vr1, :Vr2, :Va, :Vr3], 5, InfrastructureSystemsInternal(), )
+function ST1A(UEL_flags, PSS_flags, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref=1.0, ext=Dict{String, Any}(), )
+    ST1A(UEL_flags, PSS_flags, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref, ext, [:Vm, :Vr1, :Vr2, :Va, :Vr3], 5, InfrastructureSystemsInternal(), )
 end
 
-function ST1A(; UEL_inputs, PSS_inputs, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref=1.0, ext=Dict{String, Any}(), )
-    ST1A(UEL_inputs, PSS_inputs, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref, ext, )
+function ST1A(; UEL_flags, PSS_flags, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref=1.0, ext=Dict{String, Any}(), )
+    ST1A(UEL_flags, PSS_flags, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
 function ST1A(::Nothing)
     ST1A(;
-        UEL_inputs=1,
-        PSS_inputs=1,
+        UEL_flags=1,
+        PSS_flags=1,
         Tr=0,
         Vi_lim=(0.0, 0.0),
         Tc=0,
@@ -134,7 +134,7 @@ function ST1A(::Nothing)
         Vr_lim=(0.0, 0.0),
         Kc=0,
         Kf=0,
-        Tf=0,
+        Tf=eps(),
         K_lr=0,
         I_lr=0,
         V_ref=0,
@@ -142,10 +142,10 @@ function ST1A(::Nothing)
     )
 end
 
-"""Get ST1A UEL_inputs."""
-get_UEL_inputs(value::ST1A) = value.UEL_inputs
-"""Get ST1A PSS_inputs."""
-get_PSS_inputs(value::ST1A) = value.PSS_inputs
+"""Get ST1A UEL_flags."""
+get_UEL_flags(value::ST1A) = value.UEL_flags
+"""Get ST1A PSS_flags."""
+get_PSS_flags(value::ST1A) = value.PSS_flags
 """Get ST1A Tr."""
 get_Tr(value::ST1A) = value.Tr
 """Get ST1A Vi_lim."""
@@ -187,10 +187,10 @@ get_n_states(value::ST1A) = value.n_states
 """Get ST1A internal."""
 get_internal(value::ST1A) = value.internal
 
-"""Set ST1A UEL_inputs."""
-set_UEL_inputs!(value::ST1A, val::Int64) = value.UEL_inputs = val
-"""Set ST1A PSS_inputs."""
-set_PSS_inputs!(value::ST1A, val::Int64) = value.PSS_inputs = val
+"""Set ST1A UEL_flags."""
+set_UEL_flags!(value::ST1A, val::Int64) = value.UEL_flags = val
+"""Set ST1A PSS_flags."""
+set_PSS_flags!(value::ST1A, val::Int64) = value.PSS_flags = val
 """Set ST1A Tr."""
 set_Tr!(value::ST1A, val::Float64) = value.Tr = val
 """Set ST1A Vi_lim."""
