@@ -103,7 +103,7 @@ export get_L_d
 export get_L_f1d
 export get_L_ff
 export get_L_q
-export get_PSS_inputs
+export get_PSS_flags
 export get_P_max
 export get_P_min
 export get_P_ref
@@ -131,7 +131,7 @@ export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
 export get_Ts
-export get_UEL_inputs
+export get_UEL_flags
 export get_V_pss
 export get_V_ref
 export get_Va_lim
@@ -235,6 +235,7 @@ export get_rf
 export get_rg
 export get_rv
 export get_s_rated
+export get_saturation_coeffs
 export get_services
 export get_shutdn
 export get_start_time_limits
@@ -303,7 +304,7 @@ export set_L_d!
 export set_L_f1d!
 export set_L_ff!
 export set_L_q!
-export set_PSS_inputs!
+export set_PSS_flags!
 export set_P_max!
 export set_P_min!
 export set_P_ref!
@@ -331,7 +332,7 @@ export set_Tq0_p!
 export set_Tq0_pp!
 export set_Tr!
 export set_Ts!
-export set_UEL_inputs!
+export set_UEL_flags!
 export set_V_pss!
 export set_V_ref!
 export set_Va_lim!
@@ -435,6 +436,7 @@ export set_rf!
 export set_rg!
 export set_rv!
 export set_s_rated!
+export set_saturation_coeffs!
 export set_services!
 export set_shutdn!
 export set_start_time_limits!
