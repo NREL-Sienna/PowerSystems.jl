@@ -49,6 +49,7 @@ include("PSSSimple.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
+include("GasTG.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
 include("AverageConverter.jl")
@@ -61,6 +62,7 @@ include("ReactivePowerDroop.jl")
 include("CurrentControl.jl")
 include("Source.jl")
 
+export get_AT
 export get_Ae
 export get_Be
 export get_D
@@ -72,6 +74,7 @@ export get_D_ex
 export get_D_hp
 export get_D_ip
 export get_D_lp
+export get_D_turb
 export get_E_sat
 export get_H
 export get_H_ex
@@ -94,6 +97,7 @@ export get_Kc
 export get_Kd
 export get_Ke
 export get_Kf
+export get_Kt
 export get_Kv
 export get_L_1d
 export get_L_1q
@@ -103,6 +107,7 @@ export get_L_d
 export get_L_f1d
 export get_L_ff
 export get_L_q
+export get_Load_ref
 export get_PSS_flags
 export get_P_max
 export get_P_min
@@ -132,6 +137,7 @@ export get_Tq0_pp
 export get_Tr
 export get_Ts
 export get_UEL_flags
+export get_V_lim
 export get_V_pss
 export get_V_ref
 export get_Va_lim
@@ -262,6 +268,7 @@ export get_τ_min
 export get_ω_lp
 export get_ωad
 export get_ωf
+export set_AT!
 export set_Ae!
 export set_Be!
 export set_D!
@@ -273,6 +280,7 @@ export set_D_ex!
 export set_D_hp!
 export set_D_ip!
 export set_D_lp!
+export set_D_turb!
 export set_E_sat!
 export set_H!
 export set_H_ex!
@@ -295,6 +303,7 @@ export set_Kc!
 export set_Kd!
 export set_Ke!
 export set_Kf!
+export set_Kt!
 export set_Kv!
 export set_L_1d!
 export set_L_1q!
@@ -304,6 +313,7 @@ export set_L_d!
 export set_L_f1d!
 export set_L_ff!
 export set_L_q!
+export set_Load_ref!
 export set_PSS_flags!
 export set_P_max!
 export set_P_min!
@@ -333,6 +343,7 @@ export set_Tq0_pp!
 export set_Tr!
 export set_Ts!
 export set_UEL_flags!
+export set_V_lim!
 export set_V_pss!
 export set_V_ref!
 export set_Va_lim!
