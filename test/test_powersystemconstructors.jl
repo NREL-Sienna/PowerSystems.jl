@@ -139,7 +139,7 @@ end
                 _func! = getfield(PowerSystems, Symbol("set_" * string(field_name) * "!"))
             end
             val = func(obj)
-            if !((ps_type in types_to_skip_set) & (_func! in func_to_skip_set))
+            if !((ps_type in types_to_skip_set) && (_func! in func_to_skip_set))
                 _func!(obj, val)
             end
             @test val isa field_type
