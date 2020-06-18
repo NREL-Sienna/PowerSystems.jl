@@ -318,3 +318,17 @@ get_saturation_coeffs(value::SalientPoleQuadratic) = value.saturation_coeffs
 get_saturation_coeffs(value::SalientPoleExponential) = value.saturation_coeffs
 get_saturation_coeffs(value::RoundRotorQuadratic) = value.saturation_coeffs
 get_saturation_coeffs(value::RoundRotorExponential) = value.saturation_coeffs
+
+set_base_machine!(value::SalientPoleQuadratic, val::SalientPoleMachine) = value.base_machine
+set_base_machine!(value::SalientPoleExponential, val::SalientPoleMachine) =
+    value.base_machine
+set_base_machine!(value::RoundRotorQuadratic, val::RoundRotorMachine) = value.base_machine
+set_base_machine!(value::RoundRotorExponential, val::RoundRotorMachine) = value.base_machine
+set_saturation_coeffs!(value::SalientPoleQuadratic, val::Tuple{Float64, Float64}) =
+    value.saturation_coeffs
+set_saturation_coeffs!(value::SalientPoleExponential, val::Tuple{Float64, Float64}) =
+    value.saturation_coeffs
+set_saturation_coeffs!(value::RoundRotorQuadratic, val::Tuple{Float64, Float64}) =
+    value.saturation_coeffs
+set_saturation_coeffs!(value::RoundRotorExponential, val::Tuple{Float64, Float64}) =
+    value.saturation_coeffs

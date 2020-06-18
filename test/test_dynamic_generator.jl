@@ -230,7 +230,20 @@ end
 
     typeII_tg = TGTypeII(R = 0.05, T1 = 0.3, T2 = 0.1, τ_max = 1.0, τ_min = 0.1)
     @test typeII_tg isa PowerSystems.DynamicComponent
+
+    gast_tg = GasTG(
+        R = 0.05,
+        T1 = 0.40,
+        T2 = 0.10,
+        T3 = 2.0,
+        AT = 1.0,
+        Kt = 2.0,
+        V_lim = (0.417, 0.8),
+        D_turb = 0.0,
+    )
+    @test gast_tg isa PowerSystems.DynamicComponent
 end
+
 ################ AVR Data #####################
 @testset "Dynamic AVR Constructors" begin
     proportional_avr = AVRSimple(Kv = 5000.0)
@@ -253,6 +266,64 @@ end
         Be = 0.9,
     )
     @test typeI_avr isa PowerSystems.DynamicComponent
+
+    ac1a_avr = AC1A(
+        Tr = 0.0,
+        Tb = 0.0,
+        Tc = 0.0,
+        Ka = 200,
+        Ta = 0.5,
+        Va_lim = (-7.0, 7.0),
+        Te = 1.333,
+        Kf = 0.02,
+        Tf = 0.8,
+        Kc = 0.0,
+        Kd = 0.0,
+        Ke = 1.0,
+        E_sat = (0.0, 0.0),
+        Se = (0.0, 0.0),
+        Vr_lim = (-99.0, 99.0),
+    )
+    @test ac1a_avr isa PowerSystems.DynamicComponent
+
+    mod_ac1a_avr = ModifiedAC1A(
+        Tr = 0.0,
+        Tb = 0.0,
+        Tc = 0.0,
+        Ka = 400,
+        Ta = 0.5,
+        Vr_lim = (-5.2477, 5.2477),
+        Te = 1.1,
+        Kf = 0.035,
+        Tf = 1.0,
+        Kc = 0.2469,
+        Kd = 0.5,
+        Ke = 1.0,
+        E_sat = (2.707, 3.6102),
+        Se = (0.0366, 0.1831),
+    )
+    @test mod_ac1a_avr isa PowerSystems.DynamicComponent
+
+    st1a_avr = ST1A(
+        UEL_flags = 1,
+        PSS_flags = 1,
+        Tr = 0.0,
+        Vi_lim = (-99.0, 99.0),
+        Tc = 2.5,
+        Tb = 13.25,
+        Tc1 = 0.0,
+        Tb1 = 0.0,
+        Ka = 200.0,
+        Ta = 0.1,
+        Va_lim = (-9.5, 9.5),
+        Vr_lim = (-9.5, 9.5),
+        Kc = 0.0,
+        Kf = 0.0,
+        Tf = 1.0,
+        K_lr = 0.0,
+        I_lr = 999.0,
+    )
+    @test st1a_avr isa PowerSystems.DynamicComponent
 
     gen2_avr_benchmark = AVRTypeII(
         K0 = 20.0,
@@ -379,6 +450,7 @@ end
     #Rule: Can't add saturation if Se(1.2) <= Se(1.0)
     @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.5, 0.1))
     @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.1, 0.1))
+    @test_throws IS.ConflictingInputsError PSY.get_avr_saturation((0.2, 0.1), (0.1, 0.1))
 
     @test length(collect(get_dynamic_components(Gen2AVR))) == 5
 end

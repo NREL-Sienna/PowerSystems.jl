@@ -31,6 +31,9 @@ include("AVRFixed.jl")
 include("AVRSimple.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
+include("AC1A.jl")
+include("ModifiedAC1A.jl")
+include("ST1A.jl")
 include("BaseMachine.jl")
 include("RoundRotorMachine.jl")
 include("SalientPoleMachine.jl")
@@ -46,6 +49,7 @@ include("PSSSimple.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
+include("GasTG.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
 include("AverageConverter.jl")
@@ -58,6 +62,7 @@ include("ReactivePowerDroop.jl")
 include("CurrentControl.jl")
 include("Source.jl")
 
+export get_AT
 export get_Ae
 export get_Be
 export get_D
@@ -69,11 +74,14 @@ export get_D_ex
 export get_D_hp
 export get_D_ip
 export get_D_lp
+export get_D_turb
+export get_E_sat
 export get_H
 export get_H_ex
 export get_H_hp
 export get_H_ip
 export get_H_lp
+export get_I_lr
 export get_K0
 export get_K_d
 export get_K_ex
@@ -81,11 +89,15 @@ export get_K_hp
 export get_K_i
 export get_K_ip
 export get_K_lp
+export get_K_lr
 export get_K_p
 export get_K_ω
 export get_Ka
+export get_Kc
+export get_Kd
 export get_Ke
 export get_Kf
+export get_Kt
 export get_Kv
 export get_L_1d
 export get_L_1q
@@ -95,6 +107,8 @@ export get_L_d
 export get_L_f1d
 export get_L_ff
 export get_L_q
+export get_Load_ref
+export get_PSS_flags
 export get_P_max
 export get_P_min
 export get_P_ref
@@ -110,7 +124,10 @@ export get_T4
 export get_T5
 export get_T_AA
 export get_Ta
+export get_Tb
+export get_Tb1
 export get_Tc
+export get_Tc1
 export get_Td0_p
 export get_Td0_pp
 export get_Te
@@ -119,9 +136,14 @@ export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
 export get_Ts
+export get_UEL_flags
+export get_V_lim
 export get_V_pss
 export get_V_ref
+export get_Va_lim
 export get_Vf
+export get_Vi_lim
+export get_Vr_lim
 export get_Vr_max
 export get_Vr_min
 export get_X_th
@@ -219,6 +241,7 @@ export get_rf
 export get_rg
 export get_rv
 export get_s_rated
+export get_saturation_coeffs
 export get_services
 export get_shutdn
 export get_start_time_limits
@@ -245,6 +268,7 @@ export get_τ_min
 export get_ω_lp
 export get_ωad
 export get_ωf
+export set_AT!
 export set_Ae!
 export set_Be!
 export set_D!
@@ -256,11 +280,14 @@ export set_D_ex!
 export set_D_hp!
 export set_D_ip!
 export set_D_lp!
+export set_D_turb!
+export set_E_sat!
 export set_H!
 export set_H_ex!
 export set_H_hp!
 export set_H_ip!
 export set_H_lp!
+export set_I_lr!
 export set_K0!
 export set_K_d!
 export set_K_ex!
@@ -268,11 +295,15 @@ export set_K_hp!
 export set_K_i!
 export set_K_ip!
 export set_K_lp!
+export set_K_lr!
 export set_K_p!
 export set_K_ω!
 export set_Ka!
+export set_Kc!
+export set_Kd!
 export set_Ke!
 export set_Kf!
+export set_Kt!
 export set_Kv!
 export set_L_1d!
 export set_L_1q!
@@ -282,6 +313,8 @@ export set_L_d!
 export set_L_f1d!
 export set_L_ff!
 export set_L_q!
+export set_Load_ref!
+export set_PSS_flags!
 export set_P_max!
 export set_P_min!
 export set_P_ref!
@@ -297,7 +330,10 @@ export set_T4!
 export set_T5!
 export set_T_AA!
 export set_Ta!
+export set_Tb!
+export set_Tb1!
 export set_Tc!
+export set_Tc1!
 export set_Td0_p!
 export set_Td0_pp!
 export set_Te!
@@ -306,9 +342,14 @@ export set_Tq0_p!
 export set_Tq0_pp!
 export set_Tr!
 export set_Ts!
+export set_UEL_flags!
+export set_V_lim!
 export set_V_pss!
 export set_V_ref!
+export set_Va_lim!
 export set_Vf!
+export set_Vi_lim!
+export set_Vr_lim!
 export set_Vr_max!
 export set_Vr_min!
 export set_X_th!
@@ -406,6 +447,7 @@ export set_rf!
 export set_rg!
 export set_rv!
 export set_s_rated!
+export set_saturation_coeffs!
 export set_services!
 export set_shutdn!
 export set_start_time_limits!

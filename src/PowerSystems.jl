@@ -72,6 +72,9 @@ export AVRFixed
 export AVRSimple
 export AVRTypeI
 export AVRTypeII
+export AC1A
+export ModifiedAC1A
+export ST1A
 
 #Machine Exports
 export Machine
@@ -102,6 +105,7 @@ export FiveMassShaft
 #TG Exports
 export TurbineGov
 export TGFixed
+export GasTG
 export TGTypeI
 export TGTypeII
 
