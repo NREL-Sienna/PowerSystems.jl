@@ -62,52 +62,55 @@ function read_yaml(file)
     end
 end
 
-const supported_types = ["GENROU", "GENROE", "GENSAL", "GENSAE"]
 
 function parse_dyr_components(data::Dict, yaml_file::String)
     yaml_mapping = read_yaml(yaml_file)
-    type_mapping = yaml_mapping["Machine"][1]
     param_mapping = yaml_mapping["parameter_mapping"][1]
 
     dic = Dict{Int64, Any}()
     #sizehint!(dic, 435)
-    component_table = Dict(
-        PSY.Machine => 1,
-        PSY.Shaft => 2,
-        PSY.AVR => 3,
-        PSY.TurbineGov => 4,
-        PSY.PSS => 5,
-    )
+    component_table = Dict("Machine" => 1,
+         "Shaft" => 2,
+         "AVR" => 3,
+         "TurbineGov" => 4,
+         "PSS" => 5,
+        )
     for (k, v) in data
-        bus_dict = Dict{Int64, Any}()
-        for (key, val) in v
-            temp = get!(bus_dict, key[2], Vector{Any}(undef, 5))
-            #TO DO: Only create if name is in supported_types
-            if key[1] in supported_types
-                _s = type_mapping[key[1]]
-                if occursin("Shaft", _s)
-                    _struct_as_str = lstrip.(strip.(split(_s, ','), ['(', ')']))
-                    temp[2] = make_shaft(param_mapping[_struct_as_str[2]], val)
-                    struct_as_str = _struct_as_str[1]
-                else
-                    struct_as_str = _s
+        bus_dict = Dict{Int64, Any}()    
+        for (componentID, componentValues) in v
+            #Fill array of 5 components per generator
+            temp = get!(bus_dict, componentID[2], Vector{Any}(undef, 5))
+            #Only create if name is in supported_types
+            if componentID[1] in keys(yaml_mapping)
+                components_dict = yaml_mapping[componentID[1]][1]
+                for (gen_field, struct_as_str) in components_dict
+                    params_ix = param_map[struct_as_str]
+                     if occursin("Shaft", struct_as_str)
+                        temp[2] = make_shaft(params_ix, componentValues)
+                        continue
+                     end
+                    component_constructor = (args...) -> InteractiveUtils.getfield(
+                                        PowerSystems, Symbol(struct_as_str))(args...)
+                    struct_args = populate_args(params_ix, componentValues)
+                    temp[component_table[gen_field]] = component_constructor(struct_args...)
                 end
-                param_map = param_mapping[struct_as_str]
-                component_constructor =
-                    (args...) ->
-                        InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(args...)
-
-                struct_args = populate_args(param_map, val)
-                aux = component_constructor(struct_args...)
-                temp[component_table[supertype(typeof(aux))]] = aux
+            #else
+            #    @warn "$(componentID[1]) not supported yet"                
+            end
+            for va in values(bus_dict)
+               !isassigned(va, component_table["AVR"]) && (va[component_table["AVR"]] = PSY.AVRFixed(1.0))
+                !isassigned(va, component_table["TurbineGov"]) && (va[component_table["TurbineGov"]] = PSY.TGFixed(1.0))
+               !isassigned(va, component_table["PSS"]) && (va[component_table["PSS"]] = PSY.PSSFixed(0.0))
             end
         end
-        for (ka, va) in bus_dict
-            !isassigned(va, 3) && (va[3] = PSY.AVRFixed(1.0))
-            !isassigned(va, 4) && (va[4] = PSY.TGFixed(1.0))
-            !isassigned(va, 5) && (va[5] = PSY.PSSFixed(0.0))
+        temp2 = Dict()
+        for (ix, g) in bus_dict
+            temp2[ix] = DynamicGenerator(
+                    ThermalStandard(nothing),
+                    1.0,
+                    g...)
         end
-        dic[k] = bus_dict
+        dic[k] = temp2
     end
     return dic
 end
