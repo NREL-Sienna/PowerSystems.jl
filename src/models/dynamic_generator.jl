@@ -30,13 +30,18 @@ function DynamicGenerator(
 ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
 
     n_states = (
-        machine.n_states +
-        shaft.n_states +
-        avr.n_states +
-        prime_mover.n_states +
-        pss.n_states
+        get_n_states(machine) +
+        get_n_states(shaft) +
+        get_n_states(avr) +
+        get_n_states(prime_mover) +
+        get_n_states(pss)
     )
-    states = vcat(machine.states, shaft.states, avr.states, prime_mover.states, pss.states)
+    states = vcat(get_states(machine),
+                get_states(shaft),
+                get_states(avr),
+                get_states(prime_mover),
+                get_states(pss)
+            )
 
     return DynamicGenerator{M, S, A, TG, P}(
         static_injector,
