@@ -1,10 +1,32 @@
-Machine:
+GENROU:
 - {
-  GENROU: '(RoundRotorQuadratic, RoundRotorShaft)',
-  GENSAL: '(SalientPoleQuadratic, SalientPoleShaft)',
-  GENROE: '(RoundRotorExponential, RoundRotorShaft)',
-  GENSAE: '(SalientPoleExponential, SalientPoleShaft)',
+  Machine: RoundRotorQuadratic,
+  Shaft: RoundRotorShaft
 }
+
+GENSAL:
+- { 
+  Machine: SalientPoleQuadratic, 
+  Shaft: SalientPoleShaft
+}
+
+GENROE:
+- {
+  Machine: RoundRotorExponential,
+  Shaft: RoundRotorShaft
+}
+
+GENSAE:
+- { 
+  Machine: SalientPoleExponential, 
+  Shaft: SalientPoleShaft
+}
+
+ESAC1:
+- {
+  AVR: AC1A
+}
+
 
 parameter_mapping:
 - {
