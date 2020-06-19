@@ -55,7 +55,7 @@ function get_slopes(vc::Vector{NTuple{2, Float64}})
     previous = (0.0, 0.0)
     for (ix, component) in enumerate(vc)
         if ix == 1
-            slopes[ix] = component[1] / component[2]
+            slopes[ix] = component[2] == 0.0 ? 0.0 : component[1] / component[2] # if the cost component starts at the y-origin make the first slope 0.0
             previous = component
             continue
         end
