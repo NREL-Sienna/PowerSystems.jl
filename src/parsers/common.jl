@@ -1,6 +1,9 @@
 const GENERATOR_MAPPING_FILE =
     joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping.yaml")
 
+const PSSE_DYR_MAPPING_FILE = 
+    joinpath(dirname(pathof(PowerSystems)), "parsers", "psse_dynamic_mapping.yaml")
+
 const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels.ThermalFuel))
 merge!(
     STRING2FUEL,
