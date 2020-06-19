@@ -57,14 +57,10 @@ function parse_dyr_components(data::Dict)
 
     dic = Dict{Int64, Any}()
     #sizehint!(dic, 435)
-    component_table = Dict("Machine" => 1,
-         "Shaft" => 2,
-         "AVR" => 3,
-         "TurbineGov" => 4,
-         "PSS" => 5,
-        )
+    component_table =
+        Dict("Machine" => 1, "Shaft" => 2, "AVR" => 3, "TurbineGov" => 4, "PSS" => 5)
     for (k, v) in data
-        bus_dict = Dict{Int64, Any}()    
+        bus_dict = Dict{Int64, Any}()
         for (componentID, componentValues) in v
             #Fill array of 5 components per generator
             temp = get!(bus_dict, componentID[2], Vector{Any}(undef, 5))
@@ -76,22 +72,26 @@ function parse_dyr_components(data::Dict)
                     #Get the parameter indices w/r to componentValues
                     params_ix = param_map[struct_as_str]
                     #Construct Shaft if it appears
-                     if occursin("Shaft", struct_as_str)
+                    if occursin("Shaft", struct_as_str)
                         temp[2] = make_shaft(params_ix, componentValues)
                         continue
-                     end
+                    end
                     #Construct Components
-                    component_constructor = (args...) -> InteractiveUtils.getfield(
-                                        PowerSystems, Symbol(struct_as_str))(args...)
+                    component_constructor =
+                        (args...) ->
+                            InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(args...)
                     struct_args = populate_args(params_ix, componentValues)
                     temp[component_table[gen_field]] = component_constructor(struct_args...)
-                end               
+                end
             end
             #Assign generic components if there were not provided in Dynamic Data
             for va in values(bus_dict)
-                !isassigned(va, component_table["AVR"]) && (va[component_table["AVR"]] = AVRFixed(1.0))
-                !isassigned(va, component_table["TurbineGov"]) && (va[component_table["TurbineGov"]] = TGFixed(1.0))
-                !isassigned(va, component_table["PSS"]) && (va[component_table["PSS"]] = PSSFixed(0.0))
+                !isassigned(va, component_table["AVR"]) &&
+                    (va[component_table["AVR"]] = AVRFixed(1.0))
+                !isassigned(va, component_table["TurbineGov"]) &&
+                    (va[component_table["TurbineGov"]] = TGFixed(1.0))
+                !isassigned(va, component_table["PSS"]) &&
+                    (va[component_table["PSS"]] = PSSFixed(0.0))
             end
         end
         #Store dictionary of components in a dictionary indexed by bus
@@ -114,19 +114,14 @@ end
 function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
     for g in get_components(ThermalStandard, sys)
         _num = get_number(get_bus(g))
-        _name = get_name(g) 
+        _name = get_name(g)
         _id = parse(Int64, split(_name, "-")[end])
         temp_dict = get(bus_dict_gen, _num, nothing)
         if isnothing(temp_dict)
-             @warn "Generator at bus $(_num) not found in DynData"
-         else
-             dyn_gen = DynamicGenerator(
-                 g,
-                 1.0,
-                 temp_dict[_id]...
-             )
-             add_component!(sys, dyn_gen)
+            @warn "Generator at bus $(_num) not found in DynData"
+        else
+            dyn_gen = DynamicGenerator(g, 1.0, temp_dict[_id]...)
+            add_component!(sys, dyn_gen)
         end
     end
 end
-

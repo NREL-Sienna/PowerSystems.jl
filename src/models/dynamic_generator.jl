@@ -36,12 +36,13 @@ function DynamicGenerator(
         get_n_states(prime_mover) +
         get_n_states(pss)
     )
-    states = vcat(get_states(machine),
-                get_states(shaft),
-                get_states(avr),
-                get_states(prime_mover),
-                get_states(pss)
-            )
+    states = vcat(
+        get_states(machine),
+        get_states(shaft),
+        get_states(avr),
+        get_states(prime_mover),
+        get_states(pss),
+    )
 
     return DynamicGenerator{M, S, A, TG, P}(
         static_injector,
