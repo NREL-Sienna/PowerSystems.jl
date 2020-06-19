@@ -405,13 +405,19 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
             _get_name = _get_pm_dict_name
         elseif haskey(pm_gen, "source_id")
             _get_name =
-                d -> strip(
-                    string(d["source_id"][1]) *
-                    "-" *
-                    string(d["source_id"][2]) *
-                    "-" *
-                    string(d["index"]),
-                )
+                d -> begin
+                    if length(d["source_id"]) <= 2
+                        strip(string(d["source_id"][1]) * "-" * string(d["source_id"][2]))
+                    else
+                        strip(
+                            string(d["source_id"][1]) *
+                            "-" *
+                            string(d["source_id"][2]) *
+                            "-" *
+                            string(d["source_id"][3]),
+                        )
+                    end
+                end
         end
 
         gen_name = _get_name(pm_gen)
