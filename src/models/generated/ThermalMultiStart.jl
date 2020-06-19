@@ -230,6 +230,8 @@ set_services!(value::ThermalMultiStart, val::Vector{Service}) = value.services =
 set_time_at_status!(value::ThermalMultiStart, val::Float64) = value.time_at_status = val
 """Set ThermalMultiStart must_run."""
 set_must_run!(value::ThermalMultiStart, val::Bool) = value.must_run = val
+"""Set ThermalMultiStart dynamic_injector."""
+set_dynamic_injector!(value::ThermalMultiStart, val::Union{Nothing, DynamicInjection}) = value.dynamic_injector = val
 """Set ThermalMultiStart ext."""
 set_ext!(value::ThermalMultiStart, val::Dict{String, Any}) = value.ext = val
 

@@ -122,8 +122,6 @@ end
     # If that isn't appropriate for this type, add it to types_to_skip below.
 
     types_to_skip = (System,)
-    types_to_skip_set = (ThermalMultiStart,)
-    func_to_skip_set = (PowerSystems.set_dynamic_injector!,)
     for ps_type in IS.get_all_concrete_subtypes(PowerSystemType)
         ps_type in types_to_skip && continue
         obj = ps_type(nothing)
@@ -139,9 +137,7 @@ end
                 _func! = getfield(PowerSystems, Symbol("set_" * string(field_name) * "!"))
             end
             val = func(obj)
-            if !((ps_type in types_to_skip_set) && (_func! in func_to_skip_set))
-                _func!(obj, val)
-            end
+            _func!(obj, val)
             @test val isa field_type
             #Test set function for different cases
             if typeof(val) == Float64 || typeof(val) == Int64
