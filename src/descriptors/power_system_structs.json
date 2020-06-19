@@ -2126,7 +2126,6 @@
                 "data_type": "Union{Nothing, DynamicInjection}",
                 "comment": "corresponding dynamic injection device",
                 "null_value": "nothing",
-                "exclude_setter": true,
                 "default": "nothing"
             },
             {
