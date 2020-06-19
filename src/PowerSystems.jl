@@ -260,6 +260,7 @@ import CSV
 import YAML
 import UUIDs
 import Base.to_index
+import InteractiveUtils
 
 import InfrastructureSystems
 import InfrastructureSystems:
