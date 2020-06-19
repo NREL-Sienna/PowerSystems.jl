@@ -43,29 +43,17 @@ function make_shaft(param_map, val)
     return constructor_shaft(shaft_args...)
 end
 
-function add_dynamics(system::System, file::AbstractString)
-    parsed_values = parse_dyr_file(file)
-    for g in get_components(Generator, system)
-        bus_no = get_number(get_bus(g))
-        for dev in parsed_values(bus_no)
-            dyn_gen = make_generator(dev)
-            set_dynamic_injector!(g, dyn_gen)
-        end
-    end
-    return
+function parse_dyr_components(dyr_file::AbstractString)
+    data = parse_dyr_file(dyr_file)
+    return parse_dyr_components(data)
 end
 
-function read_yaml(file)
-    open(file) do io
-        data = YAML.load(io)
-        return data
+function parse_dyr_components(data::Dict)
+    yaml_mapping = open(PSSE_DYR_MAPPING_FILE) do io
+        aux = YAML.load(io)
+        return aux
     end
-end
-
-
-function parse_dyr_components(data::Dict, yaml_file::String)
-    yaml_mapping = read_yaml(yaml_file)
-    param_mapping = yaml_mapping["parameter_mapping"][1]
+    param_map = yaml_mapping["parameter_mapping"][1]
 
     dic = Dict{Int64, Any}()
     #sizehint!(dic, 435)
@@ -80,43 +68,65 @@ function parse_dyr_components(data::Dict, yaml_file::String)
         for (componentID, componentValues) in v
             #Fill array of 5 components per generator
             temp = get!(bus_dict, componentID[2], Vector{Any}(undef, 5))
-            #Only create if name is in supported_types
+            #Only create if name is in the supported keys in the mapping
             if componentID[1] in keys(yaml_mapping)
+                #Get the component dictionary
                 components_dict = yaml_mapping[componentID[1]][1]
                 for (gen_field, struct_as_str) in components_dict
+                    #Get the parameter indices w/r to componentValues
                     params_ix = param_map[struct_as_str]
+                    #Construct Shaft if it appears
                      if occursin("Shaft", struct_as_str)
                         temp[2] = make_shaft(params_ix, componentValues)
                         continue
                      end
+                    #Construct Components
                     component_constructor = (args...) -> InteractiveUtils.getfield(
                                         PowerSystems, Symbol(struct_as_str))(args...)
                     struct_args = populate_args(params_ix, componentValues)
                     temp[component_table[gen_field]] = component_constructor(struct_args...)
-                end
-            #else
-            #    @warn "$(componentID[1]) not supported yet"                
+                end               
             end
+            #Assign generic components if there were not provided in Dynamic Data
             for va in values(bus_dict)
-               !isassigned(va, component_table["AVR"]) && (va[component_table["AVR"]] = PSY.AVRFixed(1.0))
-                !isassigned(va, component_table["TurbineGov"]) && (va[component_table["TurbineGov"]] = PSY.TGFixed(1.0))
-               !isassigned(va, component_table["PSS"]) && (va[component_table["PSS"]] = PSY.PSSFixed(0.0))
+                !isassigned(va, component_table["AVR"]) && (va[component_table["AVR"]] = AVRFixed(1.0))
+                !isassigned(va, component_table["TurbineGov"]) && (va[component_table["TurbineGov"]] = TGFixed(1.0))
+                !isassigned(va, component_table["PSS"]) && (va[component_table["PSS"]] = PSSFixed(0.0))
             end
         end
-        temp2 = Dict()
-        for (ix, g) in bus_dict
-            temp2[ix] = DynamicGenerator(
-                    ThermalStandard(nothing),
-                    1.0,
-                    g...)
-        end
-        dic[k] = temp2
+        #Store dictionary of components in a dictionary indexed by bus
+        dic[k] = bus_dict
     end
     return dic
 end
 
-function make_generator(Dict)
-    genmap = open(filename) do file
-        YAML.load(file)
+function add_dyn_injectors!(sys_file::AbstractString, dyr_file::AbstractString)
+    sys = System(sys_file)
+    bus_dict_gen = parse_dyr_components(dyr_file)
+    add_dyn_injectors!(sys, bus_dict_gen)
+end
+
+function add_dyn_injectors!(sys::System, dyr_file::AbstractString)
+    bus_dict_gen = parse_dyr_components(dyr_file)
+    add_dyn_injectors!(sys, bus_dict_gen)
+end
+
+function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
+    for g in get_components(ThermalStandard, sys)
+        _num = get_number(get_bus(g))
+        _name = get_name(g) 
+        _id = parse(Int64, split(_name, "-")[end])
+        temp_dict = get(bus_dict_gen, _num, nothing)
+        if isnothing(temp_dict)
+             @warn "Generator at bus $(_num) not found in DynData"
+         else
+             dyn_gen = DynamicGenerator(
+                 g,
+                 1.0,
+                 temp_dict[_id]...
+             )
+             add_component!(sys, dyn_gen)
+        end
     end
 end
+
