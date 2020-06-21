@@ -767,8 +767,8 @@ end
 
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
-    status = true
-    available = true
+    status = get(gen, :status_at_start, true)
+    available = get(gen, :available, true)
     rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
@@ -779,14 +779,9 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     min_down_time = get(gen, :min_down_time, nothing)
     timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
         (up = min_up_time, down = min_down_time)
-    rating = rating
     primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
     fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
-    activepowerlimits = active_power_limits
-    reactivepowerlimits = reactive_power_limits
-    ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp)
-    timelimits = timelimits
-    capacity = gen.active_power_limits_max
+    ramplimits = isnothing(ramp) ? ramp : (up = get(gen, :ramp_up, ramp), down = get(gen, :ramp_down, ramp))
     startup_cost = get(gen, :startup_cost, nothing)
     if isnothing(startup_cost)
         if hasfield(typeof(gen), :startup_heat_cold_cost)
@@ -804,8 +799,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         shutdown_cost = 0.0
     end
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
-    basepower = gen.base_mva
-    sys_basepower = data.basepower
+    basepower = get(gen, :base_mva, 1.0) # this was always being divided by sys.basepower this needs to be handled in user_descriptors
 
     return ThermalStandard(
         gen.name,
@@ -822,7 +816,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         ramplimits,
         timelimits,
         op_cost,
-        basepower / sys_basepower,
+        basepower,
     )
 end
 
@@ -832,23 +826,12 @@ function make_thermal_generator_multistart(
     cost_colnames,
     bus,
 )
+    thermal_gen = make_thermal_generator(data, gen, cost_colnames, bus) # use this to keep consistency between input data across thermal gens
     var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
     no_load_cost = var_cost[1][1]
-    status = get(gen, :status_at_start, true)
     var_cost =
         VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
-    available = true
-    rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
-    active_power_limits =
-        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    reactive_power_limits =
-        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
-    ramp = get(gen, :ramp_limits, nothing)
-    min_up_time = get(gen, :min_up_time, nothing)
-    min_down_time = get(gen, :min_down_time, nothing)
-    timelimits = isnothing(min_up_time) && isnothing(min_down_time) ? nothing :
-        (up = min_up_time, down = min_down_time)
-    lag_hot = get(gen, :hot_start_time, min_down_time)
+    lag_hot = get(gen, :hot_start_time, get_timelimits(thermal_gen).down)
     lag_warm = get(gen, :warm_start_time, 0.0)
     lag_cold = get(gen, :cold_start_time, 0.0)
     startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
@@ -856,13 +839,6 @@ function make_thermal_generator_multistart(
     startup_ramp = get(gen, :startup_ramp, 0.0)
     shutdown_ramp = get(gen, :shutdown_ramp, 0.0)
     power_trajectory = (startup = startup_ramp, shutdown = shutdown_ramp)
-    rating = rating
-    primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
-    fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
-    activepowerlimits = active_power_limits
-    reactivepowerlimits = reactive_power_limits
-    ramplimits = isnothing(ramp) ? ramp : (up = ramp, down = ramp)
-    capacity = gen.active_power_limits_max
     hot_start_cost = get(gen, :hot_start_cost, get(gen, :startup_cost, nothing))
     if isnothing(hot_start_cost)
         if hasfield(typeof(gen), :startup_heat_cold_cost)
@@ -882,31 +858,29 @@ function make_thermal_generator_multistart(
         @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
         shutdown_cost = 0.0
     end
-    time_at_status = get(gen, :time_at_status, INFINITE_TIME)
-    basepower = gen.base_mva
-    sys_basepower = data.basepower
+
     op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
     return ThermalMultiStart(;
-        name = gen.name,
-        available = available,
-        status = status,
-        bus = bus,
-        activepower = gen.active_power,
-        reactivepower = gen.reactive_power,
-        rating = rating,
-        primemover = primemover,
-        fuel = fuel,
-        activepowerlimits = active_power_limits,
-        reactivepowerlimits = reactive_power_limits,
-        ramplimits = ramplimits,
+        name = get_name(thermal_gen),
+        available = get_available(thermal_gen),
+        status = get_status(thermal_gen),
+        bus = get_bus(thermal_gen),
+        activepower = get_activepower(thermal_gen),
+        reactivepower = get_reactivepower(thermal_gen),
+        rating = get_rating(thermal_gen),
+        primemover = get_primemover(thermal_gen),
+        fuel = get_fuel(thermal_gen),
+        activepowerlimits = get_activepowerlimits(thermal_gen),
+        reactivepowerlimits = get_reactivepowerlimits(thermal_gen),
+        ramplimits = get_ramplimits(thermal_gen),
         power_trajectory = power_trajectory,
-        timelimits = timelimits,
+        timelimits = get_timelimits(thermal_gen),
         start_time_limits = startup_timelimits,
         start_types = start_types,
         op_cost = op_cost,
-        basepower = basepower / sys_basepower,
-        time_at_status = time_at_status,
+        basepower = get_basepower(thermal_gen),
+        time_at_status = get_time_at_status(thermal_gen),
         must_run = get(gen, :must_run, false),
     )
 end
