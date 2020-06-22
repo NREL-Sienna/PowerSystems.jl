@@ -156,7 +156,13 @@ solve_powerflow!(sys, nlsolve, method = :newton)
 ```
 
 """
-function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_diff_bool; args...)
+function solve_powerflow!(
+    system::System,
+    nlsolve,
+    OnceDifferentiable,
+    finite_diff_bool;
+    args...,
+)
     buses = sort(collect(get_components(Bus, system)), by = x -> get_number(x))
     N_BUS = length(buses)
 
@@ -289,7 +295,7 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
                 bb = imag(Yb[ix_f, ix_t])
                 if ix_f == ix_t
                     S_re += Vm[ix_f] * Vm[ix_t] * gb
-                    S_im += - Vm[ix_f] * Vm[ix_t] * bb
+                    S_im += -Vm[ix_f] * Vm[ix_t] * bb
                 else
                     S_re +=
                         Vm[ix_f] *
@@ -327,7 +333,7 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
                         J[F_ix_f_i, X_ix_t_fst] = 0.0
                         J[F_ix_f_i, X_ix_t_snd] = 1.0
                     end
-                elseif b == BusTypes.PV 
+                elseif b == BusTypes.PV
                     # State variables are Reactive Power Generated and Voltage Angle
                     # F[2*i-1] := p[i] = p_flow[i] + p_load[i] - p_gen[i]
                     # F[2*i] := q[i] = q_flow[i] + q_load[i] - x[2*i]
@@ -339,7 +345,7 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
 
                         #Jac: Active PF against same Angle: θ[ix_f] =  θ[ix_t]
                         J[F_ix_f_r, X_ix_t_snd] =
-                        Vm[ix_f] * sum( 
+                            Vm[ix_f] * sum(
                                 Vm[k] * (
                                     real(Yb[ix_f, k]) * -sin(θ[ix_f] - θ[k]) +
                                     imag(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k])
@@ -347,7 +353,7 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
                             )
                         #Jac: Reactive PF against same Angle: θ[ix_f] = θ[ix_t]
                         J[F_ix_f_i, X_ix_t_snd] =
-                        Vm[ix_f] * sum(
+                            Vm[ix_f] * sum(
                                 Vm[k] * (
                                     real(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k]) -
                                     imag(Yb[ix_f, k]) * -sin(θ[ix_f] - θ[k])
@@ -377,13 +383,13 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
                                 b_ij * sin(θ[ix_f] - θ[ix_t])
                             )
                     end
-                elseif b == BusTypes.PQ 
+                elseif b == BusTypes.PQ
                     # State variables are Voltage Magnitude and Voltage Angle
                     # Everything appears in everything
                     if ix_f == ix_t
                         #Jac: Active PF against same voltage magnitude Vm[ix_f] 
                         J[F_ix_f_r, X_ix_t_fst] =
-                        2 * real(Yb[ix_f, ix_t]) * Vm[ix_f] + sum(
+                            2 * real(Yb[ix_f, ix_t]) * Vm[ix_f] + sum(
                                 Vm[k] * (
                                     real(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k]) +
                                     imag(Yb[ix_f, k]) * sin(θ[ix_f] - θ[k])
@@ -391,7 +397,7 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
                             )
                         #Jac: Active PF against same angle θ[ix_f] 
                         J[F_ix_f_r, X_ix_t_snd] =
-                        Vm[ix_f] * sum(
+                            Vm[ix_f] * sum(
                                 Vm[k] * (
                                     real(Yb[ix_f, k]) * -sin(θ[ix_f] - θ[k]) +
                                     imag(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k])
@@ -400,15 +406,15 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
 
                         #Jac: Reactive PF against same voltage magnitude Vm[ix_f]
                         J[F_ix_f_i, X_ix_t_fst] =
-                        - 2 * imag(Yb[ix_f, ix_t]) * Vm[ix_f] + sum(
+                            -2 * imag(Yb[ix_f, ix_t]) * Vm[ix_f] + sum(
                                 Vm[k] * (
-                                    real(Yb[ix_f, k]) * sin(θ[ix_f] - θ[k]) - 
+                                    real(Yb[ix_f, k]) * sin(θ[ix_f] - θ[k]) -
                                     imag(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k])
                                 ) for k in neighbors[ix_f] if k != ix_f
                             )
                         #Jac: Reactive PF against same angle θ[ix_f]
                         J[F_ix_f_i, X_ix_t_snd] =
-                        Vm[ix_f] * sum(
+                            Vm[ix_f] * sum(
                                 Vm[k] * (
                                     real(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k]) -
                                     imag(Yb[ix_f, k]) * -sin(θ[ix_f] - θ[k])
@@ -419,7 +425,7 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
                         b_ij = imag(Yb[ix_f, ix_t])
                         #Jac: Active PF w/r to different voltage magnitude Vm[ix_t]
                         J[F_ix_f_r, X_ix_t_fst] =
-                        Vm[ix_f] *
+                            Vm[ix_f] *
                             (g_ij * cos(θ[ix_f] - θ[ix_t]) + b_ij * sin(θ[ix_f] - θ[ix_t]))
                         #Jac: Active PF w/r to different angle θ[ix_t]
                         J[F_ix_f_r, X_ix_t_snd] =
@@ -432,7 +438,7 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
 
                         #Jac: Reactive PF w/r to different voltage magnitude Vm[ix_t]
                         J[F_ix_f_i, X_ix_t_fst] =
-                        Vm[ix_f] *
+                            Vm[ix_f] *
                             (g_ij * sin(θ[ix_f] - θ[ix_t]) - b_ij * cos(θ[ix_f] - θ[ix_t]))
                         #Jac: Reactive PF w/r to different angle θ[ix_t]
                         J[F_ix_f_i, X_ix_t_snd] =
@@ -457,7 +463,7 @@ function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_di
         df = OnceDifferentiable(pf!, jsp!, x0, F0, J0)
         res = nlsolve(df, x0; args...)
     end
-    
+
     #@info(res)
     if res.f_converged
         #PowerSystems._write_pf_sol!(system, res)
