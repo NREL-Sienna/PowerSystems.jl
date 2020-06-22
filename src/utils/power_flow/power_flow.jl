@@ -156,7 +156,7 @@ solve_powerflow!(sys, nlsolve, method = :newton)
 ```
 
 """
-function solve_powerflow!(system::System, nlsolve; args...)
+function solve_powerflow!(system::System, nlsolve, OnceDifferentiable, finite_diff_bool; args...)
     buses = sort(collect(get_components(Bus, system)), by = x -> get_number(x))
     N_BUS = length(buses)
 
@@ -171,6 +171,38 @@ function solve_powerflow!(system::System, nlsolve; args...)
         push!(neighbors[J[nz]], I[nz])
     end
     x0 = zeros(N_BUS * 2)
+
+    #Create Jacobian structure
+    J0_I = Int64[]
+    J0_J = Int64[]
+    J0_V = Float64[]
+
+    for ix in a
+        F_ix_r = 2 * ix - 1
+        F_ix_i = 2 * ix
+
+        for j in neighbors[ix]
+            X_j_fst = 2 * j - 1
+            X_j_snd = 2 * j
+            #Set to 0.0 only on connected buses
+            push!(J0_I, F_ix_r)
+            push!(J0_J, X_j_fst)
+            push!(J0_V, 0.0)
+
+            push!(J0_I, F_ix_r)
+            push!(J0_J, X_j_snd)
+            push!(J0_V, 0.0)
+
+            push!(J0_I, F_ix_i)
+            push!(J0_J, X_j_fst)
+            push!(J0_V, 0.0)
+
+            push!(J0_I, F_ix_i)
+            push!(J0_J, X_j_snd)
+            push!(J0_V, 0.0)
+        end
+    end
+    J0 = SparseArrays.sparse(J0_I, J0_J, J0_V)
 
     # Use vectors to cache data for closure
     # These should be read only
@@ -232,12 +264,12 @@ function solve_powerflow!(system::System, nlsolve; args...)
         for (ix, b) in enumerate(bus_types)
             if b == BusTypes.REF
                 # When bustype == REFERENCE Bus, state variables are Active and Reactive Power Generated
-                P_net[ix] = X[2 * ix - 1] - P_LOAD_BUS[ix]
-                Q_net[ix] = X[2 * ix] - Q_LOAD_BUS[ix]
+                P_net[ix] = -X[2 * ix - 1] - P_LOAD_BUS[ix]
+                Q_net[ix] = -X[2 * ix] - Q_LOAD_BUS[ix]
             elseif b == BusTypes.PV
                 # When bustype == PV Bus, state variables are Reactive Power Generated and Voltage Angle
                 P_net[ix] = P_GEN_BUS[ix] - P_LOAD_BUS[ix]
-                Q_net[ix] = X[2 * ix - 1] - Q_LOAD_BUS[ix]
+                Q_net[ix] = -X[2 * ix - 1] - Q_LOAD_BUS[ix]
                 θ[ix] = X[2 * ix]
             elseif b == BusTypes.PQ
                 # When bustype == PQ Bus, state variables are Voltage Magnitude and Voltage Angle
@@ -255,26 +287,182 @@ function solve_powerflow!(system::System, nlsolve; args...)
             for ix_t in neighbors[ix_f]
                 gb = real(Yb[ix_f, ix_t])
                 bb = imag(Yb[ix_f, ix_t])
-                S_re +=
-                    Vm[ix_f] *
-                    Vm[ix_t] *
-                    (gb * cos(θ[ix_f] - θ[ix_t]) + bb * sin(θ[ix_f] - θ[ix_t]))
-                S_im +=
-                    Vm[ix_f] *
-                    Vm[ix_t] *
-                    (gb * sin(θ[ix_f] - θ[ix_t]) - bb * cos(θ[ix_f] - θ[ix_t]))
+                if ix_f == ix_t
+                    S_re += Vm[ix_f] * Vm[ix_t] * gb
+                    S_im += - Vm[ix_f] * Vm[ix_t] * bb
+                else
+                    S_re +=
+                        Vm[ix_f] *
+                        Vm[ix_t] *
+                        (gb * cos(θ[ix_f] - θ[ix_t]) + bb * sin(θ[ix_f] - θ[ix_t]))
+                    S_im +=
+                        Vm[ix_f] *
+                        Vm[ix_t] *
+                        (gb * sin(θ[ix_f] - θ[ix_t]) - bb * cos(θ[ix_f] - θ[ix_t]))
+                end
             end
             F[2 * ix_f - 1] = S_re
             F[2 * ix_f] = S_im
         end
     end
 
-    res = nlsolve(pf!, x0; args...)
-    @info(res)
+    function jsp!(J::SparseArrays.SparseMatrixCSC{Float64, Int64}, X::Vector{Float64})
+        for ix_f in a
+            F_ix_f_r = 2 * ix_f - 1
+            F_ix_f_i = 2 * ix_f
+
+            for ix_t in neighbors[ix_f]
+                X_ix_t_fst = 2 * ix_t - 1
+                X_ix_t_snd = 2 * ix_t
+                b = bus_types[ix_t]
+
+                if b == BusTypes.REF
+                    # State variables are Active and Reactive Power Generated
+                    # F[2*i-1] := p[i] = p_flow[i] + p_load[i] - x[2*i-1]
+                    # F[2*i] := q[i] = q_flow[i] + q_load[i] - x[2*i]
+                    # x does not appears in p_flow and q_flow
+                    if ix_f == ix_t
+                        J[F_ix_f_r, X_ix_t_fst] = 1.0
+                        J[F_ix_f_r, X_ix_t_snd] = 0.0
+                        J[F_ix_f_i, X_ix_t_fst] = 0.0
+                        J[F_ix_f_i, X_ix_t_snd] = 1.0
+                    end
+                elseif b == BusTypes.PV 
+                    # State variables are Reactive Power Generated and Voltage Angle
+                    # F[2*i-1] := p[i] = p_flow[i] + p_load[i] - p_gen[i]
+                    # F[2*i] := q[i] = q_flow[i] + q_load[i] - x[2*i]
+                    # x[2*i] (associated with q_gen) does not appear in q_flow
+                    # x[2*i] (associated with q_gen) does not appear in the active power balance
+                    if ix_f == ix_t
+                        J[F_ix_f_r, X_ix_t_fst] = 0.0
+                        J[F_ix_f_i, X_ix_t_fst] = 1.0
+
+                        #Jac: Active PF against same Angle: θ[ix_f] =  θ[ix_t]
+                        J[F_ix_f_r, X_ix_t_snd] =
+                        Vm[ix_f] * sum( 
+                                Vm[k] * (
+                                    real(Yb[ix_f, k]) * -sin(θ[ix_f] - θ[k]) +
+                                    imag(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k])
+                                ) for k in neighbors[ix_f] if k != ix_f
+                            )
+                        #Jac: Reactive PF against same Angle: θ[ix_f] = θ[ix_t]
+                        J[F_ix_f_i, X_ix_t_snd] =
+                        Vm[ix_f] * sum(
+                                Vm[k] * (
+                                    real(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k]) -
+                                    imag(Yb[ix_f, k]) * -sin(θ[ix_f] - θ[k])
+                                ) for k in neighbors[ix_f] if k != ix_f
+                            )
+                    else
+                        #q_gen[ix_t] does not appear in other equations
+                        J[F_ix_f_r, X_ix_t_fst] = 0.0
+                        J[F_ix_f_i, X_ix_t_fst] = 0.0
+
+                        g_ij = real(Yb[ix_f, ix_t])
+                        b_ij = imag(Yb[ix_f, ix_t])
+                        #Jac: Active PF against other angles θ[ix_t]
+                        J[F_ix_f_r, X_ix_t_snd] =
+                            Vm[ix_f] *
+                            Vm[ix_t] *
+                            (
+                                g_ij * sin(θ[ix_f] - θ[ix_t]) +
+                                b_ij * -cos(θ[ix_f] - θ[ix_t])
+                            )
+                        #Jac: Reactive PF against other angles θ[ix_t]
+                        J[F_ix_f_i, X_ix_t_snd] =
+                            Vm[ix_f] *
+                            Vm[ix_t] *
+                            (
+                                g_ij * -cos(θ[ix_f] - θ[ix_t]) -
+                                b_ij * sin(θ[ix_f] - θ[ix_t])
+                            )
+                    end
+                elseif b == BusTypes.PQ 
+                    # State variables are Voltage Magnitude and Voltage Angle
+                    # Everything appears in everything
+                    if ix_f == ix_t
+                        #Jac: Active PF against same voltage magnitude Vm[ix_f] 
+                        J[F_ix_f_r, X_ix_t_fst] =
+                        2 * real(Yb[ix_f, ix_t]) * Vm[ix_f] + sum(
+                                Vm[k] * (
+                                    real(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k]) +
+                                    imag(Yb[ix_f, k]) * sin(θ[ix_f] - θ[k])
+                                ) for k in neighbors[ix_f] if k != ix_f
+                            )
+                        #Jac: Active PF against same angle θ[ix_f] 
+                        J[F_ix_f_r, X_ix_t_snd] =
+                        Vm[ix_f] * sum(
+                                Vm[k] * (
+                                    real(Yb[ix_f, k]) * -sin(θ[ix_f] - θ[k]) +
+                                    imag(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k])
+                                ) for k in neighbors[ix_f] if k != ix_f
+                            )
+
+                        #Jac: Reactive PF against same voltage magnitude Vm[ix_f]
+                        J[F_ix_f_i, X_ix_t_fst] =
+                        - 2 * imag(Yb[ix_f, ix_t]) * Vm[ix_f] + sum(
+                                Vm[k] * (
+                                    real(Yb[ix_f, k]) * sin(θ[ix_f] - θ[k]) - 
+                                    imag(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k])
+                                ) for k in neighbors[ix_f] if k != ix_f
+                            )
+                        #Jac: Reactive PF against same angle θ[ix_f]
+                        J[F_ix_f_i, X_ix_t_snd] =
+                        Vm[ix_f] * sum(
+                                Vm[k] * (
+                                    real(Yb[ix_f, k]) * cos(θ[ix_f] - θ[k]) -
+                                    imag(Yb[ix_f, k]) * -sin(θ[ix_f] - θ[k])
+                                ) for k in neighbors[ix_f] if k != ix_f
+                            )
+                    else
+                        g_ij = real(Yb[ix_f, ix_t])
+                        b_ij = imag(Yb[ix_f, ix_t])
+                        #Jac: Active PF w/r to different voltage magnitude Vm[ix_t]
+                        J[F_ix_f_r, X_ix_t_fst] =
+                        Vm[ix_f] *
+                            (g_ij * cos(θ[ix_f] - θ[ix_t]) + b_ij * sin(θ[ix_f] - θ[ix_t]))
+                        #Jac: Active PF w/r to different angle θ[ix_t]
+                        J[F_ix_f_r, X_ix_t_snd] =
+                            Vm[ix_f] *
+                            Vm[ix_t] *
+                            (
+                                g_ij * sin(θ[ix_f] - θ[ix_t]) +
+                                b_ij * -cos(θ[ix_f] - θ[ix_t])
+                            )
+
+                        #Jac: Reactive PF w/r to different voltage magnitude Vm[ix_t]
+                        J[F_ix_f_i, X_ix_t_fst] =
+                        Vm[ix_f] *
+                            (g_ij * sin(θ[ix_f] - θ[ix_t]) - b_ij * cos(θ[ix_f] - θ[ix_t]))
+                        #Jac: Reactive PF w/r to different angle θ[ix_t]
+                        J[F_ix_f_i, X_ix_t_snd] =
+                            Vm[ix_f] *
+                            Vm[ix_t] *
+                            (
+                                g_ij * -cos(θ[ix_f] - θ[ix_t]) -
+                                b_ij * sin(θ[ix_f] - θ[ix_t])
+                            )
+                    end
+                else
+                    @assert false
+                end
+            end
+        end
+    end
+
+    if finite_diff_bool
+        res = nlsolve(pf!, x0; args...)
+    else
+        F0 = similar(x0)
+        df = OnceDifferentiable(pf!, jsp!, x0, F0, J0)
+        res = nlsolve(df, x0; args...)
+    end
+    
+    #@info(res)
     if res.f_converged
-        PowerSystems._write_pf_sol!(system, res)
-        @info("PowerFlow solve converged, the results have been stored in the system")
-        return res.f_converged
+        #PowerSystems._write_pf_sol!(system, res)
+        #@info("PowerFlow solve converged, the results have been stored in the system")
+        return res
     end
     @error("The powerflow solver returned convergence = $(res.f_converged)")
     return res.f_converged
