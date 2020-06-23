@@ -71,8 +71,10 @@ get_inertia(value::RegulationDevice) = value.inertia
 get_cost(value::RegulationDevice) = value.cost
 
 set_droop!(value::RegulationDevice, val::Float64) = value.droop = val
-set_participation_factor!(value::RegulationDevice, val::Float64) =
-    value.participation_factor = val
+set_participation_factor!(
+    value::RegulationDevice,
+    val::NamedTuple{(:up, :dn), Tuple{Float64, Float64}},
+) = value.participation_factor = val
 set_reserve_limit_up!(value::RegulationDevice, val::Float64) = value.reserve_limit_up = val
 set_reserve_limit_dn!(value::RegulationDevice, val::Float64) = value.reserve_limit_dn = val
 set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
