@@ -255,6 +255,7 @@ function solve_powerflow!(
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
         elseif b.bustype == BusTypes.PQ
+            Vm[ix] = 1.0
             x0[state_variable_count] = bus_voltage
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
@@ -270,12 +271,12 @@ function solve_powerflow!(
         for (ix, b) in enumerate(bus_types)
             if b == BusTypes.REF
                 # When bustype == REFERENCE Bus, state variables are Active and Reactive Power Generated
-                P_net[ix] = -X[2 * ix - 1] - P_LOAD_BUS[ix]
-                Q_net[ix] = -X[2 * ix] - Q_LOAD_BUS[ix]
+                P_net[ix] = X[2 * ix - 1] - P_LOAD_BUS[ix]
+                Q_net[ix] = X[2 * ix] - Q_LOAD_BUS[ix]
             elseif b == BusTypes.PV
                 # When bustype == PV Bus, state variables are Reactive Power Generated and Voltage Angle
                 P_net[ix] = P_GEN_BUS[ix] - P_LOAD_BUS[ix]
-                Q_net[ix] = -X[2 * ix - 1] - Q_LOAD_BUS[ix]
+                Q_net[ix] = X[2 * ix - 1] - Q_LOAD_BUS[ix]
                 θ[ix] = X[2 * ix]
             elseif b == BusTypes.PQ
                 # When bustype == PQ Bus, state variables are Voltage Magnitude and Voltage Angle
@@ -328,10 +329,10 @@ function solve_powerflow!(
                     # F[2*i] := q[i] = q_flow[i] + q_load[i] - x[2*i]
                     # x does not appears in p_flow and q_flow
                     if ix_f == ix_t
-                        J[F_ix_f_r, X_ix_t_fst] = 1.0
+                        J[F_ix_f_r, X_ix_t_fst] = -1.0
                         J[F_ix_f_r, X_ix_t_snd] = 0.0
                         J[F_ix_f_i, X_ix_t_fst] = 0.0
-                        J[F_ix_f_i, X_ix_t_snd] = 1.0
+                        J[F_ix_f_i, X_ix_t_snd] = -1.0
                     end
                 elseif b == BusTypes.PV
                     # State variables are Reactive Power Generated and Voltage Angle
@@ -341,7 +342,7 @@ function solve_powerflow!(
                     # x[2*i] (associated with q_gen) does not appear in the active power balance
                     if ix_f == ix_t
                         J[F_ix_f_r, X_ix_t_fst] = 0.0
-                        J[F_ix_f_i, X_ix_t_fst] = 1.0
+                        J[F_ix_f_i, X_ix_t_fst] = -1.0
 
                         #Jac: Active PF against same Angle: θ[ix_f] =  θ[ix_t]
                         J[F_ix_f_r, X_ix_t_snd] =
