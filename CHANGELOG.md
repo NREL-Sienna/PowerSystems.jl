@@ -1,5 +1,12 @@
 # PowerSystems Change Log
 
+## 0.20.1
+
+- Add AC1A, ST1A, GasTG structs for dynamic modeling.
+- Implement heuristic in pwl data to avoid NaN
+- Bug fixes with Regulation Devices
+- Improved testing. 
+
 ## 0.20.0
 
 - Add Support for MultiStart Thermal Generation (a.k.a. PGLIB Model) 
