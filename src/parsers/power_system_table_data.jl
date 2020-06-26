@@ -862,9 +862,14 @@ function make_thermal_generator_multistart(
 )
     thermal_gen = make_thermal_generator(data, gen, cost_colnames, bus)
     var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
-    no_load_cost = var_cost[1][1]
-    var_cost =
-        VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
+    if var_cost isa Float64
+        no_load_cost = 0.0
+        var_cost = VariableCost(var_cost)
+    else
+        no_load_cost = var_cost[1][1]
+        var_cost =
+            VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
+    end
     lag_hot = get(gen, :hot_start_time, get_timelimits(thermal_gen).down)
     lag_warm = get(gen, :warm_start_time, 0.0)
     lag_cold = get(gen, :cold_start_time, 0.0)
