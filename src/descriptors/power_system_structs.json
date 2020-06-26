@@ -450,7 +450,7 @@
           "internal_default": "InfrastructureSystemsInternal()"
         }
       ],
-      "supertype": "ACLine"
+      "supertype": "ACBranch"
     },
     {
       "struct_name": "MonitoredLine",
@@ -564,7 +564,7 @@
           "internal_default": "InfrastructureSystemsInternal()"
         }
       ],
-      "supertype": "ACLine"
+      "supertype": "ACBranch"
     },
     {
       "struct_name": "PhaseShiftingTransformer",

@@ -22,7 +22,6 @@ export Device
 export Branch
 export StaticInjection
 export ACBranch
-export ACLine
 export Line
 export MonitoredLine
 export DCBranch
