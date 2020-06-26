@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct Line <: ACBranch
+    mutable struct Line <: ACLine
         name::String
         available::Bool
         activepower_flow::Float64
@@ -37,7 +37,7 @@ This file is auto-generated. Do not edit.
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct Line <: ACBranch
+mutable struct Line <: ACLine
     name::String
     available::Bool
     activepower_flow::Float64

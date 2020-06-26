@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct PhaseShiftingTransformer <: ACBranch
+    mutable struct PhaseShiftingTransformer <: ACTransformer
         name::String
         available::Bool
         activepower_flow::Float64
@@ -39,7 +39,7 @@ This file is auto-generated. Do not edit.
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct PhaseShiftingTransformer <: ACBranch
+mutable struct PhaseShiftingTransformer <: ACTransformer
     name::String
     available::Bool
     activepower_flow::Float64

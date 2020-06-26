@@ -450,7 +450,7 @@
           "internal_default": "InfrastructureSystemsInternal()"
         }
       ],
-      "supertype": "ACBranch"
+      "supertype": "ACLine"
     },
     {
       "struct_name": "MonitoredLine",
@@ -564,7 +564,7 @@
           "internal_default": "InfrastructureSystemsInternal()"
         }
       ],
-      "supertype": "ACBranch"
+      "supertype": "ACLine"
     },
     {
       "struct_name": "PhaseShiftingTransformer",
@@ -686,7 +686,7 @@
           "internal_default": "InfrastructureSystemsInternal()"
         }
       ],
-      "supertype": "ACBranch"
+      "supertype": "ACTransformer"
     },
     {
       "struct_name": "TapTransformer",
@@ -798,7 +798,7 @@
           "internal_default": "InfrastructureSystemsInternal()"
         }
       ],
-      "supertype": "ACBranch"
+      "supertype": "ACTransformer"
     },
     {
       "struct_name": "Transformer2W",
@@ -901,7 +901,7 @@
           "internal_default": "InfrastructureSystemsInternal()"
         }
       ],
-      "supertype": "ACBranch"
+      "supertype": "ACTransformer"
     },
     {
       "struct_name": "HVDCLine",
