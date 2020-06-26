@@ -23,7 +23,6 @@ export Branch
 export StaticInjection
 export ACBranch
 export ACLine
-export ACTransformer
 export Line
 export MonitoredLine
 export DCBranch

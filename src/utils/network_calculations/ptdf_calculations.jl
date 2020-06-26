@@ -31,21 +31,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
 
         A[num_bus[get_number(get_to(get_arc(b)))], ix] = -1
 
-        if isa(b, Transformer2W)
-            inv_X[ix, ix] = 1 / get_x(b)
-
-        elseif isa(b, TapTransformer)
-            inv_X[ix, ix] = 1 / (get_x(b) * get_tap(b))
-
-        elseif isa(b, ACLine)
-            inv_X[ix, ix] = 1 / get_x(b)
-
-        elseif isa(b, PhaseShiftingTransformer)
-            y = 1 / (get_r(b) + get_x(b) * 1im)
-            y_a = y / (get_tap(b) * exp(get_α(b) * 1im * (π / 180)))
-            inv_X[ix, ix] = 1 / imag(y_a)
-        end
-
+        inv_X[ix, ix] = get_admittance(b)
     end
 
     slacks = [num_bus[get_number(n)] for n in nodes if get_bustype(n) == BusTypes.REF]

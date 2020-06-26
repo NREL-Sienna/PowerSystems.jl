@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct Transformer2W <: ACTransformer
+    mutable struct Transformer2W <: ACBranch
         name::String
         available::Bool
         activepower_flow::Float64
@@ -35,7 +35,7 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct Transformer2W <: ACTransformer
+mutable struct Transformer2W <: ACBranch
     name::String
     available::Bool
     activepower_flow::Float64
