@@ -37,7 +37,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
         elseif isa(b, TapTransformer)
             inv_X[ix, ix] = 1 / (get_x(b) * get_tap(b))
 
-        elseif isa(b, Line)
+        elseif isa(b, ACLine)
             inv_X[ix, ix] = 1 / get_x(b)
 
         elseif isa(b, PhaseShiftingTransformer)
