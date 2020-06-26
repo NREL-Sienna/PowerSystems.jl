@@ -14,7 +14,7 @@ _remove_aggregration_topology!(bus::Bus, ::Area) = bus.area = nothing
 """
     calculates the admittance of AC branches
 """
-get_admittance(b::T) where {T <: ACBranch} = 1 / get_x(b)
+get_admittance(b::ACBranch) =  1 / get_x(b)
 get_admittance(b::TapTransformer) = 1 / (get_x(b) * get_tap(b))
 function get_admittance(b::PhaseShiftingTransformer)
     y = 1 / (get_r(b) + get_x(b) * 1im)
