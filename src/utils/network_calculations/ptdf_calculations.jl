@@ -31,7 +31,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
 
         A[num_bus[get_number(get_to(get_arc(b)))], ix] = -1
 
-        inv_X[ix, ix] = get_admittance(b)
+        inv_X[ix, ix] = get_series_susceptance(b)
     end
 
     slacks = [num_bus[get_number(n)] for n in nodes if get_bustype(n) == BusTypes.REF]

@@ -167,6 +167,7 @@ export PiecewiseFunction
 export get_dynamic_components
 
 export solve_powerflow!
+export solve_powerflow
 
 export parse_file
 export add_forecasts!
@@ -260,6 +261,7 @@ import CSV
 import YAML
 import UUIDs
 import Base.to_index
+import NLsolve
 
 import InfrastructureSystems
 import InfrastructureSystems:
