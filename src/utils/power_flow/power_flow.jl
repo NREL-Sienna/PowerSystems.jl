@@ -17,7 +17,7 @@ function flow_val(b::TapTransformer)
 end
 
 """
-    flow_val(b::TapTransformer)
+    flow_val(b::Line)
 
 Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Line
@@ -34,7 +34,7 @@ function flow_val(b::Line)
 end
 
 """
-    flow_val(b::TapTransformer)
+    flow_val(b::Transformer2W)
 
 Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Transformer2W
@@ -55,6 +55,61 @@ function flow_val(b::PhaseShiftingTransformer)
     return
 end
 
+"""
+    flow_func(b::TapTransformer, V_from::Complex, V_to::Complex)
+
+Calculates the From - To complex power flow using external data of voltages of branch of type
+TapTransformer
+
+"""
+function flow_func(b::TapTransformer, V_from::Complex{Float64}, V_to::Complex{Float64})
+    Y_t = 1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im)
+    c = 1 / PowerSystems.get_tap(b)
+    I = (V_from * Y_t * c^2) - (V_to * Y_t * c)
+    flow = V_from * conj(I)
+    return real(flow), imag(flow)
+end
+
+"""
+    flow_func(b::Line, V_from::Complex, V_to::Complex)
+
+Calculates the From - To complex power flow using external data of voltages of branch of type
+Line
+
+"""
+function flow_func(b::Line, V_from::Complex{Float64}, V_to::Complex{Float64})
+    Y_t = (1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im))
+    I = V_from * (Y_t + (1im * PowerSystems.get_b(b).from)) - V_to * Y_t
+    flow = V_from * conj(I)
+    return real(flow), imag(flow)
+end
+
+
+"""
+    flow_func(b::Transformer2W, V_from::Complex, V_to::Complex)
+
+Calculates the From - To complex power flow using external data of voltages of branch of type
+Transformer2W
+
+"""
+function flow_func(b::Transformer2W, V_from::Complex{Float64}, V_to::Complex{Float64})
+    Y_t = 1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im)
+    I = V_from * (Y_t + (1im * PowerSystems.get_primaryshunt(b))) - V_to * Y_t
+    flow = V_from * conj(I)
+    return real(flow), imag(flow)
+end
+
+function flow_func(b::PhaseShiftingTransformer, V_from::Complex{Float64}, V_to::Complex{Float64})
+    error("Systems with PhaseShiftingTransformer not supported yet")
+    return
+end
+
+"""
+_update_branch_flow!(sys::System)
+
+Updates the flow on the branches
+
+"""
 function _update_branch_flow!(sys::System)
     for b in get_components(ACBranch, sys)
         S_flow = flow_val(b)
@@ -63,6 +118,37 @@ function _update_branch_flow!(sys::System)
     end
 end
 
+"""
+# TODO: Apply actions according to load type
+    _get_load_data(sys::System, b::Bus)
+
+Obtain total load on bus b
+
+"""
+function _get_load_data(sys::System, b::Bus)
+    activepower = 0.0
+    reactivepower = 0.0
+    for l in get_components(ElectricLoad, sys)
+        if (l.bus == b)
+            if isa(l, FixedAdmittance)
+                # Assume v rated = 1.0
+                activepower += real(get_Y(l))
+                reactivepower += imag(get_Y(l))
+            else
+                activepower += get_activepower(l)
+                reactivepower += get_reactivepower(l)
+            end
+        end
+    end
+    return activepower, reactivepower
+end
+
+"""
+    _write_pf_sol!(sys::System, nl_result)
+
+Updates system voltages and powers with power flow results
+
+"""
 function _write_pf_sol!(sys::System, nl_result)
     result = round.(nl_result.zero; digits = 7)
     buses = enumerate(sort(collect(get_components(Bus, sys)), by = x -> get_number(x)))
@@ -95,39 +181,110 @@ function _write_pf_sol!(sys::System, nl_result)
     end
 
     _update_branch_flow!(sys)
-
-    return
-end
-
-# TODO: Apply actions according to load type
-function _get_load_data(sys::System, b::Bus)
-    activepower = 0.0
-    reactivepower = 0.0
-    for l in get_components(ElectricLoad, sys)
-        if (l.bus == b)
-            if isa(l, FixedAdmittance)
-                # Assume v rated = 1.0
-                activepower += real(get_Y(l))
-                reactivepower += imag(get_Y(l))
-            else
-                activepower += get_activepower(l)
-                reactivepower += get_reactivepower(l)
-            end
-        end
-    end
-    return activepower, reactivepower
 end
 
 """
-    solve_powerflow!(system, solve_function, args...)
+    _write_results(sys::System, nl_result)
+Return power flow results in dictionary of dataframes.
+
+"""
+function _write_results(sys::System, nl_result)
+    result = round.(nl_result.zero; digits = 7)
+    buses = sort(collect(get_components(Bus, sys)), by = x -> get_number(x))
+    N_BUS = length(buses)
+    bus_map = Dict(buses .=> 1:N_BUS)
+    sources = get_components(StaticInjection, sys, d -> !isa(d, ElectricLoad))
+    Vm_vect = fill(0.0, N_BUS)
+    θ_vect = fill(0.0, N_BUS)
+    P_gen_vect = fill(0.0, N_BUS)
+    Q_gen_vect = fill(0.0, N_BUS)
+    P_load_vect = fill(0.0, N_BUS)
+    Q_load_vect = fill(0.0, N_BUS)
+
+    for (ix, bus) in enumerate(buses)
+        P_load_vect[ix], Q_load_vect[ix] = _get_load_data(sys, bus)
+        if bus.bustype == BusTypes.REF
+            Vm_vect[ix] = get_voltage(bus)
+            θ_vect[ix] = get_angle(bus)
+            P_gen_vect[ix] = result[2 * ix - 1]
+            Q_gen_vect[ix] = result[2 * ix]
+        elseif bus.bustype == BusTypes.PV
+            Vm_vect[ix] = get_voltage(bus)
+            θ_vect[ix] = result[2 * ix]
+            for gen in sources
+                if gen.bus == bus
+                    P_gen_vect[ix] += get_activepower(gen)
+                end
+            end
+            Q_gen_vect[ix] = result[2 * ix - 1]
+        elseif bus.bustype == BusTypes.PQ
+            Vm_vect[ix] = result[2 * ix - 1]
+            θ_vect[ix] = result[2 * ix]
+            for gen in sources
+                if gen.bus == bus
+                    P_gen_vect[ix] += get_activepower(gen)
+                    Q_gen_vect[ix] += get_reactivepower(gen)
+                end
+            end
+        end
+    end
+
+    branches = get_components(ACBranch, sys)
+    N_BRANCH = length(branches)
+    P_from_to_vect = fill(0.0, N_BRANCH)
+    Q_from_to_vect = fill(0.0, N_BRANCH)
+    P_to_from_vect = fill(0.0, N_BRANCH)
+    Q_to_from_vect = fill(0.0, N_BRANCH)
+    for (ix, b) in enumerate(branches)
+        bus_f_ix = bus_map[get_arc(b).from]
+        bus_t_ix = bus_map[get_arc(b).to]
+        V_from = Vm_vect[bus_f_ix] * (cos(θ_vect[bus_f_ix]) + sin(θ_vect[bus_f_ix]) * 1im)
+        V_to = Vm_vect[bus_t_ix] * (cos(θ_vect[bus_t_ix]) + sin(θ_vect[bus_t_ix]) * 1im)
+        P_from_to_vect[ix], Q_from_to_vect[ix] = flow_func(b, V_from, V_to)
+        P_to_from_vect[ix], Q_to_from_vect[ix] = flow_func(b, V_to, V_from)
+    end
+
+    bus_df = DataFrames.DataFrame(
+        bus_number = get_number.(buses),
+        Vm = Vm_vect,
+        θ = θ_vect,
+        P_gen = P_gen_vect,
+        P_load = P_load_vect,
+        P_net = P_gen_vect - P_load_vect,
+        Q_gen = Q_gen_vect,
+        Q_load = Q_load_vect,
+        Q_net = Q_gen_vect - Q_load_vect,
+    )
+
+    branch_df = DataFrames.DataFrame(
+        line_name = get_name.(branches),
+        bus_from = get_number.(get_from.(get_arc.(branches))),
+        bus_to = get_number.(get_to.(get_arc.(branches))),
+        P_from_to = P_from_to_vect,
+        Q_from_to = Q_from_to_vect,
+        P_to_from = P_to_from_vect,
+        Q_to_from = Q_to_from_vect,
+        P_losses = P_from_to_vect - P_to_from_vect,
+        Q_losses = P_from_to_vect - P_to_from_vect,
+    )
+    DataFrames.sort!(branch_df, [:bus_from, :bus_to])
+    
+
+    return Dict("bus_results" => bus_df, "flow_results" => branch_df)
+end
+
+
+
+"""
+    solve_powerflow!(system, finite_diff = false, args...)
 
 Solves a the power flow into the system and writes the solution into the relevant structs.
 Updates generators active and reactive power setpoints and branches active and reactive
 power flows (calculated in the From - To direction) (see
 [`flow_val`](@ref))
 
-Requires loading NLsolve.jl to run.
-
+Supports solving using Finite Differences Method (instead of using analytic Jacobian)
+by setting finite_diff = true.
 Supports passing NLsolve kwargs in the args. By default shows the solver trace.
 
 Arguments available for `nlsolve`:
@@ -148,20 +305,69 @@ Arguments available for `nlsolve`:
 
 ## Examples
 ```julia
-using NLsolve
-solve_powerflow!(sys, nlsolve)
+solve_powerflow!(sys)
 # Passing NLsolve arguments
-solve_powerflow!(sys, nlsolve, method = :newton)
+solve_powerflow!(sys, method = :newton)
+# Using Finite Differences
+solve_powerflow!(sys, finite_diff = true)
 
 ```
 
 """
 function solve_powerflow!(
+    system::System;
+    finite_diff = false,
+    kwargs...,
+)
+    #finite_diff = get(kwargs, :finite_diff, false)
+    res = _solve_powerflow(system, finite_diff; kwargs...)
+    if res.f_converged
+        PowerSystems._write_pf_sol!(system, res)
+        @info("PowerFlow solve converged, the results have been stored in the system")
+        return res.f_converged
+    end
+    @error("The powerflow solver returned convergence = $(res.f_converged)")
+    return res.f_converged
+end
+
+
+"""
+    solve_powerflow(system, finite_diff = false, args...)
+
+Similar to solve_powerflow!(sys) but does not update the system struct with results.
+Returns the results in a dictionary of dataframes.
+
+## Examples
+```julia
+res = solve_powerflow(sys)
+# Passing NLsolve arguments
+res = solve_powerflow(sys, method = :newton)
+# Using Finite Differences
+res = solve_powerflow(sys, finite_diff = true)
+
+```
+
+"""
+function solve_powerflow(
+    system::System;
+    finite_diff = false,
+    kwargs...,
+)
+    #finite_diff = get(kwargs, :finite_diff, false)
+    res = _solve_powerflow(system, finite_diff; kwargs...)
+
+    if res.f_converged
+        @info("PowerFlow solve converged, the results are exported in DataFrames")
+        return _write_results(system, res)
+    end
+    @error("The powerflow solver returned convergence = $(res.f_converged)")
+    return res.f_converged
+end
+
+function _solve_powerflow(
     system::System,
-    nlsolve,
-    OnceDifferentiable,
-    finite_diff_bool;
-    args...,
+    finite_diff::Bool;
+    kwargs...,
 )
     buses = sort(collect(get_components(Bus, system)), by = x -> get_number(x))
     N_BUS = length(buses)
@@ -457,20 +663,14 @@ function solve_powerflow!(
         end
     end
 
-    if finite_diff_bool
-        res = nlsolve(pf!, x0; args...)
+    #pop!(kwargs, :finite_diff, nothing)
+    if finite_diff
+        res = NLsolve.nlsolve(pf!, x0; kwargs...)
     else
         F0 = similar(x0)
-        df = OnceDifferentiable(pf!, jsp!, x0, F0, J0)
-        res = nlsolve(df, x0; args...)
+        df = NLsolve.OnceDifferentiable(pf!, jsp!, x0, F0, J0)
+        res = NLsolve.nlsolve(df, x0; kwargs...)
     end
 
-    #@info(res)
-    if res.f_converged
-        #PowerSystems._write_pf_sol!(system, res)
-        #@info("PowerFlow solve converged, the results have been stored in the system")
-        return res
-    end
-    @error("The powerflow solver returned convergence = $(res.f_converged)")
-    return res.f_converged
+    return res
 end
