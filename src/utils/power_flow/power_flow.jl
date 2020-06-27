@@ -6,9 +6,9 @@ TapTransformer
 
 """
 function flow_val(b::TapTransformer)
-    Y_t = 1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im)
-    c = 1 / PowerSystems.get_tap(b)
-    arc = PowerSystems.get_arc(b)
+    Y_t = get_series_admittance(b)
+    c = 1 / get_tap(b)
+    arc = get_arc(b)
     V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
     V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
     I = (V_from * Y_t * c^2) - (V_to * Y_t * c)
@@ -24,7 +24,7 @@ Line
 
 """
 function flow_val(b::Line)
-    Y_t = (1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im))
+    Y_t = get_series_admittance(b)
     arc = PowerSystems.get_arc(b)
     V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
     V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
@@ -41,11 +41,11 @@ Transformer2W
 
 """
 function flow_val(b::Transformer2W)
-    Y_t = 1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im)
-    arc = PowerSystems.get_arc(b)
+    Y_t = get_series_admittance(b)
+    arc = get_arc(b)
     V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
     V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
-    I = V_from * (Y_t + (1im * PowerSystems.get_primaryshunt(b))) - V_to * Y_t
+    I = V_from * (Y_t + (1im * get_primaryshunt(b))) - V_to * Y_t
     flow = V_from * conj(I)
     return flow
 end
@@ -63,8 +63,8 @@ TapTransformer
 
 """
 function flow_func(b::TapTransformer, V_from::Complex{Float64}, V_to::Complex{Float64})
-    Y_t = 1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im)
-    c = 1 / PowerSystems.get_tap(b)
+    Y_t = get_series_admittance(b)
+    c = 1 / get_tap(b)
     I = (V_from * Y_t * c^2) - (V_to * Y_t * c)
     flow = V_from * conj(I)
     return real(flow), imag(flow)
@@ -78,8 +78,8 @@ Line
 
 """
 function flow_func(b::Line, V_from::Complex{Float64}, V_to::Complex{Float64})
-    Y_t = (1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im))
-    I = V_from * (Y_t + (1im * PowerSystems.get_b(b).from)) - V_to * Y_t
+    Y_t = get_series_admittance(b)
+    I = V_from * (Y_t + (1im * get_b(b).from)) - V_to * Y_t
     flow = V_from * conj(I)
     return real(flow), imag(flow)
 end
@@ -92,8 +92,8 @@ Transformer2W
 
 """
 function flow_func(b::Transformer2W, V_from::Complex{Float64}, V_to::Complex{Float64})
-    Y_t = 1 / (PowerSystems.get_r(b) + PowerSystems.get_x(b) * 1im)
-    I = V_from * (Y_t + (1im * PowerSystems.get_primaryshunt(b))) - V_to * Y_t
+    Y_t = get_series_admittance(b)
+    I = V_from * (Y_t + (1im * get_primaryshunt(b))) - V_to * Y_t
     flow = V_from * conj(I)
     return real(flow), imag(flow)
 end
