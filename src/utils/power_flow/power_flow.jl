@@ -376,29 +376,59 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     J0_J = Int64[]
     J0_V = Float64[]
 
-    for ix in a
-        F_ix_r = 2 * ix - 1
-        F_ix_i = 2 * ix
+    for ix_f in a
+        F_ix_f_r = 2 * ix_f - 1
+        F_ix_f_i = 2 * ix_f
 
-        for j in neighbors[ix]
-            X_j_fst = 2 * j - 1
-            X_j_snd = 2 * j
+        for ix_t in neighbors[ix_f]
+            X_ix_t_fst = 2 * ix_t - 1
+            X_ix_t_snd = 2 * ix_t
+            b = get_bustype(buses[ix_t])
             #Set to 0.0 only on connected buses
-            push!(J0_I, F_ix_r)
-            push!(J0_J, X_j_fst)
-            push!(J0_V, 0.0)
-
-            push!(J0_I, F_ix_r)
-            push!(J0_J, X_j_snd)
-            push!(J0_V, 0.0)
-
-            push!(J0_I, F_ix_i)
-            push!(J0_J, X_j_fst)
-            push!(J0_V, 0.0)
-
-            push!(J0_I, F_ix_i)
-            push!(J0_J, X_j_snd)
-            push!(J0_V, 0.0)
+            if b == BusTypes.REF
+                if ix_f == ix_t
+                    #Active PF w/r Local Active Power
+                    push!(J0_I, F_ix_f_r)
+                    push!(J0_J, X_ix_t_fst)
+                    push!(J0_V, 0.0)
+                    #Rective PF w/r Local Reactive Power
+                    push!(J0_I, F_ix_f_i)
+                    push!(J0_J, X_ix_t_snd)
+                    push!(J0_V, 0.0)
+                end
+            elseif b == BusTypes.PV
+                #Active PF w/r Angle
+                push!(J0_I, F_ix_f_r)
+                push!(J0_J, X_ix_t_snd)
+                push!(J0_V, 0.0)
+                #Reactive PF w/r Angle
+                push!(J0_I, F_ix_f_i)
+                push!(J0_J, X_ix_t_snd)
+                push!(J0_V, 0.0)
+                if ix_f == ix_t
+                    #Reactive PF w/r Local Reactive Power
+                    push!(J0_I, F_ix_f_i)
+                    push!(J0_J, X_ix_t_fst)
+                    push!(J0_V, 0.0)
+                end
+            elseif b == BusTypes.PQ
+                #Active PF w/r VoltageMag
+                push!(J0_I, F_ix_f_r)
+                push!(J0_J, X_ix_t_fst)
+                push!(J0_V, 0.0)
+                #Reactive PF w/r VoltageMag
+                push!(J0_I, F_ix_f_i)
+                push!(J0_J, X_ix_t_fst)
+                push!(J0_V, 0.0)
+                #Active PF w/r Angle
+                push!(J0_I, F_ix_f_r)
+                push!(J0_J, X_ix_t_snd)
+                push!(J0_V, 0.0)
+                #Reactive PF w/r Angle
+                push!(J0_I, F_ix_f_i)
+                push!(J0_J, X_ix_t_snd)
+                push!(J0_V, 0.0)
+            end
         end
     end
     J0 = SparseArrays.sparse(J0_I, J0_J, J0_V)
@@ -523,8 +553,6 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                     # x does not appears in p_flow and q_flow
                     if ix_f == ix_t
                         J[F_ix_f_r, X_ix_t_fst] = -1.0
-                        J[F_ix_f_r, X_ix_t_snd] = 0.0
-                        J[F_ix_f_i, X_ix_t_fst] = 0.0
                         J[F_ix_f_i, X_ix_t_snd] = -1.0
                     end
                 elseif b == BusTypes.PV
@@ -534,9 +562,8 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                     # x[2*i] (associated with q_gen) does not appear in q_flow
                     # x[2*i] (associated with q_gen) does not appear in the active power balance
                     if ix_f == ix_t
-                        J[F_ix_f_r, X_ix_t_fst] = 0.0
+                        #Jac: Reactive PF against local active power
                         J[F_ix_f_i, X_ix_t_fst] = -1.0
-
                         #Jac: Active PF against same Angle: θ[ix_f] =  θ[ix_t]
                         J[F_ix_f_r, X_ix_t_snd] =
                             Vm[ix_f] * sum(
@@ -554,10 +581,6 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                                 ) for k in neighbors[ix_f] if k != ix_f
                             )
                     else
-                        #q_gen[ix_t] does not appear in other equations
-                        J[F_ix_f_r, X_ix_t_fst] = 0.0
-                        J[F_ix_f_i, X_ix_t_fst] = 0.0
-
                         g_ij = real(Yb[ix_f, ix_t])
                         b_ij = imag(Yb[ix_f, ix_t])
                         #Jac: Active PF against other angles θ[ix_t]
@@ -650,7 +673,6 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         end
     end
 
-    #pop!(kwargs, :finite_diff, nothing)
     if finite_diff
         res = NLsolve.nlsolve(pf!, x0; kwargs...)
     else
