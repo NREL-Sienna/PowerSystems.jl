@@ -1,5 +1,12 @@
 # PowerSystems Change Log
 
+## 0.21.0
+
+- Improvements to Power Flow solve: Add Jacobian Function, add a method that modifies the system and one that returns results
+- Improvements to TableData Parsing
+- Add new methods to get admittance from branches
+- Add Monitored Line to PTDF
+
 ## 0.20.1
 
 - Add AC1A, ST1A, GasTG structs for dynamic modeling.
