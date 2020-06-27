@@ -344,7 +344,6 @@ res = solve_powerflow(sys, finite_diff = true)
 
 """
 function solve_powerflow(system::System; finite_diff = false, kwargs...)
-    #finite_diff = get(kwargs, :finite_diff, false)
     res = _solve_powerflow(system, finite_diff; kwargs...)
 
     if res.f_converged
