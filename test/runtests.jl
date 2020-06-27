@@ -1,6 +1,7 @@
 using Test
 using Logging
 using Dates
+using LinearAlgebra
 import InteractiveUtils
 
 import InfrastructureSystems

@@ -57,12 +57,17 @@ c_sys5_re() = System(
 )
 
 @testset begin
-    using NLsolve
     # This is a negative test. The data passed for sys5_re is known to be infeasible.
     @test_logs(
         (:error, "The powerflow solver returned convergence = false"),
         match_mode = :any,
-        @test !solve_powerflow!(c_sys5_re(), nlsolve)
+        @test !solve_powerflow!(c_sys5_re(), finite_diff = true)
     )
-    @test solve_powerflow!(c_sys14(), nlsolve, method = :newton)
+    #Compare results between finite diff methods and Jacobian method
+    res_finite_diff = solve_powerflow(c_sys14(), finite_diff = true)
+    res_jacobian = solve_powerflow(c_sys14())
+    @test LinearAlgebra.norm(
+        res_finite_diff["bus_results"].Vm - res_jacobian["bus_results"].Vm
+    ) <= 1e-6
+    @test solve_powerflow!(c_sys14(), finite_diff = true, method = :newton)
 end
