@@ -84,7 +84,6 @@ function flow_func(b::Line, V_from::Complex{Float64}, V_to::Complex{Float64})
     return real(flow), imag(flow)
 end
 
-
 """
     flow_func(b::Transformer2W, V_from::Complex, V_to::Complex)
 
@@ -99,7 +98,11 @@ function flow_func(b::Transformer2W, V_from::Complex{Float64}, V_to::Complex{Flo
     return real(flow), imag(flow)
 end
 
-function flow_func(b::PhaseShiftingTransformer, V_from::Complex{Float64}, V_to::Complex{Float64})
+function flow_func(
+    b::PhaseShiftingTransformer,
+    V_from::Complex{Float64},
+    V_to::Complex{Float64},
+)
     error("Systems with PhaseShiftingTransformer not supported yet")
     return
 end
@@ -268,12 +271,9 @@ function _write_results(sys::System, nl_result)
         Q_losses = P_from_to_vect - P_to_from_vect,
     )
     DataFrames.sort!(branch_df, [:bus_from, :bus_to])
-    
 
     return Dict("bus_results" => bus_df, "flow_results" => branch_df)
 end
-
-
 
 """
     solve_powerflow!(system, finite_diff = false, args...)
@@ -314,11 +314,7 @@ solve_powerflow!(sys, finite_diff = true)
 ```
 
 """
-function solve_powerflow!(
-    system::System;
-    finite_diff = false,
-    kwargs...,
-)
+function solve_powerflow!(system::System; finite_diff = false, kwargs...)
     #finite_diff = get(kwargs, :finite_diff, false)
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
@@ -329,7 +325,6 @@ function solve_powerflow!(
     @error("The powerflow solver returned convergence = $(res.f_converged)")
     return res.f_converged
 end
-
 
 """
     solve_powerflow(system, finite_diff = false, args...)
@@ -348,11 +343,7 @@ res = solve_powerflow(sys, finite_diff = true)
 ```
 
 """
-function solve_powerflow(
-    system::System;
-    finite_diff = false,
-    kwargs...,
-)
+function solve_powerflow(system::System; finite_diff = false, kwargs...)
     #finite_diff = get(kwargs, :finite_diff, false)
     res = _solve_powerflow(system, finite_diff; kwargs...)
 
@@ -364,11 +355,7 @@ function solve_powerflow(
     return res.f_converged
 end
 
-function _solve_powerflow(
-    system::System,
-    finite_diff::Bool;
-    kwargs...,
-)
+function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     buses = sort(collect(get_components(Bus, system)), by = x -> get_number(x))
     N_BUS = length(buses)
 

@@ -67,7 +67,7 @@ c_sys5_re() = System(
     res_finite_diff = solve_powerflow(c_sys14(), finite_diff = true)
     res_jacobian = solve_powerflow(c_sys14())
     @test LinearAlgebra.norm(
-        res_finite_diff["bus_results"].Vm - res_jacobian["bus_results"].Vm
+        res_finite_diff["bus_results"].Vm - res_jacobian["bus_results"].Vm,
     ) <= 1e-6
     @test solve_powerflow!(c_sys14(), finite_diff = true, method = :newton)
 end
