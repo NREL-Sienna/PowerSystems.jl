@@ -267,8 +267,8 @@ function _write_results(sys::System, nl_result)
         Q_from_to = Q_from_to_vect,
         P_to_from = P_to_from_vect,
         Q_to_from = Q_to_from_vect,
-        P_losses = abs.(P_from_to_vect - P_to_from_vect),
-        Q_losses = abs.(Q_from_to_vect - Q_to_from_vect),
+        P_losses = P_from_to_vect + P_to_from_vect,
+        Q_losses = Q_from_to_vect + Q_to_from_vect,
     )
     DataFrames.sort!(branch_df, [:bus_from, :bus_to])
 
