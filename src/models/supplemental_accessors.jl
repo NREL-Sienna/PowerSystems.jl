@@ -6,13 +6,13 @@ set_load_zone!(bus::Bus, load_zone::LoadZone) = bus.load_zone = load_zone
 set_area!(bus::Bus, area::Area) = bus.area = area
 
 """
-    removes the aggregation topology in a Bus
+Remove the aggregation topology in a Bus
 """
 _remove_aggregration_topology!(bus::Bus, ::LoadZone) = bus.load_zone = nothing
 _remove_aggregration_topology!(bus::Bus, ::Area) = bus.area = nothing
 
 """
-    calculates the admittance of AC branches
+Calculate the admittance of AC branches
 """
 get_series_susceptance(b::ACBranch) = 1 / get_x(b)
 get_series_susceptance(b::TapTransformer) = 1 / (get_x(b) * get_tap(b))

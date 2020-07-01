@@ -8,8 +8,6 @@ All subtypes must implement the method get_aggregation_topology_accessor.
 abstract type AggregationTopology <: Topology end
 
 """
-    get_aggregation_topology_accessor(::Type{T}) where T <: AggregationTopology
-
 Return the method to be called on a Bus to get its AggregationTopology value for this type.
 """
 function get_aggregation_topology_accessor(::Type{T}) where {T <: AggregationTopology}
