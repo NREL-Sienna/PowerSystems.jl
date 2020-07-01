@@ -248,6 +248,7 @@ export get_start_time_limits
 export get_start_types
 export get_startup
 export get_states
+export get_states_types
 export get_status
 export get_storage_capacity
 export get_tap
@@ -454,6 +455,7 @@ export set_start_time_limits!
 export set_start_types!
 export set_startup!
 export set_states!
+export set_states_types!
 export set_status!
 export set_storage_capacity!
 export set_tap!

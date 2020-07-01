@@ -18,6 +18,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
+        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
@@ -37,8 +38,13 @@ Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 - `Be::Float64`: 2nd ceiling coefficient, validation range: (0, nothing)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states are:
+	Vf: Voltage field,
+	Vr1: Amplifier State,
+	Vr2: Stabilizing Feedback State,
+	Vm: Measured voltage
+- `n_states::Int64`: The AVR Type I has 4 states
+- `states_types::Vector{StateTypes.StateType}`: AVR Type I has 4 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AVRTypeI <: AVR
@@ -67,14 +73,22 @@ mutable struct AVRTypeI <: AVR
     "Reference Voltage Set-point"
     V_ref::Float64
     ext::Dict{String, Any}
+    "The states are:
+	Vf: Voltage field,
+	Vr1: Amplifier State,
+	Vr2: Stabilizing Feedback State,
+	Vm: Measured voltage"
     states::Vector{Symbol}
+    "The AVR Type I has 4 states"
     n_states::Int64
+    "AVR Type I has 4 differential states"
+    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, InfrastructureSystemsInternal(), )
+    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function AVRTypeI(; Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
@@ -130,6 +144,8 @@ get_ext(value::AVRTypeI) = value.ext
 get_states(value::AVRTypeI) = value.states
 """Get AVRTypeI n_states."""
 get_n_states(value::AVRTypeI) = value.n_states
+"""Get AVRTypeI states_types."""
+get_states_types(value::AVRTypeI) = value.states_types
 """Get AVRTypeI internal."""
 get_internal(value::AVRTypeI) = value.internal
 
@@ -163,5 +179,7 @@ set_ext!(value::AVRTypeI, val::Dict{String, Any}) = value.ext = val
 set_states!(value::AVRTypeI, val::Vector{Symbol}) = value.states = val
 """Set AVRTypeI n_states."""
 set_n_states!(value::AVRTypeI, val::Int64) = value.n_states = val
+"""Set AVRTypeI states_types."""
+set_states_types!(value::AVRTypeI, val::Vector{StateTypes.StateType}) = value.states_types = val
 """Set AVRTypeI internal."""
 set_internal!(value::AVRTypeI, val::InfrastructureSystemsInternal) = value.internal = val
