@@ -72,6 +72,12 @@ IS.@scoped_enum ThermalFuel begin
     OTHER # OTH     # Other
 end
 
+IS.@scoped_enum StateType begin
+    Differential
+    Algebraic
+    Hybrid
+end
+
 PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
 DEFAULT_BASE_MVA = 100.0
 

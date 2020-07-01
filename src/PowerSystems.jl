@@ -157,6 +157,7 @@ export BusTypes
 export LoadModels
 export PrimeMovers
 export ThermalFuels
+export StateTypes
 
 export Forecast
 export Deterministic
