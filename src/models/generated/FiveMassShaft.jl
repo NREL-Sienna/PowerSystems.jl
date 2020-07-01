@@ -51,8 +51,18 @@ Parameters of 5 mass-spring shaft model.
 - `K_lp::Float64`: Low pressure turbine angle coefficient, validation range: (0, nothing)
 - `K_ex::Float64`: Exciter angle coefficient, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states are:
+	δ: rotor angle,
+	ω: rotor speed,
+	δ_hp: rotor angle of high pressure turbine,
+	ω_hp: rotor speed of high pressure turbine,
+	δ_ip: rotor angle of intermediate pressure turbine,
+	ω_ip: rotor speed of intermediate pressure turbine,
+	δ_lp: rotor angle of low pressure turbine,
+	ω_lp: rotor speed of low pressure turbine,
+	δ_ex: rotor angle of exciter,
+	ω_lp: rotor speed of exciter
+- `n_states::Int64`: FiveMassShaft has 10 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct FiveMassShaft <: Shaft
@@ -93,7 +103,19 @@ mutable struct FiveMassShaft <: Shaft
     "Exciter angle coefficient"
     K_ex::Float64
     ext::Dict{String, Any}
+    "The states are:
+	δ: rotor angle,
+	ω: rotor speed,
+	δ_hp: rotor angle of high pressure turbine,
+	ω_hp: rotor speed of high pressure turbine,
+	δ_ip: rotor angle of intermediate pressure turbine,
+	ω_ip: rotor speed of intermediate pressure turbine,
+	δ_lp: rotor angle of low pressure turbine,
+	ω_lp: rotor speed of low pressure turbine,
+	δ_ex: rotor angle of exciter,
+	ω_lp: rotor speed of exciter"
     states::Vector{Symbol}
+    "FiveMassShaft has 10 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

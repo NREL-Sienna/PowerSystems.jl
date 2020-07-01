@@ -11,15 +11,21 @@ This file is auto-generated. Do not edit.
         n_states::Int64
     end
 
-Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko. "Operation of a phase locked loop system under distorted utility conditions." IEEE Transactions on Industry applications 33.1 (1997): 58-63.
+Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko.
+"Operation of a phase locked loop system under distorted utility conditions."
+IEEE Transactions on Industry applications 33.1 (1997): 58-63.
 
 # Arguments
 - `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: (0, nothing)
 - `kp_pll::Float64`: PLL proportional gain, validation range: (0, nothing)
 - `ki_pll::Float64`: PLL integral gain, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states of the KauraPLL model are:
+	vd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),
+	vq_pll: q-axis of the measured voltage in the PLL SRF,
+	ε_pll: Integrator state of the PI controller,
+	θ_pll: Phase angle displacement in the PLL SRF
+- `n_states::Int64`: KauraPLL has 4 states
 """
 mutable struct KauraPLL <: FrequencyEstimator
     "PLL low-pass filter frequency (rad/sec)"
@@ -29,7 +35,13 @@ mutable struct KauraPLL <: FrequencyEstimator
     "PLL integral gain"
     ki_pll::Float64
     ext::Dict{String, Any}
+    "The states of the KauraPLL model are:
+	vd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),
+	vq_pll: q-axis of the measured voltage in the PLL SRF,
+	ε_pll: Integrator state of the PI controller,
+	θ_pll: Phase angle displacement in the PLL SRF"
     states::Vector{Symbol}
+    "KauraPLL has 4 states"
     n_states::Int64
 end
 

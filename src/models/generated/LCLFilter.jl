@@ -22,8 +22,14 @@ Parameters of a LCL filter outside the converter, the states are in the grid's r
 - `lg::Float64`: Series inductance in p.u. of converter filter to the grid, validation range: (0, nothing)
 - `rg::Float64`: Series resistance in p.u. of converter filter to the grid, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states of the LCLFilter model are:
+	ir_cnv: Real current out of the converter,
+	ii_cnv: Imaginary current out of the converter,
+	vr_filter: Real voltage at the filter's capacitor,
+	vi_filter: Imaginary voltage at the filter's capacitor,
+	ir_filter: Real current out of the filter,
+	ii_filter: Imaginary current out of the filter
+- `n_states::Int64`: LCLFilter has 6 states
 """
 mutable struct LCLFilter <: Filter
     "Series inductance in p.u. of converter filter"
@@ -37,7 +43,15 @@ mutable struct LCLFilter <: Filter
     "Series resistance in p.u. of converter filter to the grid"
     rg::Float64
     ext::Dict{String, Any}
+    "The states of the LCLFilter model are:
+	ir_cnv: Real current out of the converter,
+	ii_cnv: Imaginary current out of the converter,
+	vr_filter: Real voltage at the filter's capacitor,
+	vi_filter: Imaginary voltage at the filter's capacitor,
+	ir_filter: Real current out of the filter,
+	ii_filter: Imaginary current out of the filter"
     states::Vector{Symbol}
+    "LCLFilter has 6 states"
     n_states::Int64
 end
 

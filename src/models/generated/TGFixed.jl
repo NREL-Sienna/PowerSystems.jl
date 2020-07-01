@@ -19,7 +19,7 @@ Parameters of a fixed Turbine Governor that returns a fixed mechanical torque
 - `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
-- `n_states::Int64`
+- `n_states::Int64`: TGFixed has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TGFixed <: TurbineGov
@@ -29,6 +29,7 @@ mutable struct TGFixed <: TurbineGov
     P_ref::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
+    "TGFixed has no states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

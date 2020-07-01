@@ -19,8 +19,8 @@ Parameters of a Classic Machine: GENCLS in PSSE and PSLF
 - `Xd_p::Float64`: Reactance after EMF in machine per unit, validation range: (0, nothing)
 - `eq_p::Float64`: Fixed EMF behind the impedance, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: BaseMachine has no states
+- `n_states::Int64`: BaseMachine has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct BaseMachine <: Machine
@@ -31,7 +31,9 @@ mutable struct BaseMachine <: Machine
     "Fixed EMF behind the impedance"
     eq_p::Float64
     ext::Dict{String, Any}
+    "BaseMachine has no states"
     states::Vector{Symbol}
+    "BaseMachine has no states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

@@ -18,7 +18,7 @@ Parameters of a PSS that returns a proportional droop voltage to add to the refe
 - `K_p::Float64`: Proportional gain for active power, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
-- `n_states::Int64`
+- `n_states::Int64`: PSSSimple has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PSSSimple <: PSS
@@ -28,6 +28,7 @@ mutable struct PSSSimple <: PSS
     K_p::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
+    "PSSSimple has no states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

@@ -18,8 +18,10 @@ Parameters of a LCL filter outside the converter
 - `rf::Float64`: filter resistance, validation range: (0, nothing)
 - `cf::Float64`: filter capacitance, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states of the LCFilter model are:
+	ir_filter: Real current out of the filter,
+	ii_filter: Imaginary current out of the filter
+- `n_states::Int64`: LCFilter has two states
 """
 mutable struct LCFilter <: Filter
     "filter inductance"
@@ -29,12 +31,16 @@ mutable struct LCFilter <: Filter
     "filter capacitance"
     cf::Float64
     ext::Dict{String, Any}
+    "The states of the LCFilter model are:
+	ir_filter: Real current out of the filter,
+	ii_filter: Imaginary current out of the filter"
     states::Vector{Symbol}
+    "LCFilter has two states"
     n_states::Int64
 end
 
 function LCFilter(lf, rf, cf, ext=Dict{String, Any}(), )
-    LCFilter(lf, rf, cf, ext, [:id_o, :iq_o], 4, )
+    LCFilter(lf, rf, cf, ext, [:ir_filter, :ii_filter], 2, )
 end
 
 function LCFilter(; lf, rf, cf, ext=Dict{String, Any}(), )

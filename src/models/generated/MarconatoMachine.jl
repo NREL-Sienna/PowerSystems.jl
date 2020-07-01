@@ -41,8 +41,14 @@ Parameters of 6-states synchronous machine: Marconato model
 - `ext::Dict{String, Any}`
 - `γd::Float64`
 - `γq::Float64`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states are:
+	eψq: q-axis stator flux,
+	ψd: d-axis stator flux,
+	eq_p: q-axis transient voltage,
+	ed_p: d-axis transient voltage,
+	eq_pp: q-axis subtransient voltage,
+	ed_pp: d-axis subtransient voltage
+- `n_states::Int64`: MarconatoMachine has 6 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct MarconatoMachine <: Machine
@@ -73,7 +79,15 @@ mutable struct MarconatoMachine <: Machine
     ext::Dict{String, Any}
     γd::Float64
     γq::Float64
+    "The states are:
+	eψq: q-axis stator flux,
+	ψd: d-axis stator flux,
+	eq_p: q-axis transient voltage,
+	ed_p: d-axis transient voltage,
+	eq_pp: q-axis subtransient voltage,
+	ed_pp: d-axis subtransient voltage"
     states::Vector{Symbol}
+    "MarconatoMachine has 6 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

@@ -30,8 +30,10 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: (0, nothing)
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states are:
+	eq_p: q-axis transient voltage,
+	ed_p: d-axis transient voltage
+- `n_states::Int64`: OneDOneQMachine has 2 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct OneDOneQMachine <: Machine
@@ -50,7 +52,11 @@ mutable struct OneDOneQMachine <: Machine
     "Time constant of transient q-axis voltage"
     Tq0_p::Float64
     ext::Dict{String, Any}
+    "The states are:
+	eq_p: q-axis transient voltage,
+	ed_p: d-axis transient voltage"
     states::Vector{Symbol}
+    "OneDOneQMachine has 2 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

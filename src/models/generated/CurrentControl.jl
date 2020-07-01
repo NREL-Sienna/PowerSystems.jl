@@ -18,7 +18,9 @@ This file is auto-generated. Do not edit.
         n_states::Int64
     end
 
-Parameters of an inner loop current control PID using virtual impedance.
+Parameters of an inner loop current control PID using virtual impedance based on D'Arco, Suul and Fosso.
+"A Virtual Synchronous Machine implementation for distributed control of power converters in SmartGrids."
+Electric Power Systems Research 122 (2015) 180–197.
 
 # Arguments
 - `kpv::Float64`: voltage controller proportional gain, validation range: (0, nothing)
@@ -32,8 +34,14 @@ Parameters of an inner loop current control PID using virtual impedance.
 - `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: (0, nothing)
 - `kad::Float64`: active damping gain, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states of the VirtualInertia model are:
+	ξd_ic: d-axis integrator state of the PI voltage controller,
+	ξq_ic: q-axis integrator state of the PI voltage controller,
+	γd_ic: d-axis integrator state of the PI current controller,
+	γq_ic: q-axis integrator state of the PI current controller,
+	ϕd_ic: d-axis low-pass filter of active damping,
+	ϕq_ic: q-axis low-pass filter of active damping
+- `n_states::Int64`: CurrentControl has 6 states
 """
 mutable struct CurrentControl <: InnerControl
     "voltage controller proportional gain"
@@ -57,7 +65,15 @@ mutable struct CurrentControl <: InnerControl
     "active damping gain"
     kad::Float64
     ext::Dict{String, Any}
+    "The states of the VirtualInertia model are:
+	ξd_ic: d-axis integrator state of the PI voltage controller,
+	ξq_ic: q-axis integrator state of the PI voltage controller,
+	γd_ic: d-axis integrator state of the PI current controller,
+	γq_ic: q-axis integrator state of the PI current controller,
+	ϕd_ic: d-axis low-pass filter of active damping,
+	ϕq_ic: q-axis low-pass filter of active damping"
     states::Vector{Symbol}
+    "CurrentControl has 6 states"
     n_states::Int64
 end
 
