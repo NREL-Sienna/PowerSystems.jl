@@ -45,7 +45,7 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
 - `states::Vector{Symbol}`: The states are:
-	eψd: d-axis stator flux,
+	ψd: d-axis stator flux,
 	ψq: q-axis stator flux,
 	ψf: field rotor flux,
 	ψ1d: d-axis rotor damping flux,
@@ -84,7 +84,7 @@ mutable struct FullMachine <: Machine
     "Equations 3.128, 3.132 From Kundur"
     inv_q_fluxlink::Array{Float64,2}
     "The states are:
-	eψd: d-axis stator flux,
+	ψd: d-axis stator flux,
 	ψq: q-axis stator flux,
 	ψf: field rotor flux,
 	ψ1d: d-axis rotor damping flux,

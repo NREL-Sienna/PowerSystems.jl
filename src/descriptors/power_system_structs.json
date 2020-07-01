@@ -4201,7 +4201,7 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\teψd: d-axis stator flux,\n\tψq: q-axis stator flux,\n\tψf: field rotor flux,\n\tψ1d: d-axis rotor damping flux,\n\tψ1q: q-axis rotor damping flux",
+          "comment": "The states are:\n\tψd: d-axis stator flux,\n\tψq: q-axis stator flux,\n\tψf: field rotor flux,\n\tψ1d: d-axis rotor damping flux,\n\tψ1q: q-axis rotor damping flux",
           "internal_default": "[:ψd, :ψq, :ψf, :ψ1d, :ψ1q]",
           "data_type": "Vector{Symbol}"
         },
@@ -4364,7 +4364,7 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\teψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
+          "comment": "The states are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
           "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
           "data_type": "Vector{Symbol}"
         },

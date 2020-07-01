@@ -42,7 +42,7 @@ Parameters of 6-states synchronous machine: Marconato model
 - `γd::Float64`
 - `γq::Float64`
 - `states::Vector{Symbol}`: The states are:
-	eψq: q-axis stator flux,
+	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
@@ -80,7 +80,7 @@ mutable struct MarconatoMachine <: Machine
     γd::Float64
     γq::Float64
     "The states are:
-	eψq: q-axis stator flux,
+	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
