@@ -718,5 +718,25 @@
             "description": "Maximum Rective Power",
             "system_per_unit": true
         }
+    ],
+    "load": [
+        {
+            "name": "bus_id",
+            "description": "Numeric Bus ID"
+        },
+        {
+            "name": "name",
+            "description": "load name"
+        },
+        {
+            "name": "max_active_power",
+            "description": "Maximum Active Power",
+            "system_per_unit": true
+        },
+        {
+            "name": "max_reactive_power",
+            "description": "Maximum Rective Power",
+            "system_per_unit": true
+        }
     ]
 }

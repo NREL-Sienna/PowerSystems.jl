@@ -275,13 +275,14 @@ function System(
 
     loadzone_csv_parser!(sys, data)
     bus_csv_parser!(sys, data)
-    load_csv_parser!(sys, data)
+    busload_csv_parser!(sys, data)
 
     # Services and forecasts must be last.
     parsers = (
         (get_dataframe(data, BRANCH::InputCategory), branch_csv_parser!),
         (get_dataframe(data, DC_BRANCH::InputCategory), dc_branch_csv_parser!),
         (get_dataframe(data, GENERATOR::InputCategory), gen_csv_parser!),
+        (get_dataframe(data, LOAD::InputCategory), load_csv_parser!),
         (get_dataframe(data, RESERVE::InputCategory), services_csv_parser!),
     )
 
@@ -510,12 +511,12 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 """
-    load_csv_parser!(sys::System, data::PowerSystemTableData)
+    busload_csv_parser!(sys::System, data::PowerSystemTableData)
 
-Add loads to the System from the raw data.
+Add loads to the System from the raw bus data.
 
 """
-function load_csv_parser!(sys::System, data::PowerSystemTableData)
+function busload_csv_parser!(sys::System, data::PowerSystemTableData)
     for ps_bus in get_components(Bus, sys)
         max_active_power = 0.0
         max_reactive_power = 0.0
@@ -550,6 +551,38 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
             )
             add_component!(sys, load)
         end
+    end
+end
+
+"""
+    load_csv_parser!(sys::System, data::PowerSystemTableData)
+
+Add loads to the System from the raw load data.
+
+"""
+function load_csv_parser!(sys::System, data::PowerSystemTableData)
+    for rawload in iterate_rows(data, LOAD::InputCategory)
+        bus = get_bus(sys, rawload.bus_id)
+        if isnothing(bus)
+            throw(DataFormatError("could not find $(rawload.bus_id)"))
+        end
+
+        max_active_power = rawload.max_active_power
+        max_reactive_power = rawload.max_reactive_power
+        active_power = get(rawload, :active_power, max_active_power)
+        reactive_power = get(rawload, :reactive_power, max_reactive_power)
+
+        load = PowerLoad(
+            name = rawload.name,
+            available = true,
+            bus = bus,
+            model = LoadModels.ConstantPower,
+            activepower = active_power,
+            reactivepower = reactive_power,
+            maxactivepower = max_active_power,
+            maxreactivepower = max_reactive_power,
+        )
+        add_component!(sys, load)
     end
 end
 
