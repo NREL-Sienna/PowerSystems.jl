@@ -475,7 +475,11 @@ function IS.add_forecast!(
             IS.get_uuid(get_bus(load)) in uuids
         )
             forecasts = IS.get_forecasts(component_)
-            key = IS.ForecastKey(typeof(forecast), get_initial_time(forecast), IS.get_label(forecast))
+            key = IS.ForecastKey(
+                typeof(forecast),
+                get_initial_time(forecast),
+                IS.get_label(forecast),
+            )
             if haskey(forecasts.data, key)
                 @warn "forecast $key is already stored for $(get_name(component_)), not adding $(get_name(component)) Area forecast"
             else
