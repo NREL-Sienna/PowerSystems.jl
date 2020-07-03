@@ -1,8 +1,5 @@
 
 """
-    TamuSystem(tamu_folder::AbstractString;
-                     kwargs...)
-
 Creates a system from a PSS/e .RAW (v33) load flow case, and an associated .csv with MW load
 time series data. The format is established by the
 [Texas A&M University Test Case Archive](https://electricgrids.engr.tamu.edu/electric-grid-test-cases/)

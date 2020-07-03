@@ -83,11 +83,6 @@ function PowerSystemTableData(
 end
 
 """
-     PowerSystemTableData(directory::AbstractString,
-                          basepower::Float64,
-                          user_descriptor_file::AbstractString;
-                          descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE)
-
 Reads in all the data stored in csv files
 The general format for data is
     folder:
@@ -222,8 +217,6 @@ function get_dataframe(data::PowerSystemTableData, category::InputCategory)
 end
 
 """
-    iterate_rows(data::PowerSystemTableData, category; na_to_nothing=true)
-
 Return a NamedTuple of parameters from the descriptor file for each row of a dataframe,
 making type conversions as necessary.
 
@@ -241,8 +234,6 @@ function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true
 end
 
 """
-    System(data::PowerSystemTableData)
-
 Construct a System from PowerSystemTableData data.
 
 # Arguments
@@ -301,8 +292,6 @@ function System(
 end
 
 """
-    bus_csv_parser!(sys::System, bus_raw::DataFrames.DataFrame)
-
 Add buses and areas to the System from the raw data.
 
 """
@@ -336,8 +325,6 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 """
-    branch_csv_parser!(sys::System, data::PowerSystemTableData)
-
 Add branches to the System from the raw data.
 
 """
@@ -408,10 +395,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 """
-    dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
-
 Add DC branches to the System from raw data.
-
 """
 function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
     for dc_branch in iterate_rows(data, DC_BRANCH::InputCategory)
@@ -477,8 +461,6 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 """
-    gen_csv_parser!(sys::System, data::PowerSystemTableData)
-
 Add generators to the System from the raw data.
 
 """
@@ -625,10 +607,7 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 """
-    services_csv_parser!(sys::System, data::PowerSystemTableData)
-
 Add services to the System from the raw data.
-
 """
 function services_csv_parser!(sys::System, data::PowerSystemTableData)
     bus_id_column = get_user_field(data, BUS::InputCategory, "bus_id")

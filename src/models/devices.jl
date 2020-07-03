@@ -1,6 +1,4 @@
 """
-    add_service!(device::Device, service::Service)
-
 Add a service to a device.
 
 Throws ArgumentError if the service is already attached to the device.
@@ -40,8 +38,6 @@ function add_service!(device::Device, service::AGC)
 end
 
 """
-    remove_service!(device::Device, service::Service)
-
 Remove a service from a device.
 
 Throws ArgumentError if the service is not attached to the device.
@@ -53,8 +49,6 @@ function remove_service!(device::Device, service::Service)
 end
 
 """
-    has_service(device::Device, service::Service)
-
 Return true if the service is attached to the device.
 """
 function has_service(device::Device, service::Service)
@@ -68,8 +62,6 @@ function has_service(device::Device, service::Service)
 end
 
 """
-    has_service(device::Device, ::Type{T}) where T <:Service
-
 Return true if a service with type T is attached to the device.
 """
 function has_service(device::Device, ::Type{T}) where {T <: Service}
@@ -104,8 +96,6 @@ function _remove_service!(device::Device, service::Service)
 end
 
 """
-    clear_services!(device::Device)
-
 Remove all services attached to the device.
 """
 function clear_services!(device::Device)
