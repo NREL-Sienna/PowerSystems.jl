@@ -828,14 +828,21 @@ function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
     return timelimits
 end
 
+function make_reactive_params(gen)
+    reactive_power = get(gen, :reactive_power, 0.0)
+    reactive_power_limits_min = get(gen, :reactive_power_limits_min, nothing)
+    reactive_power_limits_max = get(gen, :reactive_power_limits_max, nothing)
+    reactive_power_limits = (isnothing(reactive_power_limits_min) & isnothing(reactive_power_limits_max)) ? nothing : (min = reactive_power_limits_min, max = reactive_power_limits_max)
+    return reactive_power, reactive_power_limits
+end
+
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     status = get(gen, :status_at_start, true)
     available = get(gen, :available, true)
-    rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    reactive_power_limits =
-        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    rating = calculate_rating(active_power_limits, reactive_power_limits)
     ramplimits = make_ramplimits(gen)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
     primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
@@ -853,7 +860,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         status,
         bus,
         gen.active_power,
-        gen.reactive_power,
+        reactive_power,
         rating,
         primemover,
         fuel,
@@ -938,17 +945,15 @@ end
 
 function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus)
     available = true
-    rating = calculate_rating(gen.active_power_limits_max, gen.reactive_power_limits_max)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    reactive_power_limits =
-        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    rating = calculate_rating(active_power_limits, reactive_power_limits)
     ramplimits = make_ramplimits(gen)
     min_up_time = get(gen, :min_up_time, nothing)
     min_down_time = get(gen, :min_down_time, nothing)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
-    basepower = gen.base_mva
-    sys_basepower = data.basepower
+    basepower = get(gen, :base_mva, 1.0)
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -965,7 +970,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             available = available,
             bus = bus,
             activepower = gen.active_power,
-            reactivepower = gen.reactive_power,
+            reactivepower = reactive_power,
             primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             rating = rating,
             activepowerlimits = active_power_limits,
@@ -973,7 +978,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             ramplimits = ramplimits,
             timelimits = timelimits,
             op_cost = op_cost,
-            basepower = basepower / sys_basepower,
+            basepower = basepower,
             storage_capacity = storage.storage_capacity,
             inflow = storage.inflow_limit,
             initial_storage = storage.initial_storage,
@@ -985,14 +990,14 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             available = available,
             bus = bus,
             activepower = gen.active_power,
-            reactivepower = gen.reactive_power,
+            reactivepower = reactive_power,
             rating = rating,
             primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             activepowerlimits = active_power_limits,
             reactivepowerlimits = reactive_power_limits,
             ramplimits = ramplimits,
             timelimits = timelimits,
-            basepower = basepower / sys_basepower,
+            basepower = basepower,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
@@ -1013,20 +1018,24 @@ end
 function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
     generator = nothing
     available = true
-    rating = gen.active_power_limits_max
+    active_power_limits = (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    basepower = get(gen, :base_mva, 1.0)
+
     if gen_type == RenewableDispatch
         generator = RenewableDispatch(
             gen.name,
             available,
             bus,
             gen.active_power,
-            gen.reactive_power,
+            reactive_power,
             rating,
             convert(PrimeMovers.PrimeMover, gen.unit_type),
-            (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max),
+            reactive_power_limits,
             1.0,
             TwoPartCost(0.0, 0.0),
-            gen.base_mva / data.basepower,
+            basepower,
         )
     elseif gen_type == RenewableFix
         generator = RenewableFix(
@@ -1034,11 +1043,11 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             available,
             bus,
             gen.active_power,
-            gen.reactive_power,
+            reactive_power,
             rating,
             convert(PrimeMovers.PrimeMover, gen.unit_type),
             1.0,
-            gen.base_mva / data.basepower,
+            basepower,
         )
     else
         error("Unsupported type $gen_type")
@@ -1055,7 +1064,8 @@ function make_storage(data::PowerSystemTableData, gen, bus)
     input_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
     output_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
     efficiency = (in = 0.9, out = 0.9)
-    reactive_power_limits = (min = 0.0, max = 0.0)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    basepower = get(gen, :base_mva, 1.0)
 
     battery = GenericBattery(
         name = gen.name,
@@ -1069,9 +1079,9 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         inputactivepowerlimits = input_active_power_limits,
         outputactivepowerlimits = output_active_power_limits,
         efficiency = efficiency,
-        reactivepower = gen.reactive_power,
+        reactivepower = reactive_power,
         reactivepowerlimits = reactive_power_limits,
-        basepower = gen.base_mva / data.basepower,
+        basepower = basepower,
     )
 
     return battery
