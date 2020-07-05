@@ -34,7 +34,7 @@ This file is auto-generated. Do not edit.
 - `primemover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
 - `activepowerlimits::Min_Max`
 - `reactivepowerlimits::Union{Nothing, Min_Max}`, action if invalid: warn
-- `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits, validation range: (0, nothing), action if invalid: error
+- `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: (0, nothing), action if invalid: error
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `basepower::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
@@ -55,7 +55,7 @@ mutable struct HydroDispatch <: HydroGen
     primemover::PrimeMovers.PrimeMover
     activepowerlimits::Min_Max
     reactivepowerlimits::Union{Nothing, Min_Max}
-    "ramp up and ramp down limits"
+    "ramp up and ramp down limits in MW (in component base per unit) per minute"
     ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}

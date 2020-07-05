@@ -263,9 +263,9 @@
             "description": "Minimum on time required before unit shutdown"
         },
         {
-            "unit": "MW/Min",
+            "unit": "MW(p.u.)/Min",
             "name": "ramp_limits",
-            "description": "Maximum ramp up and ramp down rate",
+            "description": "Maximum ramp up and ramp down rate in MW (in component base per unit) per minute",
             "system_per_unit": true
         },
         {
@@ -390,7 +390,8 @@
         {
             "unit": "MVA",
             "name": "base_mva",
-            "description": "Unit equivalent circuit base_mva"
+            "description": "Unit equivalent circuit base_mva",
+            "system_per_unit": true
         },
         {
             "unit": "$/MW",
@@ -454,12 +455,12 @@
         },
         {
             "name": "startup_ramp",
-            "description": "Startup ramp capability",
+            "description": "Startup ramp capability in MW (in component base per unit) per minute",
             "system_per_unit": true
         },
         {
             "name": "shutdown_ramp",
-            "description": "Shutdown ramp capability",
+            "description": "Shutdown ramp capability in MW (in component base per unit) per minute",
             "system_per_unit": true
         },
         {
