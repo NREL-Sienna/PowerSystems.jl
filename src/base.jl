@@ -25,7 +25,7 @@ const SYSTEM_KWARGS = Set((
     NATURAL_UNITS
 end
 
-struct SystemUnitsSettings
+struct SystemUnitsSettings <: IS.UnitsData
     base_power::Float64
     unit_system::UnitSystem
 end
@@ -65,10 +65,10 @@ struct System <: PowerSystemType
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
     runchecks::Bool
-    unit_settings::SystemUnitsSettings
+    units_settings::SystemUnitsSettings
     internal::IS.InfrastructureSystemsInternal
 
-    function System(data, base_power, internal; kwargs...)
+    function System(data, units_settings::SystemUnitsSettings, internal::IS.InfrastructureSystemsInternal; kwargs...)
         # Note to devs: if you add parameters to kwargs then consider whether they need
         # special handling in the deserialization function in this file.
         # See JSON2.read for System.
@@ -77,15 +77,21 @@ struct System <: PowerSystemType
         # elsewhere.
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
-
+        if !isnothing(get(kwargs, :unit_system, nothing))
+            @warn("unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence")
+        end
         bus_numbers = Set{Int}()
         frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
         runchecks = get(kwargs, :runchecks, true)
-        unit_system = get(kwargs, :unit_system, DEVICE_BASE)
-        unit_settings = SystemUnitsSettings(base_power, unit_system)
-        sys = new(data, frequency, bus_numbers, runchecks, unit_settings, internal)
+        sys = new(data, frequency, bus_numbers, runchecks, units_settings, internal)
         return sys
     end
+end
+
+function System(data, base_power, internal; kwargs...)
+    unit_system = get(kwargs, :unit_system, DEVICE_BASE)
+    units_settings = SystemUnitsSettings(base_power, unit_system)
+    return System(data, units_settings, internal; kwargs...)
 end
 
 """Construct an empty `System`. Useful for building a System while parsing raw data."""
@@ -330,7 +336,7 @@ get_ext(sys::System) = IS.get_ext(sys.internal)
 """
 Return the system's base power.
 """
-get_base_power(sys::System) = sys.unit_settings.base_power
+get_base_power(sys::System) = sys.units_settings.base_power
 
 """
 Return the system's frequency.
@@ -341,6 +347,11 @@ get_frequency(sys::System) = sys.frequency
 Clear any value stored in ext.
 """
 clear_ext(sys::System) = IS.clear_ext(sys.internal)
+
+function set_unit_system!(component::Component, settings::SystemUnitsSettings)
+    component.internal.units_info = settings
+    return
+end
 
 """
 Add a component to the system.
@@ -364,6 +375,7 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
 """
 function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
+    set_unit_system!(component, sys.units_settings)
     check_component_addition(sys, component)
     check_for_services_on_addition(sys, component)
 
@@ -1286,7 +1298,7 @@ function deserialize(
 
         # Read any field that is defined in System but optional for the constructors and not
         # already handled here.
-        handled = (:data, :base_power, :bus_numbers, :internal)
+        handled = (:data, :units_settings, :bus_numbers, :internal)
         kwargs = Dict{Symbol, Any}()
         for field in setdiff(propertynames(raw), handled)
             kwargs[field] = getproperty(raw, field)
@@ -1299,7 +1311,8 @@ function deserialize(
             time_series_read_only = time_series_read_only,
         )
         internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
-        sys = System(data, float(raw.base_power); internal = internal, kwargs...)
+        units_settings = IS.convert_type(SystemUnitsSettings, raw.units_settings)
+        sys = System(data, units_settings; internal = internal)
     end
 end
 
@@ -1573,8 +1586,13 @@ end
 function IS.compare_values(x::System, y::System)
     match = true
 
-    if x.base_power != y.base_power
-        @debug "base_power does not match" x.base_power y.base_power
+    if x.units_settings.unit_system != x.units_settings.unit_system
+        @debug "unit system does not match" x.units_settings.unit_system y.units_settings.unit_system
+        match = false
+    end
+
+    if get_base_power(x) != get_base_power(y)
+        @debug "base_power does not match" get_base_power(x) get_base_power(y)
         match = false
     end
 
