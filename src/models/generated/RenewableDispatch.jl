@@ -118,7 +118,7 @@ get_powerfactor(value::RenewableDispatch) = value.powerfactor
 """Get RenewableDispatch op_cost."""
 get_op_cost(value::RenewableDispatch) = value.op_cost
 """Get RenewableDispatch basepower."""
-get_basepower(value::RenewableDispatch) = value.basepower
+get_base_power(value::RenewableDispatch) = value.basepower
 """Get RenewableDispatch services."""
 get_services(value::RenewableDispatch) = value.services
 """Get RenewableDispatch dynamic_injector."""

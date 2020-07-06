@@ -166,7 +166,7 @@ export get_arc
 export get_area
 export get_available
 export get_b
-export get_basepower
+export get_base_power
 export get_basevoltage
 export get_bias
 export get_bus

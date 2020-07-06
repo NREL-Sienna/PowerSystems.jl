@@ -214,7 +214,7 @@ export iterate_forecasts
 export make_forecasts
 export get_bus_numbers
 export get_name
-export get_basepower
+export get_base_power
 export get_frequency
 export to_json
 export check_forecast_consistency

@@ -81,7 +81,7 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 - `sys::System`: system
 """
 function total_load_rating(sys::System)
-    basepower = get_basepower(sys)
+    basepower = get_base_power(sys)
     controllable_loads = get_components(ControllableLoad, sys)
     cl = isempty(controllable_loads) ? 0.0 :
         sum(get_maxactivepower.(controllable_loads)) * basepower
@@ -112,7 +112,7 @@ function total_capacity_rating(sys::System)
     for component_type in (Generator, Storage)
         components = get_components(Generator, sys)
         if !isempty(components)
-            component_total = sum(get_rating.(components)) * get_basepower(sys)
+            component_total = sum(get_rating.(components)) * get_base_power(sys)
             @debug "total rating for $component_type = $component_total"
             total += component_total
         end

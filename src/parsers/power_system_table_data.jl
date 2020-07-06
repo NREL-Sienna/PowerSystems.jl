@@ -893,7 +893,7 @@ function make_thermal_generator_multistart(
         start_time_limits = startup_timelimits,
         start_types = start_types,
         op_cost = op_cost,
-        basepower = get_basepower(thermal_gen),
+        basepower = get_base_power(thermal_gen),
         time_at_status = get_time_at_status(thermal_gen),
         must_run = get(gen, :must_run, false),
     )

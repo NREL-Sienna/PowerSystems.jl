@@ -172,7 +172,7 @@ get_start_types(value::ThermalMultiStart) = value.start_types
 """Get ThermalMultiStart op_cost."""
 get_op_cost(value::ThermalMultiStart) = value.op_cost
 """Get ThermalMultiStart basepower."""
-get_basepower(value::ThermalMultiStart) = value.basepower
+get_base_power(value::ThermalMultiStart) = value.basepower
 """Get ThermalMultiStart services."""
 get_services(value::ThermalMultiStart) = value.services
 """Get ThermalMultiStart time_at_status."""

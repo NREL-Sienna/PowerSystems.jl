@@ -147,7 +147,7 @@ get_timelimits(value::ThermalStandard) = value.timelimits
 """Get ThermalStandard op_cost."""
 get_op_cost(value::ThermalStandard) = value.op_cost
 """Get ThermalStandard basepower."""
-get_basepower(value::ThermalStandard) = value.basepower
+get_base_power(value::ThermalStandard) = value.basepower
 """Get ThermalStandard services."""
 get_services(value::ThermalStandard) = value.services
 """Get ThermalStandard time_at_status."""
