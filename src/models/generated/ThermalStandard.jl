@@ -17,7 +17,7 @@ This file is auto-generated. Do not edit.
         ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         op_cost::ThreePartCost
-        basepower::Float64
+        base_power::Float64
         services::Vector{Service}
         time_at_status::Float64
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -43,7 +43,7 @@ Data Structure for thermal generation technologies.
 - `ramplimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
 - `timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `op_cost::ThreePartCost`
-- `basepower::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
+- `base_power::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `time_at_status::Float64`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
@@ -71,7 +71,7 @@ mutable struct ThermalStandard <: ThermalGen
     timelimits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     op_cost::ThreePartCost
     "Base power of the unit in system base per unit"
-    basepower::Float64
+    base_power::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     time_at_status::Float64
@@ -84,12 +84,12 @@ mutable struct ThermalStandard <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, services, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, base_power, services, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, basepower, services, time_at_status, dynamic_injector, ext, forecasts, )
+function ThermalStandard(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalStandard(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, timelimits, op_cost, base_power, services, time_at_status, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -109,7 +109,7 @@ function ThermalStandard(::Nothing)
         ramplimits=nothing,
         timelimits=nothing,
         op_cost=ThreePartCost(nothing),
-        basepower=0.0,
+        base_power=0.0,
         services=Device[],
         time_at_status=INFINITE_TIME,
         dynamic_injector=nothing,
@@ -146,8 +146,8 @@ get_ramplimits(value::ThermalStandard) = value.ramplimits
 get_timelimits(value::ThermalStandard) = value.timelimits
 """Get ThermalStandard op_cost."""
 get_op_cost(value::ThermalStandard) = value.op_cost
-"""Get ThermalStandard basepower."""
-get_base_power(value::ThermalStandard) = value.basepower
+"""Get ThermalStandard base_power."""
+get_base_power(value::ThermalStandard) = value.base_power
 """Get ThermalStandard services."""
 get_services(value::ThermalStandard) = value.services
 """Get ThermalStandard time_at_status."""
@@ -189,8 +189,8 @@ set_ramplimits!(value::ThermalStandard, val::Union{Nothing, NamedTuple{(:up, :do
 set_timelimits!(value::ThermalStandard, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.timelimits = val
 """Set ThermalStandard op_cost."""
 set_op_cost!(value::ThermalStandard, val::ThreePartCost) = value.op_cost = val
-"""Set ThermalStandard basepower."""
-set_basepower!(value::ThermalStandard, val::Float64) = value.basepower = val
+"""Set ThermalStandard base_power."""
+set_base_power!(value::ThermalStandard, val::Float64) = value.base_power = val
 """Set ThermalStandard services."""
 set_services!(value::ThermalStandard, val::Vector{Service}) = value.services = val
 """Set ThermalStandard time_at_status."""

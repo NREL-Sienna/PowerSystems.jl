@@ -33,15 +33,15 @@ end
 """
 System
 
-A power system defined by fields for basepower, components, and forecasts.
+A power system defined by fields for base_power, components, and forecasts.
 
 ```julia
-System(basepower)
-System(components, basepower)
-System(buses, generators, loads, branches, storage, basepower, services, annex; kwargs...)
-System(buses, generators, loads, basepower; kwargs...)
+System(base_power)
+System(components, base_power)
+System(buses, generators, loads, branches, storage, base_power, services, annex; kwargs...)
+System(buses, generators, loads, base_power; kwargs...)
 System(file; kwargs...)
-System(; buses, generators, loads, branches, storage, basepower, services, annex, kwargs...)
+System(; buses, generators, loads, branches, storage, base_power, services, annex, kwargs...)
 System(; kwargs...)
 ```
 
@@ -51,7 +51,7 @@ System(; kwargs...)
 - `loads::Vector{ElectricLoad}`: an array of load specifications that includes timing of the loads
 - `branches::Union{Nothing, Vector{Branch}}`: an array of branches; may be `nothing`
 - `storage::Union{Nothing, Vector{Storage}}`: an array of storage devices; may be `nothing`
-- `basepower::Float64`: the base power value for the system
+- `base_power::Float64`: the base power value for the system
 - `services::Union{Nothing, Vector{<:Service}}`: an array of services; may be `nothing`
 
 # Keyword arguments
@@ -89,14 +89,14 @@ struct System <: PowerSystemType
 end
 
 """Construct an empty `System`. Useful for building a System while parsing raw data."""
-function System(basepower; kwargs...)
-    return System(_create_system_data_from_kwargs(; kwargs...), basepower; kwargs...)
+function System(base_power; kwargs...)
+    return System(_create_system_data_from_kwargs(; kwargs...), base_power; kwargs...)
 end
 
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
-function System(data, basepower; kwargs...)
+function System(data, base_power; kwargs...)
     internal = get(kwargs, :internal, IS.InfrastructureSystemsInternal())
-    return System(data, basepower, internal; kwargs...)
+    return System(data, base_power, internal; kwargs...)
 end
 
 """System constructor when components are constructed externally."""
@@ -106,7 +106,7 @@ function System(
     loads::Vector{<:ElectricLoad},
     branches::Union{Nothing, Vector{<:Branch}},
     storage::Union{Nothing, Vector{<:Storage}},
-    basepower::Float64,
+    base_power::Float64,
     services::Union{Nothing, Vector{<:Service}},
     annex::Union{Nothing, Dict},
     ;
@@ -115,7 +115,7 @@ function System(
 
     data = _create_system_data_from_kwargs(; kwargs...)
 
-    sys = System(data, basepower; kwargs...)
+    sys = System(data, base_power; kwargs...)
 
     arrays = [buses, generators, loads]
     if !isnothing(branches)
@@ -174,7 +174,7 @@ function System(
     buses::Vector{Bus},
     generators::Vector{<:Generator},
     loads::Vector{<:ElectricLoad},
-    basepower::Float64,
+    base_power::Float64,
     ;
     kwargs...,
 )
@@ -184,7 +184,7 @@ function System(
         loads,
         nothing,
         nothing,
-        basepower,
+        base_power,
         nothing,
         nothing,
         nothing,
@@ -195,7 +195,7 @@ end
 
 """System constructor with keyword arguments."""
 function System(;
-    basepower = 100.0,
+    base_power = 100.0,
     buses,
     generators,
     loads,
@@ -211,7 +211,7 @@ function System(;
         loads,
         branches,
         storage,
-        basepower,
+        base_power,
         services,
         annex,
         ;
@@ -241,7 +241,7 @@ function System(
     loads = [PowerLoad(nothing)],
     branches = nothing,
     storage = nothing,
-    basepower = 100.0,
+    base_power = 100.0,
     services = nothing,
     annex = nothing,
     kwargs...,
@@ -252,7 +252,7 @@ function System(
         loads,
         branches,
         storage,
-        basepower,
+        base_power,
         services,
         annex,
         ;
@@ -1286,7 +1286,7 @@ function deserialize(
 
         # Read any field that is defined in System but optional for the constructors and not
         # already handled here.
-        handled = (:data, :basepower, :bus_numbers, :internal)
+        handled = (:data, :base_power, :bus_numbers, :internal)
         kwargs = Dict{Symbol, Any}()
         for field in setdiff(propertynames(raw), handled)
             kwargs[field] = getproperty(raw, field)
@@ -1299,7 +1299,7 @@ function deserialize(
             time_series_read_only = time_series_read_only,
         )
         internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
-        sys = System(data, float(raw.basepower); internal = internal, kwargs...)
+        sys = System(data, float(raw.base_power); internal = internal, kwargs...)
     end
 end
 
@@ -1573,8 +1573,8 @@ end
 function IS.compare_values(x::System, y::System)
     match = true
 
-    if x.basepower != y.basepower
-        @debug "basepower does not match" x.basepower y.basepower
+    if x.base_power != y.base_power
+        @debug "base_power does not match" x.base_power y.base_power
         match = false
     end
 

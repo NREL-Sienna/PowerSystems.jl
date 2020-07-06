@@ -3,7 +3,7 @@ const POWER_SYSTEM_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_inputs.json")
 
 struct PowerSystemTableData
-    basepower::Float64
+    base_power::Float64
     category_to_df::Dict{InputCategory, DataFrames.DataFrame}
     timeseries_metadata_file::Union{String, Nothing}
     directory::String
@@ -35,10 +35,10 @@ function PowerSystemTableData(
         throw(DataFormatError("key 'bus' not found in input data"))
     end
 
-    if !haskey(data, "basepower")
-        @warn "key 'basepower' not found in input data; using default=$(DEFAULT_BASE_MVA)"
+    if !haskey(data, "base_power")
+        @warn "key 'base_power' not found in input data; using default=$(DEFAULT_BASE_MVA)"
     end
-    basepower = get(data, "basepower", DEFAULT_BASE_MVA)
+    base_power = get(data, "base_power", DEFAULT_BASE_MVA)
 
     for (label, category) in categories
         val = get(data, label, nothing)
@@ -72,7 +72,7 @@ function PowerSystemTableData(
     end
 
     return PowerSystemTableData(
-        basepower,
+        base_power,
         category_to_df,
         timeseries_metadata_file,
         directory,
@@ -94,14 +94,14 @@ The general format for data is
 
 # Arguments
 - `directory::AbstractString`: directory containing CSV files
-- `basepower::Float64`: base power for System
+- `base_power::Float64`: base power for System
 - `user_descriptor_file::AbstractString`: customized input descriptor file
 - `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: PowerSystems descriptor file
 - `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file
 """
 function PowerSystemTableData(
     directory::AbstractString,
-    basepower::Float64,
+    base_power::Float64,
     user_descriptor_file::AbstractString;
     descriptor_file = POWER_SYSTEM_DESCRIPTOR_FILE,
     generator_mapping_file = GENERATOR_MAPPING_FILE,
@@ -115,7 +115,7 @@ function PowerSystemTableData(
     if length(files) == 0
         error("No files in the folder")
     else
-        data["basepower"] = basepower
+        data["base_power"] = base_power
     end
 
     encountered_files = 0
@@ -257,7 +257,7 @@ function System(
     kwargs...,
 )
     sys = System(
-        data.basepower;
+        data.base_power;
         time_series_in_memory = time_series_in_memory,
         time_series_directory = time_series_directory,
         runchecks = runchecks,
@@ -405,7 +405,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
         pf = get(dc_branch, :pf, 0.0)
 
         if dc_branch.control_mode == "Power"
-            mw_load = dc_branch.mw_load / data.basepower
+            mw_load = dc_branch.mw_load / data.base_power
 
             #TODO: is there a better way to calculate these?,
             activepowerlimits_from = (min = -1 * mw_load, max = mw_load)
@@ -714,13 +714,13 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
                 var_cost[i][1] *
                 (var_cost[i][2] - var_cost[i - 1][2]) *
                 fuel_cost *
-                data.basepower,
+                data.base_power,
                 var_cost[i][2],
             ) .* gen.active_power_limits_max for i in 2:length(var_cost)
         ]
         var_cost[1] =
             (
-                var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower,
+                var_cost[1][1] * var_cost[1][2] * fuel_cost * data.base_power,
                 var_cost[1][2],
             ) .* gen.active_power_limits_max
 
@@ -735,7 +735,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
         end
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower
+        var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * data.base_power
         fixed = 0.0
     else
         var_cost = 0.0
@@ -808,7 +808,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
-    basepower = get(gen, :base_mva, 1.0)
+    base_power = get(gen, :base_mva, 1.0)
 
     return ThermalStandard(
         gen.name,
@@ -825,7 +825,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         ramplimits,
         timelimits,
         op_cost,
-        basepower,
+        base_power,
     )
 end
 
@@ -893,7 +893,7 @@ function make_thermal_generator_multistart(
         start_time_limits = startup_timelimits,
         start_types = start_types,
         op_cost = op_cost,
-        basepower = get_base_power(thermal_gen),
+        base_power = get_base_power(thermal_gen),
         time_at_status = get_time_at_status(thermal_gen),
         must_run = get(gen, :must_run, false),
     )
@@ -910,8 +910,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
     min_up_time = get(gen, :min_up_time, nothing)
     min_down_time = get(gen, :min_down_time, nothing)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
-    basepower = gen.base_mva
-    sys_basepower = data.basepower
+    base_power = gen.base_mva
+    sys_base_power = data.base_power
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -936,7 +936,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             ramplimits = ramplimits,
             timelimits = timelimits,
             op_cost = op_cost,
-            basepower = basepower / sys_basepower,
+            base_power = base_power / sys_base_power,
             storage_capacity = storage.storage_capacity,
             inflow = storage.inflow_limit,
             initial_storage = storage.initial_storage,
@@ -955,7 +955,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             reactivepowerlimits = reactive_power_limits,
             ramplimits = ramplimits,
             timelimits = timelimits,
-            basepower = basepower / sys_basepower,
+            base_power = base_power / sys_base_power,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
@@ -989,7 +989,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max),
             1.0,
             TwoPartCost(0.0, 0.0),
-            gen.base_mva / data.basepower,
+            gen.base_mva / data.base_power,
         )
     elseif gen_type == RenewableFix
         generator = RenewableFix(
@@ -1001,7 +1001,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             rating,
             convert(PrimeMovers.PrimeMover, gen.unit_type),
             1.0,
-            gen.base_mva / data.basepower,
+            gen.base_mva / data.base_power,
         )
     else
         error("Unsupported type $gen_type")
@@ -1034,7 +1034,7 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         efficiency = efficiency,
         reactivepower = gen.reactive_power,
         reactivepowerlimits = reactive_power_limits,
-        basepower = gen.base_mva / data.basepower,
+        base_power = gen.base_mva / data.base_power,
     )
 
     return battery
@@ -1166,7 +1166,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
 
         if field_info.needs_per_unit_conversion
             @debug "convert to system_per_unit" field_info.custom_name
-            value /= data.basepower
+            value /= data.base_power
         end
 
         # TODO: need special handling for units

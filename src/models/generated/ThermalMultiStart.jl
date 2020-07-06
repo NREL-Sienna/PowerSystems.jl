@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}
         start_types::Int
         op_cost::MultiStartCost
-        basepower::Float64
+        base_power::Float64
         services::Vector{Service}
         time_at_status::Float64
         must_run::Bool
@@ -50,7 +50,7 @@ Data Structure for thermal generation technologies.
 - `start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}`:  Time limits for startup based on turbine temperature in hours
 - `start_types::Int`:  Number of startup based on turbine temperature, validation range: (1, 3), action if invalid: error
 - `op_cost::MultiStartCost`
-- `basepower::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
+- `base_power::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `time_at_status::Float64`
 - `must_run::Bool`
@@ -85,7 +85,7 @@ mutable struct ThermalMultiStart <: ThermalGen
     start_types::Int
     op_cost::MultiStartCost
     "Base power of the unit in system base per unit"
-    basepower::Float64
+    base_power::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     time_at_status::Float64
@@ -99,12 +99,12 @@ mutable struct ThermalMultiStart <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services, time_at_status, must_run, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalMultiStart(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, basepower, services, time_at_status, must_run, dynamic_injector, ext, forecasts, )
+function ThermalMultiStart(; name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalMultiStart(name, available, status, bus, activepower, reactivepower, rating, primemover, fuel, activepowerlimits, reactivepowerlimits, ramplimits, power_trajectory, timelimits, start_time_limits, start_types, op_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -127,7 +127,7 @@ function ThermalMultiStart(::Nothing)
         start_time_limits=nothing,
         start_types=1,
         op_cost=MultiStartCost(nothing),
-        basepower=0.0,
+        base_power=0.0,
         services=Device[],
         time_at_status=INFINITE_TIME,
         must_run=false,
@@ -171,8 +171,8 @@ get_start_time_limits(value::ThermalMultiStart) = value.start_time_limits
 get_start_types(value::ThermalMultiStart) = value.start_types
 """Get ThermalMultiStart op_cost."""
 get_op_cost(value::ThermalMultiStart) = value.op_cost
-"""Get ThermalMultiStart basepower."""
-get_base_power(value::ThermalMultiStart) = value.basepower
+"""Get ThermalMultiStart base_power."""
+get_base_power(value::ThermalMultiStart) = value.base_power
 """Get ThermalMultiStart services."""
 get_services(value::ThermalMultiStart) = value.services
 """Get ThermalMultiStart time_at_status."""
@@ -222,8 +222,8 @@ set_start_time_limits!(value::ThermalMultiStart, val::Union{Nothing, NamedTuple{
 set_start_types!(value::ThermalMultiStart, val::Int) = value.start_types = val
 """Set ThermalMultiStart op_cost."""
 set_op_cost!(value::ThermalMultiStart, val::MultiStartCost) = value.op_cost = val
-"""Set ThermalMultiStart basepower."""
-set_basepower!(value::ThermalMultiStart, val::Float64) = value.basepower = val
+"""Set ThermalMultiStart base_power."""
+set_base_power!(value::ThermalMultiStart, val::Float64) = value.base_power = val
 """Set ThermalMultiStart services."""
 set_services!(value::ThermalMultiStart, val::Vector{Service}) = value.services = val
 """Set ThermalMultiStart time_at_status."""
