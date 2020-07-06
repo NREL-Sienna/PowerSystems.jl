@@ -16,7 +16,7 @@ const SYSTEM_KWARGS = Set((
     :time_series_directory,
     :time_series_in_memory,
     :time_series_read_only,
-    :unit_system
+    :unit_system,
 ))
 
 @enum UnitSystem begin
@@ -68,7 +68,12 @@ struct System <: PowerSystemType
     units_settings::SystemUnitsSettings
     internal::IS.InfrastructureSystemsInternal
 
-    function System(data, units_settings::SystemUnitsSettings, internal::IS.InfrastructureSystemsInternal; kwargs...)
+    function System(
+        data,
+        units_settings::SystemUnitsSettings,
+        internal::IS.InfrastructureSystemsInternal;
+        kwargs...,
+    )
         # Note to devs: if you add parameters to kwargs then consider whether they need
         # special handling in the deserialization function in this file.
         # See JSON2.read for System.
