@@ -136,7 +136,7 @@ get_reactivepower(value::GenericBattery) = value.reactivepower
 """Get GenericBattery reactivepowerlimits."""
 get_reactivepowerlimits(value::GenericBattery) = value.reactivepowerlimits
 """Get GenericBattery basepower."""
-get_basepower(value::GenericBattery) = value.basepower
+get_base_power(value::GenericBattery) = value.basepower
 """Get GenericBattery services."""
 get_services(value::GenericBattery) = value.services
 """Get GenericBattery dynamic_injector."""

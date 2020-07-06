@@ -144,7 +144,7 @@ get_timelimits(value::HydroEnergyReservoir) = value.timelimits
 """Get HydroEnergyReservoir op_cost."""
 get_op_cost(value::HydroEnergyReservoir) = value.op_cost
 """Get HydroEnergyReservoir basepower."""
-get_basepower(value::HydroEnergyReservoir) = value.basepower
+get_base_power(value::HydroEnergyReservoir) = value.basepower
 """Get HydroEnergyReservoir storage_capacity."""
 get_storage_capacity(value::HydroEnergyReservoir) = value.storage_capacity
 """Get HydroEnergyReservoir inflow."""

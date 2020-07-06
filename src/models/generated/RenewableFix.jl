@@ -105,7 +105,7 @@ get_primemover(value::RenewableFix) = value.primemover
 """Get RenewableFix powerfactor."""
 get_powerfactor(value::RenewableFix) = value.powerfactor
 """Get RenewableFix basepower."""
-get_basepower(value::RenewableFix) = value.basepower
+get_base_power(value::RenewableFix) = value.basepower
 """Get RenewableFix services."""
 get_services(value::RenewableFix) = value.services
 """Get RenewableFix dynamic_injector."""

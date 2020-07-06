@@ -125,7 +125,7 @@ get_ramplimits(value::HydroDispatch) = value.ramplimits
 """Get HydroDispatch timelimits."""
 get_timelimits(value::HydroDispatch) = value.timelimits
 """Get HydroDispatch basepower."""
-get_basepower(value::HydroDispatch) = value.basepower
+get_base_power(value::HydroDispatch) = value.basepower
 """Get HydroDispatch services."""
 get_services(value::HydroDispatch) = value.services
 """Get HydroDispatch dynamic_injector."""
