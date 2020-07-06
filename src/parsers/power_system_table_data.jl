@@ -297,6 +297,7 @@ Add buses and areas to the System from the raw data.
 """
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
+        name = bus.name
         bus_type = get_enum_value(BusTypes.BusType, bus.bus_type)
         number = bus.bus_id
         voltage_limits = (min = 0.95, max = 1.05)
@@ -310,7 +311,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
 
         ps_bus = Bus(;
             number = number,
-            name = bus.name,
+            name = name,
             bustype = bus_type,
             angle = bus.angle,
             voltage = bus.voltage,
@@ -321,6 +322,26 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
         )
 
         add_component!(sys, ps_bus)
+
+        # add load if the following info is nonzero
+        max_active_power = get(bus, :max_active_power, 0.0)
+        max_reactive_power = get(max_reactive_power, :max_reactive_power, 0.0)
+        active_power = get(bus, :active_power, max_active_power)
+        reactive_power = get(bus, :reactive_power, max_reactive_power)
+
+        if (max_active_power != 0.0) || (max_reactive_power != 0.0)
+            load = PowerLoad(
+                name = name,
+                available = true,
+                bus = ps_bus,
+                model = LoadModels.ConstantPower,
+                activepower = active_power,
+                reactivepower = reactive_power,
+                maxactivepower = max_active_power,
+                maxreactivepower = max_reactive_power,
+            )
+            add_component!(sys, load)
+        end
     end
 end
 
@@ -493,50 +514,6 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 """
-    busload_csv_parser!(sys::System, data::PowerSystemTableData)
-
-Add loads to the System from the raw bus data.
-
-"""
-function busload_csv_parser!(sys::System, data::PowerSystemTableData)
-    for ps_bus in get_components(Bus, sys)
-        max_active_power = 0.0
-        max_reactive_power = 0.0
-        active_power = 0.0
-        reactive_power = 0.0
-        found = false
-        for bus in iterate_rows(data, BUS::InputCategory)
-            if bus.bus_id == ps_bus.number
-                max_active_power = bus.max_active_power
-                max_reactive_power = bus.max_reactive_power
-                active_power = get(bus, :active_power, max_active_power)
-                reactive_power = get(bus, :reactive_power, max_reactive_power)
-                found = true
-                break
-            end
-        end
-
-        if !found
-            throw(DataFormatError("Did not find bus index in Load data $(ps_bus.name)"))
-        end
-
-        if (max_active_power != 0.0) || (max_reactive_power != 0.0)
-            load = PowerLoad(
-                name = ps_bus.name,
-                available = true,
-                bus = ps_bus,
-                model = LoadModels.ConstantPower,
-                activepower = active_power,
-                reactivepower = reactive_power,
-                maxactivepower = max_active_power,
-                maxreactivepower = max_reactive_power,
-            )
-            add_component!(sys, load)
-        end
-    end
-end
-
-"""
     load_csv_parser!(sys::System, data::PowerSystemTableData)
 
 Add loads to the System from the raw load data.
@@ -546,7 +523,7 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
     for rawload in iterate_rows(data, LOAD::InputCategory)
         bus = get_bus(sys, rawload.bus_id)
         if isnothing(bus)
-            throw(DataFormatError("could not find $(rawload.bus_id)"))
+            throw(DataFormatError("could not find bus_number=$(rawload.bus_id) for load=$(rawload.name)"))
         end
 
         max_active_power = rawload.max_active_power
