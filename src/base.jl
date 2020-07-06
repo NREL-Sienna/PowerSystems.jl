@@ -83,7 +83,7 @@ struct System <: PowerSystemType
         runchecks = get(kwargs, :runchecks, true)
         unit_system = get(kwargs, :unit_system, DEVICE_BASE)
         unit_settings = SystemUnitsSettings(base_power, unit_system)
-        sys = new(data, frequency, bus_numbers, runchecks, internal)
+        sys = new(data, frequency, bus_numbers, runchecks, unit_settings, internal)
         return sys
     end
 end
