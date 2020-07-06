@@ -263,7 +263,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
         ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
         timelimits = nothing,
         op_cost = curtailcost,
-        basepower = d["mbase"] / sys_mbase,
+        base_power = d["mbase"] / sys_mbase,
         storage_capacity = 0.0, #TODO: Implement better Solution for this
         inflow = 0.0,
         initial_storage = 0.0,
@@ -283,7 +283,7 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
         reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
         powerfactor = 1.0,
         op_cost = cost,
-        basepower = d["mbase"] / sys_mbase,
+        base_power = d["mbase"] / sys_mbase,
     )
 
     return generator
@@ -299,7 +299,7 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
         rating = float(d["pmax"]),
         primemover = convert(PrimeMovers.PrimeMover, d["type"]),
         powerfactor = 1.0,
-        basepower = d["mbase"] / sys_mbase,
+        base_power = d["mbase"] / sys_mbase,
     )
 
     return generator
@@ -377,7 +377,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         ramplimits = (up = ramp_lim / d["mbase"], down = ramp_lim / d["mbase"]),
         timelimits = nothing,
         op_cost = op_cost,
-        basepower = d["mbase"] / sys_mbase,
+        base_power = d["mbase"] / sys_mbase,
     )
 
     return thermal_gen

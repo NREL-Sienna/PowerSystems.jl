@@ -373,7 +373,7 @@ export set_arc!
 export set_area!
 export set_available!
 export set_b!
-export set_basepower!
+export set_base_power!
 export set_basevoltage!
 export set_bias!
 export set_bus!

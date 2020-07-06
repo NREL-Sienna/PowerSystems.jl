@@ -1382,7 +1382,7 @@
           "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
         },
         {
-          "name": "basepower",
+          "name": "base_power",
           "comment": "Base power of the unit in system base per unit",
           "null_value": "0.0",
           "data_type": "Float64",
@@ -1542,7 +1542,7 @@
           "validation_action": "error"
         },
         {
-          "name": "basepower",
+          "name": "base_power",
           "comment": "Base power of the unit in system base per unit",
           "null_value": "0.0",
           "data_type": "Float64",
@@ -1658,7 +1658,7 @@
           "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
         },
         {
-          "name": "basepower",
+          "name": "base_power",
           "comment": "Base power of the unit in system base per unit",
           "null_value": "0.0",
           "data_type": "Float64",
@@ -1764,7 +1764,7 @@
           "validation_action": "error"
         },
         {
-          "name": "basepower",
+          "name": "base_power",
           "comment": "Base power of the unit in system base per unit",
           "null_value": "0.0",
           "data_type": "Float64",
@@ -1911,7 +1911,7 @@
           "data_type": "ThreePartCost"
         },
         {
-          "name": "basepower",
+          "name": "base_power",
           "comment": "Base power of the unit in system base per unit",
           "null_value": "0.0",
           "data_type": "Float64",
@@ -2092,7 +2092,7 @@
                 "data_type": "MultiStartCost"
             },
             {
-                "name": "basepower",
+                "name": "base_power",
                 "comment": "Base power of the unit in system base per unit",
                 "null_value": "0.0",
                 "data_type": "Float64",
@@ -2252,7 +2252,7 @@
                 "data_type": "Union{Nothing, Min_Max}"
             },
             {
-                "name": "basepower",
+                "name": "base_power",
                 "comment": "Base power of the unit in system base per unit",
                 "null_value": "0.0",
                 "data_type": "Float64",

@@ -81,13 +81,13 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 - `sys::System`: system
 """
 function total_load_rating(sys::System)
-    basepower = get_base_power(sys)
+    base_power = get_base_power(sys)
     controllable_loads = get_components(ControllableLoad, sys)
     cl = isempty(controllable_loads) ? 0.0 :
-        sum(get_maxactivepower.(controllable_loads)) * basepower
+        sum(get_maxactivepower.(controllable_loads)) * base_power
     @debug "System has $cl MW of ControllableLoad"
     static_loads = get_components(StaticLoad, sys)
-    sl = isempty(static_loads) ? 0.0 : sum(get_maxactivepower.(static_loads)) * basepower
+    sl = isempty(static_loads) ? 0.0 : sum(get_maxactivepower.(static_loads)) * base_power
     @debug "System has $sl MW of StaticLoad"
     # Total load calculation assumes  P = Real(V^2/Y) assuming V=1.0
     fa_loads = get_components(FixedAdmittance, sys)
