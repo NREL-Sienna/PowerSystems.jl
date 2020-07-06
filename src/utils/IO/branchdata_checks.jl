@@ -5,7 +5,7 @@ function validate_struct(sys::System, ps_struct::Union{MonitoredLine, Line})
         is_valid = false
     else
         check_angle_limits!(ps_struct)
-        if !calculate_thermal_limits!(ps_struct, sys.basepower)
+        if !calculate_thermal_limits!(ps_struct, get_base_power(sys))
             is_valid = false
         end
     end
