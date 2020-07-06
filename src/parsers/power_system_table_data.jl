@@ -266,7 +266,6 @@ function System(
 
     loadzone_csv_parser!(sys, data)
     bus_csv_parser!(sys, data)
-    busload_csv_parser!(sys, data)
 
     # Services and forecasts must be last.
     parsers = (
@@ -325,7 +324,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
 
         # add load if the following info is nonzero
         max_active_power = get(bus, :max_active_power, 0.0)
-        max_reactive_power = get(max_reactive_power, :max_reactive_power, 0.0)
+        max_reactive_power = get(bus, :max_reactive_power, 0.0)
         active_power = get(bus, :active_power, max_active_power)
         reactive_power = get(bus, :reactive_power, max_reactive_power)
 
