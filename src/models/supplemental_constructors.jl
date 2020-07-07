@@ -15,21 +15,21 @@ function PowerLoadPF(
     available::Bool,
     bus::Bus,
     model::Union{Nothing, LoadModels.LoadModel},
-    activepower::Float64,
-    maxactivepower::Float64,
+    active_power::Float64,
+    max_active_power::Float64,
     power_factor::Float64,
 )
-    maxreactivepower = maxactivepower * sin(acos(power_factor))
-    reactivepower = activepower * sin(acos(power_factor))
+    maxreactive_power = max_active_power * sin(acos(power_factor))
+    reactive_power = active_power * sin(acos(power_factor))
     return PowerLoad(
         name,
         available,
         bus,
         model,
-        activepower,
-        reactivepower,
-        maxactivepower,
-        maxreactivepower,
+        active_power,
+        reactive_power,
+        max_active_power,
+        maxreactive_power,
     )
 end
 
@@ -41,8 +41,8 @@ end
 function Line(
     name,
     available::Bool,
-    activepower_flow::Float64,
-    reactivepower_flow::Float64,
+    active_power_flow::Float64,
+    reactive_power_flow::Float64,
     arc::Arc,
     r,
     x,
@@ -53,8 +53,8 @@ function Line(
     return Line(
         name,
         available,
-        activepower_flow,
-        reactivepower_flow,
+        active_power_flow,
+        reactive_power_flow,
         arc::Arc,
         r,
         x,
@@ -72,7 +72,7 @@ function Bus(
     angle,
     voltage,
     voltagelimits,
-    basevoltage,
+    base_voltage,
     area,
     load_zone;
     ext = Dict{String, Any}(),
@@ -84,7 +84,7 @@ function Bus(
         angle,
         voltage,
         voltagelimits,
-        basevoltage,
+        base_voltage,
         area,
         load_zone,
         ext,

@@ -152,9 +152,9 @@ end
         )
     )
 
-    #test custom range (activepower and activepowerlimits)
+    #test custom range (active_power and active_powerlimits)
     bad_therm_gen_act_power = thermal_generators5(nodes)
-    bad_therm_gen_act_power[1].activepower = 10
+    bad_therm_gen_act_power[1].active_power = 10
     nodes = nodes5()
     @test_logs (:warn, r"Invalid range") System(
         nodes,

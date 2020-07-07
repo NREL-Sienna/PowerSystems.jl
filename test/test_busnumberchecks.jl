@@ -25,7 +25,7 @@ end
         angle = 1.0,
         voltage = 1.0,
         voltagelimits = (min = -1.0, max = 1.0),
-        basevoltage = 1.0,
+        base_voltage = 1.0,
     )
     bus2 = Bus(;
         number = number,
@@ -34,7 +34,7 @@ end
         angle = 1.0,
         voltage = 1.0,
         voltagelimits = (min = -1.0, max = 1.0),
-        basevoltage = 1.0,
+        base_voltage = 1.0,
         area = nothing,
         load_zone = nothing,
     )

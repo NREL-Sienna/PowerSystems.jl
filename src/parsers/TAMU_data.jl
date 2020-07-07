@@ -96,7 +96,7 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
                 sys,
                 loads[!, ["timestamp", lname]],
                 c,
-                "get_maxactivepower",
+                "get_max_active_power",
                 Float64(maximum(loads[!, lname])),
             )
         end

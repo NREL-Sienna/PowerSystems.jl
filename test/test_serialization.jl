@@ -54,7 +54,7 @@ end
     end_time = Dates.DateTime("2020-01-01T23:00:00")
     dates = collect(initial_time:Dates.Hour(1):end_time)
     data = collect(1:24)
-    label = "get_activepower"
+    label = "get_active_power"
     contributing_devices = Vector{Device}()
     for g in get_components(
         ThermalStandard,

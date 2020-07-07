@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct VirtualInertia <: ActivePowerControl
+    mutable struct VirtualInertia <: active_powerControl
         Ta::Float64
         kd::Float64
         kω::Float64
@@ -23,7 +23,7 @@ Parameters of a Virtual Inertia with SRF using VSM for active power controller
 - `states::Vector{Symbol}`
 - `n_states::Int64`
 """
-mutable struct VirtualInertia <: ActivePowerControl
+mutable struct VirtualInertia <: active_powerControl
     "VSM inertia constant"
     Ta::Float64
     "VSM damping constant"

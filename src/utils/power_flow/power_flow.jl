@@ -116,8 +116,8 @@ Updates the flow on the branches
 function _update_branch_flow!(sys::System)
     for b in get_components(ACBranch, sys)
         S_flow = flow_val(b)
-        b.activepower_flow = real(S_flow)
-        b.reactivepower_flow = imag(S_flow)
+        b.active_power_flow = real(S_flow)
+        b.reactive_power_flow = imag(S_flow)
     end
 end
 
@@ -129,21 +129,21 @@ Obtain total load on bus b
 
 """
 function _get_load_data(sys::System, b::Bus)
-    activepower = 0.0
-    reactivepower = 0.0
+    active_power = 0.0
+    reactive_power = 0.0
     for l in get_components(ElectricLoad, sys)
         if (l.bus == b)
             if isa(l, FixedAdmittance)
                 # Assume v rated = 1.0
-                activepower += real(get_Y(l))
-                reactivepower += imag(get_Y(l))
+                active_power += real(get_Y(l))
+                reactive_power += imag(get_Y(l))
             else
-                activepower += get_activepower(l)
-                reactivepower += get_reactivepower(l)
+                active_power += get_active_power(l)
+                reactive_power += get_reactive_power(l)
             end
         end
     end
-    return activepower, reactivepower
+    return active_power, reactive_power
 end
 
 """
@@ -163,8 +163,8 @@ function _write_pf_sol!(sys::System, nl_result)
             injection = get_components(StaticInjection, sys)
             devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
             generator = devices[1]
-            generator.activepower = P_gen
-            generator.reactivepower = Q_gen
+            generator.active_power = P_gen
+            generator.reactive_power = Q_gen
         elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
@@ -172,7 +172,7 @@ function _write_pf_sol!(sys::System, nl_result)
             devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
                 generator = devices[1]
-                generator.reactivepower = Q_gen
+                generator.reactive_power = Q_gen
             end
             bus.angle = θ
         elseif bus.bustype == BusTypes.PQ
@@ -216,7 +216,7 @@ function _write_results(sys::System, nl_result)
             θ_vect[ix] = result[2 * ix]
             for gen in sources
                 if gen.bus == bus
-                    P_gen_vect[ix] += get_activepower(gen)
+                    P_gen_vect[ix] += get_active_power(gen)
                 end
             end
             Q_gen_vect[ix] = result[2 * ix - 1]
@@ -225,8 +225,8 @@ function _write_results(sys::System, nl_result)
             θ_vect[ix] = result[2 * ix]
             for gen in sources
                 if gen.bus == bus
-                    P_gen_vect[ix] += get_activepower(gen)
-                    Q_gen_vect[ix] += get_reactivepower(gen)
+                    P_gen_vect[ix] += get_active_power(gen)
+                    Q_gen_vect[ix] += get_reactive_power(gen)
                 end
             end
         end
@@ -455,8 +455,8 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         get_ext(b)["neighbors"] = neighbors[ix]
         for gen in sources
             if gen.bus == b
-                P_GEN_BUS[ix] += get_activepower(gen)
-                Q_GEN_BUS[ix] += get_reactivepower(gen)
+                P_GEN_BUS[ix] += get_active_power(gen)
+                Q_GEN_BUS[ix] += get_reactive_power(gen)
             end
         end
 
@@ -603,7 +603,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                     # State variables are Voltage Magnitude and Voltage Angle
                     # Everything appears in everything
                     if ix_f == ix_t
-                        #Jac: Active PF against same voltage magnitude Vm[ix_f] 
+                        #Jac: Active PF against same voltage magnitude Vm[ix_f]
                         J[F_ix_f_r, X_ix_t_fst] =
                             2 * real(Yb[ix_f, ix_t]) * Vm[ix_f] + sum(
                                 Vm[k] * (
@@ -611,7 +611,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                                     imag(Yb[ix_f, k]) * sin(θ[ix_f] - θ[k])
                                 ) for k in neighbors[ix_f] if k != ix_f
                             )
-                        #Jac: Active PF against same angle θ[ix_f] 
+                        #Jac: Active PF against same angle θ[ix_f]
                         J[F_ix_f_r, X_ix_t_snd] =
                             Vm[ix_f] * sum(
                                 Vm[k] * (

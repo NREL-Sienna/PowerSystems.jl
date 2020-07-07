@@ -160,13 +160,13 @@
           "data_type": "String"
         },
         {
-          "name": "max_activepower",
+          "name": "peak_active_power",
           "null_value": "0.0",
           "data_type": "Float64",
           "default": "0.0"
         },
         {
-          "name": "max_reactivepower",
+          "name": "peak_reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
           "default": "0.0"
@@ -205,12 +205,12 @@
           "data_type": "String"
         },
         {
-          "name": "peak_activepower",
+          "name": "peak_active_power",
           "null_value": "0.0",
           "data_type": "Float64"
         },
         {
-          "name": "peak_reactivepower",
+          "name": "peak_reactive_power",
           "null_value": "0.0",
           "data_type": "Float64"
         },
@@ -268,7 +268,7 @@
         },
         {
           "name": "voltage",
-          "comment": "voltage as a multiple of basevoltage",
+          "comment": "voltage as a multiple of base_voltage",
           "null_value": "0.0",
           "data_type": "Union{Nothing, Float64}",
           "valid_range": "voltagelimits",
@@ -276,7 +276,7 @@
         },
         {
           "name": "voltage_limits",
-          "comment": "limits on the voltage variation as multiples of basevoltage",
+          "comment": "limits on the voltage variation as multiples of base_voltage",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
         },
@@ -360,13 +360,13 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -470,13 +470,13 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -588,13 +588,13 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -713,13 +713,13 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -829,13 +829,13 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -935,7 +935,7 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -946,37 +946,37 @@
           "data_type": "Arc"
         },
         {
-          "name": "activepower_from_max",
+          "name": "active_power_from_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "activepower_from_min",
+          "name": "active_power_from_min",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "activepower_to_max",
+          "name": "active_power_to_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "activepower_to_min",
+          "name": "active_power_to_min",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_from_max",
+          "name": "reactive_power_from_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_to_max",
+          "name": "reactive_power_to_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -1032,7 +1032,7 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -1139,13 +1139,13 @@
           "needs_conversion": true
         },
         {
-          "name": "max_activepower",
+          "name": "max_active_power",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "max_reactivepower",
+          "name": "max_reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -1287,13 +1287,13 @@
           "needs_conversion": true
         },
         {
-          "name": "max_activepower",
+          "name": "max_active_power",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
         },
         {
-          "name": "max_reactivepower",
+          "name": "max_reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
@@ -1387,7 +1387,7 @@
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "activepower_max",
+          "name": "active_power_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1398,7 +1398,7 @@
           "needs_conversion": true
         },
         {
-          "name": "activepower_min",
+          "name": "active_power_min",
           "null_value": "0.0",
           "valid_range": {
             "min": 0,
@@ -1409,7 +1409,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_max",
+          "name": "reactive_power_max",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -1420,7 +1420,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_min",
+          "name": "reactive_power_min",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -1614,7 +1614,7 @@
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "activepower_max",
+          "name": "active_power_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1625,7 +1625,7 @@
           "needs_conversion": true
         },
         {
-          "name": "activepower_min",
+          "name": "active_power_min",
           "null_value": "0.0",
           "valid_range": {
             "min": 0,
@@ -1636,7 +1636,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_max",
+          "name": "reactive_power_max",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -1647,7 +1647,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_min",
+          "name": "reactive_power_min",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -1793,7 +1793,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_max",
+          "name": "reactive_power_max",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -1804,7 +1804,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_min",
+          "name": "reactive_power_min",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -2052,7 +2052,7 @@
           "data_type": "ThermalFuels.ThermalFuel"
         },
         {
-          "name": "activepower_max",
+          "name": "active_power_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2063,7 +2063,7 @@
           "needs_conversion": true
         },
         {
-          "name": "activepower_min",
+          "name": "active_power_min",
           "null_value": "0.0",
           "valid_range": {
             "min": 0,
@@ -2074,7 +2074,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_max",
+          "name": "reactive_power_max",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -2085,7 +2085,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_min",
+          "name": "reactive_power_min",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -2253,7 +2253,7 @@
           "data_type": "ThermalFuels.ThermalFuel"
         },
         {
-          "name": "activepower_max",
+          "name": "active_power_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2264,7 +2264,7 @@
           "needs_conversion": true
         },
         {
-          "name": "activepower_min",
+          "name": "active_power_min",
           "null_value": "0.0",
           "valid_range": {
             "min": 0,
@@ -2275,7 +2275,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_max",
+          "name": "reactive_power_max",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -2286,7 +2286,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_min",
+          "name": "reactive_power_min",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -2509,7 +2509,7 @@
           "needs_conversion": true
         },
         {
-          "name": "input_activepower_max",
+          "name": "input_active_power_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2520,7 +2520,7 @@
           "needs_conversion": true
         },
         {
-          "name": "input_activepower_min",
+          "name": "input_active_power_min",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2531,7 +2531,7 @@
           "needs_conversion": true
         },
         {
-          "name": "output_activepower_max",
+          "name": "output_active_power_max",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2542,7 +2542,7 @@
           "needs_conversion": true
         },
         {
-          "name": "output_activepower_min",
+          "name": "output_active_power_min",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2569,7 +2569,7 @@
           "validation_action": "warn"
         },
         {
-          "name": "reactivepower_max",
+          "name": "reactive_power_max",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -2580,7 +2580,7 @@
           "needs_conversion": true
         },
         {
-          "name": "reactivepower_min",
+          "name": "reactive_power_min",
           "null_value": "nothing",
           "valid_range": {
             "min": 0,
@@ -6319,10 +6319,10 @@
           "data_type": "Int64"
         }
       ],
-      "supertype": "ActivePowerControl"
+      "supertype": "active_powerControl"
     },
     {
-      "struct_name": "ReactivePowerDroop",
+      "struct_name": "Reactive_powerDroop",
       "docstring": "Parameters of a Reactive Power droop controller",
       "fields": [
         {
@@ -6375,7 +6375,7 @@
           "data_type": "Int64"
         }
       ],
-      "supertype": "ReactivePowerControl"
+      "supertype": "Reactive_powerControl"
     },
     {
       "struct_name": "CurrentControl",

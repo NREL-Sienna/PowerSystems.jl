@@ -58,7 +58,7 @@ include("LCLFilter.jl")
 include("LCFilter.jl")
 include("KauraPLL.jl")
 include("VirtualInertia.jl")
-include("ReactivePowerDroop.jl")
+include("Reactive_powerDroop.jl")
 include("CurrentControl.jl")
 include("Source.jl")
 
@@ -156,15 +156,14 @@ export get_Xq_p
 export get_Xq_pp
 export get_Y
 export get_active_power
-export get_activepower_flow
-export get_activepower_from_max
-export get_activepower_from_min
-export get_activepower_max
-export get_activepower_min
-export get_activepower_to_max
-export get_activepower_to_min
+export get_active_power_flow
+export get_active_power_from_max
+export get_active_power_from_min
+export get_active_power_max
+export get_active_power_min
+export get_active_power_to_max
+export get_active_power_to_min
 export get_angle
-export get_angle_limits
 export get_angle_limits
 export get_arc
 export get_area
@@ -191,8 +190,8 @@ export get_fuel
 export get_inflow
 export get_initial_ace
 export get_initial_storage
-export get_input_activepower_max
-export get_input_activepower_min
+export get_input_active_power_max
+export get_input_active_power_min
 export get_internal
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
@@ -217,18 +216,18 @@ export get_load_response
 export get_load_zone
 export get_loss
 export get_lv
-export get_max_activepower
-export get_max_reactivepower
+export get_max_active_power
+export get_max_reactive_power
 export get_model
 export get_must_run
 export get_n_states
 export get_no_load
 export get_number
 export get_operation_cost
-export get_output_activepower_max
-export get_output_activepower_min
-export get_peak_activepower
-export get_peak_reactivepower
+export get_output_active_power_max
+export get_output_active_power_min
+export get_peak_active_power
+export get_peak_reactive_power
 export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
@@ -239,11 +238,11 @@ export get_ramp_limit_up
 export get_rate
 export get_rating
 export get_reactive_power
-export get_reactivepower_flow
-export get_reactivepower_from_max
-export get_reactivepower_max
-export get_reactivepower_min
-export get_reactivepower_to_max
+export get_reactive_power_flow
+export get_reactive_power_from_max
+export get_reactive_power_max
+export get_reactive_power_min
+export get_reactive_power_to_max
 export get_rectifier_firing_angle
 export get_rectifier_taplimits
 export get_rectifier_xrc
@@ -377,15 +376,14 @@ export set_Xq_p!
 export set_Xq_pp!
 export set_Y!
 export set_active_power!
-export set_activepower_flow!
-export set_activepower_from_max!
-export set_activepower_from_min!
-export set_activepower_max!
-export set_activepower_min!
-export set_activepower_to_max!
-export set_activepower_to_min!
+export set_active_power_flow!
+export set_active_power_from_max!
+export set_active_power_from_min!
+export set_active_power_max!
+export set_active_power_min!
+export set_active_power_to_max!
+export set_active_power_to_min!
 export set_angle!
-export set_angle_limits!
 export set_angle_limits!
 export set_arc!
 export set_area!
@@ -412,8 +410,8 @@ export set_fuel!
 export set_inflow!
 export set_initial_ace!
 export set_initial_storage!
-export set_input_activepower_max!
-export set_input_activepower_min!
+export set_input_active_power_max!
+export set_input_active_power_min!
 export set_internal!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
@@ -438,18 +436,18 @@ export set_load_response!
 export set_load_zone!
 export set_loss!
 export set_lv!
-export set_max_activepower!
-export set_max_reactivepower!
+export set_max_active_power!
+export set_max_reactive_power!
 export set_model!
 export set_must_run!
 export set_n_states!
 export set_no_load!
 export set_number!
 export set_operation_cost!
-export set_output_activepower_max!
-export set_output_activepower_min!
-export set_peak_activepower!
-export set_peak_reactivepower!
+export set_output_active_power_max!
+export set_output_active_power_min!
+export set_peak_active_power!
+export set_peak_reactive_power!
 export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!
@@ -460,11 +458,11 @@ export set_ramp_limit_up!
 export set_rate!
 export set_rating!
 export set_reactive_power!
-export set_reactivepower_flow!
-export set_reactivepower_from_max!
-export set_reactivepower_max!
-export set_reactivepower_min!
-export set_reactivepower_to_max!
+export set_reactive_power_flow!
+export set_reactive_power_from_max!
+export set_reactive_power_max!
+export set_reactive_power_min!
+export set_reactive_power_to_max!
 export set_rectifier_firing_angle!
 export set_rectifier_taplimits!
 export set_rectifier_xrc!

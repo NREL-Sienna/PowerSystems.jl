@@ -39,11 +39,11 @@ end
         gen_dat = (
             structname = nothing,
             fields = (
-                :activepower,
-                :reactivepower,
+                :active_power,
+                :reactive_power,
                 :rating,
-                :activepowerlimits,
-                :reactivepowerlimits,
+                :active_powerlimits,
+                :reactive_powerlimits,
                 :ramplimits,
             ),
         )
@@ -70,7 +70,7 @@ end
         mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
         @test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        for field in (:activepowerlimits, :reactivepowerlimits, :ramplimits)
+        for field in (:active_powerlimits, :reactive_powerlimits, :ramplimits)
             cdmgen_val = getfield(cdmgen, field)
             mpgen_val = getfield(mpgen, field)
             if isnothing(cdmgen_val) || isnothing(mpgen_val)
@@ -118,8 +118,8 @@ end
           get_rate(get_branch(mpsys, cdm_ac_branches[120]))
 
     cdm_dc_branches = collect(get_components(DCBranch, cdmsys))
-    @test get_activepowerlimits_from(cdm_dc_branches[1]) ==
-          get_activepowerlimits_from(get_branch(mpsys, cdm_dc_branches[1]))
+    @test get_active_powerlimits_from(cdm_dc_branches[1]) ==
+          get_active_powerlimits_from(get_branch(mpsys, cdm_dc_branches[1]))
 end
 
 @testset "Test reserve direction" begin

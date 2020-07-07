@@ -166,7 +166,7 @@ end
     dates = collect(initial_time:Dates.Hour(1):Dates.DateTime("2020-01-01T23:00:00"))
     data = collect(1:24)
     ta = TimeSeries.TimeArray(dates, data, [get_name(l)])
-    label = "activepower_flow"
+    label = "active_power_flow"
     forecast = Deterministic(label, ta)
     add_forecast!(sys, l, forecast)
     @test get_forecast(Deterministic, l, initial_time, label) isa Deterministic

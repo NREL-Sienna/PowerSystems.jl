@@ -9,8 +9,8 @@ This file is auto-generated. Do not edit.
         model::LoadModels.LoadModel
         active_power::Float64
         reactive_power::Float64
-        max_activepower::Float64
-        max_reactivepower::Float64
+        max_active_power::Float64
+        max_reactive_power::Float64
         operation_cost::TwoPartCost
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -28,8 +28,8 @@ This file is auto-generated. Do not edit.
 - `model::LoadModels.LoadModel`
 - `active_power::Float64`
 - `reactive_power::Float64`
-- `max_activepower::Float64`
-- `max_reactivepower::Float64`
+- `max_active_power::Float64`
+- `max_reactive_power::Float64`
 - `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
@@ -44,8 +44,8 @@ mutable struct InterruptibleLoad <: ControllableLoad
     model::LoadModels.LoadModel
     active_power::Float64
     reactive_power::Float64
-    max_activepower::Float64
-    max_reactivepower::Float64
+    max_active_power::Float64
+    max_reactive_power::Float64
     "Operation Cost of Generation [`TwoPartCost`](@ref)"
     operation_cost::TwoPartCost
     "Services that this device contributes to"
@@ -59,12 +59,12 @@ mutable struct InterruptibleLoad <: ControllableLoad
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_activepower, max_reactivepower, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_activepower, max_reactivepower, operation_cost, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, operation_cost, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function InterruptibleLoad(; name, available, bus, model, active_power, reactive_power, max_activepower, max_reactivepower, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_activepower, max_reactivepower, operation_cost, services, dynamic_injector, ext, forecasts, )
+function InterruptibleLoad(; name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, operation_cost, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,8 +76,8 @@ function InterruptibleLoad(::Nothing)
         model=LoadModels.ConstantPower,
         active_power=0.0,
         reactive_power=0.0,
-        max_activepower=0.0,
-        max_reactivepower=0.0,
+        max_active_power=0.0,
+        max_reactive_power=0.0,
         operation_cost=TwoPartCost(nothing),
         services=Device[],
         dynamic_injector=nothing,
@@ -98,10 +98,10 @@ get_model(value::InterruptibleLoad) = value.model
 get_active_power(value::InterruptibleLoad) = get_value(value, :active_power)
 """Get InterruptibleLoad reactive_power."""
 get_reactive_power(value::InterruptibleLoad) = get_value(value, :reactive_power)
-"""Get InterruptibleLoad max_activepower."""
-get_max_activepower(value::InterruptibleLoad) = get_value(value, :max_activepower)
-"""Get InterruptibleLoad max_reactivepower."""
-get_max_reactivepower(value::InterruptibleLoad) = get_value(value, :max_reactivepower)
+"""Get InterruptibleLoad max_active_power."""
+get_max_active_power(value::InterruptibleLoad) = get_value(value, :max_active_power)
+"""Get InterruptibleLoad max_reactive_power."""
+get_max_reactive_power(value::InterruptibleLoad) = get_value(value, :max_reactive_power)
 """Get InterruptibleLoad operation_cost."""
 get_operation_cost(value::InterruptibleLoad) = value.operation_cost
 """Get InterruptibleLoad services."""
@@ -127,10 +127,10 @@ set_model!(value::InterruptibleLoad, val::LoadModels.LoadModel) = value.model = 
 set_active_power!(value::InterruptibleLoad, val::Float64) = value.active_power = val
 """Set InterruptibleLoad reactive_power."""
 set_reactive_power!(value::InterruptibleLoad, val::Float64) = value.reactive_power = val
-"""Set InterruptibleLoad max_activepower."""
-set_max_activepower!(value::InterruptibleLoad, val::Float64) = value.max_activepower = val
-"""Set InterruptibleLoad max_reactivepower."""
-set_max_reactivepower!(value::InterruptibleLoad, val::Float64) = value.max_reactivepower = val
+"""Set InterruptibleLoad max_active_power."""
+set_max_active_power!(value::InterruptibleLoad, val::Float64) = value.max_active_power = val
+"""Set InterruptibleLoad max_reactive_power."""
+set_max_reactive_power!(value::InterruptibleLoad, val::Float64) = value.max_reactive_power = val
 """Set InterruptibleLoad operation_cost."""
 set_operation_cost!(value::InterruptibleLoad, val::TwoPartCost) = value.operation_cost = val
 """Set InterruptibleLoad services."""

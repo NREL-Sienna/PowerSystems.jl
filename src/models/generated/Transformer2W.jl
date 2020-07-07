@@ -5,8 +5,8 @@ This file is auto-generated. Do not edit.
     mutable struct Transformer2W <: ACBranch
         name::String
         available::Bool
-        activepower_flow::Float64
-        reactivepower_flow::Float64
+        active_power_flow::Float64
+        reactive_power_flow::Float64
         arc::Arc
         r::Float64
         x::Float64
@@ -23,8 +23,8 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 # Arguments
 - `name::String`
 - `available::Bool`
-- `activepower_flow::Float64`
-- `reactivepower_flow::Float64`
+- `active_power_flow::Float64`
+- `reactive_power_flow::Float64`
 - `arc::Arc`
 - `r::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
 - `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
@@ -38,8 +38,8 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 mutable struct Transformer2W <: ACBranch
     name::String
     available::Bool
-    activepower_flow::Float64
-    reactivepower_flow::Float64
+    active_power_flow::Float64
+    reactive_power_flow::Float64
     arc::Arc
     "System per-unit value"
     r::Float64
@@ -57,12 +57,12 @@ mutable struct Transformer2W <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -70,8 +70,8 @@ function Transformer2W(::Nothing)
     Transformer2W(;
         name="init",
         available=false,
-        activepower_flow=0.0,
-        reactivepower_flow=0.0,
+        active_power_flow=0.0,
+        reactive_power_flow=0.0,
         arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
@@ -87,10 +87,10 @@ end
 InfrastructureSystems.get_name(value::Transformer2W) = value.name
 """Get Transformer2W available."""
 get_available(value::Transformer2W) = value.available
-"""Get Transformer2W activepower_flow."""
-get_activepower_flow(value::Transformer2W) = get_value(value, :activepower_flow)
-"""Get Transformer2W reactivepower_flow."""
-get_reactivepower_flow(value::Transformer2W) = get_value(value, :reactivepower_flow)
+"""Get Transformer2W active_power_flow."""
+get_active_power_flow(value::Transformer2W) = get_value(value, :active_power_flow)
+"""Get Transformer2W reactive_power_flow."""
+get_reactive_power_flow(value::Transformer2W) = get_value(value, :reactive_power_flow)
 """Get Transformer2W arc."""
 get_arc(value::Transformer2W) = value.arc
 """Get Transformer2W r."""
@@ -114,10 +114,10 @@ get_internal(value::Transformer2W) = value.internal
 InfrastructureSystems.set_name!(value::Transformer2W, val::String) = value.name = val
 """Set Transformer2W available."""
 set_available!(value::Transformer2W, val::Bool) = value.available = val
-"""Set Transformer2W activepower_flow."""
-set_activepower_flow!(value::Transformer2W, val::Float64) = value.activepower_flow = val
-"""Set Transformer2W reactivepower_flow."""
-set_reactivepower_flow!(value::Transformer2W, val::Float64) = value.reactivepower_flow = val
+"""Set Transformer2W active_power_flow."""
+set_active_power_flow!(value::Transformer2W, val::Float64) = value.active_power_flow = val
+"""Set Transformer2W reactive_power_flow."""
+set_reactive_power_flow!(value::Transformer2W, val::Float64) = value.reactive_power_flow = val
 """Set Transformer2W arc."""
 set_arc!(value::Transformer2W, val::Arc) = value.arc = val
 """Set Transformer2W r."""
