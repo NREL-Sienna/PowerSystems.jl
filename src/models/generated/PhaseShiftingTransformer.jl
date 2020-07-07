@@ -10,7 +10,7 @@ This file is auto-generated. Do not edit.
         arc::Arc
         r::Float64
         x::Float64
-        primaryshunt::Float64
+        primary_shunt::Float64
         tap::Float64
         α::Float64
         rate::Union{Nothing, Float64}
@@ -30,7 +30,7 @@ This file is auto-generated. Do not edit.
 - `arc::Arc`
 - `r::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
 - `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
-- `primaryshunt::Float64`, validation range: (0, 2), action if invalid: error
+- `primary_shunt::Float64`, validation range: (0, 2), action if invalid: error
 - `tap::Float64`, validation range: (0, 2), action if invalid: error
 - `α::Float64`, validation range: (-1.571, 1.571), action if invalid: warn
 - `rate::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
@@ -49,7 +49,7 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     r::Float64
     "System per-unit value"
     x::Float64
-    primaryshunt::Float64
+    primary_shunt::Float64
     tap::Float64
     α::Float64
     rate::Union{Nothing, Float64}
@@ -62,12 +62,12 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, α, rate, services, ext, forecasts, )
+function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -80,7 +80,7 @@ function PhaseShiftingTransformer(::Nothing)
         arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
-        primaryshunt=0.0,
+        primary_shunt=0.0,
         tap=1.0,
         α=0.0,
         rate=0.0,
@@ -95,23 +95,23 @@ InfrastructureSystems.get_name(value::PhaseShiftingTransformer) = value.name
 """Get PhaseShiftingTransformer available."""
 get_available(value::PhaseShiftingTransformer) = value.available
 """Get PhaseShiftingTransformer activepower_flow."""
-get_activepower_flow(value::PhaseShiftingTransformer) = value.activepower_flow
+get_activepower_flow(value::PhaseShiftingTransformer) = get_value(value, :activepower_flow)
 """Get PhaseShiftingTransformer reactivepower_flow."""
-get_reactivepower_flow(value::PhaseShiftingTransformer) = value.reactivepower_flow
+get_reactivepower_flow(value::PhaseShiftingTransformer) = get_value(value, :reactivepower_flow)
 """Get PhaseShiftingTransformer arc."""
 get_arc(value::PhaseShiftingTransformer) = value.arc
 """Get PhaseShiftingTransformer r."""
 get_r(value::PhaseShiftingTransformer) = value.r
 """Get PhaseShiftingTransformer x."""
 get_x(value::PhaseShiftingTransformer) = value.x
-"""Get PhaseShiftingTransformer primaryshunt."""
-get_primaryshunt(value::PhaseShiftingTransformer) = value.primaryshunt
+"""Get PhaseShiftingTransformer primary_shunt."""
+get_primary_shunt(value::PhaseShiftingTransformer) = value.primary_shunt
 """Get PhaseShiftingTransformer tap."""
 get_tap(value::PhaseShiftingTransformer) = value.tap
 """Get PhaseShiftingTransformer α."""
 get_α(value::PhaseShiftingTransformer) = value.α
 """Get PhaseShiftingTransformer rate."""
-get_rate(value::PhaseShiftingTransformer) = value.rate
+get_rate(value::PhaseShiftingTransformer) = get_value(value, :rate)
 """Get PhaseShiftingTransformer services."""
 get_services(value::PhaseShiftingTransformer) = value.services
 """Get PhaseShiftingTransformer ext."""
@@ -135,8 +135,8 @@ set_arc!(value::PhaseShiftingTransformer, val::Arc) = value.arc = val
 set_r!(value::PhaseShiftingTransformer, val::Float64) = value.r = val
 """Set PhaseShiftingTransformer x."""
 set_x!(value::PhaseShiftingTransformer, val::Float64) = value.x = val
-"""Set PhaseShiftingTransformer primaryshunt."""
-set_primaryshunt!(value::PhaseShiftingTransformer, val::Float64) = value.primaryshunt = val
+"""Set PhaseShiftingTransformer primary_shunt."""
+set_primary_shunt!(value::PhaseShiftingTransformer, val::Float64) = value.primary_shunt = val
 """Set PhaseShiftingTransformer tap."""
 set_tap!(value::PhaseShiftingTransformer, val::Float64) = value.tap = val
 """Set PhaseShiftingTransformer α."""

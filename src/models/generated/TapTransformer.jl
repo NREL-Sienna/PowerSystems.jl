@@ -10,7 +10,7 @@ This file is auto-generated. Do not edit.
         arc::Arc
         r::Float64
         x::Float64
-        primaryshunt::Float64
+        primary_shunt::Float64
         tap::Float64
         rate::Union{Nothing, Float64}
         services::Vector{Service}
@@ -29,7 +29,7 @@ This file is auto-generated. Do not edit.
 - `arc::Arc`
 - `r::Float64`: System per-unit value, validation range: (-2, 2), action if invalid: error
 - `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
-- `primaryshunt::Float64`: System per-unit value, validation range: (0, 2), action if invalid: error
+- `primary_shunt::Float64`: System per-unit value, validation range: (0, 2), action if invalid: error
 - `tap::Float64`, validation range: (0, 2), action if invalid: error
 - `rate::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
@@ -48,7 +48,7 @@ mutable struct TapTransformer <: ACBranch
     "System per-unit value"
     x::Float64
     "System per-unit value"
-    primaryshunt::Float64
+    primary_shunt::Float64
     tap::Float64
     rate::Union{Nothing, Float64}
     "Services that this device contributes to"
@@ -60,12 +60,12 @@ mutable struct TapTransformer <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, tap, rate, services, ext, forecasts, )
+function TapTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    TapTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, rate, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -78,7 +78,7 @@ function TapTransformer(::Nothing)
         arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
-        primaryshunt=0.0,
+        primary_shunt=0.0,
         tap=1.0,
         rate=0.0,
         services=Device[],
@@ -92,21 +92,21 @@ InfrastructureSystems.get_name(value::TapTransformer) = value.name
 """Get TapTransformer available."""
 get_available(value::TapTransformer) = value.available
 """Get TapTransformer activepower_flow."""
-get_activepower_flow(value::TapTransformer) = value.activepower_flow
+get_activepower_flow(value::TapTransformer) = get_value(value, :activepower_flow)
 """Get TapTransformer reactivepower_flow."""
-get_reactivepower_flow(value::TapTransformer) = value.reactivepower_flow
+get_reactivepower_flow(value::TapTransformer) = get_value(value, :reactivepower_flow)
 """Get TapTransformer arc."""
 get_arc(value::TapTransformer) = value.arc
 """Get TapTransformer r."""
 get_r(value::TapTransformer) = value.r
 """Get TapTransformer x."""
 get_x(value::TapTransformer) = value.x
-"""Get TapTransformer primaryshunt."""
-get_primaryshunt(value::TapTransformer) = value.primaryshunt
+"""Get TapTransformer primary_shunt."""
+get_primary_shunt(value::TapTransformer) = value.primary_shunt
 """Get TapTransformer tap."""
 get_tap(value::TapTransformer) = value.tap
 """Get TapTransformer rate."""
-get_rate(value::TapTransformer) = value.rate
+get_rate(value::TapTransformer) = get_value(value, :rate)
 """Get TapTransformer services."""
 get_services(value::TapTransformer) = value.services
 """Get TapTransformer ext."""
@@ -130,8 +130,8 @@ set_arc!(value::TapTransformer, val::Arc) = value.arc = val
 set_r!(value::TapTransformer, val::Float64) = value.r = val
 """Set TapTransformer x."""
 set_x!(value::TapTransformer, val::Float64) = value.x = val
-"""Set TapTransformer primaryshunt."""
-set_primaryshunt!(value::TapTransformer, val::Float64) = value.primaryshunt = val
+"""Set TapTransformer primary_shunt."""
+set_primary_shunt!(value::TapTransformer, val::Float64) = value.primary_shunt = val
 """Set TapTransformer tap."""
 set_tap!(value::TapTransformer, val::Float64) = value.tap = val
 """Set TapTransformer rate."""

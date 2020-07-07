@@ -45,8 +45,8 @@ end
 # Constructor for demo purposes; non-functional.
 function TGFixed(::Nothing)
     TGFixed(;
-        efficiency=0,
-        P_ref=0,
+        efficiency=0.0,
+        P_ref=0.0,
         ext=Dict{String, Any}(),
     )
 end

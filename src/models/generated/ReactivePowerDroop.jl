@@ -44,9 +44,9 @@ end
 # Constructor for demo purposes; non-functional.
 function ReactivePowerDroop(::Nothing)
     ReactivePowerDroop(;
-        kq=0,
-        ωf=0,
-        V_ref=0,
+        kq=0.0,
+        ωf=0.0,
+        V_ref=0.0,
         ext=Dict{String, Any}(),
     )
 end

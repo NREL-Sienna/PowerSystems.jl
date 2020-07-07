@@ -42,7 +42,7 @@ end
 # Constructor for demo purposes; non-functional.
 function AVRFixed(::Nothing)
     AVRFixed(;
-        Vf=0,
+        Vf=0.0,
         ext=Dict{String, Any}(),
     )
 end

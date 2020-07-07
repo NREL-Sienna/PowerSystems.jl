@@ -37,7 +37,7 @@ function PowerLoadPF(::Nothing)
     return PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0)
 end
 
-"""Accepts anglelimits as a Float64."""
+"""Accepts angle_limits as a Float64."""
 function Line(
     name,
     available::Bool,
@@ -48,7 +48,7 @@ function Line(
     x,
     b,
     rate,
-    anglelimits::Float64,
+    angle_limits::Float64,
 )
     return Line(
         name,
@@ -60,7 +60,7 @@ function Line(
         x,
         b,
         rate,
-        (min = -anglelimits, max = anglelimits),
+        (min = -angle_limits, max = angle_limits),
     )
 end
 

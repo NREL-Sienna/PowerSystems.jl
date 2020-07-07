@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         x::Float64
         b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
         rate::Float64
-        anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
@@ -31,7 +31,7 @@ This file is auto-generated. Do not edit.
 - `x::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
 - `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: (0, 100), action if invalid: error
 - `rate::Float64`
-- `anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: (-1.571, 1.571), action if invalid: error
+- `angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: (-1.571, 1.571), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -50,7 +50,7 @@ mutable struct Line <: ACBranch
     "System per-unit value"
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
     rate::Float64
-    anglelimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
@@ -60,12 +60,12 @@ mutable struct Line <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, anglelimits, services, ext, forecasts, )
+function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -80,7 +80,7 @@ function Line(::Nothing)
         x=0.0,
         b=(from=0.0, to=0.0),
         rate=0.0,
-        anglelimits=(min=-1.571, max=1.571),
+        angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
         forecasts=InfrastructureSystems.Forecasts(),
@@ -92,9 +92,9 @@ InfrastructureSystems.get_name(value::Line) = value.name
 """Get Line available."""
 get_available(value::Line) = value.available
 """Get Line activepower_flow."""
-get_activepower_flow(value::Line) = value.activepower_flow
+get_activepower_flow(value::Line) = get_value(value, :activepower_flow)
 """Get Line reactivepower_flow."""
-get_reactivepower_flow(value::Line) = value.reactivepower_flow
+get_reactivepower_flow(value::Line) = get_value(value, :reactivepower_flow)
 """Get Line arc."""
 get_arc(value::Line) = value.arc
 """Get Line r."""
@@ -104,9 +104,9 @@ get_x(value::Line) = value.x
 """Get Line b."""
 get_b(value::Line) = value.b
 """Get Line rate."""
-get_rate(value::Line) = value.rate
-"""Get Line anglelimits."""
-get_anglelimits(value::Line) = value.anglelimits
+get_rate(value::Line) = get_value(value, :rate)
+"""Get Line angle_limits."""
+get_angle_limits(value::Line) = value.angle_limits
 """Get Line services."""
 get_services(value::Line) = value.services
 """Get Line ext."""
@@ -134,8 +134,8 @@ set_x!(value::Line, val::Float64) = value.x = val
 set_b!(value::Line, val::NamedTuple{(:from, :to), Tuple{Float64, Float64}}) = value.b = val
 """Set Line rate."""
 set_rate!(value::Line, val::Float64) = value.rate = val
-"""Set Line anglelimits."""
-set_anglelimits!(value::Line, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.anglelimits = val
+"""Set Line angle_limits."""
+set_angle_limits!(value::Line, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.angle_limits = val
 """Set Line services."""
 set_services!(value::Line, val::Vector{Service}) = value.services = val
 """Set Line ext."""

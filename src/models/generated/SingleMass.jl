@@ -44,8 +44,8 @@ end
 # Constructor for demo purposes; non-functional.
 function SingleMass(::Nothing)
     SingleMass(;
-        H=0,
-        D=0,
+        H=0.0,
+        D=0.0,
         ext=Dict{String, Any}(),
     )
 end

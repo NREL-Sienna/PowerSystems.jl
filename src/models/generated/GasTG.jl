@@ -79,15 +79,15 @@ end
 # Constructor for demo purposes; non-functional.
 function GasTG(::Nothing)
     GasTG(;
-        R=0,
-        T1=0,
-        T2=0,
-        T3=0,
-        AT=0,
-        Kt=0,
+        R=0.0,
+        T1=0.0,
+        T2=0.0,
+        T3=0.0,
+        AT=0.0,
+        Kt=0.0,
         V_lim=(0.0, 0.0),
-        D_turb=0,
-        Load_ref=0,
+        D_turb=0.0,
+        Load_ref=0.0,
         ext=Dict{String, Any}(),
     )
 end
