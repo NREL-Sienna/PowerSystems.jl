@@ -32,10 +32,10 @@ Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 - `Load_ref::Float64`: Reference Load Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the GAST model are:
-	x_g1: Fuel valve opening
-	x_g2: Fuel flow
+	x_g1: Fuel valve opening,
+	x_g2: Fuel flow,
 	x_g3: Exhaust temperature load
-- `n_states::Int64`
+- `n_states::Int64`: GasTG has 3 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GasTG <: TurbineGov
@@ -59,10 +59,11 @@ mutable struct GasTG <: TurbineGov
     Load_ref::Float64
     ext::Dict{String, Any}
     "The states of the GAST model are:
-	x_g1: Fuel valve opening
-	x_g2: Fuel flow
+	x_g1: Fuel valve opening,
+	x_g2: Fuel flow,
 	x_g3: Exhaust temperature load"
     states::Vector{Symbol}
+    "GasTG has 3 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

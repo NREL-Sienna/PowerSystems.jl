@@ -44,8 +44,12 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `ext::Dict{String, Any}`
 - `γd::Float64`
 - `γq::Float64`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states are:
+	eq_p: q-axis transient voltage,
+	ed_p: d-axis transient voltage,
+	eq_pp: q-axis subtransient voltage,
+	ed_pp: d-axis subtransient voltage
+- `n_states::Int64`: SimpleMarconatoMachine has 4 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SimpleMarconatoMachine <: Machine
@@ -76,7 +80,13 @@ mutable struct SimpleMarconatoMachine <: Machine
     ext::Dict{String, Any}
     γd::Float64
     γq::Float64
+    "The states are:
+	eq_p: q-axis transient voltage,
+	ed_p: d-axis transient voltage,
+	eq_pp: q-axis subtransient voltage,
+	ed_pp: d-axis subtransient voltage"
     states::Vector{Symbol}
+    "SimpleMarconatoMachine has 4 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

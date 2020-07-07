@@ -2613,6 +2613,12 @@
           "data_type": "Int64"
         },
         {
+          "name": "states_types",
+          "comment": "Fixed AVR has no states",
+          "internal_default": "Vector{StateTypes.StateType}()",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
@@ -2654,7 +2660,7 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tVf: field voltage",
           "internal_default": "[:Vf]",
           "data_type": "Vector{Symbol}"
         },
@@ -2663,6 +2669,12 @@
           "comment": "Fixed AVR has 1 states",
           "internal_default": 1,
           "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "Simple AVR has 1 differential states",
+          "internal_default": "[StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -2806,15 +2818,21 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tVf: Voltage field,\n\tVr1: Amplifier State,\n\tVr2: Stabilizing Feedback State,\n\tVm: Measured voltage",
           "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "The AVR Type I has 4 states",
           "internal_default": 4,
           "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "AVR Type I has 4 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -2958,15 +2976,21 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tVf: Voltage field,\n\tVr1: First Lead-Lag state,\n\tVr2: Second lead-lag state,\n\tVm: Measured voltage",
           "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "AVR Type II has 4 states",
           "internal_default": 4,
           "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "AVR Type II has 4 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -3147,9 +3171,15 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "AC1A has 5 states",
           "internal_default": 5,
           "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "AC1A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -3327,6 +3357,12 @@
           "comment": "",
           "internal_default": 5,
           "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "ModifiedAC1A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -3526,9 +3562,15 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "ST1A has 5 states",
           "internal_default": 5,
           "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "ST1A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -3581,13 +3623,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "BaseMachine has no states",
           "internal_default": "Vector{Symbol}()",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "BaseMachine has no states",
           "internal_default": 0,
           "data_type": "Int64"
         },
@@ -3734,7 +3776,7 @@
             },
             {
                 "name": "n_states",
-                "comment": "",
+                "comment": "RoundRotorMachine has 4 states",
                 "internal_default": 4,
                 "data_type": "Int64"
             },
@@ -3861,7 +3903,7 @@
             },
             {
                 "name": "n_states",
-                "comment": "",
+                "comment": "SalientPoleMachine has 3 states",
                 "internal_default": 3,
                 "data_type": "Int64"
             },
@@ -3996,13 +4038,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\teψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
           "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "AndersonFouadMachine has 6 states",
           "internal_default": 6,
           "data_type": "Int64"
         },
@@ -4159,13 +4201,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tψd: d-axis stator flux,\n\tψq: q-axis stator flux,\n\tψf: field rotor flux,\n\tψ1d: d-axis rotor damping flux,\n\tψ1q: q-axis rotor damping flux",
           "internal_default": "[:ψd, :ψq, :ψf, :ψ1d, :ψ1q]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "FullMachine has 5 states",
           "internal_default": 5,
           "data_type": "Int64"
         },
@@ -4322,13 +4364,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
           "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "MarconatoMachine has 6 states",
           "internal_default": 6,
           "data_type": "Int64"
         },
@@ -4423,13 +4465,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage",
           "internal_default": "[:eq_p, :ed_p]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "OneDOneQMachine has 2 states",
           "internal_default": 2,
           "data_type": "Int64"
         },
@@ -4564,13 +4606,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
           "internal_default": "[:eq_p, :ed_p, :eq_pp, :ed_pp]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "SimpleAFMachine has 4 states",
           "internal_default": 4,
           "data_type": "Int64"
         },
@@ -4727,13 +4769,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tψf: field rotor flux,\n\tψ1d: d-axis rotor damping flux,\n\tψ1q: q-axis rotor damping flux",
           "internal_default": "[:ψf, :ψ1d, :ψ1q]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "SimpleFullMachine has 3 states",
           "internal_default": 3,
           "data_type": "Int64"
         },
@@ -4890,13 +4932,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
           "internal_default": "[:eq_p, :ed_p, :eq_pp, :ed_pp]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "SimpleMarconatoMachine has 4 states",
           "internal_default": 4,
           "data_type": "Int64"
         },
@@ -4937,7 +4979,7 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "PSSFixed has no states",
           "internal_default": 0,
           "data_type": "Int64"
         },
@@ -4988,7 +5030,7 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "PSSSimple has no states",
           "internal_default": 0,
           "data_type": "Int64"
         },
@@ -5033,13 +5075,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tδ: rotor angle,\n\tω: rotor speed",
           "internal_default": "[:δ, :ω]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "SingleMass has 1 state",
           "internal_default": 2,
           "data_type": "Int64"
         },
@@ -5244,13 +5286,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tδ: rotor angle,\n\tω: rotor speed,\n\tδ_hp: rotor angle of high pressure turbine,\n\tω_hp: rotor speed of high pressure turbine,\n\tδ_ip: rotor angle of intermediate pressure turbine,\n\tω_ip: rotor speed of intermediate pressure turbine,\n\tδ_lp: rotor angle of low pressure turbine,\n\tω_lp: rotor speed of low pressure turbine,\n\tδ_ex: rotor angle of exciter,\n\tω_lp: rotor speed of exciter",
           "internal_default": "[:δ, :ω, :δ_hp, :ω_hp, :δ_ip, :ω_ip, :δ_lp, :ω_lp, :δ_ex, :ω_ex]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "FiveMassShaft has 10 states",
           "internal_default": 10,
           "data_type": "Int64"
         },
@@ -5302,7 +5344,7 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "TGFixed has no states",
           "internal_default": 0,
           "data_type": "Int64"
         },
@@ -5414,13 +5456,13 @@
         },
         {
           "name": "states",
-          "comment": "The states of the GAST model are:\n\tx_g1: Fuel valve opening\n\tx_g2: Fuel flow\n\tx_g3: Exhaust temperature load",
+          "comment": "The states of the GAST model are:\n\tx_g1: Fuel valve opening,\n\tx_g2: Fuel flow,\n\tx_g3: Exhaust temperature load",
           "internal_default": "[:x_g1, :x_g2, :x_g3]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "GasTG has 3 states",
           "internal_default": 3,
           "data_type": "Int64"
         },
@@ -5536,13 +5578,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states of the TGTypeI model are:\n\tx_g1: Governor state,\n\tx_g2: Servo state,\n\tx_g3: Reheat state",
           "internal_default": "[:x_g1, :x_g2, :x_g3]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "TGTypeI has 3 states",
           "internal_default": 3,
           "data_type": "Int64"
         },
@@ -5628,13 +5670,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states of the TGTypeI model are:\n\tx_g1: lead-lag state",
           "internal_default": "[:xg]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "TGTypeII has 1 state",
           "internal_default": 1,
           "data_type": "Int64"
         },
@@ -5685,7 +5727,7 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "AverageConverter has no states",
           "internal_default": 0,
           "data_type": "Int64"
         }
@@ -5720,7 +5762,7 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "FixedDCSource has no states",
           "internal_default": 0,
           "data_type": "Int64"
         },
@@ -5795,13 +5837,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states of the LCLFilter model are:\n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
           "internal_default": "[:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "LCLFilter has 6 states",
           "internal_default": 6,
           "data_type": "Int64"
         }
@@ -5850,14 +5892,14 @@
         },
         {
           "name": "states",
-          "comment": "",
-          "internal_default": "[:id_o, :iq_o]",
+          "comment": "The states of the LCFilter model are:\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
+          "internal_default": "[:ir_filter, :ii_filter]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
-          "internal_default": 4,
+          "comment": "LCFilter has two states",
+          "internal_default": 2,
           "data_type": "Int64"
         }
       ],
@@ -5865,7 +5907,7 @@
     },
     {
       "struct_name": "KauraPLL",
-      "docstring": "Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko. \"Operation of a phase locked loop system under distorted utility conditions.\" IEEE Transactions on Industry applications 33.1 (1997): 58-63.",
+      "docstring": "Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko.\n\"Operation of a phase locked loop system under distorted utility conditions.\"\nIEEE Transactions on Industry applications 33.1 (1997): 58-63.",
       "fields": [
         {
           "name": "ω_lp",
@@ -5905,13 +5947,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states of the KauraPLL model are:\n\tvd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),\n\tvq_pll: q-axis of the measured voltage in the PLL SRF,\n\tε_pll: Integrator state of the PI controller,\n\tθ_pll: Phase angle displacement in the PLL SRF",
           "internal_default": "[:vd_pll, :vq_pll, :ε_pll, :θ_pll]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "KauraPLL has 4 states",
           "internal_default": 4,
           "data_type": "Int64"
         }
@@ -5971,13 +6013,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states of the VirtualInertia model are:\n\tω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,\n\tθ_oc: Phase angle displacement of the virtual synchronous generator model",
           "internal_default": "[:ω_oc, :θ_oc]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "VirtualInertia has two states",
           "internal_default": 2,
           "data_type": "Int64"
         }
@@ -6027,13 +6069,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states of the ReactivePowerDroop model are:\n\tq_oc: Filtered reactive output power",
           "internal_default": "[:q_oc]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "ReactivePowerDroop has 1 state",
           "internal_default": 1,
           "data_type": "Int64"
         }
@@ -6042,7 +6084,7 @@
     },
     {
       "struct_name": "CurrentControl",
-      "docstring": "Parameters of an inner loop current control PID using virtual impedance.",
+      "docstring": "Parameters of an inner loop current control PID using virtual impedance based on D'Arco, Suul and Fosso.\n\"A Virtual Synchronous Machine implementation for distributed control of power converters in SmartGrids.\"\nElectric Power Systems Research 122 (2015) 180–197.",
       "fields": [
         {
           "name": "kpv",
@@ -6152,13 +6194,13 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states of the VirtualInertia model are:\n\tξd_ic: d-axis integrator state of the PI voltage controller,\n\tξq_ic: q-axis integrator state of the PI voltage controller,\n\tγd_ic: d-axis integrator state of the PI current controller,\n\tγq_ic: q-axis integrator state of the PI current controller,\n\tϕd_ic: d-axis low-pass filter of active damping,\n\tϕq_ic: q-axis low-pass filter of active damping",
           "internal_default": "[:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "CurrentControl has 6 states",
           "internal_default": 6,
           "data_type": "Int64"
         }

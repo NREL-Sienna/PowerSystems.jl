@@ -25,8 +25,9 @@ Parameters of a Turbine Governor Type II.
 - `τ_max::Float64`: Max Power into the Governor, validation range: (0, nothing)
 - `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states of the TGTypeI model are:
+	x_g1: lead-lag state
+- `n_states::Int64`: TGTypeII has 1 state
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TGTypeII <: TurbineGov
@@ -43,7 +44,10 @@ mutable struct TGTypeII <: TurbineGov
     "Reference Power Set-point"
     P_ref::Float64
     ext::Dict{String, Any}
+    "The states of the TGTypeI model are:
+	x_g1: lead-lag state"
     states::Vector{Symbol}
+    "TGTypeII has 1 state"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

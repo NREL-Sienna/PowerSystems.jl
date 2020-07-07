@@ -38,7 +38,7 @@ IEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
 	ψq_pp: phasonf of the subtransient flux linkage in the q-axis
-- `n_states::Int64`
+- `n_states::Int64`: SalientPoleMachine has 3 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SalientPoleMachine <: Machine
@@ -68,6 +68,7 @@ mutable struct SalientPoleMachine <: Machine
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
 	ψq_pp: phasonf of the subtransient flux linkage in the q-axis"
     states::Vector{Symbol}
+    "SalientPoleMachine has 3 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

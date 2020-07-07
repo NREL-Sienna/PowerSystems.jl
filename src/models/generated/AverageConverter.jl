@@ -17,7 +17,7 @@ Parameters of an average converter model
 - `s_rated::Float64`: rated VA, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
-- `n_states::Int64`
+- `n_states::Int64`: AverageConverter has no states
 """
 mutable struct AverageConverter <: Converter
     "rated voltage"
@@ -26,6 +26,7 @@ mutable struct AverageConverter <: Converter
     s_rated::Float64
     ext::Dict{String, Any}
     states::Vector{Symbol}
+    "AverageConverter has no states"
     n_states::Int64
 end
 

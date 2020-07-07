@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
+        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
@@ -18,8 +19,10 @@ i.e. an integrator controller on EMF
 - `Kv::Float64`: Proportional Gain, validation range: (0, nothing)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
+- `states::Vector{Symbol}`: The states are:
+	Vf: field voltage
 - `n_states::Int64`: Fixed AVR has 1 states
+- `states_types::Vector{StateTypes.StateType}`: Simple AVR has 1 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AVRSimple <: AVR
@@ -28,15 +31,19 @@ mutable struct AVRSimple <: AVR
     "Reference Voltage Set-point"
     V_ref::Float64
     ext::Dict{String, Any}
+    "The states are:
+	Vf: field voltage"
     states::Vector{Symbol}
     "Fixed AVR has 1 states"
     n_states::Int64
+    "Simple AVR has 1 differential states"
+    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function AVRSimple(Kv, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRSimple(Kv, V_ref, ext, [:Vf], 1, InfrastructureSystemsInternal(), )
+    AVRSimple(Kv, V_ref, ext, [:Vf], 1, [StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function AVRSimple(; Kv, V_ref=1.0, ext=Dict{String, Any}(), )
@@ -62,6 +69,8 @@ get_ext(value::AVRSimple) = value.ext
 get_states(value::AVRSimple) = value.states
 """Get AVRSimple n_states."""
 get_n_states(value::AVRSimple) = value.n_states
+"""Get AVRSimple states_types."""
+get_states_types(value::AVRSimple) = value.states_types
 """Get AVRSimple internal."""
 get_internal(value::AVRSimple) = value.internal
 
@@ -75,5 +84,7 @@ set_ext!(value::AVRSimple, val::Dict{String, Any}) = value.ext = val
 set_states!(value::AVRSimple, val::Vector{Symbol}) = value.states = val
 """Set AVRSimple n_states."""
 set_n_states!(value::AVRSimple, val::Int64) = value.n_states = val
+"""Set AVRSimple states_types."""
+set_states_types!(value::AVRSimple, val::Vector{StateTypes.StateType}) = value.states_types = val
 """Set AVRSimple internal."""
 set_internal!(value::AVRSimple, val::InfrastructureSystemsInternal) = value.internal = val

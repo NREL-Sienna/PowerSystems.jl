@@ -20,8 +20,10 @@ Parameters of a Virtual Inertia with SRF using VSM for active power controller
 - `kω::Float64`: frequency droop gain, validation range: (0, nothing)
 - `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states of the VirtualInertia model are:
+	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
+	θ_oc: Phase angle displacement of the virtual synchronous generator model
+- `n_states::Int64`: VirtualInertia has two states
 """
 mutable struct VirtualInertia <: ActivePowerControl
     "VSM inertia constant"
@@ -33,7 +35,11 @@ mutable struct VirtualInertia <: ActivePowerControl
     "Reference Power Set-point"
     P_ref::Float64
     ext::Dict{String, Any}
+    "The states of the VirtualInertia model are:
+	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
+	θ_oc: Phase angle displacement of the virtual synchronous generator model"
     states::Vector{Symbol}
+    "VirtualInertia has two states"
     n_states::Int64
 end
 

@@ -22,6 +22,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
+        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
@@ -52,6 +53,7 @@ Parameters of Modified Type AC1A Excitacion System. EXAC1 in PSSE and PSLF
 	Ve: Integrator output state,
 	Vr3: Feedback output state
 - `n_states::Int64`
+- `states_types::Vector{StateTypes.StateType}`: ModifiedAC1A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ModifiedAC1A <: AVR
@@ -96,12 +98,14 @@ mutable struct ModifiedAC1A <: AVR
 	Vr3: Feedback output state"
     states::Vector{Symbol}
     n_states::Int64
+    "ModifiedAC1A has 5 states"
+    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function ModifiedAC1A(Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    ModifiedAC1A(Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, InfrastructureSystemsInternal(), )
+    ModifiedAC1A(Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function ModifiedAC1A(; Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
@@ -169,6 +173,8 @@ get_ext(value::ModifiedAC1A) = value.ext
 get_states(value::ModifiedAC1A) = value.states
 """Get ModifiedAC1A n_states."""
 get_n_states(value::ModifiedAC1A) = value.n_states
+"""Get ModifiedAC1A states_types."""
+get_states_types(value::ModifiedAC1A) = value.states_types
 """Get ModifiedAC1A internal."""
 get_internal(value::ModifiedAC1A) = value.internal
 
@@ -210,5 +216,7 @@ set_ext!(value::ModifiedAC1A, val::Dict{String, Any}) = value.ext = val
 set_states!(value::ModifiedAC1A, val::Vector{Symbol}) = value.states = val
 """Set ModifiedAC1A n_states."""
 set_n_states!(value::ModifiedAC1A, val::Int64) = value.n_states = val
+"""Set ModifiedAC1A states_types."""
+set_states_types!(value::ModifiedAC1A, val::Vector{StateTypes.StateType}) = value.states_types = val
 """Set ModifiedAC1A internal."""
 set_internal!(value::ModifiedAC1A, val::InfrastructureSystemsInternal) = value.internal = val

@@ -44,8 +44,13 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `ext::Dict{String, Any}`
 - `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states are:
+	ψd: d-axis stator flux,
+	ψq: q-axis stator flux,
+	ψf: field rotor flux,
+	ψ1d: d-axis rotor damping flux,
+	ψ1q: q-axis rotor damping flux
+- `n_states::Int64`: FullMachine has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct FullMachine <: Machine
@@ -78,7 +83,14 @@ mutable struct FullMachine <: Machine
     inv_d_fluxlink::Array{Float64,2}
     "Equations 3.128, 3.132 From Kundur"
     inv_q_fluxlink::Array{Float64,2}
+    "The states are:
+	ψd: d-axis stator flux,
+	ψq: q-axis stator flux,
+	ψf: field rotor flux,
+	ψ1d: d-axis rotor damping flux,
+	ψ1q: q-axis rotor damping flux"
     states::Vector{Symbol}
+    "FullMachine has 5 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

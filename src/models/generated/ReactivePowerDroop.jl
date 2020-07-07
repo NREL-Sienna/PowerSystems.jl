@@ -18,8 +18,9 @@ Parameters of a Reactive Power droop controller
 - `ωf::Float64`: filter frequency cutoff, validation range: (0, nothing)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states of the ReactivePowerDroop model are:
+	q_oc: Filtered reactive output power
+- `n_states::Int64`: ReactivePowerDroop has 1 state
 """
 mutable struct ReactivePowerDroop <: ReactivePowerControl
     "frequency droop gain"
@@ -29,7 +30,10 @@ mutable struct ReactivePowerDroop <: ReactivePowerControl
     "Reference Voltage Set-point"
     V_ref::Float64
     ext::Dict{String, Any}
+    "The states of the ReactivePowerDroop model are:
+	q_oc: Filtered reactive output power"
     states::Vector{Symbol}
+    "ReactivePowerDroop has 1 state"
     n_states::Int64
 end
 

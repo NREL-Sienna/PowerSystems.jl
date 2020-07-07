@@ -35,8 +35,14 @@ Parameters of 6-states synchronous machine: Anderson-Fouad model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: (0, nothing)
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int64`
+- `states::Vector{Symbol}`: The states are:
+	eψq: q-axis stator flux,
+	ψd: d-axis stator flux,
+	eq_p: q-axis transient voltage,
+	ed_p: d-axis transient voltage,
+	eq_pp: q-axis subtransient voltage,
+	ed_pp: d-axis subtransient voltage
+- `n_states::Int64`: AndersonFouadMachine has 6 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AndersonFouadMachine <: Machine
@@ -63,7 +69,15 @@ mutable struct AndersonFouadMachine <: Machine
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
     ext::Dict{String, Any}
+    "The states are:
+	eψq: q-axis stator flux,
+	ψd: d-axis stator flux,
+	eq_p: q-axis transient voltage,
+	ed_p: d-axis transient voltage,
+	eq_pp: q-axis subtransient voltage,
+	ed_pp: d-axis subtransient voltage"
     states::Vector{Symbol}
+    "AndersonFouadMachine has 6 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
