@@ -10,8 +10,8 @@ This file is auto-generated. Do not edit.
         reactive_power::Float64
         rating::Float64
         prime_mover::PrimeMovers.PrimeMover
-        reactivepower_max::Union{Nothing, Float64}
-        reactivepower_min::Union{Nothing, Float64}
+        reactive_power_max::Union{Nothing, Float64}
+        reactive_power_min::Union{Nothing, Float64}
         power_factor::Float64
         operation_cost::TwoPartCost
         base_power::Float64
@@ -32,8 +32,8 @@ This file is auto-generated. Do not edit.
 - `reactive_power::Float64`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
 - `prime_mover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
-- `reactivepower_max::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
-- `reactivepower_min::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
+- `reactive_power_max::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
+- `reactive_power_min::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
 - `power_factor::Float64`, validation range: (0, 1), action if invalid: error
 - `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
 - `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
@@ -53,8 +53,8 @@ mutable struct RenewableDispatch <: RenewableGen
     rating::Float64
     "PrimeMover Technology according to EIA 923"
     prime_mover::PrimeMovers.PrimeMover
-    reactivepower_max::Union{Nothing, Float64}
-    reactivepower_min::Union{Nothing, Float64}
+    reactive_power_max::Union{Nothing, Float64}
+    reactive_power_min::Union{Nothing, Float64}
     power_factor::Float64
     "Operation Cost of Generation [`TwoPartCost`](@ref)"
     operation_cost::TwoPartCost
@@ -71,12 +71,12 @@ mutable struct RenewableDispatch <: RenewableGen
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactivepower_max, reactivepower_min, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactivepower_max, reactivepower_min, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_max, reactive_power_min, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_max, reactive_power_min, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, reactivepower_max, reactivepower_min, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactivepower_max, reactivepower_min, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, )
+function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_max, reactive_power_min, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_max, reactive_power_min, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,8 +89,8 @@ function RenewableDispatch(::Nothing)
         reactive_power=0.0,
         rating=0.0,
         prime_mover=PrimeMovers.OT,
-        reactivepower_max=nothing,
-        reactivepower_min=nothing,
+        reactive_power_max=nothing,
+        reactive_power_min=nothing,
         power_factor=1.0,
         operation_cost=TwoPartCost(nothing),
         base_power=0.0,
@@ -115,10 +115,10 @@ get_reactive_power(value::RenewableDispatch) = get_value(value, :reactive_power)
 get_rating(value::RenewableDispatch) = get_value(value, :rating)
 """Get RenewableDispatch prime_mover."""
 get_prime_mover(value::RenewableDispatch) = get_value(value, :prime_mover)
-"""Get RenewableDispatch reactivepower_max."""
-get_reactivepower_max(value::RenewableDispatch) = get_value(value, :reactivepower_max)
-"""Get RenewableDispatch reactivepower_min."""
-get_reactivepower_min(value::RenewableDispatch) = get_value(value, :reactivepower_min)
+"""Get RenewableDispatch reactive_power_max."""
+get_reactive_power_max(value::RenewableDispatch) = get_value(value, :reactive_power_max)
+"""Get RenewableDispatch reactive_power_min."""
+get_reactive_power_min(value::RenewableDispatch) = get_value(value, :reactive_power_min)
 """Get RenewableDispatch power_factor."""
 get_power_factor(value::RenewableDispatch) = value.power_factor
 """Get RenewableDispatch operation_cost."""
@@ -150,10 +150,10 @@ set_reactive_power!(value::RenewableDispatch, val::Float64) = value.reactive_pow
 set_rating!(value::RenewableDispatch, val::Float64) = value.rating = val
 """Set RenewableDispatch prime_mover."""
 set_prime_mover!(value::RenewableDispatch, val::PrimeMovers.PrimeMover) = value.prime_mover = val
-"""Set RenewableDispatch reactivepower_max."""
-set_reactivepower_max!(value::RenewableDispatch, val::Union{Nothing, Float64}) = value.reactivepower_max = val
-"""Set RenewableDispatch reactivepower_min."""
-set_reactivepower_min!(value::RenewableDispatch, val::Union{Nothing, Float64}) = value.reactivepower_min = val
+"""Set RenewableDispatch reactive_power_max."""
+set_reactive_power_max!(value::RenewableDispatch, val::Union{Nothing, Float64}) = value.reactive_power_max = val
+"""Set RenewableDispatch reactive_power_min."""
+set_reactive_power_min!(value::RenewableDispatch, val::Union{Nothing, Float64}) = value.reactive_power_min = val
 """Set RenewableDispatch power_factor."""
 set_power_factor!(value::RenewableDispatch, val::Float64) = value.power_factor = val
 """Set RenewableDispatch operation_cost."""

@@ -5,8 +5,8 @@ This file is auto-generated. Do not edit.
     mutable struct PhaseShiftingTransformer <: ACBranch
         name::String
         available::Bool
-        activepower_flow::Float64
-        reactivepower_flow::Float64
+        active_power_flow::Float64
+        reactive_power_flow::Float64
         arc::Arc
         r::Float64
         x::Float64
@@ -25,8 +25,8 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `activepower_flow::Float64`
-- `reactivepower_flow::Float64`
+- `active_power_flow::Float64`
+- `reactive_power_flow::Float64`
 - `arc::Arc`
 - `r::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
 - `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
@@ -42,8 +42,8 @@ This file is auto-generated. Do not edit.
 mutable struct PhaseShiftingTransformer <: ACBranch
     name::String
     available::Bool
-    activepower_flow::Float64
-    reactivepower_flow::Float64
+    active_power_flow::Float64
+    reactive_power_flow::Float64
     arc::Arc
     "System per-unit value"
     r::Float64
@@ -62,12 +62,12 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -75,8 +75,8 @@ function PhaseShiftingTransformer(::Nothing)
     PhaseShiftingTransformer(;
         name="init",
         available=false,
-        activepower_flow=0.0,
-        reactivepower_flow=0.0,
+        active_power_flow=0.0,
+        reactive_power_flow=0.0,
         arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
@@ -94,10 +94,10 @@ end
 InfrastructureSystems.get_name(value::PhaseShiftingTransformer) = value.name
 """Get PhaseShiftingTransformer available."""
 get_available(value::PhaseShiftingTransformer) = value.available
-"""Get PhaseShiftingTransformer activepower_flow."""
-get_activepower_flow(value::PhaseShiftingTransformer) = get_value(value, :activepower_flow)
-"""Get PhaseShiftingTransformer reactivepower_flow."""
-get_reactivepower_flow(value::PhaseShiftingTransformer) = get_value(value, :reactivepower_flow)
+"""Get PhaseShiftingTransformer active_power_flow."""
+get_active_power_flow(value::PhaseShiftingTransformer) = get_value(value, :active_power_flow)
+"""Get PhaseShiftingTransformer reactive_power_flow."""
+get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(value, :reactive_power_flow)
 """Get PhaseShiftingTransformer arc."""
 get_arc(value::PhaseShiftingTransformer) = value.arc
 """Get PhaseShiftingTransformer r."""
@@ -125,10 +125,10 @@ get_internal(value::PhaseShiftingTransformer) = value.internal
 InfrastructureSystems.set_name!(value::PhaseShiftingTransformer, val::String) = value.name = val
 """Set PhaseShiftingTransformer available."""
 set_available!(value::PhaseShiftingTransformer, val::Bool) = value.available = val
-"""Set PhaseShiftingTransformer activepower_flow."""
-set_activepower_flow!(value::PhaseShiftingTransformer, val::Float64) = value.activepower_flow = val
-"""Set PhaseShiftingTransformer reactivepower_flow."""
-set_reactivepower_flow!(value::PhaseShiftingTransformer, val::Float64) = value.reactivepower_flow = val
+"""Set PhaseShiftingTransformer active_power_flow."""
+set_active_power_flow!(value::PhaseShiftingTransformer, val::Float64) = value.active_power_flow = val
+"""Set PhaseShiftingTransformer reactive_power_flow."""
+set_reactive_power_flow!(value::PhaseShiftingTransformer, val::Float64) = value.reactive_power_flow = val
 """Set PhaseShiftingTransformer arc."""
 set_arc!(value::PhaseShiftingTransformer, val::Arc) = value.arc = val
 """Set PhaseShiftingTransformer r."""

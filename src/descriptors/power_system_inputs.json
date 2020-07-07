@@ -13,7 +13,7 @@
             "description": "To Bus ID"
         },
         {
-            "name": "activepower_flow",
+            "name": "active_power_flow",
             "unit": "MW",
             "description": "Active power flow"
         },
@@ -173,13 +173,13 @@
             "description": "Continuous MW flow limit"
         },
         {
-            "name": "activepower_flow",
+            "name": "active_power_flow",
             "unit": "MW",
             "description": "Active power flow",
             "system_per_unit": true
         },
         {
-            "name": "reactivepower_flow",
+            "name": "reactive_power_flow",
             "unit": "MVAr",
             "description": "Reactive power flow",
             "system_per_unit": true

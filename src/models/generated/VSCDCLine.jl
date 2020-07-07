@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
     mutable struct VSCDCLine <: DCBranch
         name::String
         available::Bool
-        activepower_flow::Float64
+        active_power_flow::Float64
         arc::Arc
         rectifier_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         rectifier_xrc::Float64
@@ -24,7 +24,7 @@ As implemented in Milano's Book, Page 397.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `activepower_flow::Float64`
+- `active_power_flow::Float64`
 - `arc::Arc`
 - `rectifier_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `rectifier_xrc::Float64`
@@ -40,7 +40,7 @@ As implemented in Milano's Book, Page 397.
 mutable struct VSCDCLine <: DCBranch
     name::String
     available::Bool
-    activepower_flow::Float64
+    active_power_flow::Float64
     arc::Arc
     rectifier_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     rectifier_xrc::Float64
@@ -57,12 +57,12 @@ mutable struct VSCDCLine <: DCBranch
     internal::InfrastructureSystemsInternal
 end
 
-function VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function VSCDCLine(name, available, active_power_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    VSCDCLine(name, available, active_power_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function VSCDCLine(; name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    VSCDCLine(name, available, activepower_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, )
+function VSCDCLine(; name, available, active_power_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    VSCDCLine(name, available, active_power_flow, arc, rectifier_taplimits, rectifier_xrc, rectifier_firing_angle, inverter_taplimits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -70,7 +70,7 @@ function VSCDCLine(::Nothing)
     VSCDCLine(;
         name="init",
         available=false,
-        activepower_flow=0.0,
+        active_power_flow=0.0,
         arc=Arc(Bus(nothing), Bus(nothing)),
         rectifier_taplimits=(min=0.0, max=0.0),
         rectifier_xrc=0.0,
@@ -88,8 +88,8 @@ end
 InfrastructureSystems.get_name(value::VSCDCLine) = value.name
 """Get VSCDCLine available."""
 get_available(value::VSCDCLine) = value.available
-"""Get VSCDCLine activepower_flow."""
-get_activepower_flow(value::VSCDCLine) = get_value(value, :activepower_flow)
+"""Get VSCDCLine active_power_flow."""
+get_active_power_flow(value::VSCDCLine) = get_value(value, :active_power_flow)
 """Get VSCDCLine arc."""
 get_arc(value::VSCDCLine) = value.arc
 """Get VSCDCLine rectifier_taplimits."""
@@ -117,8 +117,8 @@ get_internal(value::VSCDCLine) = value.internal
 InfrastructureSystems.set_name!(value::VSCDCLine, val::String) = value.name = val
 """Set VSCDCLine available."""
 set_available!(value::VSCDCLine, val::Bool) = value.available = val
-"""Set VSCDCLine activepower_flow."""
-set_activepower_flow!(value::VSCDCLine, val::Float64) = value.activepower_flow = val
+"""Set VSCDCLine active_power_flow."""
+set_active_power_flow!(value::VSCDCLine, val::Float64) = value.active_power_flow = val
 """Set VSCDCLine arc."""
 set_arc!(value::VSCDCLine, val::Arc) = value.arc = val
 """Set VSCDCLine rectifier_taplimits."""

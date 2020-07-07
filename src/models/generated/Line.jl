@@ -5,8 +5,8 @@ This file is auto-generated. Do not edit.
     mutable struct Line <: ACBranch
         name::String
         available::Bool
-        activepower_flow::Float64
-        reactivepower_flow::Float64
+        active_power_flow::Float64
+        reactive_power_flow::Float64
         arc::Arc
         r::Float64
         x::Float64
@@ -24,8 +24,8 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `activepower_flow::Float64`
-- `reactivepower_flow::Float64`
+- `active_power_flow::Float64`
+- `reactive_power_flow::Float64`
 - `arc::Arc`
 - `r::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
 - `x::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
@@ -40,8 +40,8 @@ This file is auto-generated. Do not edit.
 mutable struct Line <: ACBranch
     name::String
     available::Bool
-    activepower_flow::Float64
-    reactivepower_flow::Float64
+    active_power_flow::Float64
+    reactive_power_flow::Float64
     arc::Arc
     "System per-unit value"
     r::Float64
@@ -60,12 +60,12 @@ mutable struct Line <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Line(; name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Line(name, available, activepower_flow, reactivepower_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, )
+function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -73,8 +73,8 @@ function Line(::Nothing)
     Line(;
         name="init",
         available=false,
-        activepower_flow=0.0,
-        reactivepower_flow=0.0,
+        active_power_flow=0.0,
+        reactive_power_flow=0.0,
         arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
@@ -91,10 +91,10 @@ end
 InfrastructureSystems.get_name(value::Line) = value.name
 """Get Line available."""
 get_available(value::Line) = value.available
-"""Get Line activepower_flow."""
-get_activepower_flow(value::Line) = get_value(value, :activepower_flow)
-"""Get Line reactivepower_flow."""
-get_reactivepower_flow(value::Line) = get_value(value, :reactivepower_flow)
+"""Get Line active_power_flow."""
+get_active_power_flow(value::Line) = get_value(value, :active_power_flow)
+"""Get Line reactive_power_flow."""
+get_reactive_power_flow(value::Line) = get_value(value, :reactive_power_flow)
 """Get Line arc."""
 get_arc(value::Line) = value.arc
 """Get Line r."""
@@ -120,10 +120,10 @@ get_internal(value::Line) = value.internal
 InfrastructureSystems.set_name!(value::Line, val::String) = value.name = val
 """Set Line available."""
 set_available!(value::Line, val::Bool) = value.available = val
-"""Set Line activepower_flow."""
-set_activepower_flow!(value::Line, val::Float64) = value.activepower_flow = val
-"""Set Line reactivepower_flow."""
-set_reactivepower_flow!(value::Line, val::Float64) = value.reactivepower_flow = val
+"""Set Line active_power_flow."""
+set_active_power_flow!(value::Line, val::Float64) = value.active_power_flow = val
+"""Set Line reactive_power_flow."""
+set_reactive_power_flow!(value::Line, val::Float64) = value.reactive_power_flow = val
 """Set Line arc."""
 set_arc!(value::Line, val::Arc) = value.arc = val
 """Set Line r."""

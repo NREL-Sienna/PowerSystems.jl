@@ -95,11 +95,11 @@ function create_system_with_dynamic_inverter()
         energy = 5.0,
         capacity = (min = 5.0, max = 100.0),
         rating = 0.0275, #Value in per_unit of the system
-        activepower = 0.01375,
-        inputactivepowerlimits = (min = 0.0, max = 50.0),
-        outputactivepowerlimits = (min = 0.0, max = 50.0),
-        reactivepower = 0.0,
-        reactivepowerlimits = (min = -50.0, max = 50.0),
+        active_power = 0.01375,
+        inputactive_powerlimits = (min = 0.0, max = 50.0),
+        outputactive_powerlimits = (min = 0.0, max = 50.0),
+        reactive_power = 0.0,
+        reactive_powerlimits = (min = -50.0, max = 50.0),
         efficiency = (in = 0.80, out = 0.90),
         base_power = 100.0,
     )
@@ -144,7 +144,7 @@ function create_system_with_dynamic_inverter()
         2 * pi * 50.0,
     ) #ωb:: Rated angular frequency
 
-    Q_control = ReactivePowerDroop(
+    Q_control = Reactive_powerDroop(
         0.2, #kq:: Reactive power droop gain in pu
         1000.0,
     ) #ωf:: Reactive power cut-off low pass filter frequency
