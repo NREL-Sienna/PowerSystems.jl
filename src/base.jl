@@ -466,11 +466,7 @@ function IS.add_forecast!(
                 get_initial_time(forecast),
                 IS.get_label(forecast),
             )
-            if haskey(forecasts.data, key)
-                @warn "forecast $key is already stored for $(get_name(component_)), not adding $(get_name(component)) Area forecast"
-            else
-                IS.add_forecast!(data, component_, forecast, ts_data)
-            end
+            IS.add_forecast!(data, component_, forecast, ts_data; skip_if_present = true)
         end
     else
         IS.add_forecast!(data, component, forecast, ts_data)
