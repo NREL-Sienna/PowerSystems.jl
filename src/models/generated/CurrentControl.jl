@@ -72,16 +72,16 @@ end
 # Constructor for demo purposes; non-functional.
 function CurrentControl(::Nothing)
     CurrentControl(;
-        kpv=0.0,
-        kiv=0.0,
-        kffv=0.0,
-        rv=0.0,
-        lv=0.0,
-        kpc=0.0,
-        kic=0.0,
-        kffi=0.0,
-        ωad=0.0,
-        kad=0.0,
+        kpv=0,
+        kiv=0,
+        kffv=0,
+        rv=0,
+        lv=0,
+        kpc=0,
+        kic=0,
+        kffi=0,
+        ωad=0,
+        kad=0,
         ext=Dict{String, Any}(),
     )
 end

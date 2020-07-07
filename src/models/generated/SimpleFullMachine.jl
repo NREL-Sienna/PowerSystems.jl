@@ -97,10 +97,10 @@ end
 # Constructor for demo purposes; non-functional.
 function SimpleFullMachine(::Nothing)
     SimpleFullMachine(;
-        R=0.0,
-        R_f=0.0,
-        R_1d=0.0,
-        R_1q=0.0,
+        R=0,
+        R_f=0,
+        R_1d=0,
+        R_1q=0,
         L_d=1.0,
         L_q=1.0,
         L_ad=2.0,

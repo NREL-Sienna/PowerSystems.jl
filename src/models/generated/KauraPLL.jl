@@ -44,9 +44,9 @@ end
 # Constructor for demo purposes; non-functional.
 function KauraPLL(::Nothing)
     KauraPLL(;
-        ω_lp=0.0,
-        kp_pll=0.0,
-        ki_pll=0.0,
+        ω_lp=0,
+        kp_pll=0,
+        ki_pll=0,
         ext=Dict{String, Any}(),
     )
 end

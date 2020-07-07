@@ -90,13 +90,13 @@ get_bus(value::PowerLoad) = value.bus
 """Get PowerLoad model."""
 get_model(value::PowerLoad) = value.model
 """Get PowerLoad active_power."""
-get_active_power(value::PowerLoad) = get_value(value, :active_power)
+get_active_power(value::PowerLoad) = get_value(Float64, value, :active_power)
 """Get PowerLoad reactive_power."""
-get_reactive_power(value::PowerLoad) = get_value(value, :reactive_power)
+get_reactive_power(value::PowerLoad) = get_value(Float64, value, :reactive_power)
 """Get PowerLoad max_active_power."""
-get_max_active_power(value::PowerLoad) = get_value(value, :max_active_power)
+get_max_active_power(value::PowerLoad) = get_value(Float64, value, :max_active_power)
 """Get PowerLoad max_reactive_power."""
-get_max_reactive_power(value::PowerLoad) = get_value(value, :max_reactive_power)
+get_max_reactive_power(value::PowerLoad) = get_value(Float64, value, :max_reactive_power)
 """Get PowerLoad services."""
 get_services(value::PowerLoad) = value.services
 """Get PowerLoad dynamic_injector."""

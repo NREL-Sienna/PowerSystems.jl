@@ -60,12 +60,12 @@ end
 # Constructor for demo purposes; non-functional.
 function TGTypeII(::Nothing)
     TGTypeII(;
-        R=0.0,
-        T1=0.0,
-        T2=0.0,
-        τ_min=0.0,
-        τ_max=0.0,
-        P_ref=0.0,
+        R=0,
+        T1=0,
+        T2=0,
+        τ_min=0,
+        τ_max=0,
+        P_ref=0,
         ext=Dict{String, Any}(),
     )
 end

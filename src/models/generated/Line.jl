@@ -92,9 +92,9 @@ InfrastructureSystems.get_name(value::Line) = value.name
 """Get Line available."""
 get_available(value::Line) = value.available
 """Get Line active_power_flow."""
-get_active_power_flow(value::Line) = get_value(value, :active_power_flow)
+get_active_power_flow(value::Line) = get_value(Float64, value, :active_power_flow)
 """Get Line reactive_power_flow."""
-get_reactive_power_flow(value::Line) = get_value(value, :reactive_power_flow)
+get_reactive_power_flow(value::Line) = get_value(Float64, value, :reactive_power_flow)
 """Get Line arc."""
 get_arc(value::Line) = value.arc
 """Get Line r."""
@@ -104,7 +104,7 @@ get_x(value::Line) = value.x
 """Get Line b."""
 get_b(value::Line) = value.b
 """Get Line rate."""
-get_rate(value::Line) = get_value(value, :rate)
+get_rate(value::Line) = get_value(Float64, value, :rate)
 """Get Line angle_limits."""
 get_angle_limits(value::Line) = value.angle_limits
 """Get Line services."""

@@ -46,8 +46,8 @@ end
 # Constructor for demo purposes; non-functional.
 function AVRSimple(::Nothing)
     AVRSimple(;
-        Kv=0.0,
-        V_ref=0.0,
+        Kv=0,
+        V_ref=0,
         ext=Dict{String, Any}(),
     )
 end

@@ -80,15 +80,15 @@ end
             @test cdmgen_val == mpgen_val
         end
 
-        if length(mpgen.op_cost.variable) == 4
+        if length(mpgen.operation_cost.variable) == 4
             @test [
                 isapprox(
-                    cdmgen.op_cost.variable[i][1],
-                    mpgen.op_cost.variable[i][1],
+                    cdmgen.operation_cost.variable[i][1],
+                    mpgen.operation_cost.variable[i][1],
                     atol = 0.1,
                 ) for i in 1:4
             ] == [true, true, true, true]
-            #@test compare_values_without_uuids(cdmgen.op_cost, mpgen.op_cost)
+            #@test compare_values_without_uuids(cdmgen.operation_cost, mpgen.operation_cost)
         end
     end
 
@@ -108,7 +108,7 @@ end
             end
             @test cdmgen_val == mpgen_val
         end
-        #@test compare_values_without_uuids(cdmgen.op_cost, mpgen.op_cost)
+        #@test compare_values_without_uuids(cdmgen.operation_cost, mpgen.operation_cost)
     end
 
     cdm_ac_branches = collect(get_components(ACBranch, cdmsys))

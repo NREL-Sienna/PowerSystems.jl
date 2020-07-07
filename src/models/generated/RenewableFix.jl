@@ -28,7 +28,7 @@ Data Structure for fixed renewable generation technologies.
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
-- `prime_mover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
+- `prime_mover::PrimeMovers.PrimeMover`: prime_mover Technology according to EIA 923
 - `power_factor::Float64`, validation range: (0, 1), action if invalid: error
 - `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
@@ -45,7 +45,7 @@ mutable struct RenewableFix <: RenewableGen
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
-    "PrimeMover Technology according to EIA 923"
+    "prime_mover Technology according to EIA 923"
     prime_mover::PrimeMovers.PrimeMover
     power_factor::Float64
     "Base power of the unit in MVA"
@@ -95,11 +95,11 @@ get_available(value::RenewableFix) = value.available
 """Get RenewableFix bus."""
 get_bus(value::RenewableFix) = value.bus
 """Get RenewableFix active_power."""
-get_active_power(value::RenewableFix) = get_value(value, :active_power)
+get_active_power(value::RenewableFix) = get_value(Float64, value, :active_power)
 """Get RenewableFix reactive_power."""
-get_reactive_power(value::RenewableFix) = get_value(value, :reactive_power)
+get_reactive_power(value::RenewableFix) = get_value(Float64, value, :reactive_power)
 """Get RenewableFix rating."""
-get_rating(value::RenewableFix) = get_value(value, :rating)
+get_rating(value::RenewableFix) = get_value(Float64, value, :rating)
 """Get RenewableFix prime_mover."""
 get_prime_mover(value::RenewableFix) = value.prime_mover
 """Get RenewableFix power_factor."""
