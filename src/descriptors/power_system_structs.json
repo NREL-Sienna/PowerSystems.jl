@@ -116,13 +116,13 @@
           "data_type": "Float64"
         },
         {
-          "name": "start_up",
+          "name": "startup",
           "comment": "startup cost",
           "null_value": "(hot = START_COST, warm = START_COST,cold = START_COST)",
           "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
         },
         {
-          "name": "shut_dn",
+          "name": "shutdn",
           "comment": "shutdown cost",
           "null_value": "0.0",
           "data_type": "Float64",
@@ -250,7 +250,7 @@
           "data_type": "String"
         },
         {
-          "name": "bus_type",
+          "name": "bustype",
           "comment": "bus type",
           "null_value": "nothing",
           "data_type": "Union{Nothing, BusTypes.BusType}"
@@ -268,7 +268,7 @@
         },
         {
           "name": "magnitude",
-          "comment": "voltage as a multiple of base_voltage",
+          "comment": "voltage as a multiple of basevoltage",
           "null_value": "0.0",
           "data_type": "Union{Nothing, Float64}",
           "valid_range": "voltage_limits",
@@ -276,9 +276,9 @@
         },
         {
           "name": "voltage_limits",
-          "comment": "limits on the voltage variation as multiples of base_voltage",
-          "null_value": "(lb=0.0, ub=0.0)",
-          "data_type": "Union{Nothing, NamedTuple{(:lb, :ub), Tuple{Float64, Float64}}}"
+          "comment": "limits on the voltage variation as multiples of basevoltage",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "Union{Nothing, Min_Max}"
         },
         {
           "name": "base_voltage",
@@ -946,39 +946,27 @@
           "data_type": "Arc"
         },
         {
-          "name": "active_power_from_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
+          "name": "active_power_limits_from",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "needs_conversion": true
         },
         {
-          "name": "active_power_from_min",
-          "null_value": "0.0",
-          "data_type": "Float64",
+          "name": "active_power_limits_to",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "needs_conversion": true
         },
         {
-          "name": "active_power_to_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
+          "name": "reactive_power_limits_from",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "needs_conversion": true
         },
         {
-          "name": "active_power_to_min",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "reactive_power_from_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "reactive_power_to_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
+          "name": "reactive_power_limits_to",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "needs_conversion": true
         },
         {
@@ -1043,7 +1031,7 @@
           "data_type": "Arc"
         },
         {
-          "name": "rectifier_taplimits",
+          "name": "rectifier_tap_limits",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
@@ -1058,7 +1046,7 @@
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
-          "name": "inverter_taplimits",
+          "name": "inverter_tap_limits",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
@@ -1365,6 +1353,7 @@
           "name": "reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
+          "valid_range": "reactive_power_limits",
           "validation_action": "warn",
           "needs_conversion": true
         },
@@ -1382,59 +1371,28 @@
         },
         {
           "name": "prime_mover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "active_power_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
+          "name": "active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "needs_conversion": true
         },
         {
-          "name": "active_power_min",
-          "null_value": "0.0",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "reactive_power_max",
+          "name": "reactive_power_limits",
+          "validation_action": "warn",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, Min_Max}",
           "needs_conversion": true
         },
         {
-          "name": "reactive_power_min",
+          "name": "ramp_limits",
+          "comment": "ramp up and ramp down limits",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
-          "needs_conversion": true
-        },
-        {
-          "name": "ramp_limit_up",
-          "comment": "ramp up limit in %/min",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1443,40 +1401,15 @@
           "needs_conversion": true
         },
         {
-          "name": "ramp_limit_dn",
-          "comment": "ramp dn limit in %/min",
+          "name": "time_limits",
+          "comment": "Minimum up and Minimum down time limits in hours",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
             "min": 0,
             "max": null
           },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "time_limits_up",
-          "comment": "Minimum up time limits in hours",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "time_limits_dn",
-          "comment": "Minimum down time limits in hours",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
+          "validation_action": "error"
         },
         {
           "name": "operation_cost",
@@ -1503,7 +1436,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "inflow",
@@ -1523,7 +1457,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "services",
@@ -1592,6 +1527,7 @@
           "name": "reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
+          "valid_range": "reactive_power_limits",
           "validation_action": "warn",
           "needs_conversion": true
         },
@@ -1609,71 +1545,28 @@
         },
         {
           "name": "prime_mover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "active_power_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
+          "name": "active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "needs_conversion": true
         },
         {
-          "name": "active_power_min",
-          "null_value": "0.0",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "reactive_power_max",
+          "name": "reactive_power_limits",
+          "validation_action": "warn",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}",
           "needs_conversion": true
         },
         {
-          "name": "reactive_power_min",
+          "name": "ramp_limits",
+          "comment": "ramp up and ramp down limits",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
-          "needs_conversion": true
-        },
-        {
-          "name": "ramp_limit_up",
-          "comment": "ramp up limit in %/min",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "ramp_limit_dn",
-          "comment": "ramp dn limit in %/min",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1690,8 +1583,7 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error",
-          "needs_conversion": true
+          "validation_action": "error"
         },
         {
           "name": "base_power",
@@ -1764,14 +1656,12 @@
         {
           "name": "active_power",
           "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
+          "data_type": "Float64"
         },
         {
           "name": "reactive_power",
           "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
+          "data_type": "Float64"
         },
         {
           "name": "rating",
@@ -1782,36 +1672,18 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error",
-          "needs_conversion": true
+          "validation_action": "error"
         },
         {
           "name": "prime_mover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover",
-          "needs_conversion": true
+          "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "reactive_power_max",
+          "name": "reactive_power_limits",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
-          "needs_conversion": true
-        },
-        {
-          "name": "reactive_power_min",
-          "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, Min_Max}",
           "needs_conversion": true
         },
         {
@@ -1925,7 +1797,7 @@
         },
         {
           "name": "prime_mover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
           "data_type": "PrimeMovers.PrimeMover"
         },
@@ -2017,6 +1889,7 @@
           "name": "active_power",
           "null_value": "0.0",
           "data_type": "Float64",
+          "valid_range": "active_power_limits",
           "validation_action": "warn",
           "needs_conversion": true
         },
@@ -2024,6 +1897,7 @@
           "name": "reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
+          "valid_range": "reactive_power_limits",
           "validation_action": "warn",
           "needs_conversion": true
         },
@@ -2041,77 +1915,32 @@
         },
         {
           "name": "prime_mover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
           "name": "fuel",
-          "comment": "PrimeMover Fuel according to EIA 923",
+          "comment": "prime_mover Fuel according to EIA 923",
           "null_value": "ThermalFuels.OTHER",
           "data_type": "ThermalFuels.ThermalFuel"
         },
         {
-          "name": "active_power_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
+          "name": "active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "needs_conversion": true
         },
         {
-          "name": "active_power_min",
-          "null_value": "0.0",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "reactive_power_max",
+          "name": "reactive_power_limits",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, Min_Max}",
           "needs_conversion": true
         },
         {
-          "name": "reactive_power_min",
+          "name": "ramp_limits",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
-          "needs_conversion": true
-        },
-        {
-          "name": "ramp_limit_up",
-          "comment": "ramp up limit in %/min",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "ramp_limit_dn",
-          "comment": "ramp dn limit in %/min",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -2128,8 +1957,7 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error",
-          "needs_conversion": true
+          "validation_action": "error"
         },
         {
           "name": "operation_cost",
@@ -2220,12 +2048,16 @@
           "name": "active_power",
           "null_value": "0.0",
           "data_type": "Float64",
+          "valid_range": "active_power_limits",
+          "validation_action": "warn",
           "needs_conversion": true
         },
         {
           "name": "reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
+          "valid_range": "reactive_power_limits",
+          "validation_action": "warn",
           "needs_conversion": true
         },
         {
@@ -2242,77 +2074,32 @@
         },
         {
           "name": "prime_mover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
           "name": "fuel",
-          "comment": "PrimeMover Fuel according to EIA 923",
+          "comment": "prime_mover Fuel according to EIA 923",
           "null_value": "ThermalFuels.OTHER",
           "data_type": "ThermalFuels.ThermalFuel"
         },
         {
-          "name": "active_power_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
+          "name": "active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "needs_conversion": true
         },
         {
-          "name": "active_power_min",
-          "null_value": "0.0",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "reactive_power_max",
+          "name": "reactive_power_limits",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, Min_Max}",
           "needs_conversion": true
         },
         {
-          "name": "reactive_power_min",
+          "name": "ramp_limits",
           "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
-          "needs_conversion": true
-        },
-        {
-          "name": "ramp_limit_up",
-          "comment": "ramp up limit in %/min",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "ramp_limit_dn",
-          "comment": "ramp dn limit in %/min",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, Float64}",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -2446,12 +2233,12 @@
         },
         {
           "name": "prime_mover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.BA",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "energy_level",
+          "name": "initial_energy",
           "null_value": "0.0",
           "comment": "State of Charge of the Battery p.u.-hr",
           "data_type": "Float64",
@@ -2463,22 +2250,10 @@
           "needs_conversion": true
         },
         {
-          "name": "energy_level_min",
-          "null_value": "0.0",
-          "comment": "Minimum storage capacity in p.u.-hr",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "energy_level_max",
-          "null_value": "0.0",
-          "comment": "Maximum storage capacity in p.u.-hr",
-          "data_type": "Float64",
+          "name": "state_of_charge_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "comment": "Maximum and Minimum storage capacity in p.u.-hr",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -2490,17 +2265,18 @@
           "name": "rating",
           "null_value": "0.0",
           "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
           "needs_conversion": true
         },
         {
           "name": "active_power",
           "null_value": "0.0",
           "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "input_active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -2509,42 +2285,9 @@
           "needs_conversion": true
         },
         {
-          "name": "input_active_power_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "input_active_power_min",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "output_active_power_max",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "needs_conversion": true
-        },
-        {
-          "name": "output_active_power_min",
-          "null_value": "0.0",
-          "data_type": "Float64",
+          "name": "output_active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -2566,33 +2309,19 @@
           "name": "reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
-          "validation_action": "warn"
-        },
-        {
-          "name": "reactive_power_max",
-          "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
+          "valid_range": "reactive_power_limits",
+          "validation_action": "warn",
           "needs_conversion": true
         },
         {
-          "name": "reactive_power_min",
-          "null_value": "nothing",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "data_type": "Union{Nothing, Float64}",
+          "name": "reactive_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "Union{Nothing, Min_Max}",
           "needs_conversion": true
         },
         {
           "name": "base_power",
-          "comment": "Base power of the unit in system base per unit",
+          "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2925,7 +2654,7 @@
         {
           "name": "Vf",
           "comment": "Fixed voltage field applied to the rotor winding",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -2947,7 +2676,7 @@
         {
           "name": "n_states",
           "comment": "Fixed AVR has no states",
-          "null_value": 0.0,
+          "null_value": 0,
           "internal_default": 0,
           "data_type": "Int64"
         },
@@ -2973,7 +2702,7 @@
         {
           "name": "Kv",
           "comment": "Proportional Gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -2983,7 +2712,7 @@
         {
           "name": "V_ref",
           "comment": "Reference Voltage Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -3031,7 +2760,7 @@
         {
           "name": "Ka",
           "comment": "Amplifier Gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3041,7 +2770,7 @@
         {
           "name": "Ke",
           "comment": "Field circuit integral deviation",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3051,7 +2780,7 @@
         {
           "name": "Kf",
           "comment": "Stabilizer Gain in s * pu/pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3061,7 +2790,7 @@
         {
           "name": "Ta",
           "comment": "Amplifier Time Constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3071,7 +2800,7 @@
         {
           "name": "Te",
           "comment": "Field Circuit Time Constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3081,7 +2810,7 @@
         {
           "name": "Tf",
           "comment": "Stabilizer Time Constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3091,7 +2820,7 @@
         {
           "name": "Tr",
           "comment": "Voltage Measurement Time Constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3101,7 +2830,7 @@
         {
           "name": "Vr_max",
           "comment": "Maximum regulator voltage in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3111,7 +2840,7 @@
         {
           "name": "Vr_min",
           "comment": "Minimum regulator voltage in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3121,7 +2850,7 @@
         {
           "name": "Ae",
           "comment": "1st ceiling coefficient",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3131,7 +2860,7 @@
         {
           "name": "Be",
           "comment": "2nd ceiling coefficient",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3141,7 +2870,7 @@
         {
           "name": "V_ref",
           "comment": "Reference Voltage Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -3189,7 +2918,7 @@
         {
           "name": "K0",
           "comment": "Regulator Gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3199,7 +2928,7 @@
         {
           "name": "T1",
           "comment": "First Pole in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3209,7 +2938,7 @@
         {
           "name": "T2",
           "comment": "First zero in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3219,7 +2948,7 @@
         {
           "name": "T3",
           "comment": "First Pole in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3229,7 +2958,7 @@
         {
           "name": "T4",
           "comment": "First zero in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3239,7 +2968,7 @@
         {
           "name": "Te",
           "comment": "Field Circuit Time Constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3249,7 +2978,7 @@
         {
           "name": "Tr",
           "comment": "Voltage Measurement Time Constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3259,7 +2988,7 @@
         {
           "name": "Vr_max",
           "comment": "Maximum regulator voltage in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3269,7 +2998,7 @@
         {
           "name": "Vr_min",
           "comment": "Minimum regulator voltage in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3279,7 +3008,7 @@
         {
           "name": "Ae",
           "comment": "1st ceiling coefficient",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3289,7 +3018,7 @@
         {
           "name": "Be",
           "comment": "2nd ceiling coefficient",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3299,7 +3028,7 @@
         {
           "name": "V_ref",
           "comment": "Reference Voltage Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -3347,7 +3076,7 @@
         {
           "name": "Tr",
           "comment": "Regulator input filter time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3357,7 +3086,7 @@
         {
           "name": "Tb",
           "comment": "Regulator denominator (lag) time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3367,7 +3096,7 @@
         {
           "name": "Tc",
           "comment": "Regulator numerator (lead) time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3377,7 +3106,7 @@
         {
           "name": "Ka",
           "comment": "Regulator output gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3387,7 +3116,7 @@
         {
           "name": "Ta",
           "comment": "Regulator output time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3403,7 +3132,7 @@
         {
           "name": "Te",
           "comment": "Exciter field time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -3413,7 +3142,7 @@
         {
           "name": "Kf",
           "comment": "Rate feedback excitation system stabilizer gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3423,7 +3152,7 @@
         {
           "name": "Tf",
           "comment": "Rate feedback time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -3433,7 +3162,7 @@
         {
           "name": "Kc",
           "comment": "Rectifier loading factor proportional to commutating reactance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3443,7 +3172,7 @@
         {
           "name": "Kd",
           "comment": "Demagnetizing factor, function of exciter alternator reactances",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3453,7 +3182,7 @@
         {
           "name": "Ke",
           "comment": "Exciter field proportional constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3481,7 +3210,7 @@
         {
           "name": "V_ref",
           "comment": "Reference Voltage Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -3536,7 +3265,7 @@
         {
           "name": "Tr",
           "comment": "Regulator input filter time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3546,7 +3275,7 @@
         {
           "name": "Tb",
           "comment": "Regulator denominator (lag) time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3556,7 +3285,7 @@
         {
           "name": "Tc",
           "comment": "Regulator numerator (lead) time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3566,7 +3295,7 @@
         {
           "name": "Ka",
           "comment": "Regulator output gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3576,7 +3305,7 @@
         {
           "name": "Ta",
           "comment": "Regulator output time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3592,7 +3321,7 @@
         {
           "name": "Te",
           "comment": "Exciter field time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -3602,7 +3331,7 @@
         {
           "name": "Kf",
           "comment": "Rate feedback excitation system stabilizer gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3612,7 +3341,7 @@
         {
           "name": "Tf",
           "comment": "Rate feedback time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -3622,7 +3351,7 @@
         {
           "name": "Kc",
           "comment": "Rectifier loading factor proportional to commutating reactance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3632,7 +3361,7 @@
         {
           "name": "Kd",
           "comment": "Demagnetizing factor, function of exciter alternator reactances",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3642,7 +3371,7 @@
         {
           "name": "Ke",
           "comment": "Exciter field proportional constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3664,7 +3393,7 @@
         {
           "name": "V_ref",
           "comment": "Reference Voltage Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -3739,7 +3468,7 @@
         {
           "name": "Tr",
           "comment": "Regulator input filter time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3755,7 +3484,7 @@
         {
           "name": "Tc",
           "comment": "First regulator denominator (lead) time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3765,7 +3494,7 @@
         {
           "name": "Tb",
           "comment": "First regulator denominator (lag) time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3775,7 +3504,7 @@
         {
           "name": "Tc1",
           "comment": "Second regulator denominator (lead) time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3785,7 +3514,7 @@
         {
           "name": "Tb1",
           "comment": "Second regulator denominator (lead) time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3795,7 +3524,7 @@
         {
           "name": "Ka",
           "comment": "Voltage regulator gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3805,7 +3534,7 @@
         {
           "name": "Ta",
           "comment": "Voltage regulator time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3827,7 +3556,7 @@
         {
           "name": "Kc",
           "comment": "Rectifier loading factor proportional to commutating reactance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3837,7 +3566,7 @@
         {
           "name": "Kf",
           "comment": "Rate feedback gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3847,7 +3576,7 @@
         {
           "name": "Tf",
           "comment": "Rate feedback time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -3857,7 +3586,7 @@
         {
           "name": "K_lr",
           "comment": "Exciter output current limiter gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3867,7 +3596,7 @@
         {
           "name": "I_lr",
           "comment": "Exciter output current limit reference",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3877,7 +3606,7 @@
         {
           "name": "V_ref",
           "comment": "Reference Voltage Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -3925,7 +3654,7 @@
         {
           "name": "R",
           "comment": "Resistance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3935,7 +3664,7 @@
         {
           "name": "Xd_p",
           "comment": "Reactance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3945,7 +3674,7 @@
         {
           "name": "eq_p",
           "comment": "Fixed EMF behind the impedance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3986,7 +3715,7 @@
         {
           "name": "R",
           "comment": "Armature resistance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3996,7 +3725,7 @@
         {
           "name": "Td0_p",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Time constant of transient d-axis voltage",
           "valid_range": {
             "min": 0,
@@ -4006,7 +3735,7 @@
         {
           "name": "Td0_pp",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Time constant of sub-transient d-axis voltage",
           "valid_range": {
             "min": 0,
@@ -4016,7 +3745,7 @@
         {
           "name": "Tq0_p",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Time constant of transient q-axis voltage",
           "valid_range": {
             "min": 0,
@@ -4026,7 +3755,7 @@
         {
           "name": "Tq0_pp",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Time constant of sub-transient q-axis voltage",
           "valid_range": {
             "min": 0,
@@ -4036,7 +3765,7 @@
         {
           "name": "Xd",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in d-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4046,7 +3775,7 @@
         {
           "name": "Xq",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in q-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4056,7 +3785,7 @@
         {
           "name": "Xd_p",
           "comment": "Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4066,7 +3795,7 @@
         {
           "name": "Xq_p",
           "comment": "Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4076,7 +3805,7 @@
         {
           "name": "Xd_pp",
           "comment": "Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4086,7 +3815,7 @@
         {
           "name": "Xl",
           "comment": "Stator leakage reactance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4133,7 +3862,7 @@
         {
           "name": "R",
           "comment": "Armature resistance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4143,7 +3872,7 @@
         {
           "name": "Td0_p",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Time constant of transient d-axis voltage",
           "valid_range": {
             "min": 0,
@@ -4153,7 +3882,7 @@
         {
           "name": "Td0_pp",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Time constant of sub-transient d-axis voltage",
           "valid_range": {
             "min": 0,
@@ -4163,7 +3892,7 @@
         {
           "name": "Tq0_pp",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Time constant of sub-transient q-axis voltage",
           "valid_range": {
             "min": 0,
@@ -4173,7 +3902,7 @@
         {
           "name": "Xd",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in d-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4183,7 +3912,7 @@
         {
           "name": "Xq",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in q-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4193,7 +3922,7 @@
         {
           "name": "Xd_p",
           "comment": "Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4203,7 +3932,7 @@
         {
           "name": "Xd_pp",
           "comment": "Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4213,7 +3942,7 @@
         {
           "name": "Xl",
           "comment": "Stator leakage reactance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4260,7 +3989,7 @@
         {
           "name": "R",
           "comment": "Resistance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4270,7 +3999,7 @@
         {
           "name": "Xd",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in d-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4280,7 +4009,7 @@
         {
           "name": "Xq",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in q-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4290,7 +4019,7 @@
         {
           "name": "Xd_p",
           "comment": "Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4300,7 +4029,7 @@
         {
           "name": "Xq_p",
           "comment": "Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4310,7 +4039,7 @@
         {
           "name": "Xd_pp",
           "comment": "Sub-Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4320,7 +4049,7 @@
         {
           "name": "Xq_pp",
           "comment": "Sub-Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4330,7 +4059,7 @@
         {
           "name": "Td0_p",
           "comment": "Time constant of transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4340,7 +4069,7 @@
         {
           "name": "Tq0_p",
           "comment": "Time constant of transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4350,7 +4079,7 @@
         {
           "name": "Td0_pp",
           "comment": "Time constant of sub-transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4360,7 +4089,7 @@
         {
           "name": "Tq0_pp",
           "comment": "Time constant of sub-transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4401,7 +4130,7 @@
         {
           "name": "R",
           "comment": "Resistance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4411,7 +4140,7 @@
         {
           "name": "R_f",
           "comment": "Field rotor winding resistance in per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4421,7 +4150,7 @@
         {
           "name": "R_1d",
           "comment": " Damping rotor winding resistance on d-axis in per unit. This value is denoted as RD in Machowski.",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4431,7 +4160,7 @@
         {
           "name": "R_1q",
           "comment": "Damping rotor winding resistance on q-axis in per unit. This value is denoted as RQ in Machowski.",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4564,7 +4293,7 @@
         {
           "name": "R",
           "comment": "Resistance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4574,7 +4303,7 @@
         {
           "name": "Xd",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in d-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4584,7 +4313,7 @@
         {
           "name": "Xq",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in q-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4594,7 +4323,7 @@
         {
           "name": "Xd_p",
           "comment": "Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4604,7 +4333,7 @@
         {
           "name": "Xq_p",
           "comment": "Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4614,7 +4343,7 @@
         {
           "name": "Xd_pp",
           "comment": "Sub-Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4624,7 +4353,7 @@
         {
           "name": "Xq_pp",
           "comment": "Sub-Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4634,7 +4363,7 @@
         {
           "name": "Td0_p",
           "comment": "Time constant of transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4644,7 +4373,7 @@
         {
           "name": "Tq0_p",
           "comment": "Time constant of transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4654,7 +4383,7 @@
         {
           "name": "Td0_pp",
           "comment": "Time constant of sub-transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4664,7 +4393,7 @@
         {
           "name": "Tq0_pp",
           "comment": "Time constant of sub-transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4674,7 +4403,7 @@
         {
           "name": "T_AA",
           "comment": "Time constant of d-axis additional leakage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4727,7 +4456,7 @@
         {
           "name": "R",
           "comment": "Resistance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4737,7 +4466,7 @@
         {
           "name": "Xd",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in d-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4747,7 +4476,7 @@
         {
           "name": "Xq",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in q-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4757,7 +4486,7 @@
         {
           "name": "Xd_p",
           "comment": "Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4767,7 +4496,7 @@
         {
           "name": "Xq_p",
           "comment": "Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4777,7 +4506,7 @@
         {
           "name": "Td0_p",
           "comment": "Time constant of transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4787,7 +4516,7 @@
         {
           "name": "Tq0_p",
           "comment": "Time constant of transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4828,7 +4557,7 @@
         {
           "name": "R",
           "comment": "Resistance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4838,7 +4567,7 @@
         {
           "name": "Xd",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in d-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4848,7 +4577,7 @@
         {
           "name": "Xq",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in q-axis per unit",
           "valid_range": {
             "min": 0,
@@ -4858,7 +4587,7 @@
         {
           "name": "Xd_p",
           "comment": "Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4868,7 +4597,7 @@
         {
           "name": "Xq_p",
           "comment": "Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4878,7 +4607,7 @@
         {
           "name": "Xd_pp",
           "comment": "Sub-Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4888,7 +4617,7 @@
         {
           "name": "Xq_pp",
           "comment": "Sub-Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4898,7 +4627,7 @@
         {
           "name": "Td0_p",
           "comment": "Time constant of transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4908,7 +4637,7 @@
         {
           "name": "Tq0_p",
           "comment": "Time constant of transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4918,7 +4647,7 @@
         {
           "name": "Td0_pp",
           "comment": "Time constant of sub-transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4928,7 +4657,7 @@
         {
           "name": "Tq0_pp",
           "comment": "Time constant of sub-transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4969,7 +4698,7 @@
         {
           "name": "R",
           "comment": "Resistance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4979,7 +4708,7 @@
         {
           "name": "R_f",
           "comment": "Field rotor winding resistance in per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4989,7 +4718,7 @@
         {
           "name": "R_1d",
           "comment": " Damping rotor winding resistance on d-axis in per unit. This value is denoted as RD in Machowski.",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -4999,7 +4728,7 @@
         {
           "name": "R_1q",
           "comment": "Damping rotor winding resistance on q-axis in per unit. This value is denoted as RQ in Machowski.",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5132,7 +4861,7 @@
         {
           "name": "R",
           "comment": "Resistance after EMF in machine per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5142,7 +4871,7 @@
         {
           "name": "Xd",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in d-axis per unit",
           "valid_range": {
             "min": 0,
@@ -5152,7 +4881,7 @@
         {
           "name": "Xq",
           "data_type": "Float64",
-          "null_value": 0.0,
+          "null_value": 0,
           "comment": "Reactance after EMF in q-axis per unit",
           "valid_range": {
             "min": 0,
@@ -5162,7 +4891,7 @@
         {
           "name": "Xd_p",
           "comment": "Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5172,7 +4901,7 @@
         {
           "name": "Xq_p",
           "comment": "Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5182,7 +4911,7 @@
         {
           "name": "Xd_pp",
           "comment": "Sub-Transient reactance after EMF in d-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5192,7 +4921,7 @@
         {
           "name": "Xq_pp",
           "comment": "Sub-Transient reactance after EMF in q-axis per unit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5202,7 +4931,7 @@
         {
           "name": "Td0_p",
           "comment": "Time constant of transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5212,7 +4941,7 @@
         {
           "name": "Tq0_p",
           "comment": "Time constant of transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5222,7 +4951,7 @@
         {
           "name": "Td0_pp",
           "comment": "Time constant of sub-transient d-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5232,7 +4961,7 @@
         {
           "name": "Tq0_pp",
           "comment": "Time constant of sub-transient q-axis voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5242,7 +4971,7 @@
         {
           "name": "T_AA",
           "comment": "Time constant of d-axis additional leakage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5295,7 +5024,7 @@
         {
           "name": "V_pss",
           "comment": "Fixed voltage stabilization signal",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5336,7 +5065,7 @@
         {
           "name": "K_ω",
           "comment": "Proportional gain for frequency",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5346,7 +5075,7 @@
         {
           "name": "K_p",
           "comment": "Proportional gain for active power",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5387,7 +5116,7 @@
         {
           "name": "H",
           "comment": "Rotor inertia constant in MWs/MVA",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5397,7 +5126,7 @@
         {
           "name": "D",
           "comment": "Rotor natural damping in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5438,7 +5167,7 @@
         {
           "name": "H",
           "comment": "Rotor inertia constant in MWs/MVA",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5448,7 +5177,7 @@
         {
           "name": "H_hp",
           "comment": "High pressure turbine inertia constant in MWs/MVA",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5458,7 +5187,7 @@
         {
           "name": "H_ip",
           "comment": "Intermediate pressure turbine inertia constant in MWs/MVA",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5468,7 +5197,7 @@
         {
           "name": "H_lp",
           "comment": "Low pressure turbine inertia constant in MWs/MVA",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5478,7 +5207,7 @@
         {
           "name": "H_ex",
           "comment": " Exciter inertia constant in MWs/MVA",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5488,7 +5217,7 @@
         {
           "name": "D",
           "comment": "Rotor natural damping in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5498,7 +5227,7 @@
         {
           "name": "D_hp",
           "comment": "High pressure turbine natural damping in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5508,7 +5237,7 @@
         {
           "name": "D_ip",
           "comment": "Intermediate pressure turbine natural damping in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5518,7 +5247,7 @@
         {
           "name": "D_lp",
           "comment": "Low pressure turbine natural damping in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5528,7 +5257,7 @@
         {
           "name": "D_ex",
           "comment": "Exciter natural damping in pu",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5538,7 +5267,7 @@
         {
           "name": "D_12",
           "comment": "High-Intermediate pressure turbine damping",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5548,7 +5277,7 @@
         {
           "name": "D_23",
           "comment": "Intermediate-Low pressure turbine damping",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5558,7 +5287,7 @@
         {
           "name": "D_34",
           "comment": "Low pressure turbine-Rotor damping",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5568,7 +5297,7 @@
         {
           "name": "D_45",
           "comment": "Rotor-Exciter damping",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5578,7 +5307,7 @@
         {
           "name": "K_hp",
           "comment": "High pressure turbine angle coefficient",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5588,7 +5317,7 @@
         {
           "name": "K_ip",
           "comment": "Intermediate pressure turbine angle coefficient",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5598,7 +5327,7 @@
         {
           "name": "K_lp",
           "comment": "Low pressure turbine angle coefficient",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5608,7 +5337,7 @@
         {
           "name": "K_ex",
           "comment": "Exciter angle coefficient",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5649,7 +5378,7 @@
         {
           "name": "efficiency",
           "comment": " Efficiency factor that multiplies P_ref",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5659,7 +5388,7 @@
         {
           "name": "P_ref",
           "comment": "Reference Power Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -5701,7 +5430,7 @@
         {
           "name": "R",
           "comment": "Speed droop parameter",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -5711,7 +5440,7 @@
         {
           "name": "T1",
           "comment": "Governor time constant in s",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -5721,7 +5450,7 @@
         {
           "name": "T2",
           "comment": "Combustion chamber time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -5731,7 +5460,7 @@
         {
           "name": "T3",
           "comment": "Load limit time constant (exhaust gas measurement time)",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
@@ -5741,7 +5470,7 @@
         {
           "name": "AT",
           "comment": "Ambient temperature load limit",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5751,7 +5480,7 @@
         {
           "name": "Kt",
           "comment": "Load limit feedback gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5767,7 +5496,7 @@
         {
           "name": "D_turb",
           "comment": "Speed damping coefficient of gas turbine rotor",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5777,7 +5506,7 @@
         {
           "name": "Load_ref",
           "comment": "Reference Load Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -5819,7 +5548,7 @@
         {
           "name": "R",
           "comment": "Droop parameter",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5829,7 +5558,7 @@
         {
           "name": "Ts",
           "comment": "Governor time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5839,7 +5568,7 @@
         {
           "name": "Tc",
           "comment": "Servo time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5849,7 +5578,7 @@
         {
           "name": "T3",
           "comment": "Transient gain time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5859,7 +5588,7 @@
         {
           "name": "T4",
           "comment": "Power fraction time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5869,7 +5598,7 @@
         {
           "name": "T5",
           "comment": "Reheat time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5879,7 +5608,7 @@
         {
           "name": "P_min",
           "comment": "Min Power into the Governor",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5889,7 +5618,7 @@
         {
           "name": "P_max",
           "comment": "Max Power into the Governor",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5899,7 +5628,7 @@
         {
           "name": "P_ref",
           "comment": "Reference Power Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -5941,7 +5670,7 @@
         {
           "name": "R",
           "comment": "Droop parameter",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5951,7 +5680,7 @@
         {
           "name": "T1",
           "comment": "Transient gain time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5961,7 +5690,7 @@
         {
           "name": "T2",
           "comment": "Power fraction time constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5971,7 +5700,7 @@
         {
           "name": "τ_min",
           "comment": "Min Power into the Governor",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5981,7 +5710,7 @@
         {
           "name": "τ_max",
           "comment": "Max Power into the Governor",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -5991,7 +5720,7 @@
         {
           "name": "P_ref",
           "comment": "Reference Power Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -6033,7 +5762,7 @@
         {
           "name": "v_rated",
           "comment": "rated voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6043,7 +5772,7 @@
         {
           "name": "s_rated",
           "comment": "rated VA",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6078,7 +5807,7 @@
         {
           "name": "voltage",
           "comment": "rated VA",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6119,7 +5848,7 @@
         {
           "name": "lf",
           "comment": "Series inductance in p.u. of converter filter",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6129,7 +5858,7 @@
         {
           "name": "rf",
           "comment": "Series resistance in p.u. of converter filter",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6139,7 +5868,7 @@
         {
           "name": "cf",
           "comment": "Shunt capacitance in p.u. of converter filter",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6149,7 +5878,7 @@
         {
           "name": "lg",
           "comment": "Series inductance in p.u. of converter filter to the grid",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6159,7 +5888,7 @@
         {
           "name": "rg",
           "comment": "Series resistance in p.u. of converter filter to the grid",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6194,7 +5923,7 @@
         {
           "name": "lf",
           "comment": "filter inductance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6204,7 +5933,7 @@
         {
           "name": "rf",
           "comment": "filter resistance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6214,7 +5943,7 @@
         {
           "name": "cf",
           "comment": "filter capacitance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6249,7 +5978,7 @@
         {
           "name": "ω_lp",
           "comment": "PLL low-pass filter frequency (rad/sec)",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6259,7 +5988,7 @@
         {
           "name": "kp_pll",
           "comment": "PLL proportional gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6269,7 +5998,7 @@
         {
           "name": "ki_pll",
           "comment": "PLL integral gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6304,7 +6033,7 @@
         {
           "name": "Ta",
           "comment": "VSM inertia constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6314,7 +6043,7 @@
         {
           "name": "kd",
           "comment": "VSM damping constant",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6324,7 +6053,7 @@
         {
           "name": "kω",
           "comment": "frequency droop gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6334,7 +6063,7 @@
         {
           "name": "P_ref",
           "comment": "Reference Power Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -6361,7 +6090,7 @@
           "data_type": "Int64"
         }
       ],
-      "supertype": "ActivePowerControl"
+      "supertype": "activePowerControl"
     },
     {
       "struct_name": "ReactivePowerDroop",
@@ -6370,7 +6099,7 @@
         {
           "name": "kq",
           "comment": "frequency droop gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6380,7 +6109,7 @@
         {
           "name": "ωf",
           "comment": "filter frequency cutoff",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6390,7 +6119,7 @@
         {
           "name": "V_ref",
           "comment": "Reference Voltage Set-point",
-          "null_value": 0.0,
+          "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -6426,7 +6155,7 @@
         {
           "name": "kpv",
           "comment": "voltage controller proportional gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6436,7 +6165,7 @@
         {
           "name": "kiv",
           "comment": "voltage controller integral gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6446,7 +6175,7 @@
         {
           "name": "kffv",
           "comment": "Binary variable to enable feed-forward gain of voltage.",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6456,7 +6185,7 @@
         {
           "name": "rv",
           "comment": "virtual resistance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6466,7 +6195,7 @@
         {
           "name": "lv",
           "comment": "virtual inductance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6476,7 +6205,7 @@
         {
           "name": "kpc",
           "comment": "current controller proportional gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6486,7 +6215,7 @@
         {
           "name": "kic",
           "comment": "current controller integral gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6496,7 +6225,7 @@
         {
           "name": "kffi",
           "comment": "Binary variable to enable feed-forward gain of current",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6506,7 +6235,7 @@
         {
           "name": "ωad",
           "comment": "active damping filter cutoff frequency (rad/sec)",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6516,7 +6245,7 @@
         {
           "name": "kad",
           "comment": "active damping gain",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6577,7 +6306,7 @@
         {
           "name": "X_th",
           "comment": "Source Thevenin impedance",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
