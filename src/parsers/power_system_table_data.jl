@@ -313,7 +313,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             bustype = bus_type,
             angle = bus.angle,
             voltage = bus.voltage,
-            voltagelimits = voltage_limits,
+            voltage_limits = voltage_limits,
             base_voltage = bus.base_voltage,
             area = area,
             load_zone = get_component(LoadZone, sys, string(bus.zone)),
@@ -526,7 +526,7 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
                 active_power = active_power,
                 reactive_power = reactive_power,
                 max_active_power = max_active_power,
-                maxreactive_power = max_reactive_power,
+                max_reactive_power = max_reactive_power,
             )
             add_component!(sys, load)
         end
@@ -801,7 +801,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
     ramplimits = make_ramplimits(gen)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
-    primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
+    prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type)
     fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
 
     var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
@@ -818,7 +818,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         gen.active_power,
         gen.reactive_power,
         rating,
-        primemover,
+        prime_mover,
         fuel,
         active_power_limits,
         reactive_power_limits,
@@ -883,7 +883,7 @@ function make_thermal_generator_multistart(
         active_power = get_active_power(thermal_gen),
         reactive_power = get_reactive_power(thermal_gen),
         rating = get_rating(thermal_gen),
-        primemover = get_primemover(thermal_gen),
+        prime_mover = get_primemover(thermal_gen),
         fuel = get_fuel(thermal_gen),
         active_powerlimits = get_active_powerlimits(thermal_gen),
         reactive_powerlimits = get_reactive_powerlimits(thermal_gen),
@@ -929,7 +929,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             bus = bus,
             active_power = gen.active_power,
             reactive_power = gen.reactive_power,
-            primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             rating = rating,
             active_powerlimits = active_power_limits,
             reactive_powerlimits = reactive_power_limits,
@@ -950,7 +950,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             active_power = gen.active_power,
             reactive_power = gen.reactive_power,
             rating = rating,
-            primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             active_powerlimits = active_power_limits,
             reactive_powerlimits = reactive_power_limits,
             ramplimits = ramplimits,
@@ -1024,7 +1024,7 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         name = gen.name,
         available = available,
         bus = bus,
-        primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+        prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
         energy = energy,
         capacity = capacity,
         rating = rating,

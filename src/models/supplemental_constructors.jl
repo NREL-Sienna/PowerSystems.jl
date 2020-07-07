@@ -19,7 +19,7 @@ function PowerLoadPF(
     max_active_power::Float64,
     power_factor::Float64,
 )
-    maxreactive_power = max_active_power * sin(acos(power_factor))
+    max_reactive_power = max_active_power * sin(acos(power_factor))
     reactive_power = active_power * sin(acos(power_factor))
     return PowerLoad(
         name,
@@ -29,7 +29,7 @@ function PowerLoadPF(
         active_power,
         reactive_power,
         max_active_power,
-        maxreactive_power,
+        max_reactive_power,
     )
 end
 
@@ -71,7 +71,7 @@ function Bus(
     bustype::String,
     angle,
     voltage,
-    voltagelimits,
+    voltage_limits,
     base_voltage,
     area,
     load_zone;
@@ -83,7 +83,7 @@ function Bus(
         get_enum_value(BusTypes.BusType, bustype),
         angle,
         voltage,
-        voltagelimits,
+        voltage_limits,
         base_voltage,
         area,
         load_zone,

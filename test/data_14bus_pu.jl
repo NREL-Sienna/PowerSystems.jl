@@ -928,7 +928,7 @@ timeseries_DA14 = [
 
 battery14(nodes14) = [GenericBattery(
     name = "Bat",
-    primemover = PrimeMovers.BA,
+    prime_mover = PrimeMovers.BA,
     available = true,
     bus = nodes14[1],
     energy = 5.0,

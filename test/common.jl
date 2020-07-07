@@ -89,7 +89,7 @@ function create_system_with_dynamic_inverter()
 
     battery = GenericBattery(
         name = "Battery",
-        primemover = PrimeMovers.BA,
+        prime_mover = PrimeMovers.BA,
         available = true,
         bus = nodes_OMIB[2],
         energy = 5.0,
@@ -144,7 +144,7 @@ function create_system_with_dynamic_inverter()
         2 * pi * 50.0,
     ) #ωb:: Rated angular frequency
 
-    Q_control = Reactive_powerDroop(
+    Q_control = ReactivePowerDroop(
         0.2, #kq:: Reactive power droop gain in pu
         1000.0,
     ) #ωf:: Reactive power cut-off low pass filter frequency

@@ -241,7 +241,7 @@ function System(
             bustype = BusTypes.REF,
             angle = 0.0,
             voltage = 0.0,
-            voltagelimits = (min = 0.0, max = 0.0),
+            voltage_limits = (min = 0.0, max = 0.0),
             base_voltage = nothing,
             area = nothing,
             load_zone = nothing,

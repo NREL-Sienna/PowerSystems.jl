@@ -124,10 +124,10 @@ function Base.convert(::Type{ThermalFuels.ThermalFuel}, fuel::Symbol)
     return convert(ThermalFuels.ThermalFuel, string(fuel))
 end
 
-function Base.convert(::Type{PrimeMovers.PrimeMover}, primemover::AbstractString)
-    return STRING2PRIMEMOVER[uppercase(primemover)]
+function Base.convert(::Type{PrimeMovers.PrimeMover}, prime_mover::AbstractString)
+    return STRING2PRIMEMOVER[uppercase(prime_mover)]
 end
 
-function Base.convert(::Type{PrimeMovers.PrimeMover}, primemover::Symbol)
-    return convert(PrimeMovers.PrimeMover, string(primemover))
+function Base.convert(::Type{PrimeMovers.PrimeMover}, prime_mover::Symbol)
+    return convert(PrimeMovers.PrimeMover, string(prime_mover))
 end

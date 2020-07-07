@@ -23,7 +23,7 @@ A power-system bus.
 - `name::String`: the name of the bus
 - `bus_type::Union{Nothing, BusTypes.BusType}`: bus type
 - `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: (-1.571, 1.571), action if invalid: error
-- `voltage::Union{Nothing, Float64}`: voltage as a multiple of base_voltage, validation range: voltagelimits, action if invalid: warn
+- `voltage::Union{Nothing, Float64}`: voltage as a multiple of base_voltage, validation range: voltage_limits, action if invalid: warn
 - `voltage_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`: limits on the voltage variation as multiples of base_voltage
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: (0, nothing), action if invalid: error
 - `area::Union{Nothing, Area}`: the area containing the bus
