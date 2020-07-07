@@ -81,7 +81,7 @@ function make_bus(bus_dict::Dict{String, Any})
         bus_dict["bustype"],
         bus_dict["angle"],
         bus_dict["voltage"],
-        bus_dict["voltagelimits"],
+        bus_dict["voltage_limits"],
         bus_dict["base_voltage"],
         bus_dict["area"],
         bus_dict["zone"],
@@ -96,7 +96,7 @@ function make_bus(bus_name, bus_number, d, bus_types, area)
         "bustype" => bus_types[d["bus_type"]],
         "angle" => d["va"],
         "voltage" => d["vm"],
-        "voltagelimits" => (min = d["vmin"], max = d["vmax"]),
+        "voltage_limits" => (min = d["vmin"], max = d["vmax"]),
         "base_voltage" => d["base_kv"],
         "area" => area,
         "zone" => nothing,
@@ -206,8 +206,8 @@ function make_loadzone(name, active_power, reactive_power; kwargs...)
     _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
     return LoadZone(;
         name = name,
-        max_active_power = sum(active_power),
-        maxreactive_power = sum(reactive_power),
+        peak_active_power = sum(active_power),
+        peak_reactive_power = sum(reactive_power),
     )
 end
 
@@ -257,7 +257,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
         active_power = d["pg"],
         reactive_power = d["qg"],
         rating = calculate_rating(d["pmax"], d["qmax"]),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         active_powerlimits = (min = d["pmin"], max = d["pmax"]),
         reactive_powerlimits = (min = d["qmin"], max = d["qmax"]),
         ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
@@ -279,7 +279,7 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
         active_power = d["pg"],
         reactive_power = d["qg"],
         rating = float(d["pmax"]),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         reactive_powerlimits = (min = d["qmin"], max = d["qmax"]),
         powerfactor = 1.0,
         op_cost = cost,
@@ -297,7 +297,7 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
         active_power = d["pg"],
         reactive_power = d["qg"],
         rating = float(d["pmax"]),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         powerfactor = 1.0,
         base_power = d["mbase"] / sys_mbase,
     )
@@ -367,17 +367,20 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         status = Bool(d["gen_status"]),
         available = true,
         bus = bus,
-        active_power = d["pg"],
-        reactive_power = d["qg"],
+        active_power = d["pg"]/d["mbase"],
+        reactive_power = d["qg"]/d["mbase"],
         rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         fuel = convert(ThermalFuels.ThermalFuel, d["fuel"]),
-        active_powerlimits = (min = d["pmin"], max = d["pmax"]),
-        reactive_powerlimits = (min = d["qmin"], max = d["qmax"]),
-        ramplimits = (up = ramp_lim / d["mbase"], down = ramp_lim / d["mbase"]),
+        active_power_max = d["pmax"]/d["mbase"],
+        active_power_min =  d["pmin"]/d["mbase"],
+        reactive_power_max =  d["qmax"]/d["mbase"],
+        reactive_power_min = d["qmin"]/d["mbase"],
+        ramp_limit_up = ramp_lim/d["mbase"],
+        ramp_limit_dn = ramp_lim/d["mbase"],
         timelimits = nothing,
         op_cost = op_cost,
-        base_power = d["mbase"] / sys_mbase,
+        base_power = d["mbase"],
     )
 
     return thermal_gen

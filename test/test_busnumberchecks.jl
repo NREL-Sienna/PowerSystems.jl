@@ -24,7 +24,7 @@ end
         bustype = BusTypes.PV,
         angle = 1.0,
         voltage = 1.0,
-        voltagelimits = (min = -1.0, max = 1.0),
+        voltage_limits = (min = -1.0, max = 1.0),
         base_voltage = 1.0,
     )
     bus2 = Bus(;
@@ -33,7 +33,7 @@ end
         bustype = BusTypes.PV,
         angle = 1.0,
         voltage = 1.0,
-        voltagelimits = (min = -1.0, max = 1.0),
+        voltage_limits = (min = -1.0, max = 1.0),
         base_voltage = 1.0,
         area = nothing,
         load_zone = nothing,

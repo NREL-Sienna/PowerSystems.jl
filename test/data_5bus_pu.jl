@@ -465,7 +465,7 @@ hydro_generators5(nodes5) = [
 
 battery5(nodes5) = [GenericBattery(
     name = "Bat",
-    primemover = PrimeMovers.BA,
+    prime_mover = PrimeMovers.BA,
     available = true,
     bus = nodes5[1],
     energy = 5.0,

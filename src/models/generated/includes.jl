@@ -58,7 +58,7 @@ include("LCLFilter.jl")
 include("LCFilter.jl")
 include("KauraPLL.jl")
 include("VirtualInertia.jl")
-include("Reactive_powerDroop.jl")
+include("ReactivePowerDroop.jl")
 include("CurrentControl.jl")
 include("Source.jl")
 
