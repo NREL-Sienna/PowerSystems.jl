@@ -281,7 +281,7 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
         rating = float(d["pmax"]),
         prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         reactive_power_limits = (min = d["qmin"], max = d["qmax"]),
-        powerfactor = 1.0,
+        power_factor = 1.0,
         operation_cost = cost,
         base_power = d["mbase"] ,
     )
@@ -298,7 +298,7 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
         reactive_power = d["qg"],
         rating = float(d["pmax"]),
         prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
-        powerfactor = 1.0,
+        power_factor = 1.0,
         base_power = d["mbase"] ,
     )
 
@@ -505,7 +505,7 @@ function make_transformer_2w(name, d, bus_f, bus_t)
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
-        primaryshunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["b_fr"],  # TODO: which b ??
         rate = d["rate_a"],
     )
 end
@@ -522,7 +522,7 @@ function make_tap_transformer(name, d, bus_f, bus_t)
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primaryshunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["b_fr"],  # TODO: which b ??
         rate = d["rate_a"],
     )
 end
@@ -539,7 +539,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primaryshunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
         rate = d["rate_a"],
     )

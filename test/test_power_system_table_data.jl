@@ -99,7 +99,7 @@ end
         # Disabled since data is inconsisten between sources
         #@test cdmgen.available == mpgen.available
         @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        for field in (:rating, :powerfactor)
+        for field in (:rating, :power_factor)
             cdmgen_val = getfield(cdmgen, field)
             mpgen_val = getfield(mpgen, field)
             if isnothing(cdmgen_val) || isnothing(mpgen_val)

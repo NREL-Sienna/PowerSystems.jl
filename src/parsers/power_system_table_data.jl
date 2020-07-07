@@ -366,7 +366,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
-                primaryshunt = branch.primary_shunt,
+                primary_shunt = branch.primary_shunt,
                 rate = branch.rate,
             )
         elseif branch_type == TapTransformer
@@ -378,7 +378,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
-                primaryshunt = branch.primary_shunt,
+                primary_shunt = branch.primary_shunt,
                 tap = branch.tap,
                 rate = branch.rate,
             )
