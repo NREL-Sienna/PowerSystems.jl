@@ -12,12 +12,9 @@ This file is auto-generated. Do not edit.
         rating::Float64
         prime_mover::PrimeMovers.PrimeMover
         fuel::ThermalFuels.ThermalFuel
-        active_power_max::Float64
-        active_power_min::Float64
-        reactive_power_max::Union{Nothing, Float64}
-        reactive_power_min::Union{Nothing, Float64}
-        ramp_limit_up::Union{Nothing, Float64}
-        ramp_limit_dn::Union{Nothing, Float64}
+        active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        reactive_power_limits::Union{Nothing, Min_Max}
+        ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}
         time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}
@@ -40,17 +37,14 @@ Data Structure for thermal generation technologies.
 - `available::Bool`
 - `status::Bool`
 - `bus::Bus`
-- `active_power::Float64`
-- `reactive_power::Float64`
+- `active_power::Float64`, validation range: active_power_limits, action if invalid: warn
+- `reactive_power::Float64`, validation range: reactive_power_limits, action if invalid: warn
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
-- `prime_mover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
-- `fuel::ThermalFuels.ThermalFuel`: PrimeMover Fuel according to EIA 923
-- `active_power_max::Float64`, validation range: (0, nothing), action if invalid: error
-- `active_power_min::Float64`, validation range: (0, nothing), action if invalid: error
-- `reactive_power_max::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
-- `reactive_power_min::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
-- `ramp_limit_up::Union{Nothing, Float64}`: ramp up limit in %/min, validation range: (0, nothing), action if invalid: error
-- `ramp_limit_dn::Union{Nothing, Float64}`: ramp dn limit in %/min, validation range: (0, nothing), action if invalid: error
+- `prime_mover::PrimeMovers.PrimeMover`: prime_mover Technology according to EIA 923
+- `fuel::ThermalFuels.ThermalFuel`: prime_mover Fuel according to EIA 923
+- `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `reactive_power_limits::Union{Nothing, Min_Max}`
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
 - `power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}`: Power trajectory the unit will take during the startup and shutdown ramp process, validation range: (0, nothing), action if invalid: error
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}`:  Time limits for startup based on turbine temperature in hours
@@ -74,18 +68,13 @@ mutable struct ThermalMultiStart <: ThermalGen
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
-    "PrimeMover Technology according to EIA 923"
+    "prime_mover Technology according to EIA 923"
     prime_mover::PrimeMovers.PrimeMover
-    "PrimeMover Fuel according to EIA 923"
+    "prime_mover Fuel according to EIA 923"
     fuel::ThermalFuels.ThermalFuel
-    active_power_max::Float64
-    active_power_min::Float64
-    reactive_power_max::Union{Nothing, Float64}
-    reactive_power_min::Union{Nothing, Float64}
-    "ramp up limit in %/min"
-    ramp_limit_up::Union{Nothing, Float64}
-    "ramp dn limit in %/min"
-    ramp_limit_dn::Union{Nothing, Float64}
+    active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    reactive_power_limits::Union{Nothing, Min_Max}
+    ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Power trajectory the unit will take during the startup and shutdown ramp process"
     power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
@@ -110,12 +99,12 @@ mutable struct ThermalMultiStart <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_max, active_power_min, reactive_power_max, reactive_power_min, ramp_limit_up, ramp_limit_dn, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_max, active_power_min, reactive_power_max, reactive_power_min, ramp_limit_up, ramp_limit_dn, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalMultiStart(; name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_max, active_power_min, reactive_power_max, reactive_power_min, ramp_limit_up, ramp_limit_dn, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_max, active_power_min, reactive_power_max, reactive_power_min, ramp_limit_up, ramp_limit_dn, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, forecasts, )
+function ThermalMultiStart(; name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -130,12 +119,9 @@ function ThermalMultiStart(::Nothing)
         rating=0.0,
         prime_mover=PrimeMovers.OT,
         fuel=ThermalFuels.OTHER,
-        active_power_max=0.0,
-        active_power_min=0.0,
-        reactive_power_max=nothing,
-        reactive_power_min=nothing,
-        ramp_limit_up=nothing,
-        ramp_limit_dn=nothing,
+        active_power_limits=(min=0.0, max=0.0),
+        reactive_power_limits=nothing,
+        ramp_limits=nothing,
         power_trajectory=nothing,
         time_limits=nothing,
         start_time_limits=nothing,
@@ -160,27 +146,21 @@ get_status(value::ThermalMultiStart) = value.status
 """Get ThermalMultiStart bus."""
 get_bus(value::ThermalMultiStart) = value.bus
 """Get ThermalMultiStart active_power."""
-get_active_power(value::ThermalMultiStart) = get_value(value, :active_power)
+get_active_power(value::ThermalMultiStart) = get_value(Float64, value, :active_power)
 """Get ThermalMultiStart reactive_power."""
-get_reactive_power(value::ThermalMultiStart) = get_value(value, :reactive_power)
+get_reactive_power(value::ThermalMultiStart) = get_value(Float64, value, :reactive_power)
 """Get ThermalMultiStart rating."""
-get_rating(value::ThermalMultiStart) = get_value(value, :rating)
+get_rating(value::ThermalMultiStart) = get_value(Float64, value, :rating)
 """Get ThermalMultiStart prime_mover."""
 get_prime_mover(value::ThermalMultiStart) = value.prime_mover
 """Get ThermalMultiStart fuel."""
 get_fuel(value::ThermalMultiStart) = value.fuel
-"""Get ThermalMultiStart active_power_max."""
-get_active_power_max(value::ThermalMultiStart) = get_value(value, :active_power_max)
-"""Get ThermalMultiStart active_power_min."""
-get_active_power_min(value::ThermalMultiStart) = get_value(value, :active_power_min)
-"""Get ThermalMultiStart reactive_power_max."""
-get_reactive_power_max(value::ThermalMultiStart) = get_value(value, :reactive_power_max)
-"""Get ThermalMultiStart reactive_power_min."""
-get_reactive_power_min(value::ThermalMultiStart) = get_value(value, :reactive_power_min)
-"""Get ThermalMultiStart ramp_limit_up."""
-get_ramp_limit_up(value::ThermalMultiStart) = get_value(value, :ramp_limit_up)
-"""Get ThermalMultiStart ramp_limit_dn."""
-get_ramp_limit_dn(value::ThermalMultiStart) = get_value(value, :ramp_limit_dn)
+"""Get ThermalMultiStart active_power_limits."""
+get_active_power_limits(value::ThermalMultiStart) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits)
+"""Get ThermalMultiStart reactive_power_limits."""
+get_reactive_power_limits(value::ThermalMultiStart) = get_value(Union{Nothing, Min_Max}, value, :reactive_power_limits)
+"""Get ThermalMultiStart ramp_limits."""
+get_ramp_limits(value::ThermalMultiStart) = get_value(Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}, value, :ramp_limits)
 """Get ThermalMultiStart power_trajectory."""
 get_power_trajectory(value::ThermalMultiStart) = value.power_trajectory
 """Get ThermalMultiStart time_limits."""
@@ -226,18 +206,12 @@ set_rating!(value::ThermalMultiStart, val::Float64) = value.rating = val
 set_prime_mover!(value::ThermalMultiStart, val::PrimeMovers.PrimeMover) = value.prime_mover = val
 """Set ThermalMultiStart fuel."""
 set_fuel!(value::ThermalMultiStart, val::ThermalFuels.ThermalFuel) = value.fuel = val
-"""Set ThermalMultiStart active_power_max."""
-set_active_power_max!(value::ThermalMultiStart, val::Float64) = value.active_power_max = val
-"""Set ThermalMultiStart active_power_min."""
-set_active_power_min!(value::ThermalMultiStart, val::Float64) = value.active_power_min = val
-"""Set ThermalMultiStart reactive_power_max."""
-set_reactive_power_max!(value::ThermalMultiStart, val::Union{Nothing, Float64}) = value.reactive_power_max = val
-"""Set ThermalMultiStart reactive_power_min."""
-set_reactive_power_min!(value::ThermalMultiStart, val::Union{Nothing, Float64}) = value.reactive_power_min = val
-"""Set ThermalMultiStart ramp_limit_up."""
-set_ramp_limit_up!(value::ThermalMultiStart, val::Union{Nothing, Float64}) = value.ramp_limit_up = val
-"""Set ThermalMultiStart ramp_limit_dn."""
-set_ramp_limit_dn!(value::ThermalMultiStart, val::Union{Nothing, Float64}) = value.ramp_limit_dn = val
+"""Set ThermalMultiStart active_power_limits."""
+set_active_power_limits!(value::ThermalMultiStart, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits = val
+"""Set ThermalMultiStart reactive_power_limits."""
+set_reactive_power_limits!(value::ThermalMultiStart, val::Union{Nothing, Min_Max}) = value.reactive_power_limits = val
+"""Set ThermalMultiStart ramp_limits."""
+set_ramp_limits!(value::ThermalMultiStart, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.ramp_limits = val
 """Set ThermalMultiStart power_trajectory."""
 set_power_trajectory!(value::ThermalMultiStart, val::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}) = value.power_trajectory = val
 """Set ThermalMultiStart time_limits."""

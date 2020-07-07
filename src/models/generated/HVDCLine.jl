@@ -7,12 +7,10 @@ This file is auto-generated. Do not edit.
         available::Bool
         active_power_flow::Float64
         arc::Arc
-        active_power_from_max::Float64
-        active_power_from_min::Float64
-        active_power_to_max::Float64
-        active_power_to_min::Float64
-        reactive_power_from_max::Float64
-        reactive_power_to_max::Float64
+        active_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        active_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        reactive_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        reactive_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -27,12 +25,10 @@ a High voltage DC line.
 - `available::Bool`
 - `active_power_flow::Float64`
 - `arc::Arc`
-- `active_power_from_max::Float64`
-- `active_power_from_min::Float64`
-- `active_power_to_max::Float64`
-- `active_power_to_min::Float64`
-- `reactive_power_from_max::Float64`
-- `reactive_power_to_max::Float64`
+- `active_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `active_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `reactive_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `reactive_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
@@ -44,12 +40,10 @@ mutable struct HVDCLine <: DCBranch
     available::Bool
     active_power_flow::Float64
     arc::Arc
-    active_power_from_max::Float64
-    active_power_from_min::Float64
-    active_power_to_max::Float64
-    active_power_to_min::Float64
-    reactive_power_from_max::Float64
-    reactive_power_to_max::Float64
+    active_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    active_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    reactive_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    reactive_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
     "Services that this device contributes to"
     services::Vector{Service}
@@ -60,12 +54,12 @@ mutable struct HVDCLine <: DCBranch
     internal::InfrastructureSystemsInternal
 end
 
-function HVDCLine(name, available, active_power_flow, arc, active_power_from_max, active_power_from_min, active_power_to_max, active_power_to_min, reactive_power_from_max, reactive_power_to_max, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HVDCLine(name, available, active_power_flow, arc, active_power_from_max, active_power_from_min, active_power_to_max, active_power_to_min, reactive_power_from_max, reactive_power_to_max, loss, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HVDCLine(; name, available, active_power_flow, arc, active_power_from_max, active_power_from_min, active_power_to_max, active_power_to_min, reactive_power_from_max, reactive_power_to_max, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HVDCLine(name, available, active_power_flow, arc, active_power_from_max, active_power_from_min, active_power_to_max, active_power_to_min, reactive_power_from_max, reactive_power_to_max, loss, services, ext, forecasts, )
+function HVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -75,12 +69,10 @@ function HVDCLine(::Nothing)
         available=false,
         active_power_flow=0.0,
         arc=Arc(Bus(nothing), Bus(nothing)),
-        active_power_from_max=0.0,
-        active_power_from_min=0.0,
-        active_power_to_max=0.0,
-        active_power_to_min=0.0,
-        reactive_power_from_max=0.0,
-        reactive_power_to_max=0.0,
+        active_power_limits_from=(min=0.0, max=0.0),
+        active_power_limits_to=(min=0.0, max=0.0),
+        reactive_power_limits_from=(min=0.0, max=0.0),
+        reactive_power_limits_to=(min=0.0, max=0.0),
         loss=(l0=0.0, l1=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
@@ -93,21 +85,17 @@ InfrastructureSystems.get_name(value::HVDCLine) = value.name
 """Get HVDCLine available."""
 get_available(value::HVDCLine) = value.available
 """Get HVDCLine active_power_flow."""
-get_active_power_flow(value::HVDCLine) = get_value(value, :active_power_flow)
+get_active_power_flow(value::HVDCLine) = get_value(Float64, value, :active_power_flow)
 """Get HVDCLine arc."""
 get_arc(value::HVDCLine) = value.arc
-"""Get HVDCLine active_power_from_max."""
-get_active_power_from_max(value::HVDCLine) = get_value(value, :active_power_from_max)
-"""Get HVDCLine active_power_from_min."""
-get_active_power_from_min(value::HVDCLine) = get_value(value, :active_power_from_min)
-"""Get HVDCLine active_power_to_max."""
-get_active_power_to_max(value::HVDCLine) = get_value(value, :active_power_to_max)
-"""Get HVDCLine active_power_to_min."""
-get_active_power_to_min(value::HVDCLine) = get_value(value, :active_power_to_min)
-"""Get HVDCLine reactive_power_from_max."""
-get_reactive_power_from_max(value::HVDCLine) = get_value(value, :reactive_power_from_max)
-"""Get HVDCLine reactive_power_to_max."""
-get_reactive_power_to_max(value::HVDCLine) = get_value(value, :reactive_power_to_max)
+"""Get HVDCLine active_power_limits_from."""
+get_active_power_limits_from(value::HVDCLine) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits_from)
+"""Get HVDCLine active_power_limits_to."""
+get_active_power_limits_to(value::HVDCLine) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits_to)
+"""Get HVDCLine reactive_power_limits_from."""
+get_reactive_power_limits_from(value::HVDCLine) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :reactive_power_limits_from)
+"""Get HVDCLine reactive_power_limits_to."""
+get_reactive_power_limits_to(value::HVDCLine) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :reactive_power_limits_to)
 """Get HVDCLine loss."""
 get_loss(value::HVDCLine) = value.loss
 """Get HVDCLine services."""
@@ -127,18 +115,14 @@ set_available!(value::HVDCLine, val::Bool) = value.available = val
 set_active_power_flow!(value::HVDCLine, val::Float64) = value.active_power_flow = val
 """Set HVDCLine arc."""
 set_arc!(value::HVDCLine, val::Arc) = value.arc = val
-"""Set HVDCLine active_power_from_max."""
-set_active_power_from_max!(value::HVDCLine, val::Float64) = value.active_power_from_max = val
-"""Set HVDCLine active_power_from_min."""
-set_active_power_from_min!(value::HVDCLine, val::Float64) = value.active_power_from_min = val
-"""Set HVDCLine active_power_to_max."""
-set_active_power_to_max!(value::HVDCLine, val::Float64) = value.active_power_to_max = val
-"""Set HVDCLine active_power_to_min."""
-set_active_power_to_min!(value::HVDCLine, val::Float64) = value.active_power_to_min = val
-"""Set HVDCLine reactive_power_from_max."""
-set_reactive_power_from_max!(value::HVDCLine, val::Float64) = value.reactive_power_from_max = val
-"""Set HVDCLine reactive_power_to_max."""
-set_reactive_power_to_max!(value::HVDCLine, val::Float64) = value.reactive_power_to_max = val
+"""Set HVDCLine active_power_limits_from."""
+set_active_power_limits_from!(value::HVDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits_from = val
+"""Set HVDCLine active_power_limits_to."""
+set_active_power_limits_to!(value::HVDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits_to = val
+"""Set HVDCLine reactive_power_limits_from."""
+set_reactive_power_limits_from!(value::HVDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.reactive_power_limits_from = val
+"""Set HVDCLine reactive_power_limits_to."""
+set_reactive_power_limits_to!(value::HVDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.reactive_power_limits_to = val
 """Set HVDCLine loss."""
 set_loss!(value::HVDCLine, val::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}) = value.loss = val
 """Set HVDCLine services."""

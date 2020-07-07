@@ -80,15 +80,15 @@ end
 # Constructor for demo purposes; non-functional.
 function TGTypeI(::Nothing)
     TGTypeI(;
-        R=0.0,
-        Ts=0.0,
-        Tc=0.0,
-        T3=0.0,
-        T4=0.0,
-        T5=0.0,
-        P_min=0.0,
-        P_max=0.0,
-        P_ref=0.0,
+        R=0,
+        Ts=0,
+        Tc=0,
+        T3=0,
+        T4=0,
+        T5=0,
+        P_min=0,
+        P_max=0,
+        P_ref=0,
         ext=Dict{String, Any}(),
     )
 end

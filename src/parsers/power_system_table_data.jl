@@ -408,10 +408,10 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
             mw_load = dc_branch.mw_load / data.base_power
 
             #TODO: is there a better way to calculate these?,
-            active_powerlimits_from = (min = -1 * mw_load, max = mw_load)
-            active_powerlimits_to = (min = -1 * mw_load, max = mw_load)
-            reactive_powerlimits_from = (min = 0.0, max = 0.0)
-            reactive_powerlimits_to = (min = 0.0, max = 0.0)
+            active_power_limits_from = (min = -1 * mw_load, max = mw_load)
+            active_power_limits_to = (min = -1 * mw_load, max = mw_load)
+            reactive_power_limits_from = (min = 0.0, max = 0.0)
+            reactive_power_limits_to = (min = 0.0, max = 0.0)
             loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
 
             value = HVDCLine(
@@ -419,10 +419,10 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 available = available,
                 active_power_flow = pf,
                 arc = connection_points,
-                active_powerlimits_from = active_powerlimits_from,
-                active_powerlimits_to = active_powerlimits_to,
-                reactive_powerlimits_from = reactive_powerlimits_from,
-                reactive_powerlimits_to = reactive_powerlimits_to,
+                active_power_limits_from = active_power_limits_from,
+                active_power_limits_to = active_power_limits_to,
+                reactive_power_limits_from = reactive_power_limits_from,
+                reactive_power_limits_to = reactive_power_limits_to,
                 loss = loss,
             )
         else
@@ -806,7 +806,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
 
     var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
-    op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
+    operation_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
     base_power = get(gen, :base_mva, 1.0)
 
@@ -824,7 +824,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         reactive_power_limits,
         ramplimits,
         timelimits,
-        op_cost,
+        operation_cost,
         base_power,
     )
 end
@@ -873,7 +873,7 @@ function make_thermal_generator_multistart(
         shutdown_cost = 0.0
     end
 
-    op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
+    operation_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
     return ThermalMultiStart(;
         name = get_name(thermal_gen),
@@ -885,14 +885,14 @@ function make_thermal_generator_multistart(
         rating = get_rating(thermal_gen),
         prime_mover = get_primemover(thermal_gen),
         fuel = get_fuel(thermal_gen),
-        active_powerlimits = get_active_powerlimits(thermal_gen),
-        reactive_powerlimits = get_reactive_powerlimits(thermal_gen),
+        active_power_limits = get_active_power_limits(thermal_gen),
+        reactive_power_limits = get_reactive_power_limits(thermal_gen),
         ramplimits = get_ramplimits(thermal_gen),
         power_trajectory = power_trajectory,
         timelimits = get_timelimits(thermal_gen),
         start_time_limits = startup_timelimits,
         start_types = start_types,
-        op_cost = op_cost,
+        operation_cost = operation_cost,
         base_power = get_base_power(thermal_gen),
         time_at_status = get_time_at_status(thermal_gen),
         must_run = get(gen, :must_run, false),
@@ -921,7 +921,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
         storage = get_storage_by_generator(data, gen.name)
 
         var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
-        op_cost = TwoPartCost(var_cost, fixed)
+        operation_cost = TwoPartCost(var_cost, fixed)
 
         hydro_gen = HydroEnergyReservoir(
             name = gen.name,
@@ -931,11 +931,11 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             reactive_power = gen.reactive_power,
             prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             rating = rating,
-            active_powerlimits = active_power_limits,
-            reactive_powerlimits = reactive_power_limits,
+            active_power_limits = active_power_limits,
+            reactive_power_limits = reactive_power_limits,
             ramplimits = ramplimits,
             timelimits = timelimits,
-            op_cost = op_cost,
+            operation_cost = operation_cost,
             base_power = base_power / sys_base_power,
             storage_capacity = storage.storage_capacity,
             inflow = storage.inflow_limit,
@@ -951,8 +951,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             reactive_power = gen.reactive_power,
             rating = rating,
             prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
-            active_powerlimits = active_power_limits,
-            reactive_powerlimits = reactive_power_limits,
+            active_power_limits = active_power_limits,
+            reactive_power_limits = reactive_power_limits,
             ramplimits = ramplimits,
             timelimits = timelimits,
             base_power = base_power / sys_base_power,
@@ -1029,11 +1029,11 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         capacity = capacity,
         rating = rating,
         active_power = gen.active_power,
-        inputactive_powerlimits = input_active_power_limits,
-        outputactive_powerlimits = output_active_power_limits,
+        inputactive_power_limits = input_active_power_limits,
+        outputactive_power_limits = output_active_power_limits,
         efficiency = efficiency,
         reactive_power = gen.reactive_power,
-        reactive_powerlimits = reactive_power_limits,
+        reactive_power_limits = reactive_power_limits,
         base_power = gen.base_mva / data.base_power,
     )
 

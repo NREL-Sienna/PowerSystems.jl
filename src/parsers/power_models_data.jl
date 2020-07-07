@@ -258,12 +258,12 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
         reactive_power = d["qg"],
         rating = calculate_rating(d["pmax"], d["qmax"]),
         prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
-        active_powerlimits = (min = d["pmin"], max = d["pmax"]),
-        reactive_powerlimits = (min = d["qmin"], max = d["qmax"]),
-        ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
-        timelimits = nothing,
-        op_cost = curtailcost,
-        base_power = d["mbase"] / sys_mbase,
+        active_power_limits = (min = d["pmin"], max = d["pmax"]),
+        reactive_power_limits = (min = d["qmin"], max = d["qmax"]),
+        ramp_limits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
+        time_limits = nothing,
+        operation_cost = curtailcost,
+        base_power = d["mbase"] ,
         storage_capacity = 0.0, #TODO: Implement better Solution for this
         inflow = 0.0,
         initial_storage = 0.0,
@@ -280,10 +280,10 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
         reactive_power = d["qg"],
         rating = float(d["pmax"]),
         prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
-        reactive_powerlimits = (min = d["qmin"], max = d["qmax"]),
+        reactive_power_limits = (min = d["qmin"], max = d["qmax"]),
         powerfactor = 1.0,
-        op_cost = cost,
-        base_power = d["mbase"] / sys_mbase,
+        operation_cost = cost,
+        base_power = d["mbase"] ,
     )
 
     return generator
@@ -299,7 +299,7 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
         rating = float(d["pmax"]),
         prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         powerfactor = 1.0,
-        base_power = d["mbase"] / sys_mbase,
+        base_power = d["mbase"] ,
     )
 
     return generator
@@ -359,7 +359,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
 
-    op_cost =
+    operation_cost =
         ThreePartCost(; variable = cost, fixed = fixed, startup = startup, shutdn = shutdn)
 
     thermal_gen = ThermalStandard(
@@ -367,20 +367,17 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         status = Bool(d["gen_status"]),
         available = true,
         bus = bus,
-        active_power = d["pg"]/d["mbase"],
-        reactive_power = d["qg"]/d["mbase"],
+        active_power = d["pg"],
+        reactive_power = d["qg"],
         rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
         prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         fuel = convert(ThermalFuels.ThermalFuel, d["fuel"]),
-        active_power_max = d["pmax"]/d["mbase"],
-        active_power_min =  d["pmin"]/d["mbase"],
-        reactive_power_max =  d["qmax"]/d["mbase"],
-        reactive_power_min = d["qmin"]/d["mbase"],
-        ramp_limit_up = ramp_lim/d["mbase"],
-        ramp_limit_dn = ramp_lim/d["mbase"],
-        timelimits = nothing,
-        op_cost = op_cost,
-        base_power = d["mbase"],
+        active_power_limits = (min = d["pmin"], max = d["pmax"]),
+        reactive_power_limits = (min = d["qmin"], max = d["qmax"]),
+        ramp_limits = (up = ramp_lim / d["mbase"], down = ramp_lim / d["mbase"]),
+        time_limits = nothing,
+        operation_cost = operation_cost,
+        base_power = d["mbase"] ,
     )
 
     return thermal_gen
@@ -574,10 +571,10 @@ function make_dcline(name, d, bus_f, bus_t)
         available = d["br_status"] == 1,
         active_power_flow = get(d, "pf", 0.0),
         arc = Arc(bus_f, bus_t),
-        active_powerlimits_from = (min = d["pminf"], max = d["pmaxf"]),
-        active_powerlimits_to = (min = d["pmint"], max = d["pmaxt"]),
-        reactive_powerlimits_from = (min = d["qminf"], max = d["qmaxf"]),
-        reactive_powerlimits_to = (min = d["qmint"], max = d["qmaxt"]),
+        active_power_limits_from = (min = d["pminf"], max = d["pmaxf"]),
+        active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
+        reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
+        reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
         loss = (l0 = d["loss0"], l1 = d["loss1"]),
     )
 end

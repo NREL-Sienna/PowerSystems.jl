@@ -45,8 +45,8 @@ end
 # Constructor for demo purposes; non-functional.
 function PSSSimple(::Nothing)
     PSSSimple(;
-        K_ω=0.0,
-        K_p=0.0,
+        K_ω=0,
+        K_p=0,
         ext=Dict{String, Any}(),
     )
 end

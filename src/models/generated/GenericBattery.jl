@@ -7,19 +7,15 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::Bus
         prime_mover::PrimeMovers.PrimeMover
-        energy_level::Float64
-        energy_level_min::Float64
-        energy_level_max::Float64
+        initial_energy::Float64
+        state_of_charge_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         rating::Float64
         active_power::Float64
-        input_active_power_max::Float64
-        input_active_power_min::Float64
-        output_active_power_max::Float64
-        output_active_power_min::Float64
+        input_active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        output_active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
         reactive_power::Float64
-        reactive_power_max::Union{Nothing, Float64}
-        reactive_power_min::Union{Nothing, Float64}
+        reactive_power_limits::Union{Nothing, Min_Max}
         base_power::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -34,21 +30,17 @@ Data structure for a generic battery
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `prime_mover::PrimeMovers.PrimeMover`: PrimeMover Technology according to EIA 923
-- `energy_level::Float64`: State of Charge of the Battery p.u.-hr, validation range: (0, nothing), action if invalid: error
-- `energy_level_min::Float64`: Minimum storage capacity in p.u.-hr, validation range: (0, nothing), action if invalid: error
-- `energy_level_max::Float64`: Maximum storage capacity in p.u.-hr, validation range: (0, nothing), action if invalid: error
-- `rating::Float64`, validation range: (0, nothing), action if invalid: error
-- `active_power::Float64`, validation range: (0, nothing), action if invalid: error
-- `input_active_power_max::Float64`, validation range: (0, nothing), action if invalid: error
-- `input_active_power_min::Float64`, validation range: (0, nothing), action if invalid: error
-- `output_active_power_max::Float64`, validation range: (0, nothing), action if invalid: error
-- `output_active_power_min::Float64`, validation range: (0, nothing), action if invalid: error
+- `prime_mover::PrimeMovers.PrimeMover`: prime_mover Technology according to EIA 923
+- `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: (0, nothing), action if invalid: error
+- `state_of_charge_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Maximum and Minimum storage capacity in p.u.-hr, validation range: (0, nothing), action if invalid: error
+- `rating::Float64`
+- `active_power::Float64`
+- `input_active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: (0, nothing), action if invalid: error
+- `output_active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: (0, nothing), action if invalid: error
 - `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`, validation range: (0, 1), action if invalid: warn
-- `reactive_power::Float64`, action if invalid: warn
-- `reactive_power_max::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
-- `reactive_power_min::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
-- `base_power::Float64`: Base power of the unit in system base per unit, validation range: (0, nothing), action if invalid: warn
+- `reactive_power::Float64`, validation range: reactive_power_limits, action if invalid: warn
+- `reactive_power_limits::Union{Nothing, Min_Max}`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -59,25 +51,20 @@ mutable struct GenericBattery <: Storage
     name::String
     available::Bool
     bus::Bus
-    "PrimeMover Technology according to EIA 923"
+    "prime_mover Technology according to EIA 923"
     prime_mover::PrimeMovers.PrimeMover
     "State of Charge of the Battery p.u.-hr"
-    energy_level::Float64
-    "Minimum storage capacity in p.u.-hr"
-    energy_level_min::Float64
-    "Maximum storage capacity in p.u.-hr"
-    energy_level_max::Float64
+    initial_energy::Float64
+    "Maximum and Minimum storage capacity in p.u.-hr"
+    state_of_charge_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     rating::Float64
     active_power::Float64
-    input_active_power_max::Float64
-    input_active_power_min::Float64
-    output_active_power_max::Float64
-    output_active_power_min::Float64
+    input_active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    output_active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
     reactive_power::Float64
-    reactive_power_max::Union{Nothing, Float64}
-    reactive_power_min::Union{Nothing, Float64}
-    "Base power of the unit in system base per unit"
+    reactive_power_limits::Union{Nothing, Min_Max}
+    "Base power of the unit in MVA"
     base_power::Float64
     "Services that this device contributes to"
     services::Vector{Service}
@@ -90,12 +77,12 @@ mutable struct GenericBattery <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function GenericBattery(name, available, bus, prime_mover, energy_level, energy_level_min, energy_level_max, rating, active_power, input_active_power_max, input_active_power_min, output_active_power_max, output_active_power_min, efficiency, reactive_power, reactive_power_max, reactive_power_min, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, prime_mover, energy_level, energy_level_min, energy_level_max, rating, active_power, input_active_power_max, input_active_power_min, output_active_power_max, output_active_power_min, efficiency, reactive_power, reactive_power_max, reactive_power_min, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function GenericBattery(; name, available, bus, prime_mover, energy_level, energy_level_min, energy_level_max, rating, active_power, input_active_power_max, input_active_power_min, output_active_power_max, output_active_power_min, efficiency, reactive_power, reactive_power_max, reactive_power_min, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, prime_mover, energy_level, energy_level_min, energy_level_max, rating, active_power, input_active_power_max, input_active_power_min, output_active_power_max, output_active_power_min, efficiency, reactive_power, reactive_power_max, reactive_power_min, base_power, services, dynamic_injector, ext, forecasts, )
+function GenericBattery(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -105,19 +92,15 @@ function GenericBattery(::Nothing)
         available=false,
         bus=Bus(nothing),
         prime_mover=PrimeMovers.BA,
-        energy_level=0.0,
-        energy_level_min=0.0,
-        energy_level_max=0.0,
+        initial_energy=0.0,
+        state_of_charge_limits=(min=0.0, max=0.0),
         rating=0.0,
         active_power=0.0,
-        input_active_power_max=0.0,
-        input_active_power_min=0.0,
-        output_active_power_max=0.0,
-        output_active_power_min=0.0,
+        input_active_power_limits=(min=0.0, max=0.0),
+        output_active_power_limits=(min=0.0, max=0.0),
         efficiency=(in=0.0, out=0.0),
         reactive_power=0.0,
-        reactive_power_max=nothing,
-        reactive_power_min=nothing,
+        reactive_power_limits=(min=0.0, max=0.0),
         base_power=0.0,
         services=Device[],
         dynamic_injector=nothing,
@@ -134,32 +117,24 @@ get_available(value::GenericBattery) = value.available
 get_bus(value::GenericBattery) = value.bus
 """Get GenericBattery prime_mover."""
 get_prime_mover(value::GenericBattery) = value.prime_mover
-"""Get GenericBattery energy_level."""
-get_energy_level(value::GenericBattery) = get_value(value, :energy_level)
-"""Get GenericBattery energy_level_min."""
-get_energy_level_min(value::GenericBattery) = get_value(value, :energy_level_min)
-"""Get GenericBattery energy_level_max."""
-get_energy_level_max(value::GenericBattery) = get_value(value, :energy_level_max)
+"""Get GenericBattery initial_energy."""
+get_initial_energy(value::GenericBattery) = get_value(Float64, value, :initial_energy)
+"""Get GenericBattery state_of_charge_limits."""
+get_state_of_charge_limits(value::GenericBattery) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :state_of_charge_limits)
 """Get GenericBattery rating."""
-get_rating(value::GenericBattery) = get_value(value, :rating)
+get_rating(value::GenericBattery) = get_value(Float64, value, :rating)
 """Get GenericBattery active_power."""
-get_active_power(value::GenericBattery) = get_value(value, :active_power)
-"""Get GenericBattery input_active_power_max."""
-get_input_active_power_max(value::GenericBattery) = get_value(value, :input_active_power_max)
-"""Get GenericBattery input_active_power_min."""
-get_input_active_power_min(value::GenericBattery) = get_value(value, :input_active_power_min)
-"""Get GenericBattery output_active_power_max."""
-get_output_active_power_max(value::GenericBattery) = get_value(value, :output_active_power_max)
-"""Get GenericBattery output_active_power_min."""
-get_output_active_power_min(value::GenericBattery) = get_value(value, :output_active_power_min)
+get_active_power(value::GenericBattery) = get_value(Float64, value, :active_power)
+"""Get GenericBattery input_active_power_limits."""
+get_input_active_power_limits(value::GenericBattery) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :input_active_power_limits)
+"""Get GenericBattery output_active_power_limits."""
+get_output_active_power_limits(value::GenericBattery) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :output_active_power_limits)
 """Get GenericBattery efficiency."""
 get_efficiency(value::GenericBattery) = value.efficiency
 """Get GenericBattery reactive_power."""
-get_reactive_power(value::GenericBattery) = value.reactive_power
-"""Get GenericBattery reactive_power_max."""
-get_reactive_power_max(value::GenericBattery) = get_value(value, :reactive_power_max)
-"""Get GenericBattery reactive_power_min."""
-get_reactive_power_min(value::GenericBattery) = get_value(value, :reactive_power_min)
+get_reactive_power(value::GenericBattery) = get_value(Float64, value, :reactive_power)
+"""Get GenericBattery reactive_power_limits."""
+get_reactive_power_limits(value::GenericBattery) = get_value(Union{Nothing, Min_Max}, value, :reactive_power_limits)
 """Get GenericBattery base_power."""
 get_base_power(value::GenericBattery) = value.base_power
 """Get GenericBattery services."""
@@ -181,32 +156,24 @@ set_available!(value::GenericBattery, val::Bool) = value.available = val
 set_bus!(value::GenericBattery, val::Bus) = value.bus = val
 """Set GenericBattery prime_mover."""
 set_prime_mover!(value::GenericBattery, val::PrimeMovers.PrimeMover) = value.prime_mover = val
-"""Set GenericBattery energy_level."""
-set_energy_level!(value::GenericBattery, val::Float64) = value.energy_level = val
-"""Set GenericBattery energy_level_min."""
-set_energy_level_min!(value::GenericBattery, val::Float64) = value.energy_level_min = val
-"""Set GenericBattery energy_level_max."""
-set_energy_level_max!(value::GenericBattery, val::Float64) = value.energy_level_max = val
+"""Set GenericBattery initial_energy."""
+set_initial_energy!(value::GenericBattery, val::Float64) = value.initial_energy = val
+"""Set GenericBattery state_of_charge_limits."""
+set_state_of_charge_limits!(value::GenericBattery, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.state_of_charge_limits = val
 """Set GenericBattery rating."""
 set_rating!(value::GenericBattery, val::Float64) = value.rating = val
 """Set GenericBattery active_power."""
 set_active_power!(value::GenericBattery, val::Float64) = value.active_power = val
-"""Set GenericBattery input_active_power_max."""
-set_input_active_power_max!(value::GenericBattery, val::Float64) = value.input_active_power_max = val
-"""Set GenericBattery input_active_power_min."""
-set_input_active_power_min!(value::GenericBattery, val::Float64) = value.input_active_power_min = val
-"""Set GenericBattery output_active_power_max."""
-set_output_active_power_max!(value::GenericBattery, val::Float64) = value.output_active_power_max = val
-"""Set GenericBattery output_active_power_min."""
-set_output_active_power_min!(value::GenericBattery, val::Float64) = value.output_active_power_min = val
+"""Set GenericBattery input_active_power_limits."""
+set_input_active_power_limits!(value::GenericBattery, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.input_active_power_limits = val
+"""Set GenericBattery output_active_power_limits."""
+set_output_active_power_limits!(value::GenericBattery, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.output_active_power_limits = val
 """Set GenericBattery efficiency."""
 set_efficiency!(value::GenericBattery, val::NamedTuple{(:in, :out), Tuple{Float64, Float64}}) = value.efficiency = val
 """Set GenericBattery reactive_power."""
 set_reactive_power!(value::GenericBattery, val::Float64) = value.reactive_power = val
-"""Set GenericBattery reactive_power_max."""
-set_reactive_power_max!(value::GenericBattery, val::Union{Nothing, Float64}) = value.reactive_power_max = val
-"""Set GenericBattery reactive_power_min."""
-set_reactive_power_min!(value::GenericBattery, val::Union{Nothing, Float64}) = value.reactive_power_min = val
+"""Set GenericBattery reactive_power_limits."""
+set_reactive_power_limits!(value::GenericBattery, val::Union{Nothing, Min_Max}) = value.reactive_power_limits = val
 """Set GenericBattery base_power."""
 set_base_power!(value::GenericBattery, val::Float64) = value.base_power = val
 """Set GenericBattery services."""

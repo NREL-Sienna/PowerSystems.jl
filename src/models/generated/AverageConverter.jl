@@ -41,8 +41,8 @@ end
 # Constructor for demo purposes; non-functional.
 function AverageConverter(::Nothing)
     AverageConverter(;
-        v_rated=0.0,
-        s_rated=0.0,
+        v_rated=0,
+        s_rated=0,
         ext=Dict{String, Any}(),
     )
 end

@@ -58,7 +58,7 @@ function Source(::Nothing)
         bus=Bus(nothing),
         active_power=0.0,
         reactive_power=0.0,
-        X_th=0.0,
+        X_th=0,
         services=Device[],
         ext=Dict{String, Any}(),
     )

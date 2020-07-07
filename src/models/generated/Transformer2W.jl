@@ -88,9 +88,9 @@ InfrastructureSystems.get_name(value::Transformer2W) = value.name
 """Get Transformer2W available."""
 get_available(value::Transformer2W) = value.available
 """Get Transformer2W active_power_flow."""
-get_active_power_flow(value::Transformer2W) = get_value(value, :active_power_flow)
+get_active_power_flow(value::Transformer2W) = get_value(Float64, value, :active_power_flow)
 """Get Transformer2W reactive_power_flow."""
-get_reactive_power_flow(value::Transformer2W) = get_value(value, :reactive_power_flow)
+get_reactive_power_flow(value::Transformer2W) = get_value(Float64, value, :reactive_power_flow)
 """Get Transformer2W arc."""
 get_arc(value::Transformer2W) = value.arc
 """Get Transformer2W r."""
@@ -100,7 +100,7 @@ get_x(value::Transformer2W) = value.x
 """Get Transformer2W primary_shunt."""
 get_primary_shunt(value::Transformer2W) = value.primary_shunt
 """Get Transformer2W rate."""
-get_rate(value::Transformer2W) = get_value(value, :rate)
+get_rate(value::Transformer2W) = get_value(Union{Nothing, Float64}, value, :rate)
 """Get Transformer2W services."""
 get_services(value::Transformer2W) = value.services
 """Get Transformer2W ext."""
