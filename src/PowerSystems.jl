@@ -340,6 +340,7 @@ include("models/dynamic_inverter_components.jl")
 include("models/generated/includes.jl")
 
 #Methods for devices
+include("models/components.jl")
 include("models/devices.jl")
 
 # Dynamic Composed types
