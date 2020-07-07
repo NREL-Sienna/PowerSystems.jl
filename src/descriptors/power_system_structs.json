@@ -6090,7 +6090,7 @@
           "data_type": "Int64"
         }
       ],
-      "supertype": "activePowerControl"
+      "supertype": "ActivePowerControl"
     },
     {
       "struct_name": "ReactivePowerDroop",
