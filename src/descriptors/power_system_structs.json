@@ -267,18 +267,18 @@
           "validation_action": "error"
         },
         {
-          "name": "voltage",
+          "name": "magnitude",
           "comment": "voltage as a multiple of base_voltage",
           "null_value": "0.0",
           "data_type": "Union{Nothing, Float64}",
-          "valid_range": "voltagelimits",
+          "valid_range": "voltage_limits",
           "validation_action": "warn"
         },
         {
           "name": "voltage_limits",
           "comment": "limits on the voltage variation as multiples of base_voltage",
-          "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}"
+          "null_value": "(lb=0.0, ub=0.0)",
+          "data_type": "Union{Nothing, NamedTuple{(:lb, :ub), Tuple{Float64, Float64}}}"
         },
         {
           "name": "base_voltage",
@@ -6361,10 +6361,10 @@
           "data_type": "Int64"
         }
       ],
-      "supertype": "active_powerControl"
+      "supertype": "ActivePowerControl"
     },
     {
-      "struct_name": "Reactive_powerDroop",
+      "struct_name": "ReactivePowerDroop",
       "docstring": "Parameters of a Reactive Power droop controller",
       "fields": [
         {
@@ -6417,7 +6417,7 @@
           "data_type": "Int64"
         }
       ],
-      "supertype": "Reactive_powerControl"
+      "supertype": "ReactivePowerControl"
     },
     {
       "struct_name": "CurrentControl",
