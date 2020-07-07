@@ -50,9 +50,9 @@ end
 # Constructor for demo purposes; non-functional.
 function BaseMachine(::Nothing)
     BaseMachine(;
-        R=0,
-        Xd_p=0,
-        eq_p=0,
+        R=0.0,
+        Xd_p=0.0,
+        eq_p=0.0,
         ext=Dict{String, Any}(),
     )
 end

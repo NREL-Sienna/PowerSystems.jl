@@ -41,7 +41,7 @@ end
 # Constructor for demo purposes; non-functional.
 function FixedDCSource(::Nothing)
     FixedDCSource(;
-        voltage=0,
+        voltage=0.0,
         ext=Dict{String, Any}(),
     )
 end

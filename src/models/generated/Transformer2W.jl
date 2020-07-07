@@ -10,7 +10,7 @@ This file is auto-generated. Do not edit.
         arc::Arc
         r::Float64
         x::Float64
-        primaryshunt::Float64
+        primary_shunt::Float64
         rate::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -28,7 +28,7 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 - `arc::Arc`
 - `r::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
 - `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
-- `primaryshunt::Float64`: System per-unit value, validation range: (0, 2), action if invalid: error
+- `primary_shunt::Float64`: System per-unit value, validation range: (0, 2), action if invalid: error
 - `rate::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
@@ -46,7 +46,7 @@ mutable struct Transformer2W <: ACBranch
     "System per-unit value"
     x::Float64
     "System per-unit value"
-    primaryshunt::Float64
+    primary_shunt::Float64
     rate::Union{Nothing, Float64}
     "Services that this device contributes to"
     services::Vector{Service}
@@ -57,12 +57,12 @@ mutable struct Transformer2W <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primaryshunt, rate, services, ext, forecasts, )
+function Transformer2W(; name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Transformer2W(name, available, activepower_flow, reactivepower_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -75,7 +75,7 @@ function Transformer2W(::Nothing)
         arc=Arc(Bus(nothing), Bus(nothing)),
         r=0.0,
         x=0.0,
-        primaryshunt=0.0,
+        primary_shunt=0.0,
         rate=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
@@ -88,19 +88,19 @@ InfrastructureSystems.get_name(value::Transformer2W) = value.name
 """Get Transformer2W available."""
 get_available(value::Transformer2W) = value.available
 """Get Transformer2W activepower_flow."""
-get_activepower_flow(value::Transformer2W) = value.activepower_flow
+get_activepower_flow(value::Transformer2W) = get_value(value, :activepower_flow)
 """Get Transformer2W reactivepower_flow."""
-get_reactivepower_flow(value::Transformer2W) = value.reactivepower_flow
+get_reactivepower_flow(value::Transformer2W) = get_value(value, :reactivepower_flow)
 """Get Transformer2W arc."""
 get_arc(value::Transformer2W) = value.arc
 """Get Transformer2W r."""
 get_r(value::Transformer2W) = value.r
 """Get Transformer2W x."""
 get_x(value::Transformer2W) = value.x
-"""Get Transformer2W primaryshunt."""
-get_primaryshunt(value::Transformer2W) = value.primaryshunt
+"""Get Transformer2W primary_shunt."""
+get_primary_shunt(value::Transformer2W) = value.primary_shunt
 """Get Transformer2W rate."""
-get_rate(value::Transformer2W) = value.rate
+get_rate(value::Transformer2W) = get_value(value, :rate)
 """Get Transformer2W services."""
 get_services(value::Transformer2W) = value.services
 """Get Transformer2W ext."""
@@ -124,8 +124,8 @@ set_arc!(value::Transformer2W, val::Arc) = value.arc = val
 set_r!(value::Transformer2W, val::Float64) = value.r = val
 """Set Transformer2W x."""
 set_x!(value::Transformer2W, val::Float64) = value.x = val
-"""Set Transformer2W primaryshunt."""
-set_primaryshunt!(value::Transformer2W, val::Float64) = value.primaryshunt = val
+"""Set Transformer2W primary_shunt."""
+set_primary_shunt!(value::Transformer2W, val::Float64) = value.primary_shunt = val
 """Set Transformer2W rate."""
 set_rate!(value::Transformer2W, val::Union{Nothing, Float64}) = value.rate = val
 """Set Transformer2W services."""

@@ -41,7 +41,7 @@ end
 # Constructor for demo purposes; non-functional.
 function PSSFixed(::Nothing)
     PSSFixed(;
-        V_pss=0,
+        V_pss=0.0,
         ext=Dict{String, Any}(),
     )
 end

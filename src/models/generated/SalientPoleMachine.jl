@@ -85,15 +85,15 @@ end
 # Constructor for demo purposes; non-functional.
 function SalientPoleMachine(::Nothing)
     SalientPoleMachine(;
-        R=0,
-        Td0_p=0,
-        Td0_pp=0,
-        Tq0_pp=0,
-        Xd=0,
-        Xq=0,
-        Xd_p=0,
-        Xd_pp=0,
-        Xl=0,
+        R=0.0,
+        Td0_p=0.0,
+        Td0_pp=0.0,
+        Tq0_pp=0.0,
+        Xd=0.0,
+        Xq=0.0,
+        Xd_p=0.0,
+        Xd_pp=0.0,
+        Xl=0.0,
         Se=(0.0, 0.0),
         ext=Dict{String, Any}(),
     )

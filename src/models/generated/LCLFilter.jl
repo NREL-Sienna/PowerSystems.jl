@@ -66,11 +66,11 @@ end
 # Constructor for demo purposes; non-functional.
 function LCLFilter(::Nothing)
     LCLFilter(;
-        lf=0,
-        rf=0,
-        cf=0,
-        lg=0,
-        rg=0,
+        lf=0.0,
+        rf=0.0,
+        cf=0.0,
+        lg=0.0,
+        rg=0.0,
         ext=Dict{String, Any}(),
     )
 end

@@ -7,10 +7,10 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::Bus
         model::Union{Nothing, LoadModels.LoadModel}
-        activepower::Float64
-        reactivepower::Float64
-        maxactivepower::Float64
-        maxreactivepower::Float64
+        active_power::Float64
+        reactive_power::Float64
+        max_activepower::Float64
+        max_reactivepower::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -25,10 +25,10 @@ Data structure for a static power load.
 - `available::Bool`
 - `bus::Bus`
 - `model::Union{Nothing, LoadModels.LoadModel}`
-- `activepower::Float64`
-- `reactivepower::Float64`
-- `maxactivepower::Float64`
-- `maxreactivepower::Float64`
+- `active_power::Float64`
+- `reactive_power::Float64`
+- `max_activepower::Float64`
+- `max_reactivepower::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -40,10 +40,10 @@ mutable struct PowerLoad <: StaticLoad
     available::Bool
     bus::Bus
     model::Union{Nothing, LoadModels.LoadModel}
-    activepower::Float64
-    reactivepower::Float64
-    maxactivepower::Float64
-    maxreactivepower::Float64
+    active_power::Float64
+    reactive_power::Float64
+    max_activepower::Float64
+    max_reactivepower::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -55,12 +55,12 @@ mutable struct PowerLoad <: StaticLoad
     internal::InfrastructureSystemsInternal
 end
 
-function PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function PowerLoad(name, available, bus, model, active_power, reactive_power, max_activepower, max_reactivepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PowerLoad(name, available, bus, model, active_power, reactive_power, max_activepower, max_reactivepower, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function PowerLoad(; name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    PowerLoad(name, available, bus, model, activepower, reactivepower, maxactivepower, maxreactivepower, services, dynamic_injector, ext, forecasts, )
+function PowerLoad(; name, available, bus, model, active_power, reactive_power, max_activepower, max_reactivepower, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PowerLoad(name, available, bus, model, active_power, reactive_power, max_activepower, max_reactivepower, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -70,10 +70,10 @@ function PowerLoad(::Nothing)
         available=false,
         bus=Bus(nothing),
         model=nothing,
-        activepower=0.0,
-        reactivepower=0.0,
-        maxactivepower=0.0,
-        maxreactivepower=0.0,
+        active_power=0.0,
+        reactive_power=0.0,
+        max_activepower=0.0,
+        max_reactivepower=0.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -89,14 +89,14 @@ get_available(value::PowerLoad) = value.available
 get_bus(value::PowerLoad) = value.bus
 """Get PowerLoad model."""
 get_model(value::PowerLoad) = value.model
-"""Get PowerLoad activepower."""
-get_activepower(value::PowerLoad) = value.activepower
-"""Get PowerLoad reactivepower."""
-get_reactivepower(value::PowerLoad) = value.reactivepower
-"""Get PowerLoad maxactivepower."""
-get_maxactivepower(value::PowerLoad) = value.maxactivepower
-"""Get PowerLoad maxreactivepower."""
-get_maxreactivepower(value::PowerLoad) = value.maxreactivepower
+"""Get PowerLoad active_power."""
+get_active_power(value::PowerLoad) = get_value(value, :active_power)
+"""Get PowerLoad reactive_power."""
+get_reactive_power(value::PowerLoad) = get_value(value, :reactive_power)
+"""Get PowerLoad max_activepower."""
+get_max_activepower(value::PowerLoad) = get_value(value, :max_activepower)
+"""Get PowerLoad max_reactivepower."""
+get_max_reactivepower(value::PowerLoad) = get_value(value, :max_reactivepower)
 """Get PowerLoad services."""
 get_services(value::PowerLoad) = value.services
 """Get PowerLoad dynamic_injector."""
@@ -116,14 +116,14 @@ set_available!(value::PowerLoad, val::Bool) = value.available = val
 set_bus!(value::PowerLoad, val::Bus) = value.bus = val
 """Set PowerLoad model."""
 set_model!(value::PowerLoad, val::Union{Nothing, LoadModels.LoadModel}) = value.model = val
-"""Set PowerLoad activepower."""
-set_activepower!(value::PowerLoad, val::Float64) = value.activepower = val
-"""Set PowerLoad reactivepower."""
-set_reactivepower!(value::PowerLoad, val::Float64) = value.reactivepower = val
-"""Set PowerLoad maxactivepower."""
-set_maxactivepower!(value::PowerLoad, val::Float64) = value.maxactivepower = val
-"""Set PowerLoad maxreactivepower."""
-set_maxreactivepower!(value::PowerLoad, val::Float64) = value.maxreactivepower = val
+"""Set PowerLoad active_power."""
+set_active_power!(value::PowerLoad, val::Float64) = value.active_power = val
+"""Set PowerLoad reactive_power."""
+set_reactive_power!(value::PowerLoad, val::Float64) = value.reactive_power = val
+"""Set PowerLoad max_activepower."""
+set_max_activepower!(value::PowerLoad, val::Float64) = value.max_activepower = val
+"""Set PowerLoad max_reactivepower."""
+set_max_reactivepower!(value::PowerLoad, val::Float64) = value.max_reactivepower = val
 """Set PowerLoad services."""
 set_services!(value::PowerLoad, val::Vector{Service}) = value.services = val
 """Set PowerLoad ext."""

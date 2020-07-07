@@ -98,18 +98,18 @@ end
 # Constructor for demo purposes; non-functional.
 function AVRTypeII(::Nothing)
     AVRTypeII(;
-        K0=0,
-        T1=0,
-        T2=0,
-        T3=0,
-        T4=0,
-        Te=0,
-        Tr=0,
-        Vr_max=0,
-        Vr_min=0,
-        Ae=0,
-        Be=0,
-        V_ref=0,
+        K0=0.0,
+        T1=0.0,
+        T2=0.0,
+        T3=0.0,
+        T4=0.0,
+        Te=0.0,
+        Tr=0.0,
+        Vr_max=0.0,
+        Vr_min=0.0,
+        Ae=0.0,
+        Be=0.0,
+        V_ref=0.0,
         ext=Dict{String, Any}(),
     )
 end

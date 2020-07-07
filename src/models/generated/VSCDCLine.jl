@@ -7,12 +7,12 @@ This file is auto-generated. Do not edit.
         available::Bool
         activepower_flow::Float64
         arc::Arc
-        rectifier_taplimits::Min_Max
+        rectifier_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         rectifier_xrc::Float64
-        rectifier_firing_angle::Min_Max
-        inverter_taplimits::Min_Max
+        rectifier_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        inverter_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         inverter_xrc::Float64
-        inverter_firing_angle::Min_Max
+        inverter_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
@@ -26,12 +26,12 @@ As implemented in Milano's Book, Page 397.
 - `available::Bool`
 - `activepower_flow::Float64`
 - `arc::Arc`
-- `rectifier_taplimits::Min_Max`
+- `rectifier_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `rectifier_xrc::Float64`
-- `rectifier_firing_angle::Min_Max`
-- `inverter_taplimits::Min_Max`
+- `rectifier_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `inverter_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `inverter_xrc::Float64`
-- `inverter_firing_angle::Min_Max`
+- `inverter_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -42,12 +42,12 @@ mutable struct VSCDCLine <: DCBranch
     available::Bool
     activepower_flow::Float64
     arc::Arc
-    rectifier_taplimits::Min_Max
+    rectifier_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     rectifier_xrc::Float64
-    rectifier_firing_angle::Min_Max
-    inverter_taplimits::Min_Max
+    rectifier_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    inverter_taplimits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     inverter_xrc::Float64
-    inverter_firing_angle::Min_Max
+    inverter_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
@@ -89,7 +89,7 @@ InfrastructureSystems.get_name(value::VSCDCLine) = value.name
 """Get VSCDCLine available."""
 get_available(value::VSCDCLine) = value.available
 """Get VSCDCLine activepower_flow."""
-get_activepower_flow(value::VSCDCLine) = value.activepower_flow
+get_activepower_flow(value::VSCDCLine) = get_value(value, :activepower_flow)
 """Get VSCDCLine arc."""
 get_arc(value::VSCDCLine) = value.arc
 """Get VSCDCLine rectifier_taplimits."""
@@ -122,17 +122,17 @@ set_activepower_flow!(value::VSCDCLine, val::Float64) = value.activepower_flow =
 """Set VSCDCLine arc."""
 set_arc!(value::VSCDCLine, val::Arc) = value.arc = val
 """Set VSCDCLine rectifier_taplimits."""
-set_rectifier_taplimits!(value::VSCDCLine, val::Min_Max) = value.rectifier_taplimits = val
+set_rectifier_taplimits!(value::VSCDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.rectifier_taplimits = val
 """Set VSCDCLine rectifier_xrc."""
 set_rectifier_xrc!(value::VSCDCLine, val::Float64) = value.rectifier_xrc = val
 """Set VSCDCLine rectifier_firing_angle."""
-set_rectifier_firing_angle!(value::VSCDCLine, val::Min_Max) = value.rectifier_firing_angle = val
+set_rectifier_firing_angle!(value::VSCDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.rectifier_firing_angle = val
 """Set VSCDCLine inverter_taplimits."""
-set_inverter_taplimits!(value::VSCDCLine, val::Min_Max) = value.inverter_taplimits = val
+set_inverter_taplimits!(value::VSCDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.inverter_taplimits = val
 """Set VSCDCLine inverter_xrc."""
 set_inverter_xrc!(value::VSCDCLine, val::Float64) = value.inverter_xrc = val
 """Set VSCDCLine inverter_firing_angle."""
-set_inverter_firing_angle!(value::VSCDCLine, val::Min_Max) = value.inverter_firing_angle = val
+set_inverter_firing_angle!(value::VSCDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.inverter_firing_angle = val
 """Set VSCDCLine services."""
 set_services!(value::VSCDCLine, val::Vector{Service}) = value.services = val
 """Set VSCDCLine ext."""

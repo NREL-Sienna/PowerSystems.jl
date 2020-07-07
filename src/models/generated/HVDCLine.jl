@@ -7,10 +7,12 @@ This file is auto-generated. Do not edit.
         available::Bool
         activepower_flow::Float64
         arc::Arc
-        activepowerlimits_from::Min_Max
-        activepowerlimits_to::Min_Max
-        reactivepowerlimits_from::Min_Max
-        reactivepowerlimits_to::Min_Max
+        activepower_from_max::Float64
+        activepower_from_min::Float64
+        activepower_to_max::Float64
+        activepower_to_min::Float64
+        reactivepower_from_max::Float64
+        reactivepower_to_max::Float64
         loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -25,10 +27,12 @@ a High voltage DC line.
 - `available::Bool`
 - `activepower_flow::Float64`
 - `arc::Arc`
-- `activepowerlimits_from::Min_Max`
-- `activepowerlimits_to::Min_Max`
-- `reactivepowerlimits_from::Min_Max`
-- `reactivepowerlimits_to::Min_Max`
+- `activepower_from_max::Float64`
+- `activepower_from_min::Float64`
+- `activepower_to_max::Float64`
+- `activepower_to_min::Float64`
+- `reactivepower_from_max::Float64`
+- `reactivepower_to_max::Float64`
 - `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
@@ -40,10 +44,12 @@ mutable struct HVDCLine <: DCBranch
     available::Bool
     activepower_flow::Float64
     arc::Arc
-    activepowerlimits_from::Min_Max
-    activepowerlimits_to::Min_Max
-    reactivepowerlimits_from::Min_Max
-    reactivepowerlimits_to::Min_Max
+    activepower_from_max::Float64
+    activepower_from_min::Float64
+    activepower_to_max::Float64
+    activepower_to_min::Float64
+    reactivepower_from_max::Float64
+    reactivepower_to_max::Float64
     loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
     "Services that this device contributes to"
     services::Vector{Service}
@@ -54,12 +60,12 @@ mutable struct HVDCLine <: DCBranch
     internal::InfrastructureSystemsInternal
 end
 
-function HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function HVDCLine(name, available, activepower_flow, arc, activepower_from_max, activepower_from_min, activepower_to_max, activepower_to_min, reactivepower_from_max, reactivepower_to_max, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HVDCLine(name, available, activepower_flow, arc, activepower_from_max, activepower_from_min, activepower_to_max, activepower_to_min, reactivepower_from_max, reactivepower_to_max, loss, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HVDCLine(; name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HVDCLine(name, available, activepower_flow, arc, activepowerlimits_from, activepowerlimits_to, reactivepowerlimits_from, reactivepowerlimits_to, loss, services, ext, forecasts, )
+function HVDCLine(; name, available, activepower_flow, arc, activepower_from_max, activepower_from_min, activepower_to_max, activepower_to_min, reactivepower_from_max, reactivepower_to_max, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HVDCLine(name, available, activepower_flow, arc, activepower_from_max, activepower_from_min, activepower_to_max, activepower_to_min, reactivepower_from_max, reactivepower_to_max, loss, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -69,10 +75,12 @@ function HVDCLine(::Nothing)
         available=false,
         activepower_flow=0.0,
         arc=Arc(Bus(nothing), Bus(nothing)),
-        activepowerlimits_from=(min=0.0, max=0.0),
-        activepowerlimits_to=(min=0.0, max=0.0),
-        reactivepowerlimits_from=(min=0.0, max=0.0),
-        reactivepowerlimits_to=(min=0.0, max=0.0),
+        activepower_from_max=0.0,
+        activepower_from_min=0.0,
+        activepower_to_max=0.0,
+        activepower_to_min=0.0,
+        reactivepower_from_max=0.0,
+        reactivepower_to_max=0.0,
         loss=(l0=0.0, l1=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
@@ -85,17 +93,21 @@ InfrastructureSystems.get_name(value::HVDCLine) = value.name
 """Get HVDCLine available."""
 get_available(value::HVDCLine) = value.available
 """Get HVDCLine activepower_flow."""
-get_activepower_flow(value::HVDCLine) = value.activepower_flow
+get_activepower_flow(value::HVDCLine) = get_value(value, :activepower_flow)
 """Get HVDCLine arc."""
 get_arc(value::HVDCLine) = value.arc
-"""Get HVDCLine activepowerlimits_from."""
-get_activepowerlimits_from(value::HVDCLine) = value.activepowerlimits_from
-"""Get HVDCLine activepowerlimits_to."""
-get_activepowerlimits_to(value::HVDCLine) = value.activepowerlimits_to
-"""Get HVDCLine reactivepowerlimits_from."""
-get_reactivepowerlimits_from(value::HVDCLine) = value.reactivepowerlimits_from
-"""Get HVDCLine reactivepowerlimits_to."""
-get_reactivepowerlimits_to(value::HVDCLine) = value.reactivepowerlimits_to
+"""Get HVDCLine activepower_from_max."""
+get_activepower_from_max(value::HVDCLine) = get_value(value, :activepower_from_max)
+"""Get HVDCLine activepower_from_min."""
+get_activepower_from_min(value::HVDCLine) = get_value(value, :activepower_from_min)
+"""Get HVDCLine activepower_to_max."""
+get_activepower_to_max(value::HVDCLine) = get_value(value, :activepower_to_max)
+"""Get HVDCLine activepower_to_min."""
+get_activepower_to_min(value::HVDCLine) = get_value(value, :activepower_to_min)
+"""Get HVDCLine reactivepower_from_max."""
+get_reactivepower_from_max(value::HVDCLine) = get_value(value, :reactivepower_from_max)
+"""Get HVDCLine reactivepower_to_max."""
+get_reactivepower_to_max(value::HVDCLine) = get_value(value, :reactivepower_to_max)
 """Get HVDCLine loss."""
 get_loss(value::HVDCLine) = value.loss
 """Get HVDCLine services."""
@@ -115,14 +127,18 @@ set_available!(value::HVDCLine, val::Bool) = value.available = val
 set_activepower_flow!(value::HVDCLine, val::Float64) = value.activepower_flow = val
 """Set HVDCLine arc."""
 set_arc!(value::HVDCLine, val::Arc) = value.arc = val
-"""Set HVDCLine activepowerlimits_from."""
-set_activepowerlimits_from!(value::HVDCLine, val::Min_Max) = value.activepowerlimits_from = val
-"""Set HVDCLine activepowerlimits_to."""
-set_activepowerlimits_to!(value::HVDCLine, val::Min_Max) = value.activepowerlimits_to = val
-"""Set HVDCLine reactivepowerlimits_from."""
-set_reactivepowerlimits_from!(value::HVDCLine, val::Min_Max) = value.reactivepowerlimits_from = val
-"""Set HVDCLine reactivepowerlimits_to."""
-set_reactivepowerlimits_to!(value::HVDCLine, val::Min_Max) = value.reactivepowerlimits_to = val
+"""Set HVDCLine activepower_from_max."""
+set_activepower_from_max!(value::HVDCLine, val::Float64) = value.activepower_from_max = val
+"""Set HVDCLine activepower_from_min."""
+set_activepower_from_min!(value::HVDCLine, val::Float64) = value.activepower_from_min = val
+"""Set HVDCLine activepower_to_max."""
+set_activepower_to_max!(value::HVDCLine, val::Float64) = value.activepower_to_max = val
+"""Set HVDCLine activepower_to_min."""
+set_activepower_to_min!(value::HVDCLine, val::Float64) = value.activepower_to_min = val
+"""Set HVDCLine reactivepower_from_max."""
+set_reactivepower_from_max!(value::HVDCLine, val::Float64) = value.reactivepower_from_max = val
+"""Set HVDCLine reactivepower_to_max."""
+set_reactivepower_to_max!(value::HVDCLine, val::Float64) = value.reactivepower_to_max = val
 """Set HVDCLine loss."""
 set_loss!(value::HVDCLine, val::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}) = value.loss = val
 """Set HVDCLine services."""

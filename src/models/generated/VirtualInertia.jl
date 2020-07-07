@@ -54,10 +54,10 @@ end
 # Constructor for demo purposes; non-functional.
 function VirtualInertia(::Nothing)
     VirtualInertia(;
-        Ta=0,
-        kd=0,
-        kω=0,
-        P_ref=0,
+        Ta=0.0,
+        kd=0.0,
+        kω=0.0,
+        P_ref=0.0,
         ext=Dict{String, Any}(),
     )
 end

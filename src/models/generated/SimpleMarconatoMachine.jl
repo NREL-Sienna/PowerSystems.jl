@@ -103,18 +103,18 @@ end
 # Constructor for demo purposes; non-functional.
 function SimpleMarconatoMachine(::Nothing)
     SimpleMarconatoMachine(;
-        R=0,
-        Xd=0,
-        Xq=0,
-        Xd_p=0,
-        Xq_p=0,
-        Xd_pp=0,
-        Xq_pp=0,
-        Td0_p=0,
-        Tq0_p=0,
-        Td0_pp=0,
-        Tq0_pp=0,
-        T_AA=0,
+        R=0.0,
+        Xd=0.0,
+        Xq=0.0,
+        Xd_p=0.0,
+        Xq_p=0.0,
+        Xd_pp=0.0,
+        Xq_pp=0.0,
+        Td0_p=0.0,
+        Tq0_p=0.0,
+        Td0_pp=0.0,
+        Tq0_pp=0.0,
+        T_AA=0.0,
         ext=Dict{String, Any}(),
     )
 end

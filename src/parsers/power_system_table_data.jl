@@ -344,7 +344,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
         if branch_type == Line
             b = branch.primary_shunt / 2
-            anglelimits = (min = -π / 2, max = π / 2) #TODO: add field in CSV
+            angle_limits = (min = -π / 2, max = π / 2) #TODO: add field in CSV
             value = Line(
                 name = branch.name,
                 available = available,
@@ -355,7 +355,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 x = branch.x,
                 b = (from = b, to = b),
                 rate = branch.rate,
-                anglelimits = anglelimits,
+                angle_limits = angle_limits,
             )
         elseif branch_type == Transformer2W
             value = Transformer2W(
