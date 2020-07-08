@@ -5826,6 +5826,17 @@
           }
         },
         {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
@@ -6072,17 +6083,6 @@
           }
         },
         {
-          "name": "P_ref",
-          "comment": "Reference Power Set-point",
-          "null_value": 0,
-          "default": "1.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
@@ -6130,6 +6130,17 @@
         {
           "name": "V_ref",
           "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Reference Reactive Power Set-point",
           "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
