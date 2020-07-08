@@ -240,7 +240,7 @@ function System(
             name = "init",
             bustype = BusTypes.REF,
             angle = 0.0,
-            voltage = 0.0,
+            magnitude = 0.0,
             voltage_limits = (min = 0.0, max = 0.0),
             base_voltage = nothing,
             area = nothing,

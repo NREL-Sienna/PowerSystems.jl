@@ -249,7 +249,7 @@ end
     proportional_avr = AVRSimple(Kv = 5000.0)
     @test proportional_avr isa PowerSystems.DynamicComponent
 
-    fixed_avr = AVRFixed(Vf = 1.05)
+    fixed_avr = AVRFixed(Vf = 1.05, V_ref = 1.0)
     @test fixed_avr isa PowerSystems.DynamicComponent
 
     typeI_avr = AVRTypeI(
@@ -347,7 +347,7 @@ end
 
     BaseShaft = SingleMass(H = 5.148, D = 2.0)
 
-    fixed_avr = AVRFixed(Vf = 1.05)
+    fixed_avr = AVRFixed(Vf = 1.05, V_ref = 1.0)
 
     proportional_avr = AVRSimple(Kv = 5000.0)
 
@@ -375,10 +375,6 @@ end
         pss = no_pss,
     )
     @test Gen1AVR isa PowerSystems.Component
-    @test get_V_ref(Gen1AVR) == 1.045
-    @test get_P_ref(Gen1AVR) == 0.40
-    @test get_Q_ref(Gen1AVR) == 0.010
-
     Gen1AVRnoAVR = DynamicGenerator(
         static_injector = static_gen,
         ω_ref = 1.0,

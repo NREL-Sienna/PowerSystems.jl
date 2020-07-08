@@ -229,7 +229,6 @@ export set_dynamic_injector!
 export set_static_injector!
 export get_V_ref
 export get_P_ref
-export get_Q_ref
 export get_saturation_coeffs
 export set_droop!
 export set_participation_factor!

@@ -4,6 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct AVRFixed <: AVR
         Vf::Float64
+        V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -14,6 +15,7 @@ Parameters of a AVR that returns a fixed voltage to the rotor winding
 
 # Arguments
 - `Vf::Float64`: Fixed voltage field applied to the rotor winding, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: Fixed AVR has no states
 - `n_states::Int64`: Fixed AVR has no states
@@ -22,6 +24,8 @@ Parameters of a AVR that returns a fixed voltage to the rotor winding
 mutable struct AVRFixed <: AVR
     "Fixed voltage field applied to the rotor winding"
     Vf::Float64
+    "Reference Voltage Set-point"
+    V_ref::Float64
     ext::Dict{String, Any}
     "Fixed AVR has no states"
     states::Vector{Symbol}
@@ -31,24 +35,27 @@ mutable struct AVRFixed <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function AVRFixed(Vf, ext=Dict{String, Any}(), )
-    AVRFixed(Vf, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
+function AVRFixed(Vf, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRFixed(Vf, V_ref, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
 end
 
-function AVRFixed(; Vf, ext=Dict{String, Any}(), )
-    AVRFixed(Vf, ext, )
+function AVRFixed(; Vf, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRFixed(Vf, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
 function AVRFixed(::Nothing)
     AVRFixed(;
         Vf=0,
+        V_ref=0,
         ext=Dict{String, Any}(),
     )
 end
 
 """Get AVRFixed Vf."""
 get_Vf(value::AVRFixed) = value.Vf
+"""Get AVRFixed V_ref."""
+get_V_ref(value::AVRFixed) = value.V_ref
 """Get AVRFixed ext."""
 get_ext(value::AVRFixed) = value.ext
 """Get AVRFixed states."""
@@ -60,6 +67,8 @@ get_internal(value::AVRFixed) = value.internal
 
 """Set AVRFixed Vf."""
 set_Vf!(value::AVRFixed, val::Float64) = value.Vf = val
+"""Set AVRFixed V_ref."""
+set_V_ref!(value::AVRFixed, val::Float64) = value.V_ref = val
 """Set AVRFixed ext."""
 set_ext!(value::AVRFixed, val::Dict{String, Any}) = value.ext = val
 """Set AVRFixed states."""
