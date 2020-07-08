@@ -364,8 +364,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
 
     ext = Dict{String, Any}()
     if haskey(d, "r_source")
-        ext["r_source"] = d["r_source"]
-        ext["x_source"] = d["x_source"]
+        ext["z_source"] = (r = d["r_source"], x = d["x_source"])
     end
 
     thermal_gen = ThermalStandard(
