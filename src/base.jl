@@ -460,13 +460,7 @@ function IS.add_forecast!(
             load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
-            forecasts = IS.get_forecasts(component_)
-            key = IS.ForecastKey(
-                typeof(forecast),
-                get_initial_time(forecast),
-                IS.get_label(forecast),
-            )
-            IS.add_forecast!(data, component_, forecast, ts_data; skip_if_present = true)
+            IS.add_forecast!(data, component_, forecast, ts_data, skip_if_present = true)
         end
     else
         IS.add_forecast!(data, component, forecast, ts_data)
