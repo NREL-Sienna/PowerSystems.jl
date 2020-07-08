@@ -932,7 +932,7 @@ battery14(nodes14) = [GenericBattery(
     available = true,
     bus = nodes14[1],
     initial_energy = 5.0,
-    state_of_charge_limits= (min = 5.0, max = 100.0),
+    state_of_charge_limits = (min = 5.0, max = 100.0),
     rating = 70,
     active_power = 10.0,
     input_active_power_limits = (min = 0.0, max = 50.0),

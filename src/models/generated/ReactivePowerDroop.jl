@@ -6,7 +6,6 @@ This file is auto-generated. Do not edit.
         kq::Float64
         ωf::Float64
         V_ref::Float64
-        Q_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -18,7 +17,6 @@ Parameters of a Reactive Power droop controller
 - `kq::Float64`: frequency droop gain, validation range: (0, nothing)
 - `ωf::Float64`: filter frequency cutoff, validation range: (0, nothing)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
-- `Q_ref::Float64`: Reference Reactive Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the ReactivePowerDroop model are:
 	q_oc: Filtered reactive output power
@@ -31,8 +29,6 @@ mutable struct ReactivePowerDroop <: ReactivePowerControl
     ωf::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
-    "Reference Reactive Power Set-point"
-    Q_ref::Float64
     ext::Dict{String, Any}
     "The states of the ReactivePowerDroop model are:
 	q_oc: Filtered reactive output power"
@@ -41,12 +37,12 @@ mutable struct ReactivePowerDroop <: ReactivePowerControl
     n_states::Int64
 end
 
-function ReactivePowerDroop(kq, ωf, V_ref=1.0, Q_ref=1.0, ext=Dict{String, Any}(), )
-    ReactivePowerDroop(kq, ωf, V_ref, Q_ref, ext, [:q_oc], 1, )
+function ReactivePowerDroop(kq, ωf, V_ref=1.0, ext=Dict{String, Any}(), )
+    ReactivePowerDroop(kq, ωf, V_ref, ext, [:q_oc], 1, )
 end
 
-function ReactivePowerDroop(; kq, ωf, V_ref=1.0, Q_ref=1.0, ext=Dict{String, Any}(), )
-    ReactivePowerDroop(kq, ωf, V_ref, Q_ref, ext, )
+function ReactivePowerDroop(; kq, ωf, V_ref=1.0, ext=Dict{String, Any}(), )
+    ReactivePowerDroop(kq, ωf, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -55,7 +51,6 @@ function ReactivePowerDroop(::Nothing)
         kq=0,
         ωf=0,
         V_ref=0,
-        Q_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -66,8 +61,6 @@ get_kq(value::ReactivePowerDroop) = value.kq
 get_ωf(value::ReactivePowerDroop) = value.ωf
 """Get ReactivePowerDroop V_ref."""
 get_V_ref(value::ReactivePowerDroop) = value.V_ref
-"""Get ReactivePowerDroop Q_ref."""
-get_Q_ref(value::ReactivePowerDroop) = value.Q_ref
 """Get ReactivePowerDroop ext."""
 get_ext(value::ReactivePowerDroop) = value.ext
 """Get ReactivePowerDroop states."""
@@ -81,8 +74,6 @@ set_kq!(value::ReactivePowerDroop, val::Float64) = value.kq = val
 set_ωf!(value::ReactivePowerDroop, val::Float64) = value.ωf = val
 """Set ReactivePowerDroop V_ref."""
 set_V_ref!(value::ReactivePowerDroop, val::Float64) = value.V_ref = val
-"""Set ReactivePowerDroop Q_ref."""
-set_Q_ref!(value::ReactivePowerDroop, val::Float64) = value.Q_ref = val
 """Set ReactivePowerDroop ext."""
 set_ext!(value::ReactivePowerDroop, val::Dict{String, Any}) = value.ext = val
 """Set ReactivePowerDroop states."""

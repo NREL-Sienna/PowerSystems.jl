@@ -873,7 +873,8 @@ function make_thermal_generator_multistart(
         shutdown_cost = 0.0
     end
 
-    operation_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
+    operation_cost =
+        MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
     return ThermalMultiStart(;
         name = get_name(thermal_gen),
@@ -1013,7 +1014,8 @@ end
 function make_storage(data::PowerSystemTableData, gen, bus)
     available = true
     initial_energy = 0.0
-    state_of_charge_limits = (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    state_of_charge_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     rating = gen.active_power_limits_max
     input_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
     output_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)

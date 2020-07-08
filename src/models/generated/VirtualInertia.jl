@@ -6,6 +6,7 @@ This file is auto-generated. Do not edit.
         Ta::Float64
         kd::Float64
         kω::Float64
+        P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -17,6 +18,7 @@ Parameters of a Virtual Inertia with SRF using VSM for active power controller
 - `Ta::Float64`: VSM inertia constant, validation range: (0, nothing)
 - `kd::Float64`: VSM damping constant, validation range: (0, nothing)
 - `kω::Float64`: frequency droop gain, validation range: (0, nothing)
+- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the VirtualInertia model are:
 	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
@@ -30,6 +32,8 @@ mutable struct VirtualInertia <: ActivePowerControl
     kd::Float64
     "frequency droop gain"
     kω::Float64
+    "Reference Power Set-point"
+    P_ref::Float64
     ext::Dict{String, Any}
     "The states of the VirtualInertia model are:
 	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
@@ -39,12 +43,12 @@ mutable struct VirtualInertia <: ActivePowerControl
     n_states::Int64
 end
 
-function VirtualInertia(Ta, kd, kω, ext=Dict{String, Any}(), )
-    VirtualInertia(Ta, kd, kω, ext, [:θ_oc, :ω_oc], 2, )
+function VirtualInertia(Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), )
+    VirtualInertia(Ta, kd, kω, P_ref, ext, [:ω_oc, :θ_oc], 2, )
 end
 
-function VirtualInertia(; Ta, kd, kω, ext=Dict{String, Any}(), )
-    VirtualInertia(Ta, kd, kω, ext, )
+function VirtualInertia(; Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), )
+    VirtualInertia(Ta, kd, kω, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -53,6 +57,7 @@ function VirtualInertia(::Nothing)
         Ta=0,
         kd=0,
         kω=0,
+        P_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -63,6 +68,8 @@ get_Ta(value::VirtualInertia) = value.Ta
 get_kd(value::VirtualInertia) = value.kd
 """Get VirtualInertia kω."""
 get_kω(value::VirtualInertia) = value.kω
+"""Get VirtualInertia P_ref."""
+get_P_ref(value::VirtualInertia) = value.P_ref
 """Get VirtualInertia ext."""
 get_ext(value::VirtualInertia) = value.ext
 """Get VirtualInertia states."""
@@ -76,6 +83,8 @@ set_Ta!(value::VirtualInertia, val::Float64) = value.Ta = val
 set_kd!(value::VirtualInertia, val::Float64) = value.kd = val
 """Set VirtualInertia kω."""
 set_kω!(value::VirtualInertia, val::Float64) = value.kω = val
+"""Set VirtualInertia P_ref."""
+set_P_ref!(value::VirtualInertia, val::Float64) = value.P_ref = val
 """Set VirtualInertia ext."""
 set_ext!(value::VirtualInertia, val::Dict{String, Any}) = value.ext = val
 """Set VirtualInertia states."""

@@ -263,7 +263,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
         ramp_limits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
         time_limits = nothing,
         operation_cost = curtailcost,
-        base_power = d["mbase"] ,
+        base_power = d["mbase"],
         storage_capacity = 0.0, #TODO: Implement better Solution for this
         inflow = 0.0,
         initial_storage = 0.0,
@@ -283,7 +283,7 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
         reactive_power_limits = (min = d["qmin"], max = d["qmax"]),
         power_factor = 1.0,
         operation_cost = cost,
-        base_power = d["mbase"] ,
+        base_power = d["mbase"],
     )
 
     return generator
@@ -299,7 +299,7 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
         rating = float(d["pmax"]),
         prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         power_factor = 1.0,
-        base_power = d["mbase"] ,
+        base_power = d["mbase"],
     )
 
     return generator

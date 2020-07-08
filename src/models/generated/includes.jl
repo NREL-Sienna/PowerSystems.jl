@@ -112,7 +112,6 @@ export get_PSS_flags
 export get_P_max
 export get_P_min
 export get_P_ref
-export get_Q_ref
 export get_R
 export get_R_1d
 export get_R_1q
@@ -161,6 +160,7 @@ export get_active_power_flow
 export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_to
+export get_activepower
 export get_angle
 export get_angle_limits
 export get_arc
@@ -236,6 +236,7 @@ export get_reactive_power_flow
 export get_reactive_power_limits
 export get_reactive_power_limits_from
 export get_reactive_power_limits_to
+export get_reactivepower
 export get_rectifier_firing_angle
 export get_rectifier_tap_limits
 export get_rectifier_xrc
@@ -323,7 +324,6 @@ export set_PSS_flags!
 export set_P_max!
 export set_P_min!
 export set_P_ref!
-export set_Q_ref!
 export set_R!
 export set_R_1d!
 export set_R_1q!
@@ -372,6 +372,7 @@ export set_active_power_flow!
 export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_to!
+export set_activepower!
 export set_angle!
 export set_angle_limits!
 export set_arc!
@@ -447,6 +448,7 @@ export set_reactive_power_flow!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
 export set_reactive_power_limits_to!
+export set_reactivepower!
 export set_rectifier_firing_angle!
 export set_rectifier_tap_limits!
 export set_rectifier_xrc!

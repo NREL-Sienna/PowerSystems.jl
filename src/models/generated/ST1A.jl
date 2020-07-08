@@ -24,7 +24,6 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
-        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
@@ -57,8 +56,7 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 	Vr2: Second lead-lag state,
 	Va: Regulator output state,
 	Vr3: Feedback output state
-- `n_states::Int64`: ST1A has 5 states
-- `states_types::Vector{StateTypes.StateType}`: ST1A has 5 states
+- `n_states::Int64`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ST1A <: AVR
@@ -106,16 +104,13 @@ mutable struct ST1A <: AVR
 	Va: Regulator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
-    "ST1A has 5 states"
     n_states::Int64
-    "ST1A has 5 states"
-    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function ST1A(UEL_flags, PSS_flags, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref=1.0, ext=Dict{String, Any}(), )
-    ST1A(UEL_flags, PSS_flags, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref, ext, [:Vm, :Vr1, :Vr2, :Va, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    ST1A(UEL_flags, PSS_flags, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref, ext, [:Vm, :Vr1, :Vr2, :Va, :Vr3], 5, InfrastructureSystemsInternal(), )
 end
 
 function ST1A(; UEL_flags, PSS_flags, Tr, Vi_lim, Tc, Tb, Tc1, Tb1, Ka, Ta, Va_lim, Vr_lim, Kc, Kf, Tf, K_lr, I_lr, V_ref=1.0, ext=Dict{String, Any}(), )
@@ -189,8 +184,6 @@ get_ext(value::ST1A) = value.ext
 get_states(value::ST1A) = value.states
 """Get ST1A n_states."""
 get_n_states(value::ST1A) = value.n_states
-"""Get ST1A states_types."""
-get_states_types(value::ST1A) = value.states_types
 """Get ST1A internal."""
 get_internal(value::ST1A) = value.internal
 
@@ -236,7 +229,5 @@ set_ext!(value::ST1A, val::Dict{String, Any}) = value.ext = val
 set_states!(value::ST1A, val::Vector{Symbol}) = value.states = val
 """Set ST1A n_states."""
 set_n_states!(value::ST1A, val::Int64) = value.n_states = val
-"""Set ST1A states_types."""
-set_states_types!(value::ST1A, val::Vector{StateTypes.StateType}) = value.states_types = val
 """Set ST1A internal."""
 set_internal!(value::ST1A, val::InfrastructureSystemsInternal) = value.internal = val

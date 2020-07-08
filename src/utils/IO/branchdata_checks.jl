@@ -18,7 +18,8 @@ function check_angle_limits!(line)
 
     orderedlimits(line.angle_limits, "Angles")
 
-    if (line.angle_limits.max / max_limit > 3) || (-1 * line.angle_limits.min / max_limit > 3)
+    if (line.angle_limits.max / max_limit > 3) ||
+       (-1 * line.angle_limits.min / max_limit > 3)
         @warn "The angle limits provided is larger than 3π/2 radians.\n " *
               "PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog =
             PS_MAX_LOG
