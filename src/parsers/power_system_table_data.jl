@@ -312,7 +312,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             name = bus.name,
             bustype = bus_type,
             angle = bus.angle,
-            voltage = bus.voltage,
+            magnitude = bus.voltage,
             voltage_limits = voltage_limits,
             base_voltage = bus.base_voltage,
             area = area,
@@ -765,30 +765,30 @@ function calculate_uc_cost(data, gen, fuel_cost)
     return startup_cost, shutdown_cost
 end
 
-function make_ramplimits(gen)
+function make_ramp_limits(gen)
     ramp = get(gen, :ramp_limits, nothing)
     if isnothing(ramp)
-        ramplimits = ramp
+        ramp_limits = ramp
     else
         up = get(gen, :ramp_up, ramp)
         up = typeof(up) == String ? tryparse(Float64, up) : up
         down = get(gen, :ramp_down, ramp)
         down = typeof(down) == String ? tryparse(Float64, down) : down
-        ramplimits = (up = up, down = down)
+        ramp_limits = (up = up, down = down)
     end
-    return ramplimits
+    return ramp_limits
 end
 
-function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
+function make_time_limits(gen, up_column::Symbol, down_column::Symbol)
     up_time = get(gen, up_column, nothing)
     up_time = typeof(up_time) == String ? tryparse(Float64, up_time) : up_time
 
     down_time = get(gen, down_column, nothing)
     down_time = typeof(down_time) == String ? tryparse(Float64, down_time) : down_time
 
-    timelimits = isnothing(up_time) && isnothing(down_time) ? nothing :
+    time_limits = isnothing(up_time) && isnothing(down_time) ? nothing :
         (up = up_time, down = down_time)
-    return timelimits
+    return time_limits
 end
 
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
@@ -799,8 +799,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     reactive_power_limits =
         (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
-    ramplimits = make_ramplimits(gen)
-    timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
+    ramp_limits = make_ramp_limits(gen)
+    time_limits = make_time_limits(gen, :min_up_time, :min_down_time)
     prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type)
     fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
 
@@ -822,8 +822,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         fuel,
         active_power_limits,
         reactive_power_limits,
-        ramplimits,
-        timelimits,
+        ramp_limits,
+        time_limits,
         operation_cost,
         base_power,
     )
@@ -845,11 +845,11 @@ function make_thermal_generator_multistart(
         var_cost =
             VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
     end
-    lag_hot = get(gen, :hot_start_time, get_timelimits(thermal_gen).down)
+    lag_hot = get(gen, :hot_start_time, get_time_limits(thermal_gen).down)
     lag_warm = get(gen, :warm_start_time, 0.0)
     lag_cold = get(gen, :cold_start_time, 0.0)
-    startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
-    start_types = sum(values(startup_timelimits) .> 0.0)
+    startup_time_limits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
+    start_types = sum(values(startup_time_limits) .> 0.0)
     startup_ramp = get(gen, :startup_ramp, 0.0)
     shutdown_ramp = get(gen, :shutdown_ramp, 0.0)
     power_trajectory = (startup = startup_ramp, shutdown = shutdown_ramp)
@@ -883,14 +883,14 @@ function make_thermal_generator_multistart(
         active_power = get_active_power(thermal_gen),
         reactive_power = get_reactive_power(thermal_gen),
         rating = get_rating(thermal_gen),
-        prime_mover = get_primemover(thermal_gen),
+        prime_mover = get_prime_mover(thermal_gen),
         fuel = get_fuel(thermal_gen),
         active_power_limits = get_active_power_limits(thermal_gen),
         reactive_power_limits = get_reactive_power_limits(thermal_gen),
-        ramplimits = get_ramplimits(thermal_gen),
+        ramp_limits = get_ramp_limits(thermal_gen),
         power_trajectory = power_trajectory,
-        timelimits = get_timelimits(thermal_gen),
-        start_time_limits = startup_timelimits,
+        time_limits = get_time_limits(thermal_gen),
+        start_time_limits = startup_time_limits,
         start_types = start_types,
         operation_cost = operation_cost,
         base_power = get_base_power(thermal_gen),
@@ -906,10 +906,10 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     reactive_power_limits =
         (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
-    ramplimits = make_ramplimits(gen)
+    ramp_limits = make_ramp_limits(gen)
     min_up_time = get(gen, :min_up_time, nothing)
     min_down_time = get(gen, :min_down_time, nothing)
-    timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
+    time_limits = make_time_limits(gen, :min_up_time, :min_down_time)
     base_power = gen.base_mva
     sys_base_power = data.base_power
 
@@ -933,8 +933,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             rating = rating,
             active_power_limits = active_power_limits,
             reactive_power_limits = reactive_power_limits,
-            ramplimits = ramplimits,
-            timelimits = timelimits,
+            ramp_limits = ramp_limits,
+            time_limits = time_limits,
             operation_cost = operation_cost,
             base_power = base_power / sys_base_power,
             storage_capacity = storage.storage_capacity,
@@ -953,8 +953,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             active_power_limits = active_power_limits,
             reactive_power_limits = reactive_power_limits,
-            ramplimits = ramplimits,
-            timelimits = timelimits,
+            ramp_limits = ramp_limits,
+            time_limits = time_limits,
             base_power = base_power / sys_base_power,
         )
     else
@@ -1012,8 +1012,8 @@ end
 
 function make_storage(data::PowerSystemTableData, gen, bus)
     available = true
-    energy = 0.0
-    capacity = (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    initial_energy = 0.0
+    state_of_charge_limits = (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     rating = gen.active_power_limits_max
     input_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
     output_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
@@ -1025,16 +1025,16 @@ function make_storage(data::PowerSystemTableData, gen, bus)
         available = available,
         bus = bus,
         prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
-        energy = energy,
-        capacity = capacity,
+        initial_energy = initial_energy,
+        state_of_charge_limits = state_of_charge_limits,
         rating = rating,
         active_power = gen.active_power,
-        inputactive_power_limits = input_active_power_limits,
-        outputactive_power_limits = output_active_power_limits,
+        input_active_power_limits = input_active_power_limits,
+        output_active_power_limits = output_active_power_limits,
         efficiency = efficiency,
         reactive_power = gen.reactive_power,
         reactive_power_limits = reactive_power_limits,
-        base_power = gen.base_mva / data.base_power,
+        base_power = gen.base_mva,
     )
 
     return battery

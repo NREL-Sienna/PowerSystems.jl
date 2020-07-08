@@ -23,7 +23,7 @@ end
         name = "bus100",
         bustype = BusTypes.PV,
         angle = 1.0,
-        voltage = 1.0,
+        magnitude = 1.0,
         voltage_limits = (min = -1.0, max = 1.0),
         base_voltage = 1.0,
     )
@@ -32,7 +32,7 @@ end
         name = "bus101",
         bustype = BusTypes.PV,
         angle = 1.0,
-        voltage = 1.0,
+        magnitude = 1.0,
         voltage_limits = (min = -1.0, max = 1.0),
         base_voltage = 1.0,
         area = nothing,

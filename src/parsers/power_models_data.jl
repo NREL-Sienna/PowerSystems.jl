@@ -377,7 +377,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         ramp_limits = (up = ramp_lim / d["mbase"], down = ramp_lim / d["mbase"]),
         time_limits = nothing,
         operation_cost = operation_cost,
-        base_power = d["mbase"] ,
+        base_power = d["mbase"],
     )
 
     return thermal_gen
