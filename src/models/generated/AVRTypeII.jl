@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model
+Parameters of an Automatic Voltage Regulator Type II - Typical static exciter model
 
 # Arguments
 - `K0::Float64`: Regulator Gain, validation range: (0, nothing)
@@ -40,11 +40,11 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vf: Voltage field,
-	Vr1: Amplifier State,
-	Vr2: Stabilizing Feedback State,
+	Vr1: First Lead-Lag state,
+	Vr2: Second lead-lag state,
 	Vm: Measured voltage
-- `n_states::Int64`: The AVR Type I has 4 states
-- `states_types::Vector{StateTypes.StateType}`: AVR Type I has 4 differential states
+- `n_states::Int64`: AVR Type II has 4 states
+- `states_types::Vector{StateTypes.StateType}`: AVR Type II has 4 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AVRTypeII <: AVR
@@ -75,13 +75,13 @@ mutable struct AVRTypeII <: AVR
     ext::Dict{String, Any}
     "The states are:
 	Vf: Voltage field,
-	Vr1: Amplifier State,
-	Vr2: Stabilizing Feedback State,
+	Vr1: First Lead-Lag state,
+	Vr2: Second lead-lag state,
 	Vm: Measured voltage"
     states::Vector{Symbol}
-    "The AVR Type I has 4 states"
+    "AVR Type II has 4 states"
     n_states::Int64
-    "AVR Type I has 4 differential states"
+    "AVR Type II has 4 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
