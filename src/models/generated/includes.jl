@@ -112,6 +112,7 @@ export get_PSS_flags
 export get_P_max
 export get_P_min
 export get_P_ref
+export get_Q_ref
 export get_R
 export get_R_1d
 export get_R_1q
@@ -321,6 +322,7 @@ export set_PSS_flags!
 export set_P_max!
 export set_P_min!
 export set_P_ref!
+export set_Q_ref!
 export set_R!
 export set_R_1d!
 export set_R_1q!
