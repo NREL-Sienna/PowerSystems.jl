@@ -6049,7 +6049,7 @@
         {
           "name": "states",
           "comment": "",
-          "internal_default": "[:ω_oc, :θ_oc]",
+          "internal_default": "[:θ_oc, :ω_oc]",
           "data_type": "Vector{Symbol}"
         },
         {

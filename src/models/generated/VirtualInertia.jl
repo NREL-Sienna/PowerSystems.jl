@@ -34,7 +34,7 @@ mutable struct VirtualInertia <: ActivePowerControl
 end
 
 function VirtualInertia(Ta, kd, kω, ext=Dict{String, Any}(), )
-    VirtualInertia(Ta, kd, kω, ext, [:ω_oc, :θ_oc], 2, )
+    VirtualInertia(Ta, kd, kω, ext, [:θ_oc, :ω_oc], 2, )
 end
 
 function VirtualInertia(; Ta, kd, kω, ext=Dict{String, Any}(), )
