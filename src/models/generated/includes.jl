@@ -230,6 +230,8 @@ export get_prime_mover
 export get_r
 export get_ramp_limits
 export get_rate
+export get_rated_current
+export get_rated_voltage
 export get_rating
 export get_reactive_power
 export get_reactive_power_flow
@@ -244,7 +246,6 @@ export get_requirement
 export get_rf
 export get_rg
 export get_rv
-export get_s_rated
 export get_saturation_coeffs
 export get_services
 export get_shutdn
@@ -261,7 +262,6 @@ export get_time_at_status
 export get_time_frame
 export get_time_limits
 export get_to
-export get_v_rated
 export get_variable
 export get_voltage
 export get_voltage_limits
@@ -442,6 +442,8 @@ export set_prime_mover!
 export set_r!
 export set_ramp_limits!
 export set_rate!
+export set_rated_current!
+export set_rated_voltage!
 export set_rating!
 export set_reactive_power!
 export set_reactive_power_flow!
@@ -456,7 +458,6 @@ export set_requirement!
 export set_rf!
 export set_rg!
 export set_rv!
-export set_s_rated!
 export set_saturation_coeffs!
 export set_services!
 export set_shutdn!
@@ -473,7 +474,6 @@ export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
 export set_to!
-export set_v_rated!
 export set_variable!
 export set_voltage!
 export set_voltage_limits!
