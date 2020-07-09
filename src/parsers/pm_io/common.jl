@@ -81,3 +81,8 @@ function correct_network_data!(data::Dict{String, <:Any})
         "dcline" => mod_dcline,
     )
 end
+
+UNIT_SYSTEM_MAPPING = Dict(
+    "system_base" => IS.SYSTEM_BASE,
+    "device_base" => IS.DEVICE_BASE,
+    "natural_units" => IS.NATURAL_UNITS)
