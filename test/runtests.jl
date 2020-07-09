@@ -2,6 +2,7 @@ using Test
 using Logging
 using Dates
 using LinearAlgebra
+import TimeSeries
 import InteractiveUtils
 
 import InfrastructureSystems
