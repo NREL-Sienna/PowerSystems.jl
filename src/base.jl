@@ -84,7 +84,7 @@ struct System <: PowerSystemType
 end
 
 function System(data, base_power, internal; kwargs...)
-    unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
+    unit_system_ = get(kwargs, :unit_system, "system_base")
     unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
     units_settings = SystemUnitsSettings(base_power, unit_system)
     return System(data, units_settings, internal; kwargs...)
@@ -372,6 +372,7 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 """
 function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
     set_unit_system!(component, sys.units_settings)
+    @assert !isnothing(component.internal.units_info)
     check_component_addition(sys, component)
     check_for_services_on_addition(sys, component)
 
@@ -418,6 +419,7 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
         end
     end
 
+    set_unit_system!(service, sys.units_settings)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; kwargs...)
 
@@ -543,6 +545,11 @@ function remove_components!(::Type{T}, sys::System) where {T <: Component}
     end
 end
 
+function clear_units!(component::Component)
+    get_internal(component).units_info = nothing
+    return
+end
+
 """
     remove_component!(sys::System, component::T) where {T <: Component}
 
@@ -554,6 +561,7 @@ function remove_component!(sys::System, component::T) where {T <: Component}
     check_component_removal(sys, component)
     IS.remove_component!(sys.data, component)
     handle_component_removal!(sys, component)
+    clear_units!(component)
 end
 
 """
@@ -1529,6 +1537,7 @@ end
 function handle_component_addition!(sys::System, component::RegulationDevice)
     copy_forecasts!(component.device, component)
     remove_component!(sys, component.device)
+    return
 end
 
 """
