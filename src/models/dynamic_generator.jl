@@ -80,3 +80,4 @@ get_prime_mover(device::DynamicGenerator) = device.prime_mover
 get_pss(device::DynamicGenerator) = device.pss
 get_static_injector(device::DynamicGenerator) = device.static_injector
 get_ext(device::DynamicGenerator) = device.ext
+get_internal(device::DynamicGenerator) = device.internal
