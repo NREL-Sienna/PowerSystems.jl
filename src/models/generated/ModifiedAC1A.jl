@@ -52,8 +52,8 @@ Parameters of Modified Type AC1A Excitacion System. EXAC1 in PSSE and PSLF
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int64`: AC1A has 5 states
-- `states_types::Vector{StateTypes.StateType}`: AC1A has 5 states
+- `n_states::Int64`
+- `states_types::Vector{StateTypes.StateType}`: ModifiedAC1A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ModifiedAC1A <: AVR
@@ -97,9 +97,8 @@ mutable struct ModifiedAC1A <: AVR
 	Ve: Integrator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
-    "AC1A has 5 states"
     n_states::Int64
-    "AC1A has 5 states"
+    "ModifiedAC1A has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

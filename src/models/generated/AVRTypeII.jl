@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of an Automatic Voltage Regulator Type II - Typical static exciter model
+Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model
 
 # Arguments
 - `K0::Float64`: Regulator Gain, validation range: (0, nothing)

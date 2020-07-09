@@ -2897,15 +2897,21 @@
         },
         {
           "name": "states",
-          "comment": "",
+          "comment": "The states are:\n\tVf: Voltage field,\n\tVr1: Amplifier State,\n\tVr2: Stabilizing Feedback State,\n\tVm: Measured voltage",
           "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "The AVR Type I has 4 states",
           "internal_default": 4,
           "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "AVR Type I has 4 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -2918,7 +2924,7 @@
     },
     {
       "struct_name": "AVRTypeII",
-      "docstring": "Parameters of an Automatic Voltage Regulator Type II - Typical static exciter model",
+      "docstring": "Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter model",
       "fields": [
         {
           "name": "K0",
@@ -3238,20 +3244,20 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\tVf: Voltage field,\n\tVr1: First Lead-Lag state,\n\tVr2: Second lead-lag state,\n\tVm: Measured voltage",
-          "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "AVR Type II has 4 states",
-          "internal_default": 4,
+          "comment": "AC1A has 5 states",
+          "internal_default": 5,
           "data_type": "Int64"
         },
         {
           "name": "states_types",
-          "comment": "AVR Type II has 4 differential states",
-          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "comment": "AC1A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
@@ -3427,13 +3433,13 @@
         },
         {
           "name": "n_states",
-          "comment": "AC1A has 5 states",
+          "comment": "",
           "internal_default": 5,
           "data_type": "Int64"
         },
         {
           "name": "states_types",
-          "comment": "AC1A has 5 states",
+          "comment": "ModifiedAC1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
@@ -3516,6 +3522,7 @@
             "max": null
           }
         },
+
         {
           "name": "Tb1",
           "comment": "Second regulator denominator (lead) time constant in s",
@@ -3552,6 +3559,7 @@
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
+
         {
           "name": "Vr_lim",
           "comment": "Limits for exciter output (Vr_min, Vr_max)",
@@ -3633,9 +3641,15 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "ST1A has 5 states",
           "internal_default": 5,
           "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "ST1A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -4103,7 +4117,7 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\teψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
+          "comment": "The states are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
           "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
           "data_type": "Vector{Symbol}"
         },
@@ -5759,7 +5773,7 @@
       "docstring": "Parameters of an average converter model",
       "fields": [
         {
-          "name": "v_rated",
+          "name": "rated_voltage",
           "comment": "rated voltage",
           "null_value": 0,
           "data_type": "Float64",
@@ -5769,7 +5783,7 @@
           }
         },
         {
-          "name": "s_rated",
+          "name": "rated_current",
           "comment": "rated VA",
           "null_value": 0,
           "data_type": "Float64",

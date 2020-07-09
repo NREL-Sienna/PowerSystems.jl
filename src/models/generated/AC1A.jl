@@ -51,12 +51,13 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1A in PSSE and PSL
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
-	Vf: Voltage field,
-	Vr1: First Lead-Lag state,
-	Vr2: Second lead-lag state,
-	Vm: Measured voltage
-- `n_states::Int64`: AVR Type II has 4 states
-- `states_types::Vector{StateTypes.StateType}`: AVR Type II has 4 differential states
+	Vm: Sensed terminal voltage,
+	Vr1: Lead-lag state,
+	Vr2: Regulator output state,
+	Ve: Integrator output state,
+	Vr3: Feedback output state
+- `n_states::Int64`: AC1A has 5 states
+- `states_types::Vector{StateTypes.StateType}`: AC1A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AC1A <: AVR
@@ -96,21 +97,22 @@ mutable struct AC1A <: AVR
     saturation_coeffs::Tuple{Float64, Float64}
     ext::Dict{String, Any}
     "The states are:
-	Vf: Voltage field,
-	Vr1: First Lead-Lag state,
-	Vr2: Second lead-lag state,
-	Vm: Measured voltage"
+	Vm: Sensed terminal voltage,
+	Vr1: Lead-lag state,
+	Vr2: Regulator output state,
+	Ve: Integrator output state,
+	Vr3: Feedback output state"
     states::Vector{Symbol}
-    "AVR Type II has 4 states"
+    "AC1A has 5 states"
     n_states::Int64
-    "AVR Type II has 4 differential states"
+    "AC1A has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, saturation_coeffs, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function AC1A(; Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
