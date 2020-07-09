@@ -19,16 +19,6 @@ const SYSTEM_KWARGS = Set((
     :unit_system,
 ))
 
-@enum UnitSystem begin
-    SYSTEM_BASE
-    DEVICE_BASE
-    NATURAL_UNITS
-end
-
-struct SystemUnitsSettings <: IS.UnitsData
-    base_power::Float64
-    unit_system::UnitSystem
-end
 
 """
 System
@@ -94,7 +84,8 @@ struct System <: PowerSystemType
 end
 
 function System(data, base_power, internal; kwargs...)
-    unit_system = get(kwargs, :unit_system, DEVICE_BASE)
+    unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
+    unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
     units_settings = SystemUnitsSettings(base_power, unit_system)
     return System(data, units_settings, internal; kwargs...)
 end
@@ -341,7 +332,7 @@ get_ext(sys::System) = IS.get_ext(sys.internal)
 """
 Return the system's base power.
 """
-get_base_power(sys::System) = sys.units_settings.base_power
+get_base_power(sys::System) = sys.units_settings.base_value
 
 """
 Return the system's frequency.
@@ -1309,6 +1300,7 @@ function deserialize(
             kwargs[field] = getproperty(raw, field)
         end
 
+        units_settings = IS.convert_type(SystemUnitsSettings, raw.units_settings)
         data = IS.deserialize(
             IS.SystemData,
             Component,
@@ -1316,8 +1308,11 @@ function deserialize(
             time_series_read_only = time_series_read_only,
         )
         internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
-        units_settings = IS.convert_type(SystemUnitsSettings, raw.units_settings)
         sys = System(data, units_settings; internal = internal)
+        for component in get_components(Component, sys)
+           set_unit_system!(component, units_settings)
+        end
+        return sys
     end
 end
 
