@@ -1,5 +1,5 @@
 function _get_multiplier(c::T) where T <: Component
-    setting = get_internal(c).unit_info
+    setting = get_internal(c).units_info
     if setting.unit_system == IS.DEVICE_BASE
         return 1.0
     elseif setting.unit_system == IS.SYSTEM_BASE
