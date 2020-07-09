@@ -1,11 +1,11 @@
-function get_value(::Type{Float64}, c::Component, value::Symbol)
-    return getfield(c, value)::Float64
+function get_value(c::Component, value::Float64)
+    return value
 end
 
-function get_value(::Type{Min_Max}, c::Component, value::Symbol)
-    return getfield(c, value)::Min_Max
+function get_value(c::Component, value::Min_Max)
+    return value
 end
 
-function get_value(::Type{T}, c::Component, value::Symbol) where {T}
-    return getfield(c, value)::T
+function get_value(c::Component, value::T) where {T}
+    return value::T
 end

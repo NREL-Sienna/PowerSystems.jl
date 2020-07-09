@@ -98,9 +98,9 @@ InfrastructureSystems.get_name(value::MonitoredLine) = value.name
 """Get MonitoredLine available."""
 get_available(value::MonitoredLine) = value.available
 """Get MonitoredLine active_power_flow."""
-get_active_power_flow(value::MonitoredLine) = get_value(Float64, value, :active_power_flow)
+get_active_power_flow(value::MonitoredLine) = get_value(value, value.active_power_flow)
 """Get MonitoredLine reactive_power_flow."""
-get_reactive_power_flow(value::MonitoredLine) = get_value(Float64, value, :reactive_power_flow)
+get_reactive_power_flow(value::MonitoredLine) = get_value(value, value.reactive_power_flow)
 """Get MonitoredLine arc."""
 get_arc(value::MonitoredLine) = value.arc
 """Get MonitoredLine r."""
@@ -110,9 +110,9 @@ get_x(value::MonitoredLine) = value.x
 """Get MonitoredLine b."""
 get_b(value::MonitoredLine) = value.b
 """Get MonitoredLine flowlimits."""
-get_flowlimits(value::MonitoredLine) = get_value(NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}, value, :flowlimits)
+get_flowlimits(value::MonitoredLine) = get_value(value, value.flowlimits)
 """Get MonitoredLine rate."""
-get_rate(value::MonitoredLine) = get_value(Float64, value, :rate)
+get_rate(value::MonitoredLine) = get_value(value, value.rate)
 """Get MonitoredLine angle_limits."""
 get_angle_limits(value::MonitoredLine) = value.angle_limits
 """Get MonitoredLine services."""

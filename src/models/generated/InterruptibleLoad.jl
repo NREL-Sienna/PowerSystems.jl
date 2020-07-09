@@ -95,13 +95,13 @@ get_bus(value::InterruptibleLoad) = value.bus
 """Get InterruptibleLoad model."""
 get_model(value::InterruptibleLoad) = value.model
 """Get InterruptibleLoad active_power."""
-get_active_power(value::InterruptibleLoad) = get_value(Float64, value, :active_power)
+get_active_power(value::InterruptibleLoad) = get_value(value, value.active_power)
 """Get InterruptibleLoad reactive_power."""
-get_reactive_power(value::InterruptibleLoad) = get_value(Float64, value, :reactive_power)
+get_reactive_power(value::InterruptibleLoad) = get_value(value, value.reactive_power)
 """Get InterruptibleLoad max_active_power."""
-get_max_active_power(value::InterruptibleLoad) = get_value(Float64, value, :max_active_power)
+get_max_active_power(value::InterruptibleLoad) = get_value(value, value.max_active_power)
 """Get InterruptibleLoad max_reactive_power."""
-get_max_reactive_power(value::InterruptibleLoad) = get_value(Float64, value, :max_reactive_power)
+get_max_reactive_power(value::InterruptibleLoad) = get_value(value, value.max_reactive_power)
 """Get InterruptibleLoad operation_cost."""
 get_operation_cost(value::InterruptibleLoad) = value.operation_cost
 """Get InterruptibleLoad services."""

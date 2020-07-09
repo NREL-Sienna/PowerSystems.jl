@@ -146,21 +146,21 @@ get_status(value::ThermalMultiStart) = value.status
 """Get ThermalMultiStart bus."""
 get_bus(value::ThermalMultiStart) = value.bus
 """Get ThermalMultiStart active_power."""
-get_active_power(value::ThermalMultiStart) = get_value(Float64, value, :active_power)
+get_active_power(value::ThermalMultiStart) = get_value(value, value.active_power)
 """Get ThermalMultiStart reactive_power."""
-get_reactive_power(value::ThermalMultiStart) = get_value(Float64, value, :reactive_power)
+get_reactive_power(value::ThermalMultiStart) = get_value(value, value.reactive_power)
 """Get ThermalMultiStart rating."""
-get_rating(value::ThermalMultiStart) = get_value(Float64, value, :rating)
+get_rating(value::ThermalMultiStart) = get_value(value, value.rating)
 """Get ThermalMultiStart prime_mover."""
 get_prime_mover(value::ThermalMultiStart) = value.prime_mover
 """Get ThermalMultiStart fuel."""
 get_fuel(value::ThermalMultiStart) = value.fuel
 """Get ThermalMultiStart active_power_limits."""
-get_active_power_limits(value::ThermalMultiStart) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits)
+get_active_power_limits(value::ThermalMultiStart) = get_value(value, value.active_power_limits)
 """Get ThermalMultiStart reactive_power_limits."""
-get_reactive_power_limits(value::ThermalMultiStart) = get_value(Union{Nothing, Min_Max}, value, :reactive_power_limits)
+get_reactive_power_limits(value::ThermalMultiStart) = get_value(value, value.reactive_power_limits)
 """Get ThermalMultiStart ramp_limits."""
-get_ramp_limits(value::ThermalMultiStart) = get_value(Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}, value, :ramp_limits)
+get_ramp_limits(value::ThermalMultiStart) = get_value(value, value.ramp_limits)
 """Get ThermalMultiStart power_trajectory."""
 get_power_trajectory(value::ThermalMultiStart) = value.power_trajectory
 """Get ThermalMultiStart time_limits."""
