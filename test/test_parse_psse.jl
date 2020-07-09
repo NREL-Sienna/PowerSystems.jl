@@ -9,6 +9,9 @@
         pm_data = PowerSystems.PowerModelsData(joinpath(PSSE_RAW_DIR, f))
         @info "Successfully parsed $f to PowerModelsData"
         sys = System(pm_data)
+        for g in get_components(Generator, sys)
+            @test haskey(get_ext(g), "z_source")
+        end
         @info "Successfully parsed $f to System struct"
     end
 
@@ -28,6 +31,9 @@ end
     for f in files[1:1]
         @info "Parsing $f ..."
         sys = System(joinpath(PM_PSSE_PATH, f))
+        for g in get_components(Generator, sys)
+            @test haskey(get_ext(g), "z_source")
+        end
         @info "Successfully parsed $f to System struct"
     end
 end

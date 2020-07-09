@@ -362,6 +362,11 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
     op_cost =
         ThreePartCost(; variable = cost, fixed = fixed, startup = startup, shutdn = shutdn)
 
+    ext = Dict{String, Any}()
+    if haskey(d, "r_source")
+        ext["z_source"] = (r = d["r_source"], x = d["x_source"])
+    end
+
     thermal_gen = ThermalStandard(
         name = gen_name,
         status = Bool(d["gen_status"]),
@@ -378,6 +383,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         timelimits = nothing,
         op_cost = op_cost,
         basepower = d["mbase"] / sys_mbase,
+        ext = ext,
     )
 
     return thermal_gen

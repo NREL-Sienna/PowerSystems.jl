@@ -196,6 +196,8 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pmax"] = pop!(gen, "PT")
             sub_data["qmin"] = pop!(gen, "QB")
             sub_data["qmax"] = pop!(gen, "QT")
+            sub_data["r_source"] = pop!(gen, "ZR")
+            sub_data["x_source"] = pop!(gen, "ZX")
 
             # Default Cost functions
             sub_data["model"] = 2
