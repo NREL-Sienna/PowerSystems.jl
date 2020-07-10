@@ -1081,7 +1081,7 @@ end
 struct _FieldInfo
     name::String
     custom_name::String
-    needs_per_unit_conversion::Bool
+    per_unit_system::Union{Nothing, IS.UnitSystem}
     unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
     # TODO unit, value ranges and options
 end
@@ -1123,14 +1123,16 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
                 end
             end
 
-            if !per_unit[name] && get(item, "system_per_unit", false)
-                throw(DataFormatError("$name cannot be defined as system_per_unit"))
+            if !per_unit[name] && get(item, "unit_system", false)
+                throw(DataFormatError("$name cannot be defined in per unit"))
             end
 
-            needs_pu_conversion =
+            pu_conversion_ =
                 per_unit[name] &&
-                haskey(item, "system_per_unit") &&
-                !item["system_per_unit"]
+                haskey(item, "unit_system") &&
+                item["unit_system"]
+
+            pu_conversion = get(UNIT_SYSTEM_MAPPING, pu_conversion_, nothing)
 
             custom_unit = get(item, "unit", nothing)
             if !isnothing(unit[name]) &&
@@ -1143,7 +1145,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
             push!(
                 fields,
-                _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion),
+                _FieldInfo(name, custom_name, pu_conversion, unit_conversion),
             )
         else
             # TODO: This should probably be a fatal error. However, the parsing code
@@ -1168,7 +1170,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             value = nothing
         end
 
-        if field_info.needs_per_unit_conversion
+        if field_info.per_unit_system != DEVICE_BASE
             @debug "convert to system_per_unit" field_info.custom_name
             value /= data.base_power
         end
