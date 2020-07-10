@@ -118,23 +118,23 @@ get_bus(value::GenericBattery) = value.bus
 """Get GenericBattery prime_mover."""
 get_prime_mover(value::GenericBattery) = value.prime_mover
 """Get GenericBattery initial_energy."""
-get_initial_energy(value::GenericBattery) = get_value(Float64, value, :initial_energy)
+get_initial_energy(value::GenericBattery) = get_value(value, value.initial_energy)
 """Get GenericBattery state_of_charge_limits."""
-get_state_of_charge_limits(value::GenericBattery) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :state_of_charge_limits)
+get_state_of_charge_limits(value::GenericBattery) = get_value(value, value.state_of_charge_limits)
 """Get GenericBattery rating."""
-get_rating(value::GenericBattery) = get_value(Float64, value, :rating)
+get_rating(value::GenericBattery) = get_value(value, value.rating)
 """Get GenericBattery active_power."""
-get_active_power(value::GenericBattery) = get_value(Float64, value, :active_power)
+get_active_power(value::GenericBattery) = get_value(value, value.active_power)
 """Get GenericBattery input_active_power_limits."""
-get_input_active_power_limits(value::GenericBattery) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :input_active_power_limits)
+get_input_active_power_limits(value::GenericBattery) = get_value(value, value.input_active_power_limits)
 """Get GenericBattery output_active_power_limits."""
-get_output_active_power_limits(value::GenericBattery) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :output_active_power_limits)
+get_output_active_power_limits(value::GenericBattery) = get_value(value, value.output_active_power_limits)
 """Get GenericBattery efficiency."""
 get_efficiency(value::GenericBattery) = value.efficiency
 """Get GenericBattery reactive_power."""
-get_reactive_power(value::GenericBattery) = get_value(Float64, value, :reactive_power)
+get_reactive_power(value::GenericBattery) = get_value(value, value.reactive_power)
 """Get GenericBattery reactive_power_limits."""
-get_reactive_power_limits(value::GenericBattery) = get_value(Union{Nothing, Min_Max}, value, :reactive_power_limits)
+get_reactive_power_limits(value::GenericBattery) = get_value(value, value.reactive_power_limits)
 """Get GenericBattery base_power."""
 get_base_power(value::GenericBattery) = value.base_power
 """Get GenericBattery services."""

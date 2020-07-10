@@ -89,7 +89,7 @@ InfrastructureSystems.get_name(value::VSCDCLine) = value.name
 """Get VSCDCLine available."""
 get_available(value::VSCDCLine) = value.available
 """Get VSCDCLine active_power_flow."""
-get_active_power_flow(value::VSCDCLine) = get_value(Float64, value, :active_power_flow)
+get_active_power_flow(value::VSCDCLine) = get_value(value, value.active_power_flow)
 """Get VSCDCLine arc."""
 get_arc(value::VSCDCLine) = value.arc
 """Get VSCDCLine rectifier_tap_limits."""

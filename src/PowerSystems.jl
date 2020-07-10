@@ -282,7 +282,9 @@ import InfrastructureSystems:
     get_horizon,
     get_initial_time,
     get_resolution,
-    get_name
+    get_name,
+    UnitSystem,
+    SystemUnitsSettings
 
 const IS = InfrastructureSystems
 

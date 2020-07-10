@@ -92,9 +92,9 @@ InfrastructureSystems.get_name(value::TapTransformer) = value.name
 """Get TapTransformer available."""
 get_available(value::TapTransformer) = value.available
 """Get TapTransformer active_power_flow."""
-get_active_power_flow(value::TapTransformer) = get_value(Float64, value, :active_power_flow)
+get_active_power_flow(value::TapTransformer) = get_value(value, value.active_power_flow)
 """Get TapTransformer reactive_power_flow."""
-get_reactive_power_flow(value::TapTransformer) = get_value(Float64, value, :reactive_power_flow)
+get_reactive_power_flow(value::TapTransformer) = get_value(value, value.reactive_power_flow)
 """Get TapTransformer arc."""
 get_arc(value::TapTransformer) = value.arc
 """Get TapTransformer r."""
@@ -106,7 +106,7 @@ get_primary_shunt(value::TapTransformer) = value.primary_shunt
 """Get TapTransformer tap."""
 get_tap(value::TapTransformer) = value.tap
 """Get TapTransformer rate."""
-get_rate(value::TapTransformer) = get_value(Union{Nothing, Float64}, value, :rate)
+get_rate(value::TapTransformer) = get_value(value, value.rate)
 """Get TapTransformer services."""
 get_services(value::TapTransformer) = value.services
 """Get TapTransformer ext."""

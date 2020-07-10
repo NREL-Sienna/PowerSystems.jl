@@ -112,7 +112,7 @@ get_rating(value::RenewableDispatch) = value.rating
 """Get RenewableDispatch prime_mover."""
 get_prime_mover(value::RenewableDispatch) = value.prime_mover
 """Get RenewableDispatch reactive_power_limits."""
-get_reactive_power_limits(value::RenewableDispatch) = get_value(Union{Nothing, Min_Max}, value, :reactive_power_limits)
+get_reactive_power_limits(value::RenewableDispatch) = get_value(value, value.reactive_power_limits)
 """Get RenewableDispatch power_factor."""
 get_power_factor(value::RenewableDispatch) = value.power_factor
 """Get RenewableDispatch operation_cost."""

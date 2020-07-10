@@ -95,9 +95,9 @@ InfrastructureSystems.get_name(value::PhaseShiftingTransformer) = value.name
 """Get PhaseShiftingTransformer available."""
 get_available(value::PhaseShiftingTransformer) = value.available
 """Get PhaseShiftingTransformer active_power_flow."""
-get_active_power_flow(value::PhaseShiftingTransformer) = get_value(Float64, value, :active_power_flow)
+get_active_power_flow(value::PhaseShiftingTransformer) = get_value(value, value.active_power_flow)
 """Get PhaseShiftingTransformer reactive_power_flow."""
-get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(Float64, value, :reactive_power_flow)
+get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(value, value.reactive_power_flow)
 """Get PhaseShiftingTransformer arc."""
 get_arc(value::PhaseShiftingTransformer) = value.arc
 """Get PhaseShiftingTransformer r."""
@@ -111,7 +111,7 @@ get_tap(value::PhaseShiftingTransformer) = value.tap
 """Get PhaseShiftingTransformer α."""
 get_α(value::PhaseShiftingTransformer) = value.α
 """Get PhaseShiftingTransformer rate."""
-get_rate(value::PhaseShiftingTransformer) = get_value(Union{Nothing, Float64}, value, :rate)
+get_rate(value::PhaseShiftingTransformer) = get_value(value, value.rate)
 """Get PhaseShiftingTransformer services."""
 get_services(value::PhaseShiftingTransformer) = value.services
 """Get PhaseShiftingTransformer ext."""

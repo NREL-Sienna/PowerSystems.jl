@@ -109,19 +109,19 @@ get_available(value::HydroDispatch) = value.available
 """Get HydroDispatch bus."""
 get_bus(value::HydroDispatch) = value.bus
 """Get HydroDispatch active_power."""
-get_active_power(value::HydroDispatch) = get_value(Float64, value, :active_power)
+get_active_power(value::HydroDispatch) = get_value(value, value.active_power)
 """Get HydroDispatch reactive_power."""
-get_reactive_power(value::HydroDispatch) = get_value(Float64, value, :reactive_power)
+get_reactive_power(value::HydroDispatch) = get_value(value, value.reactive_power)
 """Get HydroDispatch rating."""
-get_rating(value::HydroDispatch) = get_value(Float64, value, :rating)
+get_rating(value::HydroDispatch) = get_value(value, value.rating)
 """Get HydroDispatch prime_mover."""
 get_prime_mover(value::HydroDispatch) = value.prime_mover
 """Get HydroDispatch active_power_limits."""
-get_active_power_limits(value::HydroDispatch) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits)
+get_active_power_limits(value::HydroDispatch) = get_value(value, value.active_power_limits)
 """Get HydroDispatch reactive_power_limits."""
-get_reactive_power_limits(value::HydroDispatch) = get_value(Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}, value, :reactive_power_limits)
+get_reactive_power_limits(value::HydroDispatch) = get_value(value, value.reactive_power_limits)
 """Get HydroDispatch ramp_limits."""
-get_ramp_limits(value::HydroDispatch) = get_value(Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}, value, :ramp_limits)
+get_ramp_limits(value::HydroDispatch) = get_value(value, value.ramp_limits)
 """Get HydroDispatch time_limits."""
 get_time_limits(value::HydroDispatch) = value.time_limits
 """Get HydroDispatch base_power."""

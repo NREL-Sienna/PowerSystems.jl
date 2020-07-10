@@ -534,10 +534,11 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
             available = true,
             bus = bus,
             model = LoadModels.ConstantPower,
-            activepower = active_power,
-            reactivepower = reactive_power,
-            maxactivepower = max_active_power,
-            maxreactivepower = max_reactive_power,
+            active_power = active_power,
+            reactive_power = reactive_power,
+            max_active_power = max_active_power,
+            max_reactive_power = max_reactive_power,
+            base_power = sys_base_power,
         )
         add_component!(sys, load)
     end
@@ -929,8 +930,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
     ramplimits = make_ramplimits(gen)
     min_up_time = get(gen, :min_up_time, nothing)
     min_down_time = get(gen, :min_down_time, nothing)
-    timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
-    basepower = get(gen, :base_mva, 1.0)
+    time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
+    base_power = get(gen, :base_mva, 1.0)
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -950,12 +951,12 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             reactivepower = reactive_power,
             primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             rating = rating,
-            activepowerlimits = active_power_limits,
-            reactivepowerlimits = reactive_power_limits,
-            ramplimits = ramplimits,
-            timelimits = timelimits,
-            op_cost = op_cost,
-            basepower = basepower,
+            active_power_limits = active_power_limits,
+            reactive_power_limits = reactive_power_limits,
+            ramp_limits = ramp_limits,
+            time_limits = time_limits,
+            operation_cost = operation_cost,
+            base_power = base_power,
             storage_capacity = storage.storage_capacity,
             inflow = storage.inflow_limit,
             initial_storage = storage.initial_storage,
@@ -969,12 +970,12 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             activepower = gen.active_power,
             reactivepower = reactive_power,
             rating = rating,
-            primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
-            activepowerlimits = active_power_limits,
-            reactivepowerlimits = reactive_power_limits,
-            ramplimits = ramplimits,
-            timelimits = timelimits,
-            basepower = basepower,
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            active_power_limits = active_power_limits,
+            reactive_power_limits = reactive_power_limits,
+            ramp_limits = ramp_limits,
+            time_limits = time_limits,
+            base_power = base_power,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")

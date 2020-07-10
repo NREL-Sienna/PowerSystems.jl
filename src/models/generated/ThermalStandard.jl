@@ -127,21 +127,21 @@ get_status(value::ThermalStandard) = value.status
 """Get ThermalStandard bus."""
 get_bus(value::ThermalStandard) = value.bus
 """Get ThermalStandard active_power."""
-get_active_power(value::ThermalStandard) = get_value(Float64, value, :active_power)
+get_active_power(value::ThermalStandard) = get_value(value, value.active_power)
 """Get ThermalStandard reactive_power."""
-get_reactive_power(value::ThermalStandard) = get_value(Float64, value, :reactive_power)
+get_reactive_power(value::ThermalStandard) = get_value(value, value.reactive_power)
 """Get ThermalStandard rating."""
-get_rating(value::ThermalStandard) = get_value(Float64, value, :rating)
+get_rating(value::ThermalStandard) = get_value(value, value.rating)
 """Get ThermalStandard prime_mover."""
 get_prime_mover(value::ThermalStandard) = value.prime_mover
 """Get ThermalStandard fuel."""
 get_fuel(value::ThermalStandard) = value.fuel
 """Get ThermalStandard active_power_limits."""
-get_active_power_limits(value::ThermalStandard) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits)
+get_active_power_limits(value::ThermalStandard) = get_value(value, value.active_power_limits)
 """Get ThermalStandard reactive_power_limits."""
-get_reactive_power_limits(value::ThermalStandard) = get_value(Union{Nothing, Min_Max}, value, :reactive_power_limits)
+get_reactive_power_limits(value::ThermalStandard) = get_value(value, value.reactive_power_limits)
 """Get ThermalStandard ramp_limits."""
-get_ramp_limits(value::ThermalStandard) = get_value(Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}, value, :ramp_limits)
+get_ramp_limits(value::ThermalStandard) = get_value(value, value.ramp_limits)
 """Get ThermalStandard time_limits."""
 get_time_limits(value::ThermalStandard) = value.time_limits
 """Get ThermalStandard operation_cost."""

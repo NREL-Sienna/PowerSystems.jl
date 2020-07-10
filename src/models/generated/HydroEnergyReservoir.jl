@@ -126,19 +126,19 @@ get_available(value::HydroEnergyReservoir) = value.available
 """Get HydroEnergyReservoir bus."""
 get_bus(value::HydroEnergyReservoir) = value.bus
 """Get HydroEnergyReservoir active_power."""
-get_active_power(value::HydroEnergyReservoir) = get_value(Float64, value, :active_power)
+get_active_power(value::HydroEnergyReservoir) = get_value(value, value.active_power)
 """Get HydroEnergyReservoir reactive_power."""
-get_reactive_power(value::HydroEnergyReservoir) = get_value(Float64, value, :reactive_power)
+get_reactive_power(value::HydroEnergyReservoir) = get_value(value, value.reactive_power)
 """Get HydroEnergyReservoir rating."""
-get_rating(value::HydroEnergyReservoir) = get_value(Float64, value, :rating)
+get_rating(value::HydroEnergyReservoir) = get_value(value, value.rating)
 """Get HydroEnergyReservoir prime_mover."""
 get_prime_mover(value::HydroEnergyReservoir) = value.prime_mover
 """Get HydroEnergyReservoir active_power_limits."""
-get_active_power_limits(value::HydroEnergyReservoir) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits)
+get_active_power_limits(value::HydroEnergyReservoir) = get_value(value, value.active_power_limits)
 """Get HydroEnergyReservoir reactive_power_limits."""
-get_reactive_power_limits(value::HydroEnergyReservoir) = get_value(Union{Nothing, Min_Max}, value, :reactive_power_limits)
+get_reactive_power_limits(value::HydroEnergyReservoir) = get_value(value, value.reactive_power_limits)
 """Get HydroEnergyReservoir ramp_limits."""
-get_ramp_limits(value::HydroEnergyReservoir) = get_value(Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}, value, :ramp_limits)
+get_ramp_limits(value::HydroEnergyReservoir) = get_value(value, value.ramp_limits)
 """Get HydroEnergyReservoir time_limits."""
 get_time_limits(value::HydroEnergyReservoir) = value.time_limits
 """Get HydroEnergyReservoir operation_cost."""
@@ -146,11 +146,11 @@ get_operation_cost(value::HydroEnergyReservoir) = value.operation_cost
 """Get HydroEnergyReservoir base_power."""
 get_base_power(value::HydroEnergyReservoir) = value.base_power
 """Get HydroEnergyReservoir storage_capacity."""
-get_storage_capacity(value::HydroEnergyReservoir) = get_value(Float64, value, :storage_capacity)
+get_storage_capacity(value::HydroEnergyReservoir) = get_value(value, value.storage_capacity)
 """Get HydroEnergyReservoir inflow."""
 get_inflow(value::HydroEnergyReservoir) = value.inflow
 """Get HydroEnergyReservoir initial_storage."""
-get_initial_storage(value::HydroEnergyReservoir) = get_value(Float64, value, :initial_storage)
+get_initial_storage(value::HydroEnergyReservoir) = get_value(value, value.initial_storage)
 """Get HydroEnergyReservoir services."""
 get_services(value::HydroEnergyReservoir) = value.services
 """Get HydroEnergyReservoir dynamic_injector."""

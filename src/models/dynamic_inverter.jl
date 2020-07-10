@@ -126,3 +126,4 @@ get_dc_source(device::DynamicInverter) = device.dc_source
 get_freq_estimator(device::DynamicInverter) = device.freq_estimator
 get_filter(device::DynamicInverter) = device.filter
 get_static_injector(device::DynamicInverter) = device.static_injector
+get_internal(device::DynamicInverter) = device.internal

@@ -95,11 +95,11 @@ get_available(value::RenewableFix) = value.available
 """Get RenewableFix bus."""
 get_bus(value::RenewableFix) = value.bus
 """Get RenewableFix active_power."""
-get_active_power(value::RenewableFix) = get_value(Float64, value, :active_power)
+get_active_power(value::RenewableFix) = get_value(value, value.active_power)
 """Get RenewableFix reactive_power."""
-get_reactive_power(value::RenewableFix) = get_value(Float64, value, :reactive_power)
+get_reactive_power(value::RenewableFix) = get_value(value, value.reactive_power)
 """Get RenewableFix rating."""
-get_rating(value::RenewableFix) = get_value(Float64, value, :rating)
+get_rating(value::RenewableFix) = get_value(value, value.rating)
 """Get RenewableFix prime_mover."""
 get_prime_mover(value::RenewableFix) = value.prime_mover
 """Get RenewableFix power_factor."""

@@ -85,17 +85,17 @@ InfrastructureSystems.get_name(value::HVDCLine) = value.name
 """Get HVDCLine available."""
 get_available(value::HVDCLine) = value.available
 """Get HVDCLine active_power_flow."""
-get_active_power_flow(value::HVDCLine) = get_value(Float64, value, :active_power_flow)
+get_active_power_flow(value::HVDCLine) = get_value(value, value.active_power_flow)
 """Get HVDCLine arc."""
 get_arc(value::HVDCLine) = value.arc
 """Get HVDCLine active_power_limits_from."""
-get_active_power_limits_from(value::HVDCLine) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits_from)
+get_active_power_limits_from(value::HVDCLine) = get_value(value, value.active_power_limits_from)
 """Get HVDCLine active_power_limits_to."""
-get_active_power_limits_to(value::HVDCLine) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :active_power_limits_to)
+get_active_power_limits_to(value::HVDCLine) = get_value(value, value.active_power_limits_to)
 """Get HVDCLine reactive_power_limits_from."""
-get_reactive_power_limits_from(value::HVDCLine) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :reactive_power_limits_from)
+get_reactive_power_limits_from(value::HVDCLine) = get_value(value, value.reactive_power_limits_from)
 """Get HVDCLine reactive_power_limits_to."""
-get_reactive_power_limits_to(value::HVDCLine) = get_value(NamedTuple{(:min, :max), Tuple{Float64, Float64}}, value, :reactive_power_limits_to)
+get_reactive_power_limits_to(value::HVDCLine) = get_value(value, value.reactive_power_limits_to)
 """Get HVDCLine loss."""
 get_loss(value::HVDCLine) = value.loss
 """Get HVDCLine services."""

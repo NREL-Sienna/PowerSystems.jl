@@ -1139,6 +1139,17 @@
           "needs_conversion": true
         },
         {
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
           "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
           "data_type": "TwoPartCost",
@@ -1273,6 +1284,17 @@
           "null_value": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
         },
         {
           "name": "max_active_power",

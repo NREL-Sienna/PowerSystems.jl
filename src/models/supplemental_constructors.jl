@@ -18,6 +18,7 @@ function PowerLoadPF(
     active_power::Float64,
     max_active_power::Float64,
     power_factor::Float64,
+    base_power::Float64,
 )
     max_reactive_power = max_active_power * sin(acos(power_factor))
     reactive_power = active_power * sin(acos(power_factor))
@@ -28,13 +29,14 @@ function PowerLoadPF(
         model,
         active_power,
         reactive_power,
+        base_power,
         max_active_power,
         max_reactive_power,
     )
 end
 
 function PowerLoadPF(::Nothing)
-    return PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0)
+    return PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0, 100.0)
 end
 
 """Accepts angle_limits as a Float64."""
