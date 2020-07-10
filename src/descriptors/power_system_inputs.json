@@ -155,7 +155,7 @@
             "unit": "MW",
             "name": "rate",
             "description": "Continuous MW flow limit",
-            "unit_system" : "device_base"
+            "unit_system": "device_base"
         },
         {
             "unit": "radian",
@@ -730,28 +730,38 @@
             "default_value": null
         },
         {
-            "name": "mw_shunt_g",
-            "description": "Shunt conductance",
-            "unit_system": "system_base",
-            "default_value": null
-        },
-        {
-            "name": "mvar_shut_b",
-            "description": "Shunt susceptance",
-            "unit_system": "system_base",
-            "default_value": null
-        },
-        {
             "name": "max_active_power",
             "description": "Maximum Active Power",
-            "unit_system": "system_base",
-            "default_value": null
+            "unit_system": "device_base",
+            "base_reference": "base_power",
+            "default_value": 0
         },
         {
             "name": "max_reactive_power",
             "description": "Maximum Rective Power",
-            "unit_system": "system_base",
-            "default_value": null
+            "unit_system": "device_base",
+            "base_reference": "base_power",
+            "default_value": 0
+        },
+        {
+            "name": "active_power",
+            "description": "Active Power Setpoint",
+            "unit_system": "device_base",
+            "base_reference": "base_power",
+            "default_value": 0
+        },
+        {
+            "name": "reactive_power",
+            "description": "Rective Power Setpoint",
+            "unit_system": "device_base",
+            "base_reference": "base_power",
+            "default_value": 0
+        },
+        {
+            "name": "base_power",
+            "description": "base power for demand",
+            "unit_system": "natural_units",
+            "default_value": "system_base_power"
         }
     ]
 }
