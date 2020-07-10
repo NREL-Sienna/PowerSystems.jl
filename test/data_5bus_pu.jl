@@ -574,9 +574,9 @@ interruptible(nodes5) = [InterruptibleLoad(
     LoadModels.ConstantPower,
     0.10,
     0.0,
-    100.0,
     0.10,
     0.0,
+    100.0,
     TwoPartCost(150.0, 2400.0),
 )]
 
