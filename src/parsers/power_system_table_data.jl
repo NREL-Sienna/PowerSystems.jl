@@ -297,7 +297,8 @@ Add buses and areas to the System from the raw data.
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
         name = bus.name
-        bus_type = isnothing(bus.bus_type) ? nothing : get_enum_value(BusTypes.BusType, bus.bus_type)
+        bus_type = isnothing(bus.bus_type) ? nothing :
+            get_enum_value(BusTypes.BusType, bus.bus_type)
         voltage_limits = make_minmaxlimits(bus.voltage_limits_min, bus.voltage_limits_max)
 
         area_name = string(get(bus, :area, "area"))
@@ -370,7 +371,10 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 x = branch.x,
                 b = (from = b, to = b),
                 rate = branch.rate,
-                angle_limits = (min = branch.min_angle_limits, max = branch.max_angle_limits),
+                angle_limits = (
+                    min = branch.min_angle_limits,
+                    max = branch.max_angle_limits,
+                ),
             )
         elseif branch_type == Transformer2W
             value = Transformer2W(
@@ -421,10 +425,22 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
         if dc_branch.control_mode == "Power"
             mw_load = dc_branch.mw_load / data.basepower
 
-            activepowerlimits_from = (min = dc_branch.min_active_power_limit_from, max = dc_branch.max_active_power_limit_from)
-            activepowerlimits_to = (min = dc_branch.min_active_power_limit_to, max = dc_branch.max_active_power_limit_to)
-            reactivepowerlimits_from = (min = dc_branch.min_reactive_power_limit_from, max = dc_branch.max_reactive_power_limit_from)
-            reactivepowerlimits_to = (min = dc_branch.min_reactive_power_limit_to, max = dc_branch.max_reactive_power_limit_to)
+            activepowerlimits_from = (
+                min = dc_branch.min_active_power_limit_from,
+                max = dc_branch.max_active_power_limit_from,
+            )
+            activepowerlimits_to = (
+                min = dc_branch.min_active_power_limit_to,
+                max = dc_branch.max_active_power_limit_to,
+            )
+            reactivepowerlimits_from = (
+                min = dc_branch.min_reactive_power_limit_from,
+                max = dc_branch.max_reactive_power_limit_from,
+            )
+            reactivepowerlimits_to = (
+                min = dc_branch.min_reactive_power_limit_to,
+                max = dc_branch.max_reactive_power_limit_to,
+            )
 
             loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
 
@@ -628,8 +644,10 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 buses = get_dataframe(data, BUS::InputCategory)
                 bus_ids = buses[!, bus_id_column]
-                gen_type = get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
-                name = gen_type <: Storage ? get_storage_by_generator(data, gen.name).name : gen.name
+                gen_type =
+                    get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
+                name = gen_type <: Storage ? get_storage_by_generator(data, gen.name).name :
+                    gen.name
                 sys_gen = get_component(
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
                     sys,
@@ -1037,12 +1055,19 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
 end
 
 function make_storage(data::PowerSystemTableData, gen, storage, bus)
-    state_of_charge_limits = (min = storage.min_storage_capacity, max = storage.storage_capacity)
-    input_active_power_limits = (min = storage.input_active_power_limit_min, max = storage.input_active_power_limit_max)
-    output_active_power_limits = (min = storage.output_active_power_limit_min, max = storage.output_active_power_limit_max)
+    state_of_charge_limits =
+        (min = storage.min_storage_capacity, max = storage.storage_capacity)
+    input_active_power_limits = (
+        min = storage.input_active_power_limit_min,
+        max = storage.input_active_power_limit_max,
+    )
+    output_active_power_limits = (
+        min = storage.output_active_power_limit_min,
+        max = storage.output_active_power_limit_max,
+    )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
-@show storage
+    @show storage
     battery = GenericBattery(
         name = storage.name,
         available = storage.available,
@@ -1100,7 +1125,10 @@ end
 struct _FieldInfo
     name::String
     custom_name::String
-    per_unit_conversion::NamedTuple{(:From, :To, :Reference), Tuple{UnitSystem, UnitSystem, String}}
+    per_unit_conversion::NamedTuple{
+        (:From, :To, :Reference),
+        Tuple{UnitSystem, UnitSystem, String},
+    }
     unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
     default_value::Any
     # TODO unit, value ranges and options
@@ -1123,7 +1151,10 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
     for descriptor in data.user_descriptors[category]
         custom_name = descriptor["custom_name"]
         if descriptor["custom_name"] in df_names
-            per_unit[descriptor["name"]] = get_enum_value(IS.UnitSystem, get(descriptor, "unit_system", "NATURAL_UNITS"))
+            per_unit[descriptor["name"]] = get_enum_value(
+                IS.UnitSystem,
+                get(descriptor, "unit_system", "NATURAL_UNITS"),
+            )
             unit[descriptor["name"]] = get(descriptor, "unit", nothing)
             custom_names[descriptor["name"]] = custom_name
         else
@@ -1135,7 +1166,8 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
     for item in data.descriptors[category]
         name = item["name"]
-        item_unit_system = get_enum_value(IS.UnitSystem, get(item, "unit_system", "NATURAL_UNITS"))
+        item_unit_system =
+            get_enum_value(IS.UnitSystem, get(item, "unit_system", "NATURAL_UNITS"))
         per_unit_reference = get(item, "base_reference", "base_power")
         default_value = get(item, "default_value", "required")
         if default_value == "system_base_power"
@@ -1149,19 +1181,27 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
                 throw(DataFormatError("$name cannot be defined as $(per_unit[name])"))
             end
 
-            pu_conversion = (From = per_unit[name], To = item_unit_system, Reference = per_unit_reference)
+            pu_conversion = (
+                From = per_unit[name],
+                To = item_unit_system,
+                Reference = per_unit_reference,
+            )
 
             expected_unit = get(item, "unit", nothing)
             if !isnothing(expected_unit) &&
-                !isnothing(unit[name]) &&
-                expected_unit != unit[name]
+               !isnothing(unit[name]) &&
+               expected_unit != unit[name]
                 unit_conversion = (From = unit[name], To = expected_unit)
             else
                 unit_conversion = nothing
             end
         else
             custom_name = name
-            pu_conversion = (From = item_unit_system, To = item_unit_system, Reference = per_unit_reference)
+            pu_conversion = (
+                From = item_unit_system,
+                To = item_unit_system,
+                Reference = per_unit_reference,
+            )
             unit_conversion = nothing
         end
 
@@ -1180,11 +1220,11 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     fields = Vector{String}()
     vals = Vector()
     for field_info in field_infos
-    #@show field_info
+        #@show field_info
         if field_info.custom_name in names(row)
             value = row[field_info.custom_name]
         else
-        #@show row
+            #@show row
             value = field_info.default_value
             value == "required" && throw(DataFormatError("$(field_info.name) is required"))
             @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)"
@@ -1196,15 +1236,22 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             value = nothing
         end
 
-        if field_info.per_unit_conversion.From == IS.NATURAL_UNITS && field_info.per_unit_conversion.To == IS.SYSTEM_BASE
+        if field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
+           field_info.per_unit_conversion.To == IS.SYSTEM_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
             value /= data.basepower
-        elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS && field_info.per_unit_conversion.To == IS.DEVICE_BASE
+        elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
+               field_info.per_unit_conversion.To == IS.DEVICE_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            reference_idx = findfirst(x -> x.name == field_info.per_unit_conversion.Reference, field_infos)
-            isnothing(reference_idx) && throw(DataFormatError("$(field_info.per_unit_conversion.Reference) not found in table with $(field_info.custom_name)"))
+            reference_idx = findfirst(
+                x -> x.name == field_info.per_unit_conversion.Reference,
+                field_infos,
+            )
+            isnothing(reference_idx) &&
+                throw(DataFormatError("$(field_info.per_unit_conversion.Reference) not found in table with $(field_info.custom_name)"))
             reference_info = field_infos[reference_idx]
-            reference_value = get(row, reference_info.custom_name, reference_info.default_value)
+            reference_value =
+                get(row, reference_info.custom_name, reference_info.default_value)
             value /= reference_value
         elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
             throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
