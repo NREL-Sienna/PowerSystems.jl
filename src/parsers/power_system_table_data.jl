@@ -350,8 +350,8 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
         bus_to = get_bus(sys, branch.connection_points_to)
         name = get(branch, :name, get_name(bus_from) * "_" * get_name(bus_to))
         connection_points = Arc(bus_from, bus_to)
-        pf = get(branch, :pf, 0.0)
-        qf = get(branch, :qf, 0.0)
+        pf = branch.active_power_flow
+        qf = branch.reactive_power_flow
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
@@ -360,41 +360,40 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
         if branch_type == Line
             b = branch.primary_shunt / 2
-            anglelimits = (min = -π / 2, max = π / 2) #TODO: add field in CSV
             value = Line(
                 name = name,
                 available = available,
-                activepower_flow = pf,
-                reactivepower_flow = qf,
+                active_power_flow = pf,
+                reactive_power_flow = qf,
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
                 b = (from = b, to = b),
                 rate = branch.rate,
-                anglelimits = anglelimits,
+                angle_limits = (min = branch.min_angle_limits, max = branch.max_angle_limits),
             )
         elseif branch_type == Transformer2W
             value = Transformer2W(
                 name = name,
                 available = available,
-                activepower_flow = pf,
-                reactivepower_flow = qf,
+                active_power_flow = pf,
+                reactive_power_flow = qf,
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
-                primaryshunt = branch.primary_shunt,
+                primary_shunt = branch.primary_shunt,
                 rate = branch.rate,
             )
         elseif branch_type == TapTransformer
             value = TapTransformer(
                 name = name,
                 available = available,
-                activepower_flow = pf,
-                reactivepower_flow = qf,
+                active_power_flow = pf,
+                reactive_power_flow = qf,
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
-                primaryshunt = branch.primary_shunt,
+                primary_shunt = branch.primary_shunt,
                 tap = branch.tap,
                 rate = branch.rate,
             )
@@ -418,27 +417,26 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
         bus_from = get_bus(sys, dc_branch.connection_points_from)
         bus_to = get_bus(sys, dc_branch.connection_points_to)
         connection_points = Arc(bus_from, bus_to)
-        pf = get(dc_branch, :pf, 0.0)
 
         if dc_branch.control_mode == "Power"
             mw_load = dc_branch.mw_load / data.basepower
 
-            #TODO: is there a better way to calculate these?,
-            activepowerlimits_from = (min = -1 * mw_load, max = mw_load)
-            activepowerlimits_to = (min = -1 * mw_load, max = mw_load)
-            reactivepowerlimits_from = (min = 0.0, max = 0.0)
-            reactivepowerlimits_to = (min = 0.0, max = 0.0)
+            activepowerlimits_from = (min = dc_branch.min_active_power_limit_from, max = dc_branch.max_active_power_limit_from)
+            activepowerlimits_to = (min = dc_branch.min_active_power_limit_to, max = dc_branch.max_active_power_limit_to)
+            reactivepowerlimits_from = (min = dc_branch.min_reactive_power_limit_from, max = dc_branch.max_reactive_power_limit_from)
+            reactivepowerlimits_to = (min = dc_branch.min_reactive_power_limit_to, max = dc_branch.max_reactive_power_limit_to)
+
             loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
 
             value = HVDCLine(
                 name = dc_branch.name,
                 available = available,
-                activepower_flow = pf,
+                active_power_flow = dc_branch.active_power_flow,
                 arc = connection_points,
-                activepowerlimits_from = activepowerlimits_from,
-                activepowerlimits_to = activepowerlimits_to,
-                reactivepowerlimits_from = reactivepowerlimits_from,
-                reactivepowerlimits_to = reactivepowerlimits_to,
+                active_power_limits_from = activepowerlimits_from,
+                active_power_limits_to = activepowerlimits_to,
+                reactive_power_limits_from = reactivepowerlimits_from,
+                reactive_power_limits_to = reactivepowerlimits_to,
                 loss = loss,
             )
         else
@@ -460,7 +458,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
             value = VSCDCLine(
                 name = dc_branch.name,
                 available = true,
-                activepower_flow = pf,
+                active_power_flow = pf,
                 arc = connection_points,
                 rectifier_taplimits = rectifier_taplimits,
                 rectifier_xrc = rectifier_xrc,
@@ -754,7 +752,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
 end
 
 function calculate_uc_cost(data, gen, fuel_cost)
-    startup_cost = get(gen, :startup_cost, nothing)
+    startup_cost = gen.startup_cost
     if isnothing(startup_cost)
         if hasfield(typeof(gen), :startup_heat_cold_cost)
             startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
@@ -1188,11 +1186,13 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     fields = Vector{String}()
     vals = Vector()
     for field_info in field_infos
+    #@show field_info
         if field_info.custom_name in names(row)
             value = row[field_info.custom_name]
         else
-            @debug "Column $(field_info.custom_name) doesn't exist in df, using default value of $(field_info.default_value)"
             value = field_info.default_value
+            value == "required" && throw(DataFormatError("$(field_info.name) is required"))
+            @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)"
         end
         if ismissing(value)
             throw(DataFormatError("$(field_info.custom_name) value missing"))
@@ -1206,7 +1206,9 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             value /= data.basepower
         elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS && field_info.per_unit_conversion.To == IS.DEVICE_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            reference_info = field_infos[findfirst(x -> x.name == field_info.per_unit_conversion.Reference, field_infos)]
+            reference_idx = findfirst(x -> x.name == field_info.per_unit_conversion.Reference, field_infos)
+            isnothing(reference_idx) && throw(DataFormatError("$(field_info.per_unit_conversion.Reference) not found in table with $(field_info.custom_name)"))
+            reference_info = field_infos[reference_idx]
             reference_value = get(row, reference_info.custom_name, reference_info.default_value)
             value /= reference_value
         elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
