@@ -322,7 +322,24 @@
             "name": "ramp_limits",
             "description": "Maximum ramp up and ramp down rate",
             "unit_system": "device_base",
-            "base_reference": "base_mva"
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "MW/Min",
+            "name": "ramp_up",
+            "description": "Maximum ramp up rate",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "MW/Min",
+            "name": "ramp_down",
+            "description": "Maximum ramp down rate",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "MMBTU",

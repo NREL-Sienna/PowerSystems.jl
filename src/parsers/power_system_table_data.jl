@@ -787,7 +787,7 @@ end
 function make_ramplimits(gen)
     ramp = get(gen, :ramp_limits, nothing)
     if isnothing(ramp)
-        ramplimits = ramp
+        ramplimits = (up = ramp, down = ramp)
     else
         up = get(gen, :ramp_up, ramp)
         up = typeof(up) == String ? tryparse(Float64, up) : up
@@ -821,8 +821,6 @@ function make_reactive_params(gen)
 end
 
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
-    status = get(gen, :status_at_start, true)
-    available = get(gen, :available, true)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
@@ -839,8 +837,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     basepower = get(gen, :base_mva, 1.0)
     return ThermalStandard(
         name = gen.name,
-        available = available,
-        status = status,
+        available = gen.available,
+        status = gen.status_at_start,
         bus = bus,
         active_power = gen.active_power,
         reactive_power = reactive_power,
