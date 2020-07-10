@@ -5,7 +5,7 @@ function get_base_power(c::Component)
     return get_internal(c).units_info.base_value
 end
 
-function _get_multiplier(c::T) where T <: Component
+function _get_multiplier(c::T) where {T <: Component}
     setting = get_internal(c).units_info
     if isnothing(setting)
         return 1.0
@@ -20,16 +20,16 @@ function _get_multiplier(c::T) where T <: Component
     else
         @assert false
     end
-    return numerator/denominator
+    return numerator / denominator
 end
 
 function get_value(c::Component, value::Float64)
-    return _get_multiplier(c)*value
+    return _get_multiplier(c) * value
 end
 
 function get_value(c::Component, value::Min_Max)
     m = _get_multiplier(c)
-    return (min = value.min*m, max = value.max*m)
+    return (min = value.min * m, max = value.max * m)
 end
 
 function get_value(c::T, value::V) where {T <: Component, V}

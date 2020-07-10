@@ -528,7 +528,7 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
                 reactive_power = reactive_power,
                 max_active_power = max_active_power,
                 max_reactive_power = max_reactive_power,
-                base_power = sys_base_power
+                base_power = sys_base_power,
             )
             add_component!(sys, load)
         end

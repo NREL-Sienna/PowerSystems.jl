@@ -18,7 +18,7 @@ function PowerLoadPF(
     active_power::Float64,
     max_active_power::Float64,
     power_factor::Float64,
-    base_power::Float64
+    base_power::Float64,
 )
     max_reactive_power = max_active_power * sin(acos(power_factor))
     reactive_power = active_power * sin(acos(power_factor))

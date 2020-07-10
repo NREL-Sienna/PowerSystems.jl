@@ -85,4 +85,5 @@ end
 UNIT_SYSTEM_MAPPING = Dict(
     "system_base" => IS.SYSTEM_BASE,
     "device_base" => IS.DEVICE_BASE,
-    "natural_units" => IS.NATURAL_UNITS)
+    "natural_units" => IS.NATURAL_UNITS,
+)

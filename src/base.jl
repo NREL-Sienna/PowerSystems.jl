@@ -19,7 +19,6 @@ const SYSTEM_KWARGS = Set((
     :unit_system,
 ))
 
-
 """
 System
 
@@ -1149,7 +1148,7 @@ function deserialize(
         internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
         sys = System(data, units_settings; internal = internal)
         for component in get_components(Component, sys)
-           set_unit_system!(component, units_settings)
+            set_unit_system!(component, units_settings)
         end
         return sys
     end
