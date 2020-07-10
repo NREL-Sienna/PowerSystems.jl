@@ -297,9 +297,8 @@ Add buses and areas to the System from the raw data.
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
         name = bus.name
-        bus_type = get_enum_value(BusTypes.BusType, bus.bus_type)
-        number = bus.bus_id
-        voltage_limits = (min = 0.95, max = 1.05)
+        bus_type = isnothing(bus.bus_type) ? nothing : get_enum_value(BusTypes.BusType, bus.bus_type)
+        voltage_limits = (min = bus.voltage_limits_min, max = bus.voltage_limits_max)
 
         area_name = string(get(bus, :area, "area"))
         area = get_component(Area, sys, area_name)
@@ -307,29 +306,27 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             area = Area(area_name)
             add_component!(sys, area)
         end
-        zone = get(bus, :zone, nothing)
 
         ps_bus = Bus(;
-            number = number,
+            number = bus.number,
             name = name,
             bustype = bus_type,
-            angle = get(bus, :angle, nothing),
-            voltage = get(bus, :voltage, nothing),
+            angle = bus.angle,
+            voltage = bus.voltage,
             voltagelimits = voltage_limits,
-            basevoltage = get(bus, :base_voltage, nothing),
+            basevoltage = bus.base_voltage,
             area = area,
-            load_zone = get_component(LoadZone, sys, string(zone)),
+            load_zone = get_component(LoadZone, sys, string(bus.zone)),
         )
 
         add_component!(sys, ps_bus)
 
         # add load if the following info is nonzero
-        max_active_power = get(bus, :max_active_power, 0.0)
-        max_reactive_power = get(bus, :max_reactive_power, 0.0)
-        active_power = get(bus, :active_power, max_active_power)
-        reactive_power = get(bus, :reactive_power, max_reactive_power)
 
-        if (max_active_power != 0.0) || (max_reactive_power != 0.0)
+        active_power = get(bus, :active_power, bus.max_active_power)
+        reactive_power = get(bus, :reactive_power, bus.max_reactive_power)
+
+        if (bus.max_active_power != 0.0) || (bus.max_reactive_power != 0.0)
             load = PowerLoad(
                 name = name,
                 available = true,
@@ -337,8 +334,8 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
                 model = LoadModels.ConstantPower,
                 activepower = active_power,
                 reactivepower = reactive_power,
-                maxactivepower = max_active_power,
-                maxreactivepower = max_reactive_power,
+                maxactivepower = bus.max_active_power,
+                maxreactivepower = bus.max_reactive_power,
             )
             add_component!(sys, load)
         end
@@ -1105,7 +1102,7 @@ end
 struct _FieldInfo
     name::String
     custom_name::String
-    needs_per_unit_conversion::Bool
+    per_unit_conversion::NamedTuple{(:From, :To, :Reference), Tuple{UnitSystem, UnitSystem, String}}
     unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
     # TODO unit, value ranges and options
 end
@@ -1121,12 +1118,16 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
     # Cache whether PowerSystems uses a column's values as system-per-unit.
     # The user's descriptors indicate that the raw data is already system-per-unit or not.
-    per_unit = Dict{String, Bool}()
+    per_unit = Dict{String, Any}()
+    per_unit = Dict{String, Strine}()
     unit = Dict{String, Union{String, Nothing}}()
+    default_values = Dict{String, Any}()
     descriptor_names = Vector{String}()
     for descriptor in data.descriptors[category]
-        per_unit[descriptor["name"]] = get(descriptor, "system_per_unit", false)
+        per_unit[descriptor["name"]] = get_enum_value(UnitSystem, get(descriptor, "unit_system", "NATURAL_UNITS"))
+        per_unit_reference[descriptor["name"]] = get(descriptor, "base_reference", "base_power")
         unit[descriptor["name"]] = get(descriptor, "unit", nothing)
+        default_values[descriptor["name"]] = get(descriptor, "default_value", "required")
         push!(descriptor_names, descriptor["name"])
     end
 
@@ -1141,20 +1142,20 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
                     base = name[(findlast("_", name)[end] + 1):end]
                     d_name = descriptor_names[occursin.(base, descriptor_names)][end]
                     per_unit[name] = per_unit[d_name]
+                    per_unit_reference[name] = per_unit_reference[d_name]
                     unit[name] = unit[d_name]
+                    default_values[name] = default_values[d_name]
                 else
                     throw(DataFormatError("$name is not defined in $POWER_SYSTEM_DESCRIPTOR_FILE"))
                 end
             end
 
-            if !per_unit[name] && get(item, "system_per_unit", false)
+            item_unit_system = get_enum_value(UnitSystem, get(item, "unit_system", "NATURAL_UNITS"))
+            if per_unit[name] ==  NATURAL_UNITS && item_unit_system != NATURAL_UNITS
                 throw(DataFormatError("$name cannot be defined as system_per_unit"))
             end
 
-            needs_pu_conversion =
-                per_unit[name] &&
-                haskey(item, "system_per_unit") &&
-                !item["system_per_unit"]
+            pu_conversion = (From = item_unit_system, To = per_unit[name], Reference = )
 
             custom_unit = get(item, "unit", nothing)
             if !isnothing(unit[name]) &&
@@ -1167,7 +1168,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
             push!(
                 fields,
-                _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion),
+                _FieldInfo(name, custom_name, pu_conversion, unit_conversion),
             )
         else
             # TODO: This should probably be a fatal error. However, the parsing code
@@ -1186,15 +1187,21 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     for field_info in field_infos
         value = row[field_info.custom_name]
         if ismissing(value)
+
             throw(DataFormatError("$(field_info.custom_name) value missing"))
         end
         if na_to_nothing && value == "NA"
             value = nothing
         end
 
-        if field_info.needs_per_unit_conversion
-            @debug "convert to system_per_unit" field_info.custom_name
+        if field_info.per_unit_conversion.From == NATURAL_UNITS && field_info.per_unit_conversion.To == SYSTEM_BASE
+            @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
             value /= data.basepower
+        elseif field_info.per_unit_conversion.From == NATURAL_UNITS && field_info.per_unit_conversion.To == DEVICE_BASE
+            @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
+            value /= row.base_power
+        elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
+            throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
         end
 
         # TODO: need special handling for units
