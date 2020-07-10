@@ -1197,10 +1197,10 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
 
         if field_info.per_unit_conversion.From == NATURAL_UNITS && field_info.per_unit_conversion.To == SYSTEM_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            value /= data.basepower
+            value /= data.base_power
         elseif field_info.per_unit_conversion.From == NATURAL_UNITS && field_info.per_unit_conversion.To == DEVICE_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            value /= row.base_power
+            value /= row[!,field_info.per_unit_conversion.Reference]
         elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
             throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
         end
