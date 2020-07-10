@@ -101,7 +101,7 @@
             "value_range": [],
             "description": "Minimum Active Power Limit",
             "unit_system": "device_base",
-            "default_value": 0.0,
+            "default_value": null,
             "base_reference": "rate"
         },
         {
@@ -109,7 +109,7 @@
             "value_range": [],
             "description": "Maximum Active Power Limit",
             "unit_system": "device_base",
-            "default_value": 0.0,
+            "default_value": null,
             "base_reference": "rate"
         },
         {
@@ -117,7 +117,7 @@
             "value_range": [],
             "description": "Minimum Active Power Limit",
             "unit_system": "device_base",
-            "default_value": 0.0,
+            "default_value": null,
             "base_reference": "rate"
         },
         {
@@ -125,7 +125,7 @@
             "value_range": [],
             "description": "Maximum Active Power Limit",
             "unit_system": "device_base",
-            "default_value": 0.0,
+            "default_value": null,
             "base_reference": "rate"
         },
         {
@@ -620,7 +620,7 @@
         {
             "name": "must_run",
             "description": "Boolean that indicates if ThermalGen must be online always",
-            "default_value": null
+            "default_value": false
         },
         {
             "name": "generator_category",

@@ -416,6 +416,16 @@ end
 Add DC branches to the System from raw data.
 """
 function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
+    function make_dc_limits(dc_branch, min, max)
+        min_lim = dc_branch[min]
+        if isnothing(dc_branch[min]) && isnothing(dc_branch[max])
+            throw(DataFormatError("valid limits required for $min , $max"))
+        elseif isnothing(dc_branch[min])
+            min_lim = dc_branch[max] * -1.0
+        end
+        return (min = min_lim, max = dc_branch[max])
+    end
+
     for dc_branch in iterate_rows(data, DC_BRANCH::InputCategory)
         available = true
         bus_from = get_bus(sys, dc_branch.connection_points_from)
@@ -423,23 +433,27 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
         connection_points = Arc(bus_from, bus_to)
 
         if dc_branch.control_mode == "Power"
-            mw_load = dc_branch.mw_load / data.basepower
+            mw_load = dc_branch.mw_load
 
-            activepowerlimits_from = (
-                min = dc_branch.min_active_power_limit_from,
-                max = dc_branch.max_active_power_limit_from,
+            activepowerlimits_from = make_dc_limits(
+                dc_branch,
+                :min_active_power_limit_from,
+                :max_active_power_limit_from,
             )
-            activepowerlimits_to = (
-                min = dc_branch.min_active_power_limit_to,
-                max = dc_branch.max_active_power_limit_to,
+            activepowerlimits_to = make_dc_limits(
+                dc_branch,
+                :min_active_power_limit_to,
+                :max_active_power_limit_to,
             )
-            reactivepowerlimits_from = (
-                min = dc_branch.min_reactive_power_limit_from,
-                max = dc_branch.max_reactive_power_limit_from,
+            reactivepowerlimits_from = make_dc_limits(
+                dc_branch,
+                :min_reactive_power_limit_from,
+                :max_reactive_power_limit_from,
             )
-            reactivepowerlimits_to = (
-                min = dc_branch.min_reactive_power_limit_to,
-                max = dc_branch.max_reactive_power_limit_to,
+            reactivepowerlimits_to = make_dc_limits(
+                dc_branch,
+                :min_reactive_power_limit_to,
+                :max_reactive_power_limit_to,
             )
 
             loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
@@ -804,16 +818,16 @@ end
 
 function make_ramplimits(gen)
     ramp = get(gen, :ramp_limits, nothing)
-    if isnothing(ramp)
-        ramplimits = (up = ramp, down = ramp)
+    if !isnothing(ramp)
+        up = ramp
+        down = ramp
     else
         up = get(gen, :ramp_up, ramp)
         up = typeof(up) == String ? tryparse(Float64, up) : up
         down = get(gen, :ramp_down, ramp)
         down = typeof(down) == String ? tryparse(Float64, down) : down
-        ramplimits = (up = up, down = down)
     end
-    return ramplimits
+    return (up = up, down = down)
 end
 
 function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
@@ -888,15 +902,15 @@ function make_thermal_generator_multistart(
         var_cost =
             VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
     end
-    lag_hot = get(gen, :hot_start_time, get_timelimits(thermal_gen).down)
-    lag_warm = get(gen, :warm_start_time, 0.0)
-    lag_cold = get(gen, :cold_start_time, 0.0)
+    lag_hot = isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down : gen.hot_start_time
+    lag_warm = isnothing(gen.warm_start_time) ? 0.0 : gen.warm_start_time
+    lag_cold = isnothing(gen.cold_start_time) ? 0.0 : gen.cold_start_time
     startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
     start_types = sum(values(startup_timelimits) .> 0.0)
-    startup_ramp = get(gen, :startup_ramp, 0.0)
-    shutdown_ramp = get(gen, :shutdown_ramp, 0.0)
+    startup_ramp = isnothing(gen.startup_ramp) ? 0.0 : gen.startup_ramp
+    shutdown_ramp = isnothing(gen.shutdown_ramp) ? 0.0 : gen.shutdown_ramp
     power_trajectory = (startup = startup_ramp, shutdown = shutdown_ramp)
-    hot_start_cost = get(gen, :hot_start_cost, get(gen, :startup_cost, nothing))
+    hot_start_cost = isnothing(gen.hot_start_cost) ? gen.startup_cost : gen.hot_start_cost
     if isnothing(hot_start_cost)
         if hasfield(typeof(gen), :startup_heat_cold_cost)
             hot_start_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
@@ -906,11 +920,11 @@ function make_thermal_generator_multistart(
                 5
         end
     end
-    warm_start_cost = get(gen, :warm_start_cost, START_COST)
-    cold_start_cost = get(gen, :cold_start_cost, START_COST)
+    warm_start_cost = isnothing(gen.warm_start_cost) ? START_COST : gen.hot_start_cost #TODO
+    cold_start_cost = isnothing(gen.cold_start_cost) ? START_COST : gen.cold_start_cost
     startup_cost = (hot = hot_start_cost, warm = warm_start_cost, cold = cold_start_cost)
 
-    shutdown_cost = get(gen, :shutdown_cost, nothing)
+    shutdown_cost = gen.shutdown_cost
     if isnothing(shutdown_cost)
         @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
         shutdown_cost = 0.0
@@ -923,22 +937,22 @@ function make_thermal_generator_multistart(
         available = get_available(thermal_gen),
         status = get_status(thermal_gen),
         bus = get_bus(thermal_gen),
-        activepower = get_activepower(thermal_gen),
-        reactivepower = get_reactivepower(thermal_gen),
+        active_power = get_active_power(thermal_gen),
+        reactive_power = get_reactive_power(thermal_gen),
         rating = get_rating(thermal_gen),
-        primemover = get_primemover(thermal_gen),
+        prime_mover = get_prime_mover(thermal_gen),
         fuel = get_fuel(thermal_gen),
-        activepowerlimits = get_activepowerlimits(thermal_gen),
-        reactivepowerlimits = get_reactivepowerlimits(thermal_gen),
-        ramplimits = get_ramplimits(thermal_gen),
+        active_power_limits = get_active_power_limits(thermal_gen),
+        reactive_power_limits = get_reactive_power_limits(thermal_gen),
+        ramp_limits = get_ramp_limits(thermal_gen),
         power_trajectory = power_trajectory,
-        timelimits = get_timelimits(thermal_gen),
+        time_limits = get_time_limits(thermal_gen),
         start_time_limits = startup_timelimits,
         start_types = start_types,
-        op_cost = op_cost,
-        basepower = get_basepower(thermal_gen),
+        operation_cost = op_cost,
+        base_power = get_base_power(thermal_gen),
         time_at_status = get_time_at_status(thermal_gen),
-        must_run = get(gen, :must_run, false),
+        must_run = gen.must_run,
     )
 end
 
@@ -1067,7 +1081,6 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
-    @show storage
     battery = GenericBattery(
         name = storage.name,
         available = storage.available,
@@ -1220,11 +1233,9 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     fields = Vector{String}()
     vals = Vector()
     for field_info in field_infos
-        #@show field_info
         if field_info.custom_name in names(row)
             value = row[field_info.custom_name]
         else
-            #@show row
             value = field_info.default_value
             value == "required" && throw(DataFormatError("$(field_info.name) is required"))
             @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)"
