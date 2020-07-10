@@ -484,19 +484,19 @@ Add generators to the System from the raw data.
 
 """
 function gen_csv_parser!(sys::System, data::PowerSystemTableData)
-    output_percent_fields = Vector{Symbol}()
+    output_point_fields = Vector{Symbol}()
     heat_rate_fields = Vector{Symbol}()
     fields = get_user_fields(data, GENERATOR::InputCategory)
     for field in fields
-        if occursin("output_percent", field)
-            push!(output_percent_fields, Symbol(field))
+        if occursin("output_point", field)
+            push!(output_point_fields, Symbol(field))
         elseif occursin("heat_rate_", field)
             push!(heat_rate_fields, Symbol(field))
         end
     end
 
-    @assert length(output_percent_fields) > 0
-    cost_colnames = zip(heat_rate_fields, output_percent_fields)
+    @assert length(output_point_fields) > 0
+    cost_colnames = zip(heat_rate_fields, output_point_fields)
 
     for gen in iterate_rows(data, GENERATOR::InputCategory)
         bus = get_bus(sys, gen.bus_id)
@@ -1119,13 +1119,13 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
     # Cache whether PowerSystems uses a column's values as system-per-unit.
     # The user's descriptors indicate that the raw data is already system-per-unit or not.
-    per_unit = Dict{String, Any}()
-    per_unit = Dict{String, Strine}()
+    per_unit = Dict{String, IS.UnitSystem}()
+    per_unit_reference = Dict{String, String}()
     unit = Dict{String, Union{String, Nothing}}()
     default_values = Dict{String, Any}()
     descriptor_names = Vector{String}()
     for descriptor in data.descriptors[category]
-        per_unit[descriptor["name"]] = get_enum_value(UnitSystem, get(descriptor, "unit_system", "NATURAL_UNITS"))
+        per_unit[descriptor["name"]] = get_enum_value(IS.UnitSystem, get(descriptor, "unit_system", "NATURAL_UNITS"))
         per_unit_reference[descriptor["name"]] = get(descriptor, "base_reference", "base_power")
         unit[descriptor["name"]] = get(descriptor, "unit", nothing)
         default_values[descriptor["name"]] = get(descriptor, "default_value", "required")
@@ -1139,7 +1139,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
         name = item["name"]
         if custom_name in df_names
             if !(name in descriptor_names)
-                if occursin("heat_rate_", name) || occursin("output_percent_", name)
+                if occursin("heat_rate_", name) || occursin("output_point_", name)
                     base = name[(findlast("_", name)[end] + 1):end]
                     d_name = descriptor_names[occursin.(base, descriptor_names)][end]
                     per_unit[name] = per_unit[d_name]
@@ -1151,12 +1151,12 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
                 end
             end
 
-            item_unit_system = get_enum_value(UnitSystem, get(item, "unit_system", "NATURAL_UNITS"))
-            if per_unit[name] ==  NATURAL_UNITS && item_unit_system != NATURAL_UNITS
+            item_unit_system = get_enum_value(IS.UnitSystem, get(item, "unit_system", "NATURAL_UNITS"))
+            if per_unit[name] ==  IS.NATURAL_UNITS && item_unit_system != IS.NATURAL_UNITS
                 throw(DataFormatError("$name cannot be defined as system_per_unit"))
             end
 
-            pu_conversion = (From = item_unit_system, To = per_unit[name], Reference = )
+            pu_conversion = (From = item_unit_system, To = per_unit[name], Reference = per_unit_reference[name])
 
             custom_unit = get(item, "unit", nothing)
             if !isnothing(unit[name]) &&
@@ -1188,19 +1188,20 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     for field_info in field_infos
         value = row[field_info.custom_name]
         if ismissing(value)
-
             throw(DataFormatError("$(field_info.custom_name) value missing"))
         end
         if na_to_nothing && value == "NA"
             value = nothing
         end
 
-        if field_info.per_unit_conversion.From == NATURAL_UNITS && field_info.per_unit_conversion.To == SYSTEM_BASE
+        if field_info.per_unit_conversion.From == IS.NATURAL_UNITS && field_info.per_unit_conversion.To == IS.SYSTEM_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            value /= data.base_power
-        elseif field_info.per_unit_conversion.From == NATURAL_UNITS && field_info.per_unit_conversion.To == DEVICE_BASE
+            value /= data.basepower
+        elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS && field_info.per_unit_conversion.To == IS.DEVICE_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            value /= row[!,field_info.per_unit_conversion.Reference]
+            @show field_infos
+            refernce_col = field_infos[findfirst(x -> x.name == field_info.per_unit_conversion.Reference, field_infos)].custom_name
+            value /= row[refernce_col]
         elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
             throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
         end

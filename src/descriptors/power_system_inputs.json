@@ -20,11 +20,7 @@
         {
             "name": "mw_load",
             "description": "Power demand (MW)",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "name": "rectifier_firing_angle_max",
@@ -175,21 +171,13 @@
             "name": "active_power_flow",
             "unit": "MW",
             "description": "Active power flow",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "name": "reactive_power_flow",
             "unit": "MVAr",
             "description": "Reactive power flow",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "name": "tap",
@@ -227,61 +215,37 @@
             "unit": "MW",
             "name": "active_power",
             "description": "Real power injection setpoint",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "reactive_power",
             "description": "Reactive power StaticInjection setpoint",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "active_power_limits_max",
             "description": "Maximum real power StaticInjection (Unit Capacity)",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "active_power_limits_min",
             "description": "Minimum real power StaticInjection (Unit minimum stable level)",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_max",
             "description": "Maximum reactive power StaticInjection",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_min",
             "description": "Minimum reactive power StaticInjection",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "hours",
@@ -297,11 +261,7 @@
             "unit": "MW/Min",
             "name": "ramp_limits",
             "description": "Maximum ramp up and ramp down rate",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MMBTU",
@@ -507,20 +467,12 @@
         {
             "name": "startup_ramp",
             "description": "Startup ramp capability",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "name": "shutdown_ramp",
             "description": "Shutdown ramp capability",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "name": "status_at_start",
@@ -573,11 +525,7 @@
             "units": "MW",
             "name": "requirement",
             "description": "Contributing Devices for reserve requirement",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "seconds",
@@ -641,91 +589,55 @@
             "unit": "MW",
             "name": "active_power",
             "description": "Real power injection setpoint",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "reactive_power",
             "description": "Reactive power StaticInjection setpoint",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "input_power_limits_max",
             "description": "Maximum real power limit on charging",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "input_power_limits_min",
             "description": "Minimum real power limit on charging",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "output_active_power_limits_max",
             "description": "Maximum real power StaticInjection",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "output_active_power_limits_min",
             "description": "Minimum real power StaticInjection",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_max",
             "description": "Maximum reactive power StaticInjection",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_min",
             "description": "Minimum reactive power StaticInjection",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "MW",
             "name": "rating",
             "description": "Continuous MW flow limit",
-<<<<<<< HEAD
             "unit_system": "device_base"
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "unit": "%",
@@ -792,13 +704,13 @@
             "name": "voltage",
             "description": "voltage magnitude setpoint",
             "unit_system": "device_base",
+            "base_reference": "base_voltage",
             "default_value": null
         },
         {
             "unit": "radian",
             "name": "angle",
             "description": "voltage angle setpoint",
-            "unit_system": "device_base",
             "default_value": null
         },
         {
@@ -806,6 +718,7 @@
             "name": "voltage_limits_min",
             "description": "Minimum voltage setpoint",
             "unit_system": "device_base",
+            "base_reference": "base_voltage",
             "default_value": null
         },
         {
@@ -819,34 +732,26 @@
         {
             "name": "mw_shunt_g",
             "description": "Shunt conductance",
-            "unit_system": "device_base",
+            "unit_system": "system_base",
             "default_value": null
         },
         {
             "name": "mvar_shut_b",
             "description": "Shunt susceptance",
-            "unit_system": "device_base",
+            "unit_system": "system_base",
             "default_value": null
         },
         {
             "name": "max_active_power",
             "description": "Maximum Active Power",
-<<<<<<< HEAD
-            "unit_system": "device_base",
+            "unit_system": "system_base",
             "default_value": null
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         },
         {
             "name": "max_reactive_power",
             "description": "Maximum Rective Power",
-<<<<<<< HEAD
-            "unit_system": "device_base",
+            "unit_system": "system_base",
             "default_value": null
-=======
-            "unit_system" : "device_base"
->>>>>>> handle_table_data_parsing_pu
         }
     ]
 }
