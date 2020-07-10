@@ -28,9 +28,10 @@
         },
         {
             "name": "rate",
-            "description": "rating",
+            "unit": "MVA",
+            "description": "Apparent power limit rating",
             "unit_system": "system_base",
-            "default_value": "system_base_power",
+            "default_value": "system_base_power"
         },
         {
             "name": "rectifier_firing_angle_max",
@@ -245,6 +246,11 @@
         {
             "name": "name",
             "description": "Unique generator ID: Concatenated from Bus ID_Unit Type_Gen ID"
+        },
+        {
+            "name": "available",
+            "description": "Availability",
+            "default_value": true
         },
         {
             "name": "bus_id",
@@ -572,7 +578,7 @@
         {
             "name": "status_at_start",
             "description": "State of the generator at the start of the simulation",
-            "default_value": null
+            "default_value": true
         },
         {
             "name": "time_at_status",
@@ -621,13 +627,14 @@
         },
         {
             "name": "contributing_devices",
-            "description": "Contributing Devices for reserve requirement"
+            "description": "Contributing Devices for reserve requirement",
+            "default_value": null
         },
         {
             "units": "MW",
             "name": "requirement",
-            "description": "Contributing Devices for reserve requirement",
-            "unit_system": "device_base"
+            "description": "reserve requirement",
+            "unit_system": "system_base"
         },
         {
             "unit": "seconds",
@@ -636,19 +643,18 @@
         },
         {
             "name": "eligible_device_categories",
-            "description": "Eligible Device Categories"
+            "description": "Eligible Device Categories",
+            "default_value": null
         },
         {
             "name": "eligible_device_subcategories",
-            "description": "Eligible Device SubCategories"
-        },
-        {
-            "name": "eligible_generator_categories",
-            "description": "Eligible Generator Categories"
+            "description": "Eligible Device SubCategories",
+            "default_value": null
         },
         {
             "name": "eligible_regions",
-            "description": "Eligible Regions"
+            "description": "Eligible Regions",
+            "default_value": null
         },
         {
             "name": "reserve_category",
@@ -657,7 +663,8 @@
                 "VariableReserve",
                 "Transfer"
             ],
-            "description": "Type of Struct"
+            "description": "Type of Struct",
+            "default_value": "StaticReserve"
         },
         {
             "name": "direction",
@@ -674,77 +681,111 @@
             "description": "Storage object name"
         },
         {
+            "name": "available",
+            "description": "availability",
+            "default_value": true
+        },
+        {
             "name": "generator_name",
-            "description": "Generator name associated with storage"
+            "description": "Generator name associated with storage",
+            "default_value": null
         },
         {
             "name": "bus_id",
-            "description": "Connection Bus ID"
+            "description": "Connection Bus ID",
+            "default_value": null
         },
         {
             "name": "energy_level",
-            "unit": "kW/h",
+            "unit": "kWh",
             "description": "Energy Level setpoint",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
             "unit": "MW",
             "name": "active_power",
             "description": "Real power injection setpoint",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
-            "unit": "MW",
+            "unit": "MVar",
             "name": "reactive_power",
             "description": "Reactive power StaticInjection setpoint",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
             "unit": "MW",
-            "name": "input_power_limits_max",
+            "name": "input_active_power_limit_max",
             "description": "Maximum real power limit on charging",
             "unit_system": "device_base"
         },
         {
             "unit": "MW",
-            "name": "input_power_limits_min",
+            "name": "input_active_power_limit_min",
             "description": "Minimum real power limit on charging",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
             "unit": "MW",
-            "name": "output_active_power_limits_max",
+            "name": "output_active_power_limit_max",
             "description": "Maximum real power StaticInjection",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": null
         },
         {
             "unit": "MW",
-            "name": "output_active_power_limits_min",
+            "name": "output_active_power_limit_min",
             "description": "Minimum real power StaticInjection",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
             "unit": "MVAR",
-            "name": "reactive_power_limits_max",
+            "name": "output_reactive_power_limits_max",
             "description": "Maximum reactive power StaticInjection",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": null
         },
         {
             "unit": "MVAR",
-            "name": "reactive_power_limits_min",
+            "name": "output_reactive_power_limits_min",
             "description": "Minimum reactive power StaticInjection",
+            "unit_system": "device_base",
+            "default_value": null
+        },
+        {
+            "unit": "MVA",
+            "name": "rating",
+            "description": "Apparent power injection limit rating",
             "unit_system": "device_base"
         },
         {
             "unit": "MW",
-            "name": "rating",
+            "name": "base_power",
             "description": "Continuous MW flow limit",
-            "unit_system": "device_base"
+            "unit_system": "natural_units"
+        },
+        {
+            "unit": "%",
+            "name": "input_efficiency",
+            "description": "Storage Input Efficiency",
+            "default_value": 1.0
+        },
+        {
+            "unit": "%",
+            "name": "output_efficiency",
+            "description": "Storage Output Efficiency",
+            "default_value": 1.0
         },
         {
             "unit": "%",
             "name": "efficiency",
-            "description": "Battery Efficiency"
+            "description": "Battery Efficiency",
+            "default_value": 1.0
         },
         {
             "unit": "GWh",
@@ -754,15 +795,10 @@
         },
         {
             "unit": "GWh",
-            "name": "initial_storage",
-            "description": "Initial Storage",
-            "unit_system": "device_base"
-        },
-        {
-            "unit": "GWh",
-            "name": "inflow_limit",
-            "description": "Inflow Limit",
-            "unit_system": "device_base"
+            "name": "min_storage_capacity",
+            "description": "Storage Capacity minimum",
+            "unit_system": "device_base",
+            "default_value": 0.0
         }
     ],
     "bus": [
@@ -864,6 +900,49 @@
             "description": "base power for demand",
             "unit_system": "natural_units",
             "default_value": "system_base_power"
+        }
+    ],
+    "load": [
+        {
+            "name": "name",
+            "description": "Load Name"
+        },
+        {
+            "name": "available",
+            "description": "Availability",
+            "default_value": true
+        },
+        {
+            "name": "bus_id",
+            "description": "Connection Bus ID",
+            "default_value": null
+        },
+        {
+            "name": "active_power",
+            "description": "Active power setpoint",
+            "default_value": 0.0,
+            "unit_system": "device_base"
+        },
+        {
+            "name": "reactive_power",
+            "description": "Reactive power setpoint",
+            "default_value": 0.0,
+            "unit_system": "device_base"
+        },
+        {
+            "name": "base_power",
+            "description": "base",
+            "unit_system": "natural_units"
+        },
+        {
+            "name": "max_active_power",
+            "description": "max active power",
+            "unit_system": "device_base"
+        },
+        {
+            "name": "max_reactive_power",
+            "description": "max reactive power",
+            "unit_system": "device_base"
         }
     ]
 }

@@ -628,10 +628,12 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 buses = get_dataframe(data, BUS::InputCategory)
                 bus_ids = buses[!, bus_id_column]
+                gen_type = get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
+                name = gen_type <: Storage ? get_storage_by_generator(data, gen.name).name : gen.name
                 sys_gen = get_component(
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
                     sys,
-                    gen.name,
+                    name,
                 )
                 area = string(buses[
                     bus_ids .== get_number(get_bus(sys_gen)),
@@ -699,7 +701,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, bus)
     elseif gen_type == GenericBattery
-        generator = make_storage(data, gen, bus)
+        storage = get_storage_by_generator(data, gen.name)
+        generator = make_storage(data, gen, storage, bus)
     else
         @error "Skipping unsupported generator" gen_type
     end
@@ -834,23 +837,22 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
     basepower = get(gen, :base_mva, 1.0)
-
     return ThermalStandard(
-        gen.name,
-        available,
-        status,
-        bus,
-        gen.active_power,
-        reactive_power,
-        rating,
-        primemover,
-        fuel,
-        active_power_limits,
-        reactive_power_limits,
-        ramplimits,
-        timelimits,
-        op_cost,
-        basepower,
+        name = gen.name,
+        available = available,
+        status = status,
+        bus = bus,
+        active_power = gen.active_power,
+        reactive_power = reactive_power,
+        rating = rating,
+        prime_mover = primemover,
+        fuel = fuel,
+        active_power_limits = active_power_limits,
+        reactive_power_limits = reactive_power_limits,
+        ramp_limits = ramplimits,
+        time_limits = timelimits,
+        operation_cost = op_cost,
+        base_power = basepower,
     )
 end
 
@@ -925,16 +927,14 @@ function make_thermal_generator_multistart(
 end
 
 function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus)
-    available = true
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
     rating = calculate_rating(active_power_limits, reactive_power_limits)
-    ramplimits = make_ramplimits(gen)
-    min_up_time = get(gen, :min_up_time, nothing)
-    min_down_time = get(gen, :min_down_time, nothing)
+    ramp_limits = make_ramplimits(gen)
+    min_up_time = gen.min_up_time
+    min_down_time = gen.min_down_time
     time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
-    base_power = get(gen, :base_mva, 1.0)
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -944,41 +944,41 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
         storage = get_storage_by_generator(data, gen.name)
 
         var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
-        op_cost = TwoPartCost(var_cost, fixed)
+        operation_cost = TwoPartCost(var_cost, fixed)
 
         hydro_gen = HydroEnergyReservoir(
             name = gen.name,
-            available = available,
+            available = gen.available,
             bus = bus,
-            activepower = gen.active_power,
-            reactivepower = reactive_power,
-            primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            active_power = gen.active_power,
+            reactive_power = reactive_power,
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             rating = rating,
             active_power_limits = active_power_limits,
             reactive_power_limits = reactive_power_limits,
             ramp_limits = ramp_limits,
             time_limits = time_limits,
             operation_cost = operation_cost,
-            base_power = base_power,
+            base_power = gen.base_mva,
             storage_capacity = storage.storage_capacity,
-            inflow = storage.inflow_limit,
-            initial_storage = storage.initial_storage,
+            inflow = storage.input_active_power_limit_max,
+            initial_storage = storage.energy_level,
         )
     elseif gen_type == HydroDispatch
         @debug("Creating $(gen.name) as HydroDispatch")
         hydro_gen = HydroDispatch(
             name = gen.name,
-            available = available,
+            available = gen.available,
             bus = bus,
-            activepower = gen.active_power,
-            reactivepower = reactive_power,
+            active_power = gen.active_power,
+            reactive_power = reactive_power,
             rating = rating,
             prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             active_power_limits = active_power_limits,
             reactive_power_limits = reactive_power_limits,
             ramp_limits = ramp_limits,
             time_limits = time_limits,
-            base_power = base_power,
+            base_power = gen.base_mva,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
@@ -988,7 +988,7 @@ end
 
 function get_storage_by_generator(data::PowerSystemTableData, gen_name::AbstractString)
     for storage in iterate_rows(data, STORAGE::InputCategory)
-        if storage.generator_name == gen_name
+        if storage.generator_name == gen_name # TODO: This only catches the first storage object associated with a gen
             return storage
         end
     end
@@ -1038,32 +1038,28 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
     return generator
 end
 
-function make_storage(data::PowerSystemTableData, gen, bus)
-    available = true
-    energy = 0.0
-    capacity = (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    rating = gen.active_power_limits_max
-    input_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
-    output_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
-    efficiency = (in = 0.9, out = 0.9)
-    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    basepower = get(gen, :base_mva, 1.0)
-
+function make_storage(data::PowerSystemTableData, gen, storage, bus)
+    state_of_charge_limits = (min = storage.min_storage_capacity, max = storage.storage_capacity)
+    input_active_power_limits = (min = storage.input_active_power_limit_min, max = storage.input_active_power_limit_max)
+    output_active_power_limits = (min = storage.output_active_power_limit_min, max = storage.output_active_power_limit_max)
+    efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
+    (reactive_power, reactive_power_limits) = make_reactive_params(storage)
+@show storage
     battery = GenericBattery(
-        name = gen.name,
-        available = available,
+        name = storage.name,
+        available = storage.available,
         bus = bus,
-        primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
-        energy = energy,
-        capacity = capacity,
-        rating = rating,
-        activepower = gen.active_power,
-        inputactivepowerlimits = input_active_power_limits,
-        outputactivepowerlimits = output_active_power_limits,
+        prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+        initial_energy = storage.energy_level,
+        state_of_charge_limits = state_of_charge_limits,
+        rating = storage.rating,
+        active_power = storage.active_power,
+        input_active_power_limits = input_active_power_limits,
+        output_active_power_limits = output_active_power_limits,
         efficiency = efficiency,
-        reactivepower = reactive_power,
-        reactivepowerlimits = reactive_power_limits,
-        basepower = basepower,
+        reactive_power = reactive_power,
+        reactive_power_limits = reactive_power_limits,
+        base_power = storage.base_power,
     )
 
     return battery
@@ -1190,6 +1186,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
         if field_info.custom_name in names(row)
             value = row[field_info.custom_name]
         else
+        #@show row
             value = field_info.default_value
             value == "required" && throw(DataFormatError("$(field_info.name) is required"))
             @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)"
