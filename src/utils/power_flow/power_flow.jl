@@ -666,7 +666,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                             )
                     end
                 else
-                    @assert false
+                    error("Undefined Conditional")
                 end
             end
         end

@@ -18,7 +18,7 @@ function _get_multiplier(c::T) where {T <: Component}
         numerator = get_base_power(c)
         denominator = 1.0
     else
-        @assert false
+        error("Undefined Conditional")
     end
     return numerator / denominator
 end
