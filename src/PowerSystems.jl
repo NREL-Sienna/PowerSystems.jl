@@ -64,6 +64,8 @@ export GenericBattery
 
 export DynamicInjection
 export DynamicGenerator
+export DynamicInverter
+export DynamicBranch
 export RegulationDevice
 
 #AVR Exports
@@ -96,7 +98,7 @@ export SimpleFullMachine
 #PSS Exports
 export PSS
 export PSSFixed
-export PSSFixed
+export PSSSimple
 
 #Shaft Exports
 export SingleMass
@@ -109,7 +111,6 @@ export GasTG
 export TGTypeI
 export TGTypeII
 
-export DynamicInverter
 # Converter Exports
 export Converter
 export AverageConverter
