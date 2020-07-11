@@ -1329,6 +1329,10 @@ function handle_component_addition!(sys::System, component::RegulationDevice)
     remove_component!(sys, component.device)
 end
 
+function handle_component_addition!(sys::System, component::DynamicBranch)
+    remove_component!(sys, component.branch)
+end
+
 """
 Throws ArgumentError if the bus number is not stored in the system.
 """
