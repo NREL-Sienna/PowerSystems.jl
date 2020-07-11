@@ -77,7 +77,6 @@ c_sys5_re() = System(
     add_component!(sys, dyn_branch)
     @test dyn_pf = solve_powerflow!(sys)
     dyn_pf = solve_powerflow(sys)
-    @test LinearAlgebra.norm(
-        dyn_pf["bus_results"].Vm - res_jacobian["bus_results"].Vm,
-    ) <= 1e-6
+    @test LinearAlgebra.norm(dyn_pf["bus_results"].Vm - res_jacobian["bus_results"].Vm) <=
+          1e-6
 end
