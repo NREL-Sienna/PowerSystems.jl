@@ -742,7 +742,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     return generator
 end
 
-function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
+function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames, base_power)
     fuel_cost = gen.fuel_price / 1000.0
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
@@ -756,15 +756,13 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
                 var_cost[i][1] *
                 (var_cost[i][2] - var_cost[i - 1][2]) *
                 fuel_cost *
-                data.base_power,
+                base_power,
                 var_cost[i][2],
             ) .* gen.active_power_limits_max for i in 2:length(var_cost)
         ]
         var_cost[1] =
-            (
-                var_cost[1][1] * var_cost[1][2] * fuel_cost * data.base_power,
-                var_cost[1][2],
-            ) .* gen.active_power_limits_max
+            (var_cost[1][1] * var_cost[1][2] * fuel_cost * base_power, var_cost[1][2]) .*
+            gen.active_power_limits_max
 
         fixed = max(
             0.0,
@@ -777,7 +775,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
         end
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * data.base_power
+        var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * base_power
         fixed = 0.0
     else
         var_cost = 0.0
@@ -862,11 +860,12 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
     fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
 
-    var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
+    base_power = gen.base_mva
+    var_cost, fixed, fuel_cost =
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
-    base_power = get(gen, :base_mva, 1.0)
     return ThermalStandard(
         name = gen.name,
         available = gen.available,
@@ -893,7 +892,9 @@ function make_thermal_generator_multistart(
     bus,
 )
     thermal_gen = make_thermal_generator(data, gen, cost_colnames, bus)
-    var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
+    base_power = get_base_power(thermal_gen)
+    var_cost, fixed, fuel_cost =
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
     if var_cost isa Float64
         no_load_cost = 0.0
         var_cost = VariableCost(var_cost)
@@ -902,7 +903,8 @@ function make_thermal_generator_multistart(
         var_cost =
             VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
     end
-    lag_hot = isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down : gen.hot_start_time
+    lag_hot = isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down :
+        gen.hot_start_time
     lag_warm = isnothing(gen.warm_start_time) ? 0.0 : gen.warm_start_time
     lag_cold = isnothing(gen.cold_start_time) ? 0.0 : gen.cold_start_time
     startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
@@ -965,6 +967,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
     min_up_time = gen.min_up_time
     min_down_time = gen.min_down_time
     time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
+    base_power = gen.base_mva
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -973,7 +976,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
         @debug("Creating $(gen.name) as HydroEnergyReservoir")
         storage = get_storage_by_generator(data, gen.name)
 
-        var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
+        var_cost, fixed, fuel_cost =
+            calculate_variable_cost(data, gen, cost_colnames, base_power)
         operation_cost = TwoPartCost(var_cost, fixed)
 
         hydro_gen = HydroEnergyReservoir(
@@ -989,7 +993,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             ramp_limits = ramp_limits,
             time_limits = time_limits,
             operation_cost = operation_cost,
-            base_power = gen.base_mva,
+            base_power = base_power,
             storage_capacity = storage.storage_capacity,
             inflow = storage.input_active_power_limit_max,
             initial_storage = storage.energy_level,
@@ -1008,7 +1012,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             reactive_power_limits = reactive_power_limits,
             ramp_limits = ramp_limits,
             time_limits = time_limits,
-            base_power = gen.base_mva,
+            base_power = base_power,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
