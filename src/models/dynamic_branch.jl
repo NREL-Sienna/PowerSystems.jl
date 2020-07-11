@@ -2,9 +2,9 @@ mutable struct DynamicBranch <: ACBranch
     branch::ACBranch
     n_states::Int64
     states::Vector{Symbol}
-    internal::IS.InfrastructureSystemsInternalinternal::IS.InfrastructureSystemsInternal
-    function DynamicLine(branch::T) where {T <: ACBranch}
-        IS.@forward((DynamicBranch, :device), T)
+    internal::IS.InfrastructureSystemsInternal
+    function DynamicBranch(branch::T) where {T <: ACBranch}
+        IS.@forward((DynamicBranch, :branch), T)
         n_states = 2
         states = [
             :Il_R
