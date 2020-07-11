@@ -3,7 +3,7 @@ const POWER_SYSTEM_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_inputs.json")
 
 struct PowerSystemTableData
-    basepower::Float64
+    base_power::Float64
     category_to_df::Dict{InputCategory, DataFrames.DataFrame}
     timeseries_metadata_file::Union{String, Nothing}
     directory::String
@@ -35,10 +35,10 @@ function PowerSystemTableData(
         throw(DataFormatError("key 'bus' not found in input data"))
     end
 
-    if !haskey(data, "basepower")
-        @warn "key 'basepower' not found in input data; using default=$(DEFAULT_BASE_MVA)"
+    if !haskey(data, "base_power")
+        @warn "key 'base_power' not found in input data; using default=$(DEFAULT_BASE_MVA)"
     end
-    basepower = get(data, "basepower", DEFAULT_BASE_MVA)
+    base_power = get(data, "base_power", DEFAULT_BASE_MVA)
 
     for (label, category) in categories
         val = get(data, label, nothing)
@@ -72,7 +72,7 @@ function PowerSystemTableData(
     end
 
     return PowerSystemTableData(
-        basepower,
+        base_power,
         category_to_df,
         timeseries_metadata_file,
         directory,
@@ -94,14 +94,14 @@ The general format for data is
 
 # Arguments
 - `directory::AbstractString`: directory containing CSV files
-- `basepower::Float64`: base power for System
+- `base_power::Float64`: base power for System
 - `user_descriptor_file::AbstractString`: customized input descriptor file
 - `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: PowerSystems descriptor file
 - `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file
 """
 function PowerSystemTableData(
     directory::AbstractString,
-    basepower::Float64,
+    base_power::Float64,
     user_descriptor_file::AbstractString;
     descriptor_file = POWER_SYSTEM_DESCRIPTOR_FILE,
     generator_mapping_file = GENERATOR_MAPPING_FILE,
@@ -115,7 +115,7 @@ function PowerSystemTableData(
     if length(files) == 0
         error("No files in the folder")
     else
-        data["basepower"] = basepower
+        data["base_power"] = base_power
     end
 
     encountered_files = 0
@@ -257,7 +257,7 @@ function System(
     kwargs...,
 )
     sys = System(
-        data.basepower;
+        data.base_power;
         time_series_in_memory = time_series_in_memory,
         time_series_directory = time_series_directory,
         runchecks = runchecks,
@@ -756,13 +756,13 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
                 var_cost[i][1] *
                 (var_cost[i][2] - var_cost[i - 1][2]) *
                 fuel_cost *
-                data.basepower,
+                data.base_power,
                 var_cost[i][2],
             ) .* gen.active_power_limits_max for i in 2:length(var_cost)
         ]
         var_cost[1] =
             (
-                var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower,
+                var_cost[1][1] * var_cost[1][2] * fuel_cost * data.base_power,
                 var_cost[1][2],
             ) .* gen.active_power_limits_max
 
@@ -777,7 +777,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
         end
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower
+        var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * data.base_power
         fixed = 0.0
     else
         var_cost = 0.0
@@ -866,7 +866,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
-    basepower = get(gen, :base_mva, 1.0)
+    base_power = get(gen, :base_mva, 1.0)
     return ThermalStandard(
         name = gen.name,
         available = gen.available,
@@ -882,7 +882,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         ramp_limits = ramplimits,
         time_limits = timelimits,
         operation_cost = op_cost,
-        base_power = basepower,
+        base_power = base_power,
     )
 end
 
@@ -1033,7 +1033,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
     rating = calculate_rating(active_power_limits, reactive_power_limits)
-    basepower = get(gen, :base_mva, 1.0)
+    base_power = get(gen, :base_mva, 1.0)
 
     if gen_type == RenewableDispatch
         generator = RenewableDispatch(
@@ -1047,7 +1047,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             reactive_power_limits,
             1.0,
             TwoPartCost(0.0, 0.0),
-            basepower,
+            base_power,
         )
     elseif gen_type == RenewableFix
         generator = RenewableFix(
@@ -1059,7 +1059,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             rating,
             convert(PrimeMovers.PrimeMover, gen.unit_type),
             1.0,
-            basepower,
+            base_power,
         )
     else
         error("Unsupported type $gen_type")
@@ -1184,7 +1184,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
         per_unit_reference = get(item, "base_reference", "base_power")
         default_value = get(item, "default_value", "required")
         if default_value == "system_base_power"
-            default_value = data.basepower
+            default_value = data.base_power
         end
 
         if name in keys(custom_names)
@@ -1250,7 +1250,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
         if field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
            field_info.per_unit_conversion.To == IS.SYSTEM_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            value /= data.basepower
+            value /= data.base_power
         elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
                field_info.per_unit_conversion.To == IS.DEVICE_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
