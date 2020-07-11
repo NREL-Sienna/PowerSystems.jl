@@ -346,6 +346,7 @@ include("models/devices.jl")
 include("models/dynamic_generator.jl")
 include("models/dynamic_inverter.jl")
 include("models/dynamic_machines.jl")
+include("models/dynamic_branch.jl")
 
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
