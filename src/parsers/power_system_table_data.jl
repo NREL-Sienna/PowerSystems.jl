@@ -732,7 +732,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     elseif gen_type <: HydroGen
         generator = make_hydro_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type <: RenewableGen
-        generator = make_renewable_generator(gen_type, data, gen, bus)
+        generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type == GenericBattery
         storage = get_storage_by_generator(data, gen.name)
         generator = make_storage(data, gen, storage, bus)
@@ -1031,7 +1031,7 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
     throw(DataFormatError("no storage exists with generator $gen_name"))
 end
 
-function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
+function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus)
     generator = nothing
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
@@ -1051,9 +1051,9 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             reactive_power = reactive_power,
             rating = rating,
             prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
-            reeactive_power_limits = reactive_power_limits,
+            reactive_power_limits = reactive_power_limits,
             power_factor = gen.power_factor,
-            operration_cost = operation_cost,
+            operation_cost = operation_cost,
             base_power = base_power,
         )
     elseif gen_type == RenewableFix
@@ -1062,8 +1062,8 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             available = gen.available,
             bus = bus,
             active_power = gen.active_power,
-            reacttive_power = reactive_power,
-            rating = gen.rating,
+            reactive_power = reactive_power,
+            rating = rating,
             prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             power_factor = gen.power_factor,
             base_power = base_power,

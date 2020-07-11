@@ -553,7 +553,7 @@
             "unit": "%",
             "name": "power_factor",
             "description": "Power Factor",
-            "default_value": null
+            "default_value": 1.0
         },
         {
             "name": "unit_type",
