@@ -483,7 +483,7 @@ function IS.add_forecast!(
             load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
-            IS.add_forecast!(data, component_, forecast, ts_data)
+            IS.add_forecast!(data, component_, forecast, ts_data, skip_if_present = true)
         end
     else
         IS.add_forecast!(data, component, forecast, ts_data)

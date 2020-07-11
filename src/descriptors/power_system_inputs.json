@@ -318,7 +318,7 @@
             "description": "Minimum on time required before unit shutdown"
         },
         {
-            "unit": "MW/Min",
+            "unit": "MW(p.u.)/Min",
             "name": "ramp_limits",
             "description": "Maximum ramp up and ramp down rate",
             "unit_system": "device_base",
@@ -960,6 +960,26 @@
             "name": "max_reactive_power",
             "description": "max reactive power",
             "unit_system": "device_base"
+        }
+    ],
+    "load": [
+        {
+            "name": "bus_id",
+            "description": "Numeric Bus ID"
+        },
+        {
+            "name": "name",
+            "description": "load name"
+        },
+        {
+            "name": "max_active_power",
+            "description": "Maximum Active Power",
+            "system_per_unit": true
+        },
+        {
+            "name": "max_reactive_power",
+            "description": "Maximum Rective Power",
+            "system_per_unit": true
         }
     ]
 }

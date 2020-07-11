@@ -307,6 +307,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             area = Area(area_name)
             add_component!(sys, area)
         end
+        zone = get(bus, :zone, nothing)
 
         ps_bus = Bus(;
             number = bus.bus_id,
@@ -317,7 +318,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             voltage_limits = voltage_limits,
             base_voltage = bus.base_voltage,
             area = area,
-            load_zone = get_component(LoadZone, sys, string(bus.zone)),
+            load_zone = get_component(LoadZone, sys, string(zone)),
         )
         add_component!(sys, ps_bus)
 
@@ -1032,38 +1033,40 @@ end
 
 function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
     generator = nothing
-    available = true
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
     rating = calculate_rating(active_power_limits, reactive_power_limits)
-    base_power = get(gen, :base_mva, 1.0)
+    base_power = gen.base_mva
+    var_cost, fixed, fuel_cost =
+            calculate_variable_cost(data, gen, cost_colnames, base_power)
+    operation_cost = TwoPartCost(var_cost, fixed)
 
     if gen_type == RenewableDispatch
         generator = RenewableDispatch(
-            gen.name,
-            available,
-            bus,
-            gen.active_power,
-            reactive_power,
-            rating,
-            convert(PrimeMovers.PrimeMover, gen.unit_type),
-            reactive_power_limits,
-            1.0,
-            TwoPartCost(0.0, 0.0),
-            base_power,
+            name = gen.name,
+            available = gen.available,
+            bus = bus,
+            active_power = gen.active_power,
+            reactive_power = reactive_power,
+            rating = rating,
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            reeactive_power_limits = reactive_power_limits,
+            power_factor = gen.power_factor,
+            operration_cost = operation_cost,
+            base_power = base_power,
         )
     elseif gen_type == RenewableFix
         generator = RenewableFix(
-            gen.name,
-            available,
-            bus,
-            gen.active_power,
-            reactive_power,
-            rating,
-            convert(PrimeMovers.PrimeMover, gen.unit_type),
-            1.0,
-            base_power,
+            name = gen.name,
+            available = gen.available,
+            bus = bus,
+            active_power = gen.active_power,
+            reacttive_power = reactive_power,
+            rating = gen.rating,
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            power_factor = gen.power_factor,
+            base_power = base_power,
         )
     else
         error("Unsupported type $gen_type")

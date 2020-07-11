@@ -1412,7 +1412,7 @@
         },
         {
           "name": "ramp_limits",
-          "comment": "ramp up and ramp down limits",
+          "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
@@ -1586,7 +1586,7 @@
         },
         {
           "name": "ramp_limits",
-          "comment": "ramp up and ramp down limits",
+          "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
@@ -1961,6 +1961,7 @@
         },
         {
           "name": "ramp_limits",
+          "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
