@@ -70,4 +70,10 @@ c_sys5_re() = System(
         res_finite_diff["bus_results"].Vm - res_jacobian["bus_results"].Vm,
     ) <= 1e-6
     @test solve_powerflow!(c_sys14(), finite_diff = true, method = :newton)
+
+    sys = c_sys14()
+    branch = first(get_components(Line, sys))
+    dyn_branch = DynamicBranch(branch)
+    add_component!(sys, dyn_branch)
+    @test solve_powerflow!(sys)
 end

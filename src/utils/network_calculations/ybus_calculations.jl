@@ -6,7 +6,7 @@ end
 
 function _ybus!(
     ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
-    b::Line,
+    b::ACBranch,
     num_bus::Dict{Int64, Int64},
 )
 

@@ -23,7 +23,7 @@ Calculates the From - To complex power flow (Flow injected at the bus) of branch
 Line
 
 """
-function flow_val(b::Line)
+function flow_val(b::ACBranch)
     Y_t = get_series_admittance(b)
     arc = PowerSystems.get_arc(b)
     V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
@@ -116,8 +116,8 @@ Updates the flow on the branches
 function _update_branch_flow!(sys::System)
     for b in get_components(ACBranch, sys)
         S_flow = flow_val(b)
-        b.activepower_flow = real(S_flow)
-        b.reactivepower_flow = imag(S_flow)
+        set_activepower_flow!(b, real(S_flow))
+        set_reactivepower_flow!(b, imag(S_flow))
     end
 end
 
@@ -603,7 +603,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                     # State variables are Voltage Magnitude and Voltage Angle
                     # Everything appears in everything
                     if ix_f == ix_t
-                        #Jac: Active PF against same voltage magnitude Vm[ix_f] 
+                        #Jac: Active PF against same voltage magnitude Vm[ix_f]
                         J[F_ix_f_r, X_ix_t_fst] =
                             2 * real(Yb[ix_f, ix_t]) * Vm[ix_f] + sum(
                                 Vm[k] * (
@@ -611,7 +611,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                                     imag(Yb[ix_f, k]) * sin(θ[ix_f] - θ[k])
                                 ) for k in neighbors[ix_f] if k != ix_f
                             )
-                        #Jac: Active PF against same angle θ[ix_f] 
+                        #Jac: Active PF against same angle θ[ix_f]
                         J[F_ix_f_r, X_ix_t_snd] =
                             Vm[ix_f] * sum(
                                 Vm[k] * (
