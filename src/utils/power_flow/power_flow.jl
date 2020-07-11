@@ -77,7 +77,7 @@ Calculates the From - To complex power flow using external data of voltages of b
 Line
 
 """
-function flow_func(b::Line, V_from::Complex{Float64}, V_to::Complex{Float64})
+function flow_func(b::ACBranch, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
     I = V_from * (Y_t + (1im * get_b(b).from)) - V_to * Y_t
     flow = V_from * conj(I)
