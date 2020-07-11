@@ -81,3 +81,5 @@ get_pss(device::DynamicGenerator) = device.pss
 get_static_injector(device::DynamicGenerator) = device.static_injector
 get_ext(device::DynamicGenerator) = device.ext
 get_internal(device::DynamicGenerator) = device.internal
+get_V_ref(value::DynamicGenerator) = get_V_ref(get_avr(value))
+get_P_ref(value::DynamicGenerator) = get_P_ref(get_prime_mover(value))
