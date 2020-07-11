@@ -62,8 +62,8 @@ function linerate_calculation(l::Union{Line, MonitoredLine})
     g = l.r / (l.r^2 + l.x^2)
     b = -l.x / (l.r^2 + l.x^2)
     y_mag = sqrt(g^2 + b^2)
-    fr_vmax = l.arc.from.voltage_limits.max
-    to_vmax = l.arc.to.voltage_limits.max
+    fr_vmax = isnothing(l.arc.from.voltage_limits) ? nothing : l.arc.from.voltage_limits.max
+    to_vmax = isnothing(l.arc.to.voltage_limits) ? nothing : l.arc.to.voltage_limits.max
 
     if isa(fr_vmax, Nothing) || isa(to_vmax, Nothing)
         fr_vmax = 1.0
