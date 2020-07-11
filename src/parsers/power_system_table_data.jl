@@ -1031,7 +1031,13 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
     throw(DataFormatError("no storage exists with generator $gen_name"))
 end
 
-function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus)
+function make_renewable_generator(
+    gen_type,
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames,
+    bus,
+)
     generator = nothing
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
@@ -1039,7 +1045,7 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, cos
     rating = calculate_rating(active_power_limits, reactive_power_limits)
     base_power = gen.base_mva
     var_cost, fixed, fuel_cost =
-            calculate_variable_cost(data, gen, cost_colnames, base_power)
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
     operation_cost = TwoPartCost(var_cost, fixed)
 
     if gen_type == RenewableDispatch
