@@ -239,7 +239,8 @@
         {
             "name": "tap",
             "unit": "%",
-            "description": "Transformer winding ratio"
+            "description": "Transformer winding ratio",
+            "default_value": 0.0
         }
     ],
     "generator": [
@@ -277,7 +278,8 @@
             "name": "reactive_power",
             "description": "Reactive power StaticInjection setpoint",
             "unit_system": "device_base",
-            "base_reference": "base_mva"
+            "base_reference": "base_mva",
+            "default_value": 0.0
         },
         {
             "unit": "MW",
@@ -298,14 +300,16 @@
             "name": "reactive_power_limits_max",
             "description": "Maximum reactive power StaticInjection",
             "unit_system": "device_base",
-            "base_reference": "base_mva"
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_min",
             "description": "Minimum reactive power StaticInjection",
             "unit_system": "device_base",
-            "base_reference": "base_mva"
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "hours",
@@ -344,11 +348,13 @@
         {
             "unit": "MMBTU",
             "name": "startup_heat_cold_cost",
-            "description": "Heat required to startup from cold"
+            "description": "Heat required to startup from cold",
+            "default_value": null
         },
         {
             "name": "heat_rate_avg_0",
-            "description": "Heat rate Average 0 TODO"
+            "description": "Heat rate Average 0 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_1",
@@ -415,7 +421,8 @@
             "name": "output_point_0",
             "description": "Output point 0 on heat rate curve as a percentage of PMax",
             "unit_system": "device_base",
-            "base_reference": "base_mva"
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
@@ -874,7 +881,7 @@
             "description": "Minimum voltage setpoint",
             "unit_system": "device_base",
             "base_reference": "base_voltage",
-            "default_value": null
+            "default_value": 0.95
         },
         {
             "unit": "kV",
@@ -882,7 +889,7 @@
             "description": "Maximum voltage setpoint",
             "unit_system": "device_base",
             "base_reference": "base_voltage",
-            "default_value": null
+            "default_value": 1.05
         },
         {
             "name": "max_active_power",
@@ -949,7 +956,8 @@
         {
             "name": "base_power",
             "description": "base",
-            "unit_system": "natural_units"
+            "unit_system": "natural_units",
+            "default_value": "system_base_power"
         },
         {
             "name": "max_active_power",
@@ -959,27 +967,8 @@
         {
             "name": "max_reactive_power",
             "description": "max reactive power",
-            "unit_system": "device_base"
-        }
-    ],
-    "load": [
-        {
-            "name": "bus_id",
-            "description": "Numeric Bus ID"
-        },
-        {
-            "name": "name",
-            "description": "load name"
-        },
-        {
-            "name": "max_active_power",
-            "description": "Maximum Active Power",
-            "system_per_unit": true
-        },
-        {
-            "name": "max_reactive_power",
-            "description": "Maximum Rective Power",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": 0.0
         }
     ]
 }

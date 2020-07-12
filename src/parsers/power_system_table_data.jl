@@ -195,9 +195,6 @@ function get_user_field(
             throw(err)
         end
     end
-
-    msg = "Failed to find category=$category field=$field in input descriptors"
-    throw(DataFormatError(msg))
 end
 
 """Return a vector of user-defined fields for the category."""
@@ -549,23 +546,19 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
             throw(DataFormatError("could not find bus_number=$(rawload.bus_id) for load=$(rawload.name)"))
         end
 
-        max_active_power = rawload.max_active_power
-        max_reactive_power = rawload.max_reactive_power
-        active_power = get(rawload, :active_power, max_active_power)
-        reactive_power = get(rawload, :reactive_power, max_reactive_power)
-
         load = PowerLoad(
             name = rawload.name,
-            available = true,
+            available = rawload.available,
             bus = bus,
             model = LoadModels.ConstantPower,
-            active_power = active_power,
-            reactive_power = reactive_power,
-            max_active_power = max_active_power,
-            max_reactive_power = max_reactive_power,
-            base_power = sys_base_power,
+            active_power = rawload.active_power,
+            reactive_power = rawload.reactive_power,
+            max_active_power = rawload.max_active_power,
+            max_reactive_power = rawload.max_reactive_power,
+            base_power = rawload.base_power,
         )
         add_component!(sys, load)
+
     end
 end
 
