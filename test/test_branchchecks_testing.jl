@@ -148,12 +148,12 @@ end
 
     foreach(x -> PowerSystems.check_angle_limits!(x), branches_test)
 
-    @test branches_test[1].anglelimits == (min = -pi / 2, max = pi / 2)
-    @test branches_test[2].anglelimits == (min = -pi / 2, max = 75.0 * (π / 180))
-    @test branches_test[3].anglelimits == (min = -75.0 * (π / 180), max = pi / 2)
-    @test branches_test[4].anglelimits == (min = -pi / 2, max = pi / 2)
-    @test branches_test[5].anglelimits == (min = -1.2, max = 60.0 * (π / 180))
-    @test branches_test[6].anglelimits == (min = -1.17, max = 1.17)
+    @test branches_test[1].angle_limits == (min = -pi / 2, max = pi / 2)
+    @test branches_test[2].angle_limits == (min = -pi / 2, max = 75.0 * (π / 180))
+    @test branches_test[3].angle_limits == (min = -75.0 * (π / 180), max = pi / 2)
+    @test branches_test[4].angle_limits == (min = -pi / 2, max = pi / 2)
+    @test branches_test[5].angle_limits == (min = -1.2, max = 60.0 * (π / 180))
+    @test branches_test[6].angle_limits == (min = -1.17, max = 1.17)
 
     bad_angle_limits = Line(
         "1",

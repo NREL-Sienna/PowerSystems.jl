@@ -215,7 +215,7 @@ export iterate_forecasts
 export make_forecasts
 export get_bus_numbers
 export get_name
-export get_basepower
+export get_base_power
 export get_frequency
 export to_json
 export check_forecast_consistency
@@ -230,7 +230,6 @@ export set_dynamic_injector!
 export set_static_injector!
 export get_V_ref
 export get_P_ref
-export get_Q_ref
 export get_saturation_coeffs
 export set_droop!
 export set_participation_factor!
@@ -283,7 +282,9 @@ import InfrastructureSystems:
     get_horizon,
     get_initial_time,
     get_resolution,
-    get_name
+    get_name,
+    UnitSystem,
+    SystemUnitsSettings
 
 const IS = InfrastructureSystems
 
@@ -340,6 +341,7 @@ include("models/dynamic_inverter_components.jl")
 include("models/generated/includes.jl")
 
 #Methods for devices
+include("models/components.jl")
 include("models/devices.jl")
 
 # Dynamic Composed types

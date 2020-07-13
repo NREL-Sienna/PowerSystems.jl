@@ -81,8 +81,8 @@ function make_bus(bus_dict::Dict{String, Any})
         bus_dict["bustype"],
         bus_dict["angle"],
         bus_dict["voltage"],
-        bus_dict["voltagelimits"],
-        bus_dict["basevoltage"],
+        bus_dict["voltage_limits"],
+        bus_dict["base_voltage"],
         bus_dict["area"],
         bus_dict["zone"],
     )
@@ -96,8 +96,8 @@ function make_bus(bus_name, bus_number, d, bus_types, area)
         "bustype" => bus_types[d["bus_type"]],
         "angle" => d["va"],
         "voltage" => d["vm"],
-        "voltagelimits" => (min = d["vmin"], max = d["vmax"]),
-        "basevoltage" => d["base_kv"],
+        "voltage_limits" => (min = d["vmin"], max = d["vmax"]),
+        "base_voltage" => d["base_kv"],
         "area" => area,
         "zone" => nothing,
     ),)
@@ -171,17 +171,18 @@ function read_bus!(sys::System, data; kwargs...)
     return bus_number_to_bus
 end
 
-function make_load(d, bus; kwargs...)
+function make_load(d, bus, sys_mbase; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
         available = true,
         model = LoadModels.ConstantPower,
         bus = bus,
-        activepower = d["pd"],
-        reactivepower = d["qd"],
-        maxactivepower = d["pd"],
-        maxreactivepower = d["qd"],
+        active_power = d["pd"],
+        reactive_power = d["qd"],
+        max_active_power = d["pd"],
+        max_reactive_power = d["qd"],
+        base_power = sys_mbase,
     )
 end
 
@@ -191,23 +192,24 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         return
     end
 
+    sys_mbase = data["baseMVA"]
     for d_key in keys(data["load"])
         d = data["load"][d_key]
         if d["pd"] != 0.0
             bus = bus_number_to_bus[d["load_bus"]]
-            load = make_load(d, bus; kwargs...)
+            load = make_load(d, bus, sys_mbase; kwargs...)
 
             add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
         end
     end
 end
 
-function make_loadzone(name, activepower, reactivepower; kwargs...)
+function make_loadzone(name, active_power, reactive_power; kwargs...)
     _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
     return LoadZone(;
         name = name,
-        maxactivepower = sum(activepower),
-        maxreactivepower = sum(reactivepower),
+        peak_active_power = sum(active_power),
+        peak_reactive_power = sum(reactive_power),
     )
 end
 
@@ -250,20 +252,27 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = TwoPartCost(0.0, 0.0)
 
+    base_conversion = sys_mbase / d["mbase"]
     return HydroEnergyReservoir(
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
-        activepower = d["pg"],
-        reactivepower = d["qg"],
-        rating = calculate_rating(d["pmax"], d["qmax"]),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
-        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
-        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
-        ramplimits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
-        timelimits = nothing,
-        op_cost = curtailcost,
-        basepower = d["mbase"] / sys_mbase,
+        active_power = d["pg"],
+        reactive_power = d["qg"],
+        rating = calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
+        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
+        active_power_limits = (
+            min = d["pmin"] * base_conversion,
+            max = d["pmax"] * base_conversion,
+        ),
+        reactive_power_limits = (
+            min = d["qmin"] * base_conversion,
+            max = d["qmax"] * base_conversion,
+        ),
+        ramp_limits = (up = ramp_agc / d["mbase"], down = ramp_agc / d["mbase"]),
+        time_limits = nothing,
+        operation_cost = curtailcost,
+        base_power = d["mbase"],
         storage_capacity = 0.0, #TODO: Implement better Solution for this
         inflow = 0.0,
         initial_storage = 0.0,
@@ -272,34 +281,40 @@ end
 
 function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
     cost = TwoPartCost(0.0, 0.0)
+
+    base_conversion = sys_mbase / d["mbase"]
     generator = RenewableDispatch(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
-        activepower = d["pg"],
-        reactivepower = d["qg"],
-        rating = float(d["pmax"]),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
-        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
-        powerfactor = 1.0,
-        op_cost = cost,
-        basepower = d["mbase"] / sys_mbase,
+        active_power = d["pg"] * base_conversion,
+        reactive_power = d["qg"] * base_conversion,
+        rating = float(d["pmax"]) * base_conversion,
+        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
+        reactive_power_limits = (
+            min = d["qmin"] * base_conversion,
+            max = d["qmax"] * base_conversion,
+        ),
+        power_factor = 1.0,
+        operation_cost = cost,
+        base_power = d["mbase"],
     )
 
     return generator
 end
 
 function make_renewable_fix(gen_name, d, bus, sys_mbase)
+    base_conversion = sys_mbase / d["mbase"]
     generator = RenewableFix(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
-        activepower = d["pg"],
-        reactivepower = d["qg"],
-        rating = float(d["pmax"]),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
-        powerfactor = 1.0,
-        basepower = d["mbase"] / sys_mbase,
+        active_power = d["pg"] * base_conversion,
+        reactive_power = d["qg"] * base_conversion,
+        rating = float(d["pmax"]) * base_conversion,
+        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
+        power_factor = 1.0,
+        base_power = d["mbase"],
     )
 
     return generator
@@ -359,7 +374,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
 
-    op_cost =
+    operation_cost =
         ThreePartCost(; variable = cost, fixed = fixed, startup = startup, shutdn = shutdn)
 
     ext = Dict{String, Any}()
@@ -367,22 +382,29 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         ext["z_source"] = (r = d["r_source"], x = d["x_source"])
     end
 
+    base_conversion = sys_mbase / d["mbase"]
     thermal_gen = ThermalStandard(
         name = gen_name,
         status = Bool(d["gen_status"]),
         available = true,
         bus = bus,
-        activepower = d["pg"],
-        reactivepower = d["qg"],
-        rating = sqrt(d["pmax"]^2 + d["qmax"]^2),
-        primemover = convert(PrimeMovers.PrimeMover, d["type"]),
+        active_power = d["pg"],
+        reactive_power = d["qg"],
+        rating = sqrt(d["pmax"]^2 + d["qmax"]^2) * base_conversion,
+        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
         fuel = convert(ThermalFuels.ThermalFuel, d["fuel"]),
-        activepowerlimits = (min = d["pmin"], max = d["pmax"]),
-        reactivepowerlimits = (min = d["qmin"], max = d["qmax"]),
-        ramplimits = (up = ramp_lim / d["mbase"], down = ramp_lim / d["mbase"]),
-        timelimits = nothing,
-        op_cost = op_cost,
-        basepower = d["mbase"] / sys_mbase,
+        active_power_limits = (
+            min = d["pmin"] * base_conversion,
+            max = d["pmax"] * base_conversion,
+        ),
+        reactive_power_limits = (
+            min = d["qmin"] * base_conversion,
+            max = d["qmax"] * base_conversion,
+        ),
+        ramp_limits = (up = ramp_lim / d["mbase"], down = ramp_lim / d["mbase"]),
+        time_limits = nothing,
+        operation_cost = operation_cost,
+        base_power = d["mbase"],
         ext = ext,
     )
 
@@ -489,14 +511,14 @@ function make_line(name, d, bus_f, bus_t)
     return Line(;
         name = name,
         available = d["br_status"] == 1,
-        activepower_flow = pf,
-        reactivepower_flow = qf,
+        active_power_flow = pf,
+        reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
         rate = d["rate_a"],
-        anglelimits = (min = d["angmin"], max = d["angmax"]),
+        angle_limits = (min = d["angmin"], max = d["angmax"]),
     )
 end
 
@@ -506,12 +528,12 @@ function make_transformer_2w(name, d, bus_f, bus_t)
     return Transformer2W(;
         name = name,
         available = d["br_status"] == 1,
-        activepower_flow = pf,
-        reactivepower_flow = qf,
+        active_power_flow = pf,
+        reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
-        primaryshunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["b_fr"],  # TODO: which b ??
         rate = d["rate_a"],
     )
 end
@@ -522,13 +544,13 @@ function make_tap_transformer(name, d, bus_f, bus_t)
     return TapTransformer(;
         name = name,
         available = d["br_status"] == 1,
-        activepower_flow = pf,
-        reactivepower_flow = qf,
+        active_power_flow = pf,
+        reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primaryshunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["b_fr"],  # TODO: which b ??
         rate = d["rate_a"],
     )
 end
@@ -539,13 +561,13 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     return PhaseShiftingTransformer(;
         name = name,
         available = d["br_status"] == 1,
-        activepower_flow = pf,
-        reactivepower_flow = qf,
+        active_power_flow = pf,
+        reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primaryshunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
         rate = d["rate_a"],
     )
@@ -575,12 +597,12 @@ function make_dcline(name, d, bus_f, bus_t)
     return HVDCLine(;
         name = name,
         available = d["br_status"] == 1,
-        activepower_flow = get(d, "pf", 0.0),
+        active_power_flow = get(d, "pf", 0.0),
         arc = Arc(bus_f, bus_t),
-        activepowerlimits_from = (min = d["pminf"], max = d["pmaxf"]),
-        activepowerlimits_to = (min = d["pmint"], max = d["pmaxt"]),
-        reactivepowerlimits_from = (min = d["qminf"], max = d["qmaxf"]),
-        reactivepowerlimits_to = (min = d["qmint"], max = d["qmaxt"]),
+        active_power_limits_from = (min = d["pminf"], max = d["pmaxf"]),
+        active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
+        reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
+        reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
         loss = (l0 = d["loss0"], l1 = d["loss1"]),
     )
 end

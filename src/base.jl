@@ -16,20 +16,21 @@ const SYSTEM_KWARGS = Set((
     :time_series_directory,
     :time_series_in_memory,
     :time_series_read_only,
+    :unit_system,
 ))
 
 """
 System
 
-A power system defined by fields for basepower, components, and forecasts.
+A power system defined by fields for base_power, components, and forecasts.
 
 ```julia
-System(basepower)
-System(components, basepower)
-System(buses, generators, loads, branches, storage, basepower, services, annex; kwargs...)
-System(buses, generators, loads, basepower; kwargs...)
+System(base_power)
+System(components, base_power)
+System(buses, generators, loads, branches, storage, base_power, services, annex; kwargs...)
+System(buses, generators, loads, base_power; kwargs...)
 System(file; kwargs...)
-System(; buses, generators, loads, branches, storage, basepower, services, annex, kwargs...)
+System(; buses, generators, loads, branches, storage, base_power, services, annex, kwargs...)
 System(; kwargs...)
 ```
 
@@ -39,7 +40,7 @@ System(; kwargs...)
 - `loads::Vector{ElectricLoad}`: an array of load specifications that includes timing of the loads
 - `branches::Union{Nothing, Vector{Branch}}`: an array of branches; may be `nothing`
 - `storage::Union{Nothing, Vector{Storage}}`: an array of storage devices; may be `nothing`
-- `basepower::Float64`: the base power value for the system
+- `base_power::Float64`: the base power value for the system
 - `services::Union{Nothing, Vector{<:Service}}`: an array of services; may be `nothing`
 
 # Keyword arguments
@@ -50,13 +51,18 @@ System(; kwargs...)
 """
 struct System <: PowerSystemType
     data::IS.SystemData
-    basepower::Float64 # [MVA]
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
     runchecks::Bool
+    units_settings::SystemUnitsSettings
     internal::IS.InfrastructureSystemsInternal
 
-    function System(data, basepower, internal; kwargs...)
+    function System(
+        data,
+        units_settings::SystemUnitsSettings,
+        internal::IS.InfrastructureSystemsInternal;
+        kwargs...,
+    )
         # Note to devs: if you add parameters to kwargs then consider whether they need
         # special handling in the deserialization function in this file.
         # See JSON2.read for System.
@@ -65,24 +71,33 @@ struct System <: PowerSystemType
         # elsewhere.
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
-
+        if !isnothing(get(kwargs, :unit_system, nothing))
+            @warn("unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence")
+        end
         bus_numbers = Set{Int}()
         frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
         runchecks = get(kwargs, :runchecks, true)
-        sys = new(data, basepower, frequency, bus_numbers, runchecks, internal)
+        sys = new(data, frequency, bus_numbers, runchecks, units_settings, internal)
         return sys
     end
 end
 
+function System(data, base_power, internal; kwargs...)
+    unit_system_ = get(kwargs, :unit_system, "system_base")
+    unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
+    units_settings = SystemUnitsSettings(base_power, unit_system)
+    return System(data, units_settings, internal; kwargs...)
+end
+
 """Construct an empty `System`. Useful for building a System while parsing raw data."""
-function System(basepower; kwargs...)
-    return System(_create_system_data_from_kwargs(; kwargs...), basepower; kwargs...)
+function System(base_power; kwargs...)
+    return System(_create_system_data_from_kwargs(; kwargs...), base_power; kwargs...)
 end
 
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
-function System(data, basepower; kwargs...)
+function System(data, base_power; kwargs...)
     internal = get(kwargs, :internal, IS.InfrastructureSystemsInternal())
-    return System(data, basepower, internal; kwargs...)
+    return System(data, base_power, internal; kwargs...)
 end
 
 """System constructor when components are constructed externally."""
@@ -92,7 +107,7 @@ function System(
     loads::Vector{<:ElectricLoad},
     branches::Union{Nothing, Vector{<:Branch}},
     storage::Union{Nothing, Vector{<:Storage}},
-    basepower::Float64,
+    base_power::Float64,
     services::Union{Nothing, Vector{<:Service}},
     annex::Union{Nothing, Dict},
     ;
@@ -101,7 +116,7 @@ function System(
 
     data = _create_system_data_from_kwargs(; kwargs...)
 
-    sys = System(data, basepower; kwargs...)
+    sys = System(data, base_power; kwargs...)
 
     arrays = [buses, generators, loads]
     if !isnothing(branches)
@@ -160,7 +175,7 @@ function System(
     buses::Vector{Bus},
     generators::Vector{<:Generator},
     loads::Vector{<:ElectricLoad},
-    basepower::Float64,
+    base_power::Float64,
     ;
     kwargs...,
 )
@@ -170,7 +185,7 @@ function System(
         loads,
         nothing,
         nothing,
-        basepower,
+        base_power,
         nothing,
         nothing,
         nothing,
@@ -181,7 +196,7 @@ end
 
 """System constructor with keyword arguments."""
 function System(;
-    basepower = 100.0,
+    base_power = 100.0,
     buses,
     generators,
     loads,
@@ -197,7 +212,7 @@ function System(;
         loads,
         branches,
         storage,
-        basepower,
+        base_power,
         services,
         annex,
         ;
@@ -215,9 +230,9 @@ function System(
             name = "init",
             bustype = BusTypes.REF,
             angle = 0.0,
-            voltage = 0.0,
-            voltagelimits = (min = 0.0, max = 0.0),
-            basevoltage = nothing,
+            magnitude = 0.0,
+            voltage_limits = (min = 0.0, max = 0.0),
+            base_voltage = nothing,
             area = nothing,
             load_zone = nothing,
             ext = Dict{String, Any}(),
@@ -227,7 +242,7 @@ function System(
     loads = [PowerLoad(nothing)],
     branches = nothing,
     storage = nothing,
-    basepower = 100.0,
+    base_power = 100.0,
     services = nothing,
     annex = nothing,
     kwargs...,
@@ -238,7 +253,7 @@ function System(
         loads,
         branches,
         storage,
-        basepower,
+        base_power,
         services,
         annex,
         ;
@@ -312,7 +327,7 @@ get_ext(sys::System) = IS.get_ext(sys.internal)
 """
 Return the system's base power.
 """
-get_basepower(sys::System) = sys.basepower
+get_base_power(sys::System) = sys.units_settings.base_value
 
 """
 Return the system's frequency.
@@ -323,6 +338,11 @@ get_frequency(sys::System) = sys.frequency
 Clear any value stored in ext.
 """
 clear_ext(sys::System) = IS.clear_ext(sys.internal)
+
+function set_unit_system!(component::Component, settings::SystemUnitsSettings)
+    component.internal.units_info = settings
+    return
+end
 
 """
 Add a component to the system.
@@ -346,6 +366,8 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
 """
 function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
+    set_unit_system!(component, sys.units_settings)
+    @assert !isnothing(component.internal.units_info)
     check_component_addition(sys, component)
     check_for_services_on_addition(sys, component)
 
@@ -390,6 +412,7 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
         end
     end
 
+    set_unit_system!(service, sys.units_settings)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; kwargs...)
 
@@ -501,6 +524,11 @@ function remove_components!(::Type{T}, sys::System) where {T <: Component}
     end
 end
 
+function clear_units!(component::Component)
+    get_internal(component).units_info = nothing
+    return
+end
+
 """
 Remove a component from the system by its value.
 
@@ -510,6 +538,7 @@ function remove_component!(sys::System, component::T) where {T <: Component}
     check_component_removal(sys, component)
     IS.remove_component!(sys.data, component)
     handle_component_removal!(sys, component)
+    clear_units!(component)
 end
 
 """
@@ -1103,12 +1132,13 @@ function deserialize(
 
         # Read any field that is defined in System but optional for the constructors and not
         # already handled here.
-        handled = (:data, :basepower, :bus_numbers, :internal)
+        handled = (:data, :units_settings, :bus_numbers, :internal)
         kwargs = Dict{Symbol, Any}()
         for field in setdiff(propertynames(raw), handled)
             kwargs[field] = getproperty(raw, field)
         end
 
+        units_settings = IS.convert_type(SystemUnitsSettings, raw.units_settings)
         data = IS.deserialize(
             IS.SystemData,
             Component,
@@ -1116,7 +1146,11 @@ function deserialize(
             time_series_read_only = time_series_read_only,
         )
         internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
-        sys = System(data, float(raw.basepower); internal = internal, kwargs...)
+        sys = System(data, units_settings; internal = internal)
+        for component in get_components(Component, sys)
+            set_unit_system!(component, units_settings)
+        end
+        return sys
     end
 end
 
@@ -1327,6 +1361,7 @@ end
 function handle_component_addition!(sys::System, component::RegulationDevice)
     copy_forecasts!(component.device, component)
     remove_component!(sys, component.device)
+    return
 end
 
 """
@@ -1382,8 +1417,13 @@ end
 function IS.compare_values(x::System, y::System)
     match = true
 
-    if x.basepower != y.basepower
-        @debug "basepower does not match" x.basepower y.basepower
+    if x.units_settings.unit_system != x.units_settings.unit_system
+        @debug "unit system does not match" x.units_settings.unit_system y.units_settings.unit_system
+        match = false
+    end
+
+    if get_base_power(x) != get_base_power(y)
+        @debug "base_power does not match" get_base_power(x) get_base_power(y)
         match = false
     end
 
@@ -1463,15 +1503,15 @@ function convert_component!(
     new_line = linetype(
         line.name,
         line.available,
-        line.activepower_flow,
-        line.reactivepower_flow,
+        line.active_power_flow,
+        line.reactive_power_flow,
         line.arc,
         line.r,
         line.x,
         line.b,
         (from_to = line.rate, to_from = line.rate),
         line.rate,
-        line.anglelimits,
+        line.angle_limits,
         line.services,
         line.ext,
         InfrastructureSystems.Forecasts(),
@@ -1503,14 +1543,14 @@ function convert_component!(
     new_line = linetype(
         line.name,
         line.available,
-        line.activepower_flow,
-        line.reactivepower_flow,
+        line.active_power_flow,
+        line.reactive_power_flow,
         line.arc,
         line.r,
         line.x,
         line.b,
         line.rate,
-        line.anglelimits,
+        line.angle_limits,
         line.services,
         line.ext,
         InfrastructureSystems.Forecasts(),

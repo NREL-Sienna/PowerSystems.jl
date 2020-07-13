@@ -89,19 +89,19 @@ function create_system_with_dynamic_inverter()
 
     battery = GenericBattery(
         name = "Battery",
-        primemover = PrimeMovers.BA,
+        prime_mover = PrimeMovers.BA,
         available = true,
         bus = nodes_OMIB[2],
-        energy = 5.0,
-        capacity = (min = 5.0, max = 100.0),
+        initial_energy = 5.0,
+        state_of_charge_limits = (min = 5.0, max = 100.0),
         rating = 0.0275, #Value in per_unit of the system
-        activepower = 0.01375,
-        inputactivepowerlimits = (min = 0.0, max = 50.0),
-        outputactivepowerlimits = (min = 0.0, max = 50.0),
-        reactivepower = 0.0,
-        reactivepowerlimits = (min = -50.0, max = 50.0),
+        active_power = 0.01375,
+        input_active_power_limits = (min = 0.0, max = 50.0),
+        output_active_power_limits = (min = 0.0, max = 50.0),
+        reactive_power = 0.0,
+        reactive_power_limits = (min = -50.0, max = 50.0),
         efficiency = (in = 0.80, out = 0.90),
-        basepower = 100.0,
+        base_power = 100.0,
     )
     converter = AverageConverter(
         138.0, #Rated Voltage
@@ -185,9 +185,6 @@ function create_system_with_dynamic_inverter()
         filt,
     ) #Output Filter
 
-    @test get_V_ref(test_inverter) == 1.045
-    @test get_P_ref(test_inverter) == 0.01375
-    @test get_Q_ref(test_inverter) == 0.0
     add_component!(sys, test_inverter)
 
     return sys
