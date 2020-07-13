@@ -94,105 +94,105 @@
       "supertype": "OperationalCost"
     },
     {
-        "struct_name": "MultiStartCost",
-        "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
-        "fields": [
-            {
-                "name": "variable",
-                "comment": "variable cost",
-                "null_value": "VariableCost((0.0, 0.0))",
-                "data_type": "VariableCost"
-            },
-            {
-                "name": "no_load",
-                "comment": "no load cost",
-                "null_value": "0.0",
-                "data_type": "Float64"
-            },
-            {
-                "name": "fixed",
-                "comment": "fixed cost",
-                "null_value": "0.0",
-                "data_type": "Float64"
-            },
-            {
-                "name": "startup",
-                "comment": "startup cost",
-                "null_value": "(hot = START_COST, warm = START_COST,cold = START_COST)",
-                "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
-            },
-            {
-                "name": "shutdn",
-                "comment": "shutdown cost",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "warn"
-            },
-            {
-                "name": "forecasts",
-                "accessor_module": "InfrastructureSystems",
-                "comment": "internal forecast storage",
-                "null_value": "InfrastructureSystems.Forecasts()",
-                "data_type": "InfrastructureSystems.Forecasts",
-                "default": "InfrastructureSystems.Forecasts()"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "OperationalCost"
+      "struct_name": "MultiStartCost",
+      "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
+      "fields": [
+        {
+          "name": "variable",
+          "comment": "variable cost",
+          "null_value": "VariableCost((0.0, 0.0))",
+          "data_type": "VariableCost"
+        },
+        {
+          "name": "no_load",
+          "comment": "no load cost",
+          "null_value": "0.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "fixed",
+          "comment": "fixed cost",
+          "null_value": "0.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "startup",
+          "comment": "startup cost",
+          "null_value": "(hot = START_COST, warm = START_COST,cold = START_COST)",
+          "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
+        },
+        {
+          "name": "shutdn",
+          "comment": "shutdown cost",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "forecasts",
+          "accessor_module": "InfrastructureSystems",
+          "comment": "internal forecast storage",
+          "null_value": "InfrastructureSystems.Forecasts()",
+          "data_type": "InfrastructureSystems.Forecasts",
+          "default": "InfrastructureSystems.Forecasts()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "OperationalCost"
     },
     {
-        "struct_name": "Area",
-        "docstring": "A collection of buses for control purposes.",
-        "fields": [
-            {
-                "null_value": "init",
-                "name": "name",
-                "accessor_module": "InfrastructureSystems",
-                "data_type": "String"
-            },
-            {
-                "name": "maxactivepower",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "default": "0.0"
-            },
-            {
-                "name": "maxreactivepower",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "default": "0.0"
-            },
-            {
-                "name": "load_response",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "default": "0.0"
-            },
-            {
-                "name": "forecasts",
-                "accessor_module": "InfrastructureSystems",
-                "comment": "internal forecast storage",
-                "null_value": "InfrastructureSystems.Forecasts()",
-                "data_type": "InfrastructureSystems.Forecasts",
-                "default": "InfrastructureSystems.Forecasts()"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-	],
-        "supertype": "AggregationTopology"
+      "struct_name": "Area",
+      "docstring": "A collection of buses for control purposes.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "accessor_module": "InfrastructureSystems",
+          "data_type": "String"
+        },
+        {
+          "name": "peak_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "default": "0.0"
+        },
+        {
+          "name": "peak_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "default": "0.0"
+        },
+        {
+          "name": "load_response",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "default": "0.0"
+        },
+        {
+          "name": "forecasts",
+          "accessor_module": "InfrastructureSystems",
+          "comment": "internal forecast storage",
+          "null_value": "InfrastructureSystems.Forecasts()",
+          "data_type": "InfrastructureSystems.Forecasts",
+          "default": "InfrastructureSystems.Forecasts()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AggregationTopology"
     },
     {
       "struct_name": "LoadZone",
@@ -205,12 +205,12 @@
           "data_type": "String"
         },
         {
-          "name": "maxactivepower",
+          "name": "peak_active_power",
           "null_value": "0.0",
           "data_type": "Float64"
         },
         {
-          "name": "maxreactivepower",
+          "name": "peak_reactive_power",
           "null_value": "0.0",
           "data_type": "Float64"
         },
@@ -267,21 +267,21 @@
           "validation_action": "error"
         },
         {
-          "name": "voltage",
+          "name": "magnitude",
           "comment": "voltage as a multiple of basevoltage",
           "null_value": "0.0",
           "data_type": "Union{Nothing, Float64}",
-          "valid_range": "voltagelimits",
+          "valid_range": "voltage_limits",
           "validation_action": "warn"
         },
         {
-          "name": "voltagelimits",
+          "name": "voltage_limits",
           "comment": "limits on the voltage variation as multiples of basevoltage",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "Union{Nothing, Min_Max}"
         },
         {
-          "name": "basevoltage",
+          "name": "base_voltage",
           "comment": "the base voltage in kV",
           "null_value": "nothing",
           "data_type": "Union{Nothing, Float64}",
@@ -360,14 +360,16 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "null_value": "Arc(Bus(nothing), Bus(nothing))",
@@ -410,10 +412,11 @@
         {
           "null_value": "0.0",
           "name": "rate",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "anglelimits",
+          "name": "angle_limits",
           "null_value": "(min=-1.571, max=1.571)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "valid_range": {
@@ -467,14 +470,16 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "null_value": "Arc(Bus(nothing), Bus(nothing))",
@@ -518,18 +523,20 @@
           "name": "flowlimits",
           "null_value": "(from_to=0.0, to_from=0.0)",
           "comment": "TODO: throw warning above max SIL",
-          "data_type": "NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}"
+          "data_type": "NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}",
+          "needs_conversion": true
         },
         {
           "null_value": "0.0",
           "name": "rate",
           "data_type": "Float64",
-          "comment": "TODO: compare to SIL (warn) (theoretical limit)"
+          "comment": "TODO: compare to SIL (warn) (theoretical limit)",
+          "needs_conversion": true
         },
         {
-          "name": "anglelimits",
+          "name": "angle_limits",
           "null_value": "(min=-1.571, max=1.571)",
-          "data_type": "Min_Max",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
           "valid_range": {
             "min": -1.571,
             "max": 1.571
@@ -581,14 +588,16 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "null_value": "Arc(Bus(nothing), Bus(nothing))",
@@ -618,7 +627,7 @@
           "validation_action": "error"
         },
         {
-          "name": "primaryshunt",
+          "name": "primary_shunt",
           "null_value": "0.0",
           "data_type": "Float64",
           "Comment": "System per-unit value",
@@ -656,7 +665,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "services",
@@ -703,14 +713,16 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "null_value": "Arc(Bus(nothing), Bus(nothing))",
@@ -740,7 +752,7 @@
           "validation_action": "error"
         },
         {
-          "name": "primaryshunt",
+          "name": "primary_shunt",
           "null_value": "0.0",
           "data_type": "Float64",
           "comment": "System per-unit value",
@@ -768,7 +780,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "services",
@@ -816,14 +829,16 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower_flow",
+          "name": "reactive_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "null_value": "Arc(Bus(nothing), Bus(nothing))",
@@ -853,7 +868,7 @@
           "validation_action": "error"
         },
         {
-          "name": "primaryshunt",
+          "name": "primary_shunt",
           "null_value": "0.0",
           "data_type": "Float64",
           "comment": "System per-unit value",
@@ -871,7 +886,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "services",
@@ -919,9 +935,10 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "null_value": "Arc(Bus(nothing), Bus(nothing))",
@@ -929,24 +946,28 @@
           "data_type": "Arc"
         },
         {
-          "name": "activepowerlimits_from",
+          "name": "active_power_limits_from",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
         },
         {
-          "name": "activepowerlimits_to",
+          "name": "active_power_limits_to",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepowerlimits_from",
+          "name": "reactive_power_limits_from",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepowerlimits_to",
+          "name": "reactive_power_limits_to",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
         },
         {
           "name": "loss",
@@ -999,9 +1020,10 @@
           "data_type": "Bool"
         },
         {
-          "name": "activepower_flow",
+          "name": "active_power_flow",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "null_value": "Arc(Bus(nothing), Bus(nothing))",
@@ -1009,9 +1031,9 @@
           "data_type": "Arc"
         },
         {
-          "name": "rectifier_taplimits",
+          "name": "rectifier_tap_limits",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "rectifier_xrc",
@@ -1021,12 +1043,12 @@
         {
           "name": "rectifier_firing_angle",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
-          "name": "inverter_taplimits",
+          "name": "inverter_tap_limits",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "inverter_xrc",
@@ -1036,7 +1058,7 @@
         {
           "name": "inverter_firing_angle",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "services",
@@ -1093,27 +1115,42 @@
           "data_type": "LoadModels.LoadModel"
         },
         {
-          "name": "activepower",
+          "name": "active_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower",
+          "name": "reactive_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "maxactivepower",
+          "name": "max_active_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "maxreactivepower",
+          "name": "max_reactive_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "op_cost",
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
           "data_type": "TwoPartCost",
           "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
@@ -1237,24 +1274,39 @@
           "data_type": "Union{Nothing, LoadModels.LoadModel}"
         },
         {
-          "name": "activepower",
+          "name": "active_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower",
+          "name": "reactive_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "maxactivepower",
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
         },
         {
-          "name": "maxreactivepower",
+          "name": "max_active_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "name": "services",
@@ -1314,16 +1366,18 @@
           "data_type": "Bus"
         },
         {
-          "name": "activepower",
-          "null_value": "0.0",
-          "data_type": "Float64"
-        },
-        {
-          "name": "reactivepower",
+          "name": "active_power",
           "null_value": "0.0",
           "data_type": "Float64",
-          "valid_range": "reactivepowerlimits",
-          "validation_action": "warn"
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": "reactive_power_limits",
+          "validation_action": "warn",
+          "needs_conversion": true
         },
         {
           "name": "rating",
@@ -1334,27 +1388,30 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
-          "name": "primemover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "activepowerlimits",
+          "name": "active_power_limits",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepowerlimits",
+          "name": "reactive_power_limits",
           "validation_action": "warn",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, Min_Max}"
+          "data_type": "Union{Nothing, Min_Max}",
+          "needs_conversion": true
         },
         {
-          "name": "ramplimits",
+          "name": "ramp_limits",
           "comment": "ramp up and ramp down limits",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
@@ -1362,10 +1419,11 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
-          "name": "timelimits",
+          "name": "time_limits",
           "comment": "Minimum up and Minimum down time limits in hours",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
@@ -1376,14 +1434,14 @@
           "validation_action": "error"
         },
         {
-          "name": "op_cost",
+          "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
           "data_type": "TwoPartCost",
           "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
         },
         {
-          "name": "basepower",
-          "comment": "Base power of the unit in system base per unit",
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1400,7 +1458,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "inflow",
@@ -1420,7 +1479,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "services",
@@ -1480,16 +1540,18 @@
           "data_type": "Bus"
         },
         {
-          "name": "activepower",
-          "null_value": "0.0",
-          "data_type": "Float64"
-        },
-        {
-          "name": "reactivepower",
+          "name": "active_power",
           "null_value": "0.0",
           "data_type": "Float64",
-          "valid_range": "reactivepowerlimits",
-          "validation_action": "warn"
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": "reactive_power_limits",
+          "validation_action": "warn",
+          "needs_conversion": true
         },
         {
           "name": "rating",
@@ -1500,27 +1562,30 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
-          "name": "primemover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "activepowerlimits",
+          "name": "active_power_limits",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepowerlimits",
+          "name": "reactive_power_limits",
           "validation_action": "warn",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, Min_Max}"
+          "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}",
+          "needs_conversion": true
         },
         {
-          "name": "ramplimits",
+          "name": "ramp_limits",
           "comment": "ramp up and ramp down limits",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
@@ -1528,10 +1593,11 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
-          "name": "timelimits",
+          "name": "time_limits",
           "comment": "Minimum up and Minimum down time limits in hours",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
@@ -1542,8 +1608,8 @@
           "validation_action": "error"
         },
         {
-          "name": "basepower",
-          "comment": "Base power of the unit in system base per unit",
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1610,12 +1676,12 @@
           "data_type": "Bus"
         },
         {
-          "name": "activepower",
+          "name": "active_power",
           "null_value": "0.0",
           "data_type": "Float64"
         },
         {
-          "name": "reactivepower",
+          "name": "reactive_power",
           "null_value": "0.0",
           "data_type": "Float64"
         },
@@ -1631,18 +1697,19 @@
           "validation_action": "error"
         },
         {
-          "name": "primemover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "reactivepowerlimits",
+          "name": "reactive_power_limits",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, Min_Max}"
+          "data_type": "Union{Nothing, Min_Max}",
+          "needs_conversion": true
         },
         {
-          "name": "powerfactor",
+          "name": "power_factor",
           "null_value": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1652,14 +1719,14 @@
           "validation_action": "error"
         },
         {
-          "name": "op_cost",
+          "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
           "data_type": "TwoPartCost",
           "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
         },
         {
-          "name": "basepower",
-          "comment": "Base power of the unit in system base per unit",
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1727,14 +1794,16 @@
           "data_type": "Bus"
         },
         {
-          "name": "activepower",
+          "name": "active_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower",
+          "name": "reactive_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "name": "rating",
@@ -1745,16 +1814,17 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
-          "name": "primemover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
-          "name": "powerfactor",
+          "name": "power_factor",
           "null_value": "1.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1764,8 +1834,8 @@
           "validation_action": "error"
         },
         {
-          "name": "basepower",
-          "comment": "Base power of the unit in system base per unit",
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1838,18 +1908,20 @@
           "data_type": "Bus"
         },
         {
-          "name": "activepower",
+          "name": "active_power",
           "null_value": "0.0",
           "data_type": "Float64",
-          "valid_range": "activepowerlimits",
-          "validation_action": "warn"
+          "valid_range": "active_power_limits",
+          "validation_action": "warn",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepower",
+          "name": "reactive_power",
           "null_value": "0.0",
           "data_type": "Float64",
-          "valid_range": "reactivepowerlimits",
-          "validation_action": "warn"
+          "valid_range": "reactive_power_limits",
+          "validation_action": "warn",
+          "needs_conversion": true
         },
         {
           "name": "rating",
@@ -1860,42 +1932,46 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
-          "name": "primemover",
-          "comment": "PrimeMover Technology according to EIA 923",
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
           "data_type": "PrimeMovers.PrimeMover"
         },
         {
           "name": "fuel",
-          "comment": "PrimeMover Fuel according to EIA 923",
+          "comment": "prime_mover Fuel according to EIA 923",
           "null_value": "ThermalFuels.OTHER",
           "data_type": "ThermalFuels.ThermalFuel"
         },
         {
-          "name": "activepowerlimits",
+          "name": "active_power_limits",
           "null_value": "(min=0.0, max=0.0)",
-          "data_type": "Min_Max"
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
         },
         {
-          "name": "reactivepowerlimits",
+          "name": "reactive_power_limits",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, Min_Max}"
+          "data_type": "Union{Nothing, Min_Max}",
+          "needs_conversion": true
         },
         {
-          "name": "ramplimits",
+          "name": "ramp_limits",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
           "valid_range": {
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
-          "name": "timelimits",
+          "name": "time_limits",
           "comment": "Minimum up and Minimum down time limits in hours",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
@@ -1906,13 +1982,13 @@
           "validation_action": "error"
         },
         {
-          "name": "op_cost",
+          "name": "operation_cost",
           "null_value": "ThreePartCost(nothing)",
           "data_type": "ThreePartCost"
         },
         {
-          "name": "basepower",
-          "comment": "Base power of the unit in system base per unit",
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -1966,339 +2042,353 @@
       "supertype": "ThermalGen"
     },
     {
-        "struct_name": "ThermalMultiStart",
-        "docstring": "Data Structure for thermal generation technologies.",
-        "fields": [
-            {
-                "null_value": "init",
-                "name": "name",
-                "accessor_module": "InfrastructureSystems",
-                "data_type": "String"
-            },
-            {
-                "null_value": "false",
-                "name": "available",
-                "data_type": "Bool"
-            },
-            {
-                "null_value": "false",
-                "name": "status",
-                "data_type": "Bool"
-            },
-            {
-                "name": "bus",
-                "null_value": "Bus(nothing)",
-                "data_type": "Bus"
-            },
-            {
-                "name": "activepower",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": "activepowerlimits",
-                "validation_action": "warn"
-            },
-            {
-                "name": "reactivepower",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": "reactivepowerlimits",
-                "validation_action": "warn"
-            },
-            {
-                "name": "rating",
-                "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "primemover",
-                "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "PrimeMovers.OT",
-                "data_type": "PrimeMovers.PrimeMover"
-            },
-            {
-                "name": "fuel",
-                "comment": "PrimeMover Fuel according to EIA 923",
-                "null_value": "ThermalFuels.OTHER",
-                "data_type": "ThermalFuels.ThermalFuel"
-            },
-            {
-                "name": "activepowerlimits",
-                "null_value": "(min=0.0, max=0.0)",
-                "data_type": "Min_Max"
-            },
-            {
-                "name": "reactivepowerlimits",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, Min_Max}"
-            },
-            {
-                "name": "ramplimits",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "power_trajectory",
-                "comment": "Power trajectory the unit will take during the startup and shutdown ramp process",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "timelimits",
-                "comment": "Minimum up and Minimum down time limits in hours",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "start_time_limits",
-                "comment": " Time limits for startup based on turbine temperature in hours",
-                "null_value": "nothing",
-                "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
-            },
-            {
-                "name": "start_types",
-                "comment": " Number of startup based on turbine temperature",
-                "null_value": "1",
-                "data_type": "Int",
-                "valid_range": {
-                    "min": 1,
-                    "max": 3
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "op_cost",
-                "null_value": "MultiStartCost(nothing)",
-                "data_type": "MultiStartCost"
-            },
-            {
-                "name": "basepower",
-                "comment": "Base power of the unit in system base per unit",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "warn"
-            },
-            {
-                "name": "services",
-                "data_type": "Vector{Service}",
-                "comment": "Services that this device contributes to",
-                "null_value": "Device[]",
-                "default": "Device[]"
-            },
-            {
-                "name": "time_at_status",
-                "null_value": "INFINITE_TIME",
-                "data_type": "Float64",
-                "default": "INFINITE_TIME"
-            },
-            {
-                "name": "must_run",
-                "null_value": "false",
-                "data_type": "Bool",
-                "default": "false"
-            },
-            {
-                "name": "dynamic_injector",
-                "data_type": "Union{Nothing, DynamicInjection}",
-                "comment": "corresponding dynamic injection device",
-                "null_value": "nothing",
-                "default": "nothing"
-            },
-            {
-                "name": "ext",
-                "data_type": "Dict{String, Any}",
-                "null_value": "Dict{String, Any}()",
-                "default": "Dict{String, Any}()"
-            },
-            {
-                "name": "forecasts",
-                "accessor_module": "InfrastructureSystems",
-                "comment": "internal forecast storage",
-                "null_value": "InfrastructureSystems.Forecasts()",
-                "data_type": "InfrastructureSystems.Forecasts",
-                "default": "InfrastructureSystems.Forecasts()"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "ThermalGen"
+      "struct_name": "ThermalMultiStart",
+      "docstring": "Data Structure for thermal generation technologies.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "accessor_module": "InfrastructureSystems",
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "null_value": "false",
+          "name": "status",
+          "data_type": "Bool"
+        },
+        {
+          "name": "bus",
+          "null_value": "Bus(nothing)",
+          "data_type": "Bus"
+        },
+        {
+          "name": "active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": "active_power_limits",
+          "validation_action": "warn",
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": "reactive_power_limits",
+          "validation_action": "warn",
+          "needs_conversion": true
+        },
+        {
+          "name": "rating",
+          "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
+          "null_value": "PrimeMovers.OT",
+          "data_type": "PrimeMovers.PrimeMover"
+        },
+        {
+          "name": "fuel",
+          "comment": "prime_mover Fuel according to EIA 923",
+          "null_value": "ThermalFuels.OTHER",
+          "data_type": "ThermalFuels.ThermalFuel"
+        },
+        {
+          "name": "active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power_limits",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, Min_Max}",
+          "needs_conversion": true
+        },
+        {
+          "name": "ramp_limits",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "power_trajectory",
+          "comment": "Power trajectory the unit will take during the startup and shutdown ramp process",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "time_limits",
+          "comment": "Minimum up and Minimum down time limits in hours",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "start_time_limits",
+          "comment": " Time limits for startup based on turbine temperature in hours",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
+        },
+        {
+          "name": "start_types",
+          "comment": " Number of startup based on turbine temperature",
+          "null_value": "1",
+          "data_type": "Int",
+          "valid_range": {
+            "min": 1,
+            "max": 3
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "operation_cost",
+          "null_value": "MultiStartCost(nothing)",
+          "data_type": "MultiStartCost"
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "services",
+          "data_type": "Vector{Service}",
+          "comment": "Services that this device contributes to",
+          "null_value": "Device[]",
+          "default": "Device[]"
+        },
+        {
+          "name": "time_at_status",
+          "null_value": "INFINITE_TIME",
+          "data_type": "Float64",
+          "default": "INFINITE_TIME"
+        },
+        {
+          "name": "must_run",
+          "null_value": "false",
+          "data_type": "Bool",
+          "default": "false"
+        },
+        {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection device",
+          "null_value": "nothing",
+          "default": "nothing"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "forecasts",
+          "accessor_module": "InfrastructureSystems",
+          "comment": "internal forecast storage",
+          "null_value": "InfrastructureSystems.Forecasts()",
+          "data_type": "InfrastructureSystems.Forecasts",
+          "default": "InfrastructureSystems.Forecasts()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "ThermalGen"
     },
     {
-        "struct_name": "GenericBattery",
-        "docstring": "Data structure for a generic battery",
-        "fields": [
-            {
-                "null_value": "init",
-                "name": "name",
-                "accessor_module": "InfrastructureSystems",
-                "data_type": "String"
-            },
-            {
-                "null_value": "false",
-                "name": "available",
-                "data_type": "Bool"
-            },
-            {
-                "name": "bus",
-                "null_value": "Bus(nothing)",
-                "data_type": "Bus"
-            },
-            {
-                "name": "primemover",
-                "comment": "PrimeMover Technology according to EIA 923",
-                "null_value": "PrimeMovers.BA",
-                "data_type": "PrimeMovers.PrimeMover"
-            },
-            {
-                "name": "energy",
-                "null_value": "0.0",
-                "comment": "State of Charge of the Battery p.u.-hr",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "capacity",
-                "null_value": "(min=0.0, max=0.0)",
-                "comment": "Maximum and Minimum storage capacity in p.u.-hr",
-                "data_type": "Min_Max",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "rating",
-                "null_value": "0.0",
-                "data_type": "Float64"
-            },
-            {
-                "name": "activepower",
-                "null_value": "0.0",
-                "data_type": "Float64"
-            },
-            {
-                "name": "inputactivepowerlimits",
-                "null_value": "(min=0.0, max=0.0)",
-                "data_type": "Min_Max",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "outputactivepowerlimits",
-                "null_value": "(min=0.0, max=0.0)",
-                "data_type": "Min_Max",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "error"
-            },
-            {
-                "name": "efficiency",
-                "null_value": "(in=0.0, out=0.0)",
-                "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}",
-                "valid_range": {
-                    "min": 0,
-                    "max": 1
-                },
-                "validation_action": "warn"
-            },
-            {
-                "name": "reactivepower",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": "reactivepowerlimits",
-                "validation_action": "warn"
-            },
-            {
-                "name": "reactivepowerlimits",
-                "null_value": "(min=0.0, max=0.0)",
-                "data_type": "Union{Nothing, Min_Max}"
-            },
-            {
-                "name": "basepower",
-                "comment": "Base power of the unit in system base per unit",
-                "null_value": "0.0",
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                },
-                "validation_action": "warn"
-            },
-            {
-                "name": "services",
-                "data_type": "Vector{Service}",
-                "comment": "Services that this device contributes to",
-                "null_value": "Device[]",
-                "default": "Device[]"
-            },
-            {
-                "name": "dynamic_injector",
-                "data_type": "Union{Nothing, DynamicInjection}",
-                "comment": "corresponding dynamic injection device",
-                "null_value": "nothing",
-                "exclude_setter": true,
-                "default": "nothing"
-            },
-            {
-                "name": "ext",
-                "data_type": "Dict{String, Any}",
-                "null_value": "Dict{String, Any}()",
-                "default": "Dict{String, Any}()"
-            },
-            {
-                "name": "forecasts",
-                "accessor_module": "InfrastructureSystems",
-                "comment": "internal forecast storage",
-                "null_value": "InfrastructureSystems.Forecasts()",
-                "data_type": "InfrastructureSystems.Forecasts",
-                "default": "InfrastructureSystems.Forecasts()"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "Storage"
+      "struct_name": "GenericBattery",
+      "docstring": "Data structure for a generic battery",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "accessor_module": "InfrastructureSystems",
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "name": "bus",
+          "null_value": "Bus(nothing)",
+          "data_type": "Bus"
+        },
+        {
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
+          "null_value": "PrimeMovers.BA",
+          "data_type": "PrimeMovers.PrimeMover"
+        },
+        {
+          "name": "initial_energy",
+          "null_value": "0.0",
+          "comment": "State of Charge of the Battery p.u.-hr",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "state_of_charge_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "comment": "Maximum and Minimum storage capacity in p.u.-hr",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "rating",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "input_active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "output_active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "efficiency",
+          "null_value": "(in=0.0, out=0.0)",
+          "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": "reactive_power_limits",
+          "validation_action": "warn",
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "Union{Nothing, Min_Max}",
+          "needs_conversion": true
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "services",
+          "data_type": "Vector{Service}",
+          "comment": "Services that this device contributes to",
+          "null_value": "Device[]",
+          "default": "Device[]"
+        },
+        {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection device",
+          "null_value": "nothing",
+          "exclude_setter": true,
+          "default": "nothing"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "forecasts",
+          "accessor_module": "InfrastructureSystems",
+          "comment": "internal forecast storage",
+          "null_value": "InfrastructureSystems.Forecasts()",
+          "data_type": "InfrastructureSystems.Forecasts",
+          "default": "InfrastructureSystems.Forecasts()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "Storage"
     },
     {
       "struct_name": "StaticReserve",
@@ -2317,8 +2407,8 @@
           "data_type": "Bool"
         },
         {
-          "name": "timeframe",
-          "comment": "the relative saturation timeframe",
+          "name": "time_frame",
+          "comment": "the relative saturation time_frame",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2329,7 +2419,7 @@
         },
         {
           "name": "requirement",
-          "comment": "the static value of required reserves",
+          "comment": "the static value of required reserves in system p.u.",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2370,8 +2460,8 @@
           "data_type": "Bool"
         },
         {
-          "name": "timeframe",
-          "comment": "the relative saturation timeframe",
+          "name": "time_frame",
+          "comment": "the relative saturation time_frame",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2381,7 +2471,7 @@
           "validation_action": "error"
         },
         {
-          "name": "op_cost",
+          "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
           "data_type": "TwoPartCost",
           "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
@@ -2426,8 +2516,8 @@
           "data_type": "Bool"
         },
         {
-          "name": "timeframe",
-          "comment": "the relative saturation timeframe",
+          "name": "time_frame",
+          "comment": "the relative saturation time_frame",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -2587,6 +2677,17 @@
           "name": "Vf",
           "comment": "Fixed voltage field applied to the rotor winding",
           "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -3643,278 +3744,278 @@
       "supertype": "Machine"
     },
     {
-        "struct_name": "RoundRotorMachine",
-        "docstring": "Parameters of 4-states round-rotor synchronous machine with quadratic/exponential saturation:\nIEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.",
-        "fields": [
-            {
-                "name": "R",
-                "comment": "Armature resistance",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Td0_p",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Time constant of transient d-axis voltage",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Td0_pp",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Time constant of sub-transient d-axis voltage",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Tq0_p",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Time constant of transient q-axis voltage",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Tq0_pp",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Time constant of sub-transient q-axis voltage",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xd",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Reactance after EMF in d-axis per unit",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xq",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Reactance after EMF in q-axis per unit",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xd_p",
-                "comment": "Transient reactance after EMF in d-axis per unit",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xq_p",
-                "comment": "Transient reactance after EMF in q-axis per unit",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xd_pp",
-                "comment": "Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xl",
-                "comment": "Stator leakage reactance",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Se",
-                "comment": "Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2",
-                "null_value": "(0.0, 0.0)",
-                "data_type": "Tuple{Float64, Float64}"
-            },
-            {
-                "name": "ext",
-                "data_type": "Dict{String, Any}",
-                "null_value": "Dict{String, Any}()",
-                "default": "Dict{String, Any}()"
-            },
-            {
-                "name": "states",
-                "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\ted_p: d-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψ_kq: flux linkage in the first equivalent damping circuit in the d-axis",
-                "internal_default": "[:eq_p, :ed_p, :ψ_kd, :ψ_kq]",
-                "data_type": "Vector{Symbol}"
-            },
-            {
-                "name": "n_states",
-                "comment": "RoundRotorMachine has 4 states",
-                "internal_default": 4,
-                "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "Machine"
+      "struct_name": "RoundRotorMachine",
+      "docstring": "Parameters of 4-states round-rotor synchronous machine with quadratic/exponential saturation:\nIEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.",
+      "fields": [
+        {
+          "name": "R",
+          "comment": "Armature resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Td0_p",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Time constant of transient d-axis voltage",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Td0_pp",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Time constant of sub-transient d-axis voltage",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tq0_p",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Time constant of transient q-axis voltage",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tq0_pp",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Time constant of sub-transient q-axis voltage",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Reactance after EMF in d-axis per unit",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Reactance after EMF in q-axis per unit",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd_p",
+          "comment": "Transient reactance after EMF in d-axis per unit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq_p",
+          "comment": "Transient reactance after EMF in q-axis per unit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd_pp",
+          "comment": "Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xl",
+          "comment": "Stator leakage reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Se",
+          "comment": "Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\ted_p: d-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψ_kq: flux linkage in the first equivalent damping circuit in the d-axis",
+          "internal_default": "[:eq_p, :ed_p, :ψ_kd, :ψ_kq]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "RoundRotorMachine has 4 states",
+          "internal_default": 4,
+          "data_type": "Int64"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "Machine"
     },
     {
-        "struct_name": "SalientPoleMachine",
-        "docstring": "Parameters of 3-states salient-pole synchronous machine with quadratic/exponential saturation:\nIEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.",
-        "fields": [
-            {
-                "name": "R",
-                "comment": "Armature resistance",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Td0_p",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Time constant of transient d-axis voltage",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Td0_pp",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Time constant of sub-transient d-axis voltage",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Tq0_pp",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Time constant of sub-transient q-axis voltage",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xd",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Reactance after EMF in d-axis per unit",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xq",
-                "data_type": "Float64",
-                "null_value": 0,
-                "comment": "Reactance after EMF in q-axis per unit",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xd_p",
-                "comment": "Transient reactance after EMF in d-axis per unit",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xd_pp",
-                "comment": "Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Xl",
-                "comment": "Stator leakage reactance",
-                "null_value": 0,
-                "data_type": "Float64",
-                "valid_range": {
-                    "min": 0,
-                    "max": null
-                }
-            },
-            {
-                "name": "Se",
-                "comment": "Saturation factor at 1 and 1.2 pu flux: Se(eq_p) = B(eq_p-A)^2",
-                "null_value": "(0.0, 0.0)",
-                "data_type": "Tuple{Float64, Float64}"
-            },
-            {
-                "name": "ext",
-                "data_type": "Dict{String, Any}",
-                "null_value": "Dict{String, Any}()",
-                "default": "Dict{String, Any}()"
-            },
-            {
-                "name": "states",
-                "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",
-                "internal_default": "[:eq_p, :ψ_kd, :ψq_pp]",
-                "data_type": "Vector{Symbol}"
-            },
-            {
-                "name": "n_states",
-                "comment": "SalientPoleMachine has 3 states",
-                "internal_default": 3,
-                "data_type": "Int64"
-            },
-            {
-                "name": "internal",
-                "comment": "power system internal reference, do not modify",
-                "data_type": "InfrastructureSystemsInternal",
-                "internal_default": "InfrastructureSystemsInternal()"
-            }
-        ],
-        "supertype": "Machine"
+      "struct_name": "SalientPoleMachine",
+      "docstring": "Parameters of 3-states salient-pole synchronous machine with quadratic/exponential saturation:\nIEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.",
+      "fields": [
+        {
+          "name": "R",
+          "comment": "Armature resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Td0_p",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Time constant of transient d-axis voltage",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Td0_pp",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Time constant of sub-transient d-axis voltage",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tq0_pp",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Time constant of sub-transient q-axis voltage",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Reactance after EMF in d-axis per unit",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Reactance after EMF in q-axis per unit",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd_p",
+          "comment": "Transient reactance after EMF in d-axis per unit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd_pp",
+          "comment": "Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xl",
+          "comment": "Stator leakage reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Se",
+          "comment": "Saturation factor at 1 and 1.2 pu flux: Se(eq_p) = B(eq_p-A)^2",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",
+          "internal_default": "[:eq_p, :ψ_kd, :ψq_pp]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "SalientPoleMachine has 3 states",
+          "internal_default": 3,
+          "data_type": "Int64"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "Machine"
     },
     {
       "struct_name": "AndersonFouadMachine",
@@ -4038,7 +4139,7 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\teψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
+          "comment": "The states are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
           "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
           "data_type": "Vector{Symbol}"
         },
@@ -5694,7 +5795,7 @@
       "docstring": "Parameters of an average converter model",
       "fields": [
         {
-          "name": "v_rated",
+          "name": "rated_voltage",
           "comment": "rated voltage",
           "null_value": 0,
           "data_type": "Float64",
@@ -5704,7 +5805,7 @@
           }
         },
         {
-          "name": "s_rated",
+          "name": "rated_current",
           "comment": "rated VA",
           "null_value": 0,
           "data_type": "Float64",

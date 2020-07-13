@@ -7,8 +7,8 @@ function flow_val(b::TapTransformer)
     Y_t = get_series_admittance(b)
     c = 1 / get_tap(b)
     arc = get_arc(b)
-    V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
-    V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
+    V_from = arc.from.magnitude * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
+    V_to = arc.to.magnitude * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
     I = (V_from * Y_t * c^2) - (V_to * Y_t * c)
     flow = V_from * conj(I)
     return flow
@@ -22,8 +22,8 @@ Line
 function flow_val(b::ACBranch)
     Y_t = get_series_admittance(b)
     arc = PowerSystems.get_arc(b)
-    V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
-    V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
+    V_from = arc.from.magnitude * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
+    V_to = arc.to.magnitude * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
     I = V_from * (Y_t + (1im * PowerSystems.get_b(b).from)) - V_to * Y_t
     flow = V_from * conj(I)
     return flow
@@ -37,9 +37,9 @@ Transformer2W
 function flow_val(b::Transformer2W)
     Y_t = get_series_admittance(b)
     arc = get_arc(b)
-    V_from = arc.from.voltage * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
-    V_to = arc.to.voltage * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
-    I = V_from * (Y_t + (1im * get_primaryshunt(b))) - V_to * Y_t
+    V_from = arc.from.magnitude * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
+    V_to = arc.to.magnitude * (cos(arc.to.angle) + sin(arc.to.angle) * 1im)
+    I = V_from * (Y_t + (1im * get_primary_shunt(b))) - V_to * Y_t
     flow = V_from * conj(I)
     return flow
 end
@@ -83,7 +83,7 @@ Transformer2W
 """
 function flow_func(b::Transformer2W, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
-    I = V_from * (Y_t + (1im * get_primaryshunt(b))) - V_to * Y_t
+    I = V_from * (Y_t + (1im * get_primary_shunt(b))) - V_to * Y_t
     flow = V_from * conj(I)
     return real(flow), imag(flow)
 end
@@ -112,21 +112,21 @@ end
 Obtain total load on bus b
 """
 function _get_load_data(sys::System, b::Bus)
-    activepower = 0.0
-    reactivepower = 0.0
+    active_power = 0.0
+    reactive_power = 0.0
     for l in get_components(ElectricLoad, sys)
         if (l.bus == b)
             if isa(l, FixedAdmittance)
                 # Assume v rated = 1.0
-                activepower += real(get_Y(l))
-                reactivepower += imag(get_Y(l))
+                active_power += real(get_Y(l))
+                reactive_power += imag(get_Y(l))
             else
-                activepower += get_activepower(l)
-                reactivepower += get_reactivepower(l)
+                active_power += get_active_power(l)
+                reactive_power += get_reactive_power(l)
             end
         end
     end
-    return activepower, reactivepower
+    return active_power, reactive_power
 end
 
 """
@@ -144,8 +144,8 @@ function _write_pf_sol!(sys::System, nl_result)
             injection = get_components(StaticInjection, sys)
             devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
             generator = devices[1]
-            generator.activepower = P_gen
-            generator.reactivepower = Q_gen
+            generator.active_power = P_gen
+            generator.reactive_power = Q_gen
         elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
@@ -153,13 +153,13 @@ function _write_pf_sol!(sys::System, nl_result)
             devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
                 generator = devices[1]
-                generator.reactivepower = Q_gen
+                generator.reactive_power = Q_gen
             end
             bus.angle = θ
         elseif bus.bustype == BusTypes.PQ
             Vm = result[2 * ix - 1]
             θ = result[2 * ix]
-            bus.voltage = Vm
+            bus.magnitude = Vm
             bus.angle = θ
         end
     end
@@ -186,16 +186,16 @@ function _write_results(sys::System, nl_result)
     for (ix, bus) in enumerate(buses)
         P_load_vect[ix], Q_load_vect[ix] = _get_load_data(sys, bus)
         if bus.bustype == BusTypes.REF
-            Vm_vect[ix] = get_voltage(bus)
+            Vm_vect[ix] = get_magnitude(bus)
             θ_vect[ix] = get_angle(bus)
             P_gen_vect[ix] = result[2 * ix - 1]
             Q_gen_vect[ix] = result[2 * ix]
         elseif bus.bustype == BusTypes.PV
-            Vm_vect[ix] = get_voltage(bus)
+            Vm_vect[ix] = get_magnitude(bus)
             θ_vect[ix] = result[2 * ix]
             for gen in sources
                 if gen.bus == bus
-                    P_gen_vect[ix] += get_activepower(gen)
+                    P_gen_vect[ix] += get_active_power(gen)
                 end
             end
             Q_gen_vect[ix] = result[2 * ix - 1]
@@ -204,8 +204,8 @@ function _write_results(sys::System, nl_result)
             θ_vect[ix] = result[2 * ix]
             for gen in sources
                 if gen.bus == bus
-                    P_gen_vect[ix] += get_activepower(gen)
-                    Q_gen_vect[ix] += get_reactivepower(gen)
+                    P_gen_vect[ix] += get_active_power(gen)
+                    Q_gen_vect[ix] += get_reactive_power(gen)
                 end
             end
         end
@@ -424,14 +424,14 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     for (ix, b) in enumerate(buses)
         bus_number = get_number(b)::Int
         bus_angle = get_angle(b)::Float64
-        bus_voltage = get_voltage(b)::Float64
+        bus_voltage_magnitude = get_magnitude(b)::Float64
         P_GEN_BUS[ix] = 0.0
         Q_GEN_BUS[ix] = 0.0
         get_ext(b)["neighbors"] = neighbors[ix]
         for gen in sources
             if gen.bus == b
-                P_GEN_BUS[ix] += get_activepower(gen)
-                Q_GEN_BUS[ix] += get_reactivepower(gen)
+                P_GEN_BUS[ix] += get_active_power(gen)
+                Q_GEN_BUS[ix] += get_reactive_power(gen)
             end
         end
 
@@ -441,19 +441,19 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
             injection_components = get_components(StaticInjection, system, d -> d.bus == b)
             isempty(injection_components) &&
                 throw(IS.ConflictingInputsError("The slack bus does not have any injection component. Power Flow can not proceed"))
-            Vm[ix] = get_voltage(b)::Float64
+            Vm[ix] = get_magnitude(b)::Float64
             θ[ix] = get_angle(b)::Float64
             x0[state_variable_count] = P_GEN_BUS[ix]
             x0[state_variable_count + 1] = Q_GEN_BUS[ix]
             state_variable_count += 2
         elseif b.bustype == BusTypes.PV
-            Vm[ix] = get_voltage(b)::Float64
+            Vm[ix] = get_magnitude(b)::Float64
             x0[state_variable_count] = Q_GEN_BUS[ix]
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
         elseif b.bustype == BusTypes.PQ
             Vm[ix] = 1.0
-            x0[state_variable_count] = bus_voltage
+            x0[state_variable_count] = bus_voltage_magnitude
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
         else
@@ -641,7 +641,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                             )
                     end
                 else
-                    @assert false
+                    error("Undefined Conditional")
                 end
             end
         end

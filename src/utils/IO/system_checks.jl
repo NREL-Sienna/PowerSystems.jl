@@ -81,18 +81,18 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 - `sys::System`: system
 """
 function total_load_rating(sys::System)
-    basepower = get_basepower(sys)
+    base_power = get_base_power(sys)
     controllable_loads = get_components(ControllableLoad, sys)
     cl = isempty(controllable_loads) ? 0.0 :
-        sum(get_maxactivepower.(controllable_loads)) * basepower
+        sum(get_max_active_power.(controllable_loads)) * base_power
     @debug "System has $cl MW of ControllableLoad"
     static_loads = get_components(StaticLoad, sys)
-    sl = isempty(static_loads) ? 0.0 : sum(get_maxactivepower.(static_loads)) * basepower
+    sl = isempty(static_loads) ? 0.0 : sum(get_max_active_power.(static_loads)) * base_power
     @debug "System has $sl MW of StaticLoad"
     # Total load calculation assumes  P = Real(V^2/Y) assuming V=1.0
     fa_loads = get_components(FixedAdmittance, sys)
     fa = isempty(fa_loads) ? 0.0 :
-        sum(real.(get_basevoltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
+        sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
     @debug "System has $fa MW of FixedAdmittance assuming admittancce values are in P.U."
     total_load = cl + sl + fa
     @debug "Total System Load: $total_load"
@@ -112,7 +112,7 @@ function total_capacity_rating(sys::System)
     for component_type in (Generator, Storage)
         components = get_components(Generator, sys)
         if !isempty(components)
-            component_total = sum(get_rating.(components)) * get_basepower(sys)
+            component_total = sum(get_rating.(components)) * get_base_power(sys)
             @debug "total rating for $component_type = $component_total"
             total += component_total
         end

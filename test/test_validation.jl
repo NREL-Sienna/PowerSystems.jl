@@ -110,17 +110,17 @@ end
 
 @testset "Test retrieving validation action" begin
     warn_descriptor = Dict{Any, Any}(
-        "name" => "ramplimits",
+        "name" => "ramp_limits",
         "valid_range" => Dict{Any, Any}("max" => 5, "min" => 0),
         "validation_action" => "warn",
     )
     error_descriptor = Dict{Any, Any}(
-        "name" => "ramplimits",
+        "name" => "ramp_limits",
         "valid_range" => Dict{Any, Any}("max" => 5, "min" => 0),
         "validation_action" => "error",
     )
     typo_descriptor = Dict{Any, Any}(
-        "name" => "ramplimits",
+        "name" => "ramp_limits",
         "valid_range" => Dict{Any, Any}("max" => 5, "min" => 0),
         "validation_action" => "asdfasdfsd",
     )
@@ -152,9 +152,9 @@ end
         )
     )
 
-    #test custom range (activepower and activepowerlimits)
+    #test custom range (active_power and active_power_limits)
     bad_therm_gen_act_power = thermal_generators5(nodes)
-    bad_therm_gen_act_power[1].activepower = 10
+    bad_therm_gen_act_power[1].active_power = 10
     nodes = nodes5()
     @test_logs (:warn, r"Invalid range") System(
         nodes,
@@ -171,7 +171,7 @@ end
     #test validating named tuple
     nodes = nodes5()
     bad_therm_gen_ramp_lim = thermal_generators5(nodes)
-    bad_therm_gen_ramp_lim[1].ramplimits = (up = -10, down = -3)
+    bad_therm_gen_ramp_lim[1].ramp_limits = (up = -10, down = -3)
     @test_logs(
         (:error, r"Invalid range"),
         match_mode = :any,

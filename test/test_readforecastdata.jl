@@ -57,7 +57,7 @@ end
         "DAY_AHEAD",
         "Generator",
         "122_HYDRO_1",
-        "activepower",
+        "active_power",
         1.0,
         timeseries_file,
         [],
@@ -91,7 +91,7 @@ end
 
 @testset "Test single forecast addition" begin
     component_name = "122_HYDRO_1"
-    label = "activepower"
+    label = "active_power"
     timeseries_file = joinpath(
         DATA_DIR,
         "forecasts",

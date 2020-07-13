@@ -3,7 +3,7 @@ const POWER_SYSTEM_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_inputs.json")
 
 struct PowerSystemTableData
-    basepower::Float64
+    base_power::Float64
     category_to_df::Dict{InputCategory, DataFrames.DataFrame}
     timeseries_metadata_file::Union{String, Nothing}
     directory::String
@@ -35,10 +35,10 @@ function PowerSystemTableData(
         throw(DataFormatError("key 'bus' not found in input data"))
     end
 
-    if !haskey(data, "basepower")
-        @warn "key 'basepower' not found in input data; using default=$(DEFAULT_BASE_MVA)"
+    if !haskey(data, "base_power")
+        @warn "key 'base_power' not found in input data; using default=$(DEFAULT_BASE_MVA)"
     end
-    basepower = get(data, "basepower", DEFAULT_BASE_MVA)
+    base_power = get(data, "base_power", DEFAULT_BASE_MVA)
 
     for (label, category) in categories
         val = get(data, label, nothing)
@@ -72,7 +72,7 @@ function PowerSystemTableData(
     end
 
     return PowerSystemTableData(
-        basepower,
+        base_power,
         category_to_df,
         timeseries_metadata_file,
         directory,
@@ -94,14 +94,14 @@ The general format for data is
 
 # Arguments
 - `directory::AbstractString`: directory containing CSV files
-- `basepower::Float64`: base power for System
+- `base_power::Float64`: base power for System
 - `user_descriptor_file::AbstractString`: customized input descriptor file
 - `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: PowerSystems descriptor file
 - `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file
 """
 function PowerSystemTableData(
     directory::AbstractString,
-    basepower::Float64,
+    base_power::Float64,
     user_descriptor_file::AbstractString;
     descriptor_file = POWER_SYSTEM_DESCRIPTOR_FILE,
     generator_mapping_file = GENERATOR_MAPPING_FILE,
@@ -115,7 +115,7 @@ function PowerSystemTableData(
     if length(files) == 0
         error("No files in the folder")
     else
-        data["basepower"] = basepower
+        data["base_power"] = base_power
     end
 
     encountered_files = 0
@@ -257,7 +257,7 @@ function System(
     kwargs...,
 )
     sys = System(
-        data.basepower;
+        data.base_power;
         time_series_in_memory = time_series_in_memory,
         time_series_directory = time_series_directory,
         runchecks = runchecks,
@@ -266,13 +266,13 @@ function System(
 
     loadzone_csv_parser!(sys, data)
     bus_csv_parser!(sys, data)
-    load_csv_parser!(sys, data)
 
     # Services and forecasts must be last.
     parsers = (
         (get_dataframe(data, BRANCH::InputCategory), branch_csv_parser!),
         (get_dataframe(data, DC_BRANCH::InputCategory), dc_branch_csv_parser!),
         (get_dataframe(data, GENERATOR::InputCategory), gen_csv_parser!),
+        (get_dataframe(data, LOAD::InputCategory), load_csv_parser!),
         (get_dataframe(data, RESERVE::InputCategory), services_csv_parser!),
     )
 
@@ -296,11 +296,12 @@ Add buses and areas to the System from the raw data.
 """
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
-        bus_type = get_enum_value(BusTypes.BusType, bus.bus_type)
-        number = bus.bus_id
-        voltage_limits = (min = 0.95, max = 1.05)
+        name = bus.name
+        bus_type = isnothing(bus.bus_type) ? nothing :
+            get_enum_value(BusTypes.BusType, bus.bus_type)
+        voltage_limits = make_minmaxlimits(bus.voltage_limits_min, bus.voltage_limits_max)
 
-        area_name = string(bus.area)
+        area_name = string(get(bus, :area, "area"))
         area = get_component(Area, sys, area_name)
         if isnothing(area)
             area = Area(area_name)
@@ -308,18 +309,33 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
         end
 
         ps_bus = Bus(;
-            number = number,
-            name = bus.name,
+            number = bus.bus_id,
+            name = name,
             bustype = bus_type,
             angle = bus.angle,
-            voltage = bus.voltage,
-            voltagelimits = voltage_limits,
-            basevoltage = bus.base_voltage,
+            magnitude = bus.voltage,
+            voltage_limits = voltage_limits,
+            base_voltage = bus.base_voltage,
             area = area,
             load_zone = get_component(LoadZone, sys, string(bus.zone)),
         )
-
         add_component!(sys, ps_bus)
+
+        # add load if the following info is nonzero
+        if (bus.max_active_power != 0.0) || (bus.max_reactive_power != 0.0)
+            load = PowerLoad(
+                name = name,
+                available = true,
+                bus = ps_bus,
+                model = LoadModels.ConstantPower,
+                active_power = bus.active_power,
+                reactive_power = bus.reactive_power,
+                base_power = bus.base_power,
+                max_active_power = bus.max_active_power,
+                max_reactive_power = bus.max_reactive_power,
+            )
+            add_component!(sys, load)
+        end
     end
 end
 
@@ -333,52 +349,55 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
     for branch in iterate_rows(data, BRANCH::InputCategory)
         bus_from = get_bus(sys, branch.connection_points_from)
         bus_to = get_bus(sys, branch.connection_points_to)
+        name = get(branch, :name, get_name(bus_from) * "_" * get_name(bus_to))
         connection_points = Arc(bus_from, bus_to)
-        pf = get(branch, :pf, 0.0)
-        qf = get(branch, :qf, 0.0)
+        pf = branch.active_power_flow
+        qf = branch.reactive_power_flow
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
-
-        branch_type = get_branch_type(branch.tap, alpha)
+        tap = get(branch, :tap, 0.0)
+        branch_type = get_branch_type(tap, alpha)
 
         if branch_type == Line
             b = branch.primary_shunt / 2
-            anglelimits = (min = -π / 2, max = π / 2) #TODO: add field in CSV
             value = Line(
-                name = branch.name,
+                name = name,
                 available = available,
-                activepower_flow = pf,
-                reactivepower_flow = qf,
+                active_power_flow = pf,
+                reactive_power_flow = qf,
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
                 b = (from = b, to = b),
                 rate = branch.rate,
-                anglelimits = anglelimits,
+                angle_limits = (
+                    min = branch.min_angle_limits,
+                    max = branch.max_angle_limits,
+                ),
             )
         elseif branch_type == Transformer2W
             value = Transformer2W(
-                name = branch.name,
+                name = name,
                 available = available,
-                activepower_flow = pf,
-                reactivepower_flow = qf,
+                active_power_flow = pf,
+                reactive_power_flow = qf,
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
-                primaryshunt = branch.primary_shunt,
+                primary_shunt = branch.primary_shunt,
                 rate = branch.rate,
             )
         elseif branch_type == TapTransformer
             value = TapTransformer(
-                name = branch.name,
+                name = name,
                 available = available,
-                activepower_flow = pf,
-                reactivepower_flow = qf,
+                active_power_flow = pf,
+                reactive_power_flow = qf,
                 arc = connection_points,
                 r = branch.r,
                 x = branch.x,
-                primaryshunt = branch.primary_shunt,
+                primary_shunt = branch.primary_shunt,
                 tap = branch.tap,
                 rate = branch.rate,
             )
@@ -397,32 +416,57 @@ end
 Add DC branches to the System from raw data.
 """
 function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
+    function make_dc_limits(dc_branch, min, max)
+        min_lim = dc_branch[min]
+        if isnothing(dc_branch[min]) && isnothing(dc_branch[max])
+            throw(DataFormatError("valid limits required for $min , $max"))
+        elseif isnothing(dc_branch[min])
+            min_lim = dc_branch[max] * -1.0
+        end
+        return (min = min_lim, max = dc_branch[max])
+    end
+
     for dc_branch in iterate_rows(data, DC_BRANCH::InputCategory)
         available = true
         bus_from = get_bus(sys, dc_branch.connection_points_from)
         bus_to = get_bus(sys, dc_branch.connection_points_to)
         connection_points = Arc(bus_from, bus_to)
-        pf = get(dc_branch, :pf, 0.0)
 
         if dc_branch.control_mode == "Power"
-            mw_load = dc_branch.mw_load / data.basepower
+            mw_load = dc_branch.mw_load
 
-            #TODO: is there a better way to calculate these?,
-            activepowerlimits_from = (min = -1 * mw_load, max = mw_load)
-            activepowerlimits_to = (min = -1 * mw_load, max = mw_load)
-            reactivepowerlimits_from = (min = 0.0, max = 0.0)
-            reactivepowerlimits_to = (min = 0.0, max = 0.0)
+            activepowerlimits_from = make_dc_limits(
+                dc_branch,
+                :min_active_power_limit_from,
+                :max_active_power_limit_from,
+            )
+            activepowerlimits_to = make_dc_limits(
+                dc_branch,
+                :min_active_power_limit_to,
+                :max_active_power_limit_to,
+            )
+            reactivepowerlimits_from = make_dc_limits(
+                dc_branch,
+                :min_reactive_power_limit_from,
+                :max_reactive_power_limit_from,
+            )
+            reactivepowerlimits_to = make_dc_limits(
+                dc_branch,
+                :min_reactive_power_limit_to,
+                :max_reactive_power_limit_to,
+            )
+
             loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
 
             value = HVDCLine(
                 name = dc_branch.name,
                 available = available,
-                activepower_flow = pf,
+                active_power_flow = dc_branch.active_power_flow,
                 arc = connection_points,
-                activepowerlimits_from = activepowerlimits_from,
-                activepowerlimits_to = activepowerlimits_to,
-                reactivepowerlimits_from = reactivepowerlimits_from,
-                reactivepowerlimits_to = reactivepowerlimits_to,
+                active_power_limits_from = activepowerlimits_from,
+                active_power_limits_to = activepowerlimits_to,
+                reactive_power_limits_from = reactivepowerlimits_from,
+                reactive_power_limits_to = reactivepowerlimits_to,
                 loss = loss,
             )
         else
@@ -444,7 +488,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
             value = VSCDCLine(
                 name = dc_branch.name,
                 available = true,
-                activepower_flow = pf,
+                active_power_flow = pf,
                 arc = connection_points,
                 rectifier_taplimits = rectifier_taplimits,
                 rectifier_xrc = rectifier_xrc,
@@ -464,19 +508,19 @@ Add generators to the System from the raw data.
 
 """
 function gen_csv_parser!(sys::System, data::PowerSystemTableData)
-    output_percent_fields = Vector{Symbol}()
+    output_point_fields = Vector{Symbol}()
     heat_rate_fields = Vector{Symbol}()
     fields = get_user_fields(data, GENERATOR::InputCategory)
     for field in fields
-        if occursin("output_percent", field)
-            push!(output_percent_fields, Symbol(field))
+        if occursin("output_point", field)
+            push!(output_point_fields, Symbol(field))
         elseif occursin("heat_rate_", field)
             push!(heat_rate_fields, Symbol(field))
         end
     end
 
-    @assert length(output_percent_fields) > 0
-    cost_colnames = zip(heat_rate_fields, output_percent_fields)
+    @assert length(output_point_fields) > 0
+    cost_colnames = zip(heat_rate_fields, output_point_fields)
 
     for gen in iterate_rows(data, GENERATOR::InputCategory)
         bus = get_bus(sys, gen.bus_id)
@@ -492,48 +536,41 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 """
-Add loads to the System from the raw data.
+    load_csv_parser!(sys::System, data::PowerSystemTableData)
+
+Add loads to the System from the raw load data.
 
 """
 function load_csv_parser!(sys::System, data::PowerSystemTableData)
-    for ps_bus in get_components(Bus, sys)
-        max_active_power = 0.0
-        max_reactive_power = 0.0
-        active_power = 0.0
-        reactive_power = 0.0
-        found = false
-        for bus in iterate_rows(data, BUS::InputCategory)
-            if bus.bus_id == ps_bus.number
-                max_active_power = bus.max_active_power
-                max_reactive_power = bus.max_reactive_power
-                active_power = get(bus, :active_power, max_active_power)
-                reactive_power = get(bus, :reactive_power, max_reactive_power)
-                found = true
-                break
-            end
+    for rawload in iterate_rows(data, LOAD::InputCategory)
+        bus = get_bus(sys, rawload.bus_id)
+        if isnothing(bus)
+            throw(DataFormatError("could not find bus_number=$(rawload.bus_id) for load=$(rawload.name)"))
         end
 
-        if !found
-            throw(DataFormatError("Did not find bus index in Load data $(ps_bus.name)"))
-        end
+        max_active_power = rawload.max_active_power
+        max_reactive_power = rawload.max_reactive_power
+        active_power = get(rawload, :active_power, max_active_power)
+        reactive_power = get(rawload, :reactive_power, max_reactive_power)
 
-        if (max_active_power != 0.0) || (max_reactive_power != 0.0)
-            load = PowerLoad(
-                name = ps_bus.name,
-                available = true,
-                bus = ps_bus,
-                model = LoadModels.ConstantPower,
-                activepower = active_power,
-                reactivepower = reactive_power,
-                maxactivepower = max_active_power,
-                maxreactivepower = max_reactive_power,
-            )
-            add_component!(sys, load)
-        end
+        load = PowerLoad(
+            name = rawload.name,
+            available = true,
+            bus = bus,
+            model = LoadModels.ConstantPower,
+            active_power = active_power,
+            reactive_power = reactive_power,
+            max_active_power = max_active_power,
+            max_reactive_power = max_reactive_power,
+            base_power = sys_base_power,
+        )
+        add_component!(sys, load)
     end
 end
 
 """
+    loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
+
 Add branches to the System from the raw data.
 
 """
@@ -621,10 +658,14 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             for gen in iterate_rows(data, GENERATOR::InputCategory)
                 buses = get_dataframe(data, BUS::InputCategory)
                 bus_ids = buses[!, bus_id_column]
+                gen_type =
+                    get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
+                name = gen_type <: Storage ? get_storage_by_generator(data, gen.name).name :
+                    gen.name
                 sys_gen = get_component(
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
                     sys,
-                    gen.name,
+                    name,
                 )
                 area = string(buses[
                     bus_ids .== get_number(get_bus(sys_gen)),
@@ -692,7 +733,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, bus)
     elseif gen_type == GenericBattery
-        generator = make_storage(data, gen, bus)
+        storage = get_storage_by_generator(data, gen.name)
+        generator = make_storage(data, gen, storage, bus)
     else
         @error "Skipping unsupported generator" gen_type
     end
@@ -700,7 +742,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     return generator
 end
 
-function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
+function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames, base_power)
     fuel_cost = gen.fuel_price / 1000.0
 
     var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
@@ -714,15 +756,13 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
                 var_cost[i][1] *
                 (var_cost[i][2] - var_cost[i - 1][2]) *
                 fuel_cost *
-                data.basepower,
+                base_power,
                 var_cost[i][2],
             ) .* gen.active_power_limits_max for i in 2:length(var_cost)
         ]
         var_cost[1] =
-            (
-                var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower,
-                var_cost[1][2],
-            ) .* gen.active_power_limits_max
+            (var_cost[1][1] * var_cost[1][2] * fuel_cost * base_power, var_cost[1][2]) .*
+            gen.active_power_limits_max
 
         fixed = max(
             0.0,
@@ -735,7 +775,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
         end
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * data.basepower
+        var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * base_power
         fixed = 0.0
     else
         var_cost = 0.0
@@ -745,7 +785,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames)
 end
 
 function calculate_uc_cost(data, gen, fuel_cost)
-    startup_cost = get(gen, :startup_cost, nothing)
+    startup_cost = gen.startup_cost
     if isnothing(startup_cost)
         if hasfield(typeof(gen), :startup_heat_cold_cost)
             startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
@@ -765,18 +805,27 @@ function calculate_uc_cost(data, gen, fuel_cost)
     return startup_cost, shutdown_cost
 end
 
+function make_minmaxlimits(min::Union{Nothing, Float64}, max::Union{Nothing, Float64})
+    if isnothing(min) && isnothing(max)
+        minmax = nothing
+    else
+        minmax = (min = min, max = max)
+    end
+    return minmax
+end
+
 function make_ramplimits(gen)
     ramp = get(gen, :ramp_limits, nothing)
-    if isnothing(ramp)
-        ramplimits = ramp
+    if !isnothing(ramp)
+        up = ramp
+        down = ramp
     else
         up = get(gen, :ramp_up, ramp)
         up = typeof(up) == String ? tryparse(Float64, up) : up
         down = get(gen, :ramp_down, ramp)
         down = typeof(down) == String ? tryparse(Float64, down) : down
-        ramplimits = (up = up, down = down)
     end
-    return ramplimits
+    return (up = up, down = down)
 end
 
 function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
@@ -791,41 +840,48 @@ function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
     return timelimits
 end
 
+function make_reactive_params(gen)
+    reactive_power = get(gen, :reactive_power, 0.0)
+    reactive_power_limits_min = get(gen, :reactive_power_limits_min, nothing)
+    reactive_power_limits_max = get(gen, :reactive_power_limits_max, nothing)
+    reactive_power_limits =
+        (isnothing(reactive_power_limits_min) & isnothing(reactive_power_limits_max)) ?
+        nothing : (min = reactive_power_limits_min, max = reactive_power_limits_max)
+    return reactive_power, reactive_power_limits
+end
+
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
-    status = get(gen, :status_at_start, true)
-    available = get(gen, :available, true)
-    rating = sqrt(gen.active_power_limits_max^2 + gen.reactive_power_limits_max^2)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    reactive_power_limits =
-        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    rating = calculate_rating(active_power_limits, reactive_power_limits)
     ramplimits = make_ramplimits(gen)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
     primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
     fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
 
-    var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
+    base_power = gen.base_mva
+    var_cost, fixed, fuel_cost =
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
-    basepower = get(gen, :base_mva, 1.0)
-
     return ThermalStandard(
-        gen.name,
-        available,
-        status,
-        bus,
-        gen.active_power,
-        gen.reactive_power,
-        rating,
-        primemover,
-        fuel,
-        active_power_limits,
-        reactive_power_limits,
-        ramplimits,
-        timelimits,
-        op_cost,
-        basepower,
+        name = gen.name,
+        available = gen.available,
+        status = gen.status_at_start,
+        bus = bus,
+        active_power = gen.active_power,
+        reactive_power = reactive_power,
+        rating = rating,
+        prime_mover = primemover,
+        fuel = fuel,
+        active_power_limits = active_power_limits,
+        reactive_power_limits = reactive_power_limits,
+        ramp_limits = ramplimits,
+        time_limits = timelimits,
+        operation_cost = op_cost,
+        base_power = base_power,
     )
 end
 
@@ -836,7 +892,9 @@ function make_thermal_generator_multistart(
     bus,
 )
     thermal_gen = make_thermal_generator(data, gen, cost_colnames, bus)
-    var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
+    base_power = get_base_power(thermal_gen)
+    var_cost, fixed, fuel_cost =
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
     if var_cost isa Float64
         no_load_cost = 0.0
         var_cost = VariableCost(var_cost)
@@ -845,15 +903,16 @@ function make_thermal_generator_multistart(
         var_cost =
             VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
     end
-    lag_hot = get(gen, :hot_start_time, get_timelimits(thermal_gen).down)
-    lag_warm = get(gen, :warm_start_time, 0.0)
-    lag_cold = get(gen, :cold_start_time, 0.0)
+    lag_hot = isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down :
+        gen.hot_start_time
+    lag_warm = isnothing(gen.warm_start_time) ? 0.0 : gen.warm_start_time
+    lag_cold = isnothing(gen.cold_start_time) ? 0.0 : gen.cold_start_time
     startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
     start_types = sum(values(startup_timelimits) .> 0.0)
-    startup_ramp = get(gen, :startup_ramp, 0.0)
-    shutdown_ramp = get(gen, :shutdown_ramp, 0.0)
+    startup_ramp = isnothing(gen.startup_ramp) ? 0.0 : gen.startup_ramp
+    shutdown_ramp = isnothing(gen.shutdown_ramp) ? 0.0 : gen.shutdown_ramp
     power_trajectory = (startup = startup_ramp, shutdown = shutdown_ramp)
-    hot_start_cost = get(gen, :hot_start_cost, get(gen, :startup_cost, nothing))
+    hot_start_cost = isnothing(gen.hot_start_cost) ? gen.startup_cost : gen.hot_start_cost
     if isnothing(hot_start_cost)
         if hasfield(typeof(gen), :startup_heat_cold_cost)
             hot_start_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
@@ -863,11 +922,11 @@ function make_thermal_generator_multistart(
                 5
         end
     end
-    warm_start_cost = get(gen, :warm_start_cost, START_COST)
-    cold_start_cost = get(gen, :cold_start_cost, START_COST)
+    warm_start_cost = isnothing(gen.warm_start_cost) ? START_COST : gen.hot_start_cost #TODO
+    cold_start_cost = isnothing(gen.cold_start_cost) ? START_COST : gen.cold_start_cost
     startup_cost = (hot = hot_start_cost, warm = warm_start_cost, cold = cold_start_cost)
 
-    shutdown_cost = get(gen, :shutdown_cost, nothing)
+    shutdown_cost = gen.shutdown_cost
     if isnothing(shutdown_cost)
         @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
         shutdown_cost = 0.0
@@ -880,38 +939,35 @@ function make_thermal_generator_multistart(
         available = get_available(thermal_gen),
         status = get_status(thermal_gen),
         bus = get_bus(thermal_gen),
-        activepower = get_activepower(thermal_gen),
-        reactivepower = get_reactivepower(thermal_gen),
+        active_power = get_active_power(thermal_gen),
+        reactive_power = get_reactive_power(thermal_gen),
         rating = get_rating(thermal_gen),
-        primemover = get_primemover(thermal_gen),
+        prime_mover = get_prime_mover(thermal_gen),
         fuel = get_fuel(thermal_gen),
-        activepowerlimits = get_activepowerlimits(thermal_gen),
-        reactivepowerlimits = get_reactivepowerlimits(thermal_gen),
-        ramplimits = get_ramplimits(thermal_gen),
+        active_power_limits = get_active_power_limits(thermal_gen),
+        reactive_power_limits = get_reactive_power_limits(thermal_gen),
+        ramp_limits = get_ramp_limits(thermal_gen),
         power_trajectory = power_trajectory,
-        timelimits = get_timelimits(thermal_gen),
+        time_limits = get_time_limits(thermal_gen),
         start_time_limits = startup_timelimits,
         start_types = start_types,
-        op_cost = op_cost,
-        basepower = get_basepower(thermal_gen),
+        operation_cost = op_cost,
+        base_power = get_base_power(thermal_gen),
         time_at_status = get_time_at_status(thermal_gen),
-        must_run = get(gen, :must_run, false),
+        must_run = gen.must_run,
     )
 end
 
 function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus)
-    available = true
-    rating = calculate_rating(gen.active_power_limits_max, gen.reactive_power_limits_max)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    reactive_power_limits =
-        (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max)
-    ramplimits = make_ramplimits(gen)
-    min_up_time = get(gen, :min_up_time, nothing)
-    min_down_time = get(gen, :min_down_time, nothing)
-    timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
-    basepower = gen.base_mva
-    sys_basepower = data.basepower
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    ramp_limits = make_ramplimits(gen)
+    min_up_time = gen.min_up_time
+    min_down_time = gen.min_down_time
+    time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
+    base_power = gen.base_mva
 
     if gen_type == HydroEnergyReservoir
         if !haskey(data.category_to_df, STORAGE)
@@ -920,42 +976,43 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
         @debug("Creating $(gen.name) as HydroEnergyReservoir")
         storage = get_storage_by_generator(data, gen.name)
 
-        var_cost, fixed, fuel_cost = calculate_variable_cost(data, gen, cost_colnames)
-        op_cost = TwoPartCost(var_cost, fixed)
+        var_cost, fixed, fuel_cost =
+            calculate_variable_cost(data, gen, cost_colnames, base_power)
+        operation_cost = TwoPartCost(var_cost, fixed)
 
         hydro_gen = HydroEnergyReservoir(
             name = gen.name,
-            available = available,
+            available = gen.available,
             bus = bus,
-            activepower = gen.active_power,
-            reactivepower = gen.reactive_power,
-            primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            active_power = gen.active_power,
+            reactive_power = reactive_power,
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
             rating = rating,
-            activepowerlimits = active_power_limits,
-            reactivepowerlimits = reactive_power_limits,
-            ramplimits = ramplimits,
-            timelimits = timelimits,
-            op_cost = op_cost,
-            basepower = basepower / sys_basepower,
+            active_power_limits = active_power_limits,
+            reactive_power_limits = reactive_power_limits,
+            ramp_limits = ramp_limits,
+            time_limits = time_limits,
+            operation_cost = operation_cost,
+            base_power = base_power,
             storage_capacity = storage.storage_capacity,
-            inflow = storage.inflow_limit,
-            initial_storage = storage.initial_storage,
+            inflow = storage.input_active_power_limit_max,
+            initial_storage = storage.energy_level,
         )
     elseif gen_type == HydroDispatch
         @debug("Creating $(gen.name) as HydroDispatch")
         hydro_gen = HydroDispatch(
             name = gen.name,
-            available = available,
+            available = gen.available,
             bus = bus,
-            activepower = gen.active_power,
-            reactivepower = gen.reactive_power,
+            active_power = gen.active_power,
+            reactive_power = reactive_power,
             rating = rating,
-            primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
-            activepowerlimits = active_power_limits,
-            reactivepowerlimits = reactive_power_limits,
-            ramplimits = ramplimits,
-            timelimits = timelimits,
-            basepower = basepower / sys_basepower,
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            active_power_limits = active_power_limits,
+            reactive_power_limits = reactive_power_limits,
+            ramp_limits = ramp_limits,
+            time_limits = time_limits,
+            base_power = base_power,
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
@@ -965,7 +1022,7 @@ end
 
 function get_storage_by_generator(data::PowerSystemTableData, gen_name::AbstractString)
     for storage in iterate_rows(data, STORAGE::InputCategory)
-        if storage.generator_name == gen_name
+        if storage.generator_name == gen_name # TODO: This only catches the first storage object associated with a gen
             return storage
         end
     end
@@ -976,20 +1033,25 @@ end
 function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
     generator = nothing
     available = true
-    rating = gen.active_power_limits_max
+    active_power_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    base_power = get(gen, :base_mva, 1.0)
+
     if gen_type == RenewableDispatch
         generator = RenewableDispatch(
             gen.name,
             available,
             bus,
             gen.active_power,
-            gen.reactive_power,
+            reactive_power,
             rating,
             convert(PrimeMovers.PrimeMover, gen.unit_type),
-            (min = gen.reactive_power_limits_min, max = gen.reactive_power_limits_max),
+            reactive_power_limits,
             1.0,
             TwoPartCost(0.0, 0.0),
-            gen.base_mva / data.basepower,
+            base_power,
         )
     elseif gen_type == RenewableFix
         generator = RenewableFix(
@@ -997,11 +1059,11 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
             available,
             bus,
             gen.active_power,
-            gen.reactive_power,
+            reactive_power,
             rating,
             convert(PrimeMovers.PrimeMover, gen.unit_type),
             1.0,
-            gen.base_mva / data.basepower,
+            base_power,
         )
     else
         error("Unsupported type $gen_type")
@@ -1010,31 +1072,34 @@ function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus
     return generator
 end
 
-function make_storage(data::PowerSystemTableData, gen, bus)
-    available = true
-    energy = 0.0
-    capacity = (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    rating = gen.active_power_limits_max
-    input_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
-    output_active_power_limits = (min = 0.0, max = gen.active_power_limits_max)
-    efficiency = (in = 0.9, out = 0.9)
-    reactive_power_limits = (min = 0.0, max = 0.0)
-
+function make_storage(data::PowerSystemTableData, gen, storage, bus)
+    state_of_charge_limits =
+        (min = storage.min_storage_capacity, max = storage.storage_capacity)
+    input_active_power_limits = (
+        min = storage.input_active_power_limit_min,
+        max = storage.input_active_power_limit_max,
+    )
+    output_active_power_limits = (
+        min = storage.output_active_power_limit_min,
+        max = storage.output_active_power_limit_max,
+    )
+    efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
+    (reactive_power, reactive_power_limits) = make_reactive_params(storage)
     battery = GenericBattery(
-        name = gen.name,
-        available = available,
+        name = storage.name,
+        available = storage.available,
         bus = bus,
-        primemover = convert(PrimeMovers.PrimeMover, gen.unit_type),
-        energy = energy,
-        capacity = capacity,
-        rating = rating,
-        activepower = gen.active_power,
-        inputactivepowerlimits = input_active_power_limits,
-        outputactivepowerlimits = output_active_power_limits,
+        prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+        initial_energy = storage.energy_level,
+        state_of_charge_limits = state_of_charge_limits,
+        rating = storage.rating,
+        active_power = storage.active_power,
+        input_active_power_limits = input_active_power_limits,
+        output_active_power_limits = output_active_power_limits,
         efficiency = efficiency,
-        reactivepower = gen.reactive_power,
-        reactivepowerlimits = reactive_power_limits,
-        basepower = gen.base_mva / data.basepower,
+        reactive_power = reactive_power,
+        reactive_power_limits = reactive_power_limits,
+        base_power = storage.base_power,
     )
 
     return battery
@@ -1077,8 +1142,12 @@ end
 struct _FieldInfo
     name::String
     custom_name::String
-    needs_per_unit_conversion::Bool
+    per_unit_conversion::NamedTuple{
+        (:From, :To, :Reference),
+        Tuple{UnitSystem, UnitSystem, String},
+    }
     unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
+    default_value::Any
     # TODO unit, value ranges and options
 end
 
@@ -1093,59 +1162,71 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 
     # Cache whether PowerSystems uses a column's values as system-per-unit.
     # The user's descriptors indicate that the raw data is already system-per-unit or not.
-    per_unit = Dict{String, Bool}()
+    per_unit = Dict{String, IS.UnitSystem}()
     unit = Dict{String, Union{String, Nothing}}()
-    descriptor_names = Vector{String}()
-    for descriptor in data.descriptors[category]
-        per_unit[descriptor["name"]] = get(descriptor, "system_per_unit", false)
-        unit[descriptor["name"]] = get(descriptor, "unit", nothing)
-        push!(descriptor_names, descriptor["name"])
+    custom_names = Dict{String, String}()
+    for descriptor in data.user_descriptors[category]
+        custom_name = descriptor["custom_name"]
+        if descriptor["custom_name"] in df_names
+            per_unit[descriptor["name"]] = get_enum_value(
+                IS.UnitSystem,
+                get(descriptor, "unit_system", "NATURAL_UNITS"),
+            )
+            unit[descriptor["name"]] = get(descriptor, "unit", nothing)
+            custom_names[descriptor["name"]] = custom_name
+        else
+            @warn "User-defined column name $custom_name is not in dataframe."
+        end
     end
 
     fields = Vector{_FieldInfo}()
 
-    for item in data.user_descriptors[category]
-        custom_name = item["custom_name"]
+    for item in data.descriptors[category]
         name = item["name"]
-        if custom_name in df_names
-            if !(name in descriptor_names)
-                if occursin("heat_rate_", name) || occursin("output_percent_", name)
-                    base = name[(findlast("_", name)[end] + 1):end]
-                    d_name = descriptor_names[occursin.(base, descriptor_names)][end]
-                    per_unit[name] = per_unit[d_name]
-                    unit[name] = unit[d_name]
-                else
-                    throw(DataFormatError("$name is not defined in $POWER_SYSTEM_DESCRIPTOR_FILE"))
-                end
+        item_unit_system =
+            get_enum_value(IS.UnitSystem, get(item, "unit_system", "NATURAL_UNITS"))
+        per_unit_reference = get(item, "base_reference", "base_power")
+        default_value = get(item, "default_value", "required")
+        if default_value == "system_base_power"
+            default_value = data.base_power
+        end
+
+        if name in keys(custom_names)
+            custom_name = custom_names[name]
+
+            if item_unit_system == IS.NATURAL_UNITS && per_unit[name] != IS.NATURAL_UNITS
+                throw(DataFormatError("$name cannot be defined as $(per_unit[name])"))
             end
 
-            if !per_unit[name] && get(item, "system_per_unit", false)
-                throw(DataFormatError("$name cannot be defined as system_per_unit"))
-            end
+            pu_conversion = (
+                From = per_unit[name],
+                To = item_unit_system,
+                Reference = per_unit_reference,
+            )
 
-            needs_pu_conversion =
-                per_unit[name] &&
-                haskey(item, "system_per_unit") &&
-                !item["system_per_unit"]
-
-            custom_unit = get(item, "unit", nothing)
-            if !isnothing(unit[name]) &&
-               !isnothing(custom_unit) &&
-               custom_unit != unit[name]
-                unit_conversion = (From = custom_unit, To = unit[name])
+            expected_unit = get(item, "unit", nothing)
+            if !isnothing(expected_unit) &&
+               !isnothing(unit[name]) &&
+               expected_unit != unit[name]
+                unit_conversion = (From = unit[name], To = expected_unit)
             else
                 unit_conversion = nothing
             end
-
-            push!(
-                fields,
-                _FieldInfo(name, custom_name, needs_pu_conversion, unit_conversion),
-            )
         else
-            # TODO: This should probably be a fatal error. However, the parsing code
-            # doesn't use all the descriptor fields, so skip for now.
-            @warn "User-defined column name $custom_name is not in dataframe."
+            custom_name = name
+            pu_conversion = (
+                From = item_unit_system,
+                To = item_unit_system,
+                Reference = per_unit_reference,
+            )
+            unit_conversion = nothing
         end
+
+        push!(
+            fields,
+            _FieldInfo(name, custom_name, pu_conversion, unit_conversion, default_value),
+        )
+
     end
 
     return fields
@@ -1156,7 +1237,13 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
     fields = Vector{String}()
     vals = Vector()
     for field_info in field_infos
-        value = row[field_info.custom_name]
+        if field_info.custom_name in names(row)
+            value = row[field_info.custom_name]
+        else
+            value = field_info.default_value
+            value == "required" && throw(DataFormatError("$(field_info.name) is required"))
+            @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)"
+        end
         if ismissing(value)
             throw(DataFormatError("$(field_info.custom_name) value missing"))
         end
@@ -1164,9 +1251,25 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             value = nothing
         end
 
-        if field_info.needs_per_unit_conversion
-            @debug "convert to system_per_unit" field_info.custom_name
-            value /= data.basepower
+        if field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
+           field_info.per_unit_conversion.To == IS.SYSTEM_BASE
+            @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
+            value /= data.base_power
+        elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
+               field_info.per_unit_conversion.To == IS.DEVICE_BASE
+            @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
+            reference_idx = findfirst(
+                x -> x.name == field_info.per_unit_conversion.Reference,
+                field_infos,
+            )
+            isnothing(reference_idx) &&
+                throw(DataFormatError("$(field_info.per_unit_conversion.Reference) not found in table with $(field_info.custom_name)"))
+            reference_info = field_infos[reference_idx]
+            reference_value =
+                get(row, reference_info.custom_name, reference_info.default_value)
+            value /= reference_value
+        elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
+            throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
         end
 
         # TODO: need special handling for units

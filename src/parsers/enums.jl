@@ -11,7 +11,7 @@
 end
 
 ENUM_MAPPINGS = Dict()
-for enum in (AngleUnits.AngleUnit, BusTypes.BusType, InputCategory)
+for enum in (AngleUnits.AngleUnit, BusTypes.BusType, InputCategory, UnitSystem)
     ENUM_MAPPINGS[enum] = Dict()
     for value in instances(enum)
         ENUM_MAPPINGS[enum][lowercase(string(value))] = value

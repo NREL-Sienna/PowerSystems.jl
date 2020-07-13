@@ -15,52 +15,54 @@ function PowerLoadPF(
     available::Bool,
     bus::Bus,
     model::Union{Nothing, LoadModels.LoadModel},
-    activepower::Float64,
-    maxactivepower::Float64,
+    active_power::Float64,
+    max_active_power::Float64,
     power_factor::Float64,
+    base_power::Float64,
 )
-    maxreactivepower = maxactivepower * sin(acos(power_factor))
-    reactivepower = activepower * sin(acos(power_factor))
+    max_reactive_power = max_active_power * sin(acos(power_factor))
+    reactive_power = active_power * sin(acos(power_factor))
     return PowerLoad(
         name,
         available,
         bus,
         model,
-        activepower,
-        reactivepower,
-        maxactivepower,
-        maxreactivepower,
+        active_power,
+        reactive_power,
+        base_power,
+        max_active_power,
+        max_reactive_power,
     )
 end
 
 function PowerLoadPF(::Nothing)
-    return PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0)
+    return PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0, 100.0)
 end
 
-"""Accepts anglelimits as a Float64."""
+"""Accepts angle_limits as a Float64."""
 function Line(
     name,
     available::Bool,
-    activepower_flow::Float64,
-    reactivepower_flow::Float64,
+    active_power_flow::Float64,
+    reactive_power_flow::Float64,
     arc::Arc,
     r,
     x,
     b,
     rate,
-    anglelimits::Float64,
+    angle_limits::Float64,
 )
     return Line(
         name,
         available,
-        activepower_flow,
-        reactivepower_flow,
+        active_power_flow,
+        reactive_power_flow,
         arc::Arc,
         r,
         x,
         b,
         rate,
-        (min = -anglelimits, max = anglelimits),
+        (min = -angle_limits, max = angle_limits),
     )
 end
 
@@ -71,8 +73,8 @@ function Bus(
     bustype::String,
     angle,
     voltage,
-    voltagelimits,
-    basevoltage,
+    voltage_limits,
+    base_voltage,
     area,
     load_zone;
     ext = Dict{String, Any}(),
@@ -83,8 +85,8 @@ function Bus(
         get_enum_value(BusTypes.BusType, bustype),
         angle,
         voltage,
-        voltagelimits,
-        basevoltage,
+        voltage_limits,
+        base_voltage,
         area,
         load_zone,
         ext,

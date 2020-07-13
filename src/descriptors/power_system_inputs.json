@@ -13,14 +13,25 @@
             "description": "To Bus ID"
         },
         {
-            "name": "activepower_flow",
-            "unit": "MW",
-            "description": "Active power flow"
+            "name": "active_power_flow",
+            "description": "Active power flow",
+            "unit_system": "device_base",
+            "default_value": 0.0,
+            "base_reference": "rate"
         },
         {
             "name": "mw_load",
             "description": "Power demand (MW)",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": 0.0,
+            "base_reference": "rate"
+        },
+        {
+            "name": "rate",
+            "unit": "MVA",
+            "description": "Apparent power limit rating",
+            "unit_system": "system_base",
+            "default_value": "system_base_power"
         },
         {
             "name": "rectifier_firing_angle_max",
@@ -36,20 +47,20 @@
         },
         {
             "name": "rectifier_xrc",
-            "unit": "per unit",
-            "description": "Commutating transformer reactance/bridge (ohm)"
+            "description": "Commutating transformer reactance/bridge",
+            "unit_system": "device_base"
         },
         {
             "name": "rectifier_tap_limits_max",
-            "unit": "per unit",
             "value_range": [],
-            "description": "Max tap setting"
+            "description": "Max tap setting",
+            "default_value": null
         },
         {
             "name": "rectifier_tap_limits_min",
-            "unit": "per unit",
             "value_range": [],
-            "description": "Min tap setting"
+            "description": "Min tap setting",
+            "default_value": null
         },
         {
             "name": "inverter_firing_angle_max",
@@ -65,26 +76,20 @@
         },
         {
             "name": "inverter_xrc",
-            "unit": "per unit",
-            "description": "Commutating transformer reactance/bridge (ohm)"
+            "description": "Commutating transformer reactance/bridge",
+            "unit_system": "device_base"
         },
         {
             "name": "inverter_tap_limits_max",
-            "unit": "per unit",
             "value_range": [],
-            "description": "Max tap setting"
+            "description": "Max tap setting",
+            "default_value": null
         },
         {
             "name": "inverter_tap_limits_min",
-            "unit": "per unit",
             "value_range": [],
-            "description": "Min tap setting"
-        },
-        {
-            "name": "inverter_tap_limits",
-            "unit": "per unit",
-            "value_range": [],
-            "description": "Min tap setting"
+            "description": "Min tap setting",
+            "default_value": null
         },
         {
             "name": "loss",
@@ -93,27 +98,67 @@
         },
         {
             "name": "min_active_power_limit_from",
-            "unit": "per unit",
             "value_range": [],
-            "description": "Minimum Active Power Limit"
+            "description": "Minimum Active Power Limit",
+            "unit_system": "device_base",
+            "default_value": null,
+            "base_reference": "rate"
         },
         {
             "name": "max_active_power_limit_from",
-            "unit": "per unit",
             "value_range": [],
-            "description": "Maximum Active Power Limit"
+            "description": "Maximum Active Power Limit",
+            "unit_system": "device_base",
+            "default_value": null,
+            "base_reference": "rate"
         },
         {
             "name": "min_active_power_limit_to",
-            "unit": "per unit",
             "value_range": [],
-            "description": "Minimum Active Power Limit"
+            "description": "Minimum Active Power Limit",
+            "unit_system": "device_base",
+            "default_value": null,
+            "base_reference": "rate"
         },
         {
             "name": "max_active_power_limit_to",
-            "unit": "per unit",
             "value_range": [],
-            "description": "Maximum Active Power Limit"
+            "description": "Maximum Active Power Limit",
+            "unit_system": "device_base",
+            "default_value": null,
+            "base_reference": "rate"
+        },
+        {
+            "name": "min_reactive_power_limit_from",
+            "value_range": [],
+            "description": "Minimum reActive Power Limit",
+            "unit_system": "device_base",
+            "default_value": 0.0,
+            "base_reference": "rate"
+        },
+        {
+            "name": "max_reactive_power_limit_from",
+            "value_range": [],
+            "description": "Maximum reActive Power Limit",
+            "unit_system": "device_base",
+            "default_value": 0.0,
+            "base_reference": "rate"
+        },
+        {
+            "name": "min_reactive_power_limit_to",
+            "value_range": [],
+            "description": "Minimum reActive Power Limit",
+            "unit_system": "device_base",
+            "default_value": 0.0,
+            "base_reference": "rate"
+        },
+        {
+            "name": "max_reactive_power_limit_to",
+            "value_range": [],
+            "description": "Maximum reActive Power Limit",
+            "unit_system": "device_base",
+            "default_value": 0.0,
+            "base_reference": "rate"
         },
         {
             "name": "control_mode",
@@ -125,7 +170,8 @@
                 "VSCDCLine",
                 "HVDCLine"
             ],
-            "description": "Type of Struct"
+            "description": "Type of Struct",
+            "default_value": "HVDCLine"
         }
     ],
     "branch": [
@@ -142,66 +188,69 @@
             "description": "To Bus ID"
         },
         {
-            "unit": "per unit",
             "name": "r",
-            "description": "Branch resistance p.u."
+            "description": "Branch resistance p.u.",
+            "unit_system": "device_base"
         },
         {
-            "unit": "per unit",
             "name": "x",
-            "description": "Branch reactance p.u."
+            "description": "Branch reactance p.u.",
+            "unit_system": "device_base"
         },
         {
-            "unit": "per unit",
             "name": "primary_shunt",
-            "description": "Branch line charging susceptance p.u."
+            "description": "Branch line charging susceptance p.u.",
+            "unit_system": "device_base"
         },
         {
             "unit": "MW",
             "name": "rate",
             "description": "Continuous MW flow limit",
-            "system_per_unit": true
+            "unit_system": "system_base"
         },
         {
             "unit": "radian",
             "name": "min_angle_limits",
-            "description": "Minimum Angle Limits"
+            "description": "Minimum Angle Limits",
+            "default_value": 1.57079
         },
         {
             "unit": "radian",
             "name": "max_angle_limits",
-            "description": "Continuous MW flow limit"
+            "description": "Maximum endpoint angle limits",
+            "default_value": 1.57079
         },
         {
-            "name": "activepower_flow",
+            "name": "active_power_flow",
             "unit": "MW",
             "description": "Active power flow",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "rate",
+            "default_value": 0.0
         },
         {
-            "name": "reactivepower_flow",
+            "name": "reactive_power_flow",
             "unit": "MVAr",
             "description": "Reactive power flow",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "rate",
+            "default_value": 0.0
         },
         {
             "name": "tap",
             "unit": "%",
             "description": "Transformer winding ratio"
-        },
-        {
-            "name": "branch_category",
-            "value_options": [
-                "Transformers",
-                "Lines"
-            ],
-            "description": "Type of Struct"
         }
     ],
     "generator": [
         {
             "name": "name",
             "description": "Unique generator ID: Concatenated from Bus ID_Unit Type_Gen ID"
+        },
+        {
+            "name": "available",
+            "description": "Availability",
+            "default_value": true
         },
         {
             "name": "bus_id",
@@ -220,37 +269,43 @@
             "unit": "MW",
             "name": "active_power",
             "description": "Real power injection setpoint",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva"
         },
         {
             "unit": "MW",
             "name": "reactive_power",
             "description": "Reactive power StaticInjection setpoint",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva"
         },
         {
             "unit": "MW",
             "name": "active_power_limits_max",
             "description": "Maximum real power StaticInjection (Unit Capacity)",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva"
         },
         {
             "unit": "MW",
             "name": "active_power_limits_min",
             "description": "Minimum real power StaticInjection (Unit minimum stable level)",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva"
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_max",
             "description": "Maximum reactive power StaticInjection",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva"
         },
         {
             "unit": "MVAR",
             "name": "reactive_power_limits_min",
             "description": "Minimum reactive power StaticInjection",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva"
         },
         {
             "unit": "hours",
@@ -266,7 +321,25 @@
             "unit": "MW/Min",
             "name": "ramp_limits",
             "description": "Maximum ramp up and ramp down rate",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "MW/Min",
+            "name": "ramp_up",
+            "description": "Maximum ramp up rate",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "MW/Min",
+            "name": "ramp_down",
+            "description": "Maximum ramp down rate",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "MMBTU",
@@ -279,158 +352,208 @@
         },
         {
             "name": "heat_rate_incr_1",
-            "description": "Heat rate Incremental 1 TODO"
+            "description": "Heat rate Incremental 1 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_2",
-            "description": "Heat rate Incremental 2 TODO"
+            "description": "Heat rate Incremental 2 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_3",
-            "description": "Heat rate Incremental 3 TODO"
+            "description": "Heat rate Incremental 3 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_4",
-            "description": "Heat rate Incremental 4 TODO"
+            "description": "Heat rate Incremental 4 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_5",
-            "description": "Heat rate Incremental 5 TODO"
+            "description": "Heat rate Incremental 5 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_6",
-            "description": "Heat rate Incremental 6 TODO"
+            "description": "Heat rate Incremental 6 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_7",
-            "description": "Heat rate Incremental 7 TODO"
+            "description": "Heat rate Incremental 7 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_8",
-            "description": "Heat rate Incremental 8 TODO"
+            "description": "Heat rate Incremental 8 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_9",
-            "description": "Heat rate Incremental 9 TODO"
-        },      {
+            "description": "Heat rate Incremental 9 TODO",
+            "default_value": null
+        },
+        {
             "name": "heat_rate_incr_10",
-            "description": "Heat rate Incremental 10 TODO"
+            "description": "Heat rate Incremental 10 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_11",
-            "description": "Heat rate Incremental 11 TODO"
+            "description": "Heat rate Incremental 11 TODO",
+            "default_value": null
         },
         {
             "name": "heat_rate_incr_12",
-            "description": "Heat rate Incremental 12 TODO"
+            "description": "Heat rate Incremental 12 TODO",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_0",
-            "description": "Output point 0 on heat rate curve as a percentage of PMax"
+            "name": "output_point_0",
+            "description": "Output point 0 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva"
         },
         {
             "unit": "%",
-            "name": "output_percent_1",
-            "description": "Output point 1 on heat rate curve as a percentage of PMax"
+            "name": "output_point_1",
+            "description": "Output point 1 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_2",
-            "description": "Output point 2 on heat rate curve as a percentage of PMax"
+            "name": "output_point_2",
+            "description": "Output point 2 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_3",
-            "description": "Output point 3 on heat rate curve as a percentage of PMax"
+            "name": "output_point_3",
+            "description": "Output point 3 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_4",
-            "description": "Output point 4 on heat rate curve as a percentage of PMax"
-        },{
-            "unit": "%",
-            "name": "output_percent_5",
-            "description": "Output point 5 on heat rate curve as a percentage of PMax"
+            "name": "output_point_4",
+            "description": "Output point 4 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_6",
-            "description": "Output point 6 on heat rate curve as a percentage of PMax"
+            "name": "output_point_5",
+            "description": "Output point 5 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_7",
-            "description": "Output point 7 on heat rate curve as a percentage of PMax"
+            "name": "output_point_6",
+            "description": "Output point 6 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_8",
-            "description": "Output point 8 on heat rate curve as a percentage of PMax"
+            "name": "output_point_7",
+            "description": "Output point 7 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_9",
-            "description": "Output point 9 on heat rate curve as a percentage of PMax"
-        },{
-            "unit": "%",
-            "name": "output_percent_10",
-            "description": "Output point 10 on heat rate curve as a percentage of PMax"
+            "name": "output_point_8",
+            "description": "Output point 8 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_11",
-            "description": "Output point 11 on heat rate curve as a percentage of PMax"
+            "name": "output_point_9",
+            "description": "Output point 9 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "%",
-            "name": "output_percent_12",
-            "description": "Output point 12 on heat rate curve as a percentage of PMax"
+            "name": "output_point_10",
+            "description": "Output point 10 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "%",
+            "name": "output_point_11",
+            "description": "Output point 11 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "%",
+            "name": "output_point_12",
+            "description": "Output point 12 on heat rate curve as a percentage of PMax",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "unit": "MVA",
             "name": "base_mva",
-            "description": "Unit equivalent circuit base_mva"
+            "description": "Unit equivalent circuit base_mva",
+            "unit_system": "natural_units"
         },
         {
             "unit": "$/MW",
             "name": "variable_cost",
-            "description": "Variable Cost of Generation"
+            "description": "Variable Cost of Generation",
+            "default_value": null
         },
         {
             "unit": "$/MW",
             "name": "fixed_cost",
-            "description": "Fixed Cost of Generation"
+            "description": "Fixed Cost of Generation",
+            "default_value": null
         },
         {
             "unit": "$/start",
             "name": "startup_cost",
-            "description": "Cost associated with Start-up"
+            "description": "Cost associated with Start-up",
+            "default_value": null
         },
         {
             "unit": "$/start",
             "name": "shutdown_cost",
-            "description": "Cost associated with Shutdown"
-        },
-        {
-            "unit": "%",
-            "name": "annual_capacity_factor",
-            "description": "Annual Capacity factor for a Unit"
+            "description": "Cost associated with Shutdown",
+            "default_value": null
         },
         {
             "unit": "$/MW",
             "name": "curtailment_cost",
-            "description": "Cost of curtailing production"
-        },
-        {
-            "unit": "$/MW",
-            "name": "interruption_cost",
-            "description": "Cost of Non-served Energy"
+            "description": "Cost of curtailing production",
+            "default_value": null
         },
         {
             "unit": "%",
             "name": "power_factor",
-            "description": "Power Factor"
+            "description": "Power Factor",
+            "default_value": null
         },
         {
             "name": "unit_type",
@@ -442,49 +565,62 @@
         },
         {
             "name": "cold_start_time",
-            "description": "Time before which a Cold start is eligible"
+            "description": "Time before which a Cold start is eligible",
+            "default_value": null
         },
         {
             "name": "warm_start_time",
-            "description": "Time before which a Warm start is eligible"
+            "description": "Time before which a Warm start is eligible",
+            "default_value": null
         },
         {
             "name": "hot_start_time",
-            "description": "Time before which a Hot Start is eligible"
+            "description": "Time before which a Hot Start is eligible",
+            "default_value": null
         },
         {
             "name": "startup_ramp",
             "description": "Startup ramp capability",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "name": "shutdown_ramp",
             "description": "Shutdown ramp capability",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
         },
         {
             "name": "status_at_start",
-            "description": "State of the generator at the start of the simulation"
+            "description": "State of the generator at the start of the simulation",
+            "default_value": true
         },
         {
             "name": "time_at_status",
-            "description": "Number of hours spent in current state "
+            "description": "Number of hours spent in current state ",
+            "default_value": null
         },
         {
             "name": "cold_start_cost",
-            "description": "Cost for Cold start of ThermalGen"
+            "description": "Cost for Cold start of ThermalGen",
+            "default_value": null
         },
         {
             "name": "warm_start_cost",
-            "description": "Cost for Warm of ThermalGen"
+            "description": "Cost for Warm of ThermalGen",
+            "default_value": null
         },
         {
             "name": "hot_start_cost",
-            "description": "Cost for Hot of ThermalGen"
+            "description": "Cost for Hot of ThermalGen",
+            "default_value": null
         },
         {
             "name": "must_run",
-            "description": "Boolean that idicates if ThermalGen must be online always"
+            "description": "Boolean that indicates if ThermalGen must be online always",
+            "default_value": false
         },
         {
             "name": "generator_category",
@@ -496,7 +632,8 @@
                 "ThermalStandard",
                 "ThermalMultiStart"
             ],
-            "description": "Type of Struct"
+            "description": "Type of Struct",
+            "default_value": "ThermalStandard"
         }
     ],
     "simulation_objects": [],
@@ -507,13 +644,14 @@
         },
         {
             "name": "contributing_devices",
-            "description": "Contributing Devices for reserve requirement"
+            "description": "Contributing Devices for reserve requirement",
+            "default_value": null
         },
         {
             "units": "MW",
             "name": "requirement",
-            "description": "Contributing Devices for reserve requirement",
-            "system_per_unit": true
+            "description": "reserve requirement",
+            "unit_system": "system_base"
         },
         {
             "unit": "seconds",
@@ -522,19 +660,18 @@
         },
         {
             "name": "eligible_device_categories",
-            "description": "Eligible Device Categories"
+            "description": "Eligible Device Categories",
+            "default_value": null
         },
         {
             "name": "eligible_device_subcategories",
-            "description": "Eligible Device SubCategories"
-        },
-        {
-            "name": "eligible_generator_categories",
-            "description": "Eligible Generator Categories"
+            "description": "Eligible Device SubCategories",
+            "default_value": null
         },
         {
             "name": "eligible_regions",
-            "description": "Eligible Regions"
+            "description": "Eligible Regions",
+            "default_value": null
         },
         {
             "name": "reserve_category",
@@ -543,7 +680,8 @@
                 "VariableReserve",
                 "Transfer"
             ],
-            "description": "Type of Struct"
+            "description": "Type of Struct",
+            "default_value": "StaticReserve"
         },
         {
             "name": "direction",
@@ -560,91 +698,124 @@
             "description": "Storage object name"
         },
         {
+            "name": "available",
+            "description": "availability",
+            "default_value": true
+        },
+        {
             "name": "generator_name",
-            "description": "Generator name associated with storage"
+            "description": "Generator name associated with storage",
+            "default_value": null
         },
         {
             "name": "bus_id",
-            "description": "Connection Bus ID"
+            "description": "Connection Bus ID",
+            "default_value": null
         },
         {
             "name": "energy_level",
-            "unit": "kW/h",
-            "description": "Energy Level setpoint"
+            "unit": "kWh",
+            "description": "Energy Level setpoint",
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
             "unit": "MW",
             "name": "active_power",
             "description": "Real power injection setpoint",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
-            "unit": "MW",
+            "unit": "MVar",
             "name": "reactive_power",
             "description": "Reactive power StaticInjection setpoint",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
             "unit": "MW",
-            "name": "input_power_limits_max",
+            "name": "input_active_power_limit_max",
             "description": "Maximum real power limit on charging",
-            "system_per_unit": true
+            "unit_system": "device_base"
         },
         {
             "unit": "MW",
-            "name": "input_power_limits_min",
+            "name": "input_active_power_limit_min",
             "description": "Minimum real power limit on charging",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
             "unit": "MW",
-            "name": "output_active_power_limits_max",
+            "name": "output_active_power_limit_max",
             "description": "Maximum real power StaticInjection",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": null
         },
         {
             "unit": "MW",
-            "name": "output_active_power_limits_min",
+            "name": "output_active_power_limit_min",
             "description": "Minimum real power StaticInjection",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": 0.0
         },
         {
             "unit": "MVAR",
-            "name": "reactive_power_limits_max",
+            "name": "output_reactive_power_limits_max",
             "description": "Maximum reactive power StaticInjection",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": null
         },
         {
             "unit": "MVAR",
-            "name": "reactive_power_limits_min",
+            "name": "output_reactive_power_limits_min",
             "description": "Minimum reactive power StaticInjection",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "default_value": null
+        },
+        {
+            "unit": "MVA",
+            "name": "rating",
+            "description": "Apparent power injection limit rating",
+            "unit_system": "device_base"
         },
         {
             "unit": "MW",
-            "name": "rating",
+            "name": "base_power",
             "description": "Continuous MW flow limit",
-            "system_per_unit": true
+            "unit_system": "natural_units"
+        },
+        {
+            "unit": "%",
+            "name": "input_efficiency",
+            "description": "Storage Input Efficiency",
+            "default_value": 1.0
+        },
+        {
+            "unit": "%",
+            "name": "output_efficiency",
+            "description": "Storage Output Efficiency",
+            "default_value": 1.0
         },
         {
             "unit": "%",
             "name": "efficiency",
-            "description": "Battery Efficiency"
+            "description": "Battery Efficiency",
+            "default_value": 1.0
         },
         {
             "unit": "GWh",
             "name": "storage_capacity",
-            "description": "Storage Capacity"
+            "description": "Storage Capacity",
+            "unit_system": "device_base"
         },
         {
             "unit": "GWh",
-            "name": "initial_storage",
-            "description": "Initial Storage"
-        },
-        {
-            "unit": "GWh",
-            "name": "inflow_limit",
-            "description": "Inflow Limit"
+            "name": "min_storage_capacity",
+            "description": "Storage Capacity minimum",
+            "unit_system": "device_base",
+            "default_value": 0.0
         }
     ],
     "bus": [
@@ -658,16 +829,20 @@
         },
         {
             "name": "area",
-            "description": "area membership"
+            "description": "area membership",
+            "default_value": null
         },
         {
             "name": "zone",
-            "description": "zone membership"
+            "description": "zone membership",
+            "default_value": null
         },
         {
             "unit": "kV",
             "name": "base_voltage",
-            "description": "Bus voltage rating"
+            "description": "Bus voltage rating",
+            "unit_system": "natural_units",
+            "default_value": null
         },
         {
             "name": "bus_type",
@@ -676,47 +851,115 @@
                 "PV",
                 "REF"
             ],
-            "description": "Bus control type"
+            "description": "Bus control type",
+            "default_value": null
         },
         {
             "unit": "kV",
             "name": "voltage",
-            "description": "voltage magnitude setpoint"
+            "description": "voltage magnitude setpoint",
+            "unit_system": "device_base",
+            "base_reference": "base_voltage",
+            "default_value": null
         },
         {
             "unit": "radian",
             "name": "angle",
-            "description": "voltage angle setpoint"
+            "description": "voltage angle setpoint",
+            "default_value": null
         },
         {
             "unit": "kV",
             "name": "voltage_limits_min",
-            "description": "Minimum voltage setpoint"
+            "description": "Minimum voltage setpoint",
+            "unit_system": "device_base",
+            "base_reference": "base_voltage",
+            "default_value": null
         },
         {
             "unit": "kV",
             "name": "voltage_limits_max",
-            "description": "Maximum voltage setpoint"
-        },
-        {
-            "unit": "per unit",
-            "name": "mw_shunt_g",
-            "description": "Shunt conductance"
-        },
-        {
-            "unit": "per unit",
-            "name": "mvar_shut_b",
-            "description": "Shunt susceptance"
+            "description": "Maximum voltage setpoint",
+            "unit_system": "device_base",
+            "base_reference": "base_voltage",
+            "default_value": null
         },
         {
             "name": "max_active_power",
             "description": "Maximum Active Power",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_power",
+            "default_value": 0
         },
         {
             "name": "max_reactive_power",
             "description": "Maximum Rective Power",
-            "system_per_unit": true
+            "unit_system": "device_base",
+            "base_reference": "base_power",
+            "default_value": 0
+        },
+        {
+            "name": "active_power",
+            "description": "Active Power Setpoint",
+            "unit_system": "device_base",
+            "base_reference": "base_power",
+            "default_value": 0
+        },
+        {
+            "name": "reactive_power",
+            "description": "Rective Power Setpoint",
+            "unit_system": "device_base",
+            "base_reference": "base_power",
+            "default_value": 0
+        },
+        {
+            "name": "base_power",
+            "description": "base power for demand",
+            "unit_system": "natural_units",
+            "default_value": "system_base_power"
+        }
+    ],
+    "load": [
+        {
+            "name": "name",
+            "description": "Load Name"
+        },
+        {
+            "name": "available",
+            "description": "Availability",
+            "default_value": true
+        },
+        {
+            "name": "bus_id",
+            "description": "Connection Bus ID",
+            "default_value": null
+        },
+        {
+            "name": "active_power",
+            "description": "Active power setpoint",
+            "default_value": 0.0,
+            "unit_system": "device_base"
+        },
+        {
+            "name": "reactive_power",
+            "description": "Reactive power setpoint",
+            "default_value": 0.0,
+            "unit_system": "device_base"
+        },
+        {
+            "name": "base_power",
+            "description": "base",
+            "unit_system": "natural_units"
+        },
+        {
+            "name": "max_active_power",
+            "description": "max active power",
+            "unit_system": "device_base"
+        },
+        {
+            "name": "max_reactive_power",
+            "description": "max reactive power",
+            "unit_system": "device_base"
         }
     ]
 }

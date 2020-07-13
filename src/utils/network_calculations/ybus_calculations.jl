@@ -41,7 +41,7 @@ function _ybus!(
 
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
     Y11 = Y_t
-    b = get_primaryshunt(b)
+    b = get_primary_shunt(b)
 
     ybus[bus_from_no, bus_from_no] += Y11
     ybus[bus_from_no, bus_to_no] += -Y_t
@@ -64,7 +64,7 @@ function _ybus!(
 
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
     c = 1 / get_tap(b)
-    b = get_primaryshunt(b)
+    b = get_primary_shunt(b)
 
     Y11 = (Y_t * c^2)
     ybus[bus_from_no, bus_from_no] += Y11
@@ -92,7 +92,7 @@ function _ybus!(
     Y_t = 1 / (get_r(b) + get_x(b) * 1im)
     tap = (get_tap(b) * exp(get_α(b) * 1im))
     c_tap = (get_tap(b) * exp(-1 * get_α(b) * 1im))
-    b = get_primaryshunt(b)
+    b = get_primary_shunt(b)
 
     Y11 = (Y_t / abs(tap)^2)
     ybus[bus_from_no, bus_from_no] += Y11

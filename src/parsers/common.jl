@@ -97,6 +97,14 @@ function get_branch_type(tap::Float64, alpha::Float64)
     return branch_type
 end
 
+function calculate_rating(
+    active_power_limits::Union{Min_Max, Nothing},
+    reactive_power_limits::Union{Min_Max, Nothing},
+)
+    reactive_power_max = isnothing(reactive_power_limits) ? 0.0 : reactive_power_limits.max
+    return calculate_rating(active_power_limits.max, reactive_power_max)
+end
+
 function calculate_rating(active_power_max::Float64, reactive_power_max::Float64)
     return sqrt(active_power_max^2 + reactive_power_max^2)
 end
@@ -124,10 +132,10 @@ function Base.convert(::Type{ThermalFuels.ThermalFuel}, fuel::Symbol)
     return convert(ThermalFuels.ThermalFuel, string(fuel))
 end
 
-function Base.convert(::Type{PrimeMovers.PrimeMover}, primemover::AbstractString)
-    return STRING2PRIMEMOVER[uppercase(primemover)]
+function Base.convert(::Type{PrimeMovers.PrimeMover}, prime_mover::AbstractString)
+    return STRING2PRIMEMOVER[uppercase(prime_mover)]
 end
 
-function Base.convert(::Type{PrimeMovers.PrimeMover}, primemover::Symbol)
-    return convert(PrimeMovers.PrimeMover, string(primemover))
+function Base.convert(::Type{PrimeMovers.PrimeMover}, prime_mover::Symbol)
+    return convert(PrimeMovers.PrimeMover, string(prime_mover))
 end
