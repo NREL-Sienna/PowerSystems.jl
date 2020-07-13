@@ -1,6 +1,4 @@
 """
-    flow_val(b::TapTransformer)
-
 Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
 TapTransformer
 
@@ -17,13 +15,11 @@ function flow_val(b::TapTransformer)
 end
 
 """
-    flow_val(b::Line)
-
 Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Line
 
 """
-function flow_val(b::Line)
+function flow_val(b::ACBranch)
     Y_t = get_series_admittance(b)
     arc = PowerSystems.get_arc(b)
     V_from = arc.from.magnitude * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
@@ -34,8 +30,6 @@ function flow_val(b::Line)
 end
 
 """
-    flow_val(b::Transformer2W)
-
 Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Transformer2W
 
@@ -56,8 +50,6 @@ function flow_val(b::PhaseShiftingTransformer)
 end
 
 """
-    flow_func(b::TapTransformer, V_from::Complex, V_to::Complex)
-
 Calculates the From - To complex power flow using external data of voltages of branch of type
 TapTransformer
 
@@ -71,13 +63,11 @@ function flow_func(b::TapTransformer, V_from::Complex{Float64}, V_to::Complex{Fl
 end
 
 """
-    flow_func(b::Line, V_from::Complex, V_to::Complex)
-
 Calculates the From - To complex power flow using external data of voltages of branch of type
 Line
 
 """
-function flow_func(b::Line, V_from::Complex{Float64}, V_to::Complex{Float64})
+function flow_func(b::ACBranch, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
     I = V_from * (Y_t + (1im * get_b(b).from)) - V_to * Y_t
     flow = V_from * conj(I)
@@ -108,25 +98,18 @@ function flow_func(
 end
 
 """
-_update_branch_flow!(sys::System)
-
 Updates the flow on the branches
-
 """
 function _update_branch_flow!(sys::System)
     for b in get_components(ACBranch, sys)
         S_flow = flow_val(b)
-        b.active_power_flow = real(S_flow)
-        b.reactive_power_flow = imag(S_flow)
+        set_activepower_flow!(b, real(S_flow))
+        set_reactivepower_flow!(b, imag(S_flow))
     end
 end
 
 """
-# TODO: Apply actions according to load type
-    _get_load_data(sys::System, b::Bus)
-
 Obtain total load on bus b
-
 """
 function _get_load_data(sys::System, b::Bus)
     active_power = 0.0
@@ -147,8 +130,6 @@ function _get_load_data(sys::System, b::Bus)
 end
 
 """
-    _write_pf_sol!(sys::System, nl_result)
-
 Updates system voltages and powers with power flow results
 
 """
@@ -187,9 +168,7 @@ function _write_pf_sol!(sys::System, nl_result)
 end
 
 """
-    _write_results(sys::System, nl_result)
 Return power flow results in dictionary of dataframes.
-
 """
 function _write_results(sys::System, nl_result)
     result = round.(nl_result.zero; digits = 7)
@@ -276,8 +255,6 @@ function _write_results(sys::System, nl_result)
 end
 
 """
-    solve_powerflow!(system, finite_diff = false, args...)
-
 Solves a the power flow into the system and writes the solution into the relevant structs.
 Updates generators active and reactive power setpoints and branches active and reactive
 power flows (calculated in the From - To direction) (see
@@ -327,8 +304,6 @@ function solve_powerflow!(system::System; finite_diff = false, kwargs...)
 end
 
 """
-    solve_powerflow(system, finite_diff = false, args...)
-
 Similar to solve_powerflow!(sys) but does not update the system struct with results.
 Returns the results in a dictionary of dataframes.
 
