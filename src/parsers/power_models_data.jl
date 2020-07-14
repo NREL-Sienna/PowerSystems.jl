@@ -481,7 +481,7 @@ end
 function make_branch(name, d, bus_f, bus_t)
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
-    branch_type = get_branch_type(d["tap"], alpha)
+    branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
 
     if d["transformer"]
         if branch_type == Line
@@ -496,8 +496,6 @@ function make_branch(name, d, bus_f, bus_t)
             error("Unsupported branch type $branch_type")
         end
     else
-        # The get_branch_type() logic doesn't work for this data.
-        # tap can be 1.0 for this data.
         value = make_line(name, d, bus_f, bus_t)
     end
 

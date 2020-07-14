@@ -81,17 +81,18 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
     return generator
 end
 
-function get_branch_type(tap::Float64, alpha::Float64)
-    if tap <= 0.0
-        branch_type = Line
-    elseif tap == 1.0
-        branch_type = Line
-    else
+function get_branch_type(tap::Float64, alpha::Float64, is_transformer::Union{Bool,Nothing} = nothing)
+    if isnothing(is_transformer)
+        is_transformer = (tap != 0.0) & (tap != 1.0)
+    end
+    if is_transformer
         if alpha == 0.0
             branch_type = TapTransformer
         else
             branch_type = PhaseShiftingTransformer
         end
+    else
+        branch_type = Line
     end
 
     return branch_type
