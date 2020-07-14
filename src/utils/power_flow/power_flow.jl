@@ -103,8 +103,8 @@ Updates the flow on the branches
 function _update_branch_flow!(sys::System)
     for b in get_components(ACBranch, sys)
         S_flow = flow_val(b)
-        set_activepower_flow!(b, real(S_flow))
-        set_reactivepower_flow!(b, imag(S_flow))
+        set_active_power_flow!(b, real(S_flow))
+        set_reactive_power_flow!(b, imag(S_flow))
     end
 end
 
@@ -144,8 +144,8 @@ function _write_pf_sol!(sys::System, nl_result)
             injection = get_components(StaticInjection, sys)
             devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
             generator = devices[1]
-            generator.active_power = P_gen
-            generator.reactive_power = Q_gen
+            set_active_power!(generator, P_gen)
+            set_reactive_power!(generator, Q_gen)
         elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
@@ -153,14 +153,14 @@ function _write_pf_sol!(sys::System, nl_result)
             devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
                 generator = devices[1]
-                generator.reactive_power = Q_gen
+                set_reactive_power!(generator, Q_gen)
             end
             bus.angle = θ
         elseif bus.bustype == BusTypes.PQ
             Vm = result[2 * ix - 1]
             θ = result[2 * ix]
-            bus.magnitude = Vm
-            bus.angle = θ
+            set_magnitude!(bus, Vm)
+            set_angle!(bus, θ)
         end
     end
 
