@@ -116,6 +116,7 @@ export get_R
 export get_R_1d
 export get_R_1q
 export get_R_f
+export get_R_th
 export get_Se
 export get_T1
 export get_T2
@@ -160,7 +161,6 @@ export get_active_power_flow
 export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_to
-export get_activepower
 export get_angle
 export get_angle_limits
 export get_arc
@@ -188,6 +188,8 @@ export get_initial_energy
 export get_initial_storage
 export get_input_active_power_limits
 export get_internal
+export get_internal_angle
+export get_internal_voltage
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
 export get_inverter_firing_angle
@@ -238,7 +240,6 @@ export get_reactive_power_flow
 export get_reactive_power_limits
 export get_reactive_power_limits_from
 export get_reactive_power_limits_to
-export get_reactivepower
 export get_rectifier_firing_angle
 export get_rectifier_tap_limits
 export get_rectifier_xrc
@@ -328,6 +329,7 @@ export set_R!
 export set_R_1d!
 export set_R_1q!
 export set_R_f!
+export set_R_th!
 export set_Se!
 export set_T1!
 export set_T2!
@@ -372,7 +374,6 @@ export set_active_power_flow!
 export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_to!
-export set_activepower!
 export set_angle!
 export set_angle_limits!
 export set_arc!
@@ -400,6 +401,8 @@ export set_initial_energy!
 export set_initial_storage!
 export set_input_active_power_limits!
 export set_internal!
+export set_internal_angle!
+export set_internal_voltage!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
 export set_inverter_firing_angle!
@@ -450,7 +453,6 @@ export set_reactive_power_flow!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
 export set_reactive_power_limits_to!
-export set_reactivepower!
 export set_rectifier_firing_angle!
 export set_rectifier_tap_limits!
 export set_rectifier_xrc!
