@@ -520,7 +520,7 @@
           "validation_action": "error"
         },
         {
-          "name": "flowlimits",
+          "name": "flow_limits",
           "null_value": "(from_to=0.0, to_from=0.0)",
           "comment": "TODO: throw warning above max SIL",
           "data_type": "NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}",
