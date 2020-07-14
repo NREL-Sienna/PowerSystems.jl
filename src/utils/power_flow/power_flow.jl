@@ -174,7 +174,7 @@ end
 Return power flow results in dictionary of dataframes.
 """
 function _write_results(sys::System, nl_result)
-    @info "Results are exported in system base"
+    @info("Results are exported in system base")
     result = round.(nl_result.zero; digits = 7)
     buses = sort(collect(get_components(Bus, sys)), by = x -> get_number(x))
     N_BUS = length(buses)
