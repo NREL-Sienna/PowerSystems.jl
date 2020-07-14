@@ -240,7 +240,7 @@
             "name": "tap",
             "unit": "%",
             "description": "Transformer winding ratio",
-            "default_value": 0.0
+            "default_value": 1.0
         }
     ],
     "generator": [

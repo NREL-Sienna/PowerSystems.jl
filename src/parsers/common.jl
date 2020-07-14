@@ -85,7 +85,7 @@ function get_branch_type(tap::Float64, alpha::Float64)
     if tap <= 0.0
         branch_type = Line
     elseif tap == 1.0
-        branch_type = Transformer2W
+        branch_type = Line
     else
         if alpha == 0.0
             branch_type = TapTransformer
