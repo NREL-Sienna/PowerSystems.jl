@@ -345,6 +345,20 @@ function set_unit_system!(component::Component, settings::SystemUnitsSettings)
 end
 
 """
+Sets the units base for the getter functions on the devices. It modifies the behavior of all getter functions
+"""
+function set_units_base_system!(system::System, settings::String)
+    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING[settings]
+    return
+end
+
+function set_units_base_system!(system::System, settings::SystemUnitsSettings)
+    system.units_settings.unit_system = settings
+    return
+end
+
+
+"""
 Add a component to the system.
 
 Throws ArgumentError if the component's name is already stored for its concrete type.
