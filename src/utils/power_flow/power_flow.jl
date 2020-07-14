@@ -136,6 +136,7 @@ Updates system voltages and powers with power flow results
 function _write_pf_sol!(sys::System, nl_result)
     result = round.(nl_result.zero; digits = 7)
     buses = enumerate(sort(collect(get_components(Bus, sys)), by = x -> get_number(x)))
+    sys_basepower = get_base_power(sys)
 
     for (ix, bus) in buses
         if bus.bustype == BusTypes.REF
@@ -144,8 +145,9 @@ function _write_pf_sol!(sys::System, nl_result)
             injection = get_components(StaticInjection, sys)
             devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
             generator = devices[1]
-            set_active_power!(generator, P_gen)
-            set_reactive_power!(generator, Q_gen)
+            gen_basepower = get_base_power(generator)
+            set_active_power!(generator, P_gen * sys_basepower / gen_basepower)
+            set_reactive_power!(generator, Q_gen * sys_basepower / gen_basepower)
         elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
@@ -153,7 +155,8 @@ function _write_pf_sol!(sys::System, nl_result)
             devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
                 generator = devices[1]
-                set_reactive_power!(generator, Q_gen)
+                gen_basepower = get_base_power(generator)
+                set_reactive_power!(generator, Q_gen * sys_basepower / gen_basepower)
             end
             bus.angle = θ
         elseif bus.bustype == BusTypes.PQ
@@ -171,6 +174,7 @@ end
 Return power flow results in dictionary of dataframes.
 """
 function _write_results(sys::System, nl_result)
+    @info "Results are exported in system base"
     result = round.(nl_result.zero; digits = 7)
     buses = sort(collect(get_components(Bus, sys)), by = x -> get_number(x))
     N_BUS = length(buses)
@@ -292,14 +296,20 @@ solve_powerflow!(sys, finite_diff = true)
 
 """
 function solve_powerflow!(system::System; finite_diff = false, kwargs...)
-    #finite_diff = get(kwargs, :finite_diff, false)
+    #Save per-unit flag
+    flag = deepcopy(system.units_settings.unit_system)
+    #Work in System per unit
+    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING["system_base"]
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
         PowerSystems._write_pf_sol!(system, res)
         @info("PowerFlow solve converged, the results have been stored in the system")
+        #Restore original per unit base
+        system.units_settings.unit_system = flag
         return res.f_converged
     end
     @error("The powerflow solver returned convergence = $(res.f_converged)")
+    system.units_settings.unit_system = flag
     return res.f_converged
 end
 
@@ -319,13 +329,20 @@ res = solve_powerflow(sys, finite_diff = true)
 
 """
 function solve_powerflow(system::System; finite_diff = false, kwargs...)
+    #Save per-unit flag
+    flag = deepcopy(system.units_settings.unit_system)
+    #Work in System per unit
+    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING["system_base"]
     res = _solve_powerflow(system, finite_diff; kwargs...)
-
     if res.f_converged
         @info("PowerFlow solve converged, the results are exported in DataFrames")
-        return _write_results(system, res)
+        df_results = _write_results(system, res)
+        #Restore original per unit base
+        system.units_settings.unit_system = flag
+        return df_results
     end
     @error("The powerflow solver returned convergence = $(res.f_converged)")
+    system.units_settings.unit_system = flag
     return res.f_converged
 end
 
