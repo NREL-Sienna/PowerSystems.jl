@@ -1,5 +1,13 @@
 # PowerSystems Change Log
 
+## 0.22.0
+
+- Addition of DynamicLines Struct
+- Renames of Fields in Structs to match code guidelines
+- Store RAW Electric Source Data (Z) in Thermal Generators
+- Implement UnitsInfo to return data in different bases accordingly
+- Update Autogeneration of structs. 
+
 ## 0.21.0
 
 - Improvements to Power Flow solve: Add Jacobian Function, add a method that modifies the system and one that returns results
