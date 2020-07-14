@@ -1308,7 +1308,9 @@ function check_component_addition(sys::System, dyn_branch::DynamicBranch)
         name = get_name(dyn_branch.branch)
         throw(ArgumentError("static branch $name is not part of the system"))
     end
-    check_component_addition(sys, dyn_branch)
+    arc = get_arc(dyn_branch)
+    check_bus(sys, get_from(arc), arc)
+    check_bus(sys, get_to(arc), arc)
 end
 
 function check_component_addition(sys::System, bus::Bus)
