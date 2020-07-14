@@ -81,7 +81,11 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
     return generator
 end
 
-function get_branch_type(tap::Float64, alpha::Float64, is_transformer::Union{Bool,Nothing} = nothing)
+function get_branch_type(
+    tap::Float64,
+    alpha::Float64,
+    is_transformer::Union{Bool, Nothing} = nothing,
+)
     if isnothing(is_transformer)
         is_transformer = (tap != 0.0) & (tap != 1.0)
     end
