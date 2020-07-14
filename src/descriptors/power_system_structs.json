@@ -1678,12 +1678,14 @@
         {
           "name": "active_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "name": "reactive_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "name": "rating",

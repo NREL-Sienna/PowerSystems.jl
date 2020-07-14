@@ -136,6 +136,7 @@ Updates system voltages and powers with power flow results
 function _write_pf_sol!(sys::System, nl_result)
     result = round.(nl_result.zero; digits = 7)
     buses = enumerate(sort(collect(get_components(Bus, sys)), by = x -> get_number(x)))
+    sys_basepower = get_base_power(sys)
 
     for (ix, bus) in buses
         if bus.bustype == BusTypes.REF
@@ -144,8 +145,9 @@ function _write_pf_sol!(sys::System, nl_result)
             injection = get_components(StaticInjection, sys)
             devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
             generator = devices[1]
-            set_active_power!(generator, P_gen)
-            set_reactive_power!(generator, Q_gen)
+            gen_basepower = get_base_power(generator)
+            set_active_power!(generator, P_gen * sys_basepower / gen_basepower)
+            set_reactive_power!(generator, Q_gen * sys_basepower / gen_basepower)
         elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
@@ -153,7 +155,8 @@ function _write_pf_sol!(sys::System, nl_result)
             devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
                 generator = devices[1]
-                set_reactive_power!(generator, Q_gen)
+                gen_basepower = get_base_power(generator)
+                set_reactive_power!(generator, Q_gen * sys_basepower / gen_basepower)
             end
             bus.angle = θ
         elseif bus.bustype == BusTypes.PQ
@@ -171,10 +174,12 @@ end
 Return power flow results in dictionary of dataframes.
 """
 function _write_results(sys::System, nl_result)
+    @info("Voltages are exported in pu. Powers are exported in MW/MVAr.")
     result = round.(nl_result.zero; digits = 7)
     buses = sort(collect(get_components(Bus, sys)), by = x -> get_number(x))
     N_BUS = length(buses)
     bus_map = Dict(buses .=> 1:N_BUS)
+    sys_basepower = get_base_power(sys)
     sources = get_components(StaticInjection, sys, d -> !isa(d, ElectricLoad))
     Vm_vect = fill(0.0, N_BUS)
     θ_vect = fill(0.0, N_BUS)
@@ -184,28 +189,28 @@ function _write_results(sys::System, nl_result)
     Q_load_vect = fill(0.0, N_BUS)
 
     for (ix, bus) in enumerate(buses)
-        P_load_vect[ix], Q_load_vect[ix] = _get_load_data(sys, bus)
+        P_load_vect[ix], Q_load_vect[ix] = _get_load_data(sys, bus) .* sys_basepower
         if bus.bustype == BusTypes.REF
             Vm_vect[ix] = get_magnitude(bus)
             θ_vect[ix] = get_angle(bus)
-            P_gen_vect[ix] = result[2 * ix - 1]
-            Q_gen_vect[ix] = result[2 * ix]
+            P_gen_vect[ix] = result[2 * ix - 1] * sys_basepower
+            Q_gen_vect[ix] = result[2 * ix] * sys_basepower
         elseif bus.bustype == BusTypes.PV
             Vm_vect[ix] = get_magnitude(bus)
             θ_vect[ix] = result[2 * ix]
             for gen in sources
                 if gen.bus == bus
-                    P_gen_vect[ix] += get_active_power(gen)
+                    P_gen_vect[ix] += get_active_power(gen) * sys_basepower
                 end
             end
-            Q_gen_vect[ix] = result[2 * ix - 1]
+            Q_gen_vect[ix] = result[2 * ix - 1] * sys_basepower
         elseif bus.bustype == BusTypes.PQ
             Vm_vect[ix] = result[2 * ix - 1]
             θ_vect[ix] = result[2 * ix]
             for gen in sources
                 if gen.bus == bus
-                    P_gen_vect[ix] += get_active_power(gen)
-                    Q_gen_vect[ix] += get_reactive_power(gen)
+                    P_gen_vect[ix] += get_active_power(gen) * sys_basepower
+                    Q_gen_vect[ix] += get_reactive_power(gen) * sys_basepower
                 end
             end
         end
@@ -222,8 +227,8 @@ function _write_results(sys::System, nl_result)
         bus_t_ix = bus_map[get_arc(b).to]
         V_from = Vm_vect[bus_f_ix] * (cos(θ_vect[bus_f_ix]) + sin(θ_vect[bus_f_ix]) * 1im)
         V_to = Vm_vect[bus_t_ix] * (cos(θ_vect[bus_t_ix]) + sin(θ_vect[bus_t_ix]) * 1im)
-        P_from_to_vect[ix], Q_from_to_vect[ix] = flow_func(b, V_from, V_to)
-        P_to_from_vect[ix], Q_to_from_vect[ix] = flow_func(b, V_to, V_from)
+        P_from_to_vect[ix], Q_from_to_vect[ix] = flow_func(b, V_from, V_to) .* sys_basepower
+        P_to_from_vect[ix], Q_to_from_vect[ix] = flow_func(b, V_to, V_from) .* sys_basepower
     end
 
     bus_df = DataFrames.DataFrame(
@@ -292,14 +297,20 @@ solve_powerflow!(sys, finite_diff = true)
 
 """
 function solve_powerflow!(system::System; finite_diff = false, kwargs...)
-    #finite_diff = get(kwargs, :finite_diff, false)
+    #Save per-unit flag
+    settings_unit_cache = deepcopy(system.units_settings.unit_system)
+    #Work in System per unit
+    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING["system_base"]
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
         PowerSystems._write_pf_sol!(system, res)
         @info("PowerFlow solve converged, the results have been stored in the system")
+        #Restore original per unit base
+        system.units_settings.unit_system = settings_unit_cache
         return res.f_converged
     end
     @error("The powerflow solver returned convergence = $(res.f_converged)")
+    system.units_settings.unit_system = settings_unit_cache
     return res.f_converged
 end
 
@@ -319,13 +330,20 @@ res = solve_powerflow(sys, finite_diff = true)
 
 """
 function solve_powerflow(system::System; finite_diff = false, kwargs...)
+    #Save per-unit flag
+    settings_unit_cache = deepcopy(system.units_settings.unit_system)
+    #Work in System per unit
+    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING["system_base"]
     res = _solve_powerflow(system, finite_diff; kwargs...)
-
     if res.f_converged
         @info("PowerFlow solve converged, the results are exported in DataFrames")
-        return _write_results(system, res)
+        df_results = _write_results(system, res)
+        #Restore original per unit base
+        system.units_settings.unit_system = settings_unit_cache
+        return df_results
     end
     @error("The powerflow solver returned convergence = $(res.f_converged)")
+    system.units_settings.unit_system = settings_unit_cache
     return res.f_converged
 end
 
