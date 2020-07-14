@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         r::Float64
         x::Float64
         b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
-        flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
+        flow_limits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
         rate::Float64
         angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         services::Vector{Service}
@@ -31,7 +31,7 @@ This file is auto-generated. Do not edit.
 - `r::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
 - `x::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
 - `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: (0, 2), action if invalid: error
-- `flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}`: TODO: throw warning above max SIL
+- `flow_limits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}`: TODO: throw warning above max SIL
 - `rate::Float64`: TODO: compare to SIL (warn) (theoretical limit)
 - `angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: (-1.571, 1.571), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
@@ -52,7 +52,7 @@ mutable struct MonitoredLine <: ACBranch
     "System per-unit value"
     b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
     "TODO: throw warning above max SIL"
-    flowlimits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
+    flow_limits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
     "TODO: compare to SIL (warn) (theoretical limit)"
     rate::Float64
     angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
@@ -65,12 +65,12 @@ mutable struct MonitoredLine <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flowlimits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flowlimits, rate, angle_limits, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flowlimits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flowlimits, rate, angle_limits, services, ext, forecasts, )
+function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -84,7 +84,7 @@ function MonitoredLine(::Nothing)
         r=0.0,
         x=0.0,
         b=(from=0.0, to=0.0),
-        flowlimits=(from_to=0.0, to_from=0.0),
+        flow_limits=(from_to=0.0, to_from=0.0),
         rate=0.0,
         angle_limits=(min=-1.571, max=1.571),
         services=Device[],
@@ -109,8 +109,8 @@ get_r(value::MonitoredLine) = value.r
 get_x(value::MonitoredLine) = value.x
 """Get MonitoredLine b."""
 get_b(value::MonitoredLine) = value.b
-"""Get MonitoredLine flowlimits."""
-get_flowlimits(value::MonitoredLine) = get_value(value, value.flowlimits)
+"""Get MonitoredLine flow_limits."""
+get_flow_limits(value::MonitoredLine) = get_value(value, value.flow_limits)
 """Get MonitoredLine rate."""
 get_rate(value::MonitoredLine) = get_value(value, value.rate)
 """Get MonitoredLine angle_limits."""
@@ -140,8 +140,8 @@ set_r!(value::MonitoredLine, val::Float64) = value.r = val
 set_x!(value::MonitoredLine, val::Float64) = value.x = val
 """Set MonitoredLine b."""
 set_b!(value::MonitoredLine, val::NamedTuple{(:from, :to), Tuple{Float64, Float64}}) = value.b = val
-"""Set MonitoredLine flowlimits."""
-set_flowlimits!(value::MonitoredLine, val::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}) = value.flowlimits = val
+"""Set MonitoredLine flow_limits."""
+set_flow_limits!(value::MonitoredLine, val::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}) = value.flow_limits = val
 """Set MonitoredLine rate."""
 set_rate!(value::MonitoredLine, val::Float64) = value.rate = val
 """Set MonitoredLine angle_limits."""

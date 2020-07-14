@@ -179,7 +179,7 @@ export get_efficiency
 export get_eq_p
 export get_ext
 export get_fixed
-export get_flowlimits
+export get_flow_limits
 export get_from
 export get_fuel
 export get_inflow
@@ -392,7 +392,7 @@ export set_efficiency!
 export set_eq_p!
 export set_ext!
 export set_fixed!
-export set_flowlimits!
+export set_flow_limits!
 export set_from!
 export set_fuel!
 export set_inflow!
