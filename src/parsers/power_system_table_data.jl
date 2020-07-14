@@ -195,9 +195,6 @@ function get_user_field(
             throw(err)
         end
     end
-
-    msg = "Failed to find category=$category field=$field in input descriptors"
-    throw(DataFormatError(msg))
 end
 
 """Return a vector of user-defined fields for the category."""
@@ -307,6 +304,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             area = Area(area_name)
             add_component!(sys, area)
         end
+        zone = get(bus, :zone, nothing)
 
         ps_bus = Bus(;
             number = bus.bus_id,
@@ -317,7 +315,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             voltage_limits = voltage_limits,
             base_voltage = bus.base_voltage,
             area = area,
-            load_zone = get_component(LoadZone, sys, string(bus.zone)),
+            load_zone = get_component(LoadZone, sys, string(zone)),
         )
         add_component!(sys, ps_bus)
 
@@ -356,8 +354,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
-        tap = get(branch, :tap, 0.0)
-        branch_type = get_branch_type(tap, alpha)
+        branch_type = get_branch_type(branch.tap, alpha)
 
         if branch_type == Line
             b = branch.primary_shunt / 2
@@ -548,23 +545,19 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
             throw(DataFormatError("could not find bus_number=$(rawload.bus_id) for load=$(rawload.name)"))
         end
 
-        max_active_power = rawload.max_active_power
-        max_reactive_power = rawload.max_reactive_power
-        active_power = get(rawload, :active_power, max_active_power)
-        reactive_power = get(rawload, :reactive_power, max_reactive_power)
-
         load = PowerLoad(
             name = rawload.name,
-            available = true,
+            available = rawload.available,
             bus = bus,
             model = LoadModels.ConstantPower,
-            active_power = active_power,
-            reactive_power = reactive_power,
-            max_active_power = max_active_power,
-            max_reactive_power = max_reactive_power,
-            base_power = sys_base_power,
+            active_power = rawload.active_power,
+            reactive_power = rawload.reactive_power,
+            max_active_power = rawload.max_active_power,
+            max_reactive_power = rawload.max_reactive_power,
+            base_power = rawload.base_power,
         )
         add_component!(sys, load)
+
     end
 end
 
@@ -731,7 +724,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     elseif gen_type <: HydroGen
         generator = make_hydro_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type <: RenewableGen
-        generator = make_renewable_generator(gen_type, data, gen, bus)
+        generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type == GenericBattery
         storage = get_storage_by_generator(data, gen.name)
         generator = make_storage(data, gen, storage, bus)
@@ -1030,40 +1023,48 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
     throw(DataFormatError("no storage exists with generator $gen_name"))
 end
 
-function make_renewable_generator(gen_type, data::PowerSystemTableData, gen, bus)
+function make_renewable_generator(
+    gen_type,
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames,
+    bus,
+)
     generator = nothing
-    available = true
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
     rating = calculate_rating(active_power_limits, reactive_power_limits)
-    base_power = get(gen, :base_mva, 1.0)
+    base_power = gen.base_mva
+    var_cost, fixed, fuel_cost =
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
+    operation_cost = TwoPartCost(var_cost, fixed)
 
     if gen_type == RenewableDispatch
         generator = RenewableDispatch(
-            gen.name,
-            available,
-            bus,
-            gen.active_power,
-            reactive_power,
-            rating,
-            convert(PrimeMovers.PrimeMover, gen.unit_type),
-            reactive_power_limits,
-            1.0,
-            TwoPartCost(0.0, 0.0),
-            base_power,
+            name = gen.name,
+            available = gen.available,
+            bus = bus,
+            active_power = gen.active_power,
+            reactive_power = reactive_power,
+            rating = rating,
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            reactive_power_limits = reactive_power_limits,
+            power_factor = gen.power_factor,
+            operation_cost = operation_cost,
+            base_power = base_power,
         )
     elseif gen_type == RenewableFix
         generator = RenewableFix(
-            gen.name,
-            available,
-            bus,
-            gen.active_power,
-            reactive_power,
-            rating,
-            convert(PrimeMovers.PrimeMover, gen.unit_type),
-            1.0,
-            base_power,
+            name = gen.name,
+            available = gen.available,
+            bus = bus,
+            active_power = gen.active_power,
+            reactive_power = reactive_power,
+            rating = rating,
+            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            power_factor = gen.power_factor,
+            base_power = base_power,
         )
     else
         error("Unsupported type $gen_type")

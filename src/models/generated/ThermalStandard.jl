@@ -40,7 +40,7 @@ Data Structure for thermal generation technologies.
 - `fuel::ThermalFuels.ThermalFuel`: prime_mover Fuel according to EIA 923
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: (0, nothing), action if invalid: error
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `operation_cost::ThreePartCost`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
@@ -66,6 +66,7 @@ mutable struct ThermalStandard <: ThermalGen
     fuel::ThermalFuels.ThermalFuel
     active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     reactive_power_limits::Union{Nothing, Min_Max}
+    "ramp up and ramp down limits in MW (in component base per unit) per minute"
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
