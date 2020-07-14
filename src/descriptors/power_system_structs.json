@@ -6329,24 +6329,52 @@
           "data_type": "Bus"
         },
         {
-          "name": "activepower",
+          "name": "active_power",
           "null_value": "0.0",
           "data_type": "Float64"
         },
         {
-          "name": "reactivepower",
+          "name": "reactive_power",
           "null_value": "0.0",
           "data_type": "Float64"
         },
         {
-          "name": "X_th",
-          "comment": "Source Thevenin impedance",
+          "name": "R_th",
+          "comment": "Source Thevenin resistance",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
             "max": null
           }
+        },
+        {
+          "name": "X_th",
+          "comment": "Source Thevenin reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "internal_voltage",
+          "comment": "Internal Voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "default": "1.0"
+        },
+        {
+          "name": "internal_angle",
+          "comment": "Internal Angle",
+          "null_value": 0,
+          "data_type": "Float64",
+          "default": "0.0"
         },
         {
           "name": "services",
