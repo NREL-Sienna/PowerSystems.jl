@@ -1,5 +1,11 @@
 abstract type InverterComponent <: DynamicComponent end
 
+"""
+    mutable struct DynamicInverter <: DynamicInjection
+        test::Float64
+    end
+Testing Dynamic Inverter docstring
+"""
 mutable struct DynamicInverter{
     C <: Converter,
     O <: OuterControl,
@@ -10,7 +16,6 @@ mutable struct DynamicInverter{
 } <: DynamicInjection
     static_injector::Union{Nothing, StaticInjection}
     ω_ref::Float64
-    MVABase::Float64
     converter::C
     outer_control::O
     inner_control::IC
@@ -26,7 +31,6 @@ end
 function DynamicInverter(
     static_injector::StaticInjection,
     ω_ref::Float64,
-    MVABase::Float64,
     converter::C,
     outer_control::O,
     inner_control::IC,
@@ -64,7 +68,6 @@ function DynamicInverter(
     return DynamicInverter{C, O, IC, DC, P, F}(
         static_injector,
         ω_ref,
-        MVABase,
         converter,
         outer_control,
         inner_control,
@@ -81,7 +84,6 @@ end
 function DynamicInverter(;
     static_injector::StaticInjection,
     ω_ref::Float64,
-    MVABase::Float64,
     converter::C,
     outer_control::O,
     inner_control::IC,
@@ -100,7 +102,6 @@ function DynamicInverter(;
     DynamicInverter(
         static_injector,
         ω_ref,
-        MVABase,
         converter,
         outer_control,
         inner_control,

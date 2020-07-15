@@ -23,6 +23,7 @@ makedocs(
             "Extending Parsing" => "developer/extending_parsing.md",
         ],
         "API" => Any[
+            "DynamicStructs" => "api/DynamicsAPI.md"
             "PowerSystems" => "api/PowerSystems.md"
         ]
     ]
