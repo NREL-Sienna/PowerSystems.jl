@@ -1,10 +1,44 @@
 abstract type InverterComponent <: DynamicComponent end
 
 """
-    mutable struct DynamicInverter <: DynamicInjection
-        test::Float64
+    mutable struct DynamicInverter{
+        C <: Converter,
+        O <: OuterControl,
+        IC <: InnerControl,
+        DC <: DCSource,
+        P <: FrequencyEstimator,
+        F <: Filter,
+    } <: DynamicInjection
+        static_injector::Union{Nothing, StaticInjection}
+        ω_ref::Float64
+        converter::C
+        outer_control::O
+        inner_control::IC
+        dc_source::DC
+        freq_estimator::P
+        filter::F
+        n_states::Int64
+        states::Vector{Symbol}
+        ext::Dict{String, Any}
+        internal::InfrastructureSystemsInternal
     end
-Testing Dynamic Inverter docstring
+
+A dynamic inverter is composed by 6 components, namely a Converter, an Outer Control, an Inner Control,
+a DC Source, a Frequency Estimator and a Filter. It requires a Static Injection device that is attached to it.
+
+# Arguments
+- `static_injector::Union{Nothing, StaticInjection}`: Static Injector attached to the dynamic inverter.
+- `ω_ref::Float64`: Frequency reference set-point in pu.
+- `converter <: Converter`: Converter model for the PWM transformation.
+- `outer_control <: OuterControl`: Outer-control controller model.
+- `inner_control <: InnerControl`: Inner-control controller model.
+- `dc_source <: DCSource`: DC Source model.
+- `freq_estimator <: FrequencyEstimator`: Frequency Estimator (typically a PLL) model.
+- `filter <: Filter`: Filter model.
+- `n_states::Int64`: Number of states (will depend on the components).
+- `states::Vector{Symbol}`: Vector of states (will depend on the components).
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct DynamicInverter{
     C <: Converter,
@@ -21,7 +55,7 @@ mutable struct DynamicInverter{
     inner_control::IC
     dc_source::DC
     freq_estimator::P
-    filter::F #add MVAbase here
+    filter::F 
     n_states::Int64
     states::Vector{Symbol}
     ext::Dict{String, Any}

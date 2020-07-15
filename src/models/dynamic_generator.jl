@@ -1,5 +1,39 @@
 """
-Testing Dynamic generator docstring
+    mutable struct DynamicGenerator{
+        M <: Machine,
+        S <: Shaft,
+        A <: AVR,
+        TG <: TurbineGov,
+        P <: PSS,
+    } <: DynamicInjection
+        static_injector::Union{Nothing, Generator}
+        ω_ref::Float64
+        machine::M
+        shaft::S
+        avr::A
+        prime_mover::TG
+        pss::P
+        n_states::Int64
+        states::Vector{Symbol}
+        ext::Dict{String, Any}
+        internal::InfrastructureSystemsInternal
+    end
+
+A dynamic generator is composed by 5 components, namely a Machine, a Shaft, an Automatic Voltage Regulator (AVR),
+a Prime Mover (o Turbine Governor) and Power System Stabilizer (PSS). It requires a Static Injection device that is attached to it.
+
+# Arguments
+- `static_injector::Union{Nothing, StaticInjection}`: Static Injector attached to the dynamic generator.
+- `ω_ref::Float64`: Frequency reference set-point in pu.
+- `machine <: Machine`: Machine model for modeling the electro-magnetic phenomena.
+- `shaft <: Shaft`: Shaft model for modeling the electro-mechanical phenomena.
+- `avr <: AVR`: AVR model of the excitacion system.
+- `prime_mover <: TurbineGov`: Prime Mover and Turbine Governor model for mechanical power.
+- `pss <: PSS`: Power System Stabilizer model.
+- `n_states::Int64`: Number of states (will depend on the components).
+- `states::Vector{Symbol}`: Vector of states (will depend on the components).
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct DynamicGenerator{
     M <: Machine,
