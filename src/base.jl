@@ -349,14 +349,15 @@ Sets the units base for the getter functions on the devices. It modifies the beh
 """
 function set_units_base_system!(system::System, settings::String)
     system.units_settings.unit_system = UNIT_SYSTEM_MAPPING[settings]
+    @info "Unit System changed to $(UNIT_SYSTEM_MAPPING[settings])"
     return
 end
 
 function set_units_base_system!(system::System, settings::SystemUnitsSettings)
     system.units_settings.unit_system = settings
+    @info "Unit System changed to $settings"
     return
 end
-
 
 """
 Add a component to the system.
