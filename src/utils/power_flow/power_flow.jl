@@ -300,17 +300,17 @@ function solve_powerflow!(system::System; finite_diff = false, kwargs...)
     #Save per-unit flag
     settings_unit_cache = deepcopy(system.units_settings.unit_system)
     #Work in System per unit
-    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING["system_base"]
+    set_units_base_system!(system, "system_base")
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
         PowerSystems._write_pf_sol!(system, res)
         @info("PowerFlow solve converged, the results have been stored in the system")
         #Restore original per unit base
-        system.units_settings.unit_system = settings_unit_cache
+        set_units_base_system!(system, settings_unit_cache)
         return res.f_converged
     end
     @error("The powerflow solver returned convergence = $(res.f_converged)")
-    system.units_settings.unit_system = settings_unit_cache
+    set_units_base_system!(system, settings_unit_cache)
     return res.f_converged
 end
 
@@ -333,17 +333,17 @@ function solve_powerflow(system::System; finite_diff = false, kwargs...)
     #Save per-unit flag
     settings_unit_cache = deepcopy(system.units_settings.unit_system)
     #Work in System per unit
-    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING["system_base"]
+    set_units_base_system!(system, "system_base")
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
         @info("PowerFlow solve converged, the results are exported in DataFrames")
         df_results = _write_results(system, res)
         #Restore original per unit base
-        system.units_settings.unit_system = settings_unit_cache
+        set_units_base_system!(system, settings_unit_cache)
         return df_results
     end
     @error("The powerflow solver returned convergence = $(res.f_converged)")
-    system.units_settings.unit_system = settings_unit_cache
+    set_units_base_system!(system, settings_unit_cache)
     return res.f_converged
 end
 

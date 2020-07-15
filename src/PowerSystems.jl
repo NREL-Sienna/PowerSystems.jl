@@ -218,6 +218,7 @@ export get_bus_numbers
 export get_name
 export get_base_power
 export get_frequency
+export set_units_base_system!
 export to_json
 export check_forecast_consistency
 export validate_forecast_consistency
