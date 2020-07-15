@@ -176,7 +176,6 @@ function create_system_with_dynamic_inverter()
     test_inverter = DynamicInverter(
         battery,
         1.0, #ω_ref
-        100.0, #MVABase
         converter, #Converter
         outer_control, #OuterControl
         vsc, #Voltage Source Controller
