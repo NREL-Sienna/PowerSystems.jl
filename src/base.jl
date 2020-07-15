@@ -353,7 +353,7 @@ function set_units_base_system!(system::System, settings::String)
     return
 end
 
-function set_units_base_system!(system::System, settings::IS.SystemUnitsSettings)
+function set_units_base_system!(system::System, settings::UnitSystem)
     system.units_settings.unit_system = settings
     @info "Unit System changed to $settings"
     return
