@@ -1,5 +1,11 @@
 abstract type InverterComponent <: DynamicComponent end
 
+"""
+    mutable struct DynamicInverter <: DynamicInjection
+        test::Float64
+    end
+Testing Dynamic Inverter docstring
+"""
 mutable struct DynamicInverter{
     C <: Converter,
     O <: OuterControl,

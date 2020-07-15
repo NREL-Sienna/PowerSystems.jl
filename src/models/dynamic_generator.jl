@@ -1,3 +1,6 @@
+"""
+Testing Dynamic generator docstring
+"""
 mutable struct DynamicGenerator{
     M <: Machine,
     S <: Shaft,
