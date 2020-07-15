@@ -46,8 +46,16 @@ function get_exponential_saturation(Se::Tuple{Float64, Float64})
 end
 
 """
-"3-states salient-pole synchronous machine with quadratic saturation:
-IEEE Std 1110 §5.3.2 (Model 2.1). GENSAL in PSSE and PSLF."
+    mutable struct SalientPoleQuadratic <: Machine
+        base_machine::SalientPoleMachine
+        saturation_coeffs::Tuple{Float64, Float64}
+
+3-states salient-pole synchronous machine with exponential saturation:
+IEEE Std 1110 §5.3.2 (Model 2.1). GENSAL in PSSE and PSLF.
+
+# Arguments:
+- `base_machine::SalientPoleMachine`: Salient Pole Machine model.
+- `saturation_coeffs::Tuple{Float64, Float64}``: Saturation coefficients for quadratic model.
 """
 mutable struct SalientPoleQuadratic <: Machine
     base_machine::SalientPoleMachine
@@ -94,8 +102,16 @@ function SalientPoleQuadratic(::Nothing)
 end
 
 """
-"3-states salient-pole synchronous machine with exponential saturation:
-IEEE Std 1110 §5.3.2 (Model 2.1). GENSAE in PSSE and PSLF."
+    mutable struct SalientPoleExponential <: Machine
+        base_machine::SalientPoleMachine
+        saturation_coeffs::Tuple{Float64, Float64}
+
+3-states salient-pole synchronous machine with exponential saturation:
+IEEE Std 1110 §5.3.2 (Model 2.1). GENSAE in PSSE and PSLF.
+
+# Arguments:
+- `base_machine::SalientPoleMachine`: Salient Pole Machine model.
+- `saturation_coeffs::Tuple{Float64, Float64}``: Saturation coefficients for exponential model.
 """
 mutable struct SalientPoleExponential <: Machine
     base_machine::SalientPoleMachine
@@ -142,8 +158,16 @@ function SalientPoleExponential(::Nothing)
 end
 
 """
+    mutable struct RoundRotorQuadratic <: Machine
+        base_machine::RoundRotorMachine
+        saturation_coeffs::Tuple{Float64, Float64}
+
 4-states round-rotor synchronous machine with quadratic saturation:
 IEEE Std 1110 §5.3.2 (Model 2.2). GENROU model in PSSE and PSLF.
+
+# Arguments
+- `base_machine::RoundRotorMachine`: Round Rotor Machine model.
+- `saturation_coeffs::Tuple{Float64, Float64}``: Saturation coefficients for quadratic model.
 """
 mutable struct RoundRotorQuadratic <: Machine
     base_machine::RoundRotorMachine
@@ -220,8 +244,16 @@ function RoundRotorQuadratic(::Nothing)
 end
 
 """
-4-states round-rotor synchronous machine with quadratic saturation:
-IEEE Std 1110 §5.3.2 (Model 2.2). GENROU model in PSSE and PSLF.
+    mutable struct RoundRotorExponential <: Machine
+        base_machine::RoundRotorMachine
+        saturation_coeffs::Tuple{Float64, Float64}
+
+4-states round-rotor synchronous machine with exponential saturation:
+IEEE Std 1110 §5.3.2 (Model 2.2). GENROE model in PSSE and PSLF.
+
+# Arguments
+- `base_machine::RoundRotorMachine`: Round Rotor Machine model.
+- `saturation_coeffs::Tuple{Float64, Float64}``: Saturation coefficients for exponential model.
 """
 mutable struct RoundRotorExponential <: Machine
     base_machine::RoundRotorMachine
