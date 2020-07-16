@@ -109,9 +109,7 @@ function PTDF(branches, nodes, dist_slack::Vector{Float64} = [0.1])
 
     axes = (line_ax, bus_ax)
     look_up = (_make_ax_ref(line_ax), _make_ax_ref(bus_ax))
-
     return PTDF(S, axes, look_up)
-
 end
 
 """
@@ -124,7 +122,5 @@ Builds the PTDF matrix from a system. The return is a PTDF array indexed with th
 function PTDF(sys::System, dist_slack::Vector{Float64} = [0.1])
     branches = get_components(ACBranch, sys)
     nodes = get_components(Bus, sys)
-
     return PTDF(branches, nodes, dist_slack)
-
 end
