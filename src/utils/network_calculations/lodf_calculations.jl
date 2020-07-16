@@ -34,7 +34,7 @@ Builds the LODF matrix from a group of branches and nodes. The return is a LOLDF
 
 # Keyword arguments
 - `dist_slack::Vector{FLoat64}`: Vector of weights to be used as distributed slack bus.
-    The distributes slack vector has to be the same length as the number of buses
+    The distributed slack vector has to be the same length as the number of buses
 """
 function LODF(branches, nodes, dist_slack::Vector{Float64} = [0.1])
 
@@ -54,7 +54,7 @@ Builds the LODF matrix from a system. The return is a LOLDF array indexed with t
 
 # Keyword arguments
 - `dist_slack::Vector{FLoat64}`: Vector of weights to be used as distributed slack bus.
-    The distributes slack vector has to be the same length as the number of buses
+    The distributed slack vector has to be the same length as the number of buses
 """
 
 function LODF(sys::System, dist_slack::Vector{Float64} = [0.1])
