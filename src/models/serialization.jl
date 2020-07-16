@@ -76,3 +76,9 @@ function IS.convert_type(
 
     return T(values...)
 end
+
+function get_component_type(component_type::Symbol)
+    # This function will ensure that `component_type` contains a valid type expression,
+    # so it should be safe to eval.
+    return eval(IS.parse_serialized_type(component_type))
+end

@@ -121,6 +121,10 @@ end
 
 @testset "Test JSON serialization of dynamic inverter" begin
     sys = create_system_with_dynamic_inverter()
+    # Add a dynamic branch to test that code.
+    branch = collect(get_components(Branch, sys))[1]
+    dynamic_branch = DynamicBranch(branch)
+    add_component!(sys, dynamic_branch)
     _, result = validate_serialization(sys)
     @test result
 end
