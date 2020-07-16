@@ -1,5 +1,12 @@
 # PowerSystems Change Log
 
+# 0.23.0
+
+- Addition of get_max_active_power, get_max_reactive_power accessor functions
+- Enable serialization of DynamicLines
+- Islanding detection in PTDF, LODF and Ybus calculations
+- Remove MVABase field from DynamicInverter
+
 ## 0.22.0
 
 - Addition of DynamicLines Struct
