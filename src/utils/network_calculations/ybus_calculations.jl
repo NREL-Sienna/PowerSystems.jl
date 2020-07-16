@@ -125,7 +125,7 @@ end
 function Ybus(branches, nodes)
     #Get axis names
     bus_ax = [get_number(bus) for bus in nodes]
-    sort!(bus_ax, by = x -> x.number)
+    sort!(bus_ax)
     axes = (bus_ax, bus_ax)
     look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
     ybus = _buildybus(branches, nodes, Vector{FixedAdmittance}())
