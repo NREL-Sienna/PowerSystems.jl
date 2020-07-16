@@ -22,7 +22,7 @@ end
 """
 Return the max active power for the Renewable Generation calculated as the rating * power_factor
 """
-function get_max_active_power(d::T) where T <: RenewableGen
+function get_max_active_power(d::T) where {T <: RenewableGen}
     if !hasmethod(get_rating, T) || !hasmethod(get_power_factor, T)
         throw(MethodError(get_max_active_power, d))
     end
