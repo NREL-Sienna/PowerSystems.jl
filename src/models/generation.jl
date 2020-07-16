@@ -5,7 +5,7 @@ abstract type HydroGen <: Generator end
 
 """
 Abstract Type to represent renewable generation devices. Requires the implementation of get_rating
-    and get_power_factor methods
+and get_power_factor methods
 """
 abstract type RenewableGen <: Generator end
 abstract type ThermalGen <: Generator end
@@ -20,11 +20,11 @@ function IS.get_limits(
 end
 
 """
-Return the max active power for the Renewable Generation calutades as the rating * powe_factor
+Return the max active power for the Renewable Generation calculated as the rating * power_factor
 """
 function get_max_active_power(d::T) where T <: RenewableGen
     if !hasmethod(get_rating, T) || !hasmethod(get_power_factor, T)
-        throw(MethodError(get_max_reactive_power, d))
+        throw(MethodError(get_max_active_power, d))
     end
     return get_rating(d) * get_power_factor(d)
 end
