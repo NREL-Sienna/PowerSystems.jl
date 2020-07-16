@@ -1,4 +1,7 @@
-
+"""
+Line Outage Distribution Factors (LODFs) are a sensitivity measure of how a change in
+a line’s flow affects the flows on other lines in the system.
+"""
 struct LODF{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Float64}
     data::Array{Float64, 2}
     axes::Ax
@@ -26,7 +29,14 @@ function _buildlodf(branches, nodes, dist_slack::Array{Float64} = [0.1])
     return lodf
 end
 
-function LODF(branches, nodes, dist_slack::Array{Float64} = [0.1])
+"""
+Builds the LODF matrix from a group of branches and nodes. The return is a LOLDF array indexed with the branch name.
+
+# Keyword arguments
+- `dist_slack::Vector{FLoat64}`: Vector of weights to be used as distributed slack bus.
+    The distributed slack vector has to be the same length as the number of buses
+"""
+function LODF(branches, nodes, dist_slack::Vector{Float64} = [0.1])
 
     #Get axis names
     line_ax = [branch.name for branch in branches]
@@ -39,10 +49,16 @@ function LODF(branches, nodes, dist_slack::Array{Float64} = [0.1])
 
 end
 
-function LODF(sys::System, dist_slack::Array{Float64} = [0.1])
+"""
+Builds the LODF matrix from a system. The return is a LOLDF array indexed with the branch name.
+
+# Keyword arguments
+- `dist_slack::Vector{FLoat64}`: Vector of weights to be used as distributed slack bus.
+    The distributed slack vector has to be the same length as the number of buses
+"""
+
+function LODF(sys::System, dist_slack::Vector{Float64} = [0.1])
     branches = get_components(ACBranch, sys)
     nodes = get_components(Bus, sys)
-
     return LODF(branches, nodes, dist_slack)
-
 end
