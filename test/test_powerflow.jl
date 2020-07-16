@@ -49,19 +49,26 @@ c_sys5_re() = System(
     nodes_5,
     vcat(thermal_generators5(nodes_5), renewable_generators5(nodes_5)),
     loads5(nodes_5),
-    nothing,
+    branches5(nodes_5),
     nothing,
     100.0,
     nothing,
     nothing,
 )
 
+pf_sys5_re = c_sys5_re()
+remove_component!(Line, pf_sys5_re, "1")
+remove_component!(Line, pf_sys5_re, "2")
+br = get_component(Line, pf_sys5_re, "6")
+set_x!(br, 20.0)
+set_r!(br, 2.0)
+
 @testset begin
     # This is a negative test. The data passed for sys5_re is known to be infeasible.
     @test_logs(
         (:error, "The powerflow solver returned convergence = false"),
         match_mode = :any,
-        @test !solve_powerflow!(c_sys5_re(), finite_diff = true)
+        @test !solve_powerflow!(pf_sys5_re, finite_diff = true)
     )
     #Compare results between finite diff methods and Jacobian method
     res_finite_diff = solve_powerflow(c_sys14(), finite_diff = true)
