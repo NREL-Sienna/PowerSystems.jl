@@ -1194,7 +1194,7 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
         post_add_func = nothing,
     )
         for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-            c_type = _get_component_type(c_type_sym)
+            c_type = get_component_type(c_type_sym)
             c_type in parsed_types && continue
             if !isnothing(skip_types) && is_matching_type(c_type, skip_types)
                 continue
@@ -1233,12 +1233,6 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
             set_dynamic_injector!(static_injector, dynamic_injector)
         end,
     )
-end
-
-function _get_component_type(component_type::Symbol)
-    # This function will ensure that `component_type` contains a valid type expression,
-    # so it should be safe to eval.
-    return eval(IS.parse_serialized_type(component_type))
 end
 
 """
