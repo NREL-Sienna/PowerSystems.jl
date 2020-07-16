@@ -5,6 +5,19 @@ struct PTDF{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Float64}
     lookup::L
 end
 
+function _binfo_check(binfo)
+    if binfo != 0
+        if binfo < 0
+            error("Illegal Agument in Inputs")
+        elseif binfo > 0
+            error("Singular value in factorization. Possibly there is an islanded bus")
+        else
+            @assert false
+        end
+    end
+    return
+end
+
 function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
 
     buscount = length(nodes)
@@ -44,15 +57,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
     )
     if dist_slack[1] == 0.1 && length(dist_slack) == 1
         (B, bipiv, binfo) = getrf!(B)
-        if binfo != 0
-            if binfo < 0
-                error("Illegal Agument in Inputs")
-            elseif binfo > 0
-                error("Singular value in factorization. Possibly there is an islanded bus")
-            else
-                @assert false
-            end
-        end
+        _binfo_check(binfo)
         S_ = gemm(
             'N',
             'N',
@@ -64,6 +69,7 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
     elseif dist_slack[1] != 0.1 && length(dist_slack) == buscount
         @info "Distributed bus"
         (B, bipiv, binfo) = getrf!(B)
+        _binfo_check(binfo)
         S_ = gemm(
             'N',
             'N',
