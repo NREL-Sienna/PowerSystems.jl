@@ -19,6 +19,8 @@ export get_aggregation_topology_accessor
 export PowerSystemType
 export Component
 export Device
+export get_max_active_power
+export get_max_reactive_power
 export Branch
 export StaticInjection
 export ACBranch
