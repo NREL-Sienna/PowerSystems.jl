@@ -124,22 +124,51 @@ function _buildybus(branches, nodes, fixed_admittances)
     for fa in fixed_admittances
         _ybus!(ybus, fa, num_bus)
     end
-    return ybus
+    return SparseArrays.dropzeros!(ybus)
+end
+
+function _goderya(ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64})
+    node_count = size(ybus)[1]
+    max_I = node_count^2
+    I, J, val = SparseArrays.findnz(ybus)
+    T = SparseArrays.sparse(I, J, ones(length(val)))
+    T_ = T*T
+    for n in 1:node_count-1
+        I, _, _ = SparseArrays.findnz(T_)
+        if length(I) == max_I
+            @info "The System has no islands"
+            break
+        elseif length(I) < max_I
+            temp = T_*T
+            I_temp, _, _ = SparseArrays.findnz(temp)
+            if all(I_temp == I)
+                error("The system contains islands")
+            end
+            T_ = temp
+        else
+            @assert false
+        end
+        @assert n < node_count-1
+    end
+    return
 end
 
 """
 Builds a Ybus from a collection of buses and branches. The return is a Ybus Array indexed with the bus numbers and the branch names.
 
 # Keyword arguments
-- `check_connectiviy::Bool`: Checks connectivity of the network using LAPACK getrf!
+- `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
-function Ybus(branches, nodes)
+function Ybus(branches, nodes; check_connectivity::Bool = true)
     #Get axis names
     bus_ax = [get_number(bus) for bus in nodes]
     sort!(bus_ax)
     axes = (bus_ax, bus_ax)
     look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
     ybus = _buildybus(branches, nodes, Vector{FixedAdmittance}())
+    if check_connectivity
+        _goderya(ybus)
+    end
     return Ybus(ybus, axes, look_up)
 end
 
@@ -147,19 +176,20 @@ end
 Builds a Ybus from the system. The return is a Ybus Array indexed with the bus numbers and the branch names.
 
 # Keyword arguments
-- `check_connectiviy::Bool`: Checks connectivity of the network using LAPACK getrf!
+- `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
 
-function Ybus(sys::System; check_connectiviy::Bool = true)
+function Ybus(sys::System; check_connectivity::Bool = true)
     branches = get_components(ACBranch, sys)
     nodes = sort(collect(get_components(Bus, sys)), by = x -> x.number)
     fixed_admittances = get_components(FixedAdmittance, sys)
-
     # Get axis names
     bus_ax = sort([get_number(bus) for bus in nodes])
     axes = (bus_ax, bus_ax)
     look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
-
     ybus = _buildybus(branches, nodes, fixed_admittances)
+    if check_connectivity
+        _goderya(ybus)
+    end
     return Ybus(ybus, axes, look_up)
 end
