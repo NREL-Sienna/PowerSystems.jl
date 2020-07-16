@@ -508,13 +508,15 @@ end
     )
 
     t_sys5_re = c_sys5_re()
+    # Make 2 islands. Island 1: 1 - 5. Island 2: 2, 3 ,4
     remove_component!(Line, t_sys5_re, "1")
     remove_component!(Line, t_sys5_re, "2")
     remove_component!(Line, t_sys5_re, "6")
+    @test_throws IS.DataFormatError Ybus(t_sys5_re)
 
-    @test_logs(
-        (:error, "The system contains islands"),
-        match_mode = :any,
-        @test !solve_powerflow!(t_sys5_re, finite_diff = true)
-    )
+    t2_sys5_re = c_sys5_re()
+    # Remove lines. Don't cause islands
+    remove_component!(Line, t2_sys5_re, "3")
+    remove_component!(Line, t2_sys5_re, "5")
+    @test isa(Ybus(t2_sys5_re), Ybus)
 end

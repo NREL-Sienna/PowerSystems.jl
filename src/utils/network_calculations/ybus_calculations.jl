@@ -142,7 +142,7 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64})
             temp = T_ * T
             I_temp, _, _ = SparseArrays.findnz(temp)
             if all(I_temp == I)
-                error("The system contains islands")
+                throw(DataFormatError("The system contains islands"))
             end
             T_ = temp
         else
