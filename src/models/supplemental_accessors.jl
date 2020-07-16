@@ -23,3 +23,11 @@ function get_series_susceptance(b::PhaseShiftingTransformer)
 end
 
 get_series_admittance(b::ACBranch) = 1 / (get_r(b) + get_x(b) * 1im)
+
+function get_max_active_power(d::T) where {T <: Device}
+    return get_active_power_limits(d).max
+end
+
+function get_max_reactive_power(d::T) where {T <: Device}
+    return get_reactive_power_limits(d).max
+end

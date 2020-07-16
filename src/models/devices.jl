@@ -193,6 +193,7 @@ function IS.convert_type(::Type{Device}, data::Any)
     error("This form of convert_type is not supported for Devices")
 end
 
-function has_forecasts(d::Component)
-    return IS.has_forecasts(d)
-end
+get_active_power_limits(::T) where T <: Device = throw(ArgumentError("get_active_power_limits not implemented for $T"))
+get_reactive_power_limits(::T) where T <: Device = throw(ArgumentError("get_reactive_power_limits not implemented for $T"))
+get_rating(::T) where T <: Device = throw(ArgumentError("get_rating not implemented for $T"))
+get_power_factor(::T) where T <: Device = throw(ArgumentError("get_power_factor not implemented for $T"))

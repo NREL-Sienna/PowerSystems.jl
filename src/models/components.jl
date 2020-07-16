@@ -36,3 +36,7 @@ function get_value(c::T, value::V) where {T <: Component, V}
     @warn("conversion not implemented for $(V) in component $(T)")
     return value::V
 end
+
+function has_forecasts(d::Component)
+    return IS.has_forecasts(d)
+end
