@@ -15,6 +15,6 @@
         name::String
     end
 
-    @test_throws MethodError get_max_active_power(TestDevice("foo"))
-    @test_throws MethodError get_max_active_power(TestRenDevice("foo"))
+    @test_throws ArgumentError get_max_active_power(TestDevice("foo"))
+    @test_throws ArgumentError get_max_active_power(TestRenDevice("foo"))
 end
