@@ -496,4 +496,25 @@ end
 
     @test Ybus5[nodes_5[1], nodes_5[2]] == (-3.5234840209999647 + 35.234840209999646im)
 
+    c_sys5_re() = System(
+    nodes_5,
+    thermal_generators5(nodes_5),
+    loads5(nodes_5),
+    branches5(nodes_5),
+    nothing,
+    100.0,
+    nothing,
+    nothing,
+    )
+
+    t_sys5_re = c_sys5_re()
+    remove_component!(Line, t_sys5_re, "1")
+    remove_component!(Line, t_sys5_re, "2")
+    remove_component!(Line, t_sys5_re, "6")
+
+    @test_logs(
+        (:error, "The system contains islands"),
+        match_mode = :any,
+        @test !solve_powerflow!(t_sys5_re, finite_diff = true)
+    )
 end
