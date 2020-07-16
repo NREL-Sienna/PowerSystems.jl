@@ -25,15 +25,9 @@ end
 get_series_admittance(b::ACBranch) = 1 / (get_r(b) + get_x(b) * 1im)
 
 function get_max_active_power(d::T) where {T <: Device}
-    if !hasmethod(get_active_power_limits, Tuple{T})
-        throw(MethodError(get_max_active_power, d))
-    end
     return get_active_power_limits(d).max
 end
 
 function get_max_reactive_power(d::T) where {T <: Device}
-    if !hasmethod(get_reactive_power_limits, Tuple{T})
-        throw(MethodError(get_max_reactive_power, d))
-    end
     return get_reactive_power_limits(d).max
 end
