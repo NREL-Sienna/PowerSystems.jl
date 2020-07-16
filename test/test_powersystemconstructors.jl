@@ -121,7 +121,7 @@ end
     # with nullable values. Consider adding them so that this "demo-constructor" works.
     # If that isn't appropriate for this type, add it to types_to_skip below.
 
-    types_to_skip = (System,)
+    types_to_skip = (System, TestDevice, TestRenDevice)
     for ps_type in IS.get_all_concrete_subtypes(PowerSystemType)
         ps_type in types_to_skip && continue
         obj = ps_type(nothing)
