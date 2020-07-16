@@ -1,7 +1,7 @@
 """
 Power Transfer Distribution Factors (PTDF) indicate the incremental change in real power that occurs on transmission lines due to real power injections changes at the buses.
 
-The PTDF struct in indexed using the Bus numbers and branch names
+The PTDF struct is indexed using the Bus numbers and branch names
 """
 struct PTDF{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Float64}
     data::Array{Float64, 2}
