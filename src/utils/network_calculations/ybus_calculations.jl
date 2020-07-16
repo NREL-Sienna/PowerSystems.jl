@@ -1,3 +1,8 @@
+"""
+Nodal admittance matrix (Ybus) is an N x N matrix describing a power system with N buses. It represents the nodal admittance of the buses in a power system.
+
+The Ybus Struct is indexed using the Bus Numbers, no need for them to be sequential
+"""
 struct Ybus{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{ComplexF64}
     data::SparseArrays.SparseMatrixCSC{ComplexF64, Int64}
     axes::Ax
@@ -122,6 +127,12 @@ function _buildybus(branches, nodes, fixed_admittances)
     return ybus
 end
 
+"""
+Builds a Ybus from a collection of buses and branches. The return is a Ybus Array indexed with the bus numbers and the branch names.
+
+# Keyword arguments
+- `check_connectiviy::Bool`: Checks connectivity of the network using LAPACK getrf!
+"""
 function Ybus(branches, nodes)
     #Get axis names
     bus_ax = [get_number(bus) for bus in nodes]
@@ -132,7 +143,14 @@ function Ybus(branches, nodes)
     return Ybus(ybus, axes, look_up)
 end
 
-function Ybus(sys::System)
+"""
+Builds a Ybus from the system. The return is a Ybus Array indexed with the bus numbers and the branch names.
+
+# Keyword arguments
+- `check_connectiviy::Bool`: Checks connectivity of the network using LAPACK getrf!
+"""
+
+function Ybus(sys::System; check_connectiviy::Bool = true)
     branches = get_components(ACBranch, sys)
     nodes = sort(collect(get_components(Bus, sys)), by = x -> x.number)
     fixed_admittances = get_components(FixedAdmittance, sys)
@@ -143,6 +161,5 @@ function Ybus(sys::System)
     look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
 
     ybus = _buildybus(branches, nodes, fixed_admittances)
-
     return Ybus(ybus, axes, look_up)
 end
