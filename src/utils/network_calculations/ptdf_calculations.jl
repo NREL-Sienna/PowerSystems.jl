@@ -9,7 +9,7 @@ struct PTDF{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Float64}
     lookup::L
 end
 
-function binfo_check(binfo)
+function binfo_check(binfo::Int)
     if binfo != 0
         if binfo < 0
             error("Illegal Argument in Inputs")
@@ -21,6 +21,7 @@ function binfo_check(binfo)
     end
     return
 end
+
 function _buildptdf(branches, nodes, dist_slack::Vector{Float64})
 
     buscount = length(nodes)
@@ -68,7 +69,6 @@ function _buildptdf(branches, nodes, dist_slack::Vector{Float64})
             getri!(B, bipiv),
         )
         S = hcat(S_[:, 1:(slack_position - 1)], zeros(linecount), S_[:, slack_position:end])
-
     elseif dist_slack[1] != 0.1 && length(dist_slack) == buscount
         @info "Distributed bus"
         (B, bipiv, binfo) = getrf!(B)
@@ -83,10 +83,11 @@ function _buildptdf(branches, nodes, dist_slack::Vector{Float64})
         slack_array = dist_slack / sum(dist_slack)
         slack_array = reshape(slack_array, buscount, 1)
         S = S - gemm('N', 'N', gemm('N', 'N', S, slack_array), ones(1, buscount))
-
     elseif length(slack_position) == 0
         @warn("Slack bus not identified in the Bus/Nodes list, can't build PTDF")
         S = Array{Float64, 2}(undef, linecount, buscount)
+    else
+        @assert false
     end
 
     return S, A

@@ -132,14 +132,14 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64})
     max_I = node_count^2
     I, J, val = SparseArrays.findnz(ybus)
     T = SparseArrays.sparse(I, J, ones(length(val)))
-    T_ = T*T
-    for n in 1:node_count-1
+    T_ = T * T
+    for n in 1:(node_count - 1)
         I, _, _ = SparseArrays.findnz(T_)
         if length(I) == max_I
             @info "The System has no islands"
             break
         elseif length(I) < max_I
-            temp = T_*T
+            temp = T_ * T
             I_temp, _, _ = SparseArrays.findnz(temp)
             if all(I_temp == I)
                 error("The system contains islands")
@@ -148,7 +148,7 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64})
         else
             @assert false
         end
-        @assert n < node_count-1
+        @assert n < node_count - 1
     end
     return
 end
