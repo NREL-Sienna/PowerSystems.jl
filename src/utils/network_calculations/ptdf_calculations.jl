@@ -44,6 +44,15 @@ function _buildptdf(branches, nodes, dist_slack::Array{Float64} = [0.1])
     )
     if dist_slack[1] == 0.1 && length(dist_slack) == 1
         (B, bipiv, binfo) = getrf!(B)
+        if binfo != 0
+          if binfo < 0
+            error("Illegal Agument in Inputs")
+          elseif binfo > 0
+            error("Singular value in factorization. Possibly there is an islanded bus")
+          else
+            @assert false
+          end
+        end
         S_ = gemm(
             'N',
             'N',
