@@ -32,6 +32,11 @@ function get_value(c::Component, value::Min_Max)
     return (min = value.min * m, max = value.max * m)
 end
 
+function get_value(c::Component, value::Up_Down)
+    m = _get_multiplier(c)
+    return (up = value.up * m, down = value.down * m)
+end
+
 function get_value(c::T, value::V) where {T <: Component, V}
     @warn("conversion not implemented for $(V) in component $(T)")
     return value::V
