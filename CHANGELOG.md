@@ -1,6 +1,12 @@
 # PowerSystems Change Log
 
-# 0.23.0
+## 0.23.1
+
+- Fix bug in DynamicGenerator constructor
+- Add additional get_value methods for ThermalStandard ramps
+- Improve testing
+
+## 0.23.0
 
 - Addition of get_max_active_power, get_max_reactive_power accessor functions
 - Enable serialization of DynamicLines
