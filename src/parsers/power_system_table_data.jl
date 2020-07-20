@@ -743,7 +743,8 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames,
         (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2])))
         for c in var_cost if !in(nothing, c)
     ])
-    if length(var_cost) > 1
+
+    if length(var_cost) > 1 && fuel_cost > 0.0
         var_cost[2:end] = [
             (
                 var_cost[i][1] *
@@ -766,7 +767,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames,
         for i in 2:length(var_cost)
             var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
         end
-    elseif length(var_cost) == 1
+    elseif length(var_cost) == 1 && fuel_cost > 0.0
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * base_power
         fixed = 0.0
