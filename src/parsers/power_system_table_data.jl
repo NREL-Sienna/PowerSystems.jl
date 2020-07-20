@@ -743,7 +743,8 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames,
         (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2])))
         for c in var_cost if !in(nothing, c)
     ])
-    if length(var_cost) > 1
+
+    if length(var_cost) > 1 && fuel_cost > 0.0
         var_cost[2:end] = [
             (
                 var_cost[i][1] *
@@ -766,7 +767,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames,
         for i in 2:length(var_cost)
             var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
         end
-    elseif length(var_cost) == 1
+    elseif length(var_cost) == 1 && fuel_cost > 0.0
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = var_cost[1][1] * var_cost[1][2] * fuel_cost * base_power
         fixed = 0.0
@@ -1255,7 +1256,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
         if field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
            field_info.per_unit_conversion.To == IS.SYSTEM_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            value /= data.base_power
+            value = data.base_power == 0.0 ? 0.0 : value / data.base_power
         elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
                field_info.per_unit_conversion.To == IS.DEVICE_BASE
             @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
@@ -1268,7 +1269,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             reference_info = field_infos[reference_idx]
             reference_value =
                 get(row, reference_info.custom_name, reference_info.default_value)
-            value /= reference_value
+            value = reference_value == 0.0 ? 0.0 : value / reference_value
         elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
             throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
         end
