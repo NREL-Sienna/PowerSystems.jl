@@ -55,7 +55,8 @@
 
     # Test all versions of get_forecast_values()
     values1 = get_forecast_values(component, forecast)
-    values2 = get_forecast_values(Deterministic, component, initial_time, "get_max_active_power")
+    values2 =
+        get_forecast_values(Deterministic, component, initial_time, "get_max_active_power")
     @test values1 == values2
     values3 = get_forecast_values(
         Deterministic,
