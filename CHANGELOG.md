@@ -1,5 +1,10 @@
 # PowerSystems Change Log
 
+## 0.23.2
+
+- Bug fixes in TableDataParsing
+- Add get_max_reactive_power for RenewableGeneration with PowerFactor
+
 ## 0.23.1
 
 - Fix bug in DynamicGenerator constructor
