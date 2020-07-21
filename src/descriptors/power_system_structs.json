@@ -1692,6 +1692,7 @@
           "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
           "null_value": "0.0",
           "data_type": "Float64",
+          "needs_conversion": true,
           "valid_range": {
             "min": 0,
             "max": null
