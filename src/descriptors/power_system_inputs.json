@@ -212,7 +212,7 @@
             "unit": "radian",
             "name": "min_angle_limits",
             "description": "Minimum Angle Limits",
-            "default_value": 1.57079
+            "default_value": -1.57079
         },
         {
             "unit": "radian",
