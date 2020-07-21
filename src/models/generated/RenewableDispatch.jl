@@ -108,7 +108,7 @@ get_active_power(value::RenewableDispatch) = get_value(value, value.active_power
 """Get RenewableDispatch reactive_power."""
 get_reactive_power(value::RenewableDispatch) = get_value(value, value.reactive_power)
 """Get RenewableDispatch rating."""
-get_rating(value::RenewableDispatch) = value.rating
+get_rating(value::RenewableDispatch) = get_value(value, value.rating)
 """Get RenewableDispatch prime_mover."""
 get_prime_mover(value::RenewableDispatch) = value.prime_mover
 """Get RenewableDispatch reactive_power_limits."""
