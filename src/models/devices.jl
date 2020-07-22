@@ -22,7 +22,7 @@ function add_service!(device::Device, service::AGC)
 
     device_bus_area = get_area(get_bus(device))
     service_area = get_area(service)
-    if !(IS.get_uuid(device_bus_area) == IS.get_uuid(service_area))
+    if isnothing(device_bus_area) || !(IS.get_uuid(device_bus_area) == IS.get_uuid(service_area))
         throw(IS.ConflictingInputsError("Device $(get_name(device)) is not located in the regulation control area"))
     end
 
