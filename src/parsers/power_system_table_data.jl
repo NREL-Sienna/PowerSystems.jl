@@ -1046,6 +1046,7 @@ function make_renewable_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    @show reactive_power_limits
     rating = calculate_rating(active_power_limits, reactive_power_limits)
     base_power = gen.base_mva
     var_cost, fixed, fuel_cost =

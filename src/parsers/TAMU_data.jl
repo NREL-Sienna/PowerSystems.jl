@@ -16,7 +16,7 @@ folder:
 ```julia
 sys = TamuSystem(
     "./ACTIVSg25k",
-    configpath = "ACTIVSg25k_validation.json",
+    config_path = "ACTIVSg25k_validation.json",
     bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
     load_name_formatter = x->strip(join(x["source_id"], "_"))
 )

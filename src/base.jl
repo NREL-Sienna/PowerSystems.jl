@@ -48,7 +48,7 @@ System(; kwargs...)
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidRange if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
-- `configpath::String`: specify path to validation config file
+- `config_path::String`: specify path to validation config file
 """
 struct System <: PowerSystemType
     data::IS.SystemData
@@ -1504,7 +1504,7 @@ function _create_system_data_from_kwargs(; kwargs...)
     time_series_directory = get(kwargs, :time_series_directory, nothing)
     if runchecks
         validation_descriptor_file =
-            get(kwargs, :configpath, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
+            get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
     end
 
     return IS.SystemData(;
