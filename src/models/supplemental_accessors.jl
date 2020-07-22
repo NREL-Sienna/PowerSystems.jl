@@ -44,6 +44,8 @@ reactive_power_limits is nothing
 """
 function get_max_reactive_power(d::RenewableDispatch)
     reactive_power_limits = get_reactive_power_limits(d)
-    isnothing(reactive_power_limits) && return get_max_reactive_power(d)
+    if isnothing(reactive_power_limits)
+        return get_rating(d) * sin(acos(get_power_factor(d)))
+    end
     return reactive_power_limits.max
 end
