@@ -16,6 +16,7 @@ const SYSTEM_KWARGS = Set((
     :time_series_directory,
     :time_series_in_memory,
     :time_series_read_only,
+    :timeseries_metadata_file,
     :unit_system,
 ))
 

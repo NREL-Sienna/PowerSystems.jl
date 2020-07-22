@@ -279,8 +279,10 @@ function System(
         end
     end
 
-    if !isnothing(data.timeseries_metadata_file)
-        add_forecasts!(sys, data.timeseries_metadata_file; resolution = forecast_resolution)
+    timeseries_metadata_file = get(kwargs, :timeseries_metadata_file, getfield(data, :timeseries_metadata_file, nothing))
+
+    if !isnothing(timeseries_metadata_file)
+        add_forecasts!(sys, timeseries_metadata_file; resolution = forecast_resolution)
     end
 
     check!(sys)
