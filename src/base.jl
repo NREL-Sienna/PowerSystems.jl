@@ -671,7 +671,7 @@ end
 
 struct ServiceContributingDevices
     service::Service
-    contributing_devices::Vector{Device}
+    contributing_devices::Vector{Component}
 end
 
 const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
