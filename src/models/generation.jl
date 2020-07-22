@@ -32,3 +32,12 @@ Return the max reactive power for the Renewable Generation calculated as the rat
 function get_max_reactive_power(d::T) where {T <: RenewableGen}
     return get_rating(d) * sin(acos(get_power_factor(d)))
 end
+
+"""
+Return the max reactive power for the Renewable Generation calculated as the rating * power_factor
+"""
+function get_max_reactive_power(d::RenewableDispatch)
+    reactive_power_limits = get_reactive_power_limits(d)
+    isnothing(reactive_power_limits) && return get_max_reactive_power(d)
+    return reactive_power_limits.max
+end
