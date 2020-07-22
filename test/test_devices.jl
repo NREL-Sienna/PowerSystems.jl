@@ -6,6 +6,7 @@
 
     @test get_max_active_power(th) == get_active_power_limits(th).max
     @test get_max_active_power(re) <= get_rating(re)
+    @test isa(get_max_reactive_power(re), Float64)
 
     mutable struct TestDevice <: Device
         name::String
