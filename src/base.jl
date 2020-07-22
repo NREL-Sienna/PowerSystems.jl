@@ -678,25 +678,28 @@ const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType,
 const ServiceContributingDevicesMapping =
     Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
 
+function _get_contributing_devices(sys::System, service::T) where {T <: Service}
+    uuid = IS.get_uuid(service)
+    devices = ServiceContributingDevices(service, Vector{Device}())
+    for device in get_components(Device, sys)
+        for _service in get_services(device)
+            if IS.get_uuid(_service) == uuid
+                push!(devices.contributing_devices, device)
+                break
+            end
+        end
+    end
+    return devices
+end
+
 """
 Return an instance of ServiceContributingDevicesMapping.
 """
 function get_contributing_device_mapping(sys::System)
     services = ServiceContributingDevicesMapping()
     for service in get_components(Service, sys)
-        uuid = IS.get_uuid(service)
-        devices = ServiceContributingDevices(service, Vector{Device}())
-        for device in get_components(Device, sys)
-            for _service in get_services(device)
-                if IS.get_uuid(_service) == uuid
-                    push!(devices.contributing_devices, device)
-                    break
-                end
-            end
-
-            key = ServiceContributingDevicesKey((typeof(service), get_name(service)))
-            services[key] = devices
-        end
+        key = ServiceContributingDevicesKey((typeof(service), get_name(service)))
+        services[key] = _get_contributing_devices(sys, service)
     end
 
     return services
