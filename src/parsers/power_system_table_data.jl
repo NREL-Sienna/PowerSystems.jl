@@ -279,8 +279,14 @@ function System(
         end
     end
 
-    if !isnothing(data.timeseries_metadata_file)
-        add_forecasts!(sys, data.timeseries_metadata_file; resolution = forecast_resolution)
+    timeseries_metadata_file = get(
+        kwargs,
+        :timeseries_metadata_file,
+        getfield(data, :timeseries_metadata_file, nothing),
+    )
+
+    if !isnothing(timeseries_metadata_file)
+        add_forecasts!(sys, timeseries_metadata_file; resolution = forecast_resolution)
     end
 
     check!(sys)
@@ -823,7 +829,8 @@ function make_ramplimits(gen)
         down = get(gen, :ramp_down, ramp)
         down = typeof(down) == String ? tryparse(Float64, down) : down
     end
-    return (up = up, down = down)
+    ramplimits = isnothing(up) && isnothing(down) ? nothing : (up = up, down = down)
+    return ramplimits
 end
 
 function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
@@ -1257,25 +1264,33 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             value = nothing
         end
 
-        if field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
-           field_info.per_unit_conversion.To == IS.SYSTEM_BASE
-            @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            value = data.base_power == 0.0 ? 0.0 : value / data.base_power
-        elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
-               field_info.per_unit_conversion.To == IS.DEVICE_BASE
-            @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
-            reference_idx = findfirst(
-                x -> x.name == field_info.per_unit_conversion.Reference,
-                field_infos,
-            )
-            isnothing(reference_idx) &&
-                throw(DataFormatError("$(field_info.per_unit_conversion.Reference) not found in table with $(field_info.custom_name)"))
-            reference_info = field_infos[reference_idx]
-            reference_value =
-                get(row, reference_info.custom_name, reference_info.default_value)
-            value = reference_value == 0.0 ? 0.0 : value / reference_value
-        elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
-            throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
+        if !isnothing(value)
+            if field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
+               field_info.per_unit_conversion.To == IS.SYSTEM_BASE
+                @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
+                value = value isa String ? tryparse(Float64, value) : value
+                value = data.base_power == 0.0 ? 0.0 : value / data.base_power
+            elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
+                   field_info.per_unit_conversion.To == IS.DEVICE_BASE
+                reference_idx = findfirst(
+                    x -> x.name == field_info.per_unit_conversion.Reference,
+                    field_infos,
+                )
+                isnothing(reference_idx) &&
+                    throw(DataFormatError("$(field_info.per_unit_conversion.Reference) not found in table with $(field_info.custom_name)"))
+                reference_info = field_infos[reference_idx]
+                @debug "convert to $(field_info.per_unit_conversion.To) using $(reference_info.custom_name)" field_info.custom_name
+                reference_value =
+                    get(row, reference_info.custom_name, reference_info.default_value)
+                reference_value == "required" &&
+                    throw(DataFormatError("$(reference_info.name) is required for p.u. conversion"))
+                value = value isa String ? tryparse(Float64, value) : value
+                value = reference_value == 0.0 ? 0.0 : value / reference_value
+            elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
+                throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
+            end
+        else
+            @debug "$(field_info.custom_name) is nothing"
         end
 
         # TODO: need special handling for units
