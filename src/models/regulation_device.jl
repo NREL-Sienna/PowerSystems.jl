@@ -22,7 +22,7 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
     ) where {T <: StaticInjection}
         # Note that forecasts are not forwarded to T. They get copied from T in
         # handle_component_addition!.
-        IS.@forward((RegulationDevice{T}, :device), T)
+        IS.@forward((RegulationDevice{T}, :device), T, [:get_internal])
         new{T}(
             device,
             droop,
@@ -69,6 +69,7 @@ get_reserve_limit_up(value::RegulationDevice) = value.reserve_limit_up
 get_reserve_limit_dn(value::RegulationDevice) = value.reserve_limit_dn
 get_inertia(value::RegulationDevice) = value.inertia
 get_cost(value::RegulationDevice) = value.cost
+
 
 set_droop!(value::RegulationDevice, val::Float64) = value.droop = val
 set_participation_factor!(
