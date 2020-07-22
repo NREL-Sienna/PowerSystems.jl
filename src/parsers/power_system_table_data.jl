@@ -849,9 +849,13 @@ function make_reactive_params(gen)
     reactive_power = get(gen, :reactive_power, 0.0)
     reactive_power_limits_min = get(gen, :reactive_power_limits_min, nothing)
     reactive_power_limits_max = get(gen, :reactive_power_limits_max, nothing)
-    reactive_power_limits =
-        (isnothing(reactive_power_limits_min) & isnothing(reactive_power_limits_max)) ?
-        nothing : (min = reactive_power_limits_min, max = reactive_power_limits_max)
+    if  (isnothing(reactive_power_limits_min) & isnothing(reactive_power_limits_max))
+        reactive_power_limits = nothing
+    elseif isnothing(reactive_power_limits_min)
+        reactive_power_limits = (min = 0.0, max = reactive_power_limits_max)
+    else
+        reactive_power_limits =  (min = reactive_power_limits_min, max = reactive_power_limits_max)
+    end
     return reactive_power, reactive_power_limits
 end
 
@@ -1046,7 +1050,6 @@ function make_renewable_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    @show reactive_power_limits
     rating = calculate_rating(active_power_limits, reactive_power_limits)
     base_power = gen.base_mva
     var_cost, fixed, fuel_cost =
