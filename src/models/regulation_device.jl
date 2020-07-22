@@ -70,7 +70,6 @@ get_reserve_limit_dn(value::RegulationDevice) = value.reserve_limit_dn
 get_inertia(value::RegulationDevice) = value.inertia
 get_cost(value::RegulationDevice) = value.cost
 
-
 set_droop!(value::RegulationDevice, val::Float64) = value.droop = val
 set_participation_factor!(
     value::RegulationDevice,
