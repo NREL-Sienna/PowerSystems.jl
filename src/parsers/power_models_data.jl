@@ -23,7 +23,7 @@ such as `bus_name_formatter` or `gen_name_formatter`.
 # Examples
 ```julia
 sys = System(
-    pm_data, configpath = "ACTIVSg25k_validation.json",
+    pm_data, config_path = "ACTIVSg25k_validation.json",
     bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
     load_name_formatter = x->strip(join(x["source_id"], "_"))
 )

@@ -568,7 +568,8 @@
         },
         {
             "name": "category",
-            "description": "Category"
+            "description": "Category",
+            "default_value": null
         },
         {
             "name": "cold_start_time",

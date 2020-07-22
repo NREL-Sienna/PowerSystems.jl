@@ -849,9 +849,14 @@ function make_reactive_params(gen)
     reactive_power = get(gen, :reactive_power, 0.0)
     reactive_power_limits_min = get(gen, :reactive_power_limits_min, nothing)
     reactive_power_limits_max = get(gen, :reactive_power_limits_max, nothing)
-    reactive_power_limits =
-        (isnothing(reactive_power_limits_min) & isnothing(reactive_power_limits_max)) ?
-        nothing : (min = reactive_power_limits_min, max = reactive_power_limits_max)
+    if isnothing(reactive_power_limits_min) && isnothing(reactive_power_limits_max)
+        reactive_power_limits = nothing
+    elseif isnothing(reactive_power_limits_min)
+        reactive_power_limits = (min = 0.0, max = reactive_power_limits_max)
+    else
+        reactive_power_limits =
+            (min = reactive_power_limits_min, max = reactive_power_limits_max)
+    end
     return reactive_power, reactive_power_limits
 end
 
