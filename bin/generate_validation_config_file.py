@@ -24,7 +24,7 @@ def generate_config(input_file):
     data = read_json_data(input_file)
     items = []
 
-    for ps_struct in data:
+    for ps_struct in data["auto_generated_structs"]:
         new_struct = OrderedDict()
         new_struct["struct_name"] = ps_struct["struct_name"]
         new_struct["fields"] = []
