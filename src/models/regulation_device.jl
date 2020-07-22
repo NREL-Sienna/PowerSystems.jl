@@ -22,7 +22,7 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
     ) where {T <: StaticInjection}
         # Note that forecasts are not forwarded to T. They get copied from T in
         # handle_component_addition!.
-        IS.@forward((RegulationDevice{T}, :device), T)
+        IS.@forward((RegulationDevice{T}, :device), T, [:get_internal])
         new{T}(
             device,
             droop,
