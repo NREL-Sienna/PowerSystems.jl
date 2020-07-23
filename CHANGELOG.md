@@ -1,5 +1,11 @@
 # PowerSystems Change Log
 
+## 0.23.3
+
+- Bug fixes in TableDataParsing
+- Improvements in RegulationDevice getter functions
+- Addition of get_max_reactive_power for RenewableDispatch
+
 ## 0.23.2
 
 - Bug fixes in TableDataParsing
