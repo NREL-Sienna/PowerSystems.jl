@@ -4,7 +4,7 @@ Se(1.2) = B(1.2 - A)^2 and Se(1.0) = B(1.0 - A)^2 as:
 Se(1.0) = Se(1.2)/(1.2 - A)^2 * (1.0 - A)^2 that yields
 (1.2 - A)^2 Se(1.0) = Se(1.2) * (1.0 - A)^2 or expanding:
 (Se(1.2) - Se(1.0)) A^2 + (2.4 Se(1.0) - 2 Se(1.2)) A + (Se(1.2) - 1.44 Se(1.0)) = 0
-and uses the negative solution of the quadratic equation 
+and uses the negative solution of the quadratic equation
 """
 function get_quadratic_saturation(Se::Tuple{Float64, Float64})
     if Se[1] == 0.0 && Se[2] == 0.0
@@ -65,7 +65,6 @@ mutable struct SalientPoleQuadratic <: Machine
         Xl::Float64,
         Se::Tuple{Float64, Float64},
     )
-        IS.@forward((SalientPoleQuadratic, :base_machine), SalientPoleMachine)
         saturation_coeffs = get_quadratic_saturation(Se)
         new(
             SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se),
@@ -73,6 +72,7 @@ mutable struct SalientPoleQuadratic <: Machine
         )
     end
 end
+IS.@forward((SalientPoleQuadratic, :base_machine), SalientPoleMachine)
 
 function SalientPoleQuadratic(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
     SalientPoleQuadratic(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
@@ -113,7 +113,6 @@ mutable struct SalientPoleExponential <: Machine
         Xl::Float64,
         Se::Tuple{Float64, Float64},
     )
-        IS.@forward((SalientPoleExponential, :base_machine), SalientPoleMachine)
         saturation_coeffs = get_exponential_saturation(Se)
         new(
             SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se),
@@ -121,6 +120,7 @@ mutable struct SalientPoleExponential <: Machine
         )
     end
 end
+IS.@forward((SalientPoleExponential, :base_machine), SalientPoleMachine)
 
 function SalientPoleExponential(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
     SalientPoleExponential(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
@@ -163,7 +163,6 @@ mutable struct RoundRotorQuadratic <: Machine
         Xl::Float64,
         Se::Tuple{Float64, Float64},
     )
-        IS.@forward((RoundRotorQuadratic, :base_machine), RoundRotorMachine)
         saturation_coeffs = get_quadratic_saturation(Se)
         new(
             RoundRotorMachine(
@@ -184,6 +183,7 @@ mutable struct RoundRotorQuadratic <: Machine
         )
     end
 end
+IS.@forward((RoundRotorQuadratic, :base_machine), RoundRotorMachine)
 
 function RoundRotorQuadratic(;
     R,
@@ -241,7 +241,6 @@ mutable struct RoundRotorExponential <: Machine
         Xl::Float64,
         Se::Tuple{Float64, Float64},
     )
-        IS.@forward((RoundRotorExponential, :base_machine), RoundRotorMachine)
         saturation_coeffs = get_exponential_saturation(Se)
         new(
             RoundRotorMachine(
@@ -262,6 +261,7 @@ mutable struct RoundRotorExponential <: Machine
         )
     end
 end
+IS.@forward((RoundRotorExponential, :base_machine), RoundRotorMachine)
 
 function RoundRotorExponential(;
     R,
