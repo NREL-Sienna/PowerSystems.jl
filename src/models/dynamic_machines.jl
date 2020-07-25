@@ -52,27 +52,27 @@ IEEE Std 1110 §5.3.2 (Model 2.1). GENSAL in PSSE and PSLF."
 mutable struct SalientPoleQuadratic <: Machine
     base_machine::SalientPoleMachine
     saturation_coeffs::Tuple{Float64, Float64}
-
-    function SalientPoleQuadratic(
-        R::Float64,
-        Td0_p::Float64,
-        Td0_pp::Float64,
-        Tq0_pp::Float64,
-        Xd::Float64,
-        Xq::Float64,
-        Xd_p::Float64,
-        Xd_pp::Float64,
-        Xl::Float64,
-        Se::Tuple{Float64, Float64},
-    )
-        saturation_coeffs = get_quadratic_saturation(Se)
-        new(
-            SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se),
-            saturation_coeffs,
-        )
-    end
 end
 IS.@forward((SalientPoleQuadratic, :base_machine), SalientPoleMachine)
+
+function SalientPoleQuadratic(
+    R::Float64,
+    Td0_p::Float64,
+    Td0_pp::Float64,
+    Tq0_pp::Float64,
+    Xd::Float64,
+    Xq::Float64,
+    Xd_p::Float64,
+    Xd_pp::Float64,
+    Xl::Float64,
+    Se::Tuple{Float64, Float64},
+)
+    saturation_coeffs = get_quadratic_saturation(Se)
+    SalientPoleQuadratic(
+        SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se),
+        saturation_coeffs,
+    )
+end
 
 function SalientPoleQuadratic(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
     SalientPoleQuadratic(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
@@ -100,27 +100,27 @@ IEEE Std 1110 §5.3.2 (Model 2.1). GENSAE in PSSE and PSLF."
 mutable struct SalientPoleExponential <: Machine
     base_machine::SalientPoleMachine
     saturation_coeffs::Tuple{Float64, Float64}
-
-    function SalientPoleExponential(
-        R::Float64,
-        Td0_p::Float64,
-        Td0_pp::Float64,
-        Tq0_pp::Float64,
-        Xd::Float64,
-        Xq::Float64,
-        Xd_p::Float64,
-        Xd_pp::Float64,
-        Xl::Float64,
-        Se::Tuple{Float64, Float64},
-    )
-        saturation_coeffs = get_exponential_saturation(Se)
-        new(
-            SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se),
-            saturation_coeffs,
-        )
-    end
 end
 IS.@forward((SalientPoleExponential, :base_machine), SalientPoleMachine)
+
+function SalientPoleExponential(
+    R::Float64,
+    Td0_p::Float64,
+    Td0_pp::Float64,
+    Tq0_pp::Float64,
+    Xd::Float64,
+    Xq::Float64,
+    Xd_p::Float64,
+    Xd_pp::Float64,
+    Xl::Float64,
+    Se::Tuple{Float64, Float64},
+)
+    saturation_coeffs = get_exponential_saturation(Se)
+    SalientPoleExponential(
+        SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se),
+        saturation_coeffs,
+    )
+end
 
 function SalientPoleExponential(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
     SalientPoleExponential(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
@@ -148,6 +148,9 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU model in PSSE and PSLF.
 mutable struct RoundRotorQuadratic <: Machine
     base_machine::RoundRotorMachine
     saturation_coeffs::Tuple{Float64, Float64}
+end
+IS.@forward((RoundRotorQuadratic, :base_machine), RoundRotorMachine)
+
 
     function RoundRotorQuadratic(
         R::Float64,
@@ -164,7 +167,7 @@ mutable struct RoundRotorQuadratic <: Machine
         Se::Tuple{Float64, Float64},
     )
         saturation_coeffs = get_quadratic_saturation(Se)
-        new(
+        RoundRotorQuadratic(
             RoundRotorMachine(
                 R,
                 Td0_p,
@@ -182,8 +185,6 @@ mutable struct RoundRotorQuadratic <: Machine
             saturation_coeffs,
         )
     end
-end
-IS.@forward((RoundRotorQuadratic, :base_machine), RoundRotorMachine)
 
 function RoundRotorQuadratic(;
     R,
@@ -226,6 +227,9 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU model in PSSE and PSLF.
 mutable struct RoundRotorExponential <: Machine
     base_machine::RoundRotorMachine
     saturation_coeffs::Tuple{Float64, Float64}
+end
+IS.@forward((RoundRotorExponential, :base_machine), RoundRotorMachine)
+
 
     function RoundRotorExponential(
         R::Float64,
@@ -242,7 +246,7 @@ mutable struct RoundRotorExponential <: Machine
         Se::Tuple{Float64, Float64},
     )
         saturation_coeffs = get_exponential_saturation(Se)
-        new(
+        RoundRotorExponential(
             RoundRotorMachine(
                 R,
                 Td0_p,
@@ -260,8 +264,6 @@ mutable struct RoundRotorExponential <: Machine
             saturation_coeffs,
         )
     end
-end
-IS.@forward((RoundRotorExponential, :base_machine), RoundRotorMachine)
 
 function RoundRotorExponential(;
     R,
