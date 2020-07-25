@@ -1,5 +1,12 @@
 # PowerSystems Change Log
 
+## 0.24.0
+
+- Change the use of @forward macros to avoid world of age errors
+- Change DynamicMachines constructors to avoid de-serialization errors
+- Change implementation of DynamicBranches
+- Change implementation of RegulatioDevices
+
 ## 0.23.3
 
 - Bug fixes in TableDataParsing
