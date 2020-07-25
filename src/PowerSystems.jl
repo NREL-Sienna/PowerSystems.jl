@@ -337,12 +337,12 @@ include("models/reserves.jl")
 include("models/generation.jl")
 include("models/storage.jl")
 include("models/loads.jl")
-include("models/regulation_device.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
+include("models/regulation_device.jl")
 
 #Methods for devices
 include("models/components.jl")

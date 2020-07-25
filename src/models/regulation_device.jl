@@ -22,7 +22,6 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
     ) where {T <: StaticInjection}
         # Note that forecasts are not forwarded to T. They get copied from T in
         # handle_component_addition!.
-        IS.@forward((RegulationDevice{T}, :device), T, [:get_internal])
         new{T}(
             device,
             droop,
@@ -80,3 +79,22 @@ set_reserve_limit_dn!(value::RegulationDevice, val::Float64) = value.reserve_lim
 set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
 IS.set_forecasts!(value::RegulationDevice, val::IS.Forecasts) = value.forecasts = val
+
+RegulationDeviceSupportedTypes = DataType[
+    InterruptibleLoad,
+    HydroDispatch,
+    HydroEnergyReservoir,
+    RenewableDispatch,
+    ThermalMultiStart,
+    ThermalStandard,
+    Source,
+    GenericBattery,
+]
+
+for RDT in RegulationDeviceSupportedTypes
+    IS.@forward(
+        (RegulationDevice{RDT}, :device),
+        RDT,
+        [:get_internal, :get_name, :get_forecasts]
+    )
+end
