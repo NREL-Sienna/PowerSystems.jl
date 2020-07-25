@@ -80,6 +80,21 @@ set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
 IS.set_forecasts!(value::RegulationDevice, val::IS.Forecasts) = value.forecasts = val
 
-for T in IS.get_all_concrete_subtypes(StaticInjection)
-    IS.@forward((RegulationDevice{T}, :device), T, [:get_internal])
+RegulationDeviceSupportedTypes = DataType[
+    InterruptibleLoad,
+    HydroDispatch,
+    HydroEnergyReservoir,
+    RenewableDispatch,
+    ThermalMultiStart,
+    ThermalStandard,
+    Source,
+    GenericBattery,
+]
+
+for RDT in RegulationDeviceSupportedTypes
+    IS.@forward(
+        (RegulationDevice{RDT}, :device),
+        RDT,
+        [:get_internal, :get_name, :get_forecasts]
+    )
 end
