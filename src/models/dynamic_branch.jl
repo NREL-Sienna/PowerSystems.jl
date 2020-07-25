@@ -34,7 +34,6 @@ get_states(value::DynamicBranch) = value.states
 """Get DynamicBranch internal."""
 get_internal(value::DynamicBranch) = value.internal
 
-
 InfrastructureSystems.get_name(value::DynamicBranch) = get_name(value.branch)
 """Get DynamicBranch available."""
 get_available(value::DynamicBranch) = get_available(value.branch)
@@ -65,9 +64,11 @@ InfrastructureSystems.set_name!(value::DynamicBranch, val::String) = value.name 
 """Set DynamicBranch available."""
 set_available!(value::DynamicBranch, val::Bool) = set_available!(value.branch, val)
 """Set DynamicBranch active_power_flow."""
-set_active_power_flow!(value::DynamicBranch, val::Float64) = set_active_power_flow!(value.branch, val)
+set_active_power_flow!(value::DynamicBranch, val::Float64) =
+    set_active_power_flow!(value.branch, val)
 """Set DynamicBranch reactive_power_flow."""
-set_reactive_power_flow!(value::DynamicBranch, val::Float64) = set_reactive_power_flow!(value.branch, val)
+set_reactive_power_flow!(value::DynamicBranch, val::Float64) =
+    set_reactive_power_flow!(value.branch, val)
 """Set DynamicBranch arc."""
 set_arc!(value::DynamicBranch, val::Arc) = set_arc!(value.branch, val)
 """Set DynamicBranch r."""
@@ -79,15 +80,22 @@ set_b!(value::DynamicBranch, val) = set_b!(value.branch, val)
 """Set DynamicBranch rate."""
 set_rate!(value::DynamicBranch, val::Float64) = set_rate!(value.branch, val)
 """Set DynamicBranch angle_limits."""
-set_angle_limits!(value::DynamicBranch, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = set_angle_limits!(value.branch, val)
+set_angle_limits!(
+    value::DynamicBranch,
+    val::NamedTuple{(:min, :max), Tuple{Float64, Float64}},
+) = set_angle_limits!(value.branch, val)
 """Set DynamicBranch services."""
 set_services!(value::DynamicBranch, val::Vector{Service}) = set_services!(value.branch, val)
 """Set DynamicBranch ext."""
 set_ext!(value::DynamicBranch, val::Dict{String, Any}) = set_ext!(value.branch, val)
 
-InfrastructureSystems.set_forecasts!(value::DynamicBranch, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(
+    value::DynamicBranch,
+    val::InfrastructureSystems.Forecasts,
+) = value.forecasts = val
 """Set DynamicBranch internal."""
-set_internal!(value::DynamicBranch, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::DynamicBranch, val::InfrastructureSystemsInternal) =
+    value.internal = val
 "Set branch"
 set_branch!(value::DynamicBranch, val::ACBranch) = value.branch = val
 "Set n_states"
