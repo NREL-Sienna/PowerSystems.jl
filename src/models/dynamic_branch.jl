@@ -34,7 +34,7 @@ get_states(value::DynamicBranch) = value.states
 """Get DynamicBranch internal."""
 get_internal(value::DynamicBranch) = value.internal
 
-InfrastructureSystems.get_name(value::DynamicBranch) = get_name(value.branch)
+IS.get_name(value::DynamicBranch) = IS.get_name(value.branch)
 """Get DynamicBranch available."""
 get_available(value::DynamicBranch) = get_available(value.branch)
 """Get DynamicBranch active_power_flow."""
@@ -58,9 +58,9 @@ get_services(value::DynamicBranch) = get_services(value.branch)
 """Get DynamicBranch ext."""
 get_ext(value::DynamicBranch) = get_ext(value.branch)
 
-InfrastructureSystems.get_forecasts(value::DynamicBranch) = get_forecasts(value.branch)
+IS.get_forecasts(value::DynamicBranch) = IS.get_forecasts(value.branch)
 
-InfrastructureSystems.set_name!(value::DynamicBranch, val::String) = value.name = val
+IS.set_name!(value::DynamicBranch, val::String) = value.name = val
 """Set DynamicBranch available."""
 set_available!(value::DynamicBranch, val::Bool) = set_available!(value.branch, val)
 """Set DynamicBranch active_power_flow."""
@@ -89,7 +89,7 @@ set_services!(value::DynamicBranch, val::Vector{Service}) = set_services!(value.
 """Set DynamicBranch ext."""
 set_ext!(value::DynamicBranch, val::Dict{String, Any}) = set_ext!(value.branch, val)
 
-InfrastructureSystems.set_forecasts!(
+IS.set_forecasts!(
     value::DynamicBranch,
     val::InfrastructureSystems.Forecasts,
 ) = value.forecasts = val
