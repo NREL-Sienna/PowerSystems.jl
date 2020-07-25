@@ -151,40 +151,39 @@ mutable struct RoundRotorQuadratic <: Machine
 end
 IS.@forward((RoundRotorQuadratic, :base_machine), RoundRotorMachine)
 
-
-    function RoundRotorQuadratic(
-        R::Float64,
-        Td0_p::Float64,
-        Td0_pp::Float64,
-        Tq0_p::Float64,
-        Tq0_pp::Float64,
-        Xd::Float64,
-        Xq::Float64,
-        Xd_p::Float64,
-        Xq_p::Float64,
-        Xd_pp::Float64,
-        Xl::Float64,
-        Se::Tuple{Float64, Float64},
+function RoundRotorQuadratic(
+    R::Float64,
+    Td0_p::Float64,
+    Td0_pp::Float64,
+    Tq0_p::Float64,
+    Tq0_pp::Float64,
+    Xd::Float64,
+    Xq::Float64,
+    Xd_p::Float64,
+    Xq_p::Float64,
+    Xd_pp::Float64,
+    Xl::Float64,
+    Se::Tuple{Float64, Float64},
+)
+    saturation_coeffs = get_quadratic_saturation(Se)
+    RoundRotorQuadratic(
+        RoundRotorMachine(
+            R,
+            Td0_p,
+            Td0_pp,
+            Tq0_p,
+            Tq0_pp,
+            Xd,
+            Xq,
+            Xd_p,
+            Xq_p,
+            Xd_pp,
+            Xl,
+            Se,
+        ),
+        saturation_coeffs,
     )
-        saturation_coeffs = get_quadratic_saturation(Se)
-        RoundRotorQuadratic(
-            RoundRotorMachine(
-                R,
-                Td0_p,
-                Td0_pp,
-                Tq0_p,
-                Tq0_pp,
-                Xd,
-                Xq,
-                Xd_p,
-                Xq_p,
-                Xd_pp,
-                Xl,
-                Se,
-            ),
-            saturation_coeffs,
-        )
-    end
+end
 
 function RoundRotorQuadratic(;
     R,
@@ -230,40 +229,39 @@ mutable struct RoundRotorExponential <: Machine
 end
 IS.@forward((RoundRotorExponential, :base_machine), RoundRotorMachine)
 
-
-    function RoundRotorExponential(
-        R::Float64,
-        Td0_p::Float64,
-        Td0_pp::Float64,
-        Tq0_p::Float64,
-        Tq0_pp::Float64,
-        Xd::Float64,
-        Xq::Float64,
-        Xd_p::Float64,
-        Xq_p::Float64,
-        Xd_pp::Float64,
-        Xl::Float64,
-        Se::Tuple{Float64, Float64},
+function RoundRotorExponential(
+    R::Float64,
+    Td0_p::Float64,
+    Td0_pp::Float64,
+    Tq0_p::Float64,
+    Tq0_pp::Float64,
+    Xd::Float64,
+    Xq::Float64,
+    Xd_p::Float64,
+    Xq_p::Float64,
+    Xd_pp::Float64,
+    Xl::Float64,
+    Se::Tuple{Float64, Float64},
+)
+    saturation_coeffs = get_exponential_saturation(Se)
+    RoundRotorExponential(
+        RoundRotorMachine(
+            R,
+            Td0_p,
+            Td0_pp,
+            Tq0_p,
+            Tq0_pp,
+            Xd,
+            Xq,
+            Xd_p,
+            Xq_p,
+            Xd_pp,
+            Xl,
+            Se,
+        ),
+        saturation_coeffs,
     )
-        saturation_coeffs = get_exponential_saturation(Se)
-        RoundRotorExponential(
-            RoundRotorMachine(
-                R,
-                Td0_p,
-                Td0_pp,
-                Tq0_p,
-                Tq0_pp,
-                Xd,
-                Xq,
-                Xd_p,
-                Xq_p,
-                Xd_pp,
-                Xl,
-                Se,
-            ),
-            saturation_coeffs,
-        )
-    end
+end
 
 function RoundRotorExponential(;
     R,
