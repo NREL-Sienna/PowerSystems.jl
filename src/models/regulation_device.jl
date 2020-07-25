@@ -79,3 +79,7 @@ set_reserve_limit_dn!(value::RegulationDevice, val::Float64) = value.reserve_lim
 set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
 IS.set_forecasts!(value::RegulationDevice, val::IS.Forecasts) = value.forecasts = val
+
+for T in InteractiveUtils.subtypes(StaticInjection)
+    IS.@forward((RegulationDevice{T}, :device), T, [:get_internal])
+end
