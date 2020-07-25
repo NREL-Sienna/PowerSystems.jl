@@ -80,6 +80,6 @@ set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
 IS.set_forecasts!(value::RegulationDevice, val::IS.Forecasts) = value.forecasts = val
 
-for T in InteractiveUtils.subtypes(StaticInjection)
+for T in IS.get_all_concrete_subtypes(StaticInjection)
     IS.@forward((RegulationDevice{T}, :device), T, [:get_internal])
 end
