@@ -8,6 +8,7 @@ This file was not auto-generated.
         requirement::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
+        contributing_services::Vector{<:PSY.Service}
     end
 
 Data Structure for a group reserve product for system simulations.
@@ -18,6 +19,7 @@ Data Structure for a group reserve product for system simulations.
 - `requirement::Float64`: the static value of required reserves in system p.u., validation range: (0, nothing), action if invalid: error
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `contributing_services::Vector{<:PSY.Service}`: Services that contribute for this requirement constraint
 """
 mutable struct StaticGroupReserve <: Service
     name::String
