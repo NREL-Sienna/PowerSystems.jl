@@ -230,6 +230,8 @@ export set_area!
 export set_load_zone!
 export TamuSystem
 export PowerModelsData
+export add_dyn_injectors!
+export parse_dyn_system
 export set_dynamic_injector!
 export set_static_injector!
 export get_V_ref
