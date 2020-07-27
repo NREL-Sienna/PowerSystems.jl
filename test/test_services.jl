@@ -226,21 +226,6 @@ end
     @test length(get_components(ReserveDemandCurve{ReserveDown}, sys)) == 1
 end
 
-@testset "Test struct type collections" begin
-    concrete_types = IS.get_all_concrete_subtypes(Service)
-    reserve_types = InteractiveUtils.subtypes(Reserve)
-    reserve_parametric_types = InteractiveUtils.subtypes(ReserveDirection)
-
-    actual_count = length(concrete_types)
-    for reserve in reserve_types
-        for parametric in reserve_parametric_types
-            actual_count += 1
-        end
-    end
-
-    @test 8 == actual_count
-end
-
 @testset "Test AGC Device and Regulation Services" begin
     sys = create_rts_system()
     control_area = get_component(Area, sys, "1")
