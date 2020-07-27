@@ -145,8 +145,6 @@ export Reserve
 export ReserveDirection
 export ReserveUp
 export ReserveDown
-export ReserveSupplementaryUp
-export ReserveSupplementaryDown
 export StaticReserve
 export VariableReserve
 export AGC
