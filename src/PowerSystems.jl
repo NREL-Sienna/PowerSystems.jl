@@ -149,6 +149,7 @@ export StaticReserve
 export VariableReserve
 export AGC
 export ReserveDemandCurve
+export SupplementalReserveDemandCurve
 export Transfer
 
 export PTDF
