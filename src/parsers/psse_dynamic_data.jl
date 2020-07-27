@@ -81,6 +81,9 @@ function parse_dyr_components(data::Dict)
                         (args...) ->
                             InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(args...)
                     struct_args = populate_args(params_ix, componentValues)
+                    if struct_as_str == "BaseMachine"
+                        struct_args = [0.0, 1e-5, 1.0]
+                    end
                     temp[component_table[gen_field]] = component_constructor(struct_args...)
                 end
             end
@@ -100,10 +103,11 @@ function parse_dyr_components(data::Dict)
     return dic
 end
 
-function add_dyn_injectors!(sys_file::AbstractString, dyr_file::AbstractString)
+function parse_dyn_system(sys_file::AbstractString, dyr_file::AbstractString)
     sys = System(sys_file)
     bus_dict_gen = parse_dyr_components(dyr_file)
     add_dyn_injectors!(sys, bus_dict_gen)
+    return sys
 end
 
 function add_dyn_injectors!(sys::System, dyr_file::AbstractString)
@@ -112,14 +116,57 @@ function add_dyn_injectors!(sys::System, dyr_file::AbstractString)
 end
 
 function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
+    @info "Generators provided in .dyr, without a generator in .raw file will be skipped."
     for g in get_components(ThermalStandard, sys)
         _num = get_number(get_bus(g))
         _name = get_name(g)
         _id = parse(Int64, split(_name, "-")[end])
         temp_dict = get(bus_dict_gen, _num, nothing)
         if isnothing(temp_dict)
-            @warn "Generator at bus $(_num) not found in DynData"
+            @warn "Generator at bus $(_num), id $(_id), not found in Dynamic Data.\nVoltage Source will be used to model it."
+            r, x = get_ext(g)["z_source"]
+            if x == 0.0
+                @warn "No series reactance found. Setting it to 1e-6"
+                x = 1e-6
+            end
+            s = Source(
+                name = _name,
+                available = true,
+                bus = get_bus(g),
+                active_power = get_active_power(g),
+                reactive_power = get_reactive_power(g),
+                R_th = r,
+                X_th = x,
+            )
+            remove_component!(typeof(g), sys, _name)
+            add_component!(sys, s)
         else
+            machine = temp_dict[_id][1]
+            r, x = get_ext(g)["z_source"]
+            set_R!(machine, r)
+            shaft = temp_dict[_id][2]
+            if typeof(machine) == BaseMachine 
+                if x == 0.0
+                    @warn "No series reactance found. Setting it to 1e-6"
+                    x = 1e-6
+                end
+                set_Xd_p!(machine, x)
+                if get_H(shaft) == 0.0
+                    @info "Machine at bus $(_num), $(_id) has zero inertia. Modeling it as Voltage Source"
+                    s = Source(
+                        name = _name,
+                        available = true,
+                        bus = get_bus(g),
+                        active_power = get_active_power(g),
+                        reactive_power = get_reactive_power(g),
+                        R_th = r,
+                        X_th = x,
+                    )
+                    remove_component!(typeof(g), sys, _name)
+                    add_component!(sys, s)
+                    continue
+                end
+            end
             dyn_gen = DynamicGenerator(g, 1.0, temp_dict[_id]...)
             add_component!(sys, dyn_gen)
         end
