@@ -146,10 +146,10 @@ export ReserveDirection
 export ReserveUp
 export ReserveDown
 export StaticReserve
+export SupplementalStaticReserve
 export VariableReserve
 export AGC
 export ReserveDemandCurve
-export SupplementalReserveDemandCurve
 export Transfer
 
 export PTDF
