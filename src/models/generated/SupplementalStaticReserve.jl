@@ -1,5 +1,5 @@
 #=
-This file is auto-generated. Do not edit.
+This file is not auto-generated. Do edit if needed.
 =#
 """
     mutable struct SupplementalStaticReserve{T <: ReserveDirection} <: Reserve{T}
@@ -11,7 +11,8 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Data Structure for a proportional reserve product for system simulations.
+Data Structure for a Supplemental reserve product for system simulations.
+Supplemental means it can be contributed by both commited (online) and non-commited (offline) devices.
 
 # Arguments
 - `name::String`
