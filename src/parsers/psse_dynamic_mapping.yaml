@@ -1,0 +1,86 @@
+GENROU:
+- {
+  Machine: RoundRotorQuadratic,
+  Shaft: RoundRotorShaft
+}
+
+GENSAL:
+- {
+  Machine: SalientPoleQuadratic,
+  Shaft: SalientPoleShaft
+}
+
+GENROE:
+- {
+  Machine: RoundRotorExponential,
+  Shaft: RoundRotorShaft
+}
+
+GENSAE:
+- {
+  Machine: SalientPoleExponential,
+  Shaft: SalientPoleShaft
+}
+
+GENCLS:
+- {
+  Machine: BaseMachine,
+  Shaft: ClsShaft
+}
+
+ESAC1A:
+- {
+  AVR: AC1A
+}
+
+EXAC1:
+- {
+  AVR: ModifiedAC1A
+}
+
+ESST1A:
+- {
+  AVR: ST1A
+}
+
+GAST:
+- {
+  TurbineGov: GasTG
+}
+
+
+parameter_mapping:
+- {
+  RoundRotorQuadratic: [0.0, #R
+                        1,  #Td0_p
+                        2,  #Td0_pp
+                        3,  #Tq0_p
+                        4,  #Tq0_pp
+                        7,  #Xd
+                        8,  #Xq
+                        9,  #Xd_p
+                        10, #Xq_p
+                        11, #Xd_pp
+                        12, #Xl,
+                        '(13, 14)'], #(Se(1.0), Se(1.2))
+  RoundRotorExponential: [0.0, 1, 2, 3, 4, 7, 8, 9, 10, 11, 12, '(13, 14)'],
+  SalientPoleQuadratic: [0.0, #R
+                        1,  #Td0_p
+                        2,  #Td0_pp
+                        3,  #Tq0_pp
+                        6,  #Xd
+                        7,  #Xq
+                        8,  #Xd_p
+                        9, #Xd_pp
+                        10, #Xl,
+                        '(11, 12)'], #(Se(1.0), Se(1.2))
+  SalientPoleExponential: [0.0, 1, 2, 3, 6, 7, 8, 9, 10, '(11, 12)'],
+  RoundRotorShaft: [5, 6],
+  SalientPoleShaft: [4, 5],
+  BaseMachine: [],
+  ClsShaft: [1, 2],
+  AC1A: [1, 2, 3, 4, 5, '(7, 6)', 8, 9, 10, 11, 12, 13, '(14, 16)', '(15, 17)', '(19, 18)'],
+  ModifiedAC1A: [1, 2, 3, 4 , 5, '(7, 6)', 8, 9, 10, 11, 12, 13, 14, '(14, 16)', '(15, 17)'],
+  ST1A: [1, 2, 3, '(5, 4)', 6, 7, 8, 9, 10, 11, '(13, 12)', '(15, 14)', 16, 17, 18, 19, 20],
+  GASTG: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
