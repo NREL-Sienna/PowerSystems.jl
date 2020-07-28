@@ -61,7 +61,12 @@ get_requirement(value::StaticGroupReserve) = value.requirement
 get_ext(value::StaticGroupReserve) = value.ext
 """Get StaticGroupReserve internal."""
 get_internal(value::StaticGroupReserve) = value.internal
+"""Get StaticGroupReserve contributing_devices."""
 get_contributing_devices(value::StaticGroupReserve) = value.contributing_devices
+
+"""
+Return a vector of services contributing to the group service.
+"""
 function _get_contributing_devices(sys::System, service::T) where {T <: StaticGroupReserve}
     return get_contributing_devices(service)
 end
@@ -75,4 +80,5 @@ set_requirement!(value::StaticGroupReserve, val::Float64) = value.requirement = 
 set_ext!(value::StaticGroupReserve, val::Dict{String, Any}) = value.ext = val
 """Set StaticGroupReserve internal."""
 set_internal!(value::StaticGroupReserve, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set StaticGroupReserve contributing_devices."""
 set_contributing_devices(value::StaticGroupReserve,val::Vector{<:PSY.Service}) = value.contributing_devices = val

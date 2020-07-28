@@ -678,6 +678,9 @@ const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType,
 const ServiceContributingDevicesMapping =
     Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
 
+"""
+Return a vector of devices contributing to the service.
+"""
 function _get_contributing_devices(sys::System, service::T) where {T <: Service}
     uuid = IS.get_uuid(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
