@@ -3,6 +3,8 @@
     ger4_raw_file = joinpath(PSSE_RAW_DIR, "Benchmark_4ger_33_2015.RAW")
     ger4_dyr_file = joinpath(PSSE_DYR_DIR, "Benchmark_4ger_33_2015.dyr")
     sys = System(ger4_raw_file, ger4_dyr_file)
+    @test_throws PSY.DataFormatError System(ger4_raw_file, ger4_raw_file)
+    @test_throws PSY.DataFormatError System(ger4_dyr_file, ger4_raw_file)
     dyn_injectors = get_components(DynamicInjection, sys)
     @test length(dyn_injectors) == 4
     for g in dyn_injectors
