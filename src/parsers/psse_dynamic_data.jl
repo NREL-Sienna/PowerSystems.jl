@@ -75,12 +75,15 @@ end
 
 function _assign_missing_components!(bus_dict, component_table)
     for va in values(bus_dict)
-        !isassigned(va, component_table["AVR"]) &&
-            (va[component_table["AVR"]] = AVRFixed(1.0))
-        !isassigned(va, component_table["TurbineGov"]) &&
-            (va[component_table["TurbineGov"]] = TGFixed(1.0))
-        !isassigned(va, component_table["PSS"]) &&
-            (va[component_table["PSS"]] = PSSFixed(0.0))
+        if !isassigned(va, component_table["AVR"])
+            va[component_table["AVR"]] = AVRFixed(1.0)
+        end
+        if !isassigned(va, component_table["TurbineGov"])
+            va[component_table["TurbineGov"]] = TGFixed(1.0)
+        end
+        if !isassigned(va, component_table["PSS"])
+            va[component_table["PSS"]] = PSSFixed(0.0)
+        end
     end
 end
 
@@ -154,10 +157,12 @@ function _parse_dyr_components(data::Dict)
                     end
                     temp[component_table[gen_field]] = component_constructor(struct_args...)
                 end
+            else
+                @warn "$(componentID[1]) at bus $bus_num, id $(componentID[2]), not supported in PowerSystems.jl. Skipping data."
             end
-            #Assign generic components if there were not provided in Dynamic Data
-            _assign_missing_components!(bus_dict, component_table)
         end
+        #Assign generic components if there were not provided in Dynamic Data
+        _assign_missing_components!(bus_dict, component_table)
         #Store dictionary of components in a dictionary indexed by bus
         dic[bus_num] = bus_dict
     end
@@ -217,7 +222,7 @@ end
 
 function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
     @info "Generators provided in .dyr, without a generator in .raw file will be skipped."
-    for g in get_components(ThermalStandard, sys)
+    for g in collect(get_components(ThermalStandard, sys))
         _num = get_number(get_bus(g))
         _name = get_name(g)
         _id = parse(Int64, split(_name, "-")[end])
@@ -230,9 +235,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
                 x = 1e-6
             end
             s = _make_source(g, r, x)
-            #Remove ThermalGenerator
             remove_component!(typeof(g), sys, _name)
-            #Add Source
             add_component!(sys, s)
         else
             #Obtain Machine from Dictionary
@@ -251,9 +254,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
                 if get_H(shaft) == 0.0
                     @info "Machine at bus $(_num), id $(_id) has zero inertia. Modeling it as Voltage Source"
                     s = _make_source(g, r, x)
-                    #Remove ThermalGenerator
                     remove_component!(typeof(g), sys, _name)
-                    #Add Source
                     add_component!(sys, s)
                     #Don't add DynamicComponent in case of adding Source
                     continue
