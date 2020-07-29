@@ -230,6 +230,7 @@ export set_area!
 export set_load_zone!
 export TamuSystem
 export PowerModelsData
+export add_dyn_injectors!
 export set_dynamic_injector!
 export set_static_injector!
 export get_V_ref
@@ -266,6 +267,7 @@ import YAML
 import UUIDs
 import Base.to_index
 import NLsolve
+import InteractiveUtils
 
 import InfrastructureSystems
 import InfrastructureSystems:
@@ -380,6 +382,7 @@ include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/power_system_table_data.jl")
 include("parsers/power_models_data.jl")
+include("parsers/psse_dynamic_data.jl")
 include("parsers/TAMU_data.jl")
 
 # Better printing
