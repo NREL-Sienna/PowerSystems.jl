@@ -16,6 +16,11 @@ This file is auto-generated. Do not edit.
         Xl::Float64
         Se::Tuple{Float64, Float64}
         ext::Dict{String, Any}
+        γ_d1::Float64
+        γ_q1::Float64
+        γ_d2::Float64
+        γ_q2::Float64
+        γ_qd::Float64
         states::Vector{Symbol}
         n_states::Int64
         internal::InfrastructureSystemsInternal
@@ -38,6 +43,11 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 - `Xl::Float64`: Stator leakage reactance, validation range: (0, nothing)
 - `Se::Tuple{Float64, Float64}`: Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2
 - `ext::Dict{String, Any}`
+- `γ_d1::Float64`: γ_d1 parameter
+- `γ_q1::Float64`: γ_q1 parameter
+- `γ_d2::Float64`: γ_d2 parameter
+- `γ_q2::Float64`: γ_q2 parameter
+- `γ_qd::Float64`: γ_qd parameter
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
@@ -72,6 +82,16 @@ mutable struct RoundRotorMachine <: Machine
     "Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2"
     Se::Tuple{Float64, Float64}
     ext::Dict{String, Any}
+    "γ_d1 parameter"
+    γ_d1::Float64
+    "γ_q1 parameter"
+    γ_q1::Float64
+    "γ_d2 parameter"
+    γ_d2::Float64
+    "γ_q2 parameter"
+    γ_q2::Float64
+    "γ_qd parameter"
+    γ_qd::Float64
     "The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
@@ -85,7 +105,7 @@ mutable struct RoundRotorMachine <: Machine
 end
 
 function RoundRotorMachine(R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xl, Se, ext=Dict{String, Any}(), )
-    RoundRotorMachine(R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xl, Se, ext, [:eq_p, :ed_p, :ψ_kd, :ψ_kq], 4, InfrastructureSystemsInternal(), )
+    RoundRotorMachine(R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xl, Se, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xd_pp - Xl) / (Xq_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, (Xq_p - Xd_pp) / (Xq_p - Xl)^2, (Xq - Xl) / (Xd - Xl), [:eq_p, :ed_p, :ψ_kd, :ψ_kq], 4, InfrastructureSystemsInternal(), )
 end
 
 function RoundRotorMachine(; R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xl, Se, ext=Dict{String, Any}(), )
@@ -137,6 +157,16 @@ get_Xl(value::RoundRotorMachine) = value.Xl
 get_Se(value::RoundRotorMachine) = value.Se
 """Get RoundRotorMachine ext."""
 get_ext(value::RoundRotorMachine) = value.ext
+"""Get RoundRotorMachine γ_d1."""
+get_γ_d1(value::RoundRotorMachine) = value.γ_d1
+"""Get RoundRotorMachine γ_q1."""
+get_γ_q1(value::RoundRotorMachine) = value.γ_q1
+"""Get RoundRotorMachine γ_d2."""
+get_γ_d2(value::RoundRotorMachine) = value.γ_d2
+"""Get RoundRotorMachine γ_q2."""
+get_γ_q2(value::RoundRotorMachine) = value.γ_q2
+"""Get RoundRotorMachine γ_qd."""
+get_γ_qd(value::RoundRotorMachine) = value.γ_qd
 """Get RoundRotorMachine states."""
 get_states(value::RoundRotorMachine) = value.states
 """Get RoundRotorMachine n_states."""
@@ -170,6 +200,16 @@ set_Xl!(value::RoundRotorMachine, val::Float64) = value.Xl = val
 set_Se!(value::RoundRotorMachine, val::Tuple{Float64, Float64}) = value.Se = val
 """Set RoundRotorMachine ext."""
 set_ext!(value::RoundRotorMachine, val::Dict{String, Any}) = value.ext = val
+"""Set RoundRotorMachine γ_d1."""
+set_γ_d1!(value::RoundRotorMachine, val::Float64) = value.γ_d1 = val
+"""Set RoundRotorMachine γ_q1."""
+set_γ_q1!(value::RoundRotorMachine, val::Float64) = value.γ_q1 = val
+"""Set RoundRotorMachine γ_d2."""
+set_γ_d2!(value::RoundRotorMachine, val::Float64) = value.γ_d2 = val
+"""Set RoundRotorMachine γ_q2."""
+set_γ_q2!(value::RoundRotorMachine, val::Float64) = value.γ_q2 = val
+"""Set RoundRotorMachine γ_qd."""
+set_γ_qd!(value::RoundRotorMachine, val::Float64) = value.γ_qd = val
 """Set RoundRotorMachine states."""
 set_states!(value::RoundRotorMachine, val::Vector{Symbol}) = value.states = val
 """Set RoundRotorMachine n_states."""

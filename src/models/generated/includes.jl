@@ -268,6 +268,11 @@ export get_voltage
 export get_voltage_limits
 export get_x
 export get_α
+export get_γ_d1
+export get_γ_d2
+export get_γ_q1
+export get_γ_q2
+export get_γ_qd
 export get_γd
 export get_γq
 export get_τ_max
@@ -481,6 +486,11 @@ export set_voltage!
 export set_voltage_limits!
 export set_x!
 export set_α!
+export set_γ_d1!
+export set_γ_d2!
+export set_γ_q1!
+export set_γ_q2!
+export set_γ_qd!
 export set_γd!
 export set_γq!
 export set_τ_max!
