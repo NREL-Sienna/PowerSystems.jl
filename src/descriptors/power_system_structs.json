@@ -1903,7 +1903,8 @@
         {
           "null_value": "false",
           "name": "status",
-          "data_type": "Bool"
+          "data_type": "Bool",
+          "default": "false"
         },
         {
           "name": "bus",
@@ -1936,19 +1937,22 @@
             "max": null
           },
           "validation_action": "error",
-          "needs_conversion": true
+          "needs_conversion": true,
+          "default": "0.0"
         },
         {
           "name": "prime_mover",
           "comment": "prime_mover Technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers.PrimeMover",
+          "default": "PrimeMovers.OT"
         },
         {
           "name": "fuel",
           "comment": "prime_mover Fuel according to EIA 923",
           "null_value": "ThermalFuels.OTHER",
-          "data_type": "ThermalFuels.ThermalFuel"
+          "data_type": "ThermalFuels.ThermalFuel",
+          "default": "ThermalFuels.OTHER"
         },
         {
           "name": "active_power_limits",
@@ -1972,7 +1976,8 @@
             "max": null
           },
           "validation_action": "error",
-          "needs_conversion": true
+          "needs_conversion": true,
+          "default": "nothing"
         },
         {
           "name": "time_limits",
@@ -1983,12 +1988,14 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "default": "nothing"
         },
         {
           "name": "operation_cost",
           "null_value": "ThreePartCost(nothing)",
-          "data_type": "ThreePartCost"
+          "data_type": "ThreePartCost",
+          "default": "ThreePartCost(nothing)"
         },
         {
           "name": "base_power",
