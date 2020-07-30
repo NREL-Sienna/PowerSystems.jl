@@ -233,6 +233,17 @@ export PowerModelsData
 export add_dyn_injectors!
 export set_dynamic_injector!
 export set_static_injector!
+export get_machine
+export get_shaft
+export get_avr
+export get_prime_mover
+export get_pss
+export get_converter
+export get_outer_control
+export get_inner_control
+export get_dc_source
+export get_freq_estimator
+export get_filter
 export get_V_ref
 export get_P_ref
 export get_saturation_coeffs
