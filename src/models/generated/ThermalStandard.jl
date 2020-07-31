@@ -85,11 +85,11 @@ mutable struct ThermalStandard <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+function ThermalStandard(name, available, status, bus, active_power, reactive_power, rating=0.0, prime_mover=PrimeMovers.OT, fuel=ThermalFuels.OTHER, active_power_limits, reactive_power_limits, ramp_limits, time_limits=nothing, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
     ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, services, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+function ThermalStandard(; name, available, status, bus, active_power, reactive_power, rating=0.0, prime_mover=PrimeMovers.OT, fuel=ThermalFuels.OTHER, active_power_limits, reactive_power_limits, ramp_limits, time_limits=nothing, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
     ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, services, time_at_status, dynamic_injector, ext, forecasts, )
 end
 
