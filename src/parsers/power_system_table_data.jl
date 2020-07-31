@@ -759,16 +759,18 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames,
     if length(var_cost) > 1
         var_cost[2:end] = [
             (
-                (var_cost[i][1] * fuel_cost *
-                (var_cost[i][2] - var_cost[i - 1][2]) +
-                var_cost[i][2] * vom) *
-                base_power,
+                (
+                    var_cost[i][1] * fuel_cost * (var_cost[i][2] - var_cost[i - 1][2]) +
+                    var_cost[i][2] * vom
+                ) * base_power,
                 var_cost[i][2],
             ) .* gen.active_power_limits_max for i in 2:length(var_cost)
         ]
         var_cost[1] =
-            ((var_cost[1][1] * fuel_cost + vom) * var_cost[1][2] * base_power, var_cost[1][2]) .*
-            gen.active_power_limits_max
+            (
+                (var_cost[1][1] * fuel_cost + vom) * var_cost[1][2] * base_power,
+                var_cost[1][2],
+            ) .* gen.active_power_limits_max
 
         fixed = max(
             0.0,
@@ -776,7 +778,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames,
             (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost[1] =
-            (var_cost[1][1] - fixed, var_cost[1][2] * base_power/data.base_power)
+            (var_cost[1][1] - fixed, var_cost[1][2] * base_power / data.base_power)
         for i in 2:length(var_cost)
             var_cost[i] = (
                 var_cost[i - 1][1] + var_cost[i][1],
@@ -785,7 +787,7 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames,
         end
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = var_cost[1][1] * fuel_cost  + vom
+        var_cost = var_cost[1][1] * fuel_cost + vom
         fixed = 0.0
     end
     return var_cost, fixed, fuel_cost
