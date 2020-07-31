@@ -1903,8 +1903,7 @@
         {
           "null_value": "false",
           "name": "status",
-          "data_type": "Bool",
-          "default": "false"
+          "data_type": "Bool"
         },
         {
           "name": "bus",
@@ -1976,8 +1975,7 @@
             "max": null
           },
           "validation_action": "error",
-          "needs_conversion": true,
-          "default": "nothing"
+          "needs_conversion": true
         },
         {
           "name": "time_limits",
@@ -1994,8 +1992,7 @@
         {
           "name": "operation_cost",
           "null_value": "ThreePartCost(nothing)",
-          "data_type": "ThreePartCost",
-          "default": "ThreePartCost(nothing)"
+          "data_type": "ThreePartCost"
         },
         {
           "name": "base_power",
