@@ -1936,22 +1936,7 @@
             "max": null
           },
           "validation_action": "error",
-          "needs_conversion": true,
-          "default": "0.0"
-        },
-        {
-          "name": "prime_mover",
-          "comment": "prime_mover Technology according to EIA 923",
-          "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover",
-          "default": "PrimeMovers.OT"
-        },
-        {
-          "name": "fuel",
-          "comment": "prime_mover Fuel according to EIA 923",
-          "null_value": "ThermalFuels.OTHER",
-          "data_type": "ThermalFuels.ThermalFuel",
-          "default": "ThermalFuels.OTHER"
+          "needs_conversion": true
         },
         {
           "name": "active_power_limits",
@@ -1978,18 +1963,6 @@
           "needs_conversion": true
         },
         {
-          "name": "time_limits",
-          "comment": "Minimum up and Minimum down time limits in hours",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error",
-          "default": "nothing"
-        },
-        {
           "name": "operation_cost",
           "null_value": "ThreePartCost(nothing)",
           "data_type": "ThreePartCost"
@@ -2004,6 +1977,32 @@
             "max": null
           },
           "validation_action": "warn"
+        },
+        {
+          "name": "time_limits",
+          "comment": "Minimum up and Minimum down time limits in hours",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "default": "nothing"
+        },
+        {
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
+          "null_value": "PrimeMovers.OT",
+          "data_type": "PrimeMovers.PrimeMover",
+          "default": "PrimeMovers.OT"
+        },
+        {
+          "name": "fuel",
+          "comment": "prime_mover Fuel according to EIA 923",
+          "null_value": "ThermalFuels.OTHER",
+          "data_type": "ThermalFuels.ThermalFuel",
+          "default": "ThermalFuels.OTHER"
         },
         {
           "name": "services",
