@@ -523,8 +523,8 @@ end
     @test get_Se(GENROU) == (0.1, 0.5)
     @test get_states(GENROU) == [:eq_p, :ed_p, :ψ_kd, :ψ_kq]
     @test get_n_states(GENROU) == 4
-    @test abs(get_saturation_coeffs(GENROU)[1] - 0.8381966011250106) <= 1e-6
-    @test abs(get_saturation_coeffs(GENROU)[2] - 3.819660112501054) <= 1e-6
+    @test abs(get_saturation_coeffs(GENROU)[1] - 0.8620204102886729) <= 1e-6
+    @test abs(get_saturation_coeffs(GENROU)[2] - 5.252551286084112) <= 1e-6
 
     #Test GENROE
     @test get_R(GENROE) == 0.0
@@ -557,8 +557,8 @@ end
     @test get_Se(GENSAL) == (0.1, 0.5)
     @test get_states(GENSAL) == [:eq_p, :ψ_kd, :ψq_pp]
     @test get_n_states(GENSAL) == 3
-    @test abs(get_saturation_coeffs(GENSAL)[1] - 0.8381966011250106) <= 1e-6
-    @test abs(get_saturation_coeffs(GENSAL)[2] - 3.819660112501054) <= 1e-6
+    @test abs(get_saturation_coeffs(GENSAL)[1] - 0.8620204102886729) <= 1e-6
+    @test abs(get_saturation_coeffs(GENSAL)[2] - 5.252551286084112) <= 1e-6
 
     #Test GENSAE
     @test get_R(GENSAE) == 0.0

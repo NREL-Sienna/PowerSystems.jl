@@ -230,8 +230,20 @@ export set_area!
 export set_load_zone!
 export TamuSystem
 export PowerModelsData
+export add_dyn_injectors!
 export set_dynamic_injector!
 export set_static_injector!
+export get_machine
+export get_shaft
+export get_avr
+export get_prime_mover
+export get_pss
+export get_converter
+export get_outer_control
+export get_inner_control
+export get_dc_source
+export get_freq_estimator
+export get_filter
 export get_V_ref
 export get_P_ref
 export get_saturation_coeffs
@@ -266,6 +278,7 @@ import YAML
 import UUIDs
 import Base.to_index
 import NLsolve
+import InteractiveUtils
 
 import InfrastructureSystems
 import InfrastructureSystems:
@@ -380,6 +393,7 @@ include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
 include("parsers/power_system_table_data.jl")
 include("parsers/power_models_data.jl")
+include("parsers/psse_dynamic_data.jl")
 include("parsers/TAMU_data.jl")
 
 # Better printing

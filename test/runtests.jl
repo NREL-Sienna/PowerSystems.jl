@@ -26,6 +26,8 @@ DATA_DIR = joinpath(BASE_DIR, "data")
 FORECASTS_DIR = joinpath(DATA_DIR, "forecasts")
 MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
 PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
+PSSE_DYR_DIR = joinpath(DATA_DIR, "psse_dyr")
+PSSE_TEST_DIR = joinpath(DATA_DIR, "PSSE_test")
 RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
 TAMU_DIR = joinpath(DATA_DIR, "ACTIVSg2000")
 
