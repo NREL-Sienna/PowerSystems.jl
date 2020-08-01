@@ -65,7 +65,10 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
         push!(fixed_cols, "load_" * join(lsplit[2:3], "_"))
     end
 
-    loads = DataFrames.DataFrame(CSV.File(load_file, skipto = 3, header = fixed_cols), copycols = false)
+    loads = DataFrames.DataFrame(
+        CSV.File(load_file, skipto = 3, header = fixed_cols),
+        copycols = false,
+    )
 
     function parse_datetime_ampm(ds::AbstractString, fmt::Dates.DateFormat)
         m = match(r"(.*)\s(AM|PM)", ds)
