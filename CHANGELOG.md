@@ -1,5 +1,11 @@
 # PowerSystems Change Log
 
+## 0.24.1
+
+- Add pss/e .dyr file parsing support
+- Bug fixes in staturation data GENROU and GENROE
+- Bug fixes in TableData parsing
+
 ## 0.24.0
 
 - Change the use of @forward macros to avoid world of age errors
