@@ -14,6 +14,9 @@ This file is auto-generated. Do not edit.
         Xl::Float64
         Se::Tuple{Float64, Float64}
         ext::Dict{String, Any}
+        γ_d1::Float64
+        γ_q1::Float64
+        γ_d2::Float64
         states::Vector{Symbol}
         n_states::Int64
         internal::InfrastructureSystemsInternal
@@ -34,6 +37,9 @@ IEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.
 - `Xl::Float64`: Stator leakage reactance, validation range: (0, nothing)
 - `Se::Tuple{Float64, Float64}`: Saturation factor at 1 and 1.2 pu flux: Se(eq_p) = B(eq_p-A)^2
 - `ext::Dict{String, Any}`
+- `γ_d1::Float64`: γ_d1 parameter
+- `γ_q1::Float64`: γ_q1 parameter
+- `γ_d2::Float64`: γ_d2 parameter
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
@@ -63,6 +69,12 @@ mutable struct SalientPoleMachine <: Machine
     "Saturation factor at 1 and 1.2 pu flux: Se(eq_p) = B(eq_p-A)^2"
     Se::Tuple{Float64, Float64}
     ext::Dict{String, Any}
+    "γ_d1 parameter"
+    γ_d1::Float64
+    "γ_q1 parameter"
+    γ_q1::Float64
+    "γ_d2 parameter"
+    γ_d2::Float64
     "The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
@@ -75,7 +87,7 @@ mutable struct SalientPoleMachine <: Machine
 end
 
 function SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext=Dict{String, Any}(), )
-    SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext, [:eq_p, :ψ_kd, :ψq_pp], 3, InfrastructureSystemsInternal(), )
+    SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, [:eq_p, :ψ_kd, :ψq_pp], 3, InfrastructureSystemsInternal(), )
 end
 
 function SalientPoleMachine(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext=Dict{String, Any}(), )
@@ -121,6 +133,12 @@ get_Xl(value::SalientPoleMachine) = value.Xl
 get_Se(value::SalientPoleMachine) = value.Se
 """Get SalientPoleMachine ext."""
 get_ext(value::SalientPoleMachine) = value.ext
+"""Get SalientPoleMachine γ_d1."""
+get_γ_d1(value::SalientPoleMachine) = value.γ_d1
+"""Get SalientPoleMachine γ_q1."""
+get_γ_q1(value::SalientPoleMachine) = value.γ_q1
+"""Get SalientPoleMachine γ_d2."""
+get_γ_d2(value::SalientPoleMachine) = value.γ_d2
 """Get SalientPoleMachine states."""
 get_states(value::SalientPoleMachine) = value.states
 """Get SalientPoleMachine n_states."""
@@ -150,6 +168,12 @@ set_Xl!(value::SalientPoleMachine, val::Float64) = value.Xl = val
 set_Se!(value::SalientPoleMachine, val::Tuple{Float64, Float64}) = value.Se = val
 """Set SalientPoleMachine ext."""
 set_ext!(value::SalientPoleMachine, val::Dict{String, Any}) = value.ext = val
+"""Set SalientPoleMachine γ_d1."""
+set_γ_d1!(value::SalientPoleMachine, val::Float64) = value.γ_d1 = val
+"""Set SalientPoleMachine γ_q1."""
+set_γ_q1!(value::SalientPoleMachine, val::Float64) = value.γ_q1 = val
+"""Set SalientPoleMachine γ_d2."""
+set_γ_d2!(value::SalientPoleMachine, val::Float64) = value.γ_d2 = val
 """Set SalientPoleMachine states."""
 set_states!(value::SalientPoleMachine, val::Vector{Symbol}) = value.states = val
 """Set SalientPoleMachine n_states."""

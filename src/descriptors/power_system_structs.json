@@ -4034,6 +4034,25 @@
           "default": "Dict{String, Any}()"
         },
         {
+          "name": "γ_d1",
+          "comment": "γ_d1 parameter",
+          "internal_default": "(Xd_pp - Xl) / (Xd_p - Xl)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "γ_q1",
+          "comment": "γ_q1 parameter",
+          "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "γ_d2",
+          "comment": "γ_d2 parameter",
+          "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
+          "data_type": "Float64"
+        },
+
+        {
           "name": "states",
           "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",
           "internal_default": "[:eq_p, :ψ_kd, :ψq_pp]",
