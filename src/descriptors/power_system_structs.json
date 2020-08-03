@@ -2452,6 +2452,55 @@
       "supertype": "Reserve{T}"
     },
     {
+      "struct_name": "StaticReserveGroup",
+      "docstring": "Data Structure for a group reserve product for system simulations.",
+      "parametric": "ReserveDirection",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "accessor_module": "InfrastructureSystems",
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "name": "requirement",
+          "comment": "the static value of required reserves in system p.u.",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        },
+        {
+          "name": "contributing_services",
+          "comment": "Services that contribute for this requirement constraint",
+          "data_type": "Vector{<:PSY.Service}",
+          "null_value": "Vector{<:PSY.Service}()",
+          "default": "Vector{<:PSY.Service}()"
+        }
+      ],
+      "supertype": "Service"
+    },
+    {
       "struct_name": "ReserveDemandCurve",
       "docstring": "Data Structure for a operating reserve with demand curve product for system simulations.",
       "parametric": "ReserveDirection",

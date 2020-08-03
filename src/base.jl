@@ -696,6 +696,13 @@ function _get_contributing_devices(sys::System, service::T) where {T <: Service}
 end
 
 """
+Return a vector of services contributing to the group service.
+"""
+function _get_contributing_devices(sys::System, service::T) where {T <: StaticReserveGroup}
+    return get_contributing_devices(service)
+end
+
+"""
 Return an instance of ServiceContributingDevicesMapping.
 """
 function get_contributing_device_mapping(sys::System)

@@ -23,6 +23,7 @@ include("ThermalStandard.jl")
 include("ThermalMultiStart.jl")
 include("GenericBattery.jl")
 include("StaticReserve.jl")
+include("StaticReserveGroup.jl")
 include("ReserveDemandCurve.jl")
 include("VariableReserve.jl")
 include("AGC.jl")
@@ -61,7 +62,6 @@ include("VirtualInertia.jl")
 include("ReactivePowerDroop.jl")
 include("CurrentControl.jl")
 include("Source.jl")
-include("StaticReserveGroup")
 
 export get_AT
 export get_Ae
@@ -174,6 +174,7 @@ export get_bias
 export get_bus
 export get_bustype
 export get_cf
+export get_contributing_services
 export get_delta_t
 export get_dynamic_injector
 export get_efficiency
@@ -392,6 +393,7 @@ export set_bias!
 export set_bus!
 export set_bustype!
 export set_cf!
+export set_contributing_services!
 export set_delta_t!
 export set_dynamic_injector!
 export set_efficiency!

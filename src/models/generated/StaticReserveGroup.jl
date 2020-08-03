@@ -1,8 +1,8 @@
 #=
-This file was not auto-generated.
+This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct StaticReserveGroup <: Service
+    mutable struct StaticReserveGroup{T <: ReserveDirection} <: Service
         name::String
         available::Bool
         requirement::Float64
@@ -21,7 +21,7 @@ Data Structure for a group reserve product for system simulations.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 - `contributing_services::Vector{<:PSY.Service}`: Services that contribute for this requirement constraint
 """
-mutable struct StaticReserveGroup <: Service
+mutable struct StaticReserveGroup{T <: ReserveDirection} <: Service
     name::String
     available::Bool
     "the static value of required reserves in system p.u."
@@ -29,25 +29,26 @@ mutable struct StaticReserveGroup <: Service
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
+    "Services that contribute for this requirement constraint"
     contributing_services::Vector{<:PSY.Service}
 end
 
-function StaticReserveGroup(name, available,  requirement, ext=Dict{String, Any}(), contributing_services=Vector{<:PSY.Service}(), )
-    StaticReserveGroup(name, available,  requirement, ext, InfrastructureSystemsInternal(), contributing_services, )
+function StaticReserveGroup{T}(name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{&lt;:PSY.Service}(), ) where T <: ReserveDirection
+    StaticReserveGroup{T}(name, available, requirement, ext, contributing_services, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserveGroup(; name, available,  requirement, ext=Dict{String, Any}(), contributing_services=Vector{<:PSY.Service}(), )
-    StaticReserveGroup(name, available,  requirement, ext, contributing_services)
+function StaticReserveGroup{T}(; name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{&lt;:PSY.Service}(), ) where T <: ReserveDirection
+    StaticReserveGroup{T}(name, available, requirement, ext, contributing_services, )
 end
 
 # Constructor for demo purposes; non-functional.
-function StaticReserveGroup(::Nothing)
-    StaticReserveGroup(;
+function StaticReserveGroup{T}(::Nothing) where T <: ReserveDirection
+    StaticReserveGroup{T}(;
         name="init",
         available=false,
         requirement=0.0,
         ext=Dict{String, Any}(),
-        contributing_services=Vector{<:PSY.Service}(),
+        contributing_services=Vector{&lt;:PSY.Service}(),
     )
 end
 
@@ -61,15 +62,9 @@ get_requirement(value::StaticReserveGroup) = value.requirement
 get_ext(value::StaticReserveGroup) = value.ext
 """Get StaticReserveGroup internal."""
 get_internal(value::StaticReserveGroup) = value.internal
-"""Get StaticReserveGroup contributing_devices."""
-get_contributing_devices(value::StaticReserveGroup) = value.contributing_devices
+"""Get StaticReserveGroup contributing_services."""
+get_contributing_services(value::StaticReserveGroup) = value.contributing_services
 
-"""
-Return a vector of services contributing to the group service.
-"""
-function _get_contributing_devices(sys::System, service::T) where {T <: StaticReserveGroup}
-    return get_contributing_devices(service)
-end
 
 InfrastructureSystems.set_name!(value::StaticReserveGroup, val::String) = value.name = val
 """Set StaticReserveGroup available."""
@@ -80,5 +75,5 @@ set_requirement!(value::StaticReserveGroup, val::Float64) = value.requirement = 
 set_ext!(value::StaticReserveGroup, val::Dict{String, Any}) = value.ext = val
 """Set StaticReserveGroup internal."""
 set_internal!(value::StaticReserveGroup, val::InfrastructureSystemsInternal) = value.internal = val
-"""Set StaticReserveGroup contributing_devices."""
-set_contributing_devices(value::StaticReserveGroup,val::Vector{<:PSY.Service}) = value.contributing_devices = val
+"""Set StaticReserveGroup contributing_services."""
+set_contributing_services!(value::StaticReserveGroup, val::Vector{&lt;:PSY.Service}) = value.contributing_services = val
