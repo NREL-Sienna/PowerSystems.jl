@@ -61,6 +61,7 @@ include("VirtualInertia.jl")
 include("ReactivePowerDroop.jl")
 include("CurrentControl.jl")
 include("Source.jl")
+include("StaticReserveGroup")
 
 export get_AT
 export get_Ae
