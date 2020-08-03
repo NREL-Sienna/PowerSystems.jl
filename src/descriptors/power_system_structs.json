@@ -1939,18 +1939,6 @@
           "needs_conversion": true
         },
         {
-          "name": "prime_mover",
-          "comment": "prime_mover Technology according to EIA 923",
-          "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover"
-        },
-        {
-          "name": "fuel",
-          "comment": "prime_mover Fuel according to EIA 923",
-          "null_value": "ThermalFuels.OTHER",
-          "data_type": "ThermalFuels.ThermalFuel"
-        },
-        {
           "name": "active_power_limits",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
@@ -1975,17 +1963,6 @@
           "needs_conversion": true
         },
         {
-          "name": "time_limits",
-          "comment": "Minimum up and Minimum down time limits in hours",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "error"
-        },
-        {
           "name": "operation_cost",
           "null_value": "ThreePartCost(nothing)",
           "data_type": "ThreePartCost"
@@ -2000,6 +1977,32 @@
             "max": null
           },
           "validation_action": "warn"
+        },
+        {
+          "name": "time_limits",
+          "comment": "Minimum up and Minimum down time limits in hours",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "default": "nothing"
+        },
+        {
+          "name": "prime_mover",
+          "comment": "prime_mover Technology according to EIA 923",
+          "null_value": "PrimeMovers.OT",
+          "data_type": "PrimeMovers.PrimeMover",
+          "default": "PrimeMovers.OT"
+        },
+        {
+          "name": "fuel",
+          "comment": "prime_mover Fuel according to EIA 923",
+          "null_value": "ThermalFuels.OTHER",
+          "data_type": "ThermalFuels.ThermalFuel",
+          "default": "ThermalFuels.OTHER"
         },
         {
           "name": "services",
@@ -4030,6 +4033,25 @@
           "null_value": "Dict{String, Any}()",
           "default": "Dict{String, Any}()"
         },
+        {
+          "name": "γ_d1",
+          "comment": "γ_d1 parameter",
+          "internal_default": "(Xd_pp - Xl) / (Xd_p - Xl)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "γ_q1",
+          "comment": "γ_q1 parameter",
+          "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "γ_d2",
+          "comment": "γ_d2 parameter",
+          "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
+          "data_type": "Float64"
+        },
+
         {
           "name": "states",
           "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",

@@ -14,21 +14,21 @@ nodes_OMIB = [
 ]
 
 static_gen = ThermalStandard(
-    "TestGen",
-    true,
-    true,
-    nodes_OMIB[2],
-    0.40,
-    0.010,
-    0.5,
-    PrimeMovers.ST,
-    ThermalFuels.COAL,
-    (min = 0.0, max = 0.40),
-    (min = -0.30, max = 0.30),
-    nothing,
-    nothing,
-    ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
-    1.0,
+    name = "TestGen",
+    available = true,
+    status = true,
+    bus = nodes_OMIB[2],
+    active_power = 0.40,
+    reactive_power = 0.010,
+    rating = 0.5,
+    prime_mover = PrimeMovers.ST,
+    fuel = ThermalFuels.COAL,
+    active_power_limits = (min = 0.0, max = 0.40),
+    reactive_power_limits = (min = -0.30, max = 0.30),
+    time_limits = nothing,
+    ramp_limits = nothing,
+    operation_cost = ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
+    base_power = 1.0,
 )
 
 branch_OMIB = [Line(
