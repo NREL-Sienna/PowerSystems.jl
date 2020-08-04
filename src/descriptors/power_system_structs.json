@@ -2485,17 +2485,17 @@
           "default": "Dict{String, Any}()"
         },
         {
+          "name": "contributing_services",
+          "comment": "Services that contribute for this requirement constraint",
+          "data_type": "Vector{<:Service}",
+          "null_value": "Vector{Service}()",
+          "default": "Vector{Service}()"
+        },
+        {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
           "internal_default": "InfrastructureSystemsInternal()"
-        },
-        {
-          "name": "contributing_services",
-          "comment": "Services that contribute for this requirement constraint",
-          "data_type": "Vector{Service}",
-          "null_value": "Vector{Service}()",
-          "default": "Vector{Service}()"
         }
       ],
       "supertype": "Service"

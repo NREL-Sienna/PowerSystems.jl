@@ -442,6 +442,23 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
 end
 
 """
+Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+
+# Arguments
+- `sys::System`: system
+- `service::StaticReserveGroup`: service to add
+"""
+function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+
+    set_unit_system!(service, sys.units_settings)
+    # Since this isn't atomic, order is important. Add to system before adding to devices.
+    IS.add_component!(sys.data, service; kwargs...)
+end
+
+"""
 Adds forecasts from a metadata file or metadata descriptors.
 
 # Arguments
@@ -679,7 +696,7 @@ const ServiceContributingDevicesMapping =
     Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
 
 """
-Return a vector of devices contributing to the service.
+Returns a ServiceContributingDevices object.
 """
 function _get_contributing_devices(sys::System, service::T) where {T <: Service}
     uuid = IS.get_uuid(service)
@@ -696,10 +713,21 @@ function _get_contributing_devices(sys::System, service::T) where {T <: Service}
 end
 
 """
-Return a vector of services contributing to the group service.
+Return a ServiceContributingDevices object for group service.
 """
 function _get_contributing_devices(sys::System, service::T) where {T <: StaticReserveGroup}
-    return get_contributing_devices(service)
+    return ServiceContributingDevices(service, get_contributing_services(service))
+end
+
+"""
+Return a vector of services contributing to the group service.
+"""
+function get_contributing_devices(sys::System, service::T) where {T <: StaticReserveGroup}
+    if isnothing(get_component(T, sys, get_name(service)))
+        throw(ArgumentError("service $(get_name(service)) is not part of the system"))
+    end
+
+    return get_contributing_services(service)
 end
 
 """
