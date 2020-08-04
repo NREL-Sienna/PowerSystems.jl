@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         requirement::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
-        contributing_services::Vector{<:Service}
+        contributing_services::Vector{Service}
     end
 
 Data Structure for a group reserve product for system simulations.
@@ -19,7 +19,7 @@ Data Structure for a group reserve product for system simulations.
 - `requirement::Float64`: the static value of required reserves in system p.u., validation range: (0, nothing), action if invalid: error
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
-- `contributing_services::Vector{<:Service}`: Services that contribute for this requirement constraint
+- `contributing_services::Vector{Service}`: Services that contribute for this requirement constraint
 """
 mutable struct StaticReserveGroup{T <: ReserveDirection} <: Service
     name::String
@@ -30,14 +30,14 @@ mutable struct StaticReserveGroup{T <: ReserveDirection} <: Service
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
     "Services that contribute for this requirement constraint"
-    contributing_services::Vector{<:Service}
+    contributing_services::Vector{Service}
 end
 
-function StaticReserveGroup{T}(name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{&lt;:Service}(), ) where T <: ReserveDirection
+function StaticReserveGroup{T}(name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{Service}(), ) where T <: ReserveDirection
     StaticReserveGroup{T}(name, available, requirement, ext, contributing_services, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserveGroup{T}(; name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{&lt;:Service}(), ) where T <: ReserveDirection
+function StaticReserveGroup{T}(; name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{Service}(), ) where T <: ReserveDirection
     StaticReserveGroup{T}(name, available, requirement, ext, contributing_services, )
 end
 
@@ -48,7 +48,7 @@ function StaticReserveGroup{T}(::Nothing) where T <: ReserveDirection
         available=false,
         requirement=0.0,
         ext=Dict{String, Any}(),
-        contributing_services=Vector{&lt;:Service}(),
+        contributing_services=Vector{Service}(),
     )
 end
 
@@ -76,4 +76,4 @@ set_ext!(value::StaticReserveGroup, val::Dict{String, Any}) = value.ext = val
 """Set StaticReserveGroup internal."""
 set_internal!(value::StaticReserveGroup, val::InfrastructureSystemsInternal) = value.internal = val
 """Set StaticReserveGroup contributing_services."""
-set_contributing_services!(value::StaticReserveGroup, val::Vector{&lt;:Service}) = value.contributing_services = val
+set_contributing_services!(value::StaticReserveGroup, val::Vector{Service}) = value.contributing_services = val
