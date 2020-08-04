@@ -2493,9 +2493,9 @@
         {
           "name": "contributing_services",
           "comment": "Services that contribute for this requirement constraint",
-          "data_type": "Vector{<:PSY.Service}",
-          "null_value": "Vector{<:PSY.Service}()",
-          "default": "Vector{<:PSY.Service}()"
+          "data_type": "Vector{<:Service}",
+          "null_value": "Vector{<:Service}()",
+          "default": "Vector{<:Service}()"
         }
       ],
       "supertype": "Service"
