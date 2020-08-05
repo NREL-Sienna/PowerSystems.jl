@@ -454,7 +454,6 @@ function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
     end
 
     set_unit_system!(service, sys.units_settings)
-    # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; kwargs...)
 end
 
