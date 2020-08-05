@@ -1,3 +1,6 @@
+#=
+This file is auto-generated. Do not edit.
+=#
 """
     mutable struct StaticReserveGroup{T <: ReserveDirection} <: Service
         name::String
@@ -70,16 +73,5 @@ set_available!(value::StaticReserveGroup, val::Bool) = value.available = val
 set_requirement!(value::StaticReserveGroup, val::Float64) = value.requirement = val
 """Set StaticReserveGroup ext."""
 set_ext!(value::StaticReserveGroup, val::Dict{String, Any}) = value.ext = val
-"""Set StaticReserveGroup contributing_services."""
-set_contributing_services!(value::StaticReserveGroup, val::Vector{Service}) = value.contributing_services = val
-"""Set StaticReserveGroup contributing_services with check"""
-function set_contributing_services!(sys::System, service::StaticReserveGroup, val::Vector{Service})
-    for _service in get_contributing_services(service)
-        if !is_attached(_service, sys)
-            throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
-        end
-    end
-    service.contributing_services = val
-end
 """Set StaticReserveGroup internal."""
 set_internal!(value::StaticReserveGroup, val::InfrastructureSystemsInternal) = value.internal = val

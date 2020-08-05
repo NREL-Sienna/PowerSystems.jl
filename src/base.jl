@@ -463,6 +463,17 @@ function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
     IS.add_component!(sys.data, service; kwargs...)
 end
 
+"""Set StaticReserveGroup contributing_services with check"""
+function set_contributing_services!(sys::System, service::StaticReserveGroup, val::Vector{Service})
+    for _service in val
+        if !is_attached(_service, sys)
+            throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
+            return
+        end
+    end
+    service.contributing_services = val
+end
+
 """
 Similar to [`add_component!`](@ref) but for StaticReserveGroup.
 

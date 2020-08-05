@@ -322,7 +322,7 @@ end
     # add contributing services
     expected_contributing_services = Vector{Service}()
     push!(expected_contributing_services, service)
-    set_contributing_services!(groupservice, expected_contributing_services)
+    set_contributing_services!(sys, groupservice, expected_contributing_services)
     # get contributing services
     contributing_services = get_contributing_services(groupservice)
 
@@ -337,14 +337,13 @@ end
     groupservice = StaticReserveGroup{ReserveDown}(nothing)
 
     # Bus is not a Service.
-    @test_throws MethodError set_contributing_services!(groupservice, [bus])
+    @test_throws MethodError set_contributing_services!(sys, groupservice, [bus])
 
     # Service not in System
     service = StaticReserve{ReserveDown}(nothing)
     contributing_services = Vector{Service}()
     push!(contributing_services, service)
-    set_contributing_services!(groupservice, contributing_services)
-    @test_throws ArgumentError add_service!(sys, groupservice)
+    @test_throws ArgumentError add_service!(sys, groupservice, contributing_services)
 
     # Service in a StaticReserveGroup
     devices = []
@@ -360,6 +359,6 @@ end
         push!(devices, gen)
     end
     add_service!(sys, service, devices)
-    add_service!(sys, groupservice)
+    add_service!(sys, groupservice, contributing_services)
     @test_throws ArgumentError remove_component!(sys, service)
 end

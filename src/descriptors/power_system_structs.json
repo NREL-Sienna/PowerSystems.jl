@@ -2489,7 +2489,8 @@
           "comment": "Services that contribute for this requirement constraint",
           "data_type": "Vector{Service}",
           "null_value": "Vector{Service}()",
-          "default": "Vector{Service}()"
+          "default": "Vector{Service}()",
+          "exclude_setter": true
         },
         {
           "name": "internal",
