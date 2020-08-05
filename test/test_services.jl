@@ -331,10 +331,11 @@ end
     @test contributing_services == expected_contributing_services
 end
 
-@testset "Test StaticReserveGroup constructor errors" begin
+@testset "Test StaticReserveGroup errors" begin
     sys = System(100)
     bus = Bus(nothing)
     groupservice = StaticReserveGroup{ReserveDown}(nothing)
+
     # Bus is not a Service.
     @test_throws MethodError set_contributing_services!(groupservice, [bus])
 
@@ -344,4 +345,21 @@ end
     push!(contributing_services, service)
     set_contributing_services!(groupservice, contributing_services)
     @test_throws ArgumentError add_service!(sys, groupservice)
+
+    # Service in a StaticReserveGroup
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+    add_service!(sys, service, devices)
+    add_service!(sys, groupservice)
+    @test_throws ArgumentError remove_component!(sys, service)
 end

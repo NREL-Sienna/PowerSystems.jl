@@ -590,7 +590,7 @@ function remove_component!(sys::System, service::T) where {T <: Service}
     groupservices = collect(get_components(StaticReserveGroup, sys))
     for groupservice in groupservices
         if service ∈ get_contributing_services(groupservice)
-            throw(ArgumentError("service $(get_name(_service)) is part of a StaticReserveGroup"))
+            throw(ArgumentError("service $(get_name(service)) is part of a StaticReserveGroup"))
             return
         end
     end
