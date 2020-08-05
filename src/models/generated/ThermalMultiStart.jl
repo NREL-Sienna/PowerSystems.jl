@@ -230,8 +230,6 @@ set_services!(value::ThermalMultiStart, val) = value.services = val
 set_time_at_status!(value::ThermalMultiStart, val) = value.time_at_status = val
 """Set ThermalMultiStart must_run."""
 set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
-"""Set ThermalMultiStart dynamic_injector."""
-set_dynamic_injector!(value::ThermalMultiStart, val) = value.dynamic_injector = val
 """Set ThermalMultiStart ext."""
 set_ext!(value::ThermalMultiStart, val) = value.ext = val
 
