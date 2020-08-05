@@ -688,7 +688,7 @@ end
 
 struct ServiceContributingDevices
     service::Service
-    contributing_devices::Vector{Component}
+    contributing_devices::Vector{Device}
 end
 
 const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
@@ -710,24 +710,6 @@ function _get_contributing_devices(sys::System, service::T) where {T <: Service}
         end
     end
     return devices
-end
-
-"""
-Return a ServiceContributingDevices object for group service.
-"""
-function _get_contributing_devices(sys::System, service::T) where {T <: StaticReserveGroup}
-    return ServiceContributingDevices(service, get_contributing_services(service))
-end
-
-"""
-Return a vector of services contributing to the group service.
-"""
-function get_contributing_devices(sys::System, service::T) where {T <: StaticReserveGroup}
-    if isnothing(get_component(T, sys, get_name(service)))
-        throw(ArgumentError("service $(get_name(service)) is not part of the system"))
-    end
-
-    return get_contributing_services(service)
 end
 
 """

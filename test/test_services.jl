@@ -323,7 +323,7 @@ end
     expected_contributing_services = [service]
     set_contributing_services!(groupservice, expected_contributing_services)
     # get contributing services
-    contributing_services = get_contributing_devices(sys, groupservice)
+    contributing_services = get_contributing_services(sys, groupservice)
 
     # check if expected contributing services is iqual to contributing services  
     sort!(contributing_services, by = x -> get_name(x))
