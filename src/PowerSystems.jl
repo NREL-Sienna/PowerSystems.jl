@@ -259,6 +259,7 @@ export get_reserve_limit_up
 export get_reserve_limit_dn
 export get_participation_factor
 export get_cost
+export get_units_base
 
 #################################################################################
 # Imports

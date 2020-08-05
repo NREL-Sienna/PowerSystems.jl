@@ -300,7 +300,7 @@ function solve_powerflow!(system::System; finite_diff = false, kwargs...)
     #Save per-unit flag
     settings_unit_cache = deepcopy(system.units_settings.unit_system)
     #Work in System per unit
-    set_units_base_system!(system, "system_base")
+    set_units_base_system!(system, "SYSTEM_BASE")
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
         PowerSystems._write_pf_sol!(system, res)
@@ -333,7 +333,7 @@ function solve_powerflow(system::System; finite_diff = false, kwargs...)
     #Save per-unit flag
     settings_unit_cache = deepcopy(system.units_settings.unit_system)
     #Work in System per unit
-    set_units_base_system!(system, "system_base")
+    set_units_base_system!(system, "SYSTEM_BASE")
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
         @info("PowerFlow solve converged, the results are exported in DataFrames")

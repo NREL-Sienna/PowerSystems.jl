@@ -30,7 +30,7 @@
             "name": "rate",
             "unit": "MVA",
             "description": "Apparent power limit rating",
-            "unit_system": "system_base",
+            "unit_system": "SYSTEM_BASE",
             "default_value": "system_base_power"
         },
         {
@@ -206,7 +206,7 @@
             "unit": "MW",
             "name": "rate",
             "description": "Continuous MW flow limit",
-            "unit_system": "system_base"
+            "unit_system": "SYSTEM_BASE"
         },
         {
             "unit": "radian",
@@ -659,7 +659,7 @@
             "units": "MW",
             "name": "requirement",
             "description": "reserve requirement",
-            "unit_system": "system_base"
+            "unit_system": "SYSTEM_BASE"
         },
         {
             "unit": "seconds",
