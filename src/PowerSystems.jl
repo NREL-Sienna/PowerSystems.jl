@@ -261,7 +261,6 @@ export get_participation_factor
 export get_cost
 export get_units_base
 
-
 #################################################################################
 # Imports
 

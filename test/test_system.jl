@@ -196,8 +196,8 @@ end
 end
 
 @testset "Test system units" begin
-   sys = create_rts_system()
-   @test get_units_base(sys) == "DEVICE_BASE"
-   set_units_base_system!(sys, "SYSTEM_BASE")
-   @test get_units_base(sys) == "SYSTEM_BASE"
+    sys = create_rts_system()
+    @test get_units_base(sys) == "DEVICE_BASE"
+    set_units_base_system!(sys, "SYSTEM_BASE")
+    @test get_units_base(sys) == "SYSTEM_BASE"
 end
