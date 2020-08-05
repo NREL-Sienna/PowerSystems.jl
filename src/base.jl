@@ -584,20 +584,19 @@ function remove_component!(sys::System, component::T) where {T <: Component}
 end
 
 """
-Remove a StaticReserveGroup component from the system by its value.
+Throws ArgumentError if a PowerSystems rule blocks removal from the system.
 """
-function remove_component!(sys::System, service::T) where {T <: Service}
-    groupservices = collect(get_components(StaticReserveGroup, sys))
+function check_component_removal(sys::System,  service::T) where {T <: Service}
+    if T == StaticReserveGroup
+        return
+    end
+    groupservices = get_components(StaticReserveGroup, sys)
     for groupservice in groupservices
         if service ∈ get_contributing_services(groupservice)
-            throw(ArgumentError("service $(get_name(service)) is part of a StaticReserveGroup"))
+            throw(ArgumentError("service $(get_name(service)) cannot be removed with an attached StaticReserveGroup"))
             return
         end
     end
-    check_component_removal(sys, service)
-    IS.remove_component!(sys.data, service)
-    handle_component_removal!(sys, service)
-    clear_units!(service)
 end
 
 
