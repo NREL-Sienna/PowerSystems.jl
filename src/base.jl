@@ -452,7 +452,7 @@ function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
     if sys.runchecks && !validate_struct(sys, service)
         throw(InvalidValue("Invalid value for $service"))
     end
-    
+
     for _service in get_contributing_services(service)
         if !is_attached(_service, sys)
             throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
@@ -582,6 +582,24 @@ function remove_component!(sys::System, component::T) where {T <: Component}
     handle_component_removal!(sys, component)
     clear_units!(component)
 end
+
+"""
+Remove a StaticReserveGroup component from the system by its value.
+"""
+function remove_component!(sys::System, service::T) where {T <: Service}
+    groupservices = collect(get_components(StaticReserveGroup, sys))
+    for groupservice in groupservices
+        if service ∈ get_contributing_services(groupservice)
+            throw(ArgumentError("service $(get_name(_service)) is part of a StaticReserveGroup"))
+            return
+        end
+    end
+    check_component_removal(sys, service)
+    IS.remove_component!(sys.data, service)
+    handle_component_removal!(sys, service)
+    clear_units!(service)
+end
+
 
 """
 Remove a component from the system by its name.
