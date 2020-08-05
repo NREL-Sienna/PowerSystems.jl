@@ -464,7 +464,11 @@ function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
 end
 
 """Set StaticReserveGroup contributing_services with check"""
-function set_contributing_services!(sys::System, service::StaticReserveGroup, val::Vector{Service})
+function set_contributing_services!(
+    sys::System,
+    service::StaticReserveGroup,
+    val::Vector{Service},
+)
     for _service in val
         if !is_attached(_service, sys)
             throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
@@ -482,7 +486,12 @@ Similar to [`add_component!`](@ref) but for StaticReserveGroup.
 - `service::StaticReserveGroup`: service to add
 - `contributing_services`: contributing services to the group
 """
-function add_service!(sys::System, service::StaticReserveGroup, contributing_services::Vector{Service}; kwargs...)
+function add_service!(
+    sys::System,
+    service::StaticReserveGroup,
+    contributing_services::Vector{Service};
+    kwargs...,
+)
     if sys.runchecks && !validate_struct(sys, service)
         throw(InvalidValue("Invalid value for $service"))
     end
@@ -616,7 +625,7 @@ end
 """
 Throws ArgumentError if a PowerSystems rule blocks removal from the system.
 """
-function check_component_removal(sys::System,  service::T) where {T <: Service}
+function check_component_removal(sys::System, service::T) where {T <: Service}
     if T == StaticReserveGroup
         return
     end
@@ -628,7 +637,6 @@ function check_component_removal(sys::System,  service::T) where {T <: Service}
         end
     end
 end
-
 
 """
 Remove a component from the system by its name.
