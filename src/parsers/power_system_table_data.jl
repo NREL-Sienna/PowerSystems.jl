@@ -260,6 +260,7 @@ function System(
         runchecks = runchecks,
         kwargs...,
     )
+    set_units_base_system!(sys, IS.DEVICE_BASE)
 
     loadzone_csv_parser!(sys, data)
     bus_csv_parser!(sys, data)
