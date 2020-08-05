@@ -320,7 +320,8 @@ end
     @test groupservices[1] == groupservice
 
     # add contributing services
-    expected_contributing_services = [service]
+    expected_contributing_services = Vector{Service}()
+    push!(expected_contributing_services, service)
     set_contributing_services!(groupservice, expected_contributing_services)
     # get contributing services
     contributing_services = get_contributing_services(groupservice)
