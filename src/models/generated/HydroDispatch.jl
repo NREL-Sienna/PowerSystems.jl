@@ -138,34 +138,34 @@ InfrastructureSystems.get_forecasts(value::HydroDispatch) = value.forecasts
 get_internal(value::HydroDispatch) = value.internal
 
 
-InfrastructureSystems.set_name!(value::HydroDispatch, val::String) = value.name = val
+InfrastructureSystems.set_name!(value::HydroDispatch, val) = value.name = val
 """Set HydroDispatch available."""
-set_available!(value::HydroDispatch, val::Bool) = value.available = val
+set_available!(value::HydroDispatch, val) = value.available = val
 """Set HydroDispatch bus."""
-set_bus!(value::HydroDispatch, val::Bus) = value.bus = val
+set_bus!(value::HydroDispatch, val) = value.bus = val
 """Set HydroDispatch active_power."""
-set_active_power!(value::HydroDispatch, val::Float64) = value.active_power = val
+set_active_power!(value::HydroDispatch, val) = value.active_power = val
 """Set HydroDispatch reactive_power."""
-set_reactive_power!(value::HydroDispatch, val::Float64) = value.reactive_power = val
+set_reactive_power!(value::HydroDispatch, val) = value.reactive_power = val
 """Set HydroDispatch rating."""
-set_rating!(value::HydroDispatch, val::Float64) = value.rating = val
+set_rating!(value::HydroDispatch, val) = value.rating = val
 """Set HydroDispatch prime_mover."""
-set_prime_mover!(value::HydroDispatch, val::PrimeMovers.PrimeMover) = value.prime_mover = val
+set_prime_mover!(value::HydroDispatch, val) = value.prime_mover = val
 """Set HydroDispatch active_power_limits."""
-set_active_power_limits!(value::HydroDispatch, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits = val
+set_active_power_limits!(value::HydroDispatch, val) = value.active_power_limits = val
 """Set HydroDispatch reactive_power_limits."""
-set_reactive_power_limits!(value::HydroDispatch, val::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::HydroDispatch, val) = value.reactive_power_limits = val
 """Set HydroDispatch ramp_limits."""
-set_ramp_limits!(value::HydroDispatch, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.ramp_limits = val
+set_ramp_limits!(value::HydroDispatch, val) = value.ramp_limits = val
 """Set HydroDispatch time_limits."""
-set_time_limits!(value::HydroDispatch, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.time_limits = val
+set_time_limits!(value::HydroDispatch, val) = value.time_limits = val
 """Set HydroDispatch base_power."""
-set_base_power!(value::HydroDispatch, val::Float64) = value.base_power = val
+set_base_power!(value::HydroDispatch, val) = value.base_power = val
 """Set HydroDispatch services."""
-set_services!(value::HydroDispatch, val::Vector{Service}) = value.services = val
+set_services!(value::HydroDispatch, val) = value.services = val
 """Set HydroDispatch ext."""
-set_ext!(value::HydroDispatch, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::HydroDispatch, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::HydroDispatch, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::HydroDispatch, val) = value.forecasts = val
 """Set HydroDispatch internal."""
-set_internal!(value::HydroDispatch, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::HydroDispatch, val) = value.internal = val

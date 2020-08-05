@@ -150,36 +150,36 @@ get_states_types(value::AVRTypeII) = value.states_types
 get_internal(value::AVRTypeII) = value.internal
 
 """Set AVRTypeII K0."""
-set_K0!(value::AVRTypeII, val::Float64) = value.K0 = val
+set_K0!(value::AVRTypeII, val) = value.K0 = val
 """Set AVRTypeII T1."""
-set_T1!(value::AVRTypeII, val::Float64) = value.T1 = val
+set_T1!(value::AVRTypeII, val) = value.T1 = val
 """Set AVRTypeII T2."""
-set_T2!(value::AVRTypeII, val::Float64) = value.T2 = val
+set_T2!(value::AVRTypeII, val) = value.T2 = val
 """Set AVRTypeII T3."""
-set_T3!(value::AVRTypeII, val::Float64) = value.T3 = val
+set_T3!(value::AVRTypeII, val) = value.T3 = val
 """Set AVRTypeII T4."""
-set_T4!(value::AVRTypeII, val::Float64) = value.T4 = val
+set_T4!(value::AVRTypeII, val) = value.T4 = val
 """Set AVRTypeII Te."""
-set_Te!(value::AVRTypeII, val::Float64) = value.Te = val
+set_Te!(value::AVRTypeII, val) = value.Te = val
 """Set AVRTypeII Tr."""
-set_Tr!(value::AVRTypeII, val::Float64) = value.Tr = val
+set_Tr!(value::AVRTypeII, val) = value.Tr = val
 """Set AVRTypeII Vr_max."""
-set_Vr_max!(value::AVRTypeII, val::Float64) = value.Vr_max = val
+set_Vr_max!(value::AVRTypeII, val) = value.Vr_max = val
 """Set AVRTypeII Vr_min."""
-set_Vr_min!(value::AVRTypeII, val::Float64) = value.Vr_min = val
+set_Vr_min!(value::AVRTypeII, val) = value.Vr_min = val
 """Set AVRTypeII Ae."""
-set_Ae!(value::AVRTypeII, val::Float64) = value.Ae = val
+set_Ae!(value::AVRTypeII, val) = value.Ae = val
 """Set AVRTypeII Be."""
-set_Be!(value::AVRTypeII, val::Float64) = value.Be = val
+set_Be!(value::AVRTypeII, val) = value.Be = val
 """Set AVRTypeII V_ref."""
-set_V_ref!(value::AVRTypeII, val::Float64) = value.V_ref = val
+set_V_ref!(value::AVRTypeII, val) = value.V_ref = val
 """Set AVRTypeII ext."""
-set_ext!(value::AVRTypeII, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::AVRTypeII, val) = value.ext = val
 """Set AVRTypeII states."""
-set_states!(value::AVRTypeII, val::Vector{Symbol}) = value.states = val
+set_states!(value::AVRTypeII, val) = value.states = val
 """Set AVRTypeII n_states."""
-set_n_states!(value::AVRTypeII, val::Int64) = value.n_states = val
+set_n_states!(value::AVRTypeII, val) = value.n_states = val
 """Set AVRTypeII states_types."""
-set_states_types!(value::AVRTypeII, val::Vector{StateTypes.StateType}) = value.states_types = val
+set_states_types!(value::AVRTypeII, val) = value.states_types = val
 """Set AVRTypeII internal."""
-set_internal!(value::AVRTypeII, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::AVRTypeII, val) = value.internal = val

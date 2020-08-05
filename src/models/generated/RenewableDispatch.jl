@@ -131,32 +131,32 @@ InfrastructureSystems.get_forecasts(value::RenewableDispatch) = value.forecasts
 get_internal(value::RenewableDispatch) = value.internal
 
 
-InfrastructureSystems.set_name!(value::RenewableDispatch, val::String) = value.name = val
+InfrastructureSystems.set_name!(value::RenewableDispatch, val) = value.name = val
 """Set RenewableDispatch available."""
-set_available!(value::RenewableDispatch, val::Bool) = value.available = val
+set_available!(value::RenewableDispatch, val) = value.available = val
 """Set RenewableDispatch bus."""
-set_bus!(value::RenewableDispatch, val::Bus) = value.bus = val
+set_bus!(value::RenewableDispatch, val) = value.bus = val
 """Set RenewableDispatch active_power."""
-set_active_power!(value::RenewableDispatch, val::Float64) = value.active_power = val
+set_active_power!(value::RenewableDispatch, val) = value.active_power = val
 """Set RenewableDispatch reactive_power."""
-set_reactive_power!(value::RenewableDispatch, val::Float64) = value.reactive_power = val
+set_reactive_power!(value::RenewableDispatch, val) = value.reactive_power = val
 """Set RenewableDispatch rating."""
-set_rating!(value::RenewableDispatch, val::Float64) = value.rating = val
+set_rating!(value::RenewableDispatch, val) = value.rating = val
 """Set RenewableDispatch prime_mover."""
-set_prime_mover!(value::RenewableDispatch, val::PrimeMovers.PrimeMover) = value.prime_mover = val
+set_prime_mover!(value::RenewableDispatch, val) = value.prime_mover = val
 """Set RenewableDispatch reactive_power_limits."""
-set_reactive_power_limits!(value::RenewableDispatch, val::Union{Nothing, Min_Max}) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power_limits = val
 """Set RenewableDispatch power_factor."""
-set_power_factor!(value::RenewableDispatch, val::Float64) = value.power_factor = val
+set_power_factor!(value::RenewableDispatch, val) = value.power_factor = val
 """Set RenewableDispatch operation_cost."""
-set_operation_cost!(value::RenewableDispatch, val::TwoPartCost) = value.operation_cost = val
+set_operation_cost!(value::RenewableDispatch, val) = value.operation_cost = val
 """Set RenewableDispatch base_power."""
-set_base_power!(value::RenewableDispatch, val::Float64) = value.base_power = val
+set_base_power!(value::RenewableDispatch, val) = value.base_power = val
 """Set RenewableDispatch services."""
-set_services!(value::RenewableDispatch, val::Vector{Service}) = value.services = val
+set_services!(value::RenewableDispatch, val) = value.services = val
 """Set RenewableDispatch ext."""
-set_ext!(value::RenewableDispatch, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::RenewableDispatch, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::RenewableDispatch, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::RenewableDispatch, val) = value.forecasts = val
 """Set RenewableDispatch internal."""
-set_internal!(value::RenewableDispatch, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::RenewableDispatch, val) = value.internal = val

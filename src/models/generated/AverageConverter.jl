@@ -59,12 +59,12 @@ get_states(value::AverageConverter) = value.states
 get_n_states(value::AverageConverter) = value.n_states
 
 """Set AverageConverter rated_voltage."""
-set_rated_voltage!(value::AverageConverter, val::Float64) = value.rated_voltage = val
+set_rated_voltage!(value::AverageConverter, val) = value.rated_voltage = val
 """Set AverageConverter rated_current."""
-set_rated_current!(value::AverageConverter, val::Float64) = value.rated_current = val
+set_rated_current!(value::AverageConverter, val) = value.rated_current = val
 """Set AverageConverter ext."""
-set_ext!(value::AverageConverter, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::AverageConverter, val) = value.ext = val
 """Set AverageConverter states."""
-set_states!(value::AverageConverter, val::Vector{Symbol}) = value.states = val
+set_states!(value::AverageConverter, val) = value.states = val
 """Set AverageConverter n_states."""
-set_n_states!(value::AverageConverter, val::Int64) = value.n_states = val
+set_n_states!(value::AverageConverter, val) = value.n_states = val
