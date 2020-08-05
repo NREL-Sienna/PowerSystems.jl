@@ -150,6 +150,7 @@ export VariableReserve
 export AGC
 export ReserveDemandCurve
 export Transfer
+export StaticReserveGroup
 
 export PTDF
 export Ybus

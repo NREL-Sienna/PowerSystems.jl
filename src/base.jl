@@ -442,6 +442,67 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
 end
 
 """
+Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+
+# Arguments
+- `sys::System`: system
+- `service::StaticReserveGroup`: service to add
+"""
+function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+
+    for _service in get_contributing_services(service)
+        if !is_attached(_service, sys)
+            throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
+        end
+    end
+
+    set_unit_system!(service, sys.units_settings)
+    IS.add_component!(sys.data, service; kwargs...)
+end
+
+"""Set StaticReserveGroup contributing_services with check"""
+function set_contributing_services!(
+    sys::System,
+    service::StaticReserveGroup,
+    val::Vector{Service},
+)
+    for _service in val
+        if !is_attached(_service, sys)
+            throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
+            return
+        end
+    end
+    service.contributing_services = val
+end
+
+"""
+Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+
+# Arguments
+- `sys::System`: system
+- `service::StaticReserveGroup`: service to add
+- `contributing_services`: contributing services to the group
+"""
+function add_service!(
+    sys::System,
+    service::StaticReserveGroup,
+    contributing_services::Vector{Service};
+    kwargs...,
+)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+
+    set_contributing_services!(sys, service, contributing_services)
+
+    set_unit_system!(service, sys.units_settings)
+    IS.add_component!(sys.data, service; kwargs...)
+end
+
+"""
 Adds forecasts from a metadata file or metadata descriptors.
 
 # Arguments
@@ -562,6 +623,22 @@ function remove_component!(sys::System, component::T) where {T <: Component}
 end
 
 """
+Throws ArgumentError if a PowerSystems rule blocks removal from the system.
+"""
+function check_component_removal(sys::System, service::T) where {T <: Service}
+    if T == StaticReserveGroup
+        return
+    end
+    groupservices = get_components(StaticReserveGroup, sys)
+    for groupservice in groupservices
+        if service ∈ get_contributing_services(groupservice)
+            throw(ArgumentError("service $(get_name(service)) cannot be removed with an attached StaticReserveGroup"))
+            return
+        end
+    end
+end
+
+"""
 Remove a component from the system by its name.
 
 Throws ArgumentError if the component is not stored.
@@ -679,24 +756,30 @@ const ServiceContributingDevicesMapping =
     Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
 
 """
+Returns a ServiceContributingDevices object.
+"""
+function _get_contributing_devices(sys::System, service::T) where {T <: Service}
+    uuid = IS.get_uuid(service)
+    devices = ServiceContributingDevices(service, Vector{Device}())
+    for device in get_components(Device, sys)
+        for _service in get_services(device)
+            if IS.get_uuid(_service) == uuid
+                push!(devices.contributing_devices, device)
+                break
+            end
+        end
+    end
+    return devices
+end
+
+"""
 Return an instance of ServiceContributingDevicesMapping.
 """
 function get_contributing_device_mapping(sys::System)
     services = ServiceContributingDevicesMapping()
     for service in get_components(Service, sys)
-        uuid = IS.get_uuid(service)
-        devices = ServiceContributingDevices(service, Vector{Device}())
-        for device in get_components(Device, sys)
-            for _service in get_services(device)
-                if IS.get_uuid(_service) == uuid
-                    push!(devices.contributing_devices, device)
-                    break
-                end
-            end
-
-            key = ServiceContributingDevicesKey((typeof(service), get_name(service)))
-            services[key] = devices
-        end
+        key = ServiceContributingDevicesKey((typeof(service), get_name(service)))
+        services[key] = _get_contributing_devices(sys, service)
     end
 
     return services
