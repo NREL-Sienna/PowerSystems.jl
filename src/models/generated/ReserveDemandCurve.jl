@@ -73,16 +73,16 @@ InfrastructureSystems.get_forecasts(value::ReserveDemandCurve) = value.forecasts
 get_internal(value::ReserveDemandCurve) = value.internal
 
 
-InfrastructureSystems.set_name!(value::ReserveDemandCurve, val::String) = value.name = val
+InfrastructureSystems.set_name!(value::ReserveDemandCurve, val) = value.name = val
 """Set ReserveDemandCurve available."""
-set_available!(value::ReserveDemandCurve, val::Bool) = value.available = val
+set_available!(value::ReserveDemandCurve, val) = value.available = val
 """Set ReserveDemandCurve time_frame."""
-set_time_frame!(value::ReserveDemandCurve, val::Float64) = value.time_frame = val
+set_time_frame!(value::ReserveDemandCurve, val) = value.time_frame = val
 """Set ReserveDemandCurve operation_cost."""
-set_operation_cost!(value::ReserveDemandCurve, val::TwoPartCost) = value.operation_cost = val
+set_operation_cost!(value::ReserveDemandCurve, val) = value.operation_cost = val
 """Set ReserveDemandCurve ext."""
-set_ext!(value::ReserveDemandCurve, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::ReserveDemandCurve, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::ReserveDemandCurve, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::ReserveDemandCurve, val) = value.forecasts = val
 """Set ReserveDemandCurve internal."""
-set_internal!(value::ReserveDemandCurve, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::ReserveDemandCurve, val) = value.internal = val

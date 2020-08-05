@@ -96,22 +96,22 @@ get_n_states(value::TGTypeII) = value.n_states
 get_internal(value::TGTypeII) = value.internal
 
 """Set TGTypeII R."""
-set_R!(value::TGTypeII, val::Float64) = value.R = val
+set_R!(value::TGTypeII, val) = value.R = val
 """Set TGTypeII T1."""
-set_T1!(value::TGTypeII, val::Float64) = value.T1 = val
+set_T1!(value::TGTypeII, val) = value.T1 = val
 """Set TGTypeII T2."""
-set_T2!(value::TGTypeII, val::Float64) = value.T2 = val
+set_T2!(value::TGTypeII, val) = value.T2 = val
 """Set TGTypeII τ_min."""
-set_τ_min!(value::TGTypeII, val::Float64) = value.τ_min = val
+set_τ_min!(value::TGTypeII, val) = value.τ_min = val
 """Set TGTypeII τ_max."""
-set_τ_max!(value::TGTypeII, val::Float64) = value.τ_max = val
+set_τ_max!(value::TGTypeII, val) = value.τ_max = val
 """Set TGTypeII P_ref."""
-set_P_ref!(value::TGTypeII, val::Float64) = value.P_ref = val
+set_P_ref!(value::TGTypeII, val) = value.P_ref = val
 """Set TGTypeII ext."""
-set_ext!(value::TGTypeII, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::TGTypeII, val) = value.ext = val
 """Set TGTypeII states."""
-set_states!(value::TGTypeII, val::Vector{Symbol}) = value.states = val
+set_states!(value::TGTypeII, val) = value.states = val
 """Set TGTypeII n_states."""
-set_n_states!(value::TGTypeII, val::Int64) = value.n_states = val
+set_n_states!(value::TGTypeII, val) = value.n_states = val
 """Set TGTypeII internal."""
-set_internal!(value::TGTypeII, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::TGTypeII, val) = value.internal = val

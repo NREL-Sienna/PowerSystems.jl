@@ -163,42 +163,42 @@ InfrastructureSystems.get_forecasts(value::HydroEnergyReservoir) = value.forecas
 get_internal(value::HydroEnergyReservoir) = value.internal
 
 
-InfrastructureSystems.set_name!(value::HydroEnergyReservoir, val::String) = value.name = val
+InfrastructureSystems.set_name!(value::HydroEnergyReservoir, val) = value.name = val
 """Set HydroEnergyReservoir available."""
-set_available!(value::HydroEnergyReservoir, val::Bool) = value.available = val
+set_available!(value::HydroEnergyReservoir, val) = value.available = val
 """Set HydroEnergyReservoir bus."""
-set_bus!(value::HydroEnergyReservoir, val::Bus) = value.bus = val
+set_bus!(value::HydroEnergyReservoir, val) = value.bus = val
 """Set HydroEnergyReservoir active_power."""
-set_active_power!(value::HydroEnergyReservoir, val::Float64) = value.active_power = val
+set_active_power!(value::HydroEnergyReservoir, val) = value.active_power = val
 """Set HydroEnergyReservoir reactive_power."""
-set_reactive_power!(value::HydroEnergyReservoir, val::Float64) = value.reactive_power = val
+set_reactive_power!(value::HydroEnergyReservoir, val) = value.reactive_power = val
 """Set HydroEnergyReservoir rating."""
-set_rating!(value::HydroEnergyReservoir, val::Float64) = value.rating = val
+set_rating!(value::HydroEnergyReservoir, val) = value.rating = val
 """Set HydroEnergyReservoir prime_mover."""
-set_prime_mover!(value::HydroEnergyReservoir, val::PrimeMovers.PrimeMover) = value.prime_mover = val
+set_prime_mover!(value::HydroEnergyReservoir, val) = value.prime_mover = val
 """Set HydroEnergyReservoir active_power_limits."""
-set_active_power_limits!(value::HydroEnergyReservoir, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits = val
+set_active_power_limits!(value::HydroEnergyReservoir, val) = value.active_power_limits = val
 """Set HydroEnergyReservoir reactive_power_limits."""
-set_reactive_power_limits!(value::HydroEnergyReservoir, val::Union{Nothing, Min_Max}) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::HydroEnergyReservoir, val) = value.reactive_power_limits = val
 """Set HydroEnergyReservoir ramp_limits."""
-set_ramp_limits!(value::HydroEnergyReservoir, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.ramp_limits = val
+set_ramp_limits!(value::HydroEnergyReservoir, val) = value.ramp_limits = val
 """Set HydroEnergyReservoir time_limits."""
-set_time_limits!(value::HydroEnergyReservoir, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.time_limits = val
+set_time_limits!(value::HydroEnergyReservoir, val) = value.time_limits = val
 """Set HydroEnergyReservoir operation_cost."""
-set_operation_cost!(value::HydroEnergyReservoir, val::TwoPartCost) = value.operation_cost = val
+set_operation_cost!(value::HydroEnergyReservoir, val) = value.operation_cost = val
 """Set HydroEnergyReservoir base_power."""
-set_base_power!(value::HydroEnergyReservoir, val::Float64) = value.base_power = val
+set_base_power!(value::HydroEnergyReservoir, val) = value.base_power = val
 """Set HydroEnergyReservoir storage_capacity."""
-set_storage_capacity!(value::HydroEnergyReservoir, val::Float64) = value.storage_capacity = val
+set_storage_capacity!(value::HydroEnergyReservoir, val) = value.storage_capacity = val
 """Set HydroEnergyReservoir inflow."""
-set_inflow!(value::HydroEnergyReservoir, val::Float64) = value.inflow = val
+set_inflow!(value::HydroEnergyReservoir, val) = value.inflow = val
 """Set HydroEnergyReservoir initial_storage."""
-set_initial_storage!(value::HydroEnergyReservoir, val::Float64) = value.initial_storage = val
+set_initial_storage!(value::HydroEnergyReservoir, val) = value.initial_storage = val
 """Set HydroEnergyReservoir services."""
-set_services!(value::HydroEnergyReservoir, val::Vector{Service}) = value.services = val
+set_services!(value::HydroEnergyReservoir, val) = value.services = val
 """Set HydroEnergyReservoir ext."""
-set_ext!(value::HydroEnergyReservoir, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::HydroEnergyReservoir, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::HydroEnergyReservoir, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::HydroEnergyReservoir, val) = value.forecasts = val
 """Set HydroEnergyReservoir internal."""
-set_internal!(value::HydroEnergyReservoir, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::HydroEnergyReservoir, val) = value.internal = val

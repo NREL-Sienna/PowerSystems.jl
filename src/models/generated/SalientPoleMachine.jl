@@ -147,36 +147,36 @@ get_n_states(value::SalientPoleMachine) = value.n_states
 get_internal(value::SalientPoleMachine) = value.internal
 
 """Set SalientPoleMachine R."""
-set_R!(value::SalientPoleMachine, val::Float64) = value.R = val
+set_R!(value::SalientPoleMachine, val) = value.R = val
 """Set SalientPoleMachine Td0_p."""
-set_Td0_p!(value::SalientPoleMachine, val::Float64) = value.Td0_p = val
+set_Td0_p!(value::SalientPoleMachine, val) = value.Td0_p = val
 """Set SalientPoleMachine Td0_pp."""
-set_Td0_pp!(value::SalientPoleMachine, val::Float64) = value.Td0_pp = val
+set_Td0_pp!(value::SalientPoleMachine, val) = value.Td0_pp = val
 """Set SalientPoleMachine Tq0_pp."""
-set_Tq0_pp!(value::SalientPoleMachine, val::Float64) = value.Tq0_pp = val
+set_Tq0_pp!(value::SalientPoleMachine, val) = value.Tq0_pp = val
 """Set SalientPoleMachine Xd."""
-set_Xd!(value::SalientPoleMachine, val::Float64) = value.Xd = val
+set_Xd!(value::SalientPoleMachine, val) = value.Xd = val
 """Set SalientPoleMachine Xq."""
-set_Xq!(value::SalientPoleMachine, val::Float64) = value.Xq = val
+set_Xq!(value::SalientPoleMachine, val) = value.Xq = val
 """Set SalientPoleMachine Xd_p."""
-set_Xd_p!(value::SalientPoleMachine, val::Float64) = value.Xd_p = val
+set_Xd_p!(value::SalientPoleMachine, val) = value.Xd_p = val
 """Set SalientPoleMachine Xd_pp."""
-set_Xd_pp!(value::SalientPoleMachine, val::Float64) = value.Xd_pp = val
+set_Xd_pp!(value::SalientPoleMachine, val) = value.Xd_pp = val
 """Set SalientPoleMachine Xl."""
-set_Xl!(value::SalientPoleMachine, val::Float64) = value.Xl = val
+set_Xl!(value::SalientPoleMachine, val) = value.Xl = val
 """Set SalientPoleMachine Se."""
-set_Se!(value::SalientPoleMachine, val::Tuple{Float64, Float64}) = value.Se = val
+set_Se!(value::SalientPoleMachine, val) = value.Se = val
 """Set SalientPoleMachine ext."""
-set_ext!(value::SalientPoleMachine, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::SalientPoleMachine, val) = value.ext = val
 """Set SalientPoleMachine γ_d1."""
-set_γ_d1!(value::SalientPoleMachine, val::Float64) = value.γ_d1 = val
+set_γ_d1!(value::SalientPoleMachine, val) = value.γ_d1 = val
 """Set SalientPoleMachine γ_q1."""
-set_γ_q1!(value::SalientPoleMachine, val::Float64) = value.γ_q1 = val
+set_γ_q1!(value::SalientPoleMachine, val) = value.γ_q1 = val
 """Set SalientPoleMachine γ_d2."""
-set_γ_d2!(value::SalientPoleMachine, val::Float64) = value.γ_d2 = val
+set_γ_d2!(value::SalientPoleMachine, val) = value.γ_d2 = val
 """Set SalientPoleMachine states."""
-set_states!(value::SalientPoleMachine, val::Vector{Symbol}) = value.states = val
+set_states!(value::SalientPoleMachine, val) = value.states = val
 """Set SalientPoleMachine n_states."""
-set_n_states!(value::SalientPoleMachine, val::Int64) = value.n_states = val
+set_n_states!(value::SalientPoleMachine, val) = value.n_states = val
 """Set SalientPoleMachine internal."""
-set_internal!(value::SalientPoleMachine, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::SalientPoleMachine, val) = value.internal = val

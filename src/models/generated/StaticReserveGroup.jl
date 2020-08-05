@@ -66,12 +66,12 @@ get_contributing_services(value::StaticReserveGroup) = value.contributing_servic
 get_internal(value::StaticReserveGroup) = value.internal
 
 
-InfrastructureSystems.set_name!(value::StaticReserveGroup, val::String) = value.name = val
+InfrastructureSystems.set_name!(value::StaticReserveGroup, val) = value.name = val
 """Set StaticReserveGroup available."""
-set_available!(value::StaticReserveGroup, val::Bool) = value.available = val
+set_available!(value::StaticReserveGroup, val) = value.available = val
 """Set StaticReserveGroup requirement."""
-set_requirement!(value::StaticReserveGroup, val::Float64) = value.requirement = val
+set_requirement!(value::StaticReserveGroup, val) = value.requirement = val
 """Set StaticReserveGroup ext."""
-set_ext!(value::StaticReserveGroup, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::StaticReserveGroup, val) = value.ext = val
 """Set StaticReserveGroup internal."""
-set_internal!(value::StaticReserveGroup, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::StaticReserveGroup, val) = value.internal = val

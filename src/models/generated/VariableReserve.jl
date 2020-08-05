@@ -73,16 +73,16 @@ InfrastructureSystems.get_forecasts(value::VariableReserve) = value.forecasts
 get_internal(value::VariableReserve) = value.internal
 
 
-InfrastructureSystems.set_name!(value::VariableReserve, val::String) = value.name = val
+InfrastructureSystems.set_name!(value::VariableReserve, val) = value.name = val
 """Set VariableReserve available."""
-set_available!(value::VariableReserve, val::Bool) = value.available = val
+set_available!(value::VariableReserve, val) = value.available = val
 """Set VariableReserve time_frame."""
-set_time_frame!(value::VariableReserve, val::Float64) = value.time_frame = val
+set_time_frame!(value::VariableReserve, val) = value.time_frame = val
 """Set VariableReserve requirement."""
-set_requirement!(value::VariableReserve, val::Float64) = value.requirement = val
+set_requirement!(value::VariableReserve, val) = value.requirement = val
 """Set VariableReserve ext."""
-set_ext!(value::VariableReserve, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::VariableReserve, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::VariableReserve, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::VariableReserve, val) = value.forecasts = val
 """Set VariableReserve internal."""
-set_internal!(value::VariableReserve, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::VariableReserve, val) = value.internal = val

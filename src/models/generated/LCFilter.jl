@@ -71,14 +71,14 @@ get_states(value::LCFilter) = value.states
 get_n_states(value::LCFilter) = value.n_states
 
 """Set LCFilter lf."""
-set_lf!(value::LCFilter, val::Float64) = value.lf = val
+set_lf!(value::LCFilter, val) = value.lf = val
 """Set LCFilter rf."""
-set_rf!(value::LCFilter, val::Float64) = value.rf = val
+set_rf!(value::LCFilter, val) = value.rf = val
 """Set LCFilter cf."""
-set_cf!(value::LCFilter, val::Float64) = value.cf = val
+set_cf!(value::LCFilter, val) = value.cf = val
 """Set LCFilter ext."""
-set_ext!(value::LCFilter, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::LCFilter, val) = value.ext = val
 """Set LCFilter states."""
-set_states!(value::LCFilter, val::Vector{Symbol}) = value.states = val
+set_states!(value::LCFilter, val) = value.states = val
 """Set LCFilter n_states."""
-set_n_states!(value::LCFilter, val::Int64) = value.n_states = val
+set_n_states!(value::LCFilter, val) = value.n_states = val
