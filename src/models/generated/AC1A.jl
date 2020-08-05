@@ -189,46 +189,46 @@ get_states_types(value::AC1A) = value.states_types
 get_internal(value::AC1A) = value.internal
 
 """Set AC1A Tr."""
-set_Tr!(value::AC1A, val::Float64) = value.Tr = val
+set_Tr!(value::AC1A, val) = value.Tr = val
 """Set AC1A Tb."""
-set_Tb!(value::AC1A, val::Float64) = value.Tb = val
+set_Tb!(value::AC1A, val) = value.Tb = val
 """Set AC1A Tc."""
-set_Tc!(value::AC1A, val::Float64) = value.Tc = val
+set_Tc!(value::AC1A, val) = value.Tc = val
 """Set AC1A Ka."""
-set_Ka!(value::AC1A, val::Float64) = value.Ka = val
+set_Ka!(value::AC1A, val) = value.Ka = val
 """Set AC1A Ta."""
-set_Ta!(value::AC1A, val::Float64) = value.Ta = val
+set_Ta!(value::AC1A, val) = value.Ta = val
 """Set AC1A Va_lim."""
-set_Va_lim!(value::AC1A, val::Tuple{Float64, Float64}) = value.Va_lim = val
+set_Va_lim!(value::AC1A, val) = value.Va_lim = val
 """Set AC1A Te."""
-set_Te!(value::AC1A, val::Float64) = value.Te = val
+set_Te!(value::AC1A, val) = value.Te = val
 """Set AC1A Kf."""
-set_Kf!(value::AC1A, val::Float64) = value.Kf = val
+set_Kf!(value::AC1A, val) = value.Kf = val
 """Set AC1A Tf."""
-set_Tf!(value::AC1A, val::Float64) = value.Tf = val
+set_Tf!(value::AC1A, val) = value.Tf = val
 """Set AC1A Kc."""
-set_Kc!(value::AC1A, val::Float64) = value.Kc = val
+set_Kc!(value::AC1A, val) = value.Kc = val
 """Set AC1A Kd."""
-set_Kd!(value::AC1A, val::Float64) = value.Kd = val
+set_Kd!(value::AC1A, val) = value.Kd = val
 """Set AC1A Ke."""
-set_Ke!(value::AC1A, val::Float64) = value.Ke = val
+set_Ke!(value::AC1A, val) = value.Ke = val
 """Set AC1A E_sat."""
-set_E_sat!(value::AC1A, val::Tuple{Float64, Float64}) = value.E_sat = val
+set_E_sat!(value::AC1A, val) = value.E_sat = val
 """Set AC1A Se."""
-set_Se!(value::AC1A, val::Tuple{Float64, Float64}) = value.Se = val
+set_Se!(value::AC1A, val) = value.Se = val
 """Set AC1A Vr_lim."""
-set_Vr_lim!(value::AC1A, val::Tuple{Float64, Float64}) = value.Vr_lim = val
+set_Vr_lim!(value::AC1A, val) = value.Vr_lim = val
 """Set AC1A V_ref."""
-set_V_ref!(value::AC1A, val::Float64) = value.V_ref = val
+set_V_ref!(value::AC1A, val) = value.V_ref = val
 """Set AC1A saturation_coeffs."""
-set_saturation_coeffs!(value::AC1A, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
+set_saturation_coeffs!(value::AC1A, val) = value.saturation_coeffs = val
 """Set AC1A ext."""
-set_ext!(value::AC1A, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::AC1A, val) = value.ext = val
 """Set AC1A states."""
-set_states!(value::AC1A, val::Vector{Symbol}) = value.states = val
+set_states!(value::AC1A, val) = value.states = val
 """Set AC1A n_states."""
-set_n_states!(value::AC1A, val::Int64) = value.n_states = val
+set_n_states!(value::AC1A, val) = value.n_states = val
 """Set AC1A states_types."""
-set_states_types!(value::AC1A, val::Vector{StateTypes.StateType}) = value.states_types = val
+set_states_types!(value::AC1A, val) = value.states_types = val
 """Set AC1A internal."""
-set_internal!(value::AC1A, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::AC1A, val) = value.internal = val

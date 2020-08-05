@@ -189,52 +189,52 @@ InfrastructureSystems.get_forecasts(value::ThermalMultiStart) = value.forecasts
 get_internal(value::ThermalMultiStart) = value.internal
 
 
-InfrastructureSystems.set_name!(value::ThermalMultiStart, val::String) = value.name = val
+InfrastructureSystems.set_name!(value::ThermalMultiStart, val) = value.name = val
 """Set ThermalMultiStart available."""
-set_available!(value::ThermalMultiStart, val::Bool) = value.available = val
+set_available!(value::ThermalMultiStart, val) = value.available = val
 """Set ThermalMultiStart status."""
-set_status!(value::ThermalMultiStart, val::Bool) = value.status = val
+set_status!(value::ThermalMultiStart, val) = value.status = val
 """Set ThermalMultiStart bus."""
-set_bus!(value::ThermalMultiStart, val::Bus) = value.bus = val
+set_bus!(value::ThermalMultiStart, val) = value.bus = val
 """Set ThermalMultiStart active_power."""
-set_active_power!(value::ThermalMultiStart, val::Float64) = value.active_power = val
+set_active_power!(value::ThermalMultiStart, val) = value.active_power = val
 """Set ThermalMultiStart reactive_power."""
-set_reactive_power!(value::ThermalMultiStart, val::Float64) = value.reactive_power = val
+set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = val
 """Set ThermalMultiStart rating."""
-set_rating!(value::ThermalMultiStart, val::Float64) = value.rating = val
+set_rating!(value::ThermalMultiStart, val) = value.rating = val
 """Set ThermalMultiStart prime_mover."""
-set_prime_mover!(value::ThermalMultiStart, val::PrimeMovers.PrimeMover) = value.prime_mover = val
+set_prime_mover!(value::ThermalMultiStart, val) = value.prime_mover = val
 """Set ThermalMultiStart fuel."""
-set_fuel!(value::ThermalMultiStart, val::ThermalFuels.ThermalFuel) = value.fuel = val
+set_fuel!(value::ThermalMultiStart, val) = value.fuel = val
 """Set ThermalMultiStart active_power_limits."""
-set_active_power_limits!(value::ThermalMultiStart, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits = val
+set_active_power_limits!(value::ThermalMultiStart, val) = value.active_power_limits = val
 """Set ThermalMultiStart reactive_power_limits."""
-set_reactive_power_limits!(value::ThermalMultiStart, val::Union{Nothing, Min_Max}) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::ThermalMultiStart, val) = value.reactive_power_limits = val
 """Set ThermalMultiStart ramp_limits."""
-set_ramp_limits!(value::ThermalMultiStart, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.ramp_limits = val
+set_ramp_limits!(value::ThermalMultiStart, val) = value.ramp_limits = val
 """Set ThermalMultiStart power_trajectory."""
-set_power_trajectory!(value::ThermalMultiStart, val::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}) = value.power_trajectory = val
+set_power_trajectory!(value::ThermalMultiStart, val) = value.power_trajectory = val
 """Set ThermalMultiStart time_limits."""
-set_time_limits!(value::ThermalMultiStart, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.time_limits = val
+set_time_limits!(value::ThermalMultiStart, val) = value.time_limits = val
 """Set ThermalMultiStart start_time_limits."""
-set_start_time_limits!(value::ThermalMultiStart, val::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}) = value.start_time_limits = val
+set_start_time_limits!(value::ThermalMultiStart, val) = value.start_time_limits = val
 """Set ThermalMultiStart start_types."""
-set_start_types!(value::ThermalMultiStart, val::Int) = value.start_types = val
+set_start_types!(value::ThermalMultiStart, val) = value.start_types = val
 """Set ThermalMultiStart operation_cost."""
-set_operation_cost!(value::ThermalMultiStart, val::MultiStartCost) = value.operation_cost = val
+set_operation_cost!(value::ThermalMultiStart, val) = value.operation_cost = val
 """Set ThermalMultiStart base_power."""
-set_base_power!(value::ThermalMultiStart, val::Float64) = value.base_power = val
+set_base_power!(value::ThermalMultiStart, val) = value.base_power = val
 """Set ThermalMultiStart services."""
-set_services!(value::ThermalMultiStart, val::Vector{Service}) = value.services = val
+set_services!(value::ThermalMultiStart, val) = value.services = val
 """Set ThermalMultiStart time_at_status."""
-set_time_at_status!(value::ThermalMultiStart, val::Float64) = value.time_at_status = val
+set_time_at_status!(value::ThermalMultiStart, val) = value.time_at_status = val
 """Set ThermalMultiStart must_run."""
-set_must_run!(value::ThermalMultiStart, val::Bool) = value.must_run = val
+set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
 """Set ThermalMultiStart dynamic_injector."""
-set_dynamic_injector!(value::ThermalMultiStart, val::Union{Nothing, DynamicInjection}) = value.dynamic_injector = val
+set_dynamic_injector!(value::ThermalMultiStart, val) = value.dynamic_injector = val
 """Set ThermalMultiStart ext."""
-set_ext!(value::ThermalMultiStart, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::ThermalMultiStart, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::ThermalMultiStart, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::ThermalMultiStart, val) = value.forecasts = val
 """Set ThermalMultiStart internal."""
-set_internal!(value::ThermalMultiStart, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::ThermalMultiStart, val) = value.internal = val

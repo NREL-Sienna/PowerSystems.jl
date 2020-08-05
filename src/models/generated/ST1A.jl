@@ -195,48 +195,48 @@ get_states_types(value::ST1A) = value.states_types
 get_internal(value::ST1A) = value.internal
 
 """Set ST1A UEL_flags."""
-set_UEL_flags!(value::ST1A, val::Int64) = value.UEL_flags = val
+set_UEL_flags!(value::ST1A, val) = value.UEL_flags = val
 """Set ST1A PSS_flags."""
-set_PSS_flags!(value::ST1A, val::Int64) = value.PSS_flags = val
+set_PSS_flags!(value::ST1A, val) = value.PSS_flags = val
 """Set ST1A Tr."""
-set_Tr!(value::ST1A, val::Float64) = value.Tr = val
+set_Tr!(value::ST1A, val) = value.Tr = val
 """Set ST1A Vi_lim."""
-set_Vi_lim!(value::ST1A, val::Tuple{Float64, Float64}) = value.Vi_lim = val
+set_Vi_lim!(value::ST1A, val) = value.Vi_lim = val
 """Set ST1A Tc."""
-set_Tc!(value::ST1A, val::Float64) = value.Tc = val
+set_Tc!(value::ST1A, val) = value.Tc = val
 """Set ST1A Tb."""
-set_Tb!(value::ST1A, val::Float64) = value.Tb = val
+set_Tb!(value::ST1A, val) = value.Tb = val
 """Set ST1A Tc1."""
-set_Tc1!(value::ST1A, val::Float64) = value.Tc1 = val
+set_Tc1!(value::ST1A, val) = value.Tc1 = val
 """Set ST1A Tb1."""
-set_Tb1!(value::ST1A, val::Float64) = value.Tb1 = val
+set_Tb1!(value::ST1A, val) = value.Tb1 = val
 """Set ST1A Ka."""
-set_Ka!(value::ST1A, val::Float64) = value.Ka = val
+set_Ka!(value::ST1A, val) = value.Ka = val
 """Set ST1A Ta."""
-set_Ta!(value::ST1A, val::Float64) = value.Ta = val
+set_Ta!(value::ST1A, val) = value.Ta = val
 """Set ST1A Va_lim."""
-set_Va_lim!(value::ST1A, val::Tuple{Float64, Float64}) = value.Va_lim = val
+set_Va_lim!(value::ST1A, val) = value.Va_lim = val
 """Set ST1A Vr_lim."""
-set_Vr_lim!(value::ST1A, val::Tuple{Float64, Float64}) = value.Vr_lim = val
+set_Vr_lim!(value::ST1A, val) = value.Vr_lim = val
 """Set ST1A Kc."""
-set_Kc!(value::ST1A, val::Float64) = value.Kc = val
+set_Kc!(value::ST1A, val) = value.Kc = val
 """Set ST1A Kf."""
-set_Kf!(value::ST1A, val::Float64) = value.Kf = val
+set_Kf!(value::ST1A, val) = value.Kf = val
 """Set ST1A Tf."""
-set_Tf!(value::ST1A, val::Float64) = value.Tf = val
+set_Tf!(value::ST1A, val) = value.Tf = val
 """Set ST1A K_lr."""
-set_K_lr!(value::ST1A, val::Float64) = value.K_lr = val
+set_K_lr!(value::ST1A, val) = value.K_lr = val
 """Set ST1A I_lr."""
-set_I_lr!(value::ST1A, val::Float64) = value.I_lr = val
+set_I_lr!(value::ST1A, val) = value.I_lr = val
 """Set ST1A V_ref."""
-set_V_ref!(value::ST1A, val::Float64) = value.V_ref = val
+set_V_ref!(value::ST1A, val) = value.V_ref = val
 """Set ST1A ext."""
-set_ext!(value::ST1A, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::ST1A, val) = value.ext = val
 """Set ST1A states."""
-set_states!(value::ST1A, val::Vector{Symbol}) = value.states = val
+set_states!(value::ST1A, val) = value.states = val
 """Set ST1A n_states."""
-set_n_states!(value::ST1A, val::Int64) = value.n_states = val
+set_n_states!(value::ST1A, val) = value.n_states = val
 """Set ST1A states_types."""
-set_states_types!(value::ST1A, val::Vector{StateTypes.StateType}) = value.states_types = val
+set_states_types!(value::ST1A, val) = value.states_types = val
 """Set ST1A internal."""
-set_internal!(value::ST1A, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::ST1A, val) = value.internal = val

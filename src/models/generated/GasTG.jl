@@ -121,28 +121,28 @@ get_n_states(value::GasTG) = value.n_states
 get_internal(value::GasTG) = value.internal
 
 """Set GasTG R."""
-set_R!(value::GasTG, val::Float64) = value.R = val
+set_R!(value::GasTG, val) = value.R = val
 """Set GasTG T1."""
-set_T1!(value::GasTG, val::Float64) = value.T1 = val
+set_T1!(value::GasTG, val) = value.T1 = val
 """Set GasTG T2."""
-set_T2!(value::GasTG, val::Float64) = value.T2 = val
+set_T2!(value::GasTG, val) = value.T2 = val
 """Set GasTG T3."""
-set_T3!(value::GasTG, val::Float64) = value.T3 = val
+set_T3!(value::GasTG, val) = value.T3 = val
 """Set GasTG AT."""
-set_AT!(value::GasTG, val::Float64) = value.AT = val
+set_AT!(value::GasTG, val) = value.AT = val
 """Set GasTG Kt."""
-set_Kt!(value::GasTG, val::Float64) = value.Kt = val
+set_Kt!(value::GasTG, val) = value.Kt = val
 """Set GasTG V_lim."""
-set_V_lim!(value::GasTG, val::Tuple{Float64, Float64}) = value.V_lim = val
+set_V_lim!(value::GasTG, val) = value.V_lim = val
 """Set GasTG D_turb."""
-set_D_turb!(value::GasTG, val::Float64) = value.D_turb = val
+set_D_turb!(value::GasTG, val) = value.D_turb = val
 """Set GasTG Load_ref."""
-set_Load_ref!(value::GasTG, val::Float64) = value.Load_ref = val
+set_Load_ref!(value::GasTG, val) = value.Load_ref = val
 """Set GasTG ext."""
-set_ext!(value::GasTG, val::Dict{String, Any}) = value.ext = val
+set_ext!(value::GasTG, val) = value.ext = val
 """Set GasTG states."""
-set_states!(value::GasTG, val::Vector{Symbol}) = value.states = val
+set_states!(value::GasTG, val) = value.states = val
 """Set GasTG n_states."""
-set_n_states!(value::GasTG, val::Int64) = value.n_states = val
+set_n_states!(value::GasTG, val) = value.n_states = val
 """Set GasTG internal."""
-set_internal!(value::GasTG, val::InfrastructureSystemsInternal) = value.internal = val
+set_internal!(value::GasTG, val) = value.internal = val
