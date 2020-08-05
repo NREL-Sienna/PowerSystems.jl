@@ -84,7 +84,7 @@ struct System <: PowerSystemType
 end
 
 function System(data, base_power, internal; kwargs...)
-    unit_system_ = get(kwargs, :unit_system, "system_base")
+    unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
     unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
     units_settings = SystemUnitsSettings(base_power, unit_system)
     return System(data, units_settings, internal; kwargs...)
@@ -358,6 +358,10 @@ function set_units_base_system!(system::System, settings::UnitSystem)
     system.units_settings.unit_system = settings
     @info "Unit System changed to $settings"
     return
+end
+
+function get_units_base(system::System)
+    return string(system.units_settings.unit_system)
 end
 
 """
