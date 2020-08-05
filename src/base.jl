@@ -452,6 +452,12 @@ function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
     if sys.runchecks && !validate_struct(sys, service)
         throw(InvalidValue("Invalid value for $service"))
     end
+    
+    for _service in get_contributing_services(service)
+        if !is_attached(_service, sys)
+            throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
+        end
+    end
 
     set_unit_system!(service, sys.units_settings)
     IS.add_component!(sys.data, service; kwargs...)

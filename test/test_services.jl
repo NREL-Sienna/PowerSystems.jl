@@ -337,4 +337,11 @@ end
     groupservice = StaticReserveGroup{ReserveDown}(nothing)
     # Bus is not a Service.
     @test_throws MethodError set_contributing_services!(groupservice, [bus])
+
+    # Service not in System
+    service = StaticReserve{ReserveDown}(nothing)
+    contributing_services = Vector{Service}()
+    push!(contributing_services, service)
+    set_contributing_services!(groupservice, contributing_services)
+    @test_throws ArgumentError add_service!(sys, groupservice)
 end
