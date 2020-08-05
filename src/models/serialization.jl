@@ -19,7 +19,7 @@ function JSON2.read(io::IO, ::Type{VariableCost})
     return VariableCost(variable)
 end
 
-const COMPOSED_COMPONENTS = (Area, Bus, LoadZone)
+const COMPOSED_COMPONENTS = (Area, Bus, LoadZone, Vector{Service})
 
 function JSON2.write(io::IO, component::T) where {T <: Component}
     return JSON2.write(io, encode_components_with_uuids(component, COMPOSED_COMPONENTS))
@@ -36,7 +36,11 @@ function encode_components_with_uuids(component::T, types_as_uuids) where {T}
     for name in fields
         val = getfield(component, name)
         if mapreduce(x -> val isa x, |, types_as_uuids)
-            push!(vals, IS.get_uuid(val))
+            if val isa Array
+                push!(vals, [IS.get_uuid(x) for x in val])
+            else
+                push!(vals, IS.get_uuid(val))
+            end
         else
             push!(vals, val)
         end
@@ -60,11 +64,22 @@ function IS.convert_type(
         if !isnothing(val) && (
             fieldtype <: Union{Nothing, Area} ||
             fieldtype <: Union{Nothing, LoadZone} ||
+            fieldtype <: Vector{Service} ||
             fieldtype <: Bus
         )
-            uuid = Base.UUID(val.value)
-            component = component_cache[uuid]
-            push!(values, component)
+            if fieldtype <: Vector{Service}
+                _values = fieldtype()
+                for _val in val
+                    uuid = Base.UUID(_val.value)
+                    component = component_cache[uuid]
+                    push!(_values, component)
+                end
+                push!(values, _values)
+            else
+                uuid = Base.UUID(val.value)
+                component = component_cache[uuid]
+                push!(values, component)
+            end
         elseif fieldtype <: Component
             # Recurse.
             push!(values, IS.convert_type(fieldtype, val, component_cache))

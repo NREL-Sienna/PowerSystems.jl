@@ -1306,11 +1306,11 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
-    # Devices have services, skip one round.
-    deserialize_and_add!(; skip_types = [Device])
+    # Devices and StaticReserveGroup have services, skip one round.
+    deserialize_and_add!(; skip_types = [Device, StaticReserveGroup])
     # DynamicInjection has to follow StaticInjection.
     deserialize_and_add!(;
-        include_types = [Device],
+        include_types = [Device, StaticReserveGroup],
         skip_types = [DynamicInjection, RegulationDevice],
     )
     deserialize_and_add!(; include_types = [RegulationDevice])
