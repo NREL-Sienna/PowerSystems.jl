@@ -163,42 +163,42 @@ InfrastructureSystems.get_forecasts(value::ThermalStandard) = value.forecasts
 get_internal(value::ThermalStandard) = value.internal
 
 
-InfrastructureSystems.set_name!(value::ThermalStandard, val) = value.name = val
+InfrastructureSystems.set_name!(value::ThermalStandard, val::String) = value.name = val
 """Set ThermalStandard available."""
-set_available!(value::ThermalStandard, val) = value.available = val
+set_available!(value::ThermalStandard, val::Bool) = value.available = val
 """Set ThermalStandard status."""
-set_status!(value::ThermalStandard, val) = value.status = val
+set_status!(value::ThermalStandard, val::Bool) = value.status = val
 """Set ThermalStandard bus."""
-set_bus!(value::ThermalStandard, val) = value.bus = val
+set_bus!(value::ThermalStandard, val::Bus) = value.bus = val
 """Set ThermalStandard active_power."""
-set_active_power!(value::ThermalStandard, val) = value.active_power = val
+set_active_power!(value::ThermalStandard, val::Float64) = value.active_power = val
 """Set ThermalStandard reactive_power."""
-set_reactive_power!(value::ThermalStandard, val) = value.reactive_power = val
+set_reactive_power!(value::ThermalStandard, val::Float64) = value.reactive_power = val
 """Set ThermalStandard rating."""
-set_rating!(value::ThermalStandard, val) = value.rating = val
+set_rating!(value::ThermalStandard, val::Float64) = value.rating = val
 """Set ThermalStandard active_power_limits."""
-set_active_power_limits!(value::ThermalStandard, val) = value.active_power_limits = val
+set_active_power_limits!(value::ThermalStandard, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits = val
 """Set ThermalStandard reactive_power_limits."""
-set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::ThermalStandard, val::Union{Nothing, Min_Max}) = value.reactive_power_limits = val
 """Set ThermalStandard ramp_limits."""
-set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = val
+set_ramp_limits!(value::ThermalStandard, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.ramp_limits = val
 """Set ThermalStandard operation_cost."""
-set_operation_cost!(value::ThermalStandard, val) = value.operation_cost = val
+set_operation_cost!(value::ThermalStandard, val::ThreePartCost) = value.operation_cost = val
 """Set ThermalStandard base_power."""
-set_base_power!(value::ThermalStandard, val) = value.base_power = val
+set_base_power!(value::ThermalStandard, val::Float64) = value.base_power = val
 """Set ThermalStandard time_limits."""
-set_time_limits!(value::ThermalStandard, val) = value.time_limits = val
+set_time_limits!(value::ThermalStandard, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.time_limits = val
 """Set ThermalStandard prime_mover."""
-set_prime_mover!(value::ThermalStandard, val) = value.prime_mover = val
+set_prime_mover!(value::ThermalStandard, val::PrimeMovers.PrimeMover) = value.prime_mover = val
 """Set ThermalStandard fuel."""
-set_fuel!(value::ThermalStandard, val) = value.fuel = val
+set_fuel!(value::ThermalStandard, val::ThermalFuels.ThermalFuel) = value.fuel = val
 """Set ThermalStandard services."""
-set_services!(value::ThermalStandard, val) = value.services = val
+set_services!(value::ThermalStandard, val::Vector{Service}) = value.services = val
 """Set ThermalStandard time_at_status."""
-set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
+set_time_at_status!(value::ThermalStandard, val::Float64) = value.time_at_status = val
 """Set ThermalStandard ext."""
-set_ext!(value::ThermalStandard, val) = value.ext = val
+set_ext!(value::ThermalStandard, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::ThermalStandard, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::ThermalStandard, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set ThermalStandard internal."""
-set_internal!(value::ThermalStandard, val) = value.internal = val
+set_internal!(value::ThermalStandard, val::InfrastructureSystemsInternal) = value.internal = val

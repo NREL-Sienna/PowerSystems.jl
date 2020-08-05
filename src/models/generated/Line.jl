@@ -117,30 +117,30 @@ InfrastructureSystems.get_forecasts(value::Line) = value.forecasts
 get_internal(value::Line) = value.internal
 
 
-InfrastructureSystems.set_name!(value::Line, val) = value.name = val
+InfrastructureSystems.set_name!(value::Line, val::String) = value.name = val
 """Set Line available."""
-set_available!(value::Line, val) = value.available = val
+set_available!(value::Line, val::Bool) = value.available = val
 """Set Line active_power_flow."""
-set_active_power_flow!(value::Line, val) = value.active_power_flow = val
+set_active_power_flow!(value::Line, val::Float64) = value.active_power_flow = val
 """Set Line reactive_power_flow."""
-set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = val
+set_reactive_power_flow!(value::Line, val::Float64) = value.reactive_power_flow = val
 """Set Line arc."""
-set_arc!(value::Line, val) = value.arc = val
+set_arc!(value::Line, val::Arc) = value.arc = val
 """Set Line r."""
-set_r!(value::Line, val) = value.r = val
+set_r!(value::Line, val::Float64) = value.r = val
 """Set Line x."""
-set_x!(value::Line, val) = value.x = val
+set_x!(value::Line, val::Float64) = value.x = val
 """Set Line b."""
-set_b!(value::Line, val) = value.b = val
+set_b!(value::Line, val::NamedTuple{(:from, :to), Tuple{Float64, Float64}}) = value.b = val
 """Set Line rate."""
-set_rate!(value::Line, val) = value.rate = val
+set_rate!(value::Line, val::Float64) = value.rate = val
 """Set Line angle_limits."""
-set_angle_limits!(value::Line, val) = value.angle_limits = val
+set_angle_limits!(value::Line, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.angle_limits = val
 """Set Line services."""
-set_services!(value::Line, val) = value.services = val
+set_services!(value::Line, val::Vector{Service}) = value.services = val
 """Set Line ext."""
-set_ext!(value::Line, val) = value.ext = val
+set_ext!(value::Line, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::Line, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::Line, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set Line internal."""
-set_internal!(value::Line, val) = value.internal = val
+set_internal!(value::Line, val::InfrastructureSystemsInternal) = value.internal = val

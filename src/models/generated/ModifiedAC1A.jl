@@ -179,44 +179,44 @@ get_states_types(value::ModifiedAC1A) = value.states_types
 get_internal(value::ModifiedAC1A) = value.internal
 
 """Set ModifiedAC1A Tr."""
-set_Tr!(value::ModifiedAC1A, val) = value.Tr = val
+set_Tr!(value::ModifiedAC1A, val::Float64) = value.Tr = val
 """Set ModifiedAC1A Tb."""
-set_Tb!(value::ModifiedAC1A, val) = value.Tb = val
+set_Tb!(value::ModifiedAC1A, val::Float64) = value.Tb = val
 """Set ModifiedAC1A Tc."""
-set_Tc!(value::ModifiedAC1A, val) = value.Tc = val
+set_Tc!(value::ModifiedAC1A, val::Float64) = value.Tc = val
 """Set ModifiedAC1A Ka."""
-set_Ka!(value::ModifiedAC1A, val) = value.Ka = val
+set_Ka!(value::ModifiedAC1A, val::Float64) = value.Ka = val
 """Set ModifiedAC1A Ta."""
-set_Ta!(value::ModifiedAC1A, val) = value.Ta = val
+set_Ta!(value::ModifiedAC1A, val::Float64) = value.Ta = val
 """Set ModifiedAC1A Vr_lim."""
-set_Vr_lim!(value::ModifiedAC1A, val) = value.Vr_lim = val
+set_Vr_lim!(value::ModifiedAC1A, val::Tuple{Float64, Float64}) = value.Vr_lim = val
 """Set ModifiedAC1A Te."""
-set_Te!(value::ModifiedAC1A, val) = value.Te = val
+set_Te!(value::ModifiedAC1A, val::Float64) = value.Te = val
 """Set ModifiedAC1A Kf."""
-set_Kf!(value::ModifiedAC1A, val) = value.Kf = val
+set_Kf!(value::ModifiedAC1A, val::Float64) = value.Kf = val
 """Set ModifiedAC1A Tf."""
-set_Tf!(value::ModifiedAC1A, val) = value.Tf = val
+set_Tf!(value::ModifiedAC1A, val::Float64) = value.Tf = val
 """Set ModifiedAC1A Kc."""
-set_Kc!(value::ModifiedAC1A, val) = value.Kc = val
+set_Kc!(value::ModifiedAC1A, val::Float64) = value.Kc = val
 """Set ModifiedAC1A Kd."""
-set_Kd!(value::ModifiedAC1A, val) = value.Kd = val
+set_Kd!(value::ModifiedAC1A, val::Float64) = value.Kd = val
 """Set ModifiedAC1A Ke."""
-set_Ke!(value::ModifiedAC1A, val) = value.Ke = val
+set_Ke!(value::ModifiedAC1A, val::Float64) = value.Ke = val
 """Set ModifiedAC1A E_sat."""
-set_E_sat!(value::ModifiedAC1A, val) = value.E_sat = val
+set_E_sat!(value::ModifiedAC1A, val::Tuple{Float64, Float64}) = value.E_sat = val
 """Set ModifiedAC1A Se."""
-set_Se!(value::ModifiedAC1A, val) = value.Se = val
+set_Se!(value::ModifiedAC1A, val::Tuple{Float64, Float64}) = value.Se = val
 """Set ModifiedAC1A V_ref."""
-set_V_ref!(value::ModifiedAC1A, val) = value.V_ref = val
+set_V_ref!(value::ModifiedAC1A, val::Float64) = value.V_ref = val
 """Set ModifiedAC1A saturation_coeffs."""
-set_saturation_coeffs!(value::ModifiedAC1A, val) = value.saturation_coeffs = val
+set_saturation_coeffs!(value::ModifiedAC1A, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
 """Set ModifiedAC1A ext."""
-set_ext!(value::ModifiedAC1A, val) = value.ext = val
+set_ext!(value::ModifiedAC1A, val::Dict{String, Any}) = value.ext = val
 """Set ModifiedAC1A states."""
-set_states!(value::ModifiedAC1A, val) = value.states = val
+set_states!(value::ModifiedAC1A, val::Vector{Symbol}) = value.states = val
 """Set ModifiedAC1A n_states."""
-set_n_states!(value::ModifiedAC1A, val) = value.n_states = val
+set_n_states!(value::ModifiedAC1A, val::Int64) = value.n_states = val
 """Set ModifiedAC1A states_types."""
-set_states_types!(value::ModifiedAC1A, val) = value.states_types = val
+set_states_types!(value::ModifiedAC1A, val::Vector{StateTypes.StateType}) = value.states_types = val
 """Set ModifiedAC1A internal."""
-set_internal!(value::ModifiedAC1A, val) = value.internal = val
+set_internal!(value::ModifiedAC1A, val::InfrastructureSystemsInternal) = value.internal = val

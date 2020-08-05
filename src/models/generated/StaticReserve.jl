@@ -66,14 +66,14 @@ get_ext(value::StaticReserve) = value.ext
 get_internal(value::StaticReserve) = value.internal
 
 
-InfrastructureSystems.set_name!(value::StaticReserve, val) = value.name = val
+InfrastructureSystems.set_name!(value::StaticReserve, val::String) = value.name = val
 """Set StaticReserve available."""
-set_available!(value::StaticReserve, val) = value.available = val
+set_available!(value::StaticReserve, val::Bool) = value.available = val
 """Set StaticReserve time_frame."""
-set_time_frame!(value::StaticReserve, val) = value.time_frame = val
+set_time_frame!(value::StaticReserve, val::Float64) = value.time_frame = val
 """Set StaticReserve requirement."""
-set_requirement!(value::StaticReserve, val) = value.requirement = val
+set_requirement!(value::StaticReserve, val::Float64) = value.requirement = val
 """Set StaticReserve ext."""
-set_ext!(value::StaticReserve, val) = value.ext = val
+set_ext!(value::StaticReserve, val::Dict{String, Any}) = value.ext = val
 """Set StaticReserve internal."""
-set_internal!(value::StaticReserve, val) = value.internal = val
+set_internal!(value::StaticReserve, val::InfrastructureSystemsInternal) = value.internal = val

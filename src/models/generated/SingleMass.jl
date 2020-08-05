@@ -70,14 +70,14 @@ get_n_states(value::SingleMass) = value.n_states
 get_internal(value::SingleMass) = value.internal
 
 """Set SingleMass H."""
-set_H!(value::SingleMass, val) = value.H = val
+set_H!(value::SingleMass, val::Float64) = value.H = val
 """Set SingleMass D."""
-set_D!(value::SingleMass, val) = value.D = val
+set_D!(value::SingleMass, val::Float64) = value.D = val
 """Set SingleMass ext."""
-set_ext!(value::SingleMass, val) = value.ext = val
+set_ext!(value::SingleMass, val::Dict{String, Any}) = value.ext = val
 """Set SingleMass states."""
-set_states!(value::SingleMass, val) = value.states = val
+set_states!(value::SingleMass, val::Vector{Symbol}) = value.states = val
 """Set SingleMass n_states."""
-set_n_states!(value::SingleMass, val) = value.n_states = val
+set_n_states!(value::SingleMass, val::Int64) = value.n_states = val
 """Set SingleMass internal."""
-set_internal!(value::SingleMass, val) = value.internal = val
+set_internal!(value::SingleMass, val::InfrastructureSystemsInternal) = value.internal = val

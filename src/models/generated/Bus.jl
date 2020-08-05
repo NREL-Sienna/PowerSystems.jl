@@ -120,24 +120,24 @@ get_ext(value::Bus) = value.ext
 get_internal(value::Bus) = value.internal
 
 """Set Bus number."""
-set_number!(value::Bus, val) = value.number = val
+set_number!(value::Bus, val::Int64) = value.number = val
 
-InfrastructureSystems.set_name!(value::Bus, val) = value.name = val
+InfrastructureSystems.set_name!(value::Bus, val::String) = value.name = val
 """Set Bus bustype."""
-set_bustype!(value::Bus, val) = value.bustype = val
+set_bustype!(value::Bus, val::Union{Nothing, BusTypes.BusType}) = value.bustype = val
 """Set Bus angle."""
-set_angle!(value::Bus, val) = value.angle = val
+set_angle!(value::Bus, val::Union{Nothing, Float64}) = value.angle = val
 """Set Bus magnitude."""
-set_magnitude!(value::Bus, val) = value.magnitude = val
+set_magnitude!(value::Bus, val::Union{Nothing, Float64}) = value.magnitude = val
 """Set Bus voltage_limits."""
-set_voltage_limits!(value::Bus, val) = value.voltage_limits = val
+set_voltage_limits!(value::Bus, val::Union{Nothing, Min_Max}) = value.voltage_limits = val
 """Set Bus base_voltage."""
-set_base_voltage!(value::Bus, val) = value.base_voltage = val
+set_base_voltage!(value::Bus, val::Union{Nothing, Float64}) = value.base_voltage = val
 """Set Bus area."""
-set_area!(value::Bus, val) = value.area = val
+set_area!(value::Bus, val::Union{Nothing, Area}) = value.area = val
 """Set Bus load_zone."""
-set_load_zone!(value::Bus, val) = value.load_zone = val
+set_load_zone!(value::Bus, val::Union{Nothing, LoadZone}) = value.load_zone = val
 """Set Bus ext."""
-set_ext!(value::Bus, val) = value.ext = val
+set_ext!(value::Bus, val::Dict{String, Any}) = value.ext = val
 """Set Bus internal."""
-set_internal!(value::Bus, val) = value.internal = val
+set_internal!(value::Bus, val::InfrastructureSystemsInternal) = value.internal = val

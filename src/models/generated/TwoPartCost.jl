@@ -55,10 +55,10 @@ InfrastructureSystems.get_forecasts(value::TwoPartCost) = value.forecasts
 get_internal(value::TwoPartCost) = value.internal
 
 """Set TwoPartCost variable."""
-set_variable!(value::TwoPartCost, val) = value.variable = val
+set_variable!(value::TwoPartCost, val::VariableCost) = value.variable = val
 """Set TwoPartCost fixed."""
-set_fixed!(value::TwoPartCost, val) = value.fixed = val
+set_fixed!(value::TwoPartCost, val::Float64) = value.fixed = val
 
-InfrastructureSystems.set_forecasts!(value::TwoPartCost, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::TwoPartCost, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set TwoPartCost internal."""
-set_internal!(value::TwoPartCost, val) = value.internal = val
+set_internal!(value::TwoPartCost, val::InfrastructureSystemsInternal) = value.internal = val

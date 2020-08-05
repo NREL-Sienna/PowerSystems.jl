@@ -58,12 +58,12 @@ get_n_states(value::PSSFixed) = value.n_states
 get_internal(value::PSSFixed) = value.internal
 
 """Set PSSFixed V_pss."""
-set_V_pss!(value::PSSFixed, val) = value.V_pss = val
+set_V_pss!(value::PSSFixed, val::Float64) = value.V_pss = val
 """Set PSSFixed ext."""
-set_ext!(value::PSSFixed, val) = value.ext = val
+set_ext!(value::PSSFixed, val::Dict{String, Any}) = value.ext = val
 """Set PSSFixed states."""
-set_states!(value::PSSFixed, val) = value.states = val
+set_states!(value::PSSFixed, val::Vector{Symbol}) = value.states = val
 """Set PSSFixed n_states."""
-set_n_states!(value::PSSFixed, val) = value.n_states = val
+set_n_states!(value::PSSFixed, val::Int64) = value.n_states = val
 """Set PSSFixed internal."""
-set_internal!(value::PSSFixed, val) = value.internal = val
+set_internal!(value::PSSFixed, val::InfrastructureSystemsInternal) = value.internal = val

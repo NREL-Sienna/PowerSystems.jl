@@ -118,28 +118,28 @@ InfrastructureSystems.get_forecasts(value::RenewableFix) = value.forecasts
 get_internal(value::RenewableFix) = value.internal
 
 
-InfrastructureSystems.set_name!(value::RenewableFix, val) = value.name = val
+InfrastructureSystems.set_name!(value::RenewableFix, val::String) = value.name = val
 """Set RenewableFix available."""
-set_available!(value::RenewableFix, val) = value.available = val
+set_available!(value::RenewableFix, val::Bool) = value.available = val
 """Set RenewableFix bus."""
-set_bus!(value::RenewableFix, val) = value.bus = val
+set_bus!(value::RenewableFix, val::Bus) = value.bus = val
 """Set RenewableFix active_power."""
-set_active_power!(value::RenewableFix, val) = value.active_power = val
+set_active_power!(value::RenewableFix, val::Float64) = value.active_power = val
 """Set RenewableFix reactive_power."""
-set_reactive_power!(value::RenewableFix, val) = value.reactive_power = val
+set_reactive_power!(value::RenewableFix, val::Float64) = value.reactive_power = val
 """Set RenewableFix rating."""
-set_rating!(value::RenewableFix, val) = value.rating = val
+set_rating!(value::RenewableFix, val::Float64) = value.rating = val
 """Set RenewableFix prime_mover."""
-set_prime_mover!(value::RenewableFix, val) = value.prime_mover = val
+set_prime_mover!(value::RenewableFix, val::PrimeMovers.PrimeMover) = value.prime_mover = val
 """Set RenewableFix power_factor."""
-set_power_factor!(value::RenewableFix, val) = value.power_factor = val
+set_power_factor!(value::RenewableFix, val::Float64) = value.power_factor = val
 """Set RenewableFix base_power."""
-set_base_power!(value::RenewableFix, val) = value.base_power = val
+set_base_power!(value::RenewableFix, val::Float64) = value.base_power = val
 """Set RenewableFix services."""
-set_services!(value::RenewableFix, val) = value.services = val
+set_services!(value::RenewableFix, val::Vector{Service}) = value.services = val
 """Set RenewableFix ext."""
-set_ext!(value::RenewableFix, val) = value.ext = val
+set_ext!(value::RenewableFix, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::RenewableFix, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::RenewableFix, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set RenewableFix internal."""
-set_internal!(value::RenewableFix, val) = value.internal = val
+set_internal!(value::RenewableFix, val::InfrastructureSystemsInternal) = value.internal = val

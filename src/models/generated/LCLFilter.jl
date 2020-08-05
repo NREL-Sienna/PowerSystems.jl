@@ -93,18 +93,18 @@ get_states(value::LCLFilter) = value.states
 get_n_states(value::LCLFilter) = value.n_states
 
 """Set LCLFilter lf."""
-set_lf!(value::LCLFilter, val) = value.lf = val
+set_lf!(value::LCLFilter, val::Float64) = value.lf = val
 """Set LCLFilter rf."""
-set_rf!(value::LCLFilter, val) = value.rf = val
+set_rf!(value::LCLFilter, val::Float64) = value.rf = val
 """Set LCLFilter cf."""
-set_cf!(value::LCLFilter, val) = value.cf = val
+set_cf!(value::LCLFilter, val::Float64) = value.cf = val
 """Set LCLFilter lg."""
-set_lg!(value::LCLFilter, val) = value.lg = val
+set_lg!(value::LCLFilter, val::Float64) = value.lg = val
 """Set LCLFilter rg."""
-set_rg!(value::LCLFilter, val) = value.rg = val
+set_rg!(value::LCLFilter, val::Float64) = value.rg = val
 """Set LCLFilter ext."""
-set_ext!(value::LCLFilter, val) = value.ext = val
+set_ext!(value::LCLFilter, val::Dict{String, Any}) = value.ext = val
 """Set LCLFilter states."""
-set_states!(value::LCLFilter, val) = value.states = val
+set_states!(value::LCLFilter, val::Vector{Symbol}) = value.states = val
 """Set LCLFilter n_states."""
-set_n_states!(value::LCLFilter, val) = value.n_states = val
+set_n_states!(value::LCLFilter, val::Int64) = value.n_states = val

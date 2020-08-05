@@ -114,30 +114,30 @@ InfrastructureSystems.get_forecasts(value::VSCDCLine) = value.forecasts
 get_internal(value::VSCDCLine) = value.internal
 
 
-InfrastructureSystems.set_name!(value::VSCDCLine, val) = value.name = val
+InfrastructureSystems.set_name!(value::VSCDCLine, val::String) = value.name = val
 """Set VSCDCLine available."""
-set_available!(value::VSCDCLine, val) = value.available = val
+set_available!(value::VSCDCLine, val::Bool) = value.available = val
 """Set VSCDCLine active_power_flow."""
-set_active_power_flow!(value::VSCDCLine, val) = value.active_power_flow = val
+set_active_power_flow!(value::VSCDCLine, val::Float64) = value.active_power_flow = val
 """Set VSCDCLine arc."""
-set_arc!(value::VSCDCLine, val) = value.arc = val
+set_arc!(value::VSCDCLine, val::Arc) = value.arc = val
 """Set VSCDCLine rectifier_tap_limits."""
-set_rectifier_tap_limits!(value::VSCDCLine, val) = value.rectifier_tap_limits = val
+set_rectifier_tap_limits!(value::VSCDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.rectifier_tap_limits = val
 """Set VSCDCLine rectifier_xrc."""
-set_rectifier_xrc!(value::VSCDCLine, val) = value.rectifier_xrc = val
+set_rectifier_xrc!(value::VSCDCLine, val::Float64) = value.rectifier_xrc = val
 """Set VSCDCLine rectifier_firing_angle."""
-set_rectifier_firing_angle!(value::VSCDCLine, val) = value.rectifier_firing_angle = val
+set_rectifier_firing_angle!(value::VSCDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.rectifier_firing_angle = val
 """Set VSCDCLine inverter_tap_limits."""
-set_inverter_tap_limits!(value::VSCDCLine, val) = value.inverter_tap_limits = val
+set_inverter_tap_limits!(value::VSCDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.inverter_tap_limits = val
 """Set VSCDCLine inverter_xrc."""
-set_inverter_xrc!(value::VSCDCLine, val) = value.inverter_xrc = val
+set_inverter_xrc!(value::VSCDCLine, val::Float64) = value.inverter_xrc = val
 """Set VSCDCLine inverter_firing_angle."""
-set_inverter_firing_angle!(value::VSCDCLine, val) = value.inverter_firing_angle = val
+set_inverter_firing_angle!(value::VSCDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.inverter_firing_angle = val
 """Set VSCDCLine services."""
-set_services!(value::VSCDCLine, val) = value.services = val
+set_services!(value::VSCDCLine, val::Vector{Service}) = value.services = val
 """Set VSCDCLine ext."""
-set_ext!(value::VSCDCLine, val) = value.ext = val
+set_ext!(value::VSCDCLine, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::VSCDCLine, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::VSCDCLine, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set VSCDCLine internal."""
-set_internal!(value::VSCDCLine, val) = value.internal = val
+set_internal!(value::VSCDCLine, val::InfrastructureSystemsInternal) = value.internal = val

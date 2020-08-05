@@ -76,16 +76,16 @@ InfrastructureSystems.get_forecasts(value::MultiStartCost) = value.forecasts
 get_internal(value::MultiStartCost) = value.internal
 
 """Set MultiStartCost variable."""
-set_variable!(value::MultiStartCost, val) = value.variable = val
+set_variable!(value::MultiStartCost, val::VariableCost) = value.variable = val
 """Set MultiStartCost no_load."""
-set_no_load!(value::MultiStartCost, val) = value.no_load = val
+set_no_load!(value::MultiStartCost, val::Float64) = value.no_load = val
 """Set MultiStartCost fixed."""
-set_fixed!(value::MultiStartCost, val) = value.fixed = val
+set_fixed!(value::MultiStartCost, val::Float64) = value.fixed = val
 """Set MultiStartCost startup."""
-set_startup!(value::MultiStartCost, val) = value.startup = val
+set_startup!(value::MultiStartCost, val::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}) = value.startup = val
 """Set MultiStartCost shutdn."""
-set_shutdn!(value::MultiStartCost, val) = value.shutdn = val
+set_shutdn!(value::MultiStartCost, val::Float64) = value.shutdn = val
 
-InfrastructureSystems.set_forecasts!(value::MultiStartCost, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::MultiStartCost, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set MultiStartCost internal."""
-set_internal!(value::MultiStartCost, val) = value.internal = val
+set_internal!(value::MultiStartCost, val::InfrastructureSystemsInternal) = value.internal = val

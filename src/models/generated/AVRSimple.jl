@@ -75,16 +75,16 @@ get_states_types(value::AVRSimple) = value.states_types
 get_internal(value::AVRSimple) = value.internal
 
 """Set AVRSimple Kv."""
-set_Kv!(value::AVRSimple, val) = value.Kv = val
+set_Kv!(value::AVRSimple, val::Float64) = value.Kv = val
 """Set AVRSimple V_ref."""
-set_V_ref!(value::AVRSimple, val) = value.V_ref = val
+set_V_ref!(value::AVRSimple, val::Float64) = value.V_ref = val
 """Set AVRSimple ext."""
-set_ext!(value::AVRSimple, val) = value.ext = val
+set_ext!(value::AVRSimple, val::Dict{String, Any}) = value.ext = val
 """Set AVRSimple states."""
-set_states!(value::AVRSimple, val) = value.states = val
+set_states!(value::AVRSimple, val::Vector{Symbol}) = value.states = val
 """Set AVRSimple n_states."""
-set_n_states!(value::AVRSimple, val) = value.n_states = val
+set_n_states!(value::AVRSimple, val::Int64) = value.n_states = val
 """Set AVRSimple states_types."""
-set_states_types!(value::AVRSimple, val) = value.states_types = val
+set_states_types!(value::AVRSimple, val::Vector{StateTypes.StateType}) = value.states_types = val
 """Set AVRSimple internal."""
-set_internal!(value::AVRSimple, val) = value.internal = val
+set_internal!(value::AVRSimple, val::InfrastructureSystemsInternal) = value.internal = val

@@ -111,28 +111,28 @@ InfrastructureSystems.get_forecasts(value::Transformer2W) = value.forecasts
 get_internal(value::Transformer2W) = value.internal
 
 
-InfrastructureSystems.set_name!(value::Transformer2W, val) = value.name = val
+InfrastructureSystems.set_name!(value::Transformer2W, val::String) = value.name = val
 """Set Transformer2W available."""
-set_available!(value::Transformer2W, val) = value.available = val
+set_available!(value::Transformer2W, val::Bool) = value.available = val
 """Set Transformer2W active_power_flow."""
-set_active_power_flow!(value::Transformer2W, val) = value.active_power_flow = val
+set_active_power_flow!(value::Transformer2W, val::Float64) = value.active_power_flow = val
 """Set Transformer2W reactive_power_flow."""
-set_reactive_power_flow!(value::Transformer2W, val) = value.reactive_power_flow = val
+set_reactive_power_flow!(value::Transformer2W, val::Float64) = value.reactive_power_flow = val
 """Set Transformer2W arc."""
-set_arc!(value::Transformer2W, val) = value.arc = val
+set_arc!(value::Transformer2W, val::Arc) = value.arc = val
 """Set Transformer2W r."""
-set_r!(value::Transformer2W, val) = value.r = val
+set_r!(value::Transformer2W, val::Float64) = value.r = val
 """Set Transformer2W x."""
-set_x!(value::Transformer2W, val) = value.x = val
+set_x!(value::Transformer2W, val::Float64) = value.x = val
 """Set Transformer2W primary_shunt."""
-set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = val
+set_primary_shunt!(value::Transformer2W, val::Float64) = value.primary_shunt = val
 """Set Transformer2W rate."""
-set_rate!(value::Transformer2W, val) = value.rate = val
+set_rate!(value::Transformer2W, val::Union{Nothing, Float64}) = value.rate = val
 """Set Transformer2W services."""
-set_services!(value::Transformer2W, val) = value.services = val
+set_services!(value::Transformer2W, val::Vector{Service}) = value.services = val
 """Set Transformer2W ext."""
-set_ext!(value::Transformer2W, val) = value.ext = val
+set_ext!(value::Transformer2W, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::Transformer2W, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::Transformer2W, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set Transformer2W internal."""
-set_internal!(value::Transformer2W, val) = value.internal = val
+set_internal!(value::Transformer2W, val::InfrastructureSystemsInternal) = value.internal = val

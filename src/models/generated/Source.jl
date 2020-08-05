@@ -105,26 +105,26 @@ get_ext(value::Source) = value.ext
 get_internal(value::Source) = value.internal
 
 
-InfrastructureSystems.set_name!(value::Source, val) = value.name = val
+InfrastructureSystems.set_name!(value::Source, val::String) = value.name = val
 """Set Source available."""
-set_available!(value::Source, val) = value.available = val
+set_available!(value::Source, val::Bool) = value.available = val
 """Set Source bus."""
-set_bus!(value::Source, val) = value.bus = val
+set_bus!(value::Source, val::Bus) = value.bus = val
 """Set Source active_power."""
-set_active_power!(value::Source, val) = value.active_power = val
+set_active_power!(value::Source, val::Float64) = value.active_power = val
 """Set Source reactive_power."""
-set_reactive_power!(value::Source, val) = value.reactive_power = val
+set_reactive_power!(value::Source, val::Float64) = value.reactive_power = val
 """Set Source R_th."""
-set_R_th!(value::Source, val) = value.R_th = val
+set_R_th!(value::Source, val::Float64) = value.R_th = val
 """Set Source X_th."""
-set_X_th!(value::Source, val) = value.X_th = val
+set_X_th!(value::Source, val::Float64) = value.X_th = val
 """Set Source internal_voltage."""
-set_internal_voltage!(value::Source, val) = value.internal_voltage = val
+set_internal_voltage!(value::Source, val::Float64) = value.internal_voltage = val
 """Set Source internal_angle."""
-set_internal_angle!(value::Source, val) = value.internal_angle = val
+set_internal_angle!(value::Source, val::Float64) = value.internal_angle = val
 """Set Source services."""
-set_services!(value::Source, val) = value.services = val
+set_services!(value::Source, val::Vector{Service}) = value.services = val
 """Set Source ext."""
-set_ext!(value::Source, val) = value.ext = val
+set_ext!(value::Source, val::Dict{String, Any}) = value.ext = val
 """Set Source internal."""
-set_internal!(value::Source, val) = value.internal = val
+set_internal!(value::Source, val::InfrastructureSystemsInternal) = value.internal = val

@@ -175,44 +175,44 @@ get_n_states(value::RoundRotorMachine) = value.n_states
 get_internal(value::RoundRotorMachine) = value.internal
 
 """Set RoundRotorMachine R."""
-set_R!(value::RoundRotorMachine, val) = value.R = val
+set_R!(value::RoundRotorMachine, val::Float64) = value.R = val
 """Set RoundRotorMachine Td0_p."""
-set_Td0_p!(value::RoundRotorMachine, val) = value.Td0_p = val
+set_Td0_p!(value::RoundRotorMachine, val::Float64) = value.Td0_p = val
 """Set RoundRotorMachine Td0_pp."""
-set_Td0_pp!(value::RoundRotorMachine, val) = value.Td0_pp = val
+set_Td0_pp!(value::RoundRotorMachine, val::Float64) = value.Td0_pp = val
 """Set RoundRotorMachine Tq0_p."""
-set_Tq0_p!(value::RoundRotorMachine, val) = value.Tq0_p = val
+set_Tq0_p!(value::RoundRotorMachine, val::Float64) = value.Tq0_p = val
 """Set RoundRotorMachine Tq0_pp."""
-set_Tq0_pp!(value::RoundRotorMachine, val) = value.Tq0_pp = val
+set_Tq0_pp!(value::RoundRotorMachine, val::Float64) = value.Tq0_pp = val
 """Set RoundRotorMachine Xd."""
-set_Xd!(value::RoundRotorMachine, val) = value.Xd = val
+set_Xd!(value::RoundRotorMachine, val::Float64) = value.Xd = val
 """Set RoundRotorMachine Xq."""
-set_Xq!(value::RoundRotorMachine, val) = value.Xq = val
+set_Xq!(value::RoundRotorMachine, val::Float64) = value.Xq = val
 """Set RoundRotorMachine Xd_p."""
-set_Xd_p!(value::RoundRotorMachine, val) = value.Xd_p = val
+set_Xd_p!(value::RoundRotorMachine, val::Float64) = value.Xd_p = val
 """Set RoundRotorMachine Xq_p."""
-set_Xq_p!(value::RoundRotorMachine, val) = value.Xq_p = val
+set_Xq_p!(value::RoundRotorMachine, val::Float64) = value.Xq_p = val
 """Set RoundRotorMachine Xd_pp."""
-set_Xd_pp!(value::RoundRotorMachine, val) = value.Xd_pp = val
+set_Xd_pp!(value::RoundRotorMachine, val::Float64) = value.Xd_pp = val
 """Set RoundRotorMachine Xl."""
-set_Xl!(value::RoundRotorMachine, val) = value.Xl = val
+set_Xl!(value::RoundRotorMachine, val::Float64) = value.Xl = val
 """Set RoundRotorMachine Se."""
-set_Se!(value::RoundRotorMachine, val) = value.Se = val
+set_Se!(value::RoundRotorMachine, val::Tuple{Float64, Float64}) = value.Se = val
 """Set RoundRotorMachine ext."""
-set_ext!(value::RoundRotorMachine, val) = value.ext = val
+set_ext!(value::RoundRotorMachine, val::Dict{String, Any}) = value.ext = val
 """Set RoundRotorMachine γ_d1."""
-set_γ_d1!(value::RoundRotorMachine, val) = value.γ_d1 = val
+set_γ_d1!(value::RoundRotorMachine, val::Float64) = value.γ_d1 = val
 """Set RoundRotorMachine γ_q1."""
-set_γ_q1!(value::RoundRotorMachine, val) = value.γ_q1 = val
+set_γ_q1!(value::RoundRotorMachine, val::Float64) = value.γ_q1 = val
 """Set RoundRotorMachine γ_d2."""
-set_γ_d2!(value::RoundRotorMachine, val) = value.γ_d2 = val
+set_γ_d2!(value::RoundRotorMachine, val::Float64) = value.γ_d2 = val
 """Set RoundRotorMachine γ_q2."""
-set_γ_q2!(value::RoundRotorMachine, val) = value.γ_q2 = val
+set_γ_q2!(value::RoundRotorMachine, val::Float64) = value.γ_q2 = val
 """Set RoundRotorMachine γ_qd."""
-set_γ_qd!(value::RoundRotorMachine, val) = value.γ_qd = val
+set_γ_qd!(value::RoundRotorMachine, val::Float64) = value.γ_qd = val
 """Set RoundRotorMachine states."""
-set_states!(value::RoundRotorMachine, val) = value.states = val
+set_states!(value::RoundRotorMachine, val::Vector{Symbol}) = value.states = val
 """Set RoundRotorMachine n_states."""
-set_n_states!(value::RoundRotorMachine, val) = value.n_states = val
+set_n_states!(value::RoundRotorMachine, val::Int64) = value.n_states = val
 """Set RoundRotorMachine internal."""
-set_internal!(value::RoundRotorMachine, val) = value.internal = val
+set_internal!(value::RoundRotorMachine, val::InfrastructureSystemsInternal) = value.internal = val

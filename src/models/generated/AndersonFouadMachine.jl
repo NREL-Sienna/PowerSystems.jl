@@ -141,32 +141,32 @@ get_n_states(value::AndersonFouadMachine) = value.n_states
 get_internal(value::AndersonFouadMachine) = value.internal
 
 """Set AndersonFouadMachine R."""
-set_R!(value::AndersonFouadMachine, val) = value.R = val
+set_R!(value::AndersonFouadMachine, val::Float64) = value.R = val
 """Set AndersonFouadMachine Xd."""
-set_Xd!(value::AndersonFouadMachine, val) = value.Xd = val
+set_Xd!(value::AndersonFouadMachine, val::Float64) = value.Xd = val
 """Set AndersonFouadMachine Xq."""
-set_Xq!(value::AndersonFouadMachine, val) = value.Xq = val
+set_Xq!(value::AndersonFouadMachine, val::Float64) = value.Xq = val
 """Set AndersonFouadMachine Xd_p."""
-set_Xd_p!(value::AndersonFouadMachine, val) = value.Xd_p = val
+set_Xd_p!(value::AndersonFouadMachine, val::Float64) = value.Xd_p = val
 """Set AndersonFouadMachine Xq_p."""
-set_Xq_p!(value::AndersonFouadMachine, val) = value.Xq_p = val
+set_Xq_p!(value::AndersonFouadMachine, val::Float64) = value.Xq_p = val
 """Set AndersonFouadMachine Xd_pp."""
-set_Xd_pp!(value::AndersonFouadMachine, val) = value.Xd_pp = val
+set_Xd_pp!(value::AndersonFouadMachine, val::Float64) = value.Xd_pp = val
 """Set AndersonFouadMachine Xq_pp."""
-set_Xq_pp!(value::AndersonFouadMachine, val) = value.Xq_pp = val
+set_Xq_pp!(value::AndersonFouadMachine, val::Float64) = value.Xq_pp = val
 """Set AndersonFouadMachine Td0_p."""
-set_Td0_p!(value::AndersonFouadMachine, val) = value.Td0_p = val
+set_Td0_p!(value::AndersonFouadMachine, val::Float64) = value.Td0_p = val
 """Set AndersonFouadMachine Tq0_p."""
-set_Tq0_p!(value::AndersonFouadMachine, val) = value.Tq0_p = val
+set_Tq0_p!(value::AndersonFouadMachine, val::Float64) = value.Tq0_p = val
 """Set AndersonFouadMachine Td0_pp."""
-set_Td0_pp!(value::AndersonFouadMachine, val) = value.Td0_pp = val
+set_Td0_pp!(value::AndersonFouadMachine, val::Float64) = value.Td0_pp = val
 """Set AndersonFouadMachine Tq0_pp."""
-set_Tq0_pp!(value::AndersonFouadMachine, val) = value.Tq0_pp = val
+set_Tq0_pp!(value::AndersonFouadMachine, val::Float64) = value.Tq0_pp = val
 """Set AndersonFouadMachine ext."""
-set_ext!(value::AndersonFouadMachine, val) = value.ext = val
+set_ext!(value::AndersonFouadMachine, val::Dict{String, Any}) = value.ext = val
 """Set AndersonFouadMachine states."""
-set_states!(value::AndersonFouadMachine, val) = value.states = val
+set_states!(value::AndersonFouadMachine, val::Vector{Symbol}) = value.states = val
 """Set AndersonFouadMachine n_states."""
-set_n_states!(value::AndersonFouadMachine, val) = value.n_states = val
+set_n_states!(value::AndersonFouadMachine, val::Int64) = value.n_states = val
 """Set AndersonFouadMachine internal."""
-set_internal!(value::AndersonFouadMachine, val) = value.internal = val
+set_internal!(value::AndersonFouadMachine, val::InfrastructureSystemsInternal) = value.internal = val

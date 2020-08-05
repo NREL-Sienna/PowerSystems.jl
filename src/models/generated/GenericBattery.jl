@@ -149,38 +149,38 @@ InfrastructureSystems.get_forecasts(value::GenericBattery) = value.forecasts
 get_internal(value::GenericBattery) = value.internal
 
 
-InfrastructureSystems.set_name!(value::GenericBattery, val) = value.name = val
+InfrastructureSystems.set_name!(value::GenericBattery, val::String) = value.name = val
 """Set GenericBattery available."""
-set_available!(value::GenericBattery, val) = value.available = val
+set_available!(value::GenericBattery, val::Bool) = value.available = val
 """Set GenericBattery bus."""
-set_bus!(value::GenericBattery, val) = value.bus = val
+set_bus!(value::GenericBattery, val::Bus) = value.bus = val
 """Set GenericBattery prime_mover."""
-set_prime_mover!(value::GenericBattery, val) = value.prime_mover = val
+set_prime_mover!(value::GenericBattery, val::PrimeMovers.PrimeMover) = value.prime_mover = val
 """Set GenericBattery initial_energy."""
-set_initial_energy!(value::GenericBattery, val) = value.initial_energy = val
+set_initial_energy!(value::GenericBattery, val::Float64) = value.initial_energy = val
 """Set GenericBattery state_of_charge_limits."""
-set_state_of_charge_limits!(value::GenericBattery, val) = value.state_of_charge_limits = val
+set_state_of_charge_limits!(value::GenericBattery, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.state_of_charge_limits = val
 """Set GenericBattery rating."""
-set_rating!(value::GenericBattery, val) = value.rating = val
+set_rating!(value::GenericBattery, val::Float64) = value.rating = val
 """Set GenericBattery active_power."""
-set_active_power!(value::GenericBattery, val) = value.active_power = val
+set_active_power!(value::GenericBattery, val::Float64) = value.active_power = val
 """Set GenericBattery input_active_power_limits."""
-set_input_active_power_limits!(value::GenericBattery, val) = value.input_active_power_limits = val
+set_input_active_power_limits!(value::GenericBattery, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.input_active_power_limits = val
 """Set GenericBattery output_active_power_limits."""
-set_output_active_power_limits!(value::GenericBattery, val) = value.output_active_power_limits = val
+set_output_active_power_limits!(value::GenericBattery, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.output_active_power_limits = val
 """Set GenericBattery efficiency."""
-set_efficiency!(value::GenericBattery, val) = value.efficiency = val
+set_efficiency!(value::GenericBattery, val::NamedTuple{(:in, :out), Tuple{Float64, Float64}}) = value.efficiency = val
 """Set GenericBattery reactive_power."""
-set_reactive_power!(value::GenericBattery, val) = value.reactive_power = val
+set_reactive_power!(value::GenericBattery, val::Float64) = value.reactive_power = val
 """Set GenericBattery reactive_power_limits."""
-set_reactive_power_limits!(value::GenericBattery, val) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::GenericBattery, val::Union{Nothing, Min_Max}) = value.reactive_power_limits = val
 """Set GenericBattery base_power."""
-set_base_power!(value::GenericBattery, val) = value.base_power = val
+set_base_power!(value::GenericBattery, val::Float64) = value.base_power = val
 """Set GenericBattery services."""
-set_services!(value::GenericBattery, val) = value.services = val
+set_services!(value::GenericBattery, val::Vector{Service}) = value.services = val
 """Set GenericBattery ext."""
-set_ext!(value::GenericBattery, val) = value.ext = val
+set_ext!(value::GenericBattery, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::GenericBattery, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::GenericBattery, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set GenericBattery internal."""
-set_internal!(value::GenericBattery, val) = value.internal = val
+set_internal!(value::GenericBattery, val::InfrastructureSystemsInternal) = value.internal = val

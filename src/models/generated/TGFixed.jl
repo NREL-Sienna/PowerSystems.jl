@@ -66,14 +66,14 @@ get_n_states(value::TGFixed) = value.n_states
 get_internal(value::TGFixed) = value.internal
 
 """Set TGFixed efficiency."""
-set_efficiency!(value::TGFixed, val) = value.efficiency = val
+set_efficiency!(value::TGFixed, val::Float64) = value.efficiency = val
 """Set TGFixed P_ref."""
-set_P_ref!(value::TGFixed, val) = value.P_ref = val
+set_P_ref!(value::TGFixed, val::Float64) = value.P_ref = val
 """Set TGFixed ext."""
-set_ext!(value::TGFixed, val) = value.ext = val
+set_ext!(value::TGFixed, val::Dict{String, Any}) = value.ext = val
 """Set TGFixed states."""
-set_states!(value::TGFixed, val) = value.states = val
+set_states!(value::TGFixed, val::Vector{Symbol}) = value.states = val
 """Set TGFixed n_states."""
-set_n_states!(value::TGFixed, val) = value.n_states = val
+set_n_states!(value::TGFixed, val::Int64) = value.n_states = val
 """Set TGFixed internal."""
-set_internal!(value::TGFixed, val) = value.internal = val
+set_internal!(value::TGFixed, val::InfrastructureSystemsInternal) = value.internal = val

@@ -108,28 +108,28 @@ InfrastructureSystems.get_forecasts(value::HVDCLine) = value.forecasts
 get_internal(value::HVDCLine) = value.internal
 
 
-InfrastructureSystems.set_name!(value::HVDCLine, val) = value.name = val
+InfrastructureSystems.set_name!(value::HVDCLine, val::String) = value.name = val
 """Set HVDCLine available."""
-set_available!(value::HVDCLine, val) = value.available = val
+set_available!(value::HVDCLine, val::Bool) = value.available = val
 """Set HVDCLine active_power_flow."""
-set_active_power_flow!(value::HVDCLine, val) = value.active_power_flow = val
+set_active_power_flow!(value::HVDCLine, val::Float64) = value.active_power_flow = val
 """Set HVDCLine arc."""
-set_arc!(value::HVDCLine, val) = value.arc = val
+set_arc!(value::HVDCLine, val::Arc) = value.arc = val
 """Set HVDCLine active_power_limits_from."""
-set_active_power_limits_from!(value::HVDCLine, val) = value.active_power_limits_from = val
+set_active_power_limits_from!(value::HVDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits_from = val
 """Set HVDCLine active_power_limits_to."""
-set_active_power_limits_to!(value::HVDCLine, val) = value.active_power_limits_to = val
+set_active_power_limits_to!(value::HVDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits_to = val
 """Set HVDCLine reactive_power_limits_from."""
-set_reactive_power_limits_from!(value::HVDCLine, val) = value.reactive_power_limits_from = val
+set_reactive_power_limits_from!(value::HVDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.reactive_power_limits_from = val
 """Set HVDCLine reactive_power_limits_to."""
-set_reactive_power_limits_to!(value::HVDCLine, val) = value.reactive_power_limits_to = val
+set_reactive_power_limits_to!(value::HVDCLine, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.reactive_power_limits_to = val
 """Set HVDCLine loss."""
-set_loss!(value::HVDCLine, val) = value.loss = val
+set_loss!(value::HVDCLine, val::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}) = value.loss = val
 """Set HVDCLine services."""
-set_services!(value::HVDCLine, val) = value.services = val
+set_services!(value::HVDCLine, val::Vector{Service}) = value.services = val
 """Set HVDCLine ext."""
-set_ext!(value::HVDCLine, val) = value.ext = val
+set_ext!(value::HVDCLine, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::HVDCLine, val) = value.forecasts = val
+InfrastructureSystems.set_forecasts!(value::HVDCLine, val::InfrastructureSystems.Forecasts) = value.forecasts = val
 """Set HVDCLine internal."""
-set_internal!(value::HVDCLine, val) = value.internal = val
+set_internal!(value::HVDCLine, val::InfrastructureSystemsInternal) = value.internal = val
