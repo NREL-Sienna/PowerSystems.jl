@@ -464,6 +464,25 @@ function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
 end
 
 """
+Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+
+# Arguments
+- `sys::System`: system
+- `service::StaticReserveGroup`: service to add
+- `contributing_services`: contributing services to the group
+"""
+function add_service!(sys::System, service::StaticReserveGroup, contributing_services::Vector{Service}; kwargs...)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+
+    set_contributing_services!(sys, service, contributing_services)
+
+    set_unit_system!(service, sys.units_settings)
+    IS.add_component!(sys.data, service; kwargs...)
+end
+
+"""
 Adds forecasts from a metadata file or metadata descriptors.
 
 # Arguments
