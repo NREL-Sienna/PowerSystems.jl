@@ -260,6 +260,7 @@ function System(
         runchecks = runchecks,
         kwargs...,
     )
+    set_units_base_system!(sys, IS.DEVICE_BASE)
 
     loadzone_csv_parser!(sys, data)
     bus_csv_parser!(sys, data)
@@ -881,7 +882,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
-    return ThermalStandard(
+    g = ThermalStandard(
         name = gen.name,
         available = gen.available,
         status = gen.status_at_start,
@@ -898,6 +899,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         operation_cost = op_cost,
         base_power = base_power,
     )
+    return g
 end
 
 function make_thermal_generator_multistart(
