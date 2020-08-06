@@ -129,6 +129,35 @@ end
     @test result
 end
 
+@testset "Test JSON serialization of StaticGroupReserve" begin
+    sys = System(100)
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        # This prevents an error log message.
+        bus.bustype = BusTypes.REF
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    service = StaticReserve{ReserveDown}(nothing)
+    add_service!(sys, service, devices)
+
+    groupservice = StaticReserveGroup{ReserveDown}(nothing)
+    add_service!(sys, groupservice)
+    members = Vector{Service}()
+    push!(members, service)
+    set_contributing_services!(sys, groupservice, members)
+    _, result = validate_serialization(sys)
+    @test result
+end
+
 @testset "Test deepcopy of a system" begin
     sys = create_rts_system()
     sys2 = deepcopy(sys)

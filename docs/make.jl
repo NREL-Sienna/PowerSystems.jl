@@ -20,6 +20,7 @@ makedocs(
             "Tests" => "developer/tests.md",
             "Logging" => "developer/logging.md",
             "Style Guide" => "developer/style.md",
+            "Adding Types" => "developer/adding_types.md",
             "Extending Parsing" => "developer/extending_parsing.md",
         ],
         "API" => Any[

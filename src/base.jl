@@ -392,7 +392,7 @@ function add_component!(sys::System, component::T; kwargs...) where {T <: Compon
     check_for_services_on_addition(sys, component)
 
     if Bus in fieldtypes(T)
-        check_bus(sys, get_bus(component), component)
+        throw_if_not_attached(get_bus(component), sys)
     end
 
     if sys.runchecks && !validate_struct(sys, component)
@@ -424,12 +424,7 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
         if !(device_type <: Device)
             throw(ArgumentError("contributing_devices must be of type Device"))
         end
-
-        name = get_name(device)
-        sys_device = get_component(device_type, sys, name)
-        if isnothing(sys_device)
-            throw(ArgumentError("device $device_type $name is not part of the system"))
-        end
+        throw_if_not_attached(device, sys)
     end
 
     set_unit_system!(service, sys.units_settings)
@@ -437,7 +432,7 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
     IS.add_component!(sys.data, service; kwargs...)
 
     for device in contributing_devices
-        add_service!(device, service)
+        add_service_internal!(device, service)
     end
 end
 
@@ -454,9 +449,7 @@ function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
     end
 
     for _service in get_contributing_services(service)
-        if !is_attached(_service, sys)
-            throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
-        end
+        throw_if_not_attached(_service, sys)
     end
 
     set_unit_system!(service, sys.units_settings)
@@ -470,10 +463,7 @@ function set_contributing_services!(
     val::Vector{Service},
 )
     for _service in val
-        if !is_attached(_service, sys)
-            throw(ArgumentError("service $(get_name(_service)) is not part of the system"))
-            return
-        end
+        throw_if_not_attached(_service, sys)
     end
     service.contributing_services = val
 end
@@ -731,18 +721,31 @@ function get_available_components(::Type{T}, sys::System) where {T <: Component}
     return get_components(T, sys, x -> get_available(x))
 end
 
+"""
+Return true if the component is attached to the system.
+"""
 function is_attached(component::T, sys::System) where {T <: Component}
-    return !isnothing(get_component(T, sys, get_name(component)))
+    return is_attached(T, get_name(component), sys)
+end
+
+function is_attached(::Type{T}, name, sys::System) where {T <: Component}
+    return !isnothing(get_component(T, sys, name))
+end
+
+"""
+Throws ArgumentError if the component is not attached to the system.
+"""
+function throw_if_not_attached(component::Component, sys::System)
+    if !is_attached(component, sys)
+        throw(ArgumentError("$(summary(component)) is not attached to the system"))
+    end
 end
 
 """
 Return a vector of devices contributing to the service.
 """
 function get_contributing_devices(sys::System, service::T) where {T <: Service}
-    if isnothing(get_component(T, sys, get_name(service)))
-        throw(ArgumentError("service $(get_name(service)) is not part of the system"))
-    end
-
+    throw_if_not_attached(service, sys)
     return [x for x in get_components(Device, sys) if has_service(x, service)]
 end
 
@@ -1306,11 +1309,11 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
-    # Devices have services, skip one round.
-    deserialize_and_add!(; skip_types = [Device])
+    # Devices and StaticReserveGroup have services, skip one round.
+    deserialize_and_add!(; skip_types = [Device, StaticReserveGroup])
     # DynamicInjection has to follow StaticInjection.
     deserialize_and_add!(;
-        include_types = [Device],
+        include_types = [Device, StaticReserveGroup],
         skip_types = [DynamicInjection, RegulationDevice],
     )
     deserialize_and_add!(; include_types = [RegulationDevice])
@@ -1396,18 +1399,15 @@ handle_component_removal!(sys::System, component::Component) = nothing
 
 function check_component_addition(sys::System, branch::Branch)
     arc = get_arc(branch)
-    check_bus(sys, get_from(arc), arc)
-    check_bus(sys, get_to(arc), arc)
+    throw_if_not_attached(get_from(arc), sys)
+    throw_if_not_attached(get_to(arc), sys)
 end
 
 function check_component_addition(sys::System, dyn_branch::DynamicBranch)
-    if !is_attached(dyn_branch.branch, sys)
-        name = get_name(dyn_branch.branch)
-        throw(ArgumentError("static branch $name is not part of the system"))
-    end
+    throw_if_not_attached(dyn_branch.branch, sys)
     arc = get_arc(dyn_branch)
-    check_bus(sys, get_from(arc), arc)
-    check_bus(sys, get_to(arc), arc)
+    throw_if_not_attached(get_from(arc), sys)
+    throw_if_not_attached(get_to(arc), sys)
 end
 
 function check_component_addition(sys::System, bus::Bus)
@@ -1416,31 +1416,20 @@ function check_component_addition(sys::System, bus::Bus)
         throw(ArgumentError("bus number $number is already stored in the system"))
     end
 
-    bus_area = get_area(bus)
-    if !isnothing(bus_area)
-        name = get_name(bus_area)
-        area = get_component(Area, sys, name)
-        if isnothing(area)
-            throw(ArgumentError("bus area $name is not stored in the system"))
-        end
+    area = get_area(bus)
+    if !isnothing(area)
+        throw_if_not_attached(area, sys)
     end
 
-    bus_load_zone = get_load_zone(bus)
-    if !isnothing(bus_load_zone)
-        name = get_name(bus_load_zone)
-        load_zone = get_component(LoadZone, sys, get_name(bus_load_zone))
-        if isnothing(load_zone)
-            throw(ArgumentError("bus load_zone $name is not stored in the system"))
-        end
+    load_zone = get_load_zone(bus)
+    if !isnothing(load_zone)
+        throw_if_not_attached(load_zone, sys)
     end
 end
 
 function check_component_addition(sys::System, dynamic_injector::DynamicInjection)
     static_injector = get_static_injector(dynamic_injector)
-    if !is_attached(static_injector, sys)
-        name = get_name(static_injector)
-        throw(ArgumentError("static injector $name is not part of the system"))
-    end
+    throw_if_not_attached(static_injector, sys)
 
     if !isnothing(get_dynamic_injector(static_injector))
         name = get_name(static_injector)
@@ -1513,16 +1502,6 @@ Return a sorted vector of bus numbers in the system.
 """
 function get_bus_numbers(sys::System)
     return sort(collect(sys.bus_numbers))
-end
-
-"""
-Throws ArgumentError if the bus is not stored in the system.
-"""
-function check_bus(sys::System, bus::Bus, component::Component)
-    name = get_name(bus)
-    if isnothing(get_component(Bus, sys, name))
-        throw(ArgumentError("$component has bus $name that is not stored in the system"))
-    end
 end
 
 function IS.compare_values(x::System, y::System)
