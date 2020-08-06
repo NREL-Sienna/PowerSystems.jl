@@ -19,6 +19,8 @@ This file is auto-generated. Do not edit.
         storage_capacity::Float64
         inflow::Float64
         initial_storage::Float64
+        storage_target::Float64
+        conversion_factor::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -42,9 +44,11 @@ This file is auto-generated. Do not edit.
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
 - `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
-- `storage_capacity::Float64`, validation range: (0, nothing), action if invalid: error
-- `inflow::Float64`, validation range: (0, nothing), action if invalid: error
-- `initial_storage::Float64`, validation range: (0, nothing), action if invalid: error
+- `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: (0, nothing), action if invalid: error
+- `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: (0, nothing), action if invalid: error
+- `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: (0, nothing), action if invalid: error
+- `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
+- `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -71,9 +75,16 @@ mutable struct HydroEnergyReservoir <: HydroGen
     operation_cost::TwoPartCost
     "Base power of the unit in MVA"
     base_power::Float64
+    "Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)."
     storage_capacity::Float64
+    "Baseline inflow into the reservoir (units can be p.u. or m^3/hr)"
     inflow::Float64
+    "Initial storage capacity in the reservoir (units can be p.u-hr or m^3)."
     initial_storage::Float64
+    "Storage target at the end of simulation as ratio of storage capacity."
+    storage_target::Float64
+    "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
+    conversion_factor::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -85,12 +96,12 @@ mutable struct HydroEnergyReservoir <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, storage_capacity, inflow, initial_storage, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, storage_capacity, inflow, initial_storage, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, storage_capacity, inflow, initial_storage, storage_target=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, storage_capacity, inflow, initial_storage, storage_target, conversion_factor, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, storage_capacity, inflow, initial_storage, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, storage_capacity, inflow, initial_storage, services, dynamic_injector, ext, forecasts, )
+function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, storage_capacity, inflow, initial_storage, storage_target=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, base_power, storage_capacity, inflow, initial_storage, storage_target, conversion_factor, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -112,6 +123,8 @@ function HydroEnergyReservoir(::Nothing)
         storage_capacity=0.0,
         inflow=0.0,
         initial_storage=0.0,
+        storage_target=0.0,
+        conversion_factor=0.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -151,6 +164,10 @@ get_storage_capacity(value::HydroEnergyReservoir) = get_value(value, value.stora
 get_inflow(value::HydroEnergyReservoir) = value.inflow
 """Get HydroEnergyReservoir initial_storage."""
 get_initial_storage(value::HydroEnergyReservoir) = get_value(value, value.initial_storage)
+"""Get HydroEnergyReservoir storage_target."""
+get_storage_target(value::HydroEnergyReservoir) = value.storage_target
+"""Get HydroEnergyReservoir conversion_factor."""
+get_conversion_factor(value::HydroEnergyReservoir) = value.conversion_factor
 """Get HydroEnergyReservoir services."""
 get_services(value::HydroEnergyReservoir) = value.services
 """Get HydroEnergyReservoir dynamic_injector."""
@@ -194,6 +211,10 @@ set_storage_capacity!(value::HydroEnergyReservoir, val) = value.storage_capacity
 set_inflow!(value::HydroEnergyReservoir, val) = value.inflow = val
 """Set HydroEnergyReservoir initial_storage."""
 set_initial_storage!(value::HydroEnergyReservoir, val) = value.initial_storage = val
+"""Set HydroEnergyReservoir storage_target."""
+set_storage_target!(value::HydroEnergyReservoir, val) = value.storage_target = val
+"""Set HydroEnergyReservoir conversion_factor."""
+set_conversion_factor!(value::HydroEnergyReservoir, val) = value.conversion_factor = val
 """Set HydroEnergyReservoir services."""
 set_services!(value::HydroEnergyReservoir, val) = value.services = val
 """Set HydroEnergyReservoir ext."""
