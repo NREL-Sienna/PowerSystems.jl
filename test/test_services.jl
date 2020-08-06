@@ -117,7 +117,7 @@ end
 @testset "Test clear_services" begin
     gen = ThermalStandard(nothing)
     service = StaticReserve{ReserveDown}(nothing)
-    add_service!(gen, service)
+    PSY.add_service_internal!(gen, service)
     @test length(get_services(gen)) == 1
 
     remove_service!(gen, service)
@@ -136,7 +136,7 @@ end
     gen.name = "gen"
 
     service = StaticReserve{ReserveDown}(nothing)
-    add_service!(gen, service)
+    PSY.add_service_internal!(gen, service)
     @test length(get_services(gen)) == 1
 
     @test_throws ArgumentError add_component!(sys, gen)
@@ -163,11 +163,11 @@ end
         add_component!(sys, service)
     end
 
-    add_service!(devices[1], services[1])
-    add_service!(devices[2], services[1])
-    add_service!(devices[3], services[2])
-    add_service!(devices[4], services[2])
-    add_service!(devices[5], services[2])
+    PSY.add_service_internal!(devices[1], services[1])
+    PSY.add_service_internal!(devices[2], services[1])
+    PSY.add_service_internal!(devices[3], services[2])
+    PSY.add_service_internal!(devices[4], services[2])
+    PSY.add_service_internal!(devices[5], services[2])
 
     expected_contributing_devices1 = [devices[1], devices[2]]
     expected_contributing_devices2 = [devices[3], devices[4], devices[5]]
@@ -275,16 +275,22 @@ end
 
     device_without_regulation =
         first(get_components(HydroGen, sys, x -> get_area(get_bus(x)) == control_area))
-    @test_throws IS.ConflictingInputsError add_service!(
+    @test_throws IS.ConflictingInputsError PSY.add_service_internal!(
         device_without_regulation,
         AGC_service,
     )
 
     device_outside_area_ = get_component(ThermalStandard, sys, "213_CT_1")
     device_outside_area = RegulationDevice(device_outside_area_)
-    @test_throws IS.ConflictingInputsError add_service!(device_outside_area, AGC_service)
+    @test_throws IS.ConflictingInputsError PSY.add_service_internal!(
+        device_outside_area,
+        AGC_service,
+    )
 
-    @test_throws ArgumentError add_service!(contributing_devices[1], AGC_service)
+    @test_throws ArgumentError PSY.add_service_internal!(
+        contributing_devices[1],
+        AGC_service,
+    )
 
 end
 

@@ -1,9 +1,4 @@
-"""
-Add a service to a device.
-
-Throws ArgumentError if the service is already attached to the device.
-"""
-function add_service!(device::Device, service::Service)
+function add_service_internal!(device::Device, service::Service)
     services = get_services(device)
     for _service in services
         if IS.get_uuid(service) == IS.get_uuid(_service)
@@ -15,7 +10,7 @@ function add_service!(device::Device, service::Service)
     @debug "Add $service to $(get_name(device))"
 end
 
-function add_service!(device::Device, service::AGC)
+function add_service_internal!(device::Device, service::AGC)
     if !isa(device, RegulationDevice)
         throw(IS.ConflictingInputsError("AGC service can only accept contributing devices of type RegulationDevice"))
     end
