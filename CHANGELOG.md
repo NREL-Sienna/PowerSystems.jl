@@ -1,5 +1,19 @@
 # PowerSystems Change Log
 
+## 0.26.0
+
+- Add conversion field to HydroStorage
+- Bug fix in add_component for RegulationDevice
+- Add StaticReserveGroup object (Thanks @andrewrosemberg)
+
+
+## 0.25.0 
+
+- Bug fix in units settings when parsing TableData
+- Add defaults for ThermalStandard Fuel and Prime Mover (Thanks @raphaelsaavedra)
+- Bug Fix cost data in TableData Parsing
+- Bump IS version and remove type inputs to setter functions
+
 ## 0.24.1
 
 - Add pss/e .dyr file parsing support
