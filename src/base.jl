@@ -1457,7 +1457,6 @@ end
 function handle_component_addition!(sys::System, component::RegulationDevice)
     copy_forecasts!(component.device, component)
     remove_component!(sys, component.device)
-    set_unit_system!(component.device, component.internal.units_info)
     return
 end
 
