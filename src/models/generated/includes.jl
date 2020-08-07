@@ -175,6 +175,7 @@ export get_bus
 export get_bustype
 export get_cf
 export get_contributing_services
+export get_conversion_factor
 export get_delta_t
 export get_dynamic_injector
 export get_efficiency
@@ -260,6 +261,7 @@ export get_states
 export get_states_types
 export get_status
 export get_storage_capacity
+export get_storage_target
 export get_tap
 export get_time_at_status
 export get_time_frame
@@ -394,6 +396,7 @@ export set_bus!
 export set_bustype!
 export set_cf!
 export set_contributing_services!
+export set_conversion_factor!
 export set_delta_t!
 export set_dynamic_injector!
 export set_efficiency!
@@ -479,6 +482,7 @@ export set_states!
 export set_states_types!
 export set_status!
 export set_storage_capacity!
+export set_storage_target!
 export set_tap!
 export set_time_at_status!
 export set_time_frame!
