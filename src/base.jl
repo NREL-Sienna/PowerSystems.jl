@@ -364,6 +364,14 @@ function get_units_base(system::System)
     return string(system.units_settings.unit_system)
 end
 
+function get_units_setting(component::T) where {T <: Component}
+    return component.internal.units_info
+end
+
+function has_units_setting(component::T) where {T <: Component}
+    return !isnothing(get_units_setting(component))
+end
+
 """
 Add a component to the system.
 
@@ -387,7 +395,7 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 """
 function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
     set_unit_system!(component, sys.units_settings)
-    @assert !isnothing(component.internal.units_info)
+    @assert has_units_setting(component)
     check_component_addition(sys, component)
     check_for_services_on_addition(sys, component)
 
@@ -404,6 +412,7 @@ function add_component!(sys::System, component::T; kwargs...) where {T <: Compon
     # Whatever this may change should have been validated above in check_component_addition,
     # so this should not fail.
     handle_component_addition!(sys, component)
+    return
 end
 
 """
@@ -1457,6 +1466,8 @@ end
 function handle_component_addition!(sys::System, component::RegulationDevice)
     copy_forecasts!(component.device, component)
     remove_component!(sys, component.device)
+    # The line above removed the component setting so needs to be added back
+    set_unit_system!(component.device, component.internal.units_info)
     return
 end
 
