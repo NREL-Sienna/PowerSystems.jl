@@ -79,6 +79,10 @@ set_reserve_limit_dn!(value::RegulationDevice, val::Float64) = value.reserve_lim
 set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
 IS.set_forecasts!(value::RegulationDevice, val::IS.Forecasts) = value.forecasts = val
+function set_unit_system!(value::RegulationDevice, settings::SystemUnitsSettings)
+    value.device.internal.units_info = settings
+    return
+end
 
 RegulationDeviceSupportedTypes = DataType[
     InterruptibleLoad,
