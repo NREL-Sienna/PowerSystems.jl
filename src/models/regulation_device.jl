@@ -68,6 +68,7 @@ get_reserve_limit_up(value::RegulationDevice) = value.reserve_limit_up
 get_reserve_limit_dn(value::RegulationDevice) = value.reserve_limit_dn
 get_inertia(value::RegulationDevice) = value.inertia
 get_cost(value::RegulationDevice) = value.cost
+get_units_setting(value::RegulationDevice) = value.device.internal.units_info
 
 set_droop!(value::RegulationDevice, val::Float64) = value.droop = val
 set_participation_factor!(
@@ -79,6 +80,10 @@ set_reserve_limit_dn!(value::RegulationDevice, val::Float64) = value.reserve_lim
 set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
 IS.set_forecasts!(value::RegulationDevice, val::IS.Forecasts) = value.forecasts = val
+function set_unit_system!(value::RegulationDevice, settings::SystemUnitsSettings)
+    value.internal.units_info = value.device.internal.units_info = settings
+    return
+end
 
 RegulationDeviceSupportedTypes = DataType[
     InterruptibleLoad,
