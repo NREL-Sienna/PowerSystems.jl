@@ -7,12 +7,12 @@ first.
 
 ## Type Hierarchy
 All structs that correlate to power system components must be subtypes of the
-``Component`` abstract type. Browse its type hierachy to choose an appropriate
+`Component` abstract type. Browse its type hierachy to choose an appropriate
 supertype for your new struct.
 
 ## Auto-generating Structs
 Most PowerSystems structs are auto-generated from the JSON descriptor file
-``src/descriptors/power_system_structs.json``. You can add your new struct
+`src/descriptors/power_system_structs.json`. You can add your new struct
 here or write it manually.
 
 If all you need is the basic struct definition and getter/setter functions then
@@ -41,8 +41,8 @@ However, you can achieve a similar result with a forwarding macro.
 The basic idea is that you include the existing type within your struct and
 then use a macro to automatically forward specific methods to that instance.
 
-A few PowerSystems structs use the macro ``InfrastructureSystems.@forward`` to
-do this. Refer to the struct ``RoundRotorQuadratic`` for an example of how to
+A few PowerSystems structs use the macro `InfrastructureSystems.@forward` to
+do this. Refer to the struct `RoundRotorQuadratic` for an example of how to
 use this.
 
 ## Custom Rules
@@ -55,15 +55,15 @@ to the system.
 Similarly, if the child object is removed from the system we must also remove
 the parent's reference to that child.
 
-The source file ``src/base.jl`` provides functions that you can implement for
+The source file `src/base.jl` provides functions that you can implement for
 your new type to manage these scenarios.
 
-- ``check_component_addition(sys::System, component::Component)``
-- ``handle_component_addition!(sys::System, component::Component)``
-- ``check_component_removal(sys::System, component::Component)``
-- ``handle_component_removal!(sys::System, component::Component)``
+- `check_component_addition(sys::System, component::Component)`
+- `handle_component_addition!(sys::System, component::Component)`
+- `check_component_removal(sys::System, component::Component)`
+- `handle_component_removal!(sys::System, component::Component)`
 
-The functions ``add_component!()`` and ``remove_component!()`` call the check
+The functions `add_component!()` and `remove_component!()` call the check
 function before performing actions and then call the handle function
 afterwards. The default behavior of these functions is to do nothing. Implement
 versions that take your type in order to add your own checks or perform
@@ -72,8 +72,8 @@ additional actions.
 Beware of the condition where a custom method is already implemented for a
 supertype of your type.
 
-Note that you can call the helper functions ``is_attached(component, system)``
-and ``throw_if_not_attached(component, system)``.
+Note that you can call the helper functions `is_attached(component, system)`
+and `throw_if_not_attached(component, system)`.
 
 ## JSON Serialization
 PowerSystems provides functionality to serialize an entire system to a JSON
@@ -99,10 +99,10 @@ child is deserialized first. When it deserializes the parent it looks up the
 child's UUID in a dictionary and stores a reference to the value.
 
 PowerSystems implements this logic for many abstract types. For example, all
-subtypes of ``Device`` contain a ``Bus``, and so PowerSystems solves this
+subtypes of `Device` contain a `Bus`, and so PowerSystems solves this
 problem for all devices in one place.
 
-It's likely that your new type will ``just work``. Here's how you can test it:
+It's likely that your new type will just work. Here's how you can test it:
 
 ```julia
 using PowerSystems
