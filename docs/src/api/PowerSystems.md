@@ -25,10 +25,3 @@ Pages = ["PowerSystems.md"]
 Modules = [PowerSystems]
 Private = false
 ```
-
-## Internal
-
-```@autodocs
-Modules = [PowerSystems]
-Public = false
-```
