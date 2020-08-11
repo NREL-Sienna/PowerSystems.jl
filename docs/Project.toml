@@ -1,2 +1,5 @@
 [deps]
+D3TypeTrees = "41994980-b535-5476-86a1-6733688e0e4a"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
+PowerSystems = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
