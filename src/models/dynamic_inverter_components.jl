@@ -9,15 +9,24 @@ abstract type ActivePowerControl <: DeviceParameter end
 abstract type ReactivePowerControl <: DeviceParameter end
 
 """
-Parameters of a Outer-Loop controller using a virtual inertia with VSM for active power controller
-and a reactive power droop controller.
-# Conmutable structor
-```julia
-VirtualInertiaQDroop(A, R)
-```
+    mutable struct OuterControl{
+        A <: ActivePowerControl,
+        R <: ReactivePowerControl
+    } <: DynamicInverterComponent
+        active_power::A
+        reactive_power::R
+        ext::Dict{String, Any}
+        states::Vector{Symbol}
+        n_states::Int64
+    end
+Parameters of a Outer-Loop controller using a active power controller and a reactive power droop controller.
+
 # Arguments
-*  `A`::Float64 : Active power controller using virtual inertia with VSM
-*  `R`::Float64 : Reactive power controller using reactive power droop
+- `A <: ActivePowerControl`: Active power controller (typically droop or virtual inertia).
+- `R <: ReactivePowerControl`: Reactive power controller (typically droop).
+- `ext::Dict{String, Any}`
+- `states::Vector{Symbol}`: Vector of states (will depend on the components).
+- `n_states::Int64`: Number of states (will depend on the components).
 """
 mutable struct OuterControl{A <: ActivePowerControl, R <: ReactivePowerControl} <:
                DynamicInverterComponent
