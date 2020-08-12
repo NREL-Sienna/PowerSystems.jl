@@ -29,21 +29,21 @@ This file is auto-generated. Do not edit.
 Parameters of Modified Type AC1A Excitacion System. EXAC1 in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: (0, nothing)
-- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: (0, nothing)
-- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: (0, nothing)
-- `Ka::Float64`: Regulator output gain, validation range: (0, nothing)
-- `Ta::Float64`: Regulator output time constant in s, validation range: (0, nothing)
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
+- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, nothing)`
+- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, nothing)`
+- `Ka::Float64`: Regulator output gain, validation range: `(0, nothing)`
+- `Ta::Float64`: Regulator output time constant in s, validation range: `(0, nothing)`
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for regulator output (Vr_min, Vr_max)
-- `Te::Float64`: Exciter field time constant in s, validation range: (&quot;eps()&quot;, nothing)
-- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: (0, nothing)
-- `Tf::Float64`: Rate feedback time constant, validation range: (&quot;eps()&quot;, nothing)
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: (0, nothing)
-- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: (0, nothing)
-- `Ke::Float64`: Exciter field proportional constant, validation range: (0, nothing)
+- `Te::Float64`: Exciter field time constant in s, validation range: `("eps()", nothing)`
+- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, nothing)`
+- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", nothing)`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
+- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, nothing)`
+- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, nothing)`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -135,88 +135,88 @@ function ModifiedAC1A(::Nothing)
     )
 end
 
-"""Get ModifiedAC1A Tr."""
+"""Get [`ModifiedAC1A`](@ref) `Tr`."""
 get_Tr(value::ModifiedAC1A) = value.Tr
-"""Get ModifiedAC1A Tb."""
+"""Get [`ModifiedAC1A`](@ref) `Tb`."""
 get_Tb(value::ModifiedAC1A) = value.Tb
-"""Get ModifiedAC1A Tc."""
+"""Get [`ModifiedAC1A`](@ref) `Tc`."""
 get_Tc(value::ModifiedAC1A) = value.Tc
-"""Get ModifiedAC1A Ka."""
+"""Get [`ModifiedAC1A`](@ref) `Ka`."""
 get_Ka(value::ModifiedAC1A) = value.Ka
-"""Get ModifiedAC1A Ta."""
+"""Get [`ModifiedAC1A`](@ref) `Ta`."""
 get_Ta(value::ModifiedAC1A) = value.Ta
-"""Get ModifiedAC1A Vr_lim."""
+"""Get [`ModifiedAC1A`](@ref) `Vr_lim`."""
 get_Vr_lim(value::ModifiedAC1A) = value.Vr_lim
-"""Get ModifiedAC1A Te."""
+"""Get [`ModifiedAC1A`](@ref) `Te`."""
 get_Te(value::ModifiedAC1A) = value.Te
-"""Get ModifiedAC1A Kf."""
+"""Get [`ModifiedAC1A`](@ref) `Kf`."""
 get_Kf(value::ModifiedAC1A) = value.Kf
-"""Get ModifiedAC1A Tf."""
+"""Get [`ModifiedAC1A`](@ref) `Tf`."""
 get_Tf(value::ModifiedAC1A) = value.Tf
-"""Get ModifiedAC1A Kc."""
+"""Get [`ModifiedAC1A`](@ref) `Kc`."""
 get_Kc(value::ModifiedAC1A) = value.Kc
-"""Get ModifiedAC1A Kd."""
+"""Get [`ModifiedAC1A`](@ref) `Kd`."""
 get_Kd(value::ModifiedAC1A) = value.Kd
-"""Get ModifiedAC1A Ke."""
+"""Get [`ModifiedAC1A`](@ref) `Ke`."""
 get_Ke(value::ModifiedAC1A) = value.Ke
-"""Get ModifiedAC1A E_sat."""
+"""Get [`ModifiedAC1A`](@ref) `E_sat`."""
 get_E_sat(value::ModifiedAC1A) = value.E_sat
-"""Get ModifiedAC1A Se."""
+"""Get [`ModifiedAC1A`](@ref) `Se`."""
 get_Se(value::ModifiedAC1A) = value.Se
-"""Get ModifiedAC1A V_ref."""
+"""Get [`ModifiedAC1A`](@ref) `V_ref`."""
 get_V_ref(value::ModifiedAC1A) = value.V_ref
-"""Get ModifiedAC1A saturation_coeffs."""
+"""Get [`ModifiedAC1A`](@ref) `saturation_coeffs`."""
 get_saturation_coeffs(value::ModifiedAC1A) = value.saturation_coeffs
-"""Get ModifiedAC1A ext."""
+"""Get [`ModifiedAC1A`](@ref) `ext`."""
 get_ext(value::ModifiedAC1A) = value.ext
-"""Get ModifiedAC1A states."""
+"""Get [`ModifiedAC1A`](@ref) `states`."""
 get_states(value::ModifiedAC1A) = value.states
-"""Get ModifiedAC1A n_states."""
+"""Get [`ModifiedAC1A`](@ref) `n_states`."""
 get_n_states(value::ModifiedAC1A) = value.n_states
-"""Get ModifiedAC1A states_types."""
+"""Get [`ModifiedAC1A`](@ref) `states_types`."""
 get_states_types(value::ModifiedAC1A) = value.states_types
-"""Get ModifiedAC1A internal."""
+"""Get [`ModifiedAC1A`](@ref) `internal`."""
 get_internal(value::ModifiedAC1A) = value.internal
 
-"""Set ModifiedAC1A Tr."""
+"""Set [`ModifiedAC1A`](@ref) `Tr`."""
 set_Tr!(value::ModifiedAC1A, val) = value.Tr = val
-"""Set ModifiedAC1A Tb."""
+"""Set [`ModifiedAC1A`](@ref) `Tb`."""
 set_Tb!(value::ModifiedAC1A, val) = value.Tb = val
-"""Set ModifiedAC1A Tc."""
+"""Set [`ModifiedAC1A`](@ref) `Tc`."""
 set_Tc!(value::ModifiedAC1A, val) = value.Tc = val
-"""Set ModifiedAC1A Ka."""
+"""Set [`ModifiedAC1A`](@ref) `Ka`."""
 set_Ka!(value::ModifiedAC1A, val) = value.Ka = val
-"""Set ModifiedAC1A Ta."""
+"""Set [`ModifiedAC1A`](@ref) `Ta`."""
 set_Ta!(value::ModifiedAC1A, val) = value.Ta = val
-"""Set ModifiedAC1A Vr_lim."""
+"""Set [`ModifiedAC1A`](@ref) `Vr_lim`."""
 set_Vr_lim!(value::ModifiedAC1A, val) = value.Vr_lim = val
-"""Set ModifiedAC1A Te."""
+"""Set [`ModifiedAC1A`](@ref) `Te`."""
 set_Te!(value::ModifiedAC1A, val) = value.Te = val
-"""Set ModifiedAC1A Kf."""
+"""Set [`ModifiedAC1A`](@ref) `Kf`."""
 set_Kf!(value::ModifiedAC1A, val) = value.Kf = val
-"""Set ModifiedAC1A Tf."""
+"""Set [`ModifiedAC1A`](@ref) `Tf`."""
 set_Tf!(value::ModifiedAC1A, val) = value.Tf = val
-"""Set ModifiedAC1A Kc."""
+"""Set [`ModifiedAC1A`](@ref) `Kc`."""
 set_Kc!(value::ModifiedAC1A, val) = value.Kc = val
-"""Set ModifiedAC1A Kd."""
+"""Set [`ModifiedAC1A`](@ref) `Kd`."""
 set_Kd!(value::ModifiedAC1A, val) = value.Kd = val
-"""Set ModifiedAC1A Ke."""
+"""Set [`ModifiedAC1A`](@ref) `Ke`."""
 set_Ke!(value::ModifiedAC1A, val) = value.Ke = val
-"""Set ModifiedAC1A E_sat."""
+"""Set [`ModifiedAC1A`](@ref) `E_sat`."""
 set_E_sat!(value::ModifiedAC1A, val) = value.E_sat = val
-"""Set ModifiedAC1A Se."""
+"""Set [`ModifiedAC1A`](@ref) `Se`."""
 set_Se!(value::ModifiedAC1A, val) = value.Se = val
-"""Set ModifiedAC1A V_ref."""
+"""Set [`ModifiedAC1A`](@ref) `V_ref`."""
 set_V_ref!(value::ModifiedAC1A, val) = value.V_ref = val
-"""Set ModifiedAC1A saturation_coeffs."""
+"""Set [`ModifiedAC1A`](@ref) `saturation_coeffs`."""
 set_saturation_coeffs!(value::ModifiedAC1A, val) = value.saturation_coeffs = val
-"""Set ModifiedAC1A ext."""
+"""Set [`ModifiedAC1A`](@ref) `ext`."""
 set_ext!(value::ModifiedAC1A, val) = value.ext = val
-"""Set ModifiedAC1A states."""
+"""Set [`ModifiedAC1A`](@ref) `states`."""
 set_states!(value::ModifiedAC1A, val) = value.states = val
-"""Set ModifiedAC1A n_states."""
+"""Set [`ModifiedAC1A`](@ref) `n_states`."""
 set_n_states!(value::ModifiedAC1A, val) = value.n_states = val
-"""Set ModifiedAC1A states_types."""
+"""Set [`ModifiedAC1A`](@ref) `states_types`."""
 set_states_types!(value::ModifiedAC1A, val) = value.states_types = val
-"""Set ModifiedAC1A internal."""
+"""Set [`ModifiedAC1A`](@ref) `internal`."""
 set_internal!(value::ModifiedAC1A, val) = value.internal = val

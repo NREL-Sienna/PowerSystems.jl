@@ -63,34 +63,34 @@ end
 
 
 InfrastructureSystems.get_name(value::FixedAdmittance) = value.name
-"""Get FixedAdmittance available."""
+"""Get [`FixedAdmittance`](@ref) `available`."""
 get_available(value::FixedAdmittance) = value.available
-"""Get FixedAdmittance bus."""
+"""Get [`FixedAdmittance`](@ref) `bus`."""
 get_bus(value::FixedAdmittance) = value.bus
-"""Get FixedAdmittance Y."""
+"""Get [`FixedAdmittance`](@ref) `Y`."""
 get_Y(value::FixedAdmittance) = value.Y
-"""Get FixedAdmittance services."""
+"""Get [`FixedAdmittance`](@ref) `services`."""
 get_services(value::FixedAdmittance) = value.services
-"""Get FixedAdmittance ext."""
+"""Get [`FixedAdmittance`](@ref) `ext`."""
 get_ext(value::FixedAdmittance) = value.ext
 
 InfrastructureSystems.get_forecasts(value::FixedAdmittance) = value.forecasts
-"""Get FixedAdmittance internal."""
+"""Get [`FixedAdmittance`](@ref) `internal`."""
 get_internal(value::FixedAdmittance) = value.internal
 
 
 InfrastructureSystems.set_name!(value::FixedAdmittance, val) = value.name = val
-"""Set FixedAdmittance available."""
+"""Set [`FixedAdmittance`](@ref) `available`."""
 set_available!(value::FixedAdmittance, val) = value.available = val
-"""Set FixedAdmittance bus."""
+"""Set [`FixedAdmittance`](@ref) `bus`."""
 set_bus!(value::FixedAdmittance, val) = value.bus = val
-"""Set FixedAdmittance Y."""
+"""Set [`FixedAdmittance`](@ref) `Y`."""
 set_Y!(value::FixedAdmittance, val) = value.Y = val
-"""Set FixedAdmittance services."""
+"""Set [`FixedAdmittance`](@ref) `services`."""
 set_services!(value::FixedAdmittance, val) = value.services = val
-"""Set FixedAdmittance ext."""
+"""Set [`FixedAdmittance`](@ref) `ext`."""
 set_ext!(value::FixedAdmittance, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::FixedAdmittance, val) = value.forecasts = val
-"""Set FixedAdmittance internal."""
+"""Set [`FixedAdmittance`](@ref) `internal`."""
 set_internal!(value::FixedAdmittance, val) = value.internal = val

@@ -18,12 +18,12 @@ This file is auto-generated. Do not edit.
 Parameters of a Turbine Governor Type II.
 
 # Arguments
-- `R::Float64`: Droop parameter, validation range: (0, nothing)
-- `T1::Float64`: Transient gain time constant, validation range: (0, nothing)
-- `T2::Float64`: Power fraction time constant, validation range: (0, nothing)
-- `τ_min::Float64`: Min Power into the Governor, validation range: (0, nothing)
-- `τ_max::Float64`: Max Power into the Governor, validation range: (0, nothing)
-- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
+- `R::Float64`: Droop parameter, validation range: `(0, nothing)`
+- `T1::Float64`: Transient gain time constant, validation range: `(0, nothing)`
+- `T2::Float64`: Power fraction time constant, validation range: `(0, nothing)`
+- `τ_min::Float64`: Min Power into the Governor, validation range: `(0, nothing)`
+- `τ_max::Float64`: Max Power into the Governor, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
 	x_g1: lead-lag state
@@ -74,44 +74,44 @@ function TGTypeII(::Nothing)
     )
 end
 
-"""Get TGTypeII R."""
+"""Get [`TGTypeII`](@ref) `R`."""
 get_R(value::TGTypeII) = value.R
-"""Get TGTypeII T1."""
+"""Get [`TGTypeII`](@ref) `T1`."""
 get_T1(value::TGTypeII) = value.T1
-"""Get TGTypeII T2."""
+"""Get [`TGTypeII`](@ref) `T2`."""
 get_T2(value::TGTypeII) = value.T2
-"""Get TGTypeII τ_min."""
+"""Get [`TGTypeII`](@ref) `τ_min`."""
 get_τ_min(value::TGTypeII) = value.τ_min
-"""Get TGTypeII τ_max."""
+"""Get [`TGTypeII`](@ref) `τ_max`."""
 get_τ_max(value::TGTypeII) = value.τ_max
-"""Get TGTypeII P_ref."""
+"""Get [`TGTypeII`](@ref) `P_ref`."""
 get_P_ref(value::TGTypeII) = value.P_ref
-"""Get TGTypeII ext."""
+"""Get [`TGTypeII`](@ref) `ext`."""
 get_ext(value::TGTypeII) = value.ext
-"""Get TGTypeII states."""
+"""Get [`TGTypeII`](@ref) `states`."""
 get_states(value::TGTypeII) = value.states
-"""Get TGTypeII n_states."""
+"""Get [`TGTypeII`](@ref) `n_states`."""
 get_n_states(value::TGTypeII) = value.n_states
-"""Get TGTypeII internal."""
+"""Get [`TGTypeII`](@ref) `internal`."""
 get_internal(value::TGTypeII) = value.internal
 
-"""Set TGTypeII R."""
+"""Set [`TGTypeII`](@ref) `R`."""
 set_R!(value::TGTypeII, val) = value.R = val
-"""Set TGTypeII T1."""
+"""Set [`TGTypeII`](@ref) `T1`."""
 set_T1!(value::TGTypeII, val) = value.T1 = val
-"""Set TGTypeII T2."""
+"""Set [`TGTypeII`](@ref) `T2`."""
 set_T2!(value::TGTypeII, val) = value.T2 = val
-"""Set TGTypeII τ_min."""
+"""Set [`TGTypeII`](@ref) `τ_min`."""
 set_τ_min!(value::TGTypeII, val) = value.τ_min = val
-"""Set TGTypeII τ_max."""
+"""Set [`TGTypeII`](@ref) `τ_max`."""
 set_τ_max!(value::TGTypeII, val) = value.τ_max = val
-"""Set TGTypeII P_ref."""
+"""Set [`TGTypeII`](@ref) `P_ref`."""
 set_P_ref!(value::TGTypeII, val) = value.P_ref = val
-"""Set TGTypeII ext."""
+"""Set [`TGTypeII`](@ref) `ext`."""
 set_ext!(value::TGTypeII, val) = value.ext = val
-"""Set TGTypeII states."""
+"""Set [`TGTypeII`](@ref) `states`."""
 set_states!(value::TGTypeII, val) = value.states = val
-"""Set TGTypeII n_states."""
+"""Set [`TGTypeII`](@ref) `n_states`."""
 set_n_states!(value::TGTypeII, val) = value.n_states = val
-"""Set TGTypeII internal."""
+"""Set [`TGTypeII`](@ref) `internal`."""
 set_internal!(value::TGTypeII, val) = value.internal = val

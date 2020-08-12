@@ -30,17 +30,17 @@ Parameters of 4-states round-rotor synchronous machine with quadratic/exponentia
 IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 
 # Arguments
-- `R::Float64`: Armature resistance, validation range: (0, nothing)
-- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: (0, nothing)
-- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: (0, nothing)
-- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
-- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: (0, nothing)
-- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: (0, nothing)
-- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: (0, nothing)
-- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
-- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
-- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: (0, nothing)
-- `Xl::Float64`: Stator leakage reactance, validation range: (0, nothing)
+- `R::Float64`: Armature resistance, validation range: `(0, nothing)`
+- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
+- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
+- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
+- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
+- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
+- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
+- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
+- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
+- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: `(0, nothing)`
+- `Xl::Float64`: Stator leakage reactance, validation range: `(0, nothing)`
 - `Se::Tuple{Float64, Float64}`: Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2
 - `ext::Dict{String, Any}`
 - `γ_d1::Float64`: γ_d1 parameter
@@ -131,88 +131,88 @@ function RoundRotorMachine(::Nothing)
     )
 end
 
-"""Get RoundRotorMachine R."""
+"""Get [`RoundRotorMachine`](@ref) `R`."""
 get_R(value::RoundRotorMachine) = value.R
-"""Get RoundRotorMachine Td0_p."""
+"""Get [`RoundRotorMachine`](@ref) `Td0_p`."""
 get_Td0_p(value::RoundRotorMachine) = value.Td0_p
-"""Get RoundRotorMachine Td0_pp."""
+"""Get [`RoundRotorMachine`](@ref) `Td0_pp`."""
 get_Td0_pp(value::RoundRotorMachine) = value.Td0_pp
-"""Get RoundRotorMachine Tq0_p."""
+"""Get [`RoundRotorMachine`](@ref) `Tq0_p`."""
 get_Tq0_p(value::RoundRotorMachine) = value.Tq0_p
-"""Get RoundRotorMachine Tq0_pp."""
+"""Get [`RoundRotorMachine`](@ref) `Tq0_pp`."""
 get_Tq0_pp(value::RoundRotorMachine) = value.Tq0_pp
-"""Get RoundRotorMachine Xd."""
+"""Get [`RoundRotorMachine`](@ref) `Xd`."""
 get_Xd(value::RoundRotorMachine) = value.Xd
-"""Get RoundRotorMachine Xq."""
+"""Get [`RoundRotorMachine`](@ref) `Xq`."""
 get_Xq(value::RoundRotorMachine) = value.Xq
-"""Get RoundRotorMachine Xd_p."""
+"""Get [`RoundRotorMachine`](@ref) `Xd_p`."""
 get_Xd_p(value::RoundRotorMachine) = value.Xd_p
-"""Get RoundRotorMachine Xq_p."""
+"""Get [`RoundRotorMachine`](@ref) `Xq_p`."""
 get_Xq_p(value::RoundRotorMachine) = value.Xq_p
-"""Get RoundRotorMachine Xd_pp."""
+"""Get [`RoundRotorMachine`](@ref) `Xd_pp`."""
 get_Xd_pp(value::RoundRotorMachine) = value.Xd_pp
-"""Get RoundRotorMachine Xl."""
+"""Get [`RoundRotorMachine`](@ref) `Xl`."""
 get_Xl(value::RoundRotorMachine) = value.Xl
-"""Get RoundRotorMachine Se."""
+"""Get [`RoundRotorMachine`](@ref) `Se`."""
 get_Se(value::RoundRotorMachine) = value.Se
-"""Get RoundRotorMachine ext."""
+"""Get [`RoundRotorMachine`](@ref) `ext`."""
 get_ext(value::RoundRotorMachine) = value.ext
-"""Get RoundRotorMachine γ_d1."""
+"""Get [`RoundRotorMachine`](@ref) `γ_d1`."""
 get_γ_d1(value::RoundRotorMachine) = value.γ_d1
-"""Get RoundRotorMachine γ_q1."""
+"""Get [`RoundRotorMachine`](@ref) `γ_q1`."""
 get_γ_q1(value::RoundRotorMachine) = value.γ_q1
-"""Get RoundRotorMachine γ_d2."""
+"""Get [`RoundRotorMachine`](@ref) `γ_d2`."""
 get_γ_d2(value::RoundRotorMachine) = value.γ_d2
-"""Get RoundRotorMachine γ_q2."""
+"""Get [`RoundRotorMachine`](@ref) `γ_q2`."""
 get_γ_q2(value::RoundRotorMachine) = value.γ_q2
-"""Get RoundRotorMachine γ_qd."""
+"""Get [`RoundRotorMachine`](@ref) `γ_qd`."""
 get_γ_qd(value::RoundRotorMachine) = value.γ_qd
-"""Get RoundRotorMachine states."""
+"""Get [`RoundRotorMachine`](@ref) `states`."""
 get_states(value::RoundRotorMachine) = value.states
-"""Get RoundRotorMachine n_states."""
+"""Get [`RoundRotorMachine`](@ref) `n_states`."""
 get_n_states(value::RoundRotorMachine) = value.n_states
-"""Get RoundRotorMachine internal."""
+"""Get [`RoundRotorMachine`](@ref) `internal`."""
 get_internal(value::RoundRotorMachine) = value.internal
 
-"""Set RoundRotorMachine R."""
+"""Set [`RoundRotorMachine`](@ref) `R`."""
 set_R!(value::RoundRotorMachine, val) = value.R = val
-"""Set RoundRotorMachine Td0_p."""
+"""Set [`RoundRotorMachine`](@ref) `Td0_p`."""
 set_Td0_p!(value::RoundRotorMachine, val) = value.Td0_p = val
-"""Set RoundRotorMachine Td0_pp."""
+"""Set [`RoundRotorMachine`](@ref) `Td0_pp`."""
 set_Td0_pp!(value::RoundRotorMachine, val) = value.Td0_pp = val
-"""Set RoundRotorMachine Tq0_p."""
+"""Set [`RoundRotorMachine`](@ref) `Tq0_p`."""
 set_Tq0_p!(value::RoundRotorMachine, val) = value.Tq0_p = val
-"""Set RoundRotorMachine Tq0_pp."""
+"""Set [`RoundRotorMachine`](@ref) `Tq0_pp`."""
 set_Tq0_pp!(value::RoundRotorMachine, val) = value.Tq0_pp = val
-"""Set RoundRotorMachine Xd."""
+"""Set [`RoundRotorMachine`](@ref) `Xd`."""
 set_Xd!(value::RoundRotorMachine, val) = value.Xd = val
-"""Set RoundRotorMachine Xq."""
+"""Set [`RoundRotorMachine`](@ref) `Xq`."""
 set_Xq!(value::RoundRotorMachine, val) = value.Xq = val
-"""Set RoundRotorMachine Xd_p."""
+"""Set [`RoundRotorMachine`](@ref) `Xd_p`."""
 set_Xd_p!(value::RoundRotorMachine, val) = value.Xd_p = val
-"""Set RoundRotorMachine Xq_p."""
+"""Set [`RoundRotorMachine`](@ref) `Xq_p`."""
 set_Xq_p!(value::RoundRotorMachine, val) = value.Xq_p = val
-"""Set RoundRotorMachine Xd_pp."""
+"""Set [`RoundRotorMachine`](@ref) `Xd_pp`."""
 set_Xd_pp!(value::RoundRotorMachine, val) = value.Xd_pp = val
-"""Set RoundRotorMachine Xl."""
+"""Set [`RoundRotorMachine`](@ref) `Xl`."""
 set_Xl!(value::RoundRotorMachine, val) = value.Xl = val
-"""Set RoundRotorMachine Se."""
+"""Set [`RoundRotorMachine`](@ref) `Se`."""
 set_Se!(value::RoundRotorMachine, val) = value.Se = val
-"""Set RoundRotorMachine ext."""
+"""Set [`RoundRotorMachine`](@ref) `ext`."""
 set_ext!(value::RoundRotorMachine, val) = value.ext = val
-"""Set RoundRotorMachine γ_d1."""
+"""Set [`RoundRotorMachine`](@ref) `γ_d1`."""
 set_γ_d1!(value::RoundRotorMachine, val) = value.γ_d1 = val
-"""Set RoundRotorMachine γ_q1."""
+"""Set [`RoundRotorMachine`](@ref) `γ_q1`."""
 set_γ_q1!(value::RoundRotorMachine, val) = value.γ_q1 = val
-"""Set RoundRotorMachine γ_d2."""
+"""Set [`RoundRotorMachine`](@ref) `γ_d2`."""
 set_γ_d2!(value::RoundRotorMachine, val) = value.γ_d2 = val
-"""Set RoundRotorMachine γ_q2."""
+"""Set [`RoundRotorMachine`](@ref) `γ_q2`."""
 set_γ_q2!(value::RoundRotorMachine, val) = value.γ_q2 = val
-"""Set RoundRotorMachine γ_qd."""
+"""Set [`RoundRotorMachine`](@ref) `γ_qd`."""
 set_γ_qd!(value::RoundRotorMachine, val) = value.γ_qd = val
-"""Set RoundRotorMachine states."""
+"""Set [`RoundRotorMachine`](@ref) `states`."""
 set_states!(value::RoundRotorMachine, val) = value.states = val
-"""Set RoundRotorMachine n_states."""
+"""Set [`RoundRotorMachine`](@ref) `n_states`."""
 set_n_states!(value::RoundRotorMachine, val) = value.n_states = val
-"""Set RoundRotorMachine internal."""
+"""Set [`RoundRotorMachine`](@ref) `internal`."""
 set_internal!(value::RoundRotorMachine, val) = value.internal = val

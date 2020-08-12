@@ -53,26 +53,26 @@ end
 
 
 InfrastructureSystems.get_name(value::Transfer) = value.name
-"""Get Transfer available."""
+"""Get [`Transfer`](@ref) `available`."""
 get_available(value::Transfer) = value.available
-"""Get Transfer requirement."""
+"""Get [`Transfer`](@ref) `requirement`."""
 get_requirement(value::Transfer) = value.requirement
-"""Get Transfer ext."""
+"""Get [`Transfer`](@ref) `ext`."""
 get_ext(value::Transfer) = value.ext
 
 InfrastructureSystems.get_forecasts(value::Transfer) = value.forecasts
-"""Get Transfer internal."""
+"""Get [`Transfer`](@ref) `internal`."""
 get_internal(value::Transfer) = value.internal
 
 
 InfrastructureSystems.set_name!(value::Transfer, val) = value.name = val
-"""Set Transfer available."""
+"""Set [`Transfer`](@ref) `available`."""
 set_available!(value::Transfer, val) = value.available = val
-"""Set Transfer requirement."""
+"""Set [`Transfer`](@ref) `requirement`."""
 set_requirement!(value::Transfer, val) = value.requirement = val
-"""Set Transfer ext."""
+"""Set [`Transfer`](@ref) `ext`."""
 set_ext!(value::Transfer, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::Transfer, val) = value.forecasts = val
-"""Set Transfer internal."""
+"""Set [`Transfer`](@ref) `internal`."""
 set_internal!(value::Transfer, val) = value.internal = val

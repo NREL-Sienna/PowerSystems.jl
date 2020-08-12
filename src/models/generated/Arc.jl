@@ -40,16 +40,16 @@ function Arc(::Nothing)
     )
 end
 
-"""Get Arc from."""
+"""Get [`Arc`](@ref) `from`."""
 get_from(value::Arc) = value.from
-"""Get Arc to."""
+"""Get [`Arc`](@ref) `to`."""
 get_to(value::Arc) = value.to
-"""Get Arc internal."""
+"""Get [`Arc`](@ref) `internal`."""
 get_internal(value::Arc) = value.internal
 
-"""Set Arc from."""
+"""Set [`Arc`](@ref) `from`."""
 set_from!(value::Arc, val) = value.from = val
-"""Set Arc to."""
+"""Set [`Arc`](@ref) `to`."""
 set_to!(value::Arc, val) = value.to = val
-"""Set Arc internal."""
+"""Set [`Arc`](@ref) `internal`."""
 set_internal!(value::Arc, val) = value.internal = val

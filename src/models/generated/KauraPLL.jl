@@ -16,9 +16,9 @@ Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Bla
 IEEE Transactions on Industry applications 33.1 (1997): 58-63.
 
 # Arguments
-- `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: (0, nothing)
-- `kp_pll::Float64`: PLL proportional gain, validation range: (0, nothing)
-- `ki_pll::Float64`: PLL integral gain, validation range: (0, nothing)
+- `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: `(0, nothing)`
+- `kp_pll::Float64`: PLL proportional gain, validation range: `(0, nothing)`
+- `ki_pll::Float64`: PLL integral gain, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the KauraPLL model are:
 	vd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),
@@ -63,28 +63,28 @@ function KauraPLL(::Nothing)
     )
 end
 
-"""Get KauraPLL ω_lp."""
+"""Get [`KauraPLL`](@ref) `ω_lp`."""
 get_ω_lp(value::KauraPLL) = value.ω_lp
-"""Get KauraPLL kp_pll."""
+"""Get [`KauraPLL`](@ref) `kp_pll`."""
 get_kp_pll(value::KauraPLL) = value.kp_pll
-"""Get KauraPLL ki_pll."""
+"""Get [`KauraPLL`](@ref) `ki_pll`."""
 get_ki_pll(value::KauraPLL) = value.ki_pll
-"""Get KauraPLL ext."""
+"""Get [`KauraPLL`](@ref) `ext`."""
 get_ext(value::KauraPLL) = value.ext
-"""Get KauraPLL states."""
+"""Get [`KauraPLL`](@ref) `states`."""
 get_states(value::KauraPLL) = value.states
-"""Get KauraPLL n_states."""
+"""Get [`KauraPLL`](@ref) `n_states`."""
 get_n_states(value::KauraPLL) = value.n_states
 
-"""Set KauraPLL ω_lp."""
+"""Set [`KauraPLL`](@ref) `ω_lp`."""
 set_ω_lp!(value::KauraPLL, val) = value.ω_lp = val
-"""Set KauraPLL kp_pll."""
+"""Set [`KauraPLL`](@ref) `kp_pll`."""
 set_kp_pll!(value::KauraPLL, val) = value.kp_pll = val
-"""Set KauraPLL ki_pll."""
+"""Set [`KauraPLL`](@ref) `ki_pll`."""
 set_ki_pll!(value::KauraPLL, val) = value.ki_pll = val
-"""Set KauraPLL ext."""
+"""Set [`KauraPLL`](@ref) `ext`."""
 set_ext!(value::KauraPLL, val) = value.ext = val
-"""Set KauraPLL states."""
+"""Set [`KauraPLL`](@ref) `states`."""
 set_states!(value::KauraPLL, val) = value.states = val
-"""Set KauraPLL n_states."""
+"""Set [`KauraPLL`](@ref) `n_states`."""
 set_n_states!(value::KauraPLL, val) = value.n_states = val
