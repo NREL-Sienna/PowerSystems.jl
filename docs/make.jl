@@ -27,7 +27,9 @@ pages = OrderedDict(
             "Style Guide" => "developer/style.md",
         ],
         "API" => Any[
-            "DynamicStructs" => "api/dynamicsAPI.md"
+            "Structs" => "api/structs.md",
+            "DynamicStructs" => "api/dynamicsAPI.md",
+            "Exported" => "api/exported.md",
             "Internal" => "api/internal.md"
         ]
 )
