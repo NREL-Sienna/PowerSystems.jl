@@ -55,7 +55,7 @@ mutable struct DynamicInverter{
     inner_control::IC
     dc_source::DC
     freq_estimator::P
-    filter::F 
+    filter::F
     n_states::Int64
     states::Vector{Symbol}
     ext::Dict{String, Any}
