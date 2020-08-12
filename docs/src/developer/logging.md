@@ -1,15 +1,5 @@
-```@meta
-EditURL = "<unknown>/docs/src/developer/logging.md"
-```
+# Logging
 
-```@example logging
-```@meta
-EditURL = "<unknown>/docs/src/developer/logging.md"
-```
-
-Logging
-
-```@example logging
 This document describes logging facilities available in the PowerSystems
 module. The examples assume the following imports:
 
@@ -17,11 +7,9 @@ module. The examples assume the following imports:
 import Logging
 import PowerSystems: configure_logging, open_file_logger, MultiLogger, LogEventTracker
 ```
-```
 
-Use Cases
+## Use Cases
 
-```@example logging
 ### Enable logging in REPL or Jupyter Notebook
 
 Use `configure_logging` to create a logger with your preferences (console
@@ -82,11 +70,7 @@ logger = global_logger()
 try
     run_tests()
 finally
-```
-
-Guarantee that the global logger is reset.
-
-```@example logging
+    # Guarantee that the global logger is reset.
     global_logger(logger)
     nothing
 end
@@ -116,11 +100,8 @@ messages. Call `report_log_summary` after execution.
 ```julia
 logger = configure_logging(; filename="log.txt")
 @info "hello world"
-```
 
-Include a summary in the log file.
-
-```@example logging
+# Include a summary in the log file.
 @info report_log_summary(logger)
 close(logger)
 ```
@@ -147,14 +128,3 @@ julia> @info report_log_summary(logger)
 │     example message="hello"
 └     suppressed=98
 ```
-```
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-```
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
