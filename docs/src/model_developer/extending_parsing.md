@@ -11,7 +11,7 @@ names.
 
 *Note*:  This assumes that you are familiar with this [user workflow](../modeler/parsing.md).
 
-### Procedur
+### Procedure
 
 1. Add an entry to the array of parameters for your category in
    `src/descriptors/power_system_inputs.json` according to the following:
