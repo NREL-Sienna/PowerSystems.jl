@@ -27,7 +27,7 @@ The main features include:
 
 - **Advanced Developers**: Users that want to add new core functionalities or fix bugs in the core capabilties of `PowerSystems.jl`. This user should also check [`InfrastructureSystems.jl`](https://github.com/NREL-SIIP/InfrastructureSystems.jl).
 
-`PowerSystems.jl` in an active project under development, and we welcome your feedback, suggestions, and bug reports.
+`PowerSystems.jl` is an active project under development, and we welcome your feedback, suggestions, and bug reports.
 
 Extended examples of use can be found in [SIIP-Examples PowerSystems](https://github.com/NREL-SIIP/SIIPExamples.jl/tree/master/notebook/PowerSystems_examples)
 
