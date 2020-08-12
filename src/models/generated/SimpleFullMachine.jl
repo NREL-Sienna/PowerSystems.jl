@@ -31,18 +31,18 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
  Note that the models are somewhat different (but equivalent) due to the different Park Transformation used in both books.
 
 # Arguments
-- `R::Float64`: Resistance after EMF in machine per unit, validation range: (0, nothing)
-- `R_f::Float64`: Field rotor winding resistance in per unit, validation range: (0, nothing)
-- `R_1d::Float64`:  Damping rotor winding resistance on d-axis in per unit. This value is denoted as RD in Machowski., validation range: (0, nothing)
-- `R_1q::Float64`: Damping rotor winding resistance on q-axis in per unit. This value is denoted as RQ in Machowski., validation range: (0, nothing)
-- `L_d::Float64`: Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski)., validation range: (0, nothing)
-- `L_q::Float64`: Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur., validation range: (0, nothing)
-- `L_ad::Float64`: Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit, validation range: (0, nothing)
-- `L_aq::Float64`: Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit, validation range: (0, nothing)
-- `L_f1d::Float64`: Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit, validation range: (0, nothing)
-- `L_ff::Float64`: Field rotor winding inductance, in per unit, validation range: (0, nothing)
-- `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit, validation range: (0, nothing)
-- `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit, validation range: (0, nothing)
+- `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
+- `R_f::Float64`: Field rotor winding resistance in per unit, validation range: `(0, nothing)`
+- `R_1d::Float64`:  Damping rotor winding resistance on d-axis in per unit. This value is denoted as RD in Machowski., validation range: `(0, nothing)`
+- `R_1q::Float64`: Damping rotor winding resistance on q-axis in per unit. This value is denoted as RQ in Machowski., validation range: `(0, nothing)`
+- `L_d::Float64`: Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski)., validation range: `(0, nothing)`
+- `L_q::Float64`: Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur., validation range: `(0, nothing)`
+- `L_ad::Float64`: Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit, validation range: `(0, nothing)`
+- `L_aq::Float64`: Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit, validation range: `(0, nothing)`
+- `L_f1d::Float64`: Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit, validation range: `(0, nothing)`
+- `L_ff::Float64`: Field rotor winding inductance, in per unit, validation range: `(0, nothing)`
+- `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit, validation range: `(0, nothing)`
+- `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
@@ -121,76 +121,76 @@ function SimpleFullMachine(::Nothing)
     )
 end
 
-"""Get SimpleFullMachine R."""
+"""Get [`SimpleFullMachine`](@ref) `R`."""
 get_R(value::SimpleFullMachine) = value.R
-"""Get SimpleFullMachine R_f."""
+"""Get [`SimpleFullMachine`](@ref) `R_f`."""
 get_R_f(value::SimpleFullMachine) = value.R_f
-"""Get SimpleFullMachine R_1d."""
+"""Get [`SimpleFullMachine`](@ref) `R_1d`."""
 get_R_1d(value::SimpleFullMachine) = value.R_1d
-"""Get SimpleFullMachine R_1q."""
+"""Get [`SimpleFullMachine`](@ref) `R_1q`."""
 get_R_1q(value::SimpleFullMachine) = value.R_1q
-"""Get SimpleFullMachine L_d."""
+"""Get [`SimpleFullMachine`](@ref) `L_d`."""
 get_L_d(value::SimpleFullMachine) = value.L_d
-"""Get SimpleFullMachine L_q."""
+"""Get [`SimpleFullMachine`](@ref) `L_q`."""
 get_L_q(value::SimpleFullMachine) = value.L_q
-"""Get SimpleFullMachine L_ad."""
+"""Get [`SimpleFullMachine`](@ref) `L_ad`."""
 get_L_ad(value::SimpleFullMachine) = value.L_ad
-"""Get SimpleFullMachine L_aq."""
+"""Get [`SimpleFullMachine`](@ref) `L_aq`."""
 get_L_aq(value::SimpleFullMachine) = value.L_aq
-"""Get SimpleFullMachine L_f1d."""
+"""Get [`SimpleFullMachine`](@ref) `L_f1d`."""
 get_L_f1d(value::SimpleFullMachine) = value.L_f1d
-"""Get SimpleFullMachine L_ff."""
+"""Get [`SimpleFullMachine`](@ref) `L_ff`."""
 get_L_ff(value::SimpleFullMachine) = value.L_ff
-"""Get SimpleFullMachine L_1d."""
+"""Get [`SimpleFullMachine`](@ref) `L_1d`."""
 get_L_1d(value::SimpleFullMachine) = value.L_1d
-"""Get SimpleFullMachine L_1q."""
+"""Get [`SimpleFullMachine`](@ref) `L_1q`."""
 get_L_1q(value::SimpleFullMachine) = value.L_1q
-"""Get SimpleFullMachine ext."""
+"""Get [`SimpleFullMachine`](@ref) `ext`."""
 get_ext(value::SimpleFullMachine) = value.ext
-"""Get SimpleFullMachine inv_d_fluxlink."""
+"""Get [`SimpleFullMachine`](@ref) `inv_d_fluxlink`."""
 get_inv_d_fluxlink(value::SimpleFullMachine) = value.inv_d_fluxlink
-"""Get SimpleFullMachine inv_q_fluxlink."""
+"""Get [`SimpleFullMachine`](@ref) `inv_q_fluxlink`."""
 get_inv_q_fluxlink(value::SimpleFullMachine) = value.inv_q_fluxlink
-"""Get SimpleFullMachine states."""
+"""Get [`SimpleFullMachine`](@ref) `states`."""
 get_states(value::SimpleFullMachine) = value.states
-"""Get SimpleFullMachine n_states."""
+"""Get [`SimpleFullMachine`](@ref) `n_states`."""
 get_n_states(value::SimpleFullMachine) = value.n_states
-"""Get SimpleFullMachine internal."""
+"""Get [`SimpleFullMachine`](@ref) `internal`."""
 get_internal(value::SimpleFullMachine) = value.internal
 
-"""Set SimpleFullMachine R."""
+"""Set [`SimpleFullMachine`](@ref) `R`."""
 set_R!(value::SimpleFullMachine, val) = value.R = val
-"""Set SimpleFullMachine R_f."""
+"""Set [`SimpleFullMachine`](@ref) `R_f`."""
 set_R_f!(value::SimpleFullMachine, val) = value.R_f = val
-"""Set SimpleFullMachine R_1d."""
+"""Set [`SimpleFullMachine`](@ref) `R_1d`."""
 set_R_1d!(value::SimpleFullMachine, val) = value.R_1d = val
-"""Set SimpleFullMachine R_1q."""
+"""Set [`SimpleFullMachine`](@ref) `R_1q`."""
 set_R_1q!(value::SimpleFullMachine, val) = value.R_1q = val
-"""Set SimpleFullMachine L_d."""
+"""Set [`SimpleFullMachine`](@ref) `L_d`."""
 set_L_d!(value::SimpleFullMachine, val) = value.L_d = val
-"""Set SimpleFullMachine L_q."""
+"""Set [`SimpleFullMachine`](@ref) `L_q`."""
 set_L_q!(value::SimpleFullMachine, val) = value.L_q = val
-"""Set SimpleFullMachine L_ad."""
+"""Set [`SimpleFullMachine`](@ref) `L_ad`."""
 set_L_ad!(value::SimpleFullMachine, val) = value.L_ad = val
-"""Set SimpleFullMachine L_aq."""
+"""Set [`SimpleFullMachine`](@ref) `L_aq`."""
 set_L_aq!(value::SimpleFullMachine, val) = value.L_aq = val
-"""Set SimpleFullMachine L_f1d."""
+"""Set [`SimpleFullMachine`](@ref) `L_f1d`."""
 set_L_f1d!(value::SimpleFullMachine, val) = value.L_f1d = val
-"""Set SimpleFullMachine L_ff."""
+"""Set [`SimpleFullMachine`](@ref) `L_ff`."""
 set_L_ff!(value::SimpleFullMachine, val) = value.L_ff = val
-"""Set SimpleFullMachine L_1d."""
+"""Set [`SimpleFullMachine`](@ref) `L_1d`."""
 set_L_1d!(value::SimpleFullMachine, val) = value.L_1d = val
-"""Set SimpleFullMachine L_1q."""
+"""Set [`SimpleFullMachine`](@ref) `L_1q`."""
 set_L_1q!(value::SimpleFullMachine, val) = value.L_1q = val
-"""Set SimpleFullMachine ext."""
+"""Set [`SimpleFullMachine`](@ref) `ext`."""
 set_ext!(value::SimpleFullMachine, val) = value.ext = val
-"""Set SimpleFullMachine inv_d_fluxlink."""
+"""Set [`SimpleFullMachine`](@ref) `inv_d_fluxlink`."""
 set_inv_d_fluxlink!(value::SimpleFullMachine, val) = value.inv_d_fluxlink = val
-"""Set SimpleFullMachine inv_q_fluxlink."""
+"""Set [`SimpleFullMachine`](@ref) `inv_q_fluxlink`."""
 set_inv_q_fluxlink!(value::SimpleFullMachine, val) = value.inv_q_fluxlink = val
-"""Set SimpleFullMachine states."""
+"""Set [`SimpleFullMachine`](@ref) `states`."""
 set_states!(value::SimpleFullMachine, val) = value.states = val
-"""Set SimpleFullMachine n_states."""
+"""Set [`SimpleFullMachine`](@ref) `n_states`."""
 set_n_states!(value::SimpleFullMachine, val) = value.n_states = val
-"""Set SimpleFullMachine internal."""
+"""Set [`SimpleFullMachine`](@ref) `internal`."""
 set_internal!(value::SimpleFullMachine, val) = value.internal = val

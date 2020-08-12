@@ -16,8 +16,8 @@ Parameters of a simple proportional AVR in the derivative of EMF
 i.e. an integrator controller on EMF
 
 # Arguments
-- `Kv::Float64`: Proportional Gain, validation range: (0, nothing)
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `Kv::Float64`: Proportional Gain, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vf: field voltage
@@ -59,32 +59,32 @@ function AVRSimple(::Nothing)
     )
 end
 
-"""Get AVRSimple Kv."""
+"""Get [`AVRSimple`](@ref) `Kv`."""
 get_Kv(value::AVRSimple) = value.Kv
-"""Get AVRSimple V_ref."""
+"""Get [`AVRSimple`](@ref) `V_ref`."""
 get_V_ref(value::AVRSimple) = value.V_ref
-"""Get AVRSimple ext."""
+"""Get [`AVRSimple`](@ref) `ext`."""
 get_ext(value::AVRSimple) = value.ext
-"""Get AVRSimple states."""
+"""Get [`AVRSimple`](@ref) `states`."""
 get_states(value::AVRSimple) = value.states
-"""Get AVRSimple n_states."""
+"""Get [`AVRSimple`](@ref) `n_states`."""
 get_n_states(value::AVRSimple) = value.n_states
-"""Get AVRSimple states_types."""
+"""Get [`AVRSimple`](@ref) `states_types`."""
 get_states_types(value::AVRSimple) = value.states_types
-"""Get AVRSimple internal."""
+"""Get [`AVRSimple`](@ref) `internal`."""
 get_internal(value::AVRSimple) = value.internal
 
-"""Set AVRSimple Kv."""
+"""Set [`AVRSimple`](@ref) `Kv`."""
 set_Kv!(value::AVRSimple, val) = value.Kv = val
-"""Set AVRSimple V_ref."""
+"""Set [`AVRSimple`](@ref) `V_ref`."""
 set_V_ref!(value::AVRSimple, val) = value.V_ref = val
-"""Set AVRSimple ext."""
+"""Set [`AVRSimple`](@ref) `ext`."""
 set_ext!(value::AVRSimple, val) = value.ext = val
-"""Set AVRSimple states."""
+"""Set [`AVRSimple`](@ref) `states`."""
 set_states!(value::AVRSimple, val) = value.states = val
-"""Set AVRSimple n_states."""
+"""Set [`AVRSimple`](@ref) `n_states`."""
 set_n_states!(value::AVRSimple, val) = value.n_states = val
-"""Set AVRSimple states_types."""
+"""Set [`AVRSimple`](@ref) `states_types`."""
 set_states_types!(value::AVRSimple, val) = value.states_types = val
-"""Set AVRSimple internal."""
+"""Set [`AVRSimple`](@ref) `internal`."""
 set_internal!(value::AVRSimple, val) = value.internal = val

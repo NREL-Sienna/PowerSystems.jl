@@ -35,18 +35,18 @@ This file is auto-generated. Do not edit.
 - `available::Bool`
 - `bus::Bus`
 - `active_power::Float64`
-- `reactive_power::Float64`, validation range: reactive_power_limits, action if invalid: warn
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
-- `prime_mover::PrimeMovers.PrimeMover`: prime_mover Technology according to EIA 923
+- `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
-- `reactive_power_limits::Union{Nothing, Min_Max}`, action if invalid: warn
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: (0, nothing), action if invalid: error
-- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
+- `reactive_power_limits::Union{Nothing, Min_Max}`, action if invalid: `warn`
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
-- `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
-- `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: (0, nothing), action if invalid: error
-- `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: (0, nothing), action if invalid: error
-- `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: (0, nothing), action if invalid: error
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
+- `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
+- `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
 - `services::Vector{Service}`: Services that this device contributes to
@@ -63,7 +63,7 @@ mutable struct HydroEnergyReservoir <: HydroGen
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
-    "prime_mover Technology according to EIA 923"
+    "Prime mover technology according to EIA 923"
     prime_mover::PrimeMovers.PrimeMover
     active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     reactive_power_limits::Union{Nothing, Min_Max}
@@ -134,92 +134,92 @@ end
 
 
 InfrastructureSystems.get_name(value::HydroEnergyReservoir) = value.name
-"""Get HydroEnergyReservoir available."""
+"""Get [`HydroEnergyReservoir`](@ref) `available`."""
 get_available(value::HydroEnergyReservoir) = value.available
-"""Get HydroEnergyReservoir bus."""
+"""Get [`HydroEnergyReservoir`](@ref) `bus`."""
 get_bus(value::HydroEnergyReservoir) = value.bus
-"""Get HydroEnergyReservoir active_power."""
+"""Get [`HydroEnergyReservoir`](@ref) `active_power`."""
 get_active_power(value::HydroEnergyReservoir) = get_value(value, value.active_power)
-"""Get HydroEnergyReservoir reactive_power."""
+"""Get [`HydroEnergyReservoir`](@ref) `reactive_power`."""
 get_reactive_power(value::HydroEnergyReservoir) = get_value(value, value.reactive_power)
-"""Get HydroEnergyReservoir rating."""
+"""Get [`HydroEnergyReservoir`](@ref) `rating`."""
 get_rating(value::HydroEnergyReservoir) = get_value(value, value.rating)
-"""Get HydroEnergyReservoir prime_mover."""
+"""Get [`HydroEnergyReservoir`](@ref) `prime_mover`."""
 get_prime_mover(value::HydroEnergyReservoir) = value.prime_mover
-"""Get HydroEnergyReservoir active_power_limits."""
+"""Get [`HydroEnergyReservoir`](@ref) `active_power_limits`."""
 get_active_power_limits(value::HydroEnergyReservoir) = get_value(value, value.active_power_limits)
-"""Get HydroEnergyReservoir reactive_power_limits."""
+"""Get [`HydroEnergyReservoir`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::HydroEnergyReservoir) = get_value(value, value.reactive_power_limits)
-"""Get HydroEnergyReservoir ramp_limits."""
+"""Get [`HydroEnergyReservoir`](@ref) `ramp_limits`."""
 get_ramp_limits(value::HydroEnergyReservoir) = get_value(value, value.ramp_limits)
-"""Get HydroEnergyReservoir time_limits."""
+"""Get [`HydroEnergyReservoir`](@ref) `time_limits`."""
 get_time_limits(value::HydroEnergyReservoir) = value.time_limits
-"""Get HydroEnergyReservoir operation_cost."""
+"""Get [`HydroEnergyReservoir`](@ref) `operation_cost`."""
 get_operation_cost(value::HydroEnergyReservoir) = value.operation_cost
-"""Get HydroEnergyReservoir base_power."""
+"""Get [`HydroEnergyReservoir`](@ref) `base_power`."""
 get_base_power(value::HydroEnergyReservoir) = value.base_power
-"""Get HydroEnergyReservoir storage_capacity."""
+"""Get [`HydroEnergyReservoir`](@ref) `storage_capacity`."""
 get_storage_capacity(value::HydroEnergyReservoir) = get_value(value, value.storage_capacity)
-"""Get HydroEnergyReservoir inflow."""
+"""Get [`HydroEnergyReservoir`](@ref) `inflow`."""
 get_inflow(value::HydroEnergyReservoir) = value.inflow
-"""Get HydroEnergyReservoir initial_storage."""
+"""Get [`HydroEnergyReservoir`](@ref) `initial_storage`."""
 get_initial_storage(value::HydroEnergyReservoir) = get_value(value, value.initial_storage)
-"""Get HydroEnergyReservoir storage_target."""
+"""Get [`HydroEnergyReservoir`](@ref) `storage_target`."""
 get_storage_target(value::HydroEnergyReservoir) = value.storage_target
-"""Get HydroEnergyReservoir conversion_factor."""
+"""Get [`HydroEnergyReservoir`](@ref) `conversion_factor`."""
 get_conversion_factor(value::HydroEnergyReservoir) = value.conversion_factor
-"""Get HydroEnergyReservoir services."""
+"""Get [`HydroEnergyReservoir`](@ref) `services`."""
 get_services(value::HydroEnergyReservoir) = value.services
-"""Get HydroEnergyReservoir dynamic_injector."""
+"""Get [`HydroEnergyReservoir`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::HydroEnergyReservoir) = value.dynamic_injector
-"""Get HydroEnergyReservoir ext."""
+"""Get [`HydroEnergyReservoir`](@ref) `ext`."""
 get_ext(value::HydroEnergyReservoir) = value.ext
 
 InfrastructureSystems.get_forecasts(value::HydroEnergyReservoir) = value.forecasts
-"""Get HydroEnergyReservoir internal."""
+"""Get [`HydroEnergyReservoir`](@ref) `internal`."""
 get_internal(value::HydroEnergyReservoir) = value.internal
 
 
 InfrastructureSystems.set_name!(value::HydroEnergyReservoir, val) = value.name = val
-"""Set HydroEnergyReservoir available."""
+"""Set [`HydroEnergyReservoir`](@ref) `available`."""
 set_available!(value::HydroEnergyReservoir, val) = value.available = val
-"""Set HydroEnergyReservoir bus."""
+"""Set [`HydroEnergyReservoir`](@ref) `bus`."""
 set_bus!(value::HydroEnergyReservoir, val) = value.bus = val
-"""Set HydroEnergyReservoir active_power."""
+"""Set [`HydroEnergyReservoir`](@ref) `active_power`."""
 set_active_power!(value::HydroEnergyReservoir, val) = value.active_power = val
-"""Set HydroEnergyReservoir reactive_power."""
+"""Set [`HydroEnergyReservoir`](@ref) `reactive_power`."""
 set_reactive_power!(value::HydroEnergyReservoir, val) = value.reactive_power = val
-"""Set HydroEnergyReservoir rating."""
+"""Set [`HydroEnergyReservoir`](@ref) `rating`."""
 set_rating!(value::HydroEnergyReservoir, val) = value.rating = val
-"""Set HydroEnergyReservoir prime_mover."""
+"""Set [`HydroEnergyReservoir`](@ref) `prime_mover`."""
 set_prime_mover!(value::HydroEnergyReservoir, val) = value.prime_mover = val
-"""Set HydroEnergyReservoir active_power_limits."""
+"""Set [`HydroEnergyReservoir`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::HydroEnergyReservoir, val) = value.active_power_limits = val
-"""Set HydroEnergyReservoir reactive_power_limits."""
+"""Set [`HydroEnergyReservoir`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HydroEnergyReservoir, val) = value.reactive_power_limits = val
-"""Set HydroEnergyReservoir ramp_limits."""
+"""Set [`HydroEnergyReservoir`](@ref) `ramp_limits`."""
 set_ramp_limits!(value::HydroEnergyReservoir, val) = value.ramp_limits = val
-"""Set HydroEnergyReservoir time_limits."""
+"""Set [`HydroEnergyReservoir`](@ref) `time_limits`."""
 set_time_limits!(value::HydroEnergyReservoir, val) = value.time_limits = val
-"""Set HydroEnergyReservoir operation_cost."""
+"""Set [`HydroEnergyReservoir`](@ref) `operation_cost`."""
 set_operation_cost!(value::HydroEnergyReservoir, val) = value.operation_cost = val
-"""Set HydroEnergyReservoir base_power."""
+"""Set [`HydroEnergyReservoir`](@ref) `base_power`."""
 set_base_power!(value::HydroEnergyReservoir, val) = value.base_power = val
-"""Set HydroEnergyReservoir storage_capacity."""
+"""Set [`HydroEnergyReservoir`](@ref) `storage_capacity`."""
 set_storage_capacity!(value::HydroEnergyReservoir, val) = value.storage_capacity = val
-"""Set HydroEnergyReservoir inflow."""
+"""Set [`HydroEnergyReservoir`](@ref) `inflow`."""
 set_inflow!(value::HydroEnergyReservoir, val) = value.inflow = val
-"""Set HydroEnergyReservoir initial_storage."""
+"""Set [`HydroEnergyReservoir`](@ref) `initial_storage`."""
 set_initial_storage!(value::HydroEnergyReservoir, val) = value.initial_storage = val
-"""Set HydroEnergyReservoir storage_target."""
+"""Set [`HydroEnergyReservoir`](@ref) `storage_target`."""
 set_storage_target!(value::HydroEnergyReservoir, val) = value.storage_target = val
-"""Set HydroEnergyReservoir conversion_factor."""
+"""Set [`HydroEnergyReservoir`](@ref) `conversion_factor`."""
 set_conversion_factor!(value::HydroEnergyReservoir, val) = value.conversion_factor = val
-"""Set HydroEnergyReservoir services."""
+"""Set [`HydroEnergyReservoir`](@ref) `services`."""
 set_services!(value::HydroEnergyReservoir, val) = value.services = val
-"""Set HydroEnergyReservoir ext."""
+"""Set [`HydroEnergyReservoir`](@ref) `ext`."""
 set_ext!(value::HydroEnergyReservoir, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::HydroEnergyReservoir, val) = value.forecasts = val
-"""Set HydroEnergyReservoir internal."""
+"""Set [`HydroEnergyReservoir`](@ref) `internal`."""
 set_internal!(value::HydroEnergyReservoir, val) = value.internal = val

@@ -14,9 +14,9 @@ This file is auto-generated. Do not edit.
 Parameters of a Reactive Power droop controller
 
 # Arguments
-- `kq::Float64`: frequency droop gain, validation range: (0, nothing)
-- `ωf::Float64`: filter frequency cutoff, validation range: (0, nothing)
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `kq::Float64`: frequency droop gain, validation range: `(0, nothing)`
+- `ωf::Float64`: filter frequency cutoff, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the ReactivePowerDroop model are:
 	q_oc: Filtered reactive output power
@@ -55,28 +55,28 @@ function ReactivePowerDroop(::Nothing)
     )
 end
 
-"""Get ReactivePowerDroop kq."""
+"""Get [`ReactivePowerDroop`](@ref) `kq`."""
 get_kq(value::ReactivePowerDroop) = value.kq
-"""Get ReactivePowerDroop ωf."""
+"""Get [`ReactivePowerDroop`](@ref) `ωf`."""
 get_ωf(value::ReactivePowerDroop) = value.ωf
-"""Get ReactivePowerDroop V_ref."""
+"""Get [`ReactivePowerDroop`](@ref) `V_ref`."""
 get_V_ref(value::ReactivePowerDroop) = value.V_ref
-"""Get ReactivePowerDroop ext."""
+"""Get [`ReactivePowerDroop`](@ref) `ext`."""
 get_ext(value::ReactivePowerDroop) = value.ext
-"""Get ReactivePowerDroop states."""
+"""Get [`ReactivePowerDroop`](@ref) `states`."""
 get_states(value::ReactivePowerDroop) = value.states
-"""Get ReactivePowerDroop n_states."""
+"""Get [`ReactivePowerDroop`](@ref) `n_states`."""
 get_n_states(value::ReactivePowerDroop) = value.n_states
 
-"""Set ReactivePowerDroop kq."""
+"""Set [`ReactivePowerDroop`](@ref) `kq`."""
 set_kq!(value::ReactivePowerDroop, val) = value.kq = val
-"""Set ReactivePowerDroop ωf."""
+"""Set [`ReactivePowerDroop`](@ref) `ωf`."""
 set_ωf!(value::ReactivePowerDroop, val) = value.ωf = val
-"""Set ReactivePowerDroop V_ref."""
+"""Set [`ReactivePowerDroop`](@ref) `V_ref`."""
 set_V_ref!(value::ReactivePowerDroop, val) = value.V_ref = val
-"""Set ReactivePowerDroop ext."""
+"""Set [`ReactivePowerDroop`](@ref) `ext`."""
 set_ext!(value::ReactivePowerDroop, val) = value.ext = val
-"""Set ReactivePowerDroop states."""
+"""Set [`ReactivePowerDroop`](@ref) `states`."""
 set_states!(value::ReactivePowerDroop, val) = value.states = val
-"""Set ReactivePowerDroop n_states."""
+"""Set [`ReactivePowerDroop`](@ref) `n_states`."""
 set_n_states!(value::ReactivePowerDroop, val) = value.n_states = val

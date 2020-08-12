@@ -32,24 +32,24 @@ This excitation system supplies power through a transformer from the generator t
 Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF
 
 # Arguments
-- `UEL_flags::Int64`: Code input for Underexcitization limiter (UEL) entry. Not supported., validation range: (1, 3)
-- `PSS_flags::Int64`: Code input for Power System Stabilizer (PSS) or (VOS) entry., validation range: (1, 2)
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: (0, nothing)
+- `UEL_flags::Int64`: Code input for Underexcitization limiter (UEL) entry. Not supported., validation range: `(1, 3)`
+- `PSS_flags::Int64`: Code input for Power System Stabilizer (PSS) or (VOS) entry., validation range: `(1, 2)`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
 - `Vi_lim::Tuple{Float64, Float64}`: Voltage error limits (regulator input) (Vi_min, Vi_max)
-- `Tc::Float64`: First regulator denominator (lead) time constant in s, validation range: (0, nothing)
-- `Tb::Float64`: First regulator denominator (lag) time constant in s, validation range: (0, nothing)
-- `Tc1::Float64`: Second regulator denominator (lead) time constant in s, validation range: (0, nothing)
-- `Tb1::Float64`: Second regulator denominator (lead) time constant in s, validation range: (0, nothing)
-- `Ka::Float64`: Voltage regulator gain, validation range: (0, nothing)
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: (0, nothing)
+- `Tc::Float64`: First regulator denominator (lead) time constant in s, validation range: `(0, nothing)`
+- `Tb::Float64`: First regulator denominator (lag) time constant in s, validation range: `(0, nothing)`
+- `Tc1::Float64`: Second regulator denominator (lead) time constant in s, validation range: `(0, nothing)`
+- `Tb1::Float64`: Second regulator denominator (lead) time constant in s, validation range: `(0, nothing)`
+- `Ka::Float64`: Voltage regulator gain, validation range: `(0, nothing)`
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter output (Vr_min, Vr_max)
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: (0, nothing)
-- `Kf::Float64`: Rate feedback gain, validation range: (0, nothing)
-- `Tf::Float64`: Rate feedback time constant in s, validation range: (&quot;eps()&quot;, nothing)
-- `K_lr::Float64`: Exciter output current limiter gain, validation range: (0, nothing)
-- `I_lr::Float64`: Exciter output current limit reference, validation range: (0, nothing)
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
+- `Kf::Float64`: Rate feedback gain, validation range: `(0, nothing)`
+- `Tf::Float64`: Rate feedback time constant in s, validation range: `("eps()", nothing)`
+- `K_lr::Float64`: Exciter output current limiter gain, validation range: `(0, nothing)`
+- `I_lr::Float64`: Exciter output current limit reference, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vm: Sensed terminal voltage,
@@ -147,96 +147,96 @@ function ST1A(::Nothing)
     )
 end
 
-"""Get ST1A UEL_flags."""
+"""Get [`ST1A`](@ref) `UEL_flags`."""
 get_UEL_flags(value::ST1A) = value.UEL_flags
-"""Get ST1A PSS_flags."""
+"""Get [`ST1A`](@ref) `PSS_flags`."""
 get_PSS_flags(value::ST1A) = value.PSS_flags
-"""Get ST1A Tr."""
+"""Get [`ST1A`](@ref) `Tr`."""
 get_Tr(value::ST1A) = value.Tr
-"""Get ST1A Vi_lim."""
+"""Get [`ST1A`](@ref) `Vi_lim`."""
 get_Vi_lim(value::ST1A) = value.Vi_lim
-"""Get ST1A Tc."""
+"""Get [`ST1A`](@ref) `Tc`."""
 get_Tc(value::ST1A) = value.Tc
-"""Get ST1A Tb."""
+"""Get [`ST1A`](@ref) `Tb`."""
 get_Tb(value::ST1A) = value.Tb
-"""Get ST1A Tc1."""
+"""Get [`ST1A`](@ref) `Tc1`."""
 get_Tc1(value::ST1A) = value.Tc1
-"""Get ST1A Tb1."""
+"""Get [`ST1A`](@ref) `Tb1`."""
 get_Tb1(value::ST1A) = value.Tb1
-"""Get ST1A Ka."""
+"""Get [`ST1A`](@ref) `Ka`."""
 get_Ka(value::ST1A) = value.Ka
-"""Get ST1A Ta."""
+"""Get [`ST1A`](@ref) `Ta`."""
 get_Ta(value::ST1A) = value.Ta
-"""Get ST1A Va_lim."""
+"""Get [`ST1A`](@ref) `Va_lim`."""
 get_Va_lim(value::ST1A) = value.Va_lim
-"""Get ST1A Vr_lim."""
+"""Get [`ST1A`](@ref) `Vr_lim`."""
 get_Vr_lim(value::ST1A) = value.Vr_lim
-"""Get ST1A Kc."""
+"""Get [`ST1A`](@ref) `Kc`."""
 get_Kc(value::ST1A) = value.Kc
-"""Get ST1A Kf."""
+"""Get [`ST1A`](@ref) `Kf`."""
 get_Kf(value::ST1A) = value.Kf
-"""Get ST1A Tf."""
+"""Get [`ST1A`](@ref) `Tf`."""
 get_Tf(value::ST1A) = value.Tf
-"""Get ST1A K_lr."""
+"""Get [`ST1A`](@ref) `K_lr`."""
 get_K_lr(value::ST1A) = value.K_lr
-"""Get ST1A I_lr."""
+"""Get [`ST1A`](@ref) `I_lr`."""
 get_I_lr(value::ST1A) = value.I_lr
-"""Get ST1A V_ref."""
+"""Get [`ST1A`](@ref) `V_ref`."""
 get_V_ref(value::ST1A) = value.V_ref
-"""Get ST1A ext."""
+"""Get [`ST1A`](@ref) `ext`."""
 get_ext(value::ST1A) = value.ext
-"""Get ST1A states."""
+"""Get [`ST1A`](@ref) `states`."""
 get_states(value::ST1A) = value.states
-"""Get ST1A n_states."""
+"""Get [`ST1A`](@ref) `n_states`."""
 get_n_states(value::ST1A) = value.n_states
-"""Get ST1A states_types."""
+"""Get [`ST1A`](@ref) `states_types`."""
 get_states_types(value::ST1A) = value.states_types
-"""Get ST1A internal."""
+"""Get [`ST1A`](@ref) `internal`."""
 get_internal(value::ST1A) = value.internal
 
-"""Set ST1A UEL_flags."""
+"""Set [`ST1A`](@ref) `UEL_flags`."""
 set_UEL_flags!(value::ST1A, val) = value.UEL_flags = val
-"""Set ST1A PSS_flags."""
+"""Set [`ST1A`](@ref) `PSS_flags`."""
 set_PSS_flags!(value::ST1A, val) = value.PSS_flags = val
-"""Set ST1A Tr."""
+"""Set [`ST1A`](@ref) `Tr`."""
 set_Tr!(value::ST1A, val) = value.Tr = val
-"""Set ST1A Vi_lim."""
+"""Set [`ST1A`](@ref) `Vi_lim`."""
 set_Vi_lim!(value::ST1A, val) = value.Vi_lim = val
-"""Set ST1A Tc."""
+"""Set [`ST1A`](@ref) `Tc`."""
 set_Tc!(value::ST1A, val) = value.Tc = val
-"""Set ST1A Tb."""
+"""Set [`ST1A`](@ref) `Tb`."""
 set_Tb!(value::ST1A, val) = value.Tb = val
-"""Set ST1A Tc1."""
+"""Set [`ST1A`](@ref) `Tc1`."""
 set_Tc1!(value::ST1A, val) = value.Tc1 = val
-"""Set ST1A Tb1."""
+"""Set [`ST1A`](@ref) `Tb1`."""
 set_Tb1!(value::ST1A, val) = value.Tb1 = val
-"""Set ST1A Ka."""
+"""Set [`ST1A`](@ref) `Ka`."""
 set_Ka!(value::ST1A, val) = value.Ka = val
-"""Set ST1A Ta."""
+"""Set [`ST1A`](@ref) `Ta`."""
 set_Ta!(value::ST1A, val) = value.Ta = val
-"""Set ST1A Va_lim."""
+"""Set [`ST1A`](@ref) `Va_lim`."""
 set_Va_lim!(value::ST1A, val) = value.Va_lim = val
-"""Set ST1A Vr_lim."""
+"""Set [`ST1A`](@ref) `Vr_lim`."""
 set_Vr_lim!(value::ST1A, val) = value.Vr_lim = val
-"""Set ST1A Kc."""
+"""Set [`ST1A`](@ref) `Kc`."""
 set_Kc!(value::ST1A, val) = value.Kc = val
-"""Set ST1A Kf."""
+"""Set [`ST1A`](@ref) `Kf`."""
 set_Kf!(value::ST1A, val) = value.Kf = val
-"""Set ST1A Tf."""
+"""Set [`ST1A`](@ref) `Tf`."""
 set_Tf!(value::ST1A, val) = value.Tf = val
-"""Set ST1A K_lr."""
+"""Set [`ST1A`](@ref) `K_lr`."""
 set_K_lr!(value::ST1A, val) = value.K_lr = val
-"""Set ST1A I_lr."""
+"""Set [`ST1A`](@ref) `I_lr`."""
 set_I_lr!(value::ST1A, val) = value.I_lr = val
-"""Set ST1A V_ref."""
+"""Set [`ST1A`](@ref) `V_ref`."""
 set_V_ref!(value::ST1A, val) = value.V_ref = val
-"""Set ST1A ext."""
+"""Set [`ST1A`](@ref) `ext`."""
 set_ext!(value::ST1A, val) = value.ext = val
-"""Set ST1A states."""
+"""Set [`ST1A`](@ref) `states`."""
 set_states!(value::ST1A, val) = value.states = val
-"""Set ST1A n_states."""
+"""Set [`ST1A`](@ref) `n_states`."""
 set_n_states!(value::ST1A, val) = value.n_states = val
-"""Set ST1A states_types."""
+"""Set [`ST1A`](@ref) `states_types`."""
 set_states_types!(value::ST1A, val) = value.states_types = val
-"""Set ST1A internal."""
+"""Set [`ST1A`](@ref) `internal`."""
 set_internal!(value::ST1A, val) = value.internal = val

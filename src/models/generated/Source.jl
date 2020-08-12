@@ -25,9 +25,9 @@ This struct acts as an infinity bus.
 - `bus::Bus`
 - `active_power::Float64`
 - `reactive_power::Float64`
-- `R_th::Float64`: Source Thevenin resistance, validation range: (0, nothing)
-- `X_th::Float64`: Source Thevenin reactance, validation range: (0, nothing)
-- `internal_voltage::Float64`: Internal Voltage, validation range: (0, nothing)
+- `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
+- `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`
+- `internal_voltage::Float64`: Internal Voltage, validation range: `(0, nothing)`
 - `internal_angle::Float64`: Internal Angle
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
@@ -81,50 +81,50 @@ end
 
 
 InfrastructureSystems.get_name(value::Source) = value.name
-"""Get Source available."""
+"""Get [`Source`](@ref) `available`."""
 get_available(value::Source) = value.available
-"""Get Source bus."""
+"""Get [`Source`](@ref) `bus`."""
 get_bus(value::Source) = value.bus
-"""Get Source active_power."""
+"""Get [`Source`](@ref) `active_power`."""
 get_active_power(value::Source) = value.active_power
-"""Get Source reactive_power."""
+"""Get [`Source`](@ref) `reactive_power`."""
 get_reactive_power(value::Source) = value.reactive_power
-"""Get Source R_th."""
+"""Get [`Source`](@ref) `R_th`."""
 get_R_th(value::Source) = value.R_th
-"""Get Source X_th."""
+"""Get [`Source`](@ref) `X_th`."""
 get_X_th(value::Source) = value.X_th
-"""Get Source internal_voltage."""
+"""Get [`Source`](@ref) `internal_voltage`."""
 get_internal_voltage(value::Source) = value.internal_voltage
-"""Get Source internal_angle."""
+"""Get [`Source`](@ref) `internal_angle`."""
 get_internal_angle(value::Source) = value.internal_angle
-"""Get Source services."""
+"""Get [`Source`](@ref) `services`."""
 get_services(value::Source) = value.services
-"""Get Source ext."""
+"""Get [`Source`](@ref) `ext`."""
 get_ext(value::Source) = value.ext
-"""Get Source internal."""
+"""Get [`Source`](@ref) `internal`."""
 get_internal(value::Source) = value.internal
 
 
 InfrastructureSystems.set_name!(value::Source, val) = value.name = val
-"""Set Source available."""
+"""Set [`Source`](@ref) `available`."""
 set_available!(value::Source, val) = value.available = val
-"""Set Source bus."""
+"""Set [`Source`](@ref) `bus`."""
 set_bus!(value::Source, val) = value.bus = val
-"""Set Source active_power."""
+"""Set [`Source`](@ref) `active_power`."""
 set_active_power!(value::Source, val) = value.active_power = val
-"""Set Source reactive_power."""
+"""Set [`Source`](@ref) `reactive_power`."""
 set_reactive_power!(value::Source, val) = value.reactive_power = val
-"""Set Source R_th."""
+"""Set [`Source`](@ref) `R_th`."""
 set_R_th!(value::Source, val) = value.R_th = val
-"""Set Source X_th."""
+"""Set [`Source`](@ref) `X_th`."""
 set_X_th!(value::Source, val) = value.X_th = val
-"""Set Source internal_voltage."""
+"""Set [`Source`](@ref) `internal_voltage`."""
 set_internal_voltage!(value::Source, val) = value.internal_voltage = val
-"""Set Source internal_angle."""
+"""Set [`Source`](@ref) `internal_angle`."""
 set_internal_angle!(value::Source, val) = value.internal_angle = val
-"""Set Source services."""
+"""Set [`Source`](@ref) `services`."""
 set_services!(value::Source, val) = value.services = val
-"""Set Source ext."""
+"""Set [`Source`](@ref) `ext`."""
 set_ext!(value::Source, val) = value.ext = val
-"""Set Source internal."""
+"""Set [`Source`](@ref) `internal`."""
 set_internal!(value::Source, val) = value.internal = val

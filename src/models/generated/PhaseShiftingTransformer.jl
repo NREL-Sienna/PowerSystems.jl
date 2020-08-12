@@ -28,12 +28,12 @@ This file is auto-generated. Do not edit.
 - `active_power_flow::Float64`
 - `reactive_power_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
-- `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
-- `primary_shunt::Float64`, validation range: (0, 2), action if invalid: error
-- `tap::Float64`, validation range: (0, 2), action if invalid: error
-- `α::Float64`, validation range: (-1.571, 1.571), action if invalid: warn
-- `rate::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
+- `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `error`
+- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `error`
+- `primary_shunt::Float64`, validation range: `(0, 2)`, action if invalid: `error`
+- `tap::Float64`, validation range: `(0, 2)`, action if invalid: `error`
+- `α::Float64`, validation range: `(-1.571, 1.571)`, action if invalid: `warn`
+- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -92,62 +92,62 @@ end
 
 
 InfrastructureSystems.get_name(value::PhaseShiftingTransformer) = value.name
-"""Get PhaseShiftingTransformer available."""
+"""Get [`PhaseShiftingTransformer`](@ref) `available`."""
 get_available(value::PhaseShiftingTransformer) = value.available
-"""Get PhaseShiftingTransformer active_power_flow."""
+"""Get [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
 get_active_power_flow(value::PhaseShiftingTransformer) = get_value(value, value.active_power_flow)
-"""Get PhaseShiftingTransformer reactive_power_flow."""
+"""Get [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`."""
 get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(value, value.reactive_power_flow)
-"""Get PhaseShiftingTransformer arc."""
+"""Get [`PhaseShiftingTransformer`](@ref) `arc`."""
 get_arc(value::PhaseShiftingTransformer) = value.arc
-"""Get PhaseShiftingTransformer r."""
+"""Get [`PhaseShiftingTransformer`](@ref) `r`."""
 get_r(value::PhaseShiftingTransformer) = value.r
-"""Get PhaseShiftingTransformer x."""
+"""Get [`PhaseShiftingTransformer`](@ref) `x`."""
 get_x(value::PhaseShiftingTransformer) = value.x
-"""Get PhaseShiftingTransformer primary_shunt."""
+"""Get [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
 get_primary_shunt(value::PhaseShiftingTransformer) = value.primary_shunt
-"""Get PhaseShiftingTransformer tap."""
+"""Get [`PhaseShiftingTransformer`](@ref) `tap`."""
 get_tap(value::PhaseShiftingTransformer) = value.tap
-"""Get PhaseShiftingTransformer α."""
+"""Get [`PhaseShiftingTransformer`](@ref) `α`."""
 get_α(value::PhaseShiftingTransformer) = value.α
-"""Get PhaseShiftingTransformer rate."""
+"""Get [`PhaseShiftingTransformer`](@ref) `rate`."""
 get_rate(value::PhaseShiftingTransformer) = get_value(value, value.rate)
-"""Get PhaseShiftingTransformer services."""
+"""Get [`PhaseShiftingTransformer`](@ref) `services`."""
 get_services(value::PhaseShiftingTransformer) = value.services
-"""Get PhaseShiftingTransformer ext."""
+"""Get [`PhaseShiftingTransformer`](@ref) `ext`."""
 get_ext(value::PhaseShiftingTransformer) = value.ext
 
 InfrastructureSystems.get_forecasts(value::PhaseShiftingTransformer) = value.forecasts
-"""Get PhaseShiftingTransformer internal."""
+"""Get [`PhaseShiftingTransformer`](@ref) `internal`."""
 get_internal(value::PhaseShiftingTransformer) = value.internal
 
 
 InfrastructureSystems.set_name!(value::PhaseShiftingTransformer, val) = value.name = val
-"""Set PhaseShiftingTransformer available."""
+"""Set [`PhaseShiftingTransformer`](@ref) `available`."""
 set_available!(value::PhaseShiftingTransformer, val) = value.available = val
-"""Set PhaseShiftingTransformer active_power_flow."""
+"""Set [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::PhaseShiftingTransformer, val) = value.active_power_flow = val
-"""Set PhaseShiftingTransformer reactive_power_flow."""
+"""Set [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`."""
 set_reactive_power_flow!(value::PhaseShiftingTransformer, val) = value.reactive_power_flow = val
-"""Set PhaseShiftingTransformer arc."""
+"""Set [`PhaseShiftingTransformer`](@ref) `arc`."""
 set_arc!(value::PhaseShiftingTransformer, val) = value.arc = val
-"""Set PhaseShiftingTransformer r."""
+"""Set [`PhaseShiftingTransformer`](@ref) `r`."""
 set_r!(value::PhaseShiftingTransformer, val) = value.r = val
-"""Set PhaseShiftingTransformer x."""
+"""Set [`PhaseShiftingTransformer`](@ref) `x`."""
 set_x!(value::PhaseShiftingTransformer, val) = value.x = val
-"""Set PhaseShiftingTransformer primary_shunt."""
+"""Set [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
 set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt = val
-"""Set PhaseShiftingTransformer tap."""
+"""Set [`PhaseShiftingTransformer`](@ref) `tap`."""
 set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
-"""Set PhaseShiftingTransformer α."""
+"""Set [`PhaseShiftingTransformer`](@ref) `α`."""
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
-"""Set PhaseShiftingTransformer rate."""
+"""Set [`PhaseShiftingTransformer`](@ref) `rate`."""
 set_rate!(value::PhaseShiftingTransformer, val) = value.rate = val
-"""Set PhaseShiftingTransformer services."""
+"""Set [`PhaseShiftingTransformer`](@ref) `services`."""
 set_services!(value::PhaseShiftingTransformer, val) = value.services = val
-"""Set PhaseShiftingTransformer ext."""
+"""Set [`PhaseShiftingTransformer`](@ref) `ext`."""
 set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::PhaseShiftingTransformer, val) = value.forecasts = val
-"""Set PhaseShiftingTransformer internal."""
+"""Set [`PhaseShiftingTransformer`](@ref) `internal`."""
 set_internal!(value::PhaseShiftingTransformer, val) = value.internal = val

@@ -78,46 +78,46 @@ end
 
 
 InfrastructureSystems.get_name(value::AGC) = value.name
-"""Get AGC available."""
+"""Get [`AGC`](@ref) `available`."""
 get_available(value::AGC) = value.available
-"""Get AGC bias."""
+"""Get [`AGC`](@ref) `bias`."""
 get_bias(value::AGC) = value.bias
-"""Get AGC K_p."""
+"""Get [`AGC`](@ref) `K_p`."""
 get_K_p(value::AGC) = value.K_p
-"""Get AGC K_i."""
+"""Get [`AGC`](@ref) `K_i`."""
 get_K_i(value::AGC) = value.K_i
-"""Get AGC K_d."""
+"""Get [`AGC`](@ref) `K_d`."""
 get_K_d(value::AGC) = value.K_d
-"""Get AGC delta_t."""
+"""Get [`AGC`](@ref) `delta_t`."""
 get_delta_t(value::AGC) = value.delta_t
-"""Get AGC area."""
+"""Get [`AGC`](@ref) `area`."""
 get_area(value::AGC) = value.area
-"""Get AGC initial_ace."""
+"""Get [`AGC`](@ref) `initial_ace`."""
 get_initial_ace(value::AGC) = value.initial_ace
-"""Get AGC ext."""
+"""Get [`AGC`](@ref) `ext`."""
 get_ext(value::AGC) = value.ext
-"""Get AGC internal."""
+"""Get [`AGC`](@ref) `internal`."""
 get_internal(value::AGC) = value.internal
 
 
 InfrastructureSystems.set_name!(value::AGC, val) = value.name = val
-"""Set AGC available."""
+"""Set [`AGC`](@ref) `available`."""
 set_available!(value::AGC, val) = value.available = val
-"""Set AGC bias."""
+"""Set [`AGC`](@ref) `bias`."""
 set_bias!(value::AGC, val) = value.bias = val
-"""Set AGC K_p."""
+"""Set [`AGC`](@ref) `K_p`."""
 set_K_p!(value::AGC, val) = value.K_p = val
-"""Set AGC K_i."""
+"""Set [`AGC`](@ref) `K_i`."""
 set_K_i!(value::AGC, val) = value.K_i = val
-"""Set AGC K_d."""
+"""Set [`AGC`](@ref) `K_d`."""
 set_K_d!(value::AGC, val) = value.K_d = val
-"""Set AGC delta_t."""
+"""Set [`AGC`](@ref) `delta_t`."""
 set_delta_t!(value::AGC, val) = value.delta_t = val
-"""Set AGC area."""
+"""Set [`AGC`](@ref) `area`."""
 set_area!(value::AGC, val) = value.area = val
-"""Set AGC initial_ace."""
+"""Set [`AGC`](@ref) `initial_ace`."""
 set_initial_ace!(value::AGC, val) = value.initial_ace = val
-"""Set AGC ext."""
+"""Set [`AGC`](@ref) `ext`."""
 set_ext!(value::AGC, val) = value.ext = val
-"""Set AGC internal."""
+"""Set [`AGC`](@ref) `internal`."""
 set_internal!(value::AGC, val) = value.internal = val

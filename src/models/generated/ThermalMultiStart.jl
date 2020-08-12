@@ -37,20 +37,20 @@ Data Structure for thermal generation technologies.
 - `available::Bool`
 - `status::Bool`
 - `bus::Bus`
-- `active_power::Float64`, validation range: active_power_limits, action if invalid: warn
-- `reactive_power::Float64`, validation range: reactive_power_limits, action if invalid: warn
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
-- `prime_mover::PrimeMovers.PrimeMover`: prime_mover Technology according to EIA 923
-- `fuel::ThermalFuels.ThermalFuel`: prime_mover Fuel according to EIA 923
+- `active_power::Float64`, validation range: `active_power_limits`, action if invalid: `warn`
+- `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
+- `fuel::ThermalFuels.ThermalFuel`: Prime mover fuel according to EIA 923
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: (0, nothing), action if invalid: error
-- `power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}`: Power trajectory the unit will take during the startup and shutdown ramp process, validation range: (0, nothing), action if invalid: error
-- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: `(0, nothing)`, action if invalid: `error`
+- `power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}`: Power trajectory the unit will take during the startup and shutdown ramp process, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}`:  Time limits for startup based on turbine temperature in hours
-- `start_types::Int`:  Number of startup based on turbine temperature, validation range: (1, 3), action if invalid: error
+- `start_types::Int`:  Number of startup based on turbine temperature, validation range: `(1, 3)`, action if invalid: `error`
 - `operation_cost::MultiStartCost`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
 - `time_at_status::Float64`
 - `must_run::Bool`
@@ -68,9 +68,9 @@ mutable struct ThermalMultiStart <: ThermalGen
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
-    "prime_mover Technology according to EIA 923"
+    "Prime mover technology according to EIA 923"
     prime_mover::PrimeMovers.PrimeMover
-    "prime_mover Fuel according to EIA 923"
+    "Prime mover fuel according to EIA 923"
     fuel::ThermalFuels.ThermalFuel
     active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     reactive_power_limits::Union{Nothing, Min_Max}
@@ -139,100 +139,100 @@ end
 
 
 InfrastructureSystems.get_name(value::ThermalMultiStart) = value.name
-"""Get ThermalMultiStart available."""
+"""Get [`ThermalMultiStart`](@ref) `available`."""
 get_available(value::ThermalMultiStart) = value.available
-"""Get ThermalMultiStart status."""
+"""Get [`ThermalMultiStart`](@ref) `status`."""
 get_status(value::ThermalMultiStart) = value.status
-"""Get ThermalMultiStart bus."""
+"""Get [`ThermalMultiStart`](@ref) `bus`."""
 get_bus(value::ThermalMultiStart) = value.bus
-"""Get ThermalMultiStart active_power."""
+"""Get [`ThermalMultiStart`](@ref) `active_power`."""
 get_active_power(value::ThermalMultiStart) = get_value(value, value.active_power)
-"""Get ThermalMultiStart reactive_power."""
+"""Get [`ThermalMultiStart`](@ref) `reactive_power`."""
 get_reactive_power(value::ThermalMultiStart) = get_value(value, value.reactive_power)
-"""Get ThermalMultiStart rating."""
+"""Get [`ThermalMultiStart`](@ref) `rating`."""
 get_rating(value::ThermalMultiStart) = get_value(value, value.rating)
-"""Get ThermalMultiStart prime_mover."""
+"""Get [`ThermalMultiStart`](@ref) `prime_mover`."""
 get_prime_mover(value::ThermalMultiStart) = value.prime_mover
-"""Get ThermalMultiStart fuel."""
+"""Get [`ThermalMultiStart`](@ref) `fuel`."""
 get_fuel(value::ThermalMultiStart) = value.fuel
-"""Get ThermalMultiStart active_power_limits."""
+"""Get [`ThermalMultiStart`](@ref) `active_power_limits`."""
 get_active_power_limits(value::ThermalMultiStart) = get_value(value, value.active_power_limits)
-"""Get ThermalMultiStart reactive_power_limits."""
+"""Get [`ThermalMultiStart`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::ThermalMultiStart) = get_value(value, value.reactive_power_limits)
-"""Get ThermalMultiStart ramp_limits."""
+"""Get [`ThermalMultiStart`](@ref) `ramp_limits`."""
 get_ramp_limits(value::ThermalMultiStart) = get_value(value, value.ramp_limits)
-"""Get ThermalMultiStart power_trajectory."""
+"""Get [`ThermalMultiStart`](@ref) `power_trajectory`."""
 get_power_trajectory(value::ThermalMultiStart) = value.power_trajectory
-"""Get ThermalMultiStart time_limits."""
+"""Get [`ThermalMultiStart`](@ref) `time_limits`."""
 get_time_limits(value::ThermalMultiStart) = value.time_limits
-"""Get ThermalMultiStart start_time_limits."""
+"""Get [`ThermalMultiStart`](@ref) `start_time_limits`."""
 get_start_time_limits(value::ThermalMultiStart) = value.start_time_limits
-"""Get ThermalMultiStart start_types."""
+"""Get [`ThermalMultiStart`](@ref) `start_types`."""
 get_start_types(value::ThermalMultiStart) = value.start_types
-"""Get ThermalMultiStart operation_cost."""
+"""Get [`ThermalMultiStart`](@ref) `operation_cost`."""
 get_operation_cost(value::ThermalMultiStart) = value.operation_cost
-"""Get ThermalMultiStart base_power."""
+"""Get [`ThermalMultiStart`](@ref) `base_power`."""
 get_base_power(value::ThermalMultiStart) = value.base_power
-"""Get ThermalMultiStart services."""
+"""Get [`ThermalMultiStart`](@ref) `services`."""
 get_services(value::ThermalMultiStart) = value.services
-"""Get ThermalMultiStart time_at_status."""
+"""Get [`ThermalMultiStart`](@ref) `time_at_status`."""
 get_time_at_status(value::ThermalMultiStart) = value.time_at_status
-"""Get ThermalMultiStart must_run."""
+"""Get [`ThermalMultiStart`](@ref) `must_run`."""
 get_must_run(value::ThermalMultiStart) = value.must_run
-"""Get ThermalMultiStart dynamic_injector."""
+"""Get [`ThermalMultiStart`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::ThermalMultiStart) = value.dynamic_injector
-"""Get ThermalMultiStart ext."""
+"""Get [`ThermalMultiStart`](@ref) `ext`."""
 get_ext(value::ThermalMultiStart) = value.ext
 
 InfrastructureSystems.get_forecasts(value::ThermalMultiStart) = value.forecasts
-"""Get ThermalMultiStart internal."""
+"""Get [`ThermalMultiStart`](@ref) `internal`."""
 get_internal(value::ThermalMultiStart) = value.internal
 
 
 InfrastructureSystems.set_name!(value::ThermalMultiStart, val) = value.name = val
-"""Set ThermalMultiStart available."""
+"""Set [`ThermalMultiStart`](@ref) `available`."""
 set_available!(value::ThermalMultiStart, val) = value.available = val
-"""Set ThermalMultiStart status."""
+"""Set [`ThermalMultiStart`](@ref) `status`."""
 set_status!(value::ThermalMultiStart, val) = value.status = val
-"""Set ThermalMultiStart bus."""
+"""Set [`ThermalMultiStart`](@ref) `bus`."""
 set_bus!(value::ThermalMultiStart, val) = value.bus = val
-"""Set ThermalMultiStart active_power."""
+"""Set [`ThermalMultiStart`](@ref) `active_power`."""
 set_active_power!(value::ThermalMultiStart, val) = value.active_power = val
-"""Set ThermalMultiStart reactive_power."""
+"""Set [`ThermalMultiStart`](@ref) `reactive_power`."""
 set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = val
-"""Set ThermalMultiStart rating."""
+"""Set [`ThermalMultiStart`](@ref) `rating`."""
 set_rating!(value::ThermalMultiStart, val) = value.rating = val
-"""Set ThermalMultiStart prime_mover."""
+"""Set [`ThermalMultiStart`](@ref) `prime_mover`."""
 set_prime_mover!(value::ThermalMultiStart, val) = value.prime_mover = val
-"""Set ThermalMultiStart fuel."""
+"""Set [`ThermalMultiStart`](@ref) `fuel`."""
 set_fuel!(value::ThermalMultiStart, val) = value.fuel = val
-"""Set ThermalMultiStart active_power_limits."""
+"""Set [`ThermalMultiStart`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::ThermalMultiStart, val) = value.active_power_limits = val
-"""Set ThermalMultiStart reactive_power_limits."""
+"""Set [`ThermalMultiStart`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::ThermalMultiStart, val) = value.reactive_power_limits = val
-"""Set ThermalMultiStart ramp_limits."""
+"""Set [`ThermalMultiStart`](@ref) `ramp_limits`."""
 set_ramp_limits!(value::ThermalMultiStart, val) = value.ramp_limits = val
-"""Set ThermalMultiStart power_trajectory."""
+"""Set [`ThermalMultiStart`](@ref) `power_trajectory`."""
 set_power_trajectory!(value::ThermalMultiStart, val) = value.power_trajectory = val
-"""Set ThermalMultiStart time_limits."""
+"""Set [`ThermalMultiStart`](@ref) `time_limits`."""
 set_time_limits!(value::ThermalMultiStart, val) = value.time_limits = val
-"""Set ThermalMultiStart start_time_limits."""
+"""Set [`ThermalMultiStart`](@ref) `start_time_limits`."""
 set_start_time_limits!(value::ThermalMultiStart, val) = value.start_time_limits = val
-"""Set ThermalMultiStart start_types."""
+"""Set [`ThermalMultiStart`](@ref) `start_types`."""
 set_start_types!(value::ThermalMultiStart, val) = value.start_types = val
-"""Set ThermalMultiStart operation_cost."""
+"""Set [`ThermalMultiStart`](@ref) `operation_cost`."""
 set_operation_cost!(value::ThermalMultiStart, val) = value.operation_cost = val
-"""Set ThermalMultiStart base_power."""
+"""Set [`ThermalMultiStart`](@ref) `base_power`."""
 set_base_power!(value::ThermalMultiStart, val) = value.base_power = val
-"""Set ThermalMultiStart services."""
+"""Set [`ThermalMultiStart`](@ref) `services`."""
 set_services!(value::ThermalMultiStart, val) = value.services = val
-"""Set ThermalMultiStart time_at_status."""
+"""Set [`ThermalMultiStart`](@ref) `time_at_status`."""
 set_time_at_status!(value::ThermalMultiStart, val) = value.time_at_status = val
-"""Set ThermalMultiStart must_run."""
+"""Set [`ThermalMultiStart`](@ref) `must_run`."""
 set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
-"""Set ThermalMultiStart ext."""
+"""Set [`ThermalMultiStart`](@ref) `ext`."""
 set_ext!(value::ThermalMultiStart, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::ThermalMultiStart, val) = value.forecasts = val
-"""Set ThermalMultiStart internal."""
+"""Set [`ThermalMultiStart`](@ref) `internal`."""
 set_internal!(value::ThermalMultiStart, val) = value.internal = val

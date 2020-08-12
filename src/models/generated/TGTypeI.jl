@@ -21,15 +21,15 @@ This file is auto-generated. Do not edit.
 Parameters of a Turbine Governor Type I.
 
 # Arguments
-- `R::Float64`: Droop parameter, validation range: (0, nothing)
-- `Ts::Float64`: Governor time constant, validation range: (0, nothing)
-- `Tc::Float64`: Servo time constant, validation range: (0, nothing)
-- `T3::Float64`: Transient gain time constant, validation range: (0, nothing)
-- `T4::Float64`: Power fraction time constant, validation range: (0, nothing)
-- `T5::Float64`: Reheat time constant, validation range: (0, nothing)
-- `P_min::Float64`: Min Power into the Governor, validation range: (0, nothing)
-- `P_max::Float64`: Max Power into the Governor, validation range: (0, nothing)
-- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
+- `R::Float64`: Droop parameter, validation range: `(0, nothing)`
+- `Ts::Float64`: Governor time constant, validation range: `(0, nothing)`
+- `Tc::Float64`: Servo time constant, validation range: `(0, nothing)`
+- `T3::Float64`: Transient gain time constant, validation range: `(0, nothing)`
+- `T4::Float64`: Power fraction time constant, validation range: `(0, nothing)`
+- `T5::Float64`: Reheat time constant, validation range: `(0, nothing)`
+- `P_min::Float64`: Min Power into the Governor, validation range: `(0, nothing)`
+- `P_max::Float64`: Max Power into the Governor, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
 	x_g1: Governor state,
@@ -93,56 +93,56 @@ function TGTypeI(::Nothing)
     )
 end
 
-"""Get TGTypeI R."""
+"""Get [`TGTypeI`](@ref) `R`."""
 get_R(value::TGTypeI) = value.R
-"""Get TGTypeI Ts."""
+"""Get [`TGTypeI`](@ref) `Ts`."""
 get_Ts(value::TGTypeI) = value.Ts
-"""Get TGTypeI Tc."""
+"""Get [`TGTypeI`](@ref) `Tc`."""
 get_Tc(value::TGTypeI) = value.Tc
-"""Get TGTypeI T3."""
+"""Get [`TGTypeI`](@ref) `T3`."""
 get_T3(value::TGTypeI) = value.T3
-"""Get TGTypeI T4."""
+"""Get [`TGTypeI`](@ref) `T4`."""
 get_T4(value::TGTypeI) = value.T4
-"""Get TGTypeI T5."""
+"""Get [`TGTypeI`](@ref) `T5`."""
 get_T5(value::TGTypeI) = value.T5
-"""Get TGTypeI P_min."""
+"""Get [`TGTypeI`](@ref) `P_min`."""
 get_P_min(value::TGTypeI) = value.P_min
-"""Get TGTypeI P_max."""
+"""Get [`TGTypeI`](@ref) `P_max`."""
 get_P_max(value::TGTypeI) = value.P_max
-"""Get TGTypeI P_ref."""
+"""Get [`TGTypeI`](@ref) `P_ref`."""
 get_P_ref(value::TGTypeI) = value.P_ref
-"""Get TGTypeI ext."""
+"""Get [`TGTypeI`](@ref) `ext`."""
 get_ext(value::TGTypeI) = value.ext
-"""Get TGTypeI states."""
+"""Get [`TGTypeI`](@ref) `states`."""
 get_states(value::TGTypeI) = value.states
-"""Get TGTypeI n_states."""
+"""Get [`TGTypeI`](@ref) `n_states`."""
 get_n_states(value::TGTypeI) = value.n_states
-"""Get TGTypeI internal."""
+"""Get [`TGTypeI`](@ref) `internal`."""
 get_internal(value::TGTypeI) = value.internal
 
-"""Set TGTypeI R."""
+"""Set [`TGTypeI`](@ref) `R`."""
 set_R!(value::TGTypeI, val) = value.R = val
-"""Set TGTypeI Ts."""
+"""Set [`TGTypeI`](@ref) `Ts`."""
 set_Ts!(value::TGTypeI, val) = value.Ts = val
-"""Set TGTypeI Tc."""
+"""Set [`TGTypeI`](@ref) `Tc`."""
 set_Tc!(value::TGTypeI, val) = value.Tc = val
-"""Set TGTypeI T3."""
+"""Set [`TGTypeI`](@ref) `T3`."""
 set_T3!(value::TGTypeI, val) = value.T3 = val
-"""Set TGTypeI T4."""
+"""Set [`TGTypeI`](@ref) `T4`."""
 set_T4!(value::TGTypeI, val) = value.T4 = val
-"""Set TGTypeI T5."""
+"""Set [`TGTypeI`](@ref) `T5`."""
 set_T5!(value::TGTypeI, val) = value.T5 = val
-"""Set TGTypeI P_min."""
+"""Set [`TGTypeI`](@ref) `P_min`."""
 set_P_min!(value::TGTypeI, val) = value.P_min = val
-"""Set TGTypeI P_max."""
+"""Set [`TGTypeI`](@ref) `P_max`."""
 set_P_max!(value::TGTypeI, val) = value.P_max = val
-"""Set TGTypeI P_ref."""
+"""Set [`TGTypeI`](@ref) `P_ref`."""
 set_P_ref!(value::TGTypeI, val) = value.P_ref = val
-"""Set TGTypeI ext."""
+"""Set [`TGTypeI`](@ref) `ext`."""
 set_ext!(value::TGTypeI, val) = value.ext = val
-"""Set TGTypeI states."""
+"""Set [`TGTypeI`](@ref) `states`."""
 set_states!(value::TGTypeI, val) = value.states = val
-"""Set TGTypeI n_states."""
+"""Set [`TGTypeI`](@ref) `n_states`."""
 set_n_states!(value::TGTypeI, val) = value.n_states = val
-"""Set TGTypeI internal."""
+"""Set [`TGTypeI`](@ref) `internal`."""
 set_internal!(value::TGTypeI, val) = value.internal = val
