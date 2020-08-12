@@ -4,7 +4,7 @@
 CurrentModule = PowerSystems
 ```
 
-`PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package Power Systems Modeling that provides a rigorous data model using Julia structures to enable power systems modeling.
+`PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package that provides a rigorous data model using Julia structures to enable power systems modeling.
 
 `PowerSystems.jl` provides tools to prepares and processes data useful for electric energy systems modelling. This package serves two purposes:
 
