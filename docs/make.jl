@@ -4,19 +4,13 @@ const PSYPATH = dirname(pathof(PowerSystems))
 
 # This is commented out because the output is not user-friendly. Deliberation on how to best
 # communicate this information to users is ongoing.
-include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
+#include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
 
-makedocs(
-    modules = [PowerSystems],
-    format = Documenter.HTML(),
-    sitename = "PowerSystems.jl",
-    authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",
-    pages = Any[ # Compat: `Any` for 0.4 compat
+pages = Dict(
         "Welcome Page" => "index.md",
         "User Guide" => Any[
-            "man/installation.md",
-            "man/type_structure.md",
-            "man/data_requirements_table.md"
+            "user_guide/installation.md",
+            "user_guide/quick_start_guide.md",
         ],
         "Modeler" => Any[
             "modeler/parsing.md",
@@ -32,10 +26,37 @@ makedocs(
             "Style Guide" => "developer/style.md",
         ],
         "API" => Any[
-            "DynamicStructs" => "api/DynamicsAPI.md"
-            "Internal" => "api/Internal.md"
+            "DynamicStructs" => "api/dynamicsAPI.md"
+            "Internal" => "api/internal.md"
         ]
-    ]
+)
+
+## This code performs the automated addition of Literate - Generated Markdowns
+julia_file_filter = x -> occursin(".jl", x)
+folders = Dict(
+    "User Guide" => filter(julia_file_filter, readdir("docs/src/user_guide")),
+    "Modeler" => filter(julia_file_filter, readdir("docs/src/modeler")),
+    "Model Developer" => filter(julia_file_filter, readdir("docs/src/model_developer")),
+    "Developer" => filter(julia_file_filter, readdir("docs/src/developer")),
+)
+
+for (section, folder) in folders
+    for file in folder
+        section_folder_name = lowercase(replace(section, " " => "_"))
+        outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
+        inputfile = "$section_folder_name/$file"
+        Literate.markdown(joinpath(pwd(), "docs", "src", inputfile), outputdir)
+        subsection = titlecase(replace(split(file, ".")[1], "_" => " "))
+        push!(pages[section], ("$subsection" => replace("$inputfile", ".jl" => ".md")))
+    end
+end
+
+makedocs(
+    modules = [PowerSystems],
+    format = Documenter.HTML(),
+    sitename = "PowerSystems.jl",
+    authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",
+    pages = Any[p for p in pages]
 )
 
 deploydocs(
