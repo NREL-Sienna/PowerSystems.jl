@@ -6,9 +6,9 @@ CurrentModule = PowerSystems
 
 `PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package that provides a rigorous data model using Julia structures to enable power systems modeling.
 
-`PowerSystems.jl` provides tools to prepare and process data useful for electric energy systems modelling. This package serves two purposes:
+`PowerSystems.jl` provides tools to prepare and process data useful for electric energy systems modeling. This package serves two purposes:
 
-1. It facilitates the development and open sharing of custom datasets between users and computer systems.
+1. It facilitates the development and open sharing of large data sets for Power Systems modeling
 2. It provides a data model that imposes discipline on model specification, addressing the challenge of design and terminology choices when sharing code and data.
 
 The main features include:
@@ -18,10 +18,9 @@ The main features include:
 - Network Matrices calculations
 - Utilities for fast iterations of components to develop models
 
-
 `PowerSystems.jl` documentation and code are organized according to the needs of different users depending on their skillset and requirements. In broad terms there are three categories:
 
-- **Modeler**: Users that want to use `PowerSystems.jl` to develop a new data set for a particular analysis or experiment.
+- **Modeler**: Users that want to run a particular analysis or experiment and use `PowerSystems.jl` to develop data sets.
 
 - **Model Developer**: Users that want to develop custom components and structs in order to exploit `PowerSystems.jl` features to produce custom data sets.
 
