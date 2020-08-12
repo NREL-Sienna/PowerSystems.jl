@@ -1,6 +1,6 @@
 # Installation
 
-The latest stable release of PowerModels can be installed using the Julia package manager with
+The latest stable release of PowerSystems can be installed using the Julia package manager with
 
 ```julia
 ] add PowerSystems
