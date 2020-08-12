@@ -3,6 +3,5 @@
 ```@autodocs
 Modules = [PowerSystems]
 Private = false
-Order = [:type]
-Filter = t -> t :> PowerSystems.DynamicInjection
+Order = [:function]
 ```

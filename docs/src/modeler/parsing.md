@@ -1,29 +1,13 @@
-```@meta
-EditURL = "<unknown>/docs/src/modeler/parsing.md"
-```
+# Constructing a System from raw data
 
-```@example parsing
-```@meta
-EditURL = "<unknown>/docs/src/modeler/parsing.md"
-```
+## Supported Formats
+- PowerSystems table data (CSV Files)
+- MATPOWER (parsed by PowerModels)
+- PSS/e RAW Files(parsed by PowerModels)
+- PSS/e DYR Files
 
-Constructing a System from raw data
 
-```@example parsing
-```
-
-Supported Formats
-
-```@example parsing
-* PowerSystems table data
-* MATPOWER (parsing supported by PowerModels)
-* PSS/E (parsing supported by PowerModels)
-* PSS/E dyr files
-```
-
-PowerSystems Table Data
-
-```@example parsing
+## PowerSystems Table Data
 This is a custom format that allows users to define power system component data
 by category and column with custom names, types, and units.
 
@@ -104,6 +88,7 @@ PowerSystems supports this metadata in either CSV or JSON formats. Refer to
 for an example.
 
 #### Performance considerations
+
 By default PowerSystems stores time series data in HDF5 files. It does not keep
 all of the data in memory. This means that every time you access a forecast
 PowerSystems will have to read the data from storage, which will add latency. If
@@ -118,6 +103,7 @@ available.
 
 
 ### Custom construction of generators
+
 PowerSystems supports custom construction of subtypes of the abstract type Generator based
 on `fuel` and `type`. The parsing code detects these fields in the raw data and then
 constructs the concrete type listed in the passed generator mapping file. The default file
@@ -143,29 +129,12 @@ data = PowerSystemTableData(
 )
 sys = System(data, time_series_in_memory = true)
 ```
-```
 
-MATPOWER / PSS/E
+## MATPOWER / PSS/E
 
-```@example parsing
 The following code will create a System from a MATPOWER or PSS/E file by first
 parsing it with [PowerModels](https://github.com/lanl-ansi/PowerModels.jl).
 
 ```julia
 sys = System(PowerSystems.PowerModelsData("./case5.m"))
 ```
-```
-
-Parsing Dynamic Data
-
-```@example parsing
-```
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-```
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
