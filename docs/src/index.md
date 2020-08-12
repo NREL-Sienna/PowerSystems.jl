@@ -22,6 +22,8 @@ CurrentModule = PowerSystems
 
 `PowerSystems.jl` in an active project under development, and we welcome your feedback, suggestions, and bug reports.
 
+Extended examples of use can be found in [SIIP-Examples PowerSystems](https://github.com/NREL-SIIP/SIIPExamples.jl/tree/master/notebook/PowerSystems_examples)
+
 For more detailed documentation of each object in the library, see the API/[PowerSystems](@ref) page.
 
 ```@contents

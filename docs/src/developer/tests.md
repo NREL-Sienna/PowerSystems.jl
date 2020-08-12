@@ -1,5 +1,15 @@
-# Tests
+```@meta
+EditURL = "<unknown>/docs/src/developer/tests.md"
+```
 
+```@example tests
+```@meta
+EditURL = "<unknown>/docs/src/developer/tests.md"
+```
+
+Tests
+
+```@example tests
 Unit tests can be executed in the REPL by executing the following:
 
 ```julia
@@ -33,3 +43,14 @@ julia> include("test/runtests.jl")
 The unit test module appends a summary of all log message counts to the log
 file.  If a message is logged too frequently then consider tagging that message
 with maxlog=X to suppress it.
+```
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+```
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+

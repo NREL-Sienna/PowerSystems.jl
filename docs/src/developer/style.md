@@ -1,12 +1,27 @@
-# Julia Coding Style Guide for PowerSystems.jl
+```@meta
+EditURL = "<unknown>/docs/src/developer/style.md"
+```
 
-## Goals
+```@example style
+```@meta
+EditURL = "<unknown>/docs/src/developer/style.md"
+```
 
+Julia Coding Style Guide for PowerSystems.jl
+
+```@example style
+```
+
+Goals
+
+```@example style
 * Define a straightforward set of rules that lead to consistent, readable code.
 * Developers focus on producing high quality code, not how to format it.
+```
 
-## Base
+Base
 
+```@example style
 * Read the official
 [Julia style guide](https://docs.julialang.org/en/v1/manual/style-guide/index.html) as reference.
 * Read [Julia contribution guidelines](https://github.com/JuliaLang/julia/blob/master/CONTRIBUTING.md#general-formatting-guidelines-for-julia-code-contributions), notably its line length limit.
@@ -14,16 +29,20 @@
 * Read [BlueStyle](https://github.com/invenia/BlueStyle/) style guide.
 * Consider using a plugin that configures your text editor to use [EditorConfig](https://editorconfig.org/) settings.
 * Consider using [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl).
+```
 
-## Code Organization
+Code Organization
 
+```@example style
 * Import standard modules, then 3rd-party modules, then yours. Include a blank
   line between each group.
 
 <!-- ### Modules:  TODO -->
+```
 
-## Comments
+Comments
 
+```@example style
 * Use comments to describe non-obvious or non-trivial aspects of code.
   Describe why something was done but not how. The "how" should be apparent from
   the code itself.
@@ -48,9 +67,13 @@ Good:
 
 ```julia
 for i in 1:100
-    # arr[i] += a[i] * x^2
-    # arr[i] += b[i] * x
-    # arr[i] += c[i]
+```
+
+arr[i] += a[i] * x^2
+arr[i] += b[i] * x
+arr[i] += c[i]
+
+```@example style
     nothing
 end
 ```
@@ -60,9 +83,11 @@ end
   * `FIXME`:  code that needs refactoring
   * `BUG`:  known bug that exists. Should include a bug ID and tracking system.
   * `PERF`:  known performance limitation that needs improvement
+```
 
-## Constructors
+Constructors
 
+```@example style
 * Per guidance from Julia documentation, use inner constructors to enforce
   restrictions on parameters or to allow construction of self-referential
   objects.
@@ -73,9 +98,11 @@ members if no inner constructor is defined.
 * When creating a constructor use `function Foo()` instead of `Foo() = ...`.
   * One exception is the case where one file has all single-line functions.
 * Prefer explicit `return` in multi line functions instead of the implicit return.
+```
 
-## Exceptions
+Exceptions
 
+```@example style
 * Use exceptions for unexpected errors and not for normal error handling.
   * Detection of an unsupported data format from a user should likely throw
   an exception and terminate the application.
@@ -84,17 +111,21 @@ members if no inner constructor is defined.
 * Use @assert statements to guard against programming errors. Do not use them
   after detecting bad user input. Note that they may be compiled out in release
   builds.
+```
 
-## Globals
+Globals
 
+```@example style
 * Global constants should be written in upper case and be declared `const`.
     - `const UPPER_CASE_VARIABLE = π / 2`
 * If global variables are needed, prefix them with `g_`.
 * Don't use [magic numbers](https://en.wikipedia.org/wiki/Magic_number_%28programming%29).
   Instead, define `const GLOBALS` or `Enums` (Julia @enum).
+```
 
-## One-line Conditionals
+One-line Conditionals
 
+```@example style
 Julia code base uses this idiom frequently: `<condition> && <statement>`.
 
 See [Example](https://docs.julialang.org/en/v1.0/manual/control-flow/#Short-Circuit-Evaluation-1):
@@ -121,13 +152,17 @@ y = x > 0 ? x : -x
 
 There are many examples in our codebase that use the form `<cond> ? <statement> : <statement>`.
 These may be expressed much more clearly in an if/else statement.
+```
 
-## Unit Tests
+Unit Tests
 
+```@example style
 All code should be tested.
+```
 
-## Whitespace
+Whitespace
 
+```@example style
 * If many function arguments cause the line length to be exceeded, put one
 argument per line. In some cases it may make sense to pair some variables on
 the same line.
@@ -215,9 +250,11 @@ Good:
 ```julia
 abstract type Foo end
 ```
+```
 
-## Exports
+Exports
 
+```@example style
 `export` should be used to make it easy for the user to use a symbol from the REPL,
 an interactive interface or a program.
 
@@ -225,7 +262,20 @@ You may _need_ to use `export` when extending functionality of other packages
 that have also exported the same symbol.
 
 All symbols that have `export` **must** have proper docstrings.
+```
 
-# References
+References
 
+```@example style
 * [The Zen of Python](https://www.python.org/dev/peps/pep-0020).
+```
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+```
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+

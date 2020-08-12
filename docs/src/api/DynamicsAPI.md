@@ -1,4 +1,4 @@
-# PowerSystems Dynamic structs documentation
+# PowerSystems Dynamic Structs Documentation
 
 ```@meta
 CurrentModule = PowerSystems
@@ -118,4 +118,3 @@ Modules = [PowerSystems]
 Order = [:type]
 Filter = t -> t <: PowerSystems.Filter
 ```
-
