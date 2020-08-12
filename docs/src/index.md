@@ -15,6 +15,9 @@ The main features include:
 
 - Extensive library of data structures for power systems modeling.
 - Parsing capabilities from common data formats (PSS/e raw and dyr, Matpower and CSV)
+- Network Matrices calculations
+- Utilities for fast iterations of components to develop models
+
 
 `PowerSystems.jl` documentation and code are organized according to the needs of different users depending on their skillset and requirements. In broad terms there are three categories:
 
@@ -30,6 +33,8 @@ Extended examples of use can be found in [SIIP-Examples PowerSystems](https://gi
 
 For more detailed documentation of each object in the library, see the API/[PowerSystems](@ref) page.
 
+## Contents
+
 ```@contents
 Pages = [
     "user_guide/installation.md",
@@ -37,5 +42,5 @@ Pages = [
     "modeler/parsing.md",
     "modeler/data.md"
 ]
-Depth = 1
+Depth = 3
 ```
