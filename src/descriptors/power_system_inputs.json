@@ -37,18 +37,21 @@
             "name": "rectifier_firing_angle_max",
             "unit": "degree",
             "value_range": [],
-            "description": "Nominal maximum firing angle"
+            "description": "Nominal maximum firing angle",
+            "default_value": null
         },
         {
             "name": "rectifier_firing_angle_min",
             "unit": "degree",
             "value_range": [],
-            "description": "Minimum steady state firing angle"
+            "description": "Minimum steady state firing angle",
+            "default_value": null
         },
         {
             "name": "rectifier_xrc",
             "description": "Commutating transformer reactance/bridge",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": null
         },
         {
             "name": "rectifier_tap_limits_max",
@@ -66,18 +69,21 @@
             "name": "inverter_firing_angle_max",
             "unit": "degree",
             "value_range": [],
-            "description": "Nominal maximum firing angle"
+            "description": "Nominal maximum firing angle",
+            "default_value": null
         },
         {
             "name": "inverter_firing_angle_min",
             "unit": "degree",
             "value_range": [],
-            "description": "Minimum steady state firing angle"
+            "description": "Minimum steady state firing angle",
+            "default_value": null
         },
         {
             "name": "inverter_xrc",
             "description": "Commutating transformer reactance/bridge",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": null
         },
         {
             "name": "inverter_tap_limits_max",
@@ -94,7 +100,8 @@
         {
             "name": "loss",
             "unit": "%",
-            "description": "Power Losses on the Line"
+            "description": "Power Losses on the Line",
+            "default_value": 0.0
         },
         {
             "name": "min_active_power_limit_from",
@@ -162,7 +169,8 @@
         },
         {
             "name": "control_mode",
-            "description": "Control Mode"
+            "description": "Control Mode",
+            "default_value": "Power"
         },
         {
             "name": "dc_line_category",
