@@ -124,6 +124,7 @@ export FixedDCSource
 # Filter Exports
 export Filter
 export LCLFilter
+export LCFilter
 
 # FrequencyEstimator Exports
 export FrequencyEstimator
