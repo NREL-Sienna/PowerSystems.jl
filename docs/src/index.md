@@ -23,7 +23,7 @@ The main features include:
 
 - **Modeler**: Users that want to use `PowerSystems.jl` to develop a new data set for a particular analysis or experiment.
 
-- **Model Deverloper**: Users that wants to develop custom device and components and structs and exploit `PowerSystems.jl` features to produce custom data sets.
+- **Model Developer**: Users that want to develop custom components and structs in order to exploit `PowerSystems.jl` features to produce custom data sets.
 
 - **Advanced Developers**: Users that want to add new core functionalities or fix bugs in the core capabilties of `PowerSystems.jl`. This user should also check [`InfrastructureSystems.jl`](https://github.com/NREL-SIIP/InfrastructureSystems.jl).
 
