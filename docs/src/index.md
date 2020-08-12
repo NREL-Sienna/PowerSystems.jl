@@ -30,14 +30,12 @@ The main features include:
 
 Extended examples of use can be found in [SIIP-Examples PowerSystems](https://github.com/NREL-SIIP/SIIPExamples.jl/tree/master/notebook/PowerSystems_examples)
 
-For more detailed documentation of each object in the library, see the API/[PowerSystems](@ref) page.
-
 ## Contents
 
 ```@contents
 Pages = [
     "user_guide/installation.md",
-    "user_guide/type_structure.md"
+    "user_guide/type_structure.md",
     "modeler/parsing.md",
     "modeler/data.md"
 ]
