@@ -1,4 +1,5 @@
 using Documenter, PowerSystems
+import DataStructures: OrderedDict
 using Literate
 const PSYPATH = dirname(pathof(PowerSystems))
 
@@ -6,7 +7,7 @@ const PSYPATH = dirname(pathof(PowerSystems))
 # communicate this information to users is ongoing.
 #include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
 
-pages = Dict(
+pages = OrderedDict(
         "Welcome Page" => "index.md",
         "User Guide" => Any[
             "user_guide/installation.md",
