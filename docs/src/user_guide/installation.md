@@ -12,4 +12,4 @@ For the current development version, "checkout" this package with
 ] add PowerSystems#master
 ```
 
-## Getting test data to start with
+## Getting test data to start with some data
