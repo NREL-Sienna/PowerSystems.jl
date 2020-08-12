@@ -1,11 +1,29 @@
-# Constructing a System from raw data
+```@meta
+EditURL = "<unknown>/docs/src/modeler/parsing.md"
+```
 
-## Supported Formats
+```@example parsing
+```@meta
+EditURL = "<unknown>/docs/src/modeler/parsing.md"
+```
+
+Constructing a System from raw data
+
+```@example parsing
+```
+
+Supported Formats
+
+```@example parsing
 * PowerSystems table data
-* MATPOWER (parsed by PowerModels)
-* PSS/E (parsed by PowerModels)
+* MATPOWER (parsing supported by PowerModels)
+* PSS/E (parsing supported by PowerModels)
+* PSS/E dyr files
+```
 
-## PowerSystems Table Data
+PowerSystems Table Data
+
+```@example parsing
 This is a custom format that allows users to define power system component data
 by category and column with custom names, types, and units.
 
@@ -45,7 +63,7 @@ column names.
 For example, when parsing raw data for a generator the code expects a column
 called `name`. If the raw data instead defines that column as `GEN UID` then
 you can change the `custom_name` field under the `generator` category to
-`GEN UID` in your YAML file. 
+`GEN UID` in your YAML file.
 
 #### Per-unit conversion
 PowerSystems defines whether it expects a column value to be per-unit in
@@ -125,11 +143,29 @@ data = PowerSystemTableData(
 )
 sys = System(data, time_series_in_memory = true)
 ```
+```
 
-## MATPOWER / PSS/E
+MATPOWER / PSS/E
+
+```@example parsing
 The following code will create a System from a MATPOWER or PSS/E file by first
 parsing it with [PowerModels](https://github.com/lanl-ansi/PowerModels.jl).
 
 ```julia
 sys = System(PowerSystems.PowerModelsData("./case5.m"))
 ```
+```
+
+Parsing Dynamic Data
+
+```@example parsing
+```
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
+```
+
+---
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
