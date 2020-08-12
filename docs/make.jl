@@ -12,19 +12,20 @@ pages = OrderedDict(
         "User Guide" => Any[
             "user_guide/installation.md",
             "user_guide/quick_start_guide.md",
+            "user_guide/system.md"
         ],
         "Modeler" => Any[
             "modeler/parsing.md",
             "modeler/data.md",
         ],
         "Model Developer" => Any[
-            "Adding Types" => "model_developer/adding_types.md",
             "Extending Parsing" => "model_developer/extending_parsing.md",
+            "Adding Types" => "model_developer/adding_types.md",
         ],
         "Developer" => Any[
-            "Tests" => "developer/tests.md",
-            "Logging" => "developer/logging.md",
             "Style Guide" => "developer/style.md",
+            "Testing" => "developer/testing.md",
+            "Logging" => "developer/logging.md",
         ],
         "API" => Any[
             "Structs" => "api/structs.md",
