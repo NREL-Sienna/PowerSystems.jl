@@ -30,8 +30,7 @@ pages = OrderedDict(
         ],
         "API" => Any[
             "DynamicStructs" => "api/dynamicsAPI.md",
-            #"Exported" => "api/exported.md",
-            #"Internal" => "api/internal.md"
+            "Internal" => "api/internal.md"
         ]
 )
 
@@ -49,10 +48,15 @@ for (section, folder) in folders
     for file in folder
         section_folder_name = lowercase(replace(section, " " => "_"))
         outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
-        inputfile = "$section_folder_name/$file"
-        Literate.markdown(joinpath(pwd(), "docs", "src", inputfile), outputdir; credit = false)
+        inputfile = joinpath("$section_folder_name", "$file")
+        outputfile = string("generated_", replace("$file", ".jl" => ""))
+        Literate.markdown(joinpath(pwd(), "docs", "src", inputfile),
+                          outputdir;
+                          name = outputfile,
+                          credit = false,
+                          execute=true)
         subsection = titlecase(replace(split(file, ".")[1], "_" => " "))
-        push!(pages[section], ("$subsection" => replace("$inputfile", ".jl" => ".md")))
+        push!(pages[section], ("$subsection" =>  joinpath("$section_folder_name", "$(outputfile).md")))
     end
 end
 
