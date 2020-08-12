@@ -12,7 +12,8 @@ pages = OrderedDict(
         "User Guide" => Any[
             "user_guide/installation.md",
             "user_guide/quick_start_guide.md",
-            "user_guide/system.md"
+            "user_guide/system.md",
+            "user_guide/generated.md"
         ],
         "Modeler" => Any[
             "modeler/parsing.md",
@@ -28,14 +29,14 @@ pages = OrderedDict(
             "Logging" => "developer/logging.md",
         ],
         "API" => Any[
-            "Structs" => "api/structs.md",
             "DynamicStructs" => "api/dynamicsAPI.md",
-            "Exported" => "api/exported.md",
-            "Internal" => "api/internal.md"
+            #"Exported" => "api/exported.md",
+            #"Internal" => "api/internal.md"
         ]
 )
 
-## This code performs the automated addition of Literate - Generated Markdowns
+# This code performs the automated addition of Literate - Generated Markdowns. The desired
+# section name should be the name of the file for instance network_matrices.jl -> Network Matrices
 julia_file_filter = x -> occursin(".jl", x)
 folders = Dict(
     "User Guide" => filter(julia_file_filter, readdir("docs/src/user_guide")),
@@ -49,7 +50,7 @@ for (section, folder) in folders
         section_folder_name = lowercase(replace(section, " " => "_"))
         outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
         inputfile = "$section_folder_name/$file"
-        Literate.markdown(joinpath(pwd(), "docs", "src", inputfile), outputdir)
+        Literate.markdown(joinpath(pwd(), "docs", "src", inputfile), outputdir; credit = false)
         subsection = titlecase(replace(split(file, ".")[1], "_" => " "))
         push!(pages[section], ("$subsection" => replace("$inputfile", ".jl" => ".md")))
     end

@@ -10,7 +10,3 @@ From the computer engineering point-of-view, using tables would require to re-wr
 
 Each device in PowerSystems.jl is defined using a Julia structure embedded in a type hierarchy. This implementation enables the categorization of the devices by their operational characteristics and the data required to model them. The type-based and method-forward paradigm in PowerSystems.jl incentivizes code re-use in modeling, enhances the reproducibility of code, and enables modularization for specific data types.
 
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
-
