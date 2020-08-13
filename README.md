@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/NREL-SIIP/PowerSystems.jl.svg?branch=master)](https://travis-ci.com/NREL-SIIP/PowerSystems.jl)
 [![codecov](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl)
 [![Documentation Build](https://github.com/NREL-SIIP/PowerSystems.jl/workflows/Documentation/badge.svg?)](https://nrel-siip.github.io/PowerSystems.jl/stable)
-[![Gitter](https://badges.gitter.im/NREL/PowerSystems.jl.svg)](https://gitter.im/NREL/PowerSystems.jl?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[<img src="https://img.shields.io/badge/slack-@SIIP/PSY-blue.svg?logo=slack">](https://join.slack.com/t/nrel-siip/shared_invite/zt-glam9vdu-o8A9TwZTZqqNTKHa7q3BpQ)
 
 The `PowerSystems.jl` package provides a rigorous data model using Julia structures to enable power systems analysis and modeling. In addition to stand-alone system analysis tools and data model building, the `PowerSystems.jl` package is used as the foundational data container for the [PowerSimulations.jl](https://github.com/NREL/PowerSimulations.jl) package. `PowerSystems.jl` supports a limited number of data file formats for parsing.
 
