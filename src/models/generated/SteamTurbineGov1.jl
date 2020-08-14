@@ -55,11 +55,11 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T=1.0, ext=Dict{String, Any}(), )
+function SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext=Dict{String, Any}(), )
     SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext, [:x_g1, :Pm], 2, InfrastructureSystemsInternal(), )
 end
 
-function SteamTurbineGov1(; R, T1, valve_position_limits, T2, T3, D_T=1.0, ext=Dict{String, Any}(), )
+function SteamTurbineGov1(; R, T1, valve_position_limits, T2, T3, D_T, ext=Dict{String, Any}(), )
     SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext, )
 end
 
