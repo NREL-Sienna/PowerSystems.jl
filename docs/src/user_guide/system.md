@@ -1,17 +1,15 @@
 # System
 
-## Step 1: System description
-
-Next we need to define the different elements required to run a simulation. To run a simulation in `PowerSimulationsDynamics`, it is required to define a `System` that contains the following components:
+## System description
 
 ### Static Components:
 
-We called static components to those that are used to run a Power Flow problem. Basically those are:
+We called static components to those that are used for static
 
 - Vector of `Bus` elements, that define all the buses in the network.
 - Vector of `Branch` elements, that define all the branches elements (that connect two buses) in the network.
-- Vector of `StaticInjection` elements, that define all the devices connected to buses that can inject (or withdraw) power. These static devices, typically generators, in `PowerSimulationsDynamics` are used to solve the Power Flow problem that determines the active and reactive power provided for each device.
-- Vector of `PowerLoad` elements, that define all the loads connected to buses that can withdraw current. These are also used to solve the Power Flow. In addition, note that `PowerSimulationsDynamics` will convert ConstantPower loads to RLC loads for transient simulations.
+- Vector of `StaticInjection` elements, that define all the devices connected to buses that can inject (or withdraw) power.
+- Vector of `PowerLoad` elements, that define all the loads connected to buses that can withdraw current.
 - Vector of `Source` elements, that define source components behind a reactance that can inject or withdraw current.
 - The base of power used to define per unit values, in MVA as a `Float64` value.
 - The base frequency used in the system, in Hz as a `Float64` value.
