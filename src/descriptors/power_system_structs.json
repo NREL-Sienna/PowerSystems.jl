@@ -6050,7 +6050,7 @@
         },
         {
           "name": "states",
-          "comment": "The states of the GAST model are:\n\tPe: Machine Electrical Power Measurement,\n\tx_g1: Governor differential control,\n\tx_g2: Governor integral control, \n\tx_g3: Turbine actuator, \n\tx_g4: Turbine Lead-Lag, \n\tx_g5: Turbine load limiter measurement, \n\tx_g6: Turbine Load Limiter Integral Control, \n\tx_g7: Supervisory Load Control, \n\tx_g8: Acceleration Control, \n\tx_g9 Temperature Detection Lead - Lag:",
+          "comment": "The states of the GGOV1 model are:\n\tPe: Machine Electrical Power Measurement,\n\tx_g1: Governor differential control,\n\tx_g2: Governor integral control, \n\tx_g3: Turbine actuator, \n\tx_g4: Turbine Lead-Lag, \n\tx_g5: Turbine load limiter measurement, \n\tx_g6: Turbine Load Limiter Integral Control, \n\tx_g7: Supervisory Load Control, \n\tx_g8: Acceleration Control, \n\tx_g9 Temperature Detection Lead - Lag:",
           "internal_default": "[:Pe, :x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7, :x_g8, :x_g9]",
           "data_type": "Vector{Symbol}"
         },
@@ -6058,6 +6058,96 @@
           "name": "n_states",
           "comment": "GeneralGovModel has 10 states",
           "internal_default": 10,
+          "data_type": "Int64"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "TurbineGov"
+    },
+    {
+      "struct_name": "SteamTurbineGov1",
+      "docstring": "Steam Turbine-Governor. ",
+      "fields": [
+        {
+          "name": "R",
+          "comment": "Droop parameter",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T1",
+          "comment": "Governor time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "valve_position_limits",
+          "comment": "Valve position limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T2",
+          "comment": "Lead Lag Lead Time constant ",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T3",
+          "comment": "Lead Lag Lag Time constant ",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "D_T",
+          "comment": "Turbine Damping",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tPm: Turbine Power",
+          "internal_default": "[:x_g1, :Pm]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "TGOV1 has 2 states",
+          "internal_default": 2,
           "data_type": "Int64"
         },
         {

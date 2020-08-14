@@ -52,6 +52,7 @@ include("FiveMassShaft.jl")
 include("TGFixed.jl")
 include("GasTG.jl")
 include("GeneralGovModel.jl")
+include("SteamTurbineGov1.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
 include("AverageConverter.jl")
@@ -73,6 +74,7 @@ export get_D_12
 export get_D_23
 export get_D_34
 export get_D_45
+export get_D_T
 export get_D_ex
 export get_D_hp
 export get_D_ip
@@ -321,6 +323,7 @@ export set_D_12!
 export set_D_23!
 export set_D_34!
 export set_D_45!
+export set_D_T!
 export set_D_ex!
 export set_D_hp!
 export set_D_ip!
