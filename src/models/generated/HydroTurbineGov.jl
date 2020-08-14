@@ -35,10 +35,12 @@ Hydro Turbine-Governor.
 - `D_T::Float64`: Turbine Damping, validation range: `(0, nothing)`
 - `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the SteamTurbineGov1 model are:
-	x_g1: Valve Opening,
-	Pm: Turbine Power
-- `n_states::Int64`: TGOV1 has 2 states
+- `states::Vector{Symbol}`: The states of the HydroTurbineGov model are:
+	x_g1: filter_output,
+	x_g2: desired gate, 
+	x_g3: gate opening, 
+	x_g4: turbine flow
+- `n_states::Int64`: HYGOV has 4 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroTurbineGov <: TurbineGov
@@ -65,21 +67,26 @@ mutable struct HydroTurbineGov <: TurbineGov
     "No-power flow"
     q_nl::Float64
     ext::Dict{String, Any}
-    "The states of the SteamTurbineGov1 model are:
-	x_g1: Valve Opening,
-	Pm: Turbine Power"
+    "The states of the HydroTurbineGov model are:
+	x_g1: filter_output,
+	x_g2: desired gate, 
+	x_g3: gate opening, 
+	x_g4: turbine flow"
     states::Vector{Symbol}
-    "TGOV1 has 2 states"
+    "HYGOV has 4 states"
     n_states::Int64
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroTurbineGov(R, r, Tr, Tf, Tg, VELM=1.0, gate_position_limits, Tw, At=1.0, D_T, q_nl, ext=Dict{String, Any}(), )
-    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext, [:x_g1, :Pm], 2, InfrastructureSystemsInternal(), )
+function HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext=Dict{String, Any}(), )
+    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext, [:x_g1, 
+	x_g2:, 
+	x_g3:, 
+	x_g4:], 4, InfrastructureSystemsInternal(), )
 end
 
-function HydroTurbineGov(; R, r, Tr, Tf, Tg, VELM=1.0, gate_position_limits, Tw, At=1.0, D_T, q_nl, ext=Dict{String, Any}(), )
+function HydroTurbineGov(; R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext=Dict{String, Any}(), )
     HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext, )
 end
 

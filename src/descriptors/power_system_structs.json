@@ -6219,7 +6219,6 @@
           "name": "VELM",
           "comment": "gate velocity limit",
           "null_value": 0,
-          "default": "1.0",
           "data_type": "Float64"
         },
         {
@@ -6243,7 +6242,6 @@
           "name": "At",
           "comment": "Turbine gain",
           "null_value": 0,
-          "default": "1.0",
           "data_type": "Float64"
         },
         {
@@ -6274,14 +6272,14 @@
         },
         {
           "name": "states",
-          "comment": "The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tPm: Turbine Power",
-          "internal_default": "[:x_g1, :Pm]",
+          "comment": "The states of the HydroTurbineGov model are:\n\tx_g1: filter_output,\n\tx_g2: desired gate, \n\tx_g3: gate opening, \n\tx_g4: turbine flow",
+          "internal_default": "[:x_g1, \n\tx_g2:, \n\tx_g3:, \n\tx_g4:]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "TGOV1 has 2 states",
-          "internal_default": 2,
+          "comment": "HYGOV has 4 states",
+          "internal_default": 4,
           "data_type": "Int64"
         },
         {
