@@ -14,6 +14,7 @@ This file is auto-generated. Do not edit.
         At::Float64
         D_T::Float64
         q_nl::Float64
+        P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -34,6 +35,7 @@ Hydro Turbine-Governor.
 - `At::Float64`: Turbine gain
 - `D_T::Float64`: Turbine Damping, validation range: `(0, nothing)`
 - `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the HydroTurbineGov model are:
 	x_g1: filter_output,
@@ -66,6 +68,8 @@ mutable struct HydroTurbineGov <: TurbineGov
     D_T::Float64
     "No-power flow"
     q_nl::Float64
+    "Reference Power Set-point"
+    P_ref::Float64
     ext::Dict{String, Any}
     "The states of the HydroTurbineGov model are:
 	x_g1: filter_output,
@@ -79,12 +83,12 @@ mutable struct HydroTurbineGov <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext=Dict{String, Any}(), )
-    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext, [:x_g1, :x_g2, :x_g3, :x_g4], 4, InfrastructureSystemsInternal(), )
+function HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref=1.0, ext=Dict{String, Any}(), )
+    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref, ext, [:x_g1, :x_g2, :x_g3, :x_g4], 4, InfrastructureSystemsInternal(), )
 end
 
-function HydroTurbineGov(; R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext=Dict{String, Any}(), )
-    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext, )
+function HydroTurbineGov(; R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref=1.0, ext=Dict{String, Any}(), )
+    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -101,6 +105,7 @@ function HydroTurbineGov(::Nothing)
         At=0,
         D_T=0,
         q_nl=0,
+        P_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -127,6 +132,8 @@ get_At(value::HydroTurbineGov) = value.At
 get_D_T(value::HydroTurbineGov) = value.D_T
 """Get [`HydroTurbineGov`](@ref) `q_nl`."""
 get_q_nl(value::HydroTurbineGov) = value.q_nl
+"""Get [`HydroTurbineGov`](@ref) `P_ref`."""
+get_P_ref(value::HydroTurbineGov) = value.P_ref
 """Get [`HydroTurbineGov`](@ref) `ext`."""
 get_ext(value::HydroTurbineGov) = value.ext
 """Get [`HydroTurbineGov`](@ref) `states`."""
@@ -158,6 +165,8 @@ set_At!(value::HydroTurbineGov, val) = value.At = val
 set_D_T!(value::HydroTurbineGov, val) = value.D_T = val
 """Set [`HydroTurbineGov`](@ref) `q_nl`."""
 set_q_nl!(value::HydroTurbineGov, val) = value.q_nl = val
+"""Set [`HydroTurbineGov`](@ref) `P_ref`."""
+set_P_ref!(value::HydroTurbineGov, val) = value.P_ref = val
 """Set [`HydroTurbineGov`](@ref) `ext`."""
 set_ext!(value::HydroTurbineGov, val) = value.ext = val
 """Set [`HydroTurbineGov`](@ref) `states`."""

@@ -35,6 +35,7 @@ This file is auto-generated. Do not edit.
         Tsa::Float64
         Tsb::Float64
         R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+        P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -76,6 +77,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `Tsa::Float64`: Temperature detection lead time constant, validation range: `(0.0, nothing)`, action if invalid: `error`
 - `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0.0, nothing)`, action if invalid: `error`
 - `R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Maximum rate of load increa, action if invalid: `error`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
@@ -156,6 +158,8 @@ mutable struct GeneralGovModel <: TurbineGov
     Tsb::Float64
     "Maximum rate of load increa"
     R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+    "Reference Power Set-point"
+    P_ref::Float64
     ext::Dict{String, Any}
     "The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
@@ -175,12 +179,12 @@ mutable struct GeneralGovModel <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function GeneralGovModel(Rselect, fuel_flag, R, Tpelec, speed_error_signal, Kp_gov, Ki_gov, Kd_gov, Td_gov, valve_position_limits, T_act, K_turb, Wf_nl, Tb, Tc, T_eng, Tf_load, Kp_load, Ki_load, Ld_ref, Dm, R_open, R_close, Ki_mw, A_set, Ka, Ta, T_rate, db, Tsa, Tsb, R_lim, ext=Dict{String, Any}(), )
-    GeneralGovModel(Rselect, fuel_flag, R, Tpelec, speed_error_signal, Kp_gov, Ki_gov, Kd_gov, Td_gov, valve_position_limits, T_act, K_turb, Wf_nl, Tb, Tc, T_eng, Tf_load, Kp_load, Ki_load, Ld_ref, Dm, R_open, R_close, Ki_mw, A_set, Ka, Ta, T_rate, db, Tsa, Tsb, R_lim, ext, [:Pe, :x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7, :x_g8, :x_g9], 10, InfrastructureSystemsInternal(), )
+function GeneralGovModel(Rselect, fuel_flag, R, Tpelec, speed_error_signal, Kp_gov, Ki_gov, Kd_gov, Td_gov, valve_position_limits, T_act, K_turb, Wf_nl, Tb, Tc, T_eng, Tf_load, Kp_load, Ki_load, Ld_ref, Dm, R_open, R_close, Ki_mw, A_set, Ka, Ta, T_rate, db, Tsa, Tsb, R_lim, P_ref=1.0, ext=Dict{String, Any}(), )
+    GeneralGovModel(Rselect, fuel_flag, R, Tpelec, speed_error_signal, Kp_gov, Ki_gov, Kd_gov, Td_gov, valve_position_limits, T_act, K_turb, Wf_nl, Tb, Tc, T_eng, Tf_load, Kp_load, Ki_load, Ld_ref, Dm, R_open, R_close, Ki_mw, A_set, Ka, Ta, T_rate, db, Tsa, Tsb, R_lim, P_ref, ext, [:Pe, :x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7, :x_g8, :x_g9], 10, InfrastructureSystemsInternal(), )
 end
 
-function GeneralGovModel(; Rselect, fuel_flag, R, Tpelec, speed_error_signal, Kp_gov, Ki_gov, Kd_gov, Td_gov, valve_position_limits, T_act, K_turb, Wf_nl, Tb, Tc, T_eng, Tf_load, Kp_load, Ki_load, Ld_ref, Dm, R_open, R_close, Ki_mw, A_set, Ka, Ta, T_rate, db, Tsa, Tsb, R_lim, ext=Dict{String, Any}(), )
-    GeneralGovModel(Rselect, fuel_flag, R, Tpelec, speed_error_signal, Kp_gov, Ki_gov, Kd_gov, Td_gov, valve_position_limits, T_act, K_turb, Wf_nl, Tb, Tc, T_eng, Tf_load, Kp_load, Ki_load, Ld_ref, Dm, R_open, R_close, Ki_mw, A_set, Ka, Ta, T_rate, db, Tsa, Tsb, R_lim, ext, )
+function GeneralGovModel(; Rselect, fuel_flag, R, Tpelec, speed_error_signal, Kp_gov, Ki_gov, Kd_gov, Td_gov, valve_position_limits, T_act, K_turb, Wf_nl, Tb, Tc, T_eng, Tf_load, Kp_load, Ki_load, Ld_ref, Dm, R_open, R_close, Ki_mw, A_set, Ka, Ta, T_rate, db, Tsa, Tsb, R_lim, P_ref=1.0, ext=Dict{String, Any}(), )
+    GeneralGovModel(Rselect, fuel_flag, R, Tpelec, speed_error_signal, Kp_gov, Ki_gov, Kd_gov, Td_gov, valve_position_limits, T_act, K_turb, Wf_nl, Tb, Tc, T_eng, Tf_load, Kp_load, Ki_load, Ld_ref, Dm, R_open, R_close, Ki_mw, A_set, Ka, Ta, T_rate, db, Tsa, Tsb, R_lim, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -218,6 +222,7 @@ function GeneralGovModel(::Nothing)
         Tsa=0,
         Tsb=0,
         R_lim=(up = 0.0, down = 0.0),
+        P_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -286,6 +291,8 @@ get_Tsa(value::GeneralGovModel) = value.Tsa
 get_Tsb(value::GeneralGovModel) = value.Tsb
 """Get [`GeneralGovModel`](@ref) `R_lim`."""
 get_R_lim(value::GeneralGovModel) = value.R_lim
+"""Get [`GeneralGovModel`](@ref) `P_ref`."""
+get_P_ref(value::GeneralGovModel) = value.P_ref
 """Get [`GeneralGovModel`](@ref) `ext`."""
 get_ext(value::GeneralGovModel) = value.ext
 """Get [`GeneralGovModel`](@ref) `states`."""
@@ -359,6 +366,8 @@ set_Tsa!(value::GeneralGovModel, val) = value.Tsa = val
 set_Tsb!(value::GeneralGovModel, val) = value.Tsb = val
 """Set [`GeneralGovModel`](@ref) `R_lim`."""
 set_R_lim!(value::GeneralGovModel, val) = value.R_lim = val
+"""Set [`GeneralGovModel`](@ref) `P_ref`."""
+set_P_ref!(value::GeneralGovModel, val) = value.P_ref = val
 """Set [`GeneralGovModel`](@ref) `ext`."""
 set_ext!(value::GeneralGovModel, val) = value.ext = val
 """Set [`GeneralGovModel`](@ref) `states`."""
