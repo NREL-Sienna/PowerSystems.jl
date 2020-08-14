@@ -388,6 +388,9 @@ include("utils/network_calculations/lodf_calculations.jl")
 #PowerFlow
 include("utils/power_flow/power_flow.jl")
 
+#Conversions
+include("utils/conversion.jl")
+
 # Include Parsing files
 include("parsers/common.jl")
 include("parsers/enums.jl")
