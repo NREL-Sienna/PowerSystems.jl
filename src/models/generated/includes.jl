@@ -51,6 +51,7 @@ include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
 include("GasTG.jl")
+include("GeneralGovModel.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
 include("AverageConverter.jl")
@@ -64,6 +65,7 @@ include("CurrentControl.jl")
 include("Source.jl")
 
 export get_AT
+export get_A_set
 export get_Ae
 export get_Be
 export get_D
@@ -76,6 +78,7 @@ export get_D_hp
 export get_D_ip
 export get_D_lp
 export get_D_turb
+export get_Dm
 export get_E_sat
 export get_H
 export get_H_ex
@@ -92,12 +95,19 @@ export get_K_ip
 export get_K_lp
 export get_K_lr
 export get_K_p
+export get_K_turb
 export get_K_ω
 export get_Ka
 export get_Kc
 export get_Kd
+export get_Kd_gov
 export get_Ke
 export get_Kf
+export get_Ki_gov
+export get_Ki_load
+export get_Ki_mw
+export get_Kp_gov
+export get_Kp_load
 export get_Kt
 export get_Kv
 export get_L_1d
@@ -108,6 +118,7 @@ export get_L_d
 export get_L_f1d
 export get_L_ff
 export get_L_q
+export get_Ld_ref
 export get_Load_ref
 export get_PSS_flags
 export get_P_max
@@ -116,8 +127,12 @@ export get_P_ref
 export get_R
 export get_R_1d
 export get_R_1q
+export get_R_close
 export get_R_f
+export get_R_lim
+export get_R_open
 export get_R_th
+export get_Rselect
 export get_Se
 export get_T1
 export get_T2
@@ -125,6 +140,9 @@ export get_T3
 export get_T4
 export get_T5
 export get_T_AA
+export get_T_act
+export get_T_eng
+export get_T_rate
 export get_Ta
 export get_Tb
 export get_Tb1
@@ -132,12 +150,17 @@ export get_Tc
 export get_Tc1
 export get_Td0_p
 export get_Td0_pp
+export get_Td_gov
 export get_Te
 export get_Tf
+export get_Tf_load
+export get_Tpelec
 export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
 export get_Ts
+export get_Tsa
+export get_Tsb
 export get_UEL_flags
 export get_V_lim
 export get_V_pss
@@ -148,6 +171,7 @@ export get_Vi_lim
 export get_Vr_lim
 export get_Vr_max
 export get_Vr_min
+export get_Wf_nl
 export get_X_th
 export get_Xd
 export get_Xd_p
@@ -176,6 +200,7 @@ export get_bustype
 export get_cf
 export get_contributing_services
 export get_conversion_factor
+export get_db
 export get_delta_t
 export get_dynamic_injector
 export get_efficiency
@@ -185,6 +210,7 @@ export get_fixed
 export get_flow_limits
 export get_from
 export get_fuel
+export get_fuel_flag
 export get_inflow
 export get_initial_ace
 export get_initial_energy
@@ -253,6 +279,7 @@ export get_rv
 export get_saturation_coeffs
 export get_services
 export get_shutdn
+export get_speed_error_signal
 export get_start_time_limits
 export get_start_types
 export get_startup
@@ -267,6 +294,7 @@ export get_time_at_status
 export get_time_frame
 export get_time_limits
 export get_to
+export get_valve_position_limits
 export get_variable
 export get_voltage
 export get_voltage_limits
@@ -285,6 +313,7 @@ export get_ω_lp
 export get_ωad
 export get_ωf
 export set_AT!
+export set_A_set!
 export set_Ae!
 export set_Be!
 export set_D!
@@ -297,6 +326,7 @@ export set_D_hp!
 export set_D_ip!
 export set_D_lp!
 export set_D_turb!
+export set_Dm!
 export set_E_sat!
 export set_H!
 export set_H_ex!
@@ -313,12 +343,19 @@ export set_K_ip!
 export set_K_lp!
 export set_K_lr!
 export set_K_p!
+export set_K_turb!
 export set_K_ω!
 export set_Ka!
 export set_Kc!
 export set_Kd!
+export set_Kd_gov!
 export set_Ke!
 export set_Kf!
+export set_Ki_gov!
+export set_Ki_load!
+export set_Ki_mw!
+export set_Kp_gov!
+export set_Kp_load!
 export set_Kt!
 export set_Kv!
 export set_L_1d!
@@ -329,6 +366,7 @@ export set_L_d!
 export set_L_f1d!
 export set_L_ff!
 export set_L_q!
+export set_Ld_ref!
 export set_Load_ref!
 export set_PSS_flags!
 export set_P_max!
@@ -337,8 +375,12 @@ export set_P_ref!
 export set_R!
 export set_R_1d!
 export set_R_1q!
+export set_R_close!
 export set_R_f!
+export set_R_lim!
+export set_R_open!
 export set_R_th!
+export set_Rselect!
 export set_Se!
 export set_T1!
 export set_T2!
@@ -346,6 +388,9 @@ export set_T3!
 export set_T4!
 export set_T5!
 export set_T_AA!
+export set_T_act!
+export set_T_eng!
+export set_T_rate!
 export set_Ta!
 export set_Tb!
 export set_Tb1!
@@ -353,12 +398,17 @@ export set_Tc!
 export set_Tc1!
 export set_Td0_p!
 export set_Td0_pp!
+export set_Td_gov!
 export set_Te!
 export set_Tf!
+export set_Tf_load!
+export set_Tpelec!
 export set_Tq0_p!
 export set_Tq0_pp!
 export set_Tr!
 export set_Ts!
+export set_Tsa!
+export set_Tsb!
 export set_UEL_flags!
 export set_V_lim!
 export set_V_pss!
@@ -369,6 +419,7 @@ export set_Vi_lim!
 export set_Vr_lim!
 export set_Vr_max!
 export set_Vr_min!
+export set_Wf_nl!
 export set_X_th!
 export set_Xd!
 export set_Xd_p!
@@ -397,6 +448,7 @@ export set_bustype!
 export set_cf!
 export set_contributing_services!
 export set_conversion_factor!
+export set_db!
 export set_delta_t!
 export set_dynamic_injector!
 export set_efficiency!
@@ -406,6 +458,7 @@ export set_fixed!
 export set_flow_limits!
 export set_from!
 export set_fuel!
+export set_fuel_flag!
 export set_inflow!
 export set_initial_ace!
 export set_initial_energy!
@@ -474,6 +527,7 @@ export set_rv!
 export set_saturation_coeffs!
 export set_services!
 export set_shutdn!
+export set_speed_error_signal!
 export set_start_time_limits!
 export set_start_types!
 export set_startup!
@@ -488,6 +542,7 @@ export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
 export set_to!
+export set_valve_position_limits!
 export set_variable!
 export set_voltage!
 export set_voltage_limits!
