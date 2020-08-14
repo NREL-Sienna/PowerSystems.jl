@@ -77,7 +77,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0.0, nothing)`, action if invalid: `error`
 - `R_lim::NamedTuple{(:up, :dn), Tuple{Float64, Float64}}`: Maximum rate of load increa, action if invalid: `error`
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the GAST model are:
+- `states::Vector{Symbol}`: The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
 	x_g1: Governor differential control,
 	x_g2: Governor integral control, 
@@ -157,7 +157,7 @@ mutable struct GeneralGovModel <: TurbineGov
     "Maximum rate of load increa"
     R_lim::NamedTuple{(:up, :dn), Tuple{Float64, Float64}}
     ext::Dict{String, Any}
-    "The states of the GAST model are:
+    "The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
 	x_g1: Governor differential control,
 	x_g2: Governor integral control, 
