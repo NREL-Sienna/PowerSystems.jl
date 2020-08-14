@@ -1,9 +1,5 @@
 # Regulation Device
 
-```@docs
-RegulationDevice
-```
-
 ```@autodocs
 Modules = [PowerSystems]
 Pages   = ["models/regulation_device.jl"]
