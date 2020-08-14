@@ -59,4 +59,5 @@ get_saturation_coeffs(value::SalientPoleExponential) = value.saturation_coeffs
 
 set_base_machine!(value::SalientPoleExponential, val::SalientPoleMachine) =
     value.base_machine = val
-set_saturation_coeffs!(value::SalientPoleExponential, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
+set_saturation_coeffs!(value::SalientPoleExponential, val::Tuple{Float64, Float64}) =
+    value.saturation_coeffs = val
