@@ -4,7 +4,7 @@
 CurrentModule = PowerSystems
 ```
 
-**The Documentation is still under construction, some sections are unfinished. Please refer to the model Library for the most up-to-date info**
+**The Documentation is still under construction, some sections are unfinished. Please refer to the Model Library Section for the most up-to-date info**
 
 `PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package that provides a rigorous data model using Julia structures to enable power systems modeling.
 
@@ -32,6 +32,8 @@ The main features include:
 
 Extended examples of use can be found in [SIIP-Examples PowerSystems](https://github.com/NREL-SIIP/SIIPExamples.jl/tree/master/notebook/PowerSystems_examples)
 
+------------
+
 ## Contents
 
 ```@contents
@@ -43,3 +45,6 @@ Pages = [
 ]
 Depth = 3
 ```
+
+------------
+PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning (SIIP) initiative at the U.S. Department of Energy's National Renewable Energy Laboratory ([NREL](https://www.nrel.gov/))
