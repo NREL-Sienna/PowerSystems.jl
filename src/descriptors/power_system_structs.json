@@ -6273,7 +6273,7 @@
         {
           "name": "states",
           "comment": "The states of the HydroTurbineGov model are:\n\tx_g1: filter_output,\n\tx_g2: desired gate, \n\tx_g3: gate opening, \n\tx_g4: turbine flow",
-          "internal_default": "[:x_g1, \n\tx_g2:, \n\tx_g3:, \n\tx_g4:]",
+          "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4]",
           "data_type": "Vector{Symbol}"
         },
         {
@@ -6291,6 +6291,128 @@
       ],
       "supertype": "TurbineGov"
     },
+        {
+          "struct_name": "IEEETurbineGov1",
+          "docstring": "IEEE Type 1 Speed-Governing Model",
+          "fields": [
+            {
+              "name": "R",
+              "comment": "Droop parameter",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "Ts",
+              "comment": "Governor time constant",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "Tc",
+              "comment": "Servo time constant",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "T3",
+              "comment": "Transient gain time constant",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "T4",
+              "comment": "Power fraction time constant",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "T5",
+              "comment": "Reheat time constant",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "P_min",
+              "comment": "Min Power into the Governor",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "P_max",
+              "comment": "Max Power into the Governor",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "P_ref",
+              "comment": "Reference Power Set-point",
+              "null_value": 0,
+              "default": "1.0",
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "ext",
+              "data_type": "Dict{String, Any}",
+              "null_value": "Dict{String, Any}()",
+              "default": "Dict{String, Any}()"
+            },
+            {
+              "name": "states",
+              "comment": "The states of the TGTypeI model are:\n\tx_g1: Governor state,\n\tx_g2: Servo state,\n\tx_g3: Reheat state",
+              "internal_default": "[:x_g1, :x_g2, :x_g3]",
+              "data_type": "Vector{Symbol}"
+            },
+            {
+              "name": "n_states",
+              "comment": "TGTypeI has 3 states",
+              "internal_default": 3,
+              "data_type": "Int64"
+            },
+            {
+              "name": "internal",
+              "comment": "power system internal reference, do not modify",
+              "data_type": "InfrastructureSystemsInternal",
+              "internal_default": "InfrastructureSystemsInternal()"
+            }
+          ],
+          "supertype": "TurbineGov"
+        },
     {
       "struct_name": "TGTypeI",
       "docstring": "Parameters of a Turbine Governor Type I.",

@@ -80,10 +80,7 @@ mutable struct HydroTurbineGov <: TurbineGov
 end
 
 function HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext=Dict{String, Any}(), )
-    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext, [:x_g1, 
-	x_g2:, 
-	x_g3:, 
-	x_g4:], 4, InfrastructureSystemsInternal(), )
+    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext, [:x_g1, :x_g2, :x_g3, :x_g4], 4, InfrastructureSystemsInternal(), )
 end
 
 function HydroTurbineGov(; R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, ext=Dict{String, Any}(), )
