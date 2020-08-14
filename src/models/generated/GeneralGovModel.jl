@@ -34,7 +34,7 @@ This file is auto-generated. Do not edit.
         db::Float64
         Tsa::Float64
         Tsb::Float64
-        R_lim::NamedTuple{(:up, :dn), Tuple{Float64, Float64}}
+        R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int64
@@ -75,7 +75,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `db::Float64`: Speed governor deadband, validation range: `(0.0, nothing)`, action if invalid: `error`
 - `Tsa::Float64`: Temperature detection lead time constant, validation range: `(0.0, nothing)`, action if invalid: `error`
 - `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0.0, nothing)`, action if invalid: `error`
-- `R_lim::NamedTuple{(:up, :dn), Tuple{Float64, Float64}}`: Maximum rate of load increa, action if invalid: `error`
+- `R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Maximum rate of load increa, action if invalid: `error`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
@@ -155,7 +155,7 @@ mutable struct GeneralGovModel <: TurbineGov
     "Temperature detection lag time constant"
     Tsb::Float64
     "Maximum rate of load increa"
-    R_lim::NamedTuple{(:up, :dn), Tuple{Float64, Float64}}
+    R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
     ext::Dict{String, Any}
     "The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
