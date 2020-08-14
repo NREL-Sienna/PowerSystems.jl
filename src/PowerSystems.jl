@@ -9,6 +9,7 @@ module PowerSystems
 # Exports
 
 export System
+export Topology
 export Bus
 export Arc
 export AggregationTopology
