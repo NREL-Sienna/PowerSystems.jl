@@ -1,4 +1,4 @@
-# Internal
+# Internal API
 
 ```@autodocs
 Modules = [PowerSystems]
