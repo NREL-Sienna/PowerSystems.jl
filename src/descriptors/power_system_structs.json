@@ -6043,6 +6043,17 @@
           "validation_action": "error"
         },
         {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
@@ -6265,6 +6276,17 @@
           }
         },
         {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
@@ -6296,8 +6318,8 @@
           "docstring": "IEEE Type 1 Speed-Governing Model",
           "fields": [
             {
-              "name": "R",
-              "comment": "Droop parameter",
+              "name": "K",
+              "comment": "Governor Gain",
               "null_value": 0,
               "data_type": "Float64",
               "valid_range": {
@@ -6306,8 +6328,8 @@
               }
             },
             {
-              "name": "Ts",
-              "comment": "Governor time constant",
+              "name": "T1",
+              "comment": "Input Filter Lag",
               "null_value": 0,
               "data_type": "Float64",
               "valid_range": {
@@ -6316,8 +6338,8 @@
               }
             },
             {
-              "name": "Tc",
-              "comment": "Servo time constant",
+              "name": "T2",
+              "comment": "Input Filter Lead",
               "null_value": 0,
               "data_type": "Float64",
               "valid_range": {
@@ -6327,7 +6349,7 @@
             },
             {
               "name": "T3",
-              "comment": "Transient gain time constant",
+              "comment": "Valve position Time Constant",
               "null_value": 0,
               "data_type": "Float64",
               "valid_range": {
@@ -6336,8 +6358,54 @@
               }
             },
             {
+              "name": "U0",
+              "comment": "Maximum Valve Opening Rate",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "U_c",
+              "comment": "Maximum Valve closing rate",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": null,
+                "max": 0.0
+              }
+            },
+            {
+              "name": "valve_position_limits",
+              "comment": "Valve position limits in MW",
+              "null_value": "(min=0.0, max=0.0)",
+              "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+            },
+            {
               "name": "T4",
-              "comment": "Power fraction time constant",
+              "comment": "Time Constant inlet steam",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "K1",
+              "comment": "Fraction of high presure shaft power",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "K2",
+              "comment": "Fraction of low presure shaft power",
               "null_value": 0,
               "data_type": "Float64",
               "valid_range": {
@@ -6347,7 +6415,7 @@
             },
             {
               "name": "T5",
-              "comment": "Reheat time constant",
+              "comment": "Time constant for second boiler pass",
               "null_value": 0,
               "data_type": "Float64",
               "valid_range": {
@@ -6356,8 +6424,8 @@
               }
             },
             {
-              "name": "P_min",
-              "comment": "Min Power into the Governor",
+              "name": "K3",
+              "comment": "Fraction of high presure shaft power second boiler pass",
               "null_value": 0,
               "data_type": "Float64",
               "valid_range": {
@@ -6366,8 +6434,68 @@
               }
             },
             {
-              "name": "P_max",
-              "comment": "Max Power into the Governor",
+              "name": "K4",
+              "comment": "Fraction of low presure shaft power second boiler pass",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "T6",
+              "comment": "Time constant for third boiler pass",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "K5",
+              "comment": "Fraction of high presure shaft power third boiler pass",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "K6",
+              "comment": "Fraction of low presure shaft power third boiler pass",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "T7",
+              "comment": "Time constant for fourth boiler pass",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "K7",
+              "comment": "Fraction of high presure shaft power fourth boiler pass",
+              "null_value": 0,
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              }
+            },
+            {
+              "name": "K8",
+              "comment": "Fraction of low presure shaft power fourth boiler pass",
               "null_value": 0,
               "data_type": "Float64",
               "valid_range": {
@@ -6394,14 +6522,14 @@
             },
             {
               "name": "states",
-              "comment": "The states of the TGTypeI model are:\n\tx_g1: Governor state,\n\tx_g2: Servo state,\n\tx_g3: Reheat state",
-              "internal_default": "[:x_g1, :x_g2, :x_g3]",
+              "comment": "The states of the IEEETurbineGov model are:\n\tx_g1: First Governor integrator,\n\tx_g2: Governor output,\n\tx_g3: First Turbine integrator, \n\tx_g4: Second Turbine Integrator, \n\tx_g5: Third Turbine Integrator, \n\tx_g6: Fourth Turbine Integrator, ",
+              "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6]",
               "data_type": "Vector{Symbol}"
             },
             {
               "name": "n_states",
-              "comment": "TGTypeI has 3 states",
-              "internal_default": 3,
+              "comment": "IEEEG1 has 6 states",
+              "internal_default": 6,
               "data_type": "Int64"
             },
             {
@@ -6478,24 +6606,10 @@
           }
         },
         {
-          "name": "P_min",
-          "comment": "Min Power into the Governor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "P_max",
-          "comment": "Max Power into the Governor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "valve_position_limits",
+          "comment": "Valve position limits in MW",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "P_ref",
@@ -6570,24 +6684,10 @@
           }
         },
         {
-          "name": "τ_min",
-          "comment": "Min Power into the Governor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "τ_max",
-          "comment": "Max Power into the Governor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "τ_limits",
+          "comment": "Power into the governor limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "P_ref",
