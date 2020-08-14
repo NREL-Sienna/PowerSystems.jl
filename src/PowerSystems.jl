@@ -104,6 +104,7 @@ export PSSFixed
 export PSSSimple
 
 #Shaft Exports
+export Shaft
 export SingleMass
 export FiveMassShaft
 
