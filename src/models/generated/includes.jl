@@ -53,6 +53,7 @@ include("TGFixed.jl")
 include("GasTG.jl")
 include("GeneralGovModel.jl")
 include("SteamTurbineGov1.jl")
+include("HydroTurbineGov.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
 include("AverageConverter.jl")
@@ -68,6 +69,7 @@ include("Source.jl")
 export get_AT
 export get_A_set
 export get_Ae
+export get_At
 export get_Be
 export get_D
 export get_D_12
@@ -156,6 +158,7 @@ export get_Td_gov
 export get_Te
 export get_Tf
 export get_Tf_load
+export get_Tg
 export get_Tpelec
 export get_Tq0_p
 export get_Tq0_pp
@@ -163,7 +166,9 @@ export get_Tr
 export get_Ts
 export get_Tsa
 export get_Tsb
+export get_Tw
 export get_UEL_flags
+export get_VELM
 export get_V_lim
 export get_V_pss
 export get_V_ref
@@ -213,6 +218,7 @@ export get_flow_limits
 export get_from
 export get_fuel
 export get_fuel_flag
+export get_gate_position_limits
 export get_inflow
 export get_initial_ace
 export get_initial_energy
@@ -260,6 +266,7 @@ export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
 export get_prime_mover
+export get_q_nl
 export get_r
 export get_ramp_limits
 export get_rate
@@ -317,6 +324,7 @@ export get_ωf
 export set_AT!
 export set_A_set!
 export set_Ae!
+export set_At!
 export set_Be!
 export set_D!
 export set_D_12!
@@ -405,6 +413,7 @@ export set_Td_gov!
 export set_Te!
 export set_Tf!
 export set_Tf_load!
+export set_Tg!
 export set_Tpelec!
 export set_Tq0_p!
 export set_Tq0_pp!
@@ -412,7 +421,9 @@ export set_Tr!
 export set_Ts!
 export set_Tsa!
 export set_Tsb!
+export set_Tw!
 export set_UEL_flags!
+export set_VELM!
 export set_V_lim!
 export set_V_pss!
 export set_V_ref!
@@ -462,6 +473,7 @@ export set_flow_limits!
 export set_from!
 export set_fuel!
 export set_fuel_flag!
+export set_gate_position_limits!
 export set_inflow!
 export set_initial_ace!
 export set_initial_energy!
@@ -509,6 +521,7 @@ export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!
 export set_prime_mover!
+export set_q_nl!
 export set_r!
 export set_ramp_limits!
 export set_rate!

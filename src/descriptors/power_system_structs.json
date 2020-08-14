@@ -6039,7 +6039,7 @@
           "name": "R_lim",
           "comment": "Maximum rate of load increa",
           "null_value": "(up = 0.0, down = 0.0)",
-          "data_type": "NamedTuple{(:up, :dn), Tuple{Float64, Float64}}",
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
           "validation_action": "error"
         },
         {
@@ -6125,7 +6125,141 @@
           "name": "D_T",
           "comment": "Turbine Damping",
           "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tPm: Turbine Power",
+          "internal_default": "[:x_g1, :Pm]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "TGOV1 has 2 states",
+          "internal_default": 2,
+          "data_type": "Int64"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "TurbineGov"
+    },
+    {
+      "struct_name": "HydroTurbineGov",
+      "docstring": "Hydro Turbine-Governor.",
+      "fields": [
+        {
+          "name": "R",
+          "comment": "Permanent droop parameter",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "r",
+          "comment": "Temporary Droop",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tr",
+          "comment": "Governor time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Tf",
+          "comment": "Filter Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "valiation_action": "error"
+        },
+        {
+          "name": "Tg",
+          "comment": "Servo time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "VELM",
+          "comment": "gate velocity limit",
+          "null_value": 0,
           "default": "1.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "gate_position_limits",
+          "comment": "Gate position limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Tw",
+          "comment": "water time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "At",
+          "comment": "Turbine gain",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "D_T",
+          "comment": "Turbine Damping",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "q_nl",
+          "comment": "No-power flow",
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -6999,7 +7133,7 @@
         },
         {
           "name": "participation_factor",
-          "data_type": "NamedTuple{(:up, :dn), Tuple{Float64, Float64}}"
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}"
         },
         {
           "name": "reserve_limit_dn",
