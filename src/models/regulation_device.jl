@@ -1,7 +1,7 @@
-```
+"""
 Parametric struct to allow Injection Devices to be used in regulation services.
 Extends the device type and provides additional fields relevant to regulation services.
-```
+"""
 mutable struct RegulationDevice{T <: StaticInjection} <: Device
     device::T
     droop::Float64
@@ -40,6 +40,9 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
     end
 end
 
+"""
+Default constructor for the Regulation Device
+"""
 function RegulationDevice(
     device::T;
     droop::Float64 = Inf,
