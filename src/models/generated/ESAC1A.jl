@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct AC1A <: AVR
+    mutable struct ESAC1A <: AVR
         Tr::Float64
         Tb::Float64
         Tc::Float64
@@ -29,7 +29,7 @@ This file is auto-generated. Do not edit.
 
 This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.
 The exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.
-Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1A in PSSE and PSLF
+Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds to ESAC1A in PSSE and PSLF
 
 # Arguments
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
@@ -56,11 +56,11 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1A in PSSE and PSL
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int64`: AC1A has 5 states
-- `states_types::Vector{StateTypes.StateType}`: AC1A has 5 states
+- `n_states::Int64`: ESAC1A has 5 states
+- `states_types::Vector{StateTypes.StateType}`: ESAC1A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct AC1A <: AVR
+mutable struct ESAC1A <: AVR
     "Regulator input filter time constant in s"
     Tr::Float64
     "Regulator denominator (lag) time constant in s"
@@ -103,25 +103,25 @@ mutable struct AC1A <: AVR
 	Ve: Integrator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
-    "AC1A has 5 states"
+    "ESAC1A has 5 states"
     n_states::Int64
-    "AC1A has 5 states"
+    "ESAC1A has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function ESAC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
+    ESAC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function AC1A(; Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    AC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, saturation_coeffs, ext, )
+function ESAC1A(; Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
+    ESAC1A(Tr, Tb, Tc, Ka, Ta, Va_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, Vr_lim, V_ref, saturation_coeffs, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
-function AC1A(::Nothing)
-    AC1A(;
+function ESAC1A(::Nothing)
+    ESAC1A(;
         Tr=0,
         Tb=0,
         Tc=0,
@@ -143,92 +143,92 @@ function AC1A(::Nothing)
     )
 end
 
-"""Get [`AC1A`](@ref) `Tr`."""
-get_Tr(value::AC1A) = value.Tr
-"""Get [`AC1A`](@ref) `Tb`."""
-get_Tb(value::AC1A) = value.Tb
-"""Get [`AC1A`](@ref) `Tc`."""
-get_Tc(value::AC1A) = value.Tc
-"""Get [`AC1A`](@ref) `Ka`."""
-get_Ka(value::AC1A) = value.Ka
-"""Get [`AC1A`](@ref) `Ta`."""
-get_Ta(value::AC1A) = value.Ta
-"""Get [`AC1A`](@ref) `Va_lim`."""
-get_Va_lim(value::AC1A) = value.Va_lim
-"""Get [`AC1A`](@ref) `Te`."""
-get_Te(value::AC1A) = value.Te
-"""Get [`AC1A`](@ref) `Kf`."""
-get_Kf(value::AC1A) = value.Kf
-"""Get [`AC1A`](@ref) `Tf`."""
-get_Tf(value::AC1A) = value.Tf
-"""Get [`AC1A`](@ref) `Kc`."""
-get_Kc(value::AC1A) = value.Kc
-"""Get [`AC1A`](@ref) `Kd`."""
-get_Kd(value::AC1A) = value.Kd
-"""Get [`AC1A`](@ref) `Ke`."""
-get_Ke(value::AC1A) = value.Ke
-"""Get [`AC1A`](@ref) `E_sat`."""
-get_E_sat(value::AC1A) = value.E_sat
-"""Get [`AC1A`](@ref) `Se`."""
-get_Se(value::AC1A) = value.Se
-"""Get [`AC1A`](@ref) `Vr_lim`."""
-get_Vr_lim(value::AC1A) = value.Vr_lim
-"""Get [`AC1A`](@ref) `V_ref`."""
-get_V_ref(value::AC1A) = value.V_ref
-"""Get [`AC1A`](@ref) `saturation_coeffs`."""
-get_saturation_coeffs(value::AC1A) = value.saturation_coeffs
-"""Get [`AC1A`](@ref) `ext`."""
-get_ext(value::AC1A) = value.ext
-"""Get [`AC1A`](@ref) `states`."""
-get_states(value::AC1A) = value.states
-"""Get [`AC1A`](@ref) `n_states`."""
-get_n_states(value::AC1A) = value.n_states
-"""Get [`AC1A`](@ref) `states_types`."""
-get_states_types(value::AC1A) = value.states_types
-"""Get [`AC1A`](@ref) `internal`."""
-get_internal(value::AC1A) = value.internal
+"""Get [`ESAC1A`](@ref) `Tr`."""
+get_Tr(value::ESAC1A) = value.Tr
+"""Get [`ESAC1A`](@ref) `Tb`."""
+get_Tb(value::ESAC1A) = value.Tb
+"""Get [`ESAC1A`](@ref) `Tc`."""
+get_Tc(value::ESAC1A) = value.Tc
+"""Get [`ESAC1A`](@ref) `Ka`."""
+get_Ka(value::ESAC1A) = value.Ka
+"""Get [`ESAC1A`](@ref) `Ta`."""
+get_Ta(value::ESAC1A) = value.Ta
+"""Get [`ESAC1A`](@ref) `Va_lim`."""
+get_Va_lim(value::ESAC1A) = value.Va_lim
+"""Get [`ESAC1A`](@ref) `Te`."""
+get_Te(value::ESAC1A) = value.Te
+"""Get [`ESAC1A`](@ref) `Kf`."""
+get_Kf(value::ESAC1A) = value.Kf
+"""Get [`ESAC1A`](@ref) `Tf`."""
+get_Tf(value::ESAC1A) = value.Tf
+"""Get [`ESAC1A`](@ref) `Kc`."""
+get_Kc(value::ESAC1A) = value.Kc
+"""Get [`ESAC1A`](@ref) `Kd`."""
+get_Kd(value::ESAC1A) = value.Kd
+"""Get [`ESAC1A`](@ref) `Ke`."""
+get_Ke(value::ESAC1A) = value.Ke
+"""Get [`ESAC1A`](@ref) `E_sat`."""
+get_E_sat(value::ESAC1A) = value.E_sat
+"""Get [`ESAC1A`](@ref) `Se`."""
+get_Se(value::ESAC1A) = value.Se
+"""Get [`ESAC1A`](@ref) `Vr_lim`."""
+get_Vr_lim(value::ESAC1A) = value.Vr_lim
+"""Get [`ESAC1A`](@ref) `V_ref`."""
+get_V_ref(value::ESAC1A) = value.V_ref
+"""Get [`ESAC1A`](@ref) `saturation_coeffs`."""
+get_saturation_coeffs(value::ESAC1A) = value.saturation_coeffs
+"""Get [`ESAC1A`](@ref) `ext`."""
+get_ext(value::ESAC1A) = value.ext
+"""Get [`ESAC1A`](@ref) `states`."""
+get_states(value::ESAC1A) = value.states
+"""Get [`ESAC1A`](@ref) `n_states`."""
+get_n_states(value::ESAC1A) = value.n_states
+"""Get [`ESAC1A`](@ref) `states_types`."""
+get_states_types(value::ESAC1A) = value.states_types
+"""Get [`ESAC1A`](@ref) `internal`."""
+get_internal(value::ESAC1A) = value.internal
 
-"""Set [`AC1A`](@ref) `Tr`."""
-set_Tr!(value::AC1A, val) = value.Tr = val
-"""Set [`AC1A`](@ref) `Tb`."""
-set_Tb!(value::AC1A, val) = value.Tb = val
-"""Set [`AC1A`](@ref) `Tc`."""
-set_Tc!(value::AC1A, val) = value.Tc = val
-"""Set [`AC1A`](@ref) `Ka`."""
-set_Ka!(value::AC1A, val) = value.Ka = val
-"""Set [`AC1A`](@ref) `Ta`."""
-set_Ta!(value::AC1A, val) = value.Ta = val
-"""Set [`AC1A`](@ref) `Va_lim`."""
-set_Va_lim!(value::AC1A, val) = value.Va_lim = val
-"""Set [`AC1A`](@ref) `Te`."""
-set_Te!(value::AC1A, val) = value.Te = val
-"""Set [`AC1A`](@ref) `Kf`."""
-set_Kf!(value::AC1A, val) = value.Kf = val
-"""Set [`AC1A`](@ref) `Tf`."""
-set_Tf!(value::AC1A, val) = value.Tf = val
-"""Set [`AC1A`](@ref) `Kc`."""
-set_Kc!(value::AC1A, val) = value.Kc = val
-"""Set [`AC1A`](@ref) `Kd`."""
-set_Kd!(value::AC1A, val) = value.Kd = val
-"""Set [`AC1A`](@ref) `Ke`."""
-set_Ke!(value::AC1A, val) = value.Ke = val
-"""Set [`AC1A`](@ref) `E_sat`."""
-set_E_sat!(value::AC1A, val) = value.E_sat = val
-"""Set [`AC1A`](@ref) `Se`."""
-set_Se!(value::AC1A, val) = value.Se = val
-"""Set [`AC1A`](@ref) `Vr_lim`."""
-set_Vr_lim!(value::AC1A, val) = value.Vr_lim = val
-"""Set [`AC1A`](@ref) `V_ref`."""
-set_V_ref!(value::AC1A, val) = value.V_ref = val
-"""Set [`AC1A`](@ref) `saturation_coeffs`."""
-set_saturation_coeffs!(value::AC1A, val) = value.saturation_coeffs = val
-"""Set [`AC1A`](@ref) `ext`."""
-set_ext!(value::AC1A, val) = value.ext = val
-"""Set [`AC1A`](@ref) `states`."""
-set_states!(value::AC1A, val) = value.states = val
-"""Set [`AC1A`](@ref) `n_states`."""
-set_n_states!(value::AC1A, val) = value.n_states = val
-"""Set [`AC1A`](@ref) `states_types`."""
-set_states_types!(value::AC1A, val) = value.states_types = val
-"""Set [`AC1A`](@ref) `internal`."""
-set_internal!(value::AC1A, val) = value.internal = val
+"""Set [`ESAC1A`](@ref) `Tr`."""
+set_Tr!(value::ESAC1A, val) = value.Tr = val
+"""Set [`ESAC1A`](@ref) `Tb`."""
+set_Tb!(value::ESAC1A, val) = value.Tb = val
+"""Set [`ESAC1A`](@ref) `Tc`."""
+set_Tc!(value::ESAC1A, val) = value.Tc = val
+"""Set [`ESAC1A`](@ref) `Ka`."""
+set_Ka!(value::ESAC1A, val) = value.Ka = val
+"""Set [`ESAC1A`](@ref) `Ta`."""
+set_Ta!(value::ESAC1A, val) = value.Ta = val
+"""Set [`ESAC1A`](@ref) `Va_lim`."""
+set_Va_lim!(value::ESAC1A, val) = value.Va_lim = val
+"""Set [`ESAC1A`](@ref) `Te`."""
+set_Te!(value::ESAC1A, val) = value.Te = val
+"""Set [`ESAC1A`](@ref) `Kf`."""
+set_Kf!(value::ESAC1A, val) = value.Kf = val
+"""Set [`ESAC1A`](@ref) `Tf`."""
+set_Tf!(value::ESAC1A, val) = value.Tf = val
+"""Set [`ESAC1A`](@ref) `Kc`."""
+set_Kc!(value::ESAC1A, val) = value.Kc = val
+"""Set [`ESAC1A`](@ref) `Kd`."""
+set_Kd!(value::ESAC1A, val) = value.Kd = val
+"""Set [`ESAC1A`](@ref) `Ke`."""
+set_Ke!(value::ESAC1A, val) = value.Ke = val
+"""Set [`ESAC1A`](@ref) `E_sat`."""
+set_E_sat!(value::ESAC1A, val) = value.E_sat = val
+"""Set [`ESAC1A`](@ref) `Se`."""
+set_Se!(value::ESAC1A, val) = value.Se = val
+"""Set [`ESAC1A`](@ref) `Vr_lim`."""
+set_Vr_lim!(value::ESAC1A, val) = value.Vr_lim = val
+"""Set [`ESAC1A`](@ref) `V_ref`."""
+set_V_ref!(value::ESAC1A, val) = value.V_ref = val
+"""Set [`ESAC1A`](@ref) `saturation_coeffs`."""
+set_saturation_coeffs!(value::ESAC1A, val) = value.saturation_coeffs = val
+"""Set [`ESAC1A`](@ref) `ext`."""
+set_ext!(value::ESAC1A, val) = value.ext = val
+"""Set [`ESAC1A`](@ref) `states`."""
+set_states!(value::ESAC1A, val) = value.states = val
+"""Set [`ESAC1A`](@ref) `n_states`."""
+set_n_states!(value::ESAC1A, val) = value.n_states = val
+"""Set [`ESAC1A`](@ref) `states_types`."""
+set_states_types!(value::ESAC1A, val) = value.states_types = val
+"""Set [`ESAC1A`](@ref) `internal`."""
+set_internal!(value::ESAC1A, val) = value.internal = val
