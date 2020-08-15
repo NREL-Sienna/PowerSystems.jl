@@ -110,11 +110,11 @@ mutable struct ESST4B <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function ESST4B(Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*(pi()&#x2F;180), ext=Dict{String, Any}(), )
+function ESST4B(Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*pi()*inv(180), ext=Dict{String, Any}(), )
     ESST4B(Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, [:Vt, :Vr1, :Vr2, :Vm], 4, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function ESST4B(; Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*(pi()&#x2F;180), ext=Dict{String, Any}(), )
+function ESST4B(; Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*pi()*inv(180), ext=Dict{String, Any}(), )
     ESST4B(Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, )
 end
 

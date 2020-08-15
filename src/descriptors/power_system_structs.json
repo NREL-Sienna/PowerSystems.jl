@@ -4559,7 +4559,7 @@
           "name": "θp_rad",
           "comment": "Potential circuit phase angle (radians)",
           "null_value": 0,
-          "default": "θp*(pi()/180)",
+          "default": "θp*pi()*inv(180)",
           "data_type": "Float64"
         },
         {
