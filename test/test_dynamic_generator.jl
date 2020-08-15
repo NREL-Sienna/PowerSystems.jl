@@ -285,7 +285,7 @@ end
     )
     @test ac1a_avr isa PowerSystems.DynamicComponent
 
-    mod_ac1a_avr = EXAC1A(
+    mod_ac1a_avr = EXAC1(
         Tr = 0.0,
         Tb = 0.0,
         Tc = 0.0,
