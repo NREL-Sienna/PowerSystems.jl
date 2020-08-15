@@ -2,8 +2,8 @@
 
 ## Supported Formats
 - PowerSystems table data (CSV Files)
-- MATPOWER (parsed by PowerModels)
-- PSS/e RAW Files(parsed by PowerModels)
+- MATPOWER (code copied with permision from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
+- PSS/e RAW Files (code copied with permision from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
 - PSS/e DYR Files
 
 
@@ -15,13 +15,13 @@ by category and column with custom names, types, and units.
 Components for each category must be defined in their own CSV file. The
 following categories are currently supported:
 
-* branch.csv
-* bus.csv
-* dc_branch.csv
-* gen.csv
-* load.csv
-* reserves.csv
-* storage.csv
+- branch.csv
+- bus.csv
+- dc_branch.csv
+- gen.csv
+- load.csv
+- reserves.csv
+- storage.csv
 
 These must reside in the directory passed when constructing PowerSystemTableData.
 
@@ -130,11 +130,46 @@ data = PowerSystemTableData(
 sys = System(data, time_series_in_memory = true)
 ```
 
-## MATPOWER / PSS/E
+## MATPOWER / PSS/e
 
-The following code will create a System from a MATPOWER or PSS/E file by first
+The following code will create a System from a MATPOWER or PSS/e file by first
 parsing it with [PowerModels](https://github.com/lanl-ansi/PowerModels.jl).
 
 ```julia
 sys = System(PowerSystems.PowerModelsData("./case5.m"))
 ```
+
+### PSS/e dyr parsing
+
+PSS/e's dynamic model library is extensive, we currently support parsing a limited amount of models out of the box.
+
+**Machine models**
+
+- "GENSAE"
+- "GENSAL"
+- "GENROE"
+- "GENCLS"
+- "GENROU"
+
+**AVR Models**
+
+- "IEEET1"
+- "ESDC1A"
+- "ESAC1A"
+- "ESST4B"
+- "EXAC2"
+- "EXPIC1"
+- "ESAC6A"
+- "EXAC1"
+- "SCRX"
+- "ESDC2A"
+
+**Prime Movers**
+
+- "HYGOV"
+- "IEEEG1"
+- "GGOV1"
+
+**PSS models**
+
+- "IEEEST"
