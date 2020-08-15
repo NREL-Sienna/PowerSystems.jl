@@ -16,8 +16,8 @@ Data Structure Operational Cost Data in Three parts fixed, variable cost and sta
 # Arguments
 - `variable::VariableCost`: variable cost
 - `fixed::Float64`: fixed cost
-- `startup::Float64`: startup cost, validation range: (0, nothing), action if invalid: warn
-- `shutdn::Float64`: shutdown cost, validation range: (0, nothing), action if invalid: warn
+- `startup::Float64`: startup cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `shutdn::Float64`: shutdown cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -55,28 +55,28 @@ function ThreePartCost(::Nothing)
     )
 end
 
-"""Get ThreePartCost variable."""
+"""Get [`ThreePartCost`](@ref) `variable`."""
 get_variable(value::ThreePartCost) = value.variable
-"""Get ThreePartCost fixed."""
+"""Get [`ThreePartCost`](@ref) `fixed`."""
 get_fixed(value::ThreePartCost) = value.fixed
-"""Get ThreePartCost startup."""
+"""Get [`ThreePartCost`](@ref) `startup`."""
 get_startup(value::ThreePartCost) = value.startup
-"""Get ThreePartCost shutdn."""
+"""Get [`ThreePartCost`](@ref) `shutdn`."""
 get_shutdn(value::ThreePartCost) = value.shutdn
 
 InfrastructureSystems.get_forecasts(value::ThreePartCost) = value.forecasts
-"""Get ThreePartCost internal."""
+"""Get [`ThreePartCost`](@ref) `internal`."""
 get_internal(value::ThreePartCost) = value.internal
 
-"""Set ThreePartCost variable."""
-set_variable!(value::ThreePartCost, val::VariableCost) = value.variable = val
-"""Set ThreePartCost fixed."""
-set_fixed!(value::ThreePartCost, val::Float64) = value.fixed = val
-"""Set ThreePartCost startup."""
-set_startup!(value::ThreePartCost, val::Float64) = value.startup = val
-"""Set ThreePartCost shutdn."""
-set_shutdn!(value::ThreePartCost, val::Float64) = value.shutdn = val
+"""Set [`ThreePartCost`](@ref) `variable`."""
+set_variable!(value::ThreePartCost, val) = value.variable = val
+"""Set [`ThreePartCost`](@ref) `fixed`."""
+set_fixed!(value::ThreePartCost, val) = value.fixed = val
+"""Set [`ThreePartCost`](@ref) `startup`."""
+set_startup!(value::ThreePartCost, val) = value.startup = val
+"""Set [`ThreePartCost`](@ref) `shutdn`."""
+set_shutdn!(value::ThreePartCost, val) = value.shutdn = val
 
-InfrastructureSystems.set_forecasts!(value::ThreePartCost, val::InfrastructureSystems.Forecasts) = value.forecasts = val
-"""Set ThreePartCost internal."""
-set_internal!(value::ThreePartCost, val::InfrastructureSystemsInternal) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::ThreePartCost, val) = value.forecasts = val
+"""Set [`ThreePartCost`](@ref) `internal`."""
+set_internal!(value::ThreePartCost, val) = value.internal = val

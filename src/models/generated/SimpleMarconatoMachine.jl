@@ -29,18 +29,18 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
  dynamics is neglected.
 
 # Arguments
-- `R::Float64`: Resistance after EMF in machine per unit, validation range: (0, nothing)
-- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: (0, nothing)
-- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: (0, nothing)
-- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
-- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
-- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
-- `Xq_pp::Float64`: Sub-Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
-- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: (0, nothing)
-- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
-- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: (0, nothing)
-- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: (0, nothing)
-- `T_AA::Float64`: Time constant of d-axis additional leakage, validation range: (0, nothing)
+- `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
+- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
+- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
+- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
+- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
+- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
+- `Xq_pp::Float64`: Sub-Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
+- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
+- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
+- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
+- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
+- `T_AA::Float64`: Time constant of d-axis additional leakage, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `γd::Float64`
 - `γq::Float64`
@@ -119,76 +119,76 @@ function SimpleMarconatoMachine(::Nothing)
     )
 end
 
-"""Get SimpleMarconatoMachine R."""
+"""Get [`SimpleMarconatoMachine`](@ref) `R`."""
 get_R(value::SimpleMarconatoMachine) = value.R
-"""Get SimpleMarconatoMachine Xd."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Xd`."""
 get_Xd(value::SimpleMarconatoMachine) = value.Xd
-"""Get SimpleMarconatoMachine Xq."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Xq`."""
 get_Xq(value::SimpleMarconatoMachine) = value.Xq
-"""Get SimpleMarconatoMachine Xd_p."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Xd_p`."""
 get_Xd_p(value::SimpleMarconatoMachine) = value.Xd_p
-"""Get SimpleMarconatoMachine Xq_p."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Xq_p`."""
 get_Xq_p(value::SimpleMarconatoMachine) = value.Xq_p
-"""Get SimpleMarconatoMachine Xd_pp."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Xd_pp`."""
 get_Xd_pp(value::SimpleMarconatoMachine) = value.Xd_pp
-"""Get SimpleMarconatoMachine Xq_pp."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Xq_pp`."""
 get_Xq_pp(value::SimpleMarconatoMachine) = value.Xq_pp
-"""Get SimpleMarconatoMachine Td0_p."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Td0_p`."""
 get_Td0_p(value::SimpleMarconatoMachine) = value.Td0_p
-"""Get SimpleMarconatoMachine Tq0_p."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Tq0_p`."""
 get_Tq0_p(value::SimpleMarconatoMachine) = value.Tq0_p
-"""Get SimpleMarconatoMachine Td0_pp."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Td0_pp`."""
 get_Td0_pp(value::SimpleMarconatoMachine) = value.Td0_pp
-"""Get SimpleMarconatoMachine Tq0_pp."""
+"""Get [`SimpleMarconatoMachine`](@ref) `Tq0_pp`."""
 get_Tq0_pp(value::SimpleMarconatoMachine) = value.Tq0_pp
-"""Get SimpleMarconatoMachine T_AA."""
+"""Get [`SimpleMarconatoMachine`](@ref) `T_AA`."""
 get_T_AA(value::SimpleMarconatoMachine) = value.T_AA
-"""Get SimpleMarconatoMachine ext."""
+"""Get [`SimpleMarconatoMachine`](@ref) `ext`."""
 get_ext(value::SimpleMarconatoMachine) = value.ext
-"""Get SimpleMarconatoMachine γd."""
+"""Get [`SimpleMarconatoMachine`](@ref) `γd`."""
 get_γd(value::SimpleMarconatoMachine) = value.γd
-"""Get SimpleMarconatoMachine γq."""
+"""Get [`SimpleMarconatoMachine`](@ref) `γq`."""
 get_γq(value::SimpleMarconatoMachine) = value.γq
-"""Get SimpleMarconatoMachine states."""
+"""Get [`SimpleMarconatoMachine`](@ref) `states`."""
 get_states(value::SimpleMarconatoMachine) = value.states
-"""Get SimpleMarconatoMachine n_states."""
+"""Get [`SimpleMarconatoMachine`](@ref) `n_states`."""
 get_n_states(value::SimpleMarconatoMachine) = value.n_states
-"""Get SimpleMarconatoMachine internal."""
+"""Get [`SimpleMarconatoMachine`](@ref) `internal`."""
 get_internal(value::SimpleMarconatoMachine) = value.internal
 
-"""Set SimpleMarconatoMachine R."""
-set_R!(value::SimpleMarconatoMachine, val::Float64) = value.R = val
-"""Set SimpleMarconatoMachine Xd."""
-set_Xd!(value::SimpleMarconatoMachine, val::Float64) = value.Xd = val
-"""Set SimpleMarconatoMachine Xq."""
-set_Xq!(value::SimpleMarconatoMachine, val::Float64) = value.Xq = val
-"""Set SimpleMarconatoMachine Xd_p."""
-set_Xd_p!(value::SimpleMarconatoMachine, val::Float64) = value.Xd_p = val
-"""Set SimpleMarconatoMachine Xq_p."""
-set_Xq_p!(value::SimpleMarconatoMachine, val::Float64) = value.Xq_p = val
-"""Set SimpleMarconatoMachine Xd_pp."""
-set_Xd_pp!(value::SimpleMarconatoMachine, val::Float64) = value.Xd_pp = val
-"""Set SimpleMarconatoMachine Xq_pp."""
-set_Xq_pp!(value::SimpleMarconatoMachine, val::Float64) = value.Xq_pp = val
-"""Set SimpleMarconatoMachine Td0_p."""
-set_Td0_p!(value::SimpleMarconatoMachine, val::Float64) = value.Td0_p = val
-"""Set SimpleMarconatoMachine Tq0_p."""
-set_Tq0_p!(value::SimpleMarconatoMachine, val::Float64) = value.Tq0_p = val
-"""Set SimpleMarconatoMachine Td0_pp."""
-set_Td0_pp!(value::SimpleMarconatoMachine, val::Float64) = value.Td0_pp = val
-"""Set SimpleMarconatoMachine Tq0_pp."""
-set_Tq0_pp!(value::SimpleMarconatoMachine, val::Float64) = value.Tq0_pp = val
-"""Set SimpleMarconatoMachine T_AA."""
-set_T_AA!(value::SimpleMarconatoMachine, val::Float64) = value.T_AA = val
-"""Set SimpleMarconatoMachine ext."""
-set_ext!(value::SimpleMarconatoMachine, val::Dict{String, Any}) = value.ext = val
-"""Set SimpleMarconatoMachine γd."""
-set_γd!(value::SimpleMarconatoMachine, val::Float64) = value.γd = val
-"""Set SimpleMarconatoMachine γq."""
-set_γq!(value::SimpleMarconatoMachine, val::Float64) = value.γq = val
-"""Set SimpleMarconatoMachine states."""
-set_states!(value::SimpleMarconatoMachine, val::Vector{Symbol}) = value.states = val
-"""Set SimpleMarconatoMachine n_states."""
-set_n_states!(value::SimpleMarconatoMachine, val::Int) = value.n_states = val
-"""Set SimpleMarconatoMachine internal."""
-set_internal!(value::SimpleMarconatoMachine, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`SimpleMarconatoMachine`](@ref) `R`."""
+set_R!(value::SimpleMarconatoMachine, val) = value.R = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Xd`."""
+set_Xd!(value::SimpleMarconatoMachine, val) = value.Xd = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Xq`."""
+set_Xq!(value::SimpleMarconatoMachine, val) = value.Xq = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Xd_p`."""
+set_Xd_p!(value::SimpleMarconatoMachine, val) = value.Xd_p = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Xq_p`."""
+set_Xq_p!(value::SimpleMarconatoMachine, val) = value.Xq_p = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Xd_pp`."""
+set_Xd_pp!(value::SimpleMarconatoMachine, val) = value.Xd_pp = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Xq_pp`."""
+set_Xq_pp!(value::SimpleMarconatoMachine, val) = value.Xq_pp = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Td0_p`."""
+set_Td0_p!(value::SimpleMarconatoMachine, val) = value.Td0_p = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Tq0_p`."""
+set_Tq0_p!(value::SimpleMarconatoMachine, val) = value.Tq0_p = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Td0_pp`."""
+set_Td0_pp!(value::SimpleMarconatoMachine, val) = value.Td0_pp = val
+"""Set [`SimpleMarconatoMachine`](@ref) `Tq0_pp`."""
+set_Tq0_pp!(value::SimpleMarconatoMachine, val) = value.Tq0_pp = val
+"""Set [`SimpleMarconatoMachine`](@ref) `T_AA`."""
+set_T_AA!(value::SimpleMarconatoMachine, val) = value.T_AA = val
+"""Set [`SimpleMarconatoMachine`](@ref) `ext`."""
+set_ext!(value::SimpleMarconatoMachine, val) = value.ext = val
+"""Set [`SimpleMarconatoMachine`](@ref) `γd`."""
+set_γd!(value::SimpleMarconatoMachine, val) = value.γd = val
+"""Set [`SimpleMarconatoMachine`](@ref) `γq`."""
+set_γq!(value::SimpleMarconatoMachine, val) = value.γq = val
+"""Set [`SimpleMarconatoMachine`](@ref) `states`."""
+set_states!(value::SimpleMarconatoMachine, val) = value.states = val
+"""Set [`SimpleMarconatoMachine`](@ref) `n_states`."""
+set_n_states!(value::SimpleMarconatoMachine, val) = value.n_states = val
+"""Set [`SimpleMarconatoMachine`](@ref) `internal`."""
+set_internal!(value::SimpleMarconatoMachine, val) = value.internal = val

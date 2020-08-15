@@ -27,11 +27,11 @@ This file is auto-generated. Do not edit.
 - `active_power_flow::Float64`
 - `reactive_power_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: (-2, 2), action if invalid: error
-- `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
-- `primary_shunt::Float64`: System per-unit value, validation range: (0, 2), action if invalid: error
-- `tap::Float64`, validation range: (0, 2), action if invalid: error
-- `rate::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
+- `r::Float64`: System per-unit value, validation range: `(-2, 2)`, action if invalid: `error`
+- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `error`
+- `primary_shunt::Float64`: System per-unit value, validation range: `(0, 2)`, action if invalid: `error`
+- `tap::Float64`, validation range: `(0, 2)`, action if invalid: `error`
+- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -89,58 +89,58 @@ end
 
 
 InfrastructureSystems.get_name(value::TapTransformer) = value.name
-"""Get TapTransformer available."""
+"""Get [`TapTransformer`](@ref) `available`."""
 get_available(value::TapTransformer) = value.available
-"""Get TapTransformer active_power_flow."""
+"""Get [`TapTransformer`](@ref) `active_power_flow`."""
 get_active_power_flow(value::TapTransformer) = get_value(value, value.active_power_flow)
-"""Get TapTransformer reactive_power_flow."""
+"""Get [`TapTransformer`](@ref) `reactive_power_flow`."""
 get_reactive_power_flow(value::TapTransformer) = get_value(value, value.reactive_power_flow)
-"""Get TapTransformer arc."""
+"""Get [`TapTransformer`](@ref) `arc`."""
 get_arc(value::TapTransformer) = value.arc
-"""Get TapTransformer r."""
+"""Get [`TapTransformer`](@ref) `r`."""
 get_r(value::TapTransformer) = value.r
-"""Get TapTransformer x."""
+"""Get [`TapTransformer`](@ref) `x`."""
 get_x(value::TapTransformer) = value.x
-"""Get TapTransformer primary_shunt."""
+"""Get [`TapTransformer`](@ref) `primary_shunt`."""
 get_primary_shunt(value::TapTransformer) = value.primary_shunt
-"""Get TapTransformer tap."""
+"""Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
-"""Get TapTransformer rate."""
+"""Get [`TapTransformer`](@ref) `rate`."""
 get_rate(value::TapTransformer) = get_value(value, value.rate)
-"""Get TapTransformer services."""
+"""Get [`TapTransformer`](@ref) `services`."""
 get_services(value::TapTransformer) = value.services
-"""Get TapTransformer ext."""
+"""Get [`TapTransformer`](@ref) `ext`."""
 get_ext(value::TapTransformer) = value.ext
 
 InfrastructureSystems.get_forecasts(value::TapTransformer) = value.forecasts
-"""Get TapTransformer internal."""
+"""Get [`TapTransformer`](@ref) `internal`."""
 get_internal(value::TapTransformer) = value.internal
 
 
-InfrastructureSystems.set_name!(value::TapTransformer, val::String) = value.name = val
-"""Set TapTransformer available."""
-set_available!(value::TapTransformer, val::Bool) = value.available = val
-"""Set TapTransformer active_power_flow."""
-set_active_power_flow!(value::TapTransformer, val::Float64) = value.active_power_flow = val
-"""Set TapTransformer reactive_power_flow."""
-set_reactive_power_flow!(value::TapTransformer, val::Float64) = value.reactive_power_flow = val
-"""Set TapTransformer arc."""
-set_arc!(value::TapTransformer, val::Arc) = value.arc = val
-"""Set TapTransformer r."""
-set_r!(value::TapTransformer, val::Float64) = value.r = val
-"""Set TapTransformer x."""
-set_x!(value::TapTransformer, val::Float64) = value.x = val
-"""Set TapTransformer primary_shunt."""
-set_primary_shunt!(value::TapTransformer, val::Float64) = value.primary_shunt = val
-"""Set TapTransformer tap."""
-set_tap!(value::TapTransformer, val::Float64) = value.tap = val
-"""Set TapTransformer rate."""
-set_rate!(value::TapTransformer, val::Union{Nothing, Float64}) = value.rate = val
-"""Set TapTransformer services."""
-set_services!(value::TapTransformer, val::Vector{Service}) = value.services = val
-"""Set TapTransformer ext."""
-set_ext!(value::TapTransformer, val::Dict{String, Any}) = value.ext = val
+InfrastructureSystems.set_name!(value::TapTransformer, val) = value.name = val
+"""Set [`TapTransformer`](@ref) `available`."""
+set_available!(value::TapTransformer, val) = value.available = val
+"""Set [`TapTransformer`](@ref) `active_power_flow`."""
+set_active_power_flow!(value::TapTransformer, val) = value.active_power_flow = val
+"""Set [`TapTransformer`](@ref) `reactive_power_flow`."""
+set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow = val
+"""Set [`TapTransformer`](@ref) `arc`."""
+set_arc!(value::TapTransformer, val) = value.arc = val
+"""Set [`TapTransformer`](@ref) `r`."""
+set_r!(value::TapTransformer, val) = value.r = val
+"""Set [`TapTransformer`](@ref) `x`."""
+set_x!(value::TapTransformer, val) = value.x = val
+"""Set [`TapTransformer`](@ref) `primary_shunt`."""
+set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = val
+"""Set [`TapTransformer`](@ref) `tap`."""
+set_tap!(value::TapTransformer, val) = value.tap = val
+"""Set [`TapTransformer`](@ref) `rate`."""
+set_rate!(value::TapTransformer, val) = value.rate = val
+"""Set [`TapTransformer`](@ref) `services`."""
+set_services!(value::TapTransformer, val) = value.services = val
+"""Set [`TapTransformer`](@ref) `ext`."""
+set_ext!(value::TapTransformer, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::TapTransformer, val::InfrastructureSystems.Forecasts) = value.forecasts = val
-"""Set TapTransformer internal."""
-set_internal!(value::TapTransformer, val::InfrastructureSystemsInternal) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::TapTransformer, val) = value.forecasts = val
+"""Set [`TapTransformer`](@ref) `internal`."""
+set_internal!(value::TapTransformer, val) = value.internal = val

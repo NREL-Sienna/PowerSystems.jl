@@ -63,34 +63,34 @@ end
 
 
 InfrastructureSystems.get_name(value::FixedAdmittance) = value.name
-"""Get FixedAdmittance available."""
+"""Get [`FixedAdmittance`](@ref) `available`."""
 get_available(value::FixedAdmittance) = value.available
-"""Get FixedAdmittance bus."""
+"""Get [`FixedAdmittance`](@ref) `bus`."""
 get_bus(value::FixedAdmittance) = value.bus
-"""Get FixedAdmittance Y."""
+"""Get [`FixedAdmittance`](@ref) `Y`."""
 get_Y(value::FixedAdmittance) = value.Y
-"""Get FixedAdmittance services."""
+"""Get [`FixedAdmittance`](@ref) `services`."""
 get_services(value::FixedAdmittance) = value.services
-"""Get FixedAdmittance ext."""
+"""Get [`FixedAdmittance`](@ref) `ext`."""
 get_ext(value::FixedAdmittance) = value.ext
 
 InfrastructureSystems.get_forecasts(value::FixedAdmittance) = value.forecasts
-"""Get FixedAdmittance internal."""
+"""Get [`FixedAdmittance`](@ref) `internal`."""
 get_internal(value::FixedAdmittance) = value.internal
 
 
-InfrastructureSystems.set_name!(value::FixedAdmittance, val::String) = value.name = val
-"""Set FixedAdmittance available."""
-set_available!(value::FixedAdmittance, val::Bool) = value.available = val
-"""Set FixedAdmittance bus."""
-set_bus!(value::FixedAdmittance, val::Bus) = value.bus = val
-"""Set FixedAdmittance Y."""
-set_Y!(value::FixedAdmittance, val::Complex{Float64}) = value.Y = val
-"""Set FixedAdmittance services."""
-set_services!(value::FixedAdmittance, val::Vector{Service}) = value.services = val
-"""Set FixedAdmittance ext."""
-set_ext!(value::FixedAdmittance, val::Dict{String, Any}) = value.ext = val
+InfrastructureSystems.set_name!(value::FixedAdmittance, val) = value.name = val
+"""Set [`FixedAdmittance`](@ref) `available`."""
+set_available!(value::FixedAdmittance, val) = value.available = val
+"""Set [`FixedAdmittance`](@ref) `bus`."""
+set_bus!(value::FixedAdmittance, val) = value.bus = val
+"""Set [`FixedAdmittance`](@ref) `Y`."""
+set_Y!(value::FixedAdmittance, val) = value.Y = val
+"""Set [`FixedAdmittance`](@ref) `services`."""
+set_services!(value::FixedAdmittance, val) = value.services = val
+"""Set [`FixedAdmittance`](@ref) `ext`."""
+set_ext!(value::FixedAdmittance, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::FixedAdmittance, val::InfrastructureSystems.Forecasts) = value.forecasts = val
-"""Set FixedAdmittance internal."""
-set_internal!(value::FixedAdmittance, val::InfrastructureSystemsInternal) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::FixedAdmittance, val) = value.forecasts = val
+"""Set [`FixedAdmittance`](@ref) `internal`."""
+set_internal!(value::FixedAdmittance, val) = value.internal = val

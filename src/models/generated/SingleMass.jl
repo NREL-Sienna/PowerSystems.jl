@@ -14,8 +14,8 @@ This file is auto-generated. Do not edit.
 Parameters of single mass shaft model. Typically represents the rotor mass.
 
 # Arguments
-- `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: (0, nothing)
-- `D::Float64`: Rotor natural damping in pu, validation range: (0, nothing)
+- `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: `(0, nothing)`
+- `D::Float64`: Rotor natural damping in pu, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	δ: rotor angle,
@@ -56,28 +56,28 @@ function SingleMass(::Nothing)
     )
 end
 
-"""Get SingleMass H."""
+"""Get [`SingleMass`](@ref) `H`."""
 get_H(value::SingleMass) = value.H
-"""Get SingleMass D."""
+"""Get [`SingleMass`](@ref) `D`."""
 get_D(value::SingleMass) = value.D
-"""Get SingleMass ext."""
+"""Get [`SingleMass`](@ref) `ext`."""
 get_ext(value::SingleMass) = value.ext
-"""Get SingleMass states."""
+"""Get [`SingleMass`](@ref) `states`."""
 get_states(value::SingleMass) = value.states
-"""Get SingleMass n_states."""
+"""Get [`SingleMass`](@ref) `n_states`."""
 get_n_states(value::SingleMass) = value.n_states
-"""Get SingleMass internal."""
+"""Get [`SingleMass`](@ref) `internal`."""
 get_internal(value::SingleMass) = value.internal
 
-"""Set SingleMass H."""
-set_H!(value::SingleMass, val::Float64) = value.H = val
-"""Set SingleMass D."""
-set_D!(value::SingleMass, val::Float64) = value.D = val
-"""Set SingleMass ext."""
-set_ext!(value::SingleMass, val::Dict{String, Any}) = value.ext = val
-"""Set SingleMass states."""
-set_states!(value::SingleMass, val::Vector{Symbol}) = value.states = val
-"""Set SingleMass n_states."""
-set_n_states!(value::SingleMass, val::Int) = value.n_states = val
-"""Set SingleMass internal."""
-set_internal!(value::SingleMass, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`SingleMass`](@ref) `H`."""
+set_H!(value::SingleMass, val) = value.H = val
+"""Set [`SingleMass`](@ref) `D`."""
+set_D!(value::SingleMass, val) = value.D = val
+"""Set [`SingleMass`](@ref) `ext`."""
+set_ext!(value::SingleMass, val) = value.ext = val
+"""Set [`SingleMass`](@ref) `states`."""
+set_states!(value::SingleMass, val) = value.states = val
+"""Set [`SingleMass`](@ref) `n_states`."""
+set_n_states!(value::SingleMass, val) = value.n_states = val
+"""Set [`SingleMass`](@ref) `internal`."""
+set_internal!(value::SingleMass, val) = value.internal = val

@@ -18,12 +18,12 @@ This file is auto-generated. Do not edit.
 Steam Turbine-Governor. 
 
 # Arguments
-- `R::Float64`: Droop parameter, validation range: (0, nothing)
-- `T1::Float64`: Governor time constant, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
+- `R::Float64`: Droop parameter, validation range: `(0, nothing)`
+- `T1::Float64`: Governor time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits
-- `T2::Float64`: Lead Lag Lead Time constant , validation range: (0, nothing)
-- `T3::Float64`: Lead Lag Lag Time constant , validation range: (&quot;eps()&quot;, nothing), action if invalid: error
-- `D_T::Float64`: Turbine Damping, validation range: (0, nothing)
+- `T2::Float64`: Lead Lag Lead Time constant , validation range: `(0, nothing)`
+- `T3::Float64`: Lead Lag Lag Time constant , validation range: `("eps()", nothing)`, action if invalid: `error`
+- `D_T::Float64`: Turbine Damping, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
@@ -76,44 +76,44 @@ function SteamTurbineGov1(::Nothing)
     )
 end
 
-"""Get SteamTurbineGov1 R."""
+"""Get [`SteamTurbineGov1`](@ref) `R`."""
 get_R(value::SteamTurbineGov1) = value.R
-"""Get SteamTurbineGov1 T1."""
+"""Get [`SteamTurbineGov1`](@ref) `T1`."""
 get_T1(value::SteamTurbineGov1) = value.T1
-"""Get SteamTurbineGov1 valve_position_limits."""
+"""Get [`SteamTurbineGov1`](@ref) `valve_position_limits`."""
 get_valve_position_limits(value::SteamTurbineGov1) = value.valve_position_limits
-"""Get SteamTurbineGov1 T2."""
+"""Get [`SteamTurbineGov1`](@ref) `T2`."""
 get_T2(value::SteamTurbineGov1) = value.T2
-"""Get SteamTurbineGov1 T3."""
+"""Get [`SteamTurbineGov1`](@ref) `T3`."""
 get_T3(value::SteamTurbineGov1) = value.T3
-"""Get SteamTurbineGov1 D_T."""
+"""Get [`SteamTurbineGov1`](@ref) `D_T`."""
 get_D_T(value::SteamTurbineGov1) = value.D_T
-"""Get SteamTurbineGov1 ext."""
+"""Get [`SteamTurbineGov1`](@ref) `ext`."""
 get_ext(value::SteamTurbineGov1) = value.ext
-"""Get SteamTurbineGov1 states."""
+"""Get [`SteamTurbineGov1`](@ref) `states`."""
 get_states(value::SteamTurbineGov1) = value.states
-"""Get SteamTurbineGov1 n_states."""
+"""Get [`SteamTurbineGov1`](@ref) `n_states`."""
 get_n_states(value::SteamTurbineGov1) = value.n_states
-"""Get SteamTurbineGov1 internal."""
+"""Get [`SteamTurbineGov1`](@ref) `internal`."""
 get_internal(value::SteamTurbineGov1) = value.internal
 
-"""Set SteamTurbineGov1 R."""
-set_R!(value::SteamTurbineGov1, val::Float64) = value.R = val
-"""Set SteamTurbineGov1 T1."""
-set_T1!(value::SteamTurbineGov1, val::Float64) = value.T1 = val
-"""Set SteamTurbineGov1 valve_position_limits."""
-set_valve_position_limits!(value::SteamTurbineGov1, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.valve_position_limits = val
-"""Set SteamTurbineGov1 T2."""
-set_T2!(value::SteamTurbineGov1, val::Float64) = value.T2 = val
-"""Set SteamTurbineGov1 T3."""
-set_T3!(value::SteamTurbineGov1, val::Float64) = value.T3 = val
-"""Set SteamTurbineGov1 D_T."""
-set_D_T!(value::SteamTurbineGov1, val::Float64) = value.D_T = val
-"""Set SteamTurbineGov1 ext."""
-set_ext!(value::SteamTurbineGov1, val::Dict{String, Any}) = value.ext = val
-"""Set SteamTurbineGov1 states."""
-set_states!(value::SteamTurbineGov1, val::Vector{Symbol}) = value.states = val
-"""Set SteamTurbineGov1 n_states."""
-set_n_states!(value::SteamTurbineGov1, val::Int) = value.n_states = val
-"""Set SteamTurbineGov1 internal."""
-set_internal!(value::SteamTurbineGov1, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`SteamTurbineGov1`](@ref) `R`."""
+set_R!(value::SteamTurbineGov1, val) = value.R = val
+"""Set [`SteamTurbineGov1`](@ref) `T1`."""
+set_T1!(value::SteamTurbineGov1, val) = value.T1 = val
+"""Set [`SteamTurbineGov1`](@ref) `valve_position_limits`."""
+set_valve_position_limits!(value::SteamTurbineGov1, val) = value.valve_position_limits = val
+"""Set [`SteamTurbineGov1`](@ref) `T2`."""
+set_T2!(value::SteamTurbineGov1, val) = value.T2 = val
+"""Set [`SteamTurbineGov1`](@ref) `T3`."""
+set_T3!(value::SteamTurbineGov1, val) = value.T3 = val
+"""Set [`SteamTurbineGov1`](@ref) `D_T`."""
+set_D_T!(value::SteamTurbineGov1, val) = value.D_T = val
+"""Set [`SteamTurbineGov1`](@ref) `ext`."""
+set_ext!(value::SteamTurbineGov1, val) = value.ext = val
+"""Set [`SteamTurbineGov1`](@ref) `states`."""
+set_states!(value::SteamTurbineGov1, val) = value.states = val
+"""Set [`SteamTurbineGov1`](@ref) `n_states`."""
+set_n_states!(value::SteamTurbineGov1, val) = value.n_states = val
+"""Set [`SteamTurbineGov1`](@ref) `internal`."""
+set_internal!(value::SteamTurbineGov1, val) = value.internal = val

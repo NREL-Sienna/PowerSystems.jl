@@ -34,26 +34,26 @@ This file is auto-generated. Do not edit.
 Generic Proportional/Integral Excitation System
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: (0, nothing)
-- `Ka::Float64`: Voltage regulator gain, validation range: (0, nothing)
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: (0, nothing)
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
+- `Ka::Float64`: Voltage regulator gain, validation range: `(0, nothing)`
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Va_lim::Tuple{Float64, Float64}`: Limits for pi controler (Vr_min, Vr_max)
-- `Ta_2::Float64`: Voltage regulator time constant in s, validation range: (0, nothing)
-- `Ta_3::Float64`: Voltage regulator time constant in s, validation range: (0, nothing)
-- `Ta_4::Float64`: Voltage regulator time constant in s, validation range: (0, nothing)
+- `Ta_2::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
+- `Ta_3::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
+- `Ta_4::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Kf::Float64`: Rate feedback gain, validation range: (0, nothing)
-- `Tf_1::Float64`: Rate Feedback time constant in s, validation range: (&quot;eps()&quot;, nothing)
-- `Tf_2::Float64`: Rate Feedback time constant in s, validation range: (0, nothing)
+- `Kf::Float64`: Rate feedback gain, validation range: `(0, nothing)`
+- `Tf_1::Float64`: Rate Feedback time constant in s, validation range: `("eps()", nothing)`
+- `Tf_2::Float64`: Rate Feedback time constant in s, validation range: `(0, nothing)`
 - `Efd_lim::Tuple{Float64, Float64}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
-- `Ke::Float64`: Exciter constant, validation range: (0, nothing)
-- `Te::Float64`: Exciter time constant, validation range: (0, nothing)
+- `Ke::Float64`: Exciter constant, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter time constant, validation range: `(0, nothing)`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `Kp::Float64`: Potential source gain, validation range: (0, nothing)
-- `Ki::Float64`: current source gain, validation range: (0, nothing)
-- `Kc::Float64`: Exciter regulation factor, validation range: (0, nothing)
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `Kp::Float64`: Potential source gain, validation range: `(0, nothing)`
+- `Ki::Float64`: current source gain, validation range: `(0, nothing)`
+- `Kc::Float64`: Exciter regulation factor, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -165,108 +165,108 @@ function EXPIC1(::Nothing)
     )
 end
 
-"""Get EXPIC1 Tr."""
+"""Get [`EXPIC1`](@ref) `Tr`."""
 get_Tr(value::EXPIC1) = value.Tr
-"""Get EXPIC1 Ka."""
+"""Get [`EXPIC1`](@ref) `Ka`."""
 get_Ka(value::EXPIC1) = value.Ka
-"""Get EXPIC1 Ta."""
+"""Get [`EXPIC1`](@ref) `Ta`."""
 get_Ta(value::EXPIC1) = value.Ta
-"""Get EXPIC1 Va_lim."""
+"""Get [`EXPIC1`](@ref) `Va_lim`."""
 get_Va_lim(value::EXPIC1) = value.Va_lim
-"""Get EXPIC1 Ta_2."""
+"""Get [`EXPIC1`](@ref) `Ta_2`."""
 get_Ta_2(value::EXPIC1) = value.Ta_2
-"""Get EXPIC1 Ta_3."""
+"""Get [`EXPIC1`](@ref) `Ta_3`."""
 get_Ta_3(value::EXPIC1) = value.Ta_3
-"""Get EXPIC1 Ta_4."""
+"""Get [`EXPIC1`](@ref) `Ta_4`."""
 get_Ta_4(value::EXPIC1) = value.Ta_4
-"""Get EXPIC1 Vr_lim."""
+"""Get [`EXPIC1`](@ref) `Vr_lim`."""
 get_Vr_lim(value::EXPIC1) = value.Vr_lim
-"""Get EXPIC1 Kf."""
+"""Get [`EXPIC1`](@ref) `Kf`."""
 get_Kf(value::EXPIC1) = value.Kf
-"""Get EXPIC1 Tf_1."""
+"""Get [`EXPIC1`](@ref) `Tf_1`."""
 get_Tf_1(value::EXPIC1) = value.Tf_1
-"""Get EXPIC1 Tf_2."""
+"""Get [`EXPIC1`](@ref) `Tf_2`."""
 get_Tf_2(value::EXPIC1) = value.Tf_2
-"""Get EXPIC1 Efd_lim."""
+"""Get [`EXPIC1`](@ref) `Efd_lim`."""
 get_Efd_lim(value::EXPIC1) = value.Efd_lim
-"""Get EXPIC1 Ke."""
+"""Get [`EXPIC1`](@ref) `Ke`."""
 get_Ke(value::EXPIC1) = value.Ke
-"""Get EXPIC1 Te."""
+"""Get [`EXPIC1`](@ref) `Te`."""
 get_Te(value::EXPIC1) = value.Te
-"""Get EXPIC1 E_sat."""
+"""Get [`EXPIC1`](@ref) `E_sat`."""
 get_E_sat(value::EXPIC1) = value.E_sat
-"""Get EXPIC1 Se."""
+"""Get [`EXPIC1`](@ref) `Se`."""
 get_Se(value::EXPIC1) = value.Se
-"""Get EXPIC1 Kp."""
+"""Get [`EXPIC1`](@ref) `Kp`."""
 get_Kp(value::EXPIC1) = value.Kp
-"""Get EXPIC1 Ki."""
+"""Get [`EXPIC1`](@ref) `Ki`."""
 get_Ki(value::EXPIC1) = value.Ki
-"""Get EXPIC1 Kc."""
+"""Get [`EXPIC1`](@ref) `Kc`."""
 get_Kc(value::EXPIC1) = value.Kc
-"""Get EXPIC1 V_ref."""
+"""Get [`EXPIC1`](@ref) `V_ref`."""
 get_V_ref(value::EXPIC1) = value.V_ref
-"""Get EXPIC1 saturation_coeffs."""
+"""Get [`EXPIC1`](@ref) `saturation_coeffs`."""
 get_saturation_coeffs(value::EXPIC1) = value.saturation_coeffs
-"""Get EXPIC1 ext."""
+"""Get [`EXPIC1`](@ref) `ext`."""
 get_ext(value::EXPIC1) = value.ext
-"""Get EXPIC1 states."""
+"""Get [`EXPIC1`](@ref) `states`."""
 get_states(value::EXPIC1) = value.states
-"""Get EXPIC1 n_states."""
+"""Get [`EXPIC1`](@ref) `n_states`."""
 get_n_states(value::EXPIC1) = value.n_states
-"""Get EXPIC1 states_types."""
+"""Get [`EXPIC1`](@ref) `states_types`."""
 get_states_types(value::EXPIC1) = value.states_types
-"""Get EXPIC1 internal."""
+"""Get [`EXPIC1`](@ref) `internal`."""
 get_internal(value::EXPIC1) = value.internal
 
-"""Set EXPIC1 Tr."""
-set_Tr!(value::EXPIC1, val::Float64) = value.Tr = val
-"""Set EXPIC1 Ka."""
-set_Ka!(value::EXPIC1, val::Float64) = value.Ka = val
-"""Set EXPIC1 Ta."""
-set_Ta!(value::EXPIC1, val::Float64) = value.Ta = val
-"""Set EXPIC1 Va_lim."""
-set_Va_lim!(value::EXPIC1, val::Tuple{Float64, Float64}) = value.Va_lim = val
-"""Set EXPIC1 Ta_2."""
-set_Ta_2!(value::EXPIC1, val::Float64) = value.Ta_2 = val
-"""Set EXPIC1 Ta_3."""
-set_Ta_3!(value::EXPIC1, val::Float64) = value.Ta_3 = val
-"""Set EXPIC1 Ta_4."""
-set_Ta_4!(value::EXPIC1, val::Float64) = value.Ta_4 = val
-"""Set EXPIC1 Vr_lim."""
-set_Vr_lim!(value::EXPIC1, val::Tuple{Float64, Float64}) = value.Vr_lim = val
-"""Set EXPIC1 Kf."""
-set_Kf!(value::EXPIC1, val::Float64) = value.Kf = val
-"""Set EXPIC1 Tf_1."""
-set_Tf_1!(value::EXPIC1, val::Float64) = value.Tf_1 = val
-"""Set EXPIC1 Tf_2."""
-set_Tf_2!(value::EXPIC1, val::Float64) = value.Tf_2 = val
-"""Set EXPIC1 Efd_lim."""
-set_Efd_lim!(value::EXPIC1, val::Tuple{Float64, Float64}) = value.Efd_lim = val
-"""Set EXPIC1 Ke."""
-set_Ke!(value::EXPIC1, val::Float64) = value.Ke = val
-"""Set EXPIC1 Te."""
-set_Te!(value::EXPIC1, val::Float64) = value.Te = val
-"""Set EXPIC1 E_sat."""
-set_E_sat!(value::EXPIC1, val::Tuple{Float64, Float64}) = value.E_sat = val
-"""Set EXPIC1 Se."""
-set_Se!(value::EXPIC1, val::Tuple{Float64, Float64}) = value.Se = val
-"""Set EXPIC1 Kp."""
-set_Kp!(value::EXPIC1, val::Float64) = value.Kp = val
-"""Set EXPIC1 Ki."""
-set_Ki!(value::EXPIC1, val::Float64) = value.Ki = val
-"""Set EXPIC1 Kc."""
-set_Kc!(value::EXPIC1, val::Float64) = value.Kc = val
-"""Set EXPIC1 V_ref."""
-set_V_ref!(value::EXPIC1, val::Float64) = value.V_ref = val
-"""Set EXPIC1 saturation_coeffs."""
-set_saturation_coeffs!(value::EXPIC1, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
-"""Set EXPIC1 ext."""
-set_ext!(value::EXPIC1, val::Dict{String, Any}) = value.ext = val
-"""Set EXPIC1 states."""
-set_states!(value::EXPIC1, val::Vector{Symbol}) = value.states = val
-"""Set EXPIC1 n_states."""
-set_n_states!(value::EXPIC1, val::Int) = value.n_states = val
-"""Set EXPIC1 states_types."""
-set_states_types!(value::EXPIC1, val::Vector{StateTypes.StateType}) = value.states_types = val
-"""Set EXPIC1 internal."""
-set_internal!(value::EXPIC1, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`EXPIC1`](@ref) `Tr`."""
+set_Tr!(value::EXPIC1, val) = value.Tr = val
+"""Set [`EXPIC1`](@ref) `Ka`."""
+set_Ka!(value::EXPIC1, val) = value.Ka = val
+"""Set [`EXPIC1`](@ref) `Ta`."""
+set_Ta!(value::EXPIC1, val) = value.Ta = val
+"""Set [`EXPIC1`](@ref) `Va_lim`."""
+set_Va_lim!(value::EXPIC1, val) = value.Va_lim = val
+"""Set [`EXPIC1`](@ref) `Ta_2`."""
+set_Ta_2!(value::EXPIC1, val) = value.Ta_2 = val
+"""Set [`EXPIC1`](@ref) `Ta_3`."""
+set_Ta_3!(value::EXPIC1, val) = value.Ta_3 = val
+"""Set [`EXPIC1`](@ref) `Ta_4`."""
+set_Ta_4!(value::EXPIC1, val) = value.Ta_4 = val
+"""Set [`EXPIC1`](@ref) `Vr_lim`."""
+set_Vr_lim!(value::EXPIC1, val) = value.Vr_lim = val
+"""Set [`EXPIC1`](@ref) `Kf`."""
+set_Kf!(value::EXPIC1, val) = value.Kf = val
+"""Set [`EXPIC1`](@ref) `Tf_1`."""
+set_Tf_1!(value::EXPIC1, val) = value.Tf_1 = val
+"""Set [`EXPIC1`](@ref) `Tf_2`."""
+set_Tf_2!(value::EXPIC1, val) = value.Tf_2 = val
+"""Set [`EXPIC1`](@ref) `Efd_lim`."""
+set_Efd_lim!(value::EXPIC1, val) = value.Efd_lim = val
+"""Set [`EXPIC1`](@ref) `Ke`."""
+set_Ke!(value::EXPIC1, val) = value.Ke = val
+"""Set [`EXPIC1`](@ref) `Te`."""
+set_Te!(value::EXPIC1, val) = value.Te = val
+"""Set [`EXPIC1`](@ref) `E_sat`."""
+set_E_sat!(value::EXPIC1, val) = value.E_sat = val
+"""Set [`EXPIC1`](@ref) `Se`."""
+set_Se!(value::EXPIC1, val) = value.Se = val
+"""Set [`EXPIC1`](@ref) `Kp`."""
+set_Kp!(value::EXPIC1, val) = value.Kp = val
+"""Set [`EXPIC1`](@ref) `Ki`."""
+set_Ki!(value::EXPIC1, val) = value.Ki = val
+"""Set [`EXPIC1`](@ref) `Kc`."""
+set_Kc!(value::EXPIC1, val) = value.Kc = val
+"""Set [`EXPIC1`](@ref) `V_ref`."""
+set_V_ref!(value::EXPIC1, val) = value.V_ref = val
+"""Set [`EXPIC1`](@ref) `saturation_coeffs`."""
+set_saturation_coeffs!(value::EXPIC1, val) = value.saturation_coeffs = val
+"""Set [`EXPIC1`](@ref) `ext`."""
+set_ext!(value::EXPIC1, val) = value.ext = val
+"""Set [`EXPIC1`](@ref) `states`."""
+set_states!(value::EXPIC1, val) = value.states = val
+"""Set [`EXPIC1`](@ref) `n_states`."""
+set_n_states!(value::EXPIC1, val) = value.n_states = val
+"""Set [`EXPIC1`](@ref) `states_types`."""
+set_states_types!(value::EXPIC1, val) = value.states_types = val
+"""Set [`EXPIC1`](@ref) `internal`."""
+set_internal!(value::EXPIC1, val) = value.internal = val

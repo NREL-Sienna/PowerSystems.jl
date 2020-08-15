@@ -14,8 +14,8 @@ This file is auto-generated. Do not edit.
 Parameters of a PSS that returns a proportional droop voltage to add to the reference for the AVR
 
 # Arguments
-- `K_ω::Float64`: Proportional gain for frequency, validation range: (0, nothing)
-- `K_p::Float64`: Proportional gain for active power, validation range: (0, nothing)
+- `K_ω::Float64`: Proportional gain for frequency, validation range: `(0, nothing)`
+- `K_p::Float64`: Proportional gain for active power, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int`: PSSSimple has no states
@@ -51,28 +51,28 @@ function PSSSimple(::Nothing)
     )
 end
 
-"""Get PSSSimple K_ω."""
+"""Get [`PSSSimple`](@ref) `K_ω`."""
 get_K_ω(value::PSSSimple) = value.K_ω
-"""Get PSSSimple K_p."""
+"""Get [`PSSSimple`](@ref) `K_p`."""
 get_K_p(value::PSSSimple) = value.K_p
-"""Get PSSSimple ext."""
+"""Get [`PSSSimple`](@ref) `ext`."""
 get_ext(value::PSSSimple) = value.ext
-"""Get PSSSimple states."""
+"""Get [`PSSSimple`](@ref) `states`."""
 get_states(value::PSSSimple) = value.states
-"""Get PSSSimple n_states."""
+"""Get [`PSSSimple`](@ref) `n_states`."""
 get_n_states(value::PSSSimple) = value.n_states
-"""Get PSSSimple internal."""
+"""Get [`PSSSimple`](@ref) `internal`."""
 get_internal(value::PSSSimple) = value.internal
 
-"""Set PSSSimple K_ω."""
-set_K_ω!(value::PSSSimple, val::Float64) = value.K_ω = val
-"""Set PSSSimple K_p."""
-set_K_p!(value::PSSSimple, val::Float64) = value.K_p = val
-"""Set PSSSimple ext."""
-set_ext!(value::PSSSimple, val::Dict{String, Any}) = value.ext = val
-"""Set PSSSimple states."""
-set_states!(value::PSSSimple, val::Vector{Symbol}) = value.states = val
-"""Set PSSSimple n_states."""
-set_n_states!(value::PSSSimple, val::Int) = value.n_states = val
-"""Set PSSSimple internal."""
-set_internal!(value::PSSSimple, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`PSSSimple`](@ref) `K_ω`."""
+set_K_ω!(value::PSSSimple, val) = value.K_ω = val
+"""Set [`PSSSimple`](@ref) `K_p`."""
+set_K_p!(value::PSSSimple, val) = value.K_p = val
+"""Set [`PSSSimple`](@ref) `ext`."""
+set_ext!(value::PSSSimple, val) = value.ext = val
+"""Set [`PSSSimple`](@ref) `states`."""
+set_states!(value::PSSSimple, val) = value.states = val
+"""Set [`PSSSimple`](@ref) `n_states`."""
+set_n_states!(value::PSSSimple, val) = value.n_states = val
+"""Set [`PSSSimple`](@ref) `internal`."""
+set_internal!(value::PSSSimple, val) = value.internal = val

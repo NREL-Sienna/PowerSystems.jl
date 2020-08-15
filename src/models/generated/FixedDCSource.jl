@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
 Parameters of a Fixed DC Source that returns a fixed DC voltage
 
 # Arguments
-- `voltage::Float64`: rated VA, validation range: (0, nothing)
+- `voltage::Float64`: rated VA, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int`: FixedDCSource has no states
@@ -46,24 +46,24 @@ function FixedDCSource(::Nothing)
     )
 end
 
-"""Get FixedDCSource voltage."""
+"""Get [`FixedDCSource`](@ref) `voltage`."""
 get_voltage(value::FixedDCSource) = value.voltage
-"""Get FixedDCSource ext."""
+"""Get [`FixedDCSource`](@ref) `ext`."""
 get_ext(value::FixedDCSource) = value.ext
-"""Get FixedDCSource states."""
+"""Get [`FixedDCSource`](@ref) `states`."""
 get_states(value::FixedDCSource) = value.states
-"""Get FixedDCSource n_states."""
+"""Get [`FixedDCSource`](@ref) `n_states`."""
 get_n_states(value::FixedDCSource) = value.n_states
-"""Get FixedDCSource internal."""
+"""Get [`FixedDCSource`](@ref) `internal`."""
 get_internal(value::FixedDCSource) = value.internal
 
-"""Set FixedDCSource voltage."""
-set_voltage!(value::FixedDCSource, val::Float64) = value.voltage = val
-"""Set FixedDCSource ext."""
-set_ext!(value::FixedDCSource, val::Dict{String, Any}) = value.ext = val
-"""Set FixedDCSource states."""
-set_states!(value::FixedDCSource, val::Vector{Symbol}) = value.states = val
-"""Set FixedDCSource n_states."""
-set_n_states!(value::FixedDCSource, val::Int) = value.n_states = val
-"""Set FixedDCSource internal."""
-set_internal!(value::FixedDCSource, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`FixedDCSource`](@ref) `voltage`."""
+set_voltage!(value::FixedDCSource, val) = value.voltage = val
+"""Set [`FixedDCSource`](@ref) `ext`."""
+set_ext!(value::FixedDCSource, val) = value.ext = val
+"""Set [`FixedDCSource`](@ref) `states`."""
+set_states!(value::FixedDCSource, val) = value.states = val
+"""Set [`FixedDCSource`](@ref) `n_states`."""
+set_n_states!(value::FixedDCSource, val) = value.n_states = val
+"""Set [`FixedDCSource`](@ref) `internal`."""
+set_internal!(value::FixedDCSource, val) = value.internal = val

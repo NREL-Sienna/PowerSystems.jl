@@ -26,18 +26,18 @@ This file is auto-generated. Do not edit.
 1968 IEEE type 1 excitation system model
 
 # Arguments
-- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: (0, nothing)
-- `Ka::Float64`: Amplifier Gain, validation range: (0, nothing)
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: (0, nothing)
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`
+- `Ka::Float64`: Amplifier Gain, validation range: `(0, nothing)`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, nothing)`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Ke::Float64`: Exciter constant related to self-excited field, validation range: (0, nothing)
-- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
-- `Kf::Float64`: Excitation control system stabilizer gain, validation range: (0, nothing)
-- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
-- `switch::Int`: Switch, validation range: (0, 1), action if invalid: error
+- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, nothing)`
+- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -119,76 +119,76 @@ function IEEET1(::Nothing)
     )
 end
 
-"""Get IEEET1 Tr."""
+"""Get [`IEEET1`](@ref) `Tr`."""
 get_Tr(value::IEEET1) = value.Tr
-"""Get IEEET1 Ka."""
+"""Get [`IEEET1`](@ref) `Ka`."""
 get_Ka(value::IEEET1) = value.Ka
-"""Get IEEET1 Ta."""
+"""Get [`IEEET1`](@ref) `Ta`."""
 get_Ta(value::IEEET1) = value.Ta
-"""Get IEEET1 Vr_lim."""
+"""Get [`IEEET1`](@ref) `Vr_lim`."""
 get_Vr_lim(value::IEEET1) = value.Vr_lim
-"""Get IEEET1 Ke."""
+"""Get [`IEEET1`](@ref) `Ke`."""
 get_Ke(value::IEEET1) = value.Ke
-"""Get IEEET1 Te."""
+"""Get [`IEEET1`](@ref) `Te`."""
 get_Te(value::IEEET1) = value.Te
-"""Get IEEET1 Kf."""
+"""Get [`IEEET1`](@ref) `Kf`."""
 get_Kf(value::IEEET1) = value.Kf
-"""Get IEEET1 Tf."""
+"""Get [`IEEET1`](@ref) `Tf`."""
 get_Tf(value::IEEET1) = value.Tf
-"""Get IEEET1 switch."""
+"""Get [`IEEET1`](@ref) `switch`."""
 get_switch(value::IEEET1) = value.switch
-"""Get IEEET1 E_sat."""
+"""Get [`IEEET1`](@ref) `E_sat`."""
 get_E_sat(value::IEEET1) = value.E_sat
-"""Get IEEET1 Se."""
+"""Get [`IEEET1`](@ref) `Se`."""
 get_Se(value::IEEET1) = value.Se
-"""Get IEEET1 V_ref."""
+"""Get [`IEEET1`](@ref) `V_ref`."""
 get_V_ref(value::IEEET1) = value.V_ref
-"""Get IEEET1 saturation_coeffs."""
+"""Get [`IEEET1`](@ref) `saturation_coeffs`."""
 get_saturation_coeffs(value::IEEET1) = value.saturation_coeffs
-"""Get IEEET1 ext."""
+"""Get [`IEEET1`](@ref) `ext`."""
 get_ext(value::IEEET1) = value.ext
-"""Get IEEET1 states."""
+"""Get [`IEEET1`](@ref) `states`."""
 get_states(value::IEEET1) = value.states
-"""Get IEEET1 n_states."""
+"""Get [`IEEET1`](@ref) `n_states`."""
 get_n_states(value::IEEET1) = value.n_states
-"""Get IEEET1 states_types."""
+"""Get [`IEEET1`](@ref) `states_types`."""
 get_states_types(value::IEEET1) = value.states_types
-"""Get IEEET1 internal."""
+"""Get [`IEEET1`](@ref) `internal`."""
 get_internal(value::IEEET1) = value.internal
 
-"""Set IEEET1 Tr."""
-set_Tr!(value::IEEET1, val::Float64) = value.Tr = val
-"""Set IEEET1 Ka."""
-set_Ka!(value::IEEET1, val::Float64) = value.Ka = val
-"""Set IEEET1 Ta."""
-set_Ta!(value::IEEET1, val::Float64) = value.Ta = val
-"""Set IEEET1 Vr_lim."""
-set_Vr_lim!(value::IEEET1, val::Tuple{Float64, Float64}) = value.Vr_lim = val
-"""Set IEEET1 Ke."""
-set_Ke!(value::IEEET1, val::Float64) = value.Ke = val
-"""Set IEEET1 Te."""
-set_Te!(value::IEEET1, val::Float64) = value.Te = val
-"""Set IEEET1 Kf."""
-set_Kf!(value::IEEET1, val::Float64) = value.Kf = val
-"""Set IEEET1 Tf."""
-set_Tf!(value::IEEET1, val::Float64) = value.Tf = val
-"""Set IEEET1 switch."""
-set_switch!(value::IEEET1, val::Int) = value.switch = val
-"""Set IEEET1 E_sat."""
-set_E_sat!(value::IEEET1, val::Tuple{Float64, Float64}) = value.E_sat = val
-"""Set IEEET1 Se."""
-set_Se!(value::IEEET1, val::Tuple{Float64, Float64}) = value.Se = val
-"""Set IEEET1 V_ref."""
-set_V_ref!(value::IEEET1, val::Float64) = value.V_ref = val
-"""Set IEEET1 saturation_coeffs."""
-set_saturation_coeffs!(value::IEEET1, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
-"""Set IEEET1 ext."""
-set_ext!(value::IEEET1, val::Dict{String, Any}) = value.ext = val
-"""Set IEEET1 states."""
-set_states!(value::IEEET1, val::Vector{Symbol}) = value.states = val
-"""Set IEEET1 n_states."""
-set_n_states!(value::IEEET1, val::Int) = value.n_states = val
-"""Set IEEET1 states_types."""
-set_states_types!(value::IEEET1, val::Vector{StateTypes.StateType}) = value.states_types = val
-"""Set IEEET1 internal."""
-set_internal!(value::IEEET1, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`IEEET1`](@ref) `Tr`."""
+set_Tr!(value::IEEET1, val) = value.Tr = val
+"""Set [`IEEET1`](@ref) `Ka`."""
+set_Ka!(value::IEEET1, val) = value.Ka = val
+"""Set [`IEEET1`](@ref) `Ta`."""
+set_Ta!(value::IEEET1, val) = value.Ta = val
+"""Set [`IEEET1`](@ref) `Vr_lim`."""
+set_Vr_lim!(value::IEEET1, val) = value.Vr_lim = val
+"""Set [`IEEET1`](@ref) `Ke`."""
+set_Ke!(value::IEEET1, val) = value.Ke = val
+"""Set [`IEEET1`](@ref) `Te`."""
+set_Te!(value::IEEET1, val) = value.Te = val
+"""Set [`IEEET1`](@ref) `Kf`."""
+set_Kf!(value::IEEET1, val) = value.Kf = val
+"""Set [`IEEET1`](@ref) `Tf`."""
+set_Tf!(value::IEEET1, val) = value.Tf = val
+"""Set [`IEEET1`](@ref) `switch`."""
+set_switch!(value::IEEET1, val) = value.switch = val
+"""Set [`IEEET1`](@ref) `E_sat`."""
+set_E_sat!(value::IEEET1, val) = value.E_sat = val
+"""Set [`IEEET1`](@ref) `Se`."""
+set_Se!(value::IEEET1, val) = value.Se = val
+"""Set [`IEEET1`](@ref) `V_ref`."""
+set_V_ref!(value::IEEET1, val) = value.V_ref = val
+"""Set [`IEEET1`](@ref) `saturation_coeffs`."""
+set_saturation_coeffs!(value::IEEET1, val) = value.saturation_coeffs = val
+"""Set [`IEEET1`](@ref) `ext`."""
+set_ext!(value::IEEET1, val) = value.ext = val
+"""Set [`IEEET1`](@ref) `states`."""
+set_states!(value::IEEET1, val) = value.states = val
+"""Set [`IEEET1`](@ref) `n_states`."""
+set_n_states!(value::IEEET1, val) = value.n_states = val
+"""Set [`IEEET1`](@ref) `states_types`."""
+set_states_types!(value::IEEET1, val) = value.states_types = val
+"""Set [`IEEET1`](@ref) `internal`."""
+set_internal!(value::IEEET1, val) = value.internal = val

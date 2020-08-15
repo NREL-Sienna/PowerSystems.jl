@@ -29,20 +29,20 @@ Self-excited shunt fields with the voltage regulator operating in a mode commonl
 Parameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds to ESDC1A in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: (0, nothing)
-- `Ka::Float64`: Amplifier Gain, validation range: (0, nothing)
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: (0, nothing)
-- `Tb::Float64`: Regulator input Time Constant in s, validation range: (0, nothing)
-- `Tc::Float64`: Regulator input Time Constant in s, validation range: (0, nothing)
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`
+- `Ka::Float64`: Amplifier Gain, validation range: `(0, nothing)`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, nothing)`
+- `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`
+- `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Ke::Float64`: Exciter constant related to self-excited field, validation range: (0, nothing)
-- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
-- `Kf::Float64`: Excitation control system stabilizer gain, validation range: (0, nothing)
-- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
-- `switch::Int`: Switch, validation range: (0, 1), action if invalid: error
+- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, nothing)`
+- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -132,84 +132,84 @@ function ESDC1A(::Nothing)
     )
 end
 
-"""Get ESDC1A Tr."""
+"""Get [`ESDC1A`](@ref) `Tr`."""
 get_Tr(value::ESDC1A) = value.Tr
-"""Get ESDC1A Ka."""
+"""Get [`ESDC1A`](@ref) `Ka`."""
 get_Ka(value::ESDC1A) = value.Ka
-"""Get ESDC1A Ta."""
+"""Get [`ESDC1A`](@ref) `Ta`."""
 get_Ta(value::ESDC1A) = value.Ta
-"""Get ESDC1A Tb."""
+"""Get [`ESDC1A`](@ref) `Tb`."""
 get_Tb(value::ESDC1A) = value.Tb
-"""Get ESDC1A Tc."""
+"""Get [`ESDC1A`](@ref) `Tc`."""
 get_Tc(value::ESDC1A) = value.Tc
-"""Get ESDC1A Vr_lim."""
+"""Get [`ESDC1A`](@ref) `Vr_lim`."""
 get_Vr_lim(value::ESDC1A) = value.Vr_lim
-"""Get ESDC1A Ke."""
+"""Get [`ESDC1A`](@ref) `Ke`."""
 get_Ke(value::ESDC1A) = value.Ke
-"""Get ESDC1A Te."""
+"""Get [`ESDC1A`](@ref) `Te`."""
 get_Te(value::ESDC1A) = value.Te
-"""Get ESDC1A Kf."""
+"""Get [`ESDC1A`](@ref) `Kf`."""
 get_Kf(value::ESDC1A) = value.Kf
-"""Get ESDC1A Tf."""
+"""Get [`ESDC1A`](@ref) `Tf`."""
 get_Tf(value::ESDC1A) = value.Tf
-"""Get ESDC1A switch."""
+"""Get [`ESDC1A`](@ref) `switch`."""
 get_switch(value::ESDC1A) = value.switch
-"""Get ESDC1A E_sat."""
+"""Get [`ESDC1A`](@ref) `E_sat`."""
 get_E_sat(value::ESDC1A) = value.E_sat
-"""Get ESDC1A Se."""
+"""Get [`ESDC1A`](@ref) `Se`."""
 get_Se(value::ESDC1A) = value.Se
-"""Get ESDC1A V_ref."""
+"""Get [`ESDC1A`](@ref) `V_ref`."""
 get_V_ref(value::ESDC1A) = value.V_ref
-"""Get ESDC1A saturation_coeffs."""
+"""Get [`ESDC1A`](@ref) `saturation_coeffs`."""
 get_saturation_coeffs(value::ESDC1A) = value.saturation_coeffs
-"""Get ESDC1A ext."""
+"""Get [`ESDC1A`](@ref) `ext`."""
 get_ext(value::ESDC1A) = value.ext
-"""Get ESDC1A states."""
+"""Get [`ESDC1A`](@ref) `states`."""
 get_states(value::ESDC1A) = value.states
-"""Get ESDC1A n_states."""
+"""Get [`ESDC1A`](@ref) `n_states`."""
 get_n_states(value::ESDC1A) = value.n_states
-"""Get ESDC1A states_types."""
+"""Get [`ESDC1A`](@ref) `states_types`."""
 get_states_types(value::ESDC1A) = value.states_types
-"""Get ESDC1A internal."""
+"""Get [`ESDC1A`](@ref) `internal`."""
 get_internal(value::ESDC1A) = value.internal
 
-"""Set ESDC1A Tr."""
-set_Tr!(value::ESDC1A, val::Float64) = value.Tr = val
-"""Set ESDC1A Ka."""
-set_Ka!(value::ESDC1A, val::Float64) = value.Ka = val
-"""Set ESDC1A Ta."""
-set_Ta!(value::ESDC1A, val::Float64) = value.Ta = val
-"""Set ESDC1A Tb."""
-set_Tb!(value::ESDC1A, val::Float64) = value.Tb = val
-"""Set ESDC1A Tc."""
-set_Tc!(value::ESDC1A, val::Float64) = value.Tc = val
-"""Set ESDC1A Vr_lim."""
-set_Vr_lim!(value::ESDC1A, val::Tuple{Float64, Float64}) = value.Vr_lim = val
-"""Set ESDC1A Ke."""
-set_Ke!(value::ESDC1A, val::Float64) = value.Ke = val
-"""Set ESDC1A Te."""
-set_Te!(value::ESDC1A, val::Float64) = value.Te = val
-"""Set ESDC1A Kf."""
-set_Kf!(value::ESDC1A, val::Float64) = value.Kf = val
-"""Set ESDC1A Tf."""
-set_Tf!(value::ESDC1A, val::Float64) = value.Tf = val
-"""Set ESDC1A switch."""
-set_switch!(value::ESDC1A, val::Int) = value.switch = val
-"""Set ESDC1A E_sat."""
-set_E_sat!(value::ESDC1A, val::Tuple{Float64, Float64}) = value.E_sat = val
-"""Set ESDC1A Se."""
-set_Se!(value::ESDC1A, val::Tuple{Float64, Float64}) = value.Se = val
-"""Set ESDC1A V_ref."""
-set_V_ref!(value::ESDC1A, val::Float64) = value.V_ref = val
-"""Set ESDC1A saturation_coeffs."""
-set_saturation_coeffs!(value::ESDC1A, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
-"""Set ESDC1A ext."""
-set_ext!(value::ESDC1A, val::Dict{String, Any}) = value.ext = val
-"""Set ESDC1A states."""
-set_states!(value::ESDC1A, val::Vector{Symbol}) = value.states = val
-"""Set ESDC1A n_states."""
-set_n_states!(value::ESDC1A, val::Int) = value.n_states = val
-"""Set ESDC1A states_types."""
-set_states_types!(value::ESDC1A, val::Vector{StateTypes.StateType}) = value.states_types = val
-"""Set ESDC1A internal."""
-set_internal!(value::ESDC1A, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`ESDC1A`](@ref) `Tr`."""
+set_Tr!(value::ESDC1A, val) = value.Tr = val
+"""Set [`ESDC1A`](@ref) `Ka`."""
+set_Ka!(value::ESDC1A, val) = value.Ka = val
+"""Set [`ESDC1A`](@ref) `Ta`."""
+set_Ta!(value::ESDC1A, val) = value.Ta = val
+"""Set [`ESDC1A`](@ref) `Tb`."""
+set_Tb!(value::ESDC1A, val) = value.Tb = val
+"""Set [`ESDC1A`](@ref) `Tc`."""
+set_Tc!(value::ESDC1A, val) = value.Tc = val
+"""Set [`ESDC1A`](@ref) `Vr_lim`."""
+set_Vr_lim!(value::ESDC1A, val) = value.Vr_lim = val
+"""Set [`ESDC1A`](@ref) `Ke`."""
+set_Ke!(value::ESDC1A, val) = value.Ke = val
+"""Set [`ESDC1A`](@ref) `Te`."""
+set_Te!(value::ESDC1A, val) = value.Te = val
+"""Set [`ESDC1A`](@ref) `Kf`."""
+set_Kf!(value::ESDC1A, val) = value.Kf = val
+"""Set [`ESDC1A`](@ref) `Tf`."""
+set_Tf!(value::ESDC1A, val) = value.Tf = val
+"""Set [`ESDC1A`](@ref) `switch`."""
+set_switch!(value::ESDC1A, val) = value.switch = val
+"""Set [`ESDC1A`](@ref) `E_sat`."""
+set_E_sat!(value::ESDC1A, val) = value.E_sat = val
+"""Set [`ESDC1A`](@ref) `Se`."""
+set_Se!(value::ESDC1A, val) = value.Se = val
+"""Set [`ESDC1A`](@ref) `V_ref`."""
+set_V_ref!(value::ESDC1A, val) = value.V_ref = val
+"""Set [`ESDC1A`](@ref) `saturation_coeffs`."""
+set_saturation_coeffs!(value::ESDC1A, val) = value.saturation_coeffs = val
+"""Set [`ESDC1A`](@ref) `ext`."""
+set_ext!(value::ESDC1A, val) = value.ext = val
+"""Set [`ESDC1A`](@ref) `states`."""
+set_states!(value::ESDC1A, val) = value.states = val
+"""Set [`ESDC1A`](@ref) `n_states`."""
+set_n_states!(value::ESDC1A, val) = value.n_states = val
+"""Set [`ESDC1A`](@ref) `states_types`."""
+set_states_types!(value::ESDC1A, val) = value.states_types = val
+"""Set [`ESDC1A`](@ref) `internal`."""
+set_internal!(value::ESDC1A, val) = value.internal = val

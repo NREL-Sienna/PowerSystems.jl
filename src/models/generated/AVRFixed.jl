@@ -15,8 +15,8 @@ This file is auto-generated. Do not edit.
 Parameters of a AVR that returns a fixed voltage to the rotor winding
 
 # Arguments
-- `Vf::Float64`: Fixed voltage field applied to the rotor winding, validation range: (0, nothing)
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `Vf::Float64`: Fixed voltage field applied to the rotor winding, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: Fixed AVR has no states
 - `n_states::Int`: Fixed AVR has no states
@@ -56,32 +56,32 @@ function AVRFixed(::Nothing)
     )
 end
 
-"""Get AVRFixed Vf."""
+"""Get [`AVRFixed`](@ref) `Vf`."""
 get_Vf(value::AVRFixed) = value.Vf
-"""Get AVRFixed V_ref."""
+"""Get [`AVRFixed`](@ref) `V_ref`."""
 get_V_ref(value::AVRFixed) = value.V_ref
-"""Get AVRFixed ext."""
+"""Get [`AVRFixed`](@ref) `ext`."""
 get_ext(value::AVRFixed) = value.ext
-"""Get AVRFixed states."""
+"""Get [`AVRFixed`](@ref) `states`."""
 get_states(value::AVRFixed) = value.states
-"""Get AVRFixed n_states."""
+"""Get [`AVRFixed`](@ref) `n_states`."""
 get_n_states(value::AVRFixed) = value.n_states
-"""Get AVRFixed states_types."""
+"""Get [`AVRFixed`](@ref) `states_types`."""
 get_states_types(value::AVRFixed) = value.states_types
-"""Get AVRFixed internal."""
+"""Get [`AVRFixed`](@ref) `internal`."""
 get_internal(value::AVRFixed) = value.internal
 
-"""Set AVRFixed Vf."""
-set_Vf!(value::AVRFixed, val::Float64) = value.Vf = val
-"""Set AVRFixed V_ref."""
-set_V_ref!(value::AVRFixed, val::Float64) = value.V_ref = val
-"""Set AVRFixed ext."""
-set_ext!(value::AVRFixed, val::Dict{String, Any}) = value.ext = val
-"""Set AVRFixed states."""
-set_states!(value::AVRFixed, val::Vector{Symbol}) = value.states = val
-"""Set AVRFixed n_states."""
-set_n_states!(value::AVRFixed, val::Int) = value.n_states = val
-"""Set AVRFixed states_types."""
-set_states_types!(value::AVRFixed, val::Vector{StateTypes.StateType}) = value.states_types = val
-"""Set AVRFixed internal."""
-set_internal!(value::AVRFixed, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`AVRFixed`](@ref) `Vf`."""
+set_Vf!(value::AVRFixed, val) = value.Vf = val
+"""Set [`AVRFixed`](@ref) `V_ref`."""
+set_V_ref!(value::AVRFixed, val) = value.V_ref = val
+"""Set [`AVRFixed`](@ref) `ext`."""
+set_ext!(value::AVRFixed, val) = value.ext = val
+"""Set [`AVRFixed`](@ref) `states`."""
+set_states!(value::AVRFixed, val) = value.states = val
+"""Set [`AVRFixed`](@ref) `n_states`."""
+set_n_states!(value::AVRFixed, val) = value.n_states = val
+"""Set [`AVRFixed`](@ref) `states_types`."""
+set_states_types!(value::AVRFixed, val) = value.states_types = val
+"""Set [`AVRFixed`](@ref) `internal`."""
+set_internal!(value::AVRFixed, val) = value.internal = val

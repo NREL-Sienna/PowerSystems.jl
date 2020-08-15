@@ -22,10 +22,10 @@ A power-system bus.
 - `number::Int`: number associated with the bus
 - `name::String`: the name of the bus
 - `bustype::Union{Nothing, BusTypes.BusType}`: bus type
-- `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: (-1.571, 1.571), action if invalid: error
-- `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: voltage_limits, action if invalid: warn
+- `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`, action if invalid: `error`
+- `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
 - `voltage_limits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
-- `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: (0, nothing), action if invalid: error
+- `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
 - `area::Union{Nothing, Area}`: the area containing the bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the bus
 - `ext::Dict{String, Any}`
@@ -96,48 +96,48 @@ function Bus(::Nothing)
     )
 end
 
-"""Get Bus number."""
+"""Get [`Bus`](@ref) `number`."""
 get_number(value::Bus) = value.number
 
 InfrastructureSystems.get_name(value::Bus) = value.name
-"""Get Bus bustype."""
+"""Get [`Bus`](@ref) `bustype`."""
 get_bustype(value::Bus) = value.bustype
-"""Get Bus angle."""
+"""Get [`Bus`](@ref) `angle`."""
 get_angle(value::Bus) = value.angle
-"""Get Bus magnitude."""
+"""Get [`Bus`](@ref) `magnitude`."""
 get_magnitude(value::Bus) = value.magnitude
-"""Get Bus voltage_limits."""
+"""Get [`Bus`](@ref) `voltage_limits`."""
 get_voltage_limits(value::Bus) = value.voltage_limits
-"""Get Bus base_voltage."""
+"""Get [`Bus`](@ref) `base_voltage`."""
 get_base_voltage(value::Bus) = value.base_voltage
-"""Get Bus area."""
+"""Get [`Bus`](@ref) `area`."""
 get_area(value::Bus) = value.area
-"""Get Bus load_zone."""
+"""Get [`Bus`](@ref) `load_zone`."""
 get_load_zone(value::Bus) = value.load_zone
-"""Get Bus ext."""
+"""Get [`Bus`](@ref) `ext`."""
 get_ext(value::Bus) = value.ext
-"""Get Bus internal."""
+"""Get [`Bus`](@ref) `internal`."""
 get_internal(value::Bus) = value.internal
 
-"""Set Bus number."""
-set_number!(value::Bus, val::Int) = value.number = val
+"""Set [`Bus`](@ref) `number`."""
+set_number!(value::Bus, val) = value.number = val
 
-InfrastructureSystems.set_name!(value::Bus, val::String) = value.name = val
-"""Set Bus bustype."""
-set_bustype!(value::Bus, val::Union{Nothing, BusTypes.BusType}) = value.bustype = val
-"""Set Bus angle."""
-set_angle!(value::Bus, val::Union{Nothing, Float64}) = value.angle = val
-"""Set Bus magnitude."""
-set_magnitude!(value::Bus, val::Union{Nothing, Float64}) = value.magnitude = val
-"""Set Bus voltage_limits."""
-set_voltage_limits!(value::Bus, val::Union{Nothing, Min_Max}) = value.voltage_limits = val
-"""Set Bus base_voltage."""
-set_base_voltage!(value::Bus, val::Union{Nothing, Float64}) = value.base_voltage = val
-"""Set Bus area."""
-set_area!(value::Bus, val::Union{Nothing, Area}) = value.area = val
-"""Set Bus load_zone."""
-set_load_zone!(value::Bus, val::Union{Nothing, LoadZone}) = value.load_zone = val
-"""Set Bus ext."""
-set_ext!(value::Bus, val::Dict{String, Any}) = value.ext = val
-"""Set Bus internal."""
-set_internal!(value::Bus, val::InfrastructureSystemsInternal) = value.internal = val
+InfrastructureSystems.set_name!(value::Bus, val) = value.name = val
+"""Set [`Bus`](@ref) `bustype`."""
+set_bustype!(value::Bus, val) = value.bustype = val
+"""Set [`Bus`](@ref) `angle`."""
+set_angle!(value::Bus, val) = value.angle = val
+"""Set [`Bus`](@ref) `magnitude`."""
+set_magnitude!(value::Bus, val) = value.magnitude = val
+"""Set [`Bus`](@ref) `voltage_limits`."""
+set_voltage_limits!(value::Bus, val) = value.voltage_limits = val
+"""Set [`Bus`](@ref) `base_voltage`."""
+set_base_voltage!(value::Bus, val) = value.base_voltage = val
+"""Set [`Bus`](@ref) `area`."""
+set_area!(value::Bus, val) = value.area = val
+"""Set [`Bus`](@ref) `load_zone`."""
+set_load_zone!(value::Bus, val) = value.load_zone = val
+"""Set [`Bus`](@ref) `ext`."""
+set_ext!(value::Bus, val) = value.ext = val
+"""Set [`Bus`](@ref) `internal`."""
+set_internal!(value::Bus, val) = value.internal = val

@@ -29,14 +29,14 @@ This file is auto-generated. Do not edit.
 - `available::Bool`
 - `bus::Bus`
 - `active_power::Float64`
-- `reactive_power::Float64`, validation range: reactive_power_limits, action if invalid: warn
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
+- `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
-- `reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: warn
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: (0, nothing), action if invalid: error
-- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
-- `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -104,68 +104,68 @@ end
 
 
 InfrastructureSystems.get_name(value::HydroDispatch) = value.name
-"""Get HydroDispatch available."""
+"""Get [`HydroDispatch`](@ref) `available`."""
 get_available(value::HydroDispatch) = value.available
-"""Get HydroDispatch bus."""
+"""Get [`HydroDispatch`](@ref) `bus`."""
 get_bus(value::HydroDispatch) = value.bus
-"""Get HydroDispatch active_power."""
+"""Get [`HydroDispatch`](@ref) `active_power`."""
 get_active_power(value::HydroDispatch) = get_value(value, value.active_power)
-"""Get HydroDispatch reactive_power."""
+"""Get [`HydroDispatch`](@ref) `reactive_power`."""
 get_reactive_power(value::HydroDispatch) = get_value(value, value.reactive_power)
-"""Get HydroDispatch rating."""
+"""Get [`HydroDispatch`](@ref) `rating`."""
 get_rating(value::HydroDispatch) = get_value(value, value.rating)
-"""Get HydroDispatch prime_mover."""
+"""Get [`HydroDispatch`](@ref) `prime_mover`."""
 get_prime_mover(value::HydroDispatch) = value.prime_mover
-"""Get HydroDispatch active_power_limits."""
+"""Get [`HydroDispatch`](@ref) `active_power_limits`."""
 get_active_power_limits(value::HydroDispatch) = get_value(value, value.active_power_limits)
-"""Get HydroDispatch reactive_power_limits."""
+"""Get [`HydroDispatch`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::HydroDispatch) = get_value(value, value.reactive_power_limits)
-"""Get HydroDispatch ramp_limits."""
+"""Get [`HydroDispatch`](@ref) `ramp_limits`."""
 get_ramp_limits(value::HydroDispatch) = get_value(value, value.ramp_limits)
-"""Get HydroDispatch time_limits."""
+"""Get [`HydroDispatch`](@ref) `time_limits`."""
 get_time_limits(value::HydroDispatch) = value.time_limits
-"""Get HydroDispatch base_power."""
+"""Get [`HydroDispatch`](@ref) `base_power`."""
 get_base_power(value::HydroDispatch) = value.base_power
-"""Get HydroDispatch services."""
+"""Get [`HydroDispatch`](@ref) `services`."""
 get_services(value::HydroDispatch) = value.services
-"""Get HydroDispatch dynamic_injector."""
+"""Get [`HydroDispatch`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::HydroDispatch) = value.dynamic_injector
-"""Get HydroDispatch ext."""
+"""Get [`HydroDispatch`](@ref) `ext`."""
 get_ext(value::HydroDispatch) = value.ext
 
 InfrastructureSystems.get_forecasts(value::HydroDispatch) = value.forecasts
-"""Get HydroDispatch internal."""
+"""Get [`HydroDispatch`](@ref) `internal`."""
 get_internal(value::HydroDispatch) = value.internal
 
 
-InfrastructureSystems.set_name!(value::HydroDispatch, val::String) = value.name = val
-"""Set HydroDispatch available."""
-set_available!(value::HydroDispatch, val::Bool) = value.available = val
-"""Set HydroDispatch bus."""
-set_bus!(value::HydroDispatch, val::Bus) = value.bus = val
-"""Set HydroDispatch active_power."""
-set_active_power!(value::HydroDispatch, val::Float64) = value.active_power = val
-"""Set HydroDispatch reactive_power."""
-set_reactive_power!(value::HydroDispatch, val::Float64) = value.reactive_power = val
-"""Set HydroDispatch rating."""
-set_rating!(value::HydroDispatch, val::Float64) = value.rating = val
-"""Set HydroDispatch prime_mover."""
-set_prime_mover!(value::HydroDispatch, val::PrimeMovers.PrimeMover) = value.prime_mover = val
-"""Set HydroDispatch active_power_limits."""
-set_active_power_limits!(value::HydroDispatch, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits = val
-"""Set HydroDispatch reactive_power_limits."""
-set_reactive_power_limits!(value::HydroDispatch, val::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}) = value.reactive_power_limits = val
-"""Set HydroDispatch ramp_limits."""
-set_ramp_limits!(value::HydroDispatch, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.ramp_limits = val
-"""Set HydroDispatch time_limits."""
-set_time_limits!(value::HydroDispatch, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.time_limits = val
-"""Set HydroDispatch base_power."""
-set_base_power!(value::HydroDispatch, val::Float64) = value.base_power = val
-"""Set HydroDispatch services."""
-set_services!(value::HydroDispatch, val::Vector{Service}) = value.services = val
-"""Set HydroDispatch ext."""
-set_ext!(value::HydroDispatch, val::Dict{String, Any}) = value.ext = val
+InfrastructureSystems.set_name!(value::HydroDispatch, val) = value.name = val
+"""Set [`HydroDispatch`](@ref) `available`."""
+set_available!(value::HydroDispatch, val) = value.available = val
+"""Set [`HydroDispatch`](@ref) `bus`."""
+set_bus!(value::HydroDispatch, val) = value.bus = val
+"""Set [`HydroDispatch`](@ref) `active_power`."""
+set_active_power!(value::HydroDispatch, val) = value.active_power = val
+"""Set [`HydroDispatch`](@ref) `reactive_power`."""
+set_reactive_power!(value::HydroDispatch, val) = value.reactive_power = val
+"""Set [`HydroDispatch`](@ref) `rating`."""
+set_rating!(value::HydroDispatch, val) = value.rating = val
+"""Set [`HydroDispatch`](@ref) `prime_mover`."""
+set_prime_mover!(value::HydroDispatch, val) = value.prime_mover = val
+"""Set [`HydroDispatch`](@ref) `active_power_limits`."""
+set_active_power_limits!(value::HydroDispatch, val) = value.active_power_limits = val
+"""Set [`HydroDispatch`](@ref) `reactive_power_limits`."""
+set_reactive_power_limits!(value::HydroDispatch, val) = value.reactive_power_limits = val
+"""Set [`HydroDispatch`](@ref) `ramp_limits`."""
+set_ramp_limits!(value::HydroDispatch, val) = value.ramp_limits = val
+"""Set [`HydroDispatch`](@ref) `time_limits`."""
+set_time_limits!(value::HydroDispatch, val) = value.time_limits = val
+"""Set [`HydroDispatch`](@ref) `base_power`."""
+set_base_power!(value::HydroDispatch, val) = value.base_power = val
+"""Set [`HydroDispatch`](@ref) `services`."""
+set_services!(value::HydroDispatch, val) = value.services = val
+"""Set [`HydroDispatch`](@ref) `ext`."""
+set_ext!(value::HydroDispatch, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::HydroDispatch, val::InfrastructureSystems.Forecasts) = value.forecasts = val
-"""Set HydroDispatch internal."""
-set_internal!(value::HydroDispatch, val::InfrastructureSystemsInternal) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::HydroDispatch, val) = value.forecasts = val
+"""Set [`HydroDispatch`](@ref) `internal`."""
+set_internal!(value::HydroDispatch, val) = value.internal = val

@@ -31,22 +31,22 @@ In these excitation systems, voltage (and also current in compounded systems) is
 Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: (0, nothing)
-- `Kp_r::Float64`: Regulator propotional gain, validation range: (0, nothing)
-- `Ki_r::Float64`: Regulator integral gain, validation range: (0, nothing)
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
+- `Kp_r::Float64`: Regulator propotional gain, validation range: `(0, nothing)`
+- `Ki_r::Float64`: Regulator integral gain, validation range: `(0, nothing)`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (Vi_min, Vi_max)
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: (0, nothing)
-- `Kp_m::Float64`: Voltage regulator proportional gain output, validation range: (0, nothing)
-- `Ki_m::Float64`: Voltage regulator integral gain output, validation range: (0, nothing)
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
+- `Kp_m::Float64`: Voltage regulator proportional gain output, validation range: `(0, nothing)`
+- `Ki_m::Float64`: Voltage regulator integral gain output, validation range: `(0, nothing)`
 - `Vm_lim::Tuple{Float64, Float64}`: Limits for inner loop output (Va_min, Va_max)
-- `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: (0, nothing)
-- `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: (0, nothing)
-- `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: (&quot;eps()&quot;, nothing)
-- `VB_max::Float64`: Maximum available exciter voltage, validation range: (0, nothing)
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: (0, nothing)
-- `Xl::Float64`: Reactance associated with potential source, validation range: (0, nothing)
+- `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, nothing)`
+- `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, nothing)`
+- `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `("eps()", nothing)`
+- `VB_max::Float64`: Maximum available exciter voltage, validation range: `(0, nothing)`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
+- `Xl::Float64`: Reactance associated with potential source, validation range: `(0, nothing)`
 - `θp::Float64`: Potential circuit phase angle (degrees)
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `θp_rad::Float64`: Potential circuit phase angle (radians)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -142,92 +142,92 @@ function ESST4B(::Nothing)
     )
 end
 
-"""Get ESST4B Tr."""
+"""Get [`ESST4B`](@ref) `Tr`."""
 get_Tr(value::ESST4B) = value.Tr
-"""Get ESST4B Kp_r."""
+"""Get [`ESST4B`](@ref) `Kp_r`."""
 get_Kp_r(value::ESST4B) = value.Kp_r
-"""Get ESST4B Ki_r."""
+"""Get [`ESST4B`](@ref) `Ki_r`."""
 get_Ki_r(value::ESST4B) = value.Ki_r
-"""Get ESST4B Vr_lim."""
+"""Get [`ESST4B`](@ref) `Vr_lim`."""
 get_Vr_lim(value::ESST4B) = value.Vr_lim
-"""Get ESST4B Ta."""
+"""Get [`ESST4B`](@ref) `Ta`."""
 get_Ta(value::ESST4B) = value.Ta
-"""Get ESST4B Kp_m."""
+"""Get [`ESST4B`](@ref) `Kp_m`."""
 get_Kp_m(value::ESST4B) = value.Kp_m
-"""Get ESST4B Ki_m."""
+"""Get [`ESST4B`](@ref) `Ki_m`."""
 get_Ki_m(value::ESST4B) = value.Ki_m
-"""Get ESST4B Vm_lim."""
+"""Get [`ESST4B`](@ref) `Vm_lim`."""
 get_Vm_lim(value::ESST4B) = value.Vm_lim
-"""Get ESST4B Kg."""
+"""Get [`ESST4B`](@ref) `Kg`."""
 get_Kg(value::ESST4B) = value.Kg
-"""Get ESST4B Kp."""
+"""Get [`ESST4B`](@ref) `Kp`."""
 get_Kp(value::ESST4B) = value.Kp
-"""Get ESST4B Ki."""
+"""Get [`ESST4B`](@ref) `Ki`."""
 get_Ki(value::ESST4B) = value.Ki
-"""Get ESST4B VB_max."""
+"""Get [`ESST4B`](@ref) `VB_max`."""
 get_VB_max(value::ESST4B) = value.VB_max
-"""Get ESST4B Kc."""
+"""Get [`ESST4B`](@ref) `Kc`."""
 get_Kc(value::ESST4B) = value.Kc
-"""Get ESST4B Xl."""
+"""Get [`ESST4B`](@ref) `Xl`."""
 get_Xl(value::ESST4B) = value.Xl
-"""Get ESST4B θp."""
+"""Get [`ESST4B`](@ref) `θp`."""
 get_θp(value::ESST4B) = value.θp
-"""Get ESST4B V_ref."""
+"""Get [`ESST4B`](@ref) `V_ref`."""
 get_V_ref(value::ESST4B) = value.V_ref
-"""Get ESST4B θp_rad."""
+"""Get [`ESST4B`](@ref) `θp_rad`."""
 get_θp_rad(value::ESST4B) = value.θp_rad
-"""Get ESST4B ext."""
+"""Get [`ESST4B`](@ref) `ext`."""
 get_ext(value::ESST4B) = value.ext
-"""Get ESST4B states."""
+"""Get [`ESST4B`](@ref) `states`."""
 get_states(value::ESST4B) = value.states
-"""Get ESST4B n_states."""
+"""Get [`ESST4B`](@ref) `n_states`."""
 get_n_states(value::ESST4B) = value.n_states
-"""Get ESST4B states_types."""
+"""Get [`ESST4B`](@ref) `states_types`."""
 get_states_types(value::ESST4B) = value.states_types
-"""Get ESST4B internal."""
+"""Get [`ESST4B`](@ref) `internal`."""
 get_internal(value::ESST4B) = value.internal
 
-"""Set ESST4B Tr."""
-set_Tr!(value::ESST4B, val::Float64) = value.Tr = val
-"""Set ESST4B Kp_r."""
-set_Kp_r!(value::ESST4B, val::Float64) = value.Kp_r = val
-"""Set ESST4B Ki_r."""
-set_Ki_r!(value::ESST4B, val::Float64) = value.Ki_r = val
-"""Set ESST4B Vr_lim."""
-set_Vr_lim!(value::ESST4B, val::Tuple{Float64, Float64}) = value.Vr_lim = val
-"""Set ESST4B Ta."""
-set_Ta!(value::ESST4B, val::Float64) = value.Ta = val
-"""Set ESST4B Kp_m."""
-set_Kp_m!(value::ESST4B, val::Float64) = value.Kp_m = val
-"""Set ESST4B Ki_m."""
-set_Ki_m!(value::ESST4B, val::Float64) = value.Ki_m = val
-"""Set ESST4B Vm_lim."""
-set_Vm_lim!(value::ESST4B, val::Tuple{Float64, Float64}) = value.Vm_lim = val
-"""Set ESST4B Kg."""
-set_Kg!(value::ESST4B, val::Float64) = value.Kg = val
-"""Set ESST4B Kp."""
-set_Kp!(value::ESST4B, val::Float64) = value.Kp = val
-"""Set ESST4B Ki."""
-set_Ki!(value::ESST4B, val::Float64) = value.Ki = val
-"""Set ESST4B VB_max."""
-set_VB_max!(value::ESST4B, val::Float64) = value.VB_max = val
-"""Set ESST4B Kc."""
-set_Kc!(value::ESST4B, val::Float64) = value.Kc = val
-"""Set ESST4B Xl."""
-set_Xl!(value::ESST4B, val::Float64) = value.Xl = val
-"""Set ESST4B θp."""
-set_θp!(value::ESST4B, val::Float64) = value.θp = val
-"""Set ESST4B V_ref."""
-set_V_ref!(value::ESST4B, val::Float64) = value.V_ref = val
-"""Set ESST4B θp_rad."""
-set_θp_rad!(value::ESST4B, val::Float64) = value.θp_rad = val
-"""Set ESST4B ext."""
-set_ext!(value::ESST4B, val::Dict{String, Any}) = value.ext = val
-"""Set ESST4B states."""
-set_states!(value::ESST4B, val::Vector{Symbol}) = value.states = val
-"""Set ESST4B n_states."""
-set_n_states!(value::ESST4B, val::Int) = value.n_states = val
-"""Set ESST4B states_types."""
-set_states_types!(value::ESST4B, val::Vector{StateTypes.StateType}) = value.states_types = val
-"""Set ESST4B internal."""
-set_internal!(value::ESST4B, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`ESST4B`](@ref) `Tr`."""
+set_Tr!(value::ESST4B, val) = value.Tr = val
+"""Set [`ESST4B`](@ref) `Kp_r`."""
+set_Kp_r!(value::ESST4B, val) = value.Kp_r = val
+"""Set [`ESST4B`](@ref) `Ki_r`."""
+set_Ki_r!(value::ESST4B, val) = value.Ki_r = val
+"""Set [`ESST4B`](@ref) `Vr_lim`."""
+set_Vr_lim!(value::ESST4B, val) = value.Vr_lim = val
+"""Set [`ESST4B`](@ref) `Ta`."""
+set_Ta!(value::ESST4B, val) = value.Ta = val
+"""Set [`ESST4B`](@ref) `Kp_m`."""
+set_Kp_m!(value::ESST4B, val) = value.Kp_m = val
+"""Set [`ESST4B`](@ref) `Ki_m`."""
+set_Ki_m!(value::ESST4B, val) = value.Ki_m = val
+"""Set [`ESST4B`](@ref) `Vm_lim`."""
+set_Vm_lim!(value::ESST4B, val) = value.Vm_lim = val
+"""Set [`ESST4B`](@ref) `Kg`."""
+set_Kg!(value::ESST4B, val) = value.Kg = val
+"""Set [`ESST4B`](@ref) `Kp`."""
+set_Kp!(value::ESST4B, val) = value.Kp = val
+"""Set [`ESST4B`](@ref) `Ki`."""
+set_Ki!(value::ESST4B, val) = value.Ki = val
+"""Set [`ESST4B`](@ref) `VB_max`."""
+set_VB_max!(value::ESST4B, val) = value.VB_max = val
+"""Set [`ESST4B`](@ref) `Kc`."""
+set_Kc!(value::ESST4B, val) = value.Kc = val
+"""Set [`ESST4B`](@ref) `Xl`."""
+set_Xl!(value::ESST4B, val) = value.Xl = val
+"""Set [`ESST4B`](@ref) `θp`."""
+set_θp!(value::ESST4B, val) = value.θp = val
+"""Set [`ESST4B`](@ref) `V_ref`."""
+set_V_ref!(value::ESST4B, val) = value.V_ref = val
+"""Set [`ESST4B`](@ref) `θp_rad`."""
+set_θp_rad!(value::ESST4B, val) = value.θp_rad = val
+"""Set [`ESST4B`](@ref) `ext`."""
+set_ext!(value::ESST4B, val) = value.ext = val
+"""Set [`ESST4B`](@ref) `states`."""
+set_states!(value::ESST4B, val) = value.states = val
+"""Set [`ESST4B`](@ref) `n_states`."""
+set_n_states!(value::ESST4B, val) = value.n_states = val
+"""Set [`ESST4B`](@ref) `states_types`."""
+set_states_types!(value::ESST4B, val) = value.states_types = val
+"""Set [`ESST4B`](@ref) `internal`."""
+set_internal!(value::ESST4B, val) = value.internal = val

@@ -16,7 +16,7 @@ Data Structure for a group reserve product for system simulations.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `requirement::Float64`: the static value of required reserves in system p.u., validation range: (0, nothing), action if invalid: error
+- `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
 - `contributing_services::Vector{Service}`: Services that contribute for this requirement constraint
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -54,24 +54,24 @@ end
 
 
 InfrastructureSystems.get_name(value::StaticReserveGroup) = value.name
-"""Get StaticReserveGroup available."""
+"""Get [`StaticReserveGroup`](@ref) `available`."""
 get_available(value::StaticReserveGroup) = value.available
-"""Get StaticReserveGroup requirement."""
+"""Get [`StaticReserveGroup`](@ref) `requirement`."""
 get_requirement(value::StaticReserveGroup) = value.requirement
-"""Get StaticReserveGroup ext."""
+"""Get [`StaticReserveGroup`](@ref) `ext`."""
 get_ext(value::StaticReserveGroup) = value.ext
-"""Get StaticReserveGroup contributing_services."""
+"""Get [`StaticReserveGroup`](@ref) `contributing_services`."""
 get_contributing_services(value::StaticReserveGroup) = value.contributing_services
-"""Get StaticReserveGroup internal."""
+"""Get [`StaticReserveGroup`](@ref) `internal`."""
 get_internal(value::StaticReserveGroup) = value.internal
 
 
-InfrastructureSystems.set_name!(value::StaticReserveGroup, val::String) = value.name = val
-"""Set StaticReserveGroup available."""
-set_available!(value::StaticReserveGroup, val::Bool) = value.available = val
-"""Set StaticReserveGroup requirement."""
-set_requirement!(value::StaticReserveGroup, val::Float64) = value.requirement = val
-"""Set StaticReserveGroup ext."""
-set_ext!(value::StaticReserveGroup, val::Dict{String, Any}) = value.ext = val
-"""Set StaticReserveGroup internal."""
-set_internal!(value::StaticReserveGroup, val::InfrastructureSystemsInternal) = value.internal = val
+InfrastructureSystems.set_name!(value::StaticReserveGroup, val) = value.name = val
+"""Set [`StaticReserveGroup`](@ref) `available`."""
+set_available!(value::StaticReserveGroup, val) = value.available = val
+"""Set [`StaticReserveGroup`](@ref) `requirement`."""
+set_requirement!(value::StaticReserveGroup, val) = value.requirement = val
+"""Set [`StaticReserveGroup`](@ref) `ext`."""
+set_ext!(value::StaticReserveGroup, val) = value.ext = val
+"""Set [`StaticReserveGroup`](@ref) `internal`."""
+set_internal!(value::StaticReserveGroup, val) = value.internal = val

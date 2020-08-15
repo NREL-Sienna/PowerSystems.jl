@@ -31,21 +31,21 @@ The exciter does not employ self-excitation, and the voltage regulator power is 
 Parameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: (0, nothing)
-- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: (0, nothing)
-- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: (0, nothing)
-- `Ka::Float64`: Regulator output gain, validation range: (0, nothing)
-- `Ta::Float64`: Regulator output time constant in s, validation range: (0, nothing)
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
+- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, nothing)`
+- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, nothing)`
+- `Ka::Float64`: Regulator output gain, validation range: `(0, nothing)`
+- `Ta::Float64`: Regulator output time constant in s, validation range: `(0, nothing)`
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for regulator output (Vr_min, Vr_max)
-- `Te::Float64`: Exciter field time constant in s, validation range: (&quot;eps()&quot;, nothing)
-- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: (0, nothing)
-- `Tf::Float64`: Rate feedback time constant, validation range: (&quot;eps()&quot;, nothing)
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: (0, nothing)
-- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: (0, nothing)
-- `Ke::Float64`: Exciter field proportional constant, validation range: (0, nothing)
+- `Te::Float64`: Exciter field time constant in s, validation range: `("eps()", nothing)`
+- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, nothing)`
+- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", nothing)`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
+- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, nothing)`
+- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, nothing)`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -137,88 +137,88 @@ function EXAC1(::Nothing)
     )
 end
 
-"""Get EXAC1 Tr."""
+"""Get [`EXAC1`](@ref) `Tr`."""
 get_Tr(value::EXAC1) = value.Tr
-"""Get EXAC1 Tb."""
+"""Get [`EXAC1`](@ref) `Tb`."""
 get_Tb(value::EXAC1) = value.Tb
-"""Get EXAC1 Tc."""
+"""Get [`EXAC1`](@ref) `Tc`."""
 get_Tc(value::EXAC1) = value.Tc
-"""Get EXAC1 Ka."""
+"""Get [`EXAC1`](@ref) `Ka`."""
 get_Ka(value::EXAC1) = value.Ka
-"""Get EXAC1 Ta."""
+"""Get [`EXAC1`](@ref) `Ta`."""
 get_Ta(value::EXAC1) = value.Ta
-"""Get EXAC1 Vr_lim."""
+"""Get [`EXAC1`](@ref) `Vr_lim`."""
 get_Vr_lim(value::EXAC1) = value.Vr_lim
-"""Get EXAC1 Te."""
+"""Get [`EXAC1`](@ref) `Te`."""
 get_Te(value::EXAC1) = value.Te
-"""Get EXAC1 Kf."""
+"""Get [`EXAC1`](@ref) `Kf`."""
 get_Kf(value::EXAC1) = value.Kf
-"""Get EXAC1 Tf."""
+"""Get [`EXAC1`](@ref) `Tf`."""
 get_Tf(value::EXAC1) = value.Tf
-"""Get EXAC1 Kc."""
+"""Get [`EXAC1`](@ref) `Kc`."""
 get_Kc(value::EXAC1) = value.Kc
-"""Get EXAC1 Kd."""
+"""Get [`EXAC1`](@ref) `Kd`."""
 get_Kd(value::EXAC1) = value.Kd
-"""Get EXAC1 Ke."""
+"""Get [`EXAC1`](@ref) `Ke`."""
 get_Ke(value::EXAC1) = value.Ke
-"""Get EXAC1 E_sat."""
+"""Get [`EXAC1`](@ref) `E_sat`."""
 get_E_sat(value::EXAC1) = value.E_sat
-"""Get EXAC1 Se."""
+"""Get [`EXAC1`](@ref) `Se`."""
 get_Se(value::EXAC1) = value.Se
-"""Get EXAC1 V_ref."""
+"""Get [`EXAC1`](@ref) `V_ref`."""
 get_V_ref(value::EXAC1) = value.V_ref
-"""Get EXAC1 saturation_coeffs."""
+"""Get [`EXAC1`](@ref) `saturation_coeffs`."""
 get_saturation_coeffs(value::EXAC1) = value.saturation_coeffs
-"""Get EXAC1 ext."""
+"""Get [`EXAC1`](@ref) `ext`."""
 get_ext(value::EXAC1) = value.ext
-"""Get EXAC1 states."""
+"""Get [`EXAC1`](@ref) `states`."""
 get_states(value::EXAC1) = value.states
-"""Get EXAC1 n_states."""
+"""Get [`EXAC1`](@ref) `n_states`."""
 get_n_states(value::EXAC1) = value.n_states
-"""Get EXAC1 states_types."""
+"""Get [`EXAC1`](@ref) `states_types`."""
 get_states_types(value::EXAC1) = value.states_types
-"""Get EXAC1 internal."""
+"""Get [`EXAC1`](@ref) `internal`."""
 get_internal(value::EXAC1) = value.internal
 
-"""Set EXAC1 Tr."""
-set_Tr!(value::EXAC1, val::Float64) = value.Tr = val
-"""Set EXAC1 Tb."""
-set_Tb!(value::EXAC1, val::Float64) = value.Tb = val
-"""Set EXAC1 Tc."""
-set_Tc!(value::EXAC1, val::Float64) = value.Tc = val
-"""Set EXAC1 Ka."""
-set_Ka!(value::EXAC1, val::Float64) = value.Ka = val
-"""Set EXAC1 Ta."""
-set_Ta!(value::EXAC1, val::Float64) = value.Ta = val
-"""Set EXAC1 Vr_lim."""
-set_Vr_lim!(value::EXAC1, val::Tuple{Float64, Float64}) = value.Vr_lim = val
-"""Set EXAC1 Te."""
-set_Te!(value::EXAC1, val::Float64) = value.Te = val
-"""Set EXAC1 Kf."""
-set_Kf!(value::EXAC1, val::Float64) = value.Kf = val
-"""Set EXAC1 Tf."""
-set_Tf!(value::EXAC1, val::Float64) = value.Tf = val
-"""Set EXAC1 Kc."""
-set_Kc!(value::EXAC1, val::Float64) = value.Kc = val
-"""Set EXAC1 Kd."""
-set_Kd!(value::EXAC1, val::Float64) = value.Kd = val
-"""Set EXAC1 Ke."""
-set_Ke!(value::EXAC1, val::Float64) = value.Ke = val
-"""Set EXAC1 E_sat."""
-set_E_sat!(value::EXAC1, val::Tuple{Float64, Float64}) = value.E_sat = val
-"""Set EXAC1 Se."""
-set_Se!(value::EXAC1, val::Tuple{Float64, Float64}) = value.Se = val
-"""Set EXAC1 V_ref."""
-set_V_ref!(value::EXAC1, val::Float64) = value.V_ref = val
-"""Set EXAC1 saturation_coeffs."""
-set_saturation_coeffs!(value::EXAC1, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
-"""Set EXAC1 ext."""
-set_ext!(value::EXAC1, val::Dict{String, Any}) = value.ext = val
-"""Set EXAC1 states."""
-set_states!(value::EXAC1, val::Vector{Symbol}) = value.states = val
-"""Set EXAC1 n_states."""
-set_n_states!(value::EXAC1, val::Int) = value.n_states = val
-"""Set EXAC1 states_types."""
-set_states_types!(value::EXAC1, val::Vector{StateTypes.StateType}) = value.states_types = val
-"""Set EXAC1 internal."""
-set_internal!(value::EXAC1, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`EXAC1`](@ref) `Tr`."""
+set_Tr!(value::EXAC1, val) = value.Tr = val
+"""Set [`EXAC1`](@ref) `Tb`."""
+set_Tb!(value::EXAC1, val) = value.Tb = val
+"""Set [`EXAC1`](@ref) `Tc`."""
+set_Tc!(value::EXAC1, val) = value.Tc = val
+"""Set [`EXAC1`](@ref) `Ka`."""
+set_Ka!(value::EXAC1, val) = value.Ka = val
+"""Set [`EXAC1`](@ref) `Ta`."""
+set_Ta!(value::EXAC1, val) = value.Ta = val
+"""Set [`EXAC1`](@ref) `Vr_lim`."""
+set_Vr_lim!(value::EXAC1, val) = value.Vr_lim = val
+"""Set [`EXAC1`](@ref) `Te`."""
+set_Te!(value::EXAC1, val) = value.Te = val
+"""Set [`EXAC1`](@ref) `Kf`."""
+set_Kf!(value::EXAC1, val) = value.Kf = val
+"""Set [`EXAC1`](@ref) `Tf`."""
+set_Tf!(value::EXAC1, val) = value.Tf = val
+"""Set [`EXAC1`](@ref) `Kc`."""
+set_Kc!(value::EXAC1, val) = value.Kc = val
+"""Set [`EXAC1`](@ref) `Kd`."""
+set_Kd!(value::EXAC1, val) = value.Kd = val
+"""Set [`EXAC1`](@ref) `Ke`."""
+set_Ke!(value::EXAC1, val) = value.Ke = val
+"""Set [`EXAC1`](@ref) `E_sat`."""
+set_E_sat!(value::EXAC1, val) = value.E_sat = val
+"""Set [`EXAC1`](@ref) `Se`."""
+set_Se!(value::EXAC1, val) = value.Se = val
+"""Set [`EXAC1`](@ref) `V_ref`."""
+set_V_ref!(value::EXAC1, val) = value.V_ref = val
+"""Set [`EXAC1`](@ref) `saturation_coeffs`."""
+set_saturation_coeffs!(value::EXAC1, val) = value.saturation_coeffs = val
+"""Set [`EXAC1`](@ref) `ext`."""
+set_ext!(value::EXAC1, val) = value.ext = val
+"""Set [`EXAC1`](@ref) `states`."""
+set_states!(value::EXAC1, val) = value.states = val
+"""Set [`EXAC1`](@ref) `n_states`."""
+set_n_states!(value::EXAC1, val) = value.n_states = val
+"""Set [`EXAC1`](@ref) `states_types`."""
+set_states_types!(value::EXAC1, val) = value.states_types = val
+"""Set [`EXAC1`](@ref) `internal`."""
+set_internal!(value::EXAC1, val) = value.internal = val
