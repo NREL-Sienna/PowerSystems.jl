@@ -24,7 +24,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 
 ### Parsing capabilities in PowerSystems:
  - MATPOWER CaseFormat
- - PSS/E - PTI Format
+ - PSS/e - PTI Format
  - [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) table data format
 
 ## Installation
