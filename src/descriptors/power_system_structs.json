@@ -3772,8 +3772,8 @@
         {
           "name": "n_states",
           "comment": "SCRX has 2 states",
-          "internal_default": 4,
-          "data_type": "Int64"
+          "internal_default": 2,
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -6933,6 +6933,217 @@
           "name": "n_states",
           "comment": "PSSSimple has no states",
           "internal_default": 0,
+          "data_type": "Int64"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "PSS"
+    },
+    {
+      "struct_name": "IEEEST",
+      "docstring": "IEEE Stabilizing Model PSS. ",
+      "fields": [
+        {
+          "name": "input_code",
+          "comment": "Code input for stabilizar",
+          "null_value": 1,
+          "data_type": "Int64",
+          "valid_range": {
+            "min": 1,
+            "max": 6
+          }
+        },
+        {
+          "name": "remote_bus_control",
+          "comment": "Remot  Bus number for control.",
+          "null_value": 0,
+          "data_type": "Int64"
+        },
+        {
+          "name": "A1",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "A2",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "A3",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "A4",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "A5",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "A6",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T1",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T2",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T3",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T4",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T5",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T6",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": "2.0"
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Ks",
+          "comment": "Proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ls_lim",
+          "comment": "PSS output limits for regulator output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Vcu",
+          "comment": "Cutoff limiter upper bound",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": "1.25"
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Vcl",
+          "comment": "Cutoff limiter lower bound",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": "1.0"
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tx_p1: 1st filter integration,\n\tx_p2: 2nd filter integration, \n\tx_p3: 3rd filter integration, \n\tx_p4: 4rd filter integration, \n\tx_p5: T1/T2 lead-lag integrator, \n\tx_p6: T3/T4 lead-lag integrator, \n\t:x_p7 last integer,",
+          "internal_default": "[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "IEEEST has 7 states",
+          "internal_default": 7,
           "data_type": "Int64"
         },
         {

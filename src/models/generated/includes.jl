@@ -56,6 +56,7 @@ include("SimpleFullMachine.jl")
 include("SimpleMarconatoMachine.jl")
 include("PSSFixed.jl")
 include("PSSSimple.jl")
+include("IEEEST.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
@@ -76,6 +77,12 @@ include("ReactivePowerDroop.jl")
 include("CurrentControl.jl")
 include("Source.jl")
 
+export get_A1
+export get_A2
+export get_A3
+export get_A4
+export get_A5
+export get_A6
 export get_AT
 export get_A_set
 export get_Ae
@@ -142,6 +149,7 @@ export get_Kp_gov
 export get_Kp_load
 export get_Kp_m
 export get_Kp_r
+export get_Ks
 export get_Kt
 export get_Kv
 export get_L_1d
@@ -154,6 +162,7 @@ export get_L_ff
 export get_L_q
 export get_Ld_ref
 export get_Load_ref
+export get_Ls_lim
 export get_PSS_flags
 export get_P_ref
 export get_R
@@ -217,6 +226,8 @@ export get_V_lr
 export get_V_pss
 export get_V_ref
 export get_Va_lim
+export get_Vcl
+export get_Vcu
 export get_Vf
 export get_Vi_lim
 export get_Vm_lim
@@ -269,6 +280,7 @@ export get_initial_ace
 export get_initial_energy
 export get_initial_storage
 export get_input_active_power_limits
+export get_input_code
 export get_internal
 export get_internal_angle
 export get_internal_voltage
@@ -327,6 +339,7 @@ export get_reactive_power_limits_to
 export get_rectifier_firing_angle
 export get_rectifier_tap_limits
 export get_rectifier_xrc
+export get_remote_bus_control
 export get_requirement
 export get_rf
 export get_rg
@@ -369,6 +382,12 @@ export get_τ_limits
 export get_ω_lp
 export get_ωad
 export get_ωf
+export set_A1!
+export set_A2!
+export set_A3!
+export set_A4!
+export set_A5!
+export set_A6!
 export set_AT!
 export set_A_set!
 export set_Ae!
@@ -435,6 +454,7 @@ export set_Kp_gov!
 export set_Kp_load!
 export set_Kp_m!
 export set_Kp_r!
+export set_Ks!
 export set_Kt!
 export set_Kv!
 export set_L_1d!
@@ -447,6 +467,7 @@ export set_L_ff!
 export set_L_q!
 export set_Ld_ref!
 export set_Load_ref!
+export set_Ls_lim!
 export set_PSS_flags!
 export set_P_ref!
 export set_R!
@@ -510,6 +531,8 @@ export set_V_lr!
 export set_V_pss!
 export set_V_ref!
 export set_Va_lim!
+export set_Vcl!
+export set_Vcu!
 export set_Vf!
 export set_Vi_lim!
 export set_Vm_lim!
@@ -562,6 +585,7 @@ export set_initial_ace!
 export set_initial_energy!
 export set_initial_storage!
 export set_input_active_power_limits!
+export set_input_code!
 export set_internal!
 export set_internal_angle!
 export set_internal_voltage!
@@ -620,6 +644,7 @@ export set_reactive_power_limits_to!
 export set_rectifier_firing_angle!
 export set_rectifier_tap_limits!
 export set_rectifier_xrc!
+export set_remote_bus_control!
 export set_requirement!
 export set_rf!
 export set_rg!
