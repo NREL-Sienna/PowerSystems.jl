@@ -38,7 +38,7 @@ include("EXAC1.jl")
 include("EXAC2.jl")
 include("ESAC6A.jl")
 include("EST1A.jl")
-include("EXPIC1.jl")
+include("EXPIC.jl")
 include("ESST4B.jl")
 include("BaseMachine.jl")
 include("RoundRotorMachine.jl")
@@ -90,6 +90,7 @@ export get_D_lp
 export get_D_turb
 export get_Dm
 export get_E_sat
+export get_Efd_lim
 export get_H
 export get_H_ex
 export get_H_hp
@@ -173,6 +174,9 @@ export get_T_act
 export get_T_eng
 export get_T_rate
 export get_Ta
+export get_Ta_2
+export get_Ta_3
+export get_Ta_4
 export get_Tb
 export get_Tb1
 export get_Tc
@@ -182,6 +186,8 @@ export get_Td0_pp
 export get_Td_gov
 export get_Te
 export get_Tf
+export get_Tf_1
+export get_Tf_2
 export get_Tf_load
 export get_Tg
 export get_Th
@@ -375,6 +381,7 @@ export set_D_lp!
 export set_D_turb!
 export set_Dm!
 export set_E_sat!
+export set_Efd_lim!
 export set_H!
 export set_H_ex!
 export set_H_hp!
@@ -458,6 +465,9 @@ export set_T_act!
 export set_T_eng!
 export set_T_rate!
 export set_Ta!
+export set_Ta_2!
+export set_Ta_3!
+export set_Ta_4!
 export set_Tb!
 export set_Tb1!
 export set_Tc!
@@ -467,6 +477,8 @@ export set_Td0_pp!
 export set_Td_gov!
 export set_Te!
 export set_Tf!
+export set_Tf_1!
+export set_Tf_2!
 export set_Tf_load!
 export set_Tg!
 export set_Th!

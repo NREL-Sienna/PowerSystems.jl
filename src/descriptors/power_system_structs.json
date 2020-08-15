@@ -4603,19 +4603,19 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second lead-lag state,\n\tVa: Regulator output state,\n\tVr3: Feedback output state",
-          "internal_default": "[:Vm, :Vr1, :Vr2, :Va, :Vr3]",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second regulator lead-lag state,\n\tVr2: Third regulator lead-lag state \n\tEfd: Exciter output \n\tVr3: First feedback integrator,\n\tVr4: second feedback integrator",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Efd, :Vr3, :Vr4]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
-          "comment": "ST1A has 5 states",
-          "internal_default": 5,
+          "comment": "EXPIC has 6 states",
+          "internal_default": 6,
           "data_type": "Int64"
         },
         {
           "name": "states_types",
-          "comment": "ST1A has 5 states",
+          "comment": "EXPIC has 6 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
