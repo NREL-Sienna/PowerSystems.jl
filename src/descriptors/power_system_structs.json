@@ -3026,182 +3026,338 @@
       ],
       "supertype": "AVR"
     },
+    {
+      "struct_name": "ESDC2A",
+      "docstring": "Is used to represent field-controlled dc commutator exciters with continuously acting voltage regulators having power supplies derived from the generator or auxiliaries bus.. \nParameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds to ESDC2A in PSSE and PSLF",
+      "fields": [
         {
-          "struct_name": "ESDC2A",
-          "docstring": "Is used to represent field-controlled dc commutator exciters with continuously acting voltage regulators having power supplies derived from the generator or auxiliaries bus.. \nParameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds to ESDC2A in PSSE and PSLF",
-          "fields": [
-            {
-              "name": "Tr",
-              "comment": "Voltage Measurement Time Constant in s",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "Ka",
-              "comment": "Amplifier Gain",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "Ta",
-              "comment": "Amplifier Time Constant in s",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "Tb",
-              "comment": "Regulator input Time Constant in s",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "Tc",
-              "comment": "Regulator input Time Constant in s",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "Vr_lim",
-              "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
-              "null_value": "(0.0, 0.0)",
-              "data_type": "Tuple{Float64, Float64}"
-            },
-            {
-              "name": "Ke",
-              "comment": "Exciter constant related to self-excited field",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "Te",
-              "comment": "Exciter time constant, integration rate associated with exciter control",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": "eps()",
-                "max": null
-              },
-              "validation_action": "error"
-            },
-            {
-              "name": "Kf",
-              "comment": "Excitation control system stabilizer gain",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "Tf",
-              "comment": "Excitation control system stabilizer time constant",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": "eps()",
-                "max": null
-              },
-              "validation_action": "error"
-            },
-            {
-              "name": "switch",
-              "comment": "Switch",
-              "null_value": 0,
-              "data_type": "Int",
-              "valid_range": {
-                "min": 0,
-                "max": 1
-              },
-              "validation_action": "error"
-            },
-            {
-              "name": "E_sat",
-              "comment": "Exciter output voltage for saturation factor: (E1, E2)",
-              "null_value": "(0.0, 0.0)",
-              "data_type": "Tuple{Float64, Float64}"
-            },
-            {
-              "name": "Se",
-              "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
-              "null_value": "(0.0, 0.0)",
-              "data_type": "Tuple{Float64, Float64}"
-            },
-            {
-              "name": "V_ref",
-              "comment": "Reference Voltage Set-point",
-              "null_value": 0,
-              "default": "1.0",
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "saturation_coeffs",
-              "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
-              "data_type": "Tuple{Float64, Float64}",
-              "null_value": "(0.0, 0.0)",
-              "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
-            },
-            {
-              "name": "ext",
-              "data_type": "Dict{String, Any}",
-              "null_value": "Dict{String, Any}()",
-              "default": "Dict{String, Any}()"
-            },
-            {
-              "name": "states",
-              "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tEfd: Exciter Output, \n\tVr3: Rate feedback integrator",
-              "internal_default": "[:Vt, :Vr1, :Vr2, :Efd, :Vr3]",
-              "data_type": "Vector{Symbol}"
-            },
-            {
-              "name": "n_states",
-              "comment": "The ESDC1A has 5 states",
-              "internal_default": 4,
-              "data_type": "Int64"
-            },
-            {
-              "name": "states_types",
-              "comment": "ESDC1A I has 5 differential states",
-              "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-              "data_type": "Vector{StateTypes.StateType}"
-            },
-            {
-              "name": "internal",
-              "comment": "power system internal reference, do not modify",
-              "data_type": "InfrastructureSystemsInternal",
-              "internal_default": "InfrastructureSystemsInternal()"
-            }
-          ],
-          "supertype": "AVR"
+          "name": "Tr",
+          "comment": "Voltage Measurement Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
         },
+        {
+          "name": "Ka",
+          "comment": "Amplifier Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ta",
+          "comment": "Amplifier Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tb",
+          "comment": "Regulator input Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tc",
+          "comment": "Regulator input Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter constant related to self-excited field",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter time constant, integration rate associated with exciter control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kf",
+          "comment": "Excitation control system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tf",
+          "comment": "Excitation control system stabilizer time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "switch",
+          "comment": "Switch",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tEfd: Exciter Output, \n\tVr3: Rate feedback integrator",
+          "internal_default": "[:Vt, :Vr1, :Vr2, :Efd, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "The ESDC1A has 5 states",
+          "internal_default": 4,
+          "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "ESDC1A I has 5 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "IEEET1",
+      "docstring": "1968 IEEE type 1 excitation system model",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Voltage Measurement Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ka",
+          "comment": "Amplifier Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ta",
+          "comment": "Amplifier Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter constant related to self-excited field",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter time constant, integration rate associated with exciter control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kf",
+          "comment": "Excitation control system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tf",
+          "comment": "Excitation control system stabilizer time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "switch",
+          "comment": "Switch",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr: Regulator Output,\n\tEfd: Exciter Output, \n\tVr3: Rate feedback integrator",
+          "internal_default": "[:Vt, :Vr1, :Efd, :Vr2]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "The IEEET1 has 5 states",
+          "internal_default": 4,
+          "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "IEEET1 I has 5 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
     {
       "struct_name": "AVRTypeI",
       "docstring": "Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1",
