@@ -66,14 +66,14 @@ EXAC1:
   AVR: EXAC1
 }
 
-EXAC2:
-- {
-  AVR: EXAC2
-}
-
 EXAC1A:
 - {
   AVR: EXAC1A
+}
+
+EXAC2:
+- {
+  AVR: EXAC2
 }
 
 EXPIC1:

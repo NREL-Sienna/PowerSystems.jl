@@ -4821,7 +4821,7 @@
       "supertype": "AVR"
     },
     {
-      "struct_name": "EST1A",
+      "struct_name": "ESST1A",
       "docstring": "This excitation system supplies power through a transformer from the generator terminals and its regulated by a controlled rectifier (via thyristors).\nParameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF",
       "fields": [
         {
