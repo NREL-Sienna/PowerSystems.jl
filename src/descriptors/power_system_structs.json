@@ -3556,8 +3556,8 @@
       "supertype": "AVR"
     },
     {
-      "struct_name": "ModifiedAC1A",
-      "docstring": "Parameters of Modified Type AC1A Excitacion System. EXAC1 in PSSE and PSLF",
+      "struct_name": "EXAC1",
+      "docstring": "Modified ESAC1A. This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF",
       "fields": [
         {
           "name": "Tr",
@@ -3725,7 +3725,236 @@
         },
         {
           "name": "states_types",
-          "comment": "ModifiedAC1A has 5 states",
+          "comment": "EXAC1 has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "EXAC2",
+      "docstring": "Modified AC2. This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main exciter is used, feeding its output via non-controlled rectifiers. The Type AC2C model is similar to that of Type AC1C except for the inclusion of exciter time constant compensation and exciter field current limiting elements. EXAC2 in PSSE and PSLF.",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tb",
+          "comment": "Regulator denominator (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tc",
+          "comment": "Regulator numerator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ka",
+          "comment": "Regulator output gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ta",
+          "comment": "Regulator output time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Va_lim",
+          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kb",
+          "comment": "Second Stage regulator gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Limits for exciter field voltage (Vr_min, Vr_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter field time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "Kl",
+          "comment": "Exciter field current limiter gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kh",
+          "comment": "Exciter field current regulator feedback gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kf",
+          "comment": "Rate feedback excitation system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tf",
+          "comment": "Rate feedback time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "Kc",
+          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kd",
+          "comment": "Demagnetizing factor, function of exciter alternator reactances",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter field proportional constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_lr",
+          "comment": "Maximum exciter field current",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "",
+          "internal_default": 5,
+          "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "EXAC1 has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },

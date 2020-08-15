@@ -34,7 +34,8 @@ include("AVRTypeI.jl")
 include("AVRTypeII.jl")
 include("ESAC1A.jl")
 include("EXAC1A.jl")
-include("ModifiedAC1A.jl")
+include("EXAC1.jl")
+include("EXAC2.jl")
 include("ST1A.jl")
 include("BaseMachine.jl")
 include("RoundRotorMachine.jl")
@@ -113,14 +114,17 @@ export get_K_p
 export get_K_turb
 export get_K_ω
 export get_Ka
+export get_Kb
 export get_Kc
 export get_Kd
 export get_Kd_gov
 export get_Ke
 export get_Kf
+export get_Kh
 export get_Ki_gov
 export get_Ki_load
 export get_Ki_mw
+export get_Kl
 export get_Kp_gov
 export get_Kp_load
 export get_Kt
@@ -183,6 +187,7 @@ export get_UEL_flags
 export get_U_c
 export get_VELM
 export get_V_lim
+export get_V_lr
 export get_V_pss
 export get_V_ref
 export get_Va_lim
@@ -378,14 +383,17 @@ export set_K_p!
 export set_K_turb!
 export set_K_ω!
 export set_Ka!
+export set_Kb!
 export set_Kc!
 export set_Kd!
 export set_Kd_gov!
 export set_Ke!
 export set_Kf!
+export set_Kh!
 export set_Ki_gov!
 export set_Ki_load!
 export set_Ki_mw!
+export set_Kl!
 export set_Kp_gov!
 export set_Kp_load!
 export set_Kt!
@@ -448,6 +456,7 @@ export set_UEL_flags!
 export set_U_c!
 export set_VELM!
 export set_V_lim!
+export set_V_lr!
 export set_V_pss!
 export set_V_ref!
 export set_Va_lim!
