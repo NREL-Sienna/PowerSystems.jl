@@ -13,7 +13,7 @@ Data Structure Operational Cost Data in two parts: fixed and variable cost.
 
 # Arguments
 - `variable::VariableCost`: variable cost
-- `fixed::Float64`: fixed cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `fixed::Float64`: fixed cost, validation range: (0, nothing), action if invalid: warn
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -45,20 +45,20 @@ function TwoPartCost(::Nothing)
     )
 end
 
-"""Get [`TwoPartCost`](@ref) `variable`."""
+"""Get TwoPartCost variable."""
 get_variable(value::TwoPartCost) = value.variable
-"""Get [`TwoPartCost`](@ref) `fixed`."""
+"""Get TwoPartCost fixed."""
 get_fixed(value::TwoPartCost) = value.fixed
 
 InfrastructureSystems.get_forecasts(value::TwoPartCost) = value.forecasts
-"""Get [`TwoPartCost`](@ref) `internal`."""
+"""Get TwoPartCost internal."""
 get_internal(value::TwoPartCost) = value.internal
 
-"""Set [`TwoPartCost`](@ref) `variable`."""
-set_variable!(value::TwoPartCost, val) = value.variable = val
-"""Set [`TwoPartCost`](@ref) `fixed`."""
-set_fixed!(value::TwoPartCost, val) = value.fixed = val
+"""Set TwoPartCost variable."""
+set_variable!(value::TwoPartCost, val::VariableCost) = value.variable = val
+"""Set TwoPartCost fixed."""
+set_fixed!(value::TwoPartCost, val::Float64) = value.fixed = val
 
-InfrastructureSystems.set_forecasts!(value::TwoPartCost, val) = value.forecasts = val
-"""Set [`TwoPartCost`](@ref) `internal`."""
-set_internal!(value::TwoPartCost, val) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::TwoPartCost, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+"""Set TwoPartCost internal."""
+set_internal!(value::TwoPartCost, val::InfrastructureSystemsInternal) = value.internal = val

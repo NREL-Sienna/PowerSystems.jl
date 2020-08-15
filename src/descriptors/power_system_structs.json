@@ -3012,14 +3012,14 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tEfd: Exciter Output, \n\tVr3: Rate feedback integrator",
-          "internal_default": "[:Vt, :Vr1, :Vr2, :Efd, :Vr3]",
+          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+          "internal_default": "[:Vt, :Vr1, :Vr2, :Vf, :Vr3]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "comment": "The ESDC1A has 5 states",
-          "internal_default": 4,
+          "internal_default": 5,
           "data_type": "Int"
         },
         {
@@ -3188,8 +3188,8 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tEfd: Exciter Output, \n\tVr3: Rate feedback integrator",
-          "internal_default": "[:Vt, :Vr1, :Vr2, :Efd, :Vr3]",
+          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+          "internal_default": "[:Vt, :Vr1, :Vr2, :Vf, :Vr3]",
           "data_type": "Vector{Symbol}"
         },
         {
@@ -3344,8 +3344,8 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr: Regulator Output,\n\tEfd: Exciter Output, \n\tVr3: Rate feedback integrator",
-          "internal_default": "[:Vt, :Vr1, :Efd, :Vr2]",
+          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+          "internal_default": "[:Vt, :Vr1, :Vf, :Vr2]",
           "data_type": "Vector{Symbol}"
         },
         {
@@ -5227,8 +5227,8 @@
         },
         {
           "name": "states",
-          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second regulator lead-lag state,\n\tVr2: Third regulator lead-lag state \n\tEfd: Exciter output \n\tVr3: First feedback integrator,\n\tVr4: second feedback integrator",
-          "internal_default": "[:Vm, :Vr1, :Vr2, :Efd, :Vr3, :Vr4]",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second regulator lead-lag state,\n\tVr2: Third regulator lead-lag state \n\tVf: Exciter output \n\tVr3: First feedback integrator,\n\tVr4: second feedback integrator",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Vf, :Vr3, :Vr4]",
           "data_type": "Vector{Symbol}"
         },
         {

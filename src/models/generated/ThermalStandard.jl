@@ -33,15 +33,15 @@ Data Structure for thermal generation technologies.
 - `available::Bool`
 - `status::Bool`
 - `bus::Bus`
-- `active_power::Float64`, validation range: `active_power_limits`, action if invalid: `warn`
-- `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `active_power::Float64`, validation range: active_power_limits, action if invalid: warn
+- `reactive_power::Float64`, validation range: reactive_power_limits, action if invalid: warn
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: (0, nothing), action if invalid: error
 - `operation_cost::ThreePartCost`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
+- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: (0, nothing), action if invalid: error
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
 - `fuel::ThermalFuels.ThermalFuel`: Prime mover fuel according to EIA 923
 - `services::Vector{Service}`: Services that this device contributes to
@@ -121,84 +121,84 @@ end
 
 
 InfrastructureSystems.get_name(value::ThermalStandard) = value.name
-"""Get [`ThermalStandard`](@ref) `available`."""
+"""Get ThermalStandard available."""
 get_available(value::ThermalStandard) = value.available
-"""Get [`ThermalStandard`](@ref) `status`."""
+"""Get ThermalStandard status."""
 get_status(value::ThermalStandard) = value.status
-"""Get [`ThermalStandard`](@ref) `bus`."""
+"""Get ThermalStandard bus."""
 get_bus(value::ThermalStandard) = value.bus
-"""Get [`ThermalStandard`](@ref) `active_power`."""
+"""Get ThermalStandard active_power."""
 get_active_power(value::ThermalStandard) = get_value(value, value.active_power)
-"""Get [`ThermalStandard`](@ref) `reactive_power`."""
+"""Get ThermalStandard reactive_power."""
 get_reactive_power(value::ThermalStandard) = get_value(value, value.reactive_power)
-"""Get [`ThermalStandard`](@ref) `rating`."""
+"""Get ThermalStandard rating."""
 get_rating(value::ThermalStandard) = get_value(value, value.rating)
-"""Get [`ThermalStandard`](@ref) `active_power_limits`."""
+"""Get ThermalStandard active_power_limits."""
 get_active_power_limits(value::ThermalStandard) = get_value(value, value.active_power_limits)
-"""Get [`ThermalStandard`](@ref) `reactive_power_limits`."""
+"""Get ThermalStandard reactive_power_limits."""
 get_reactive_power_limits(value::ThermalStandard) = get_value(value, value.reactive_power_limits)
-"""Get [`ThermalStandard`](@ref) `ramp_limits`."""
+"""Get ThermalStandard ramp_limits."""
 get_ramp_limits(value::ThermalStandard) = get_value(value, value.ramp_limits)
-"""Get [`ThermalStandard`](@ref) `operation_cost`."""
+"""Get ThermalStandard operation_cost."""
 get_operation_cost(value::ThermalStandard) = value.operation_cost
-"""Get [`ThermalStandard`](@ref) `base_power`."""
+"""Get ThermalStandard base_power."""
 get_base_power(value::ThermalStandard) = value.base_power
-"""Get [`ThermalStandard`](@ref) `time_limits`."""
+"""Get ThermalStandard time_limits."""
 get_time_limits(value::ThermalStandard) = value.time_limits
-"""Get [`ThermalStandard`](@ref) `prime_mover`."""
+"""Get ThermalStandard prime_mover."""
 get_prime_mover(value::ThermalStandard) = value.prime_mover
-"""Get [`ThermalStandard`](@ref) `fuel`."""
+"""Get ThermalStandard fuel."""
 get_fuel(value::ThermalStandard) = value.fuel
-"""Get [`ThermalStandard`](@ref) `services`."""
+"""Get ThermalStandard services."""
 get_services(value::ThermalStandard) = value.services
-"""Get [`ThermalStandard`](@ref) `time_at_status`."""
+"""Get ThermalStandard time_at_status."""
 get_time_at_status(value::ThermalStandard) = value.time_at_status
-"""Get [`ThermalStandard`](@ref) `dynamic_injector`."""
+"""Get ThermalStandard dynamic_injector."""
 get_dynamic_injector(value::ThermalStandard) = value.dynamic_injector
-"""Get [`ThermalStandard`](@ref) `ext`."""
+"""Get ThermalStandard ext."""
 get_ext(value::ThermalStandard) = value.ext
 
 InfrastructureSystems.get_forecasts(value::ThermalStandard) = value.forecasts
-"""Get [`ThermalStandard`](@ref) `internal`."""
+"""Get ThermalStandard internal."""
 get_internal(value::ThermalStandard) = value.internal
 
 
-InfrastructureSystems.set_name!(value::ThermalStandard, val) = value.name = val
-"""Set [`ThermalStandard`](@ref) `available`."""
-set_available!(value::ThermalStandard, val) = value.available = val
-"""Set [`ThermalStandard`](@ref) `status`."""
-set_status!(value::ThermalStandard, val) = value.status = val
-"""Set [`ThermalStandard`](@ref) `bus`."""
-set_bus!(value::ThermalStandard, val) = value.bus = val
-"""Set [`ThermalStandard`](@ref) `active_power`."""
-set_active_power!(value::ThermalStandard, val) = value.active_power = val
-"""Set [`ThermalStandard`](@ref) `reactive_power`."""
-set_reactive_power!(value::ThermalStandard, val) = value.reactive_power = val
-"""Set [`ThermalStandard`](@ref) `rating`."""
-set_rating!(value::ThermalStandard, val) = value.rating = val
-"""Set [`ThermalStandard`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::ThermalStandard, val) = value.active_power_limits = val
-"""Set [`ThermalStandard`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_limits = val
-"""Set [`ThermalStandard`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = val
-"""Set [`ThermalStandard`](@ref) `operation_cost`."""
-set_operation_cost!(value::ThermalStandard, val) = value.operation_cost = val
-"""Set [`ThermalStandard`](@ref) `base_power`."""
-set_base_power!(value::ThermalStandard, val) = value.base_power = val
-"""Set [`ThermalStandard`](@ref) `time_limits`."""
-set_time_limits!(value::ThermalStandard, val) = value.time_limits = val
-"""Set [`ThermalStandard`](@ref) `prime_mover`."""
-set_prime_mover!(value::ThermalStandard, val) = value.prime_mover = val
-"""Set [`ThermalStandard`](@ref) `fuel`."""
-set_fuel!(value::ThermalStandard, val) = value.fuel = val
-"""Set [`ThermalStandard`](@ref) `services`."""
-set_services!(value::ThermalStandard, val) = value.services = val
-"""Set [`ThermalStandard`](@ref) `time_at_status`."""
-set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
-"""Set [`ThermalStandard`](@ref) `ext`."""
-set_ext!(value::ThermalStandard, val) = value.ext = val
+InfrastructureSystems.set_name!(value::ThermalStandard, val::String) = value.name = val
+"""Set ThermalStandard available."""
+set_available!(value::ThermalStandard, val::Bool) = value.available = val
+"""Set ThermalStandard status."""
+set_status!(value::ThermalStandard, val::Bool) = value.status = val
+"""Set ThermalStandard bus."""
+set_bus!(value::ThermalStandard, val::Bus) = value.bus = val
+"""Set ThermalStandard active_power."""
+set_active_power!(value::ThermalStandard, val::Float64) = value.active_power = val
+"""Set ThermalStandard reactive_power."""
+set_reactive_power!(value::ThermalStandard, val::Float64) = value.reactive_power = val
+"""Set ThermalStandard rating."""
+set_rating!(value::ThermalStandard, val::Float64) = value.rating = val
+"""Set ThermalStandard active_power_limits."""
+set_active_power_limits!(value::ThermalStandard, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.active_power_limits = val
+"""Set ThermalStandard reactive_power_limits."""
+set_reactive_power_limits!(value::ThermalStandard, val::Union{Nothing, Min_Max}) = value.reactive_power_limits = val
+"""Set ThermalStandard ramp_limits."""
+set_ramp_limits!(value::ThermalStandard, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.ramp_limits = val
+"""Set ThermalStandard operation_cost."""
+set_operation_cost!(value::ThermalStandard, val::ThreePartCost) = value.operation_cost = val
+"""Set ThermalStandard base_power."""
+set_base_power!(value::ThermalStandard, val::Float64) = value.base_power = val
+"""Set ThermalStandard time_limits."""
+set_time_limits!(value::ThermalStandard, val::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}) = value.time_limits = val
+"""Set ThermalStandard prime_mover."""
+set_prime_mover!(value::ThermalStandard, val::PrimeMovers.PrimeMover) = value.prime_mover = val
+"""Set ThermalStandard fuel."""
+set_fuel!(value::ThermalStandard, val::ThermalFuels.ThermalFuel) = value.fuel = val
+"""Set ThermalStandard services."""
+set_services!(value::ThermalStandard, val::Vector{Service}) = value.services = val
+"""Set ThermalStandard time_at_status."""
+set_time_at_status!(value::ThermalStandard, val::Float64) = value.time_at_status = val
+"""Set ThermalStandard ext."""
+set_ext!(value::ThermalStandard, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::ThermalStandard, val) = value.forecasts = val
-"""Set [`ThermalStandard`](@ref) `internal`."""
-set_internal!(value::ThermalStandard, val) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::ThermalStandard, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+"""Set ThermalStandard internal."""
+set_internal!(value::ThermalStandard, val::InfrastructureSystemsInternal) = value.internal = val

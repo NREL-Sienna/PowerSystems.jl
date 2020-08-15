@@ -14,9 +14,9 @@ This file is auto-generated. Do not edit.
 Parameters of a LCL filter outside the converter
 
 # Arguments
-- `lf::Float64`: filter inductance, validation range: `(0, nothing)`
-- `rf::Float64`: filter resistance, validation range: `(0, nothing)`
-- `cf::Float64`: filter capacitance, validation range: `(0, nothing)`
+- `lf::Float64`: filter inductance, validation range: (0, nothing)
+- `rf::Float64`: filter resistance, validation range: (0, nothing)
+- `cf::Float64`: filter capacitance, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the LCFilter model are:
 	ir_filter: Real current out of the filter,
@@ -57,28 +57,28 @@ function LCFilter(::Nothing)
     )
 end
 
-"""Get [`LCFilter`](@ref) `lf`."""
+"""Get LCFilter lf."""
 get_lf(value::LCFilter) = value.lf
-"""Get [`LCFilter`](@ref) `rf`."""
+"""Get LCFilter rf."""
 get_rf(value::LCFilter) = value.rf
-"""Get [`LCFilter`](@ref) `cf`."""
+"""Get LCFilter cf."""
 get_cf(value::LCFilter) = value.cf
-"""Get [`LCFilter`](@ref) `ext`."""
+"""Get LCFilter ext."""
 get_ext(value::LCFilter) = value.ext
-"""Get [`LCFilter`](@ref) `states`."""
+"""Get LCFilter states."""
 get_states(value::LCFilter) = value.states
-"""Get [`LCFilter`](@ref) `n_states`."""
+"""Get LCFilter n_states."""
 get_n_states(value::LCFilter) = value.n_states
 
-"""Set [`LCFilter`](@ref) `lf`."""
-set_lf!(value::LCFilter, val) = value.lf = val
-"""Set [`LCFilter`](@ref) `rf`."""
-set_rf!(value::LCFilter, val) = value.rf = val
-"""Set [`LCFilter`](@ref) `cf`."""
-set_cf!(value::LCFilter, val) = value.cf = val
-"""Set [`LCFilter`](@ref) `ext`."""
-set_ext!(value::LCFilter, val) = value.ext = val
-"""Set [`LCFilter`](@ref) `states`."""
-set_states!(value::LCFilter, val) = value.states = val
-"""Set [`LCFilter`](@ref) `n_states`."""
-set_n_states!(value::LCFilter, val) = value.n_states = val
+"""Set LCFilter lf."""
+set_lf!(value::LCFilter, val::Float64) = value.lf = val
+"""Set LCFilter rf."""
+set_rf!(value::LCFilter, val::Float64) = value.rf = val
+"""Set LCFilter cf."""
+set_cf!(value::LCFilter, val::Float64) = value.cf = val
+"""Set LCFilter ext."""
+set_ext!(value::LCFilter, val::Dict{String, Any}) = value.ext = val
+"""Set LCFilter states."""
+set_states!(value::LCFilter, val::Vector{Symbol}) = value.states = val
+"""Set LCFilter n_states."""
+set_n_states!(value::LCFilter, val::Int) = value.n_states = val

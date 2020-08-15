@@ -32,26 +32,26 @@ This file is auto-generated. Do not edit.
 IEEE Type 1 Speed-Governing Model
 
 # Arguments
-- `K::Float64`: Governor Gain, validation range: `(0, nothing)`
-- `T1::Float64`: Input Filter Lag, validation range: `(0, nothing)`
-- `T2::Float64`: Input Filter Lead, validation range: `(0, nothing)`
-- `T3::Float64`: Valve position Time Constant, validation range: `(0, nothing)`
-- `U0::Float64`: Maximum Valve Opening Rate, validation range: `(0, nothing)`
-- `U_c::Float64`: Maximum Valve closing rate, validation range: `(nothing, 0.0)`
+- `K::Float64`: Governor Gain, validation range: (0, nothing)
+- `T1::Float64`: Input Filter Lag, validation range: (0, nothing)
+- `T2::Float64`: Input Filter Lead, validation range: (0, nothing)
+- `T3::Float64`: Valve position Time Constant, validation range: (0, nothing)
+- `U0::Float64`: Maximum Valve Opening Rate, validation range: (0, nothing)
+- `U_c::Float64`: Maximum Valve closing rate, validation range: (nothing, 0.0)
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW
-- `T4::Float64`: Time Constant inlet steam, validation range: `(0, nothing)`
-- `K1::Float64`: Fraction of high presure shaft power, validation range: `(0, nothing)`
-- `K2::Float64`: Fraction of low presure shaft power, validation range: `(0, nothing)`
-- `T5::Float64`: Time constant for second boiler pass, validation range: `(0, nothing)`
-- `K3::Float64`: Fraction of high presure shaft power second boiler pass, validation range: `(0, nothing)`
-- `K4::Float64`: Fraction of low presure shaft power second boiler pass, validation range: `(0, nothing)`
-- `T6::Float64`: Time constant for third boiler pass, validation range: `(0, nothing)`
-- `K5::Float64`: Fraction of high presure shaft power third boiler pass, validation range: `(0, nothing)`
-- `K6::Float64`: Fraction of low presure shaft power third boiler pass, validation range: `(0, nothing)`
-- `T7::Float64`: Time constant for fourth boiler pass, validation range: `(0, nothing)`
-- `K7::Float64`: Fraction of high presure shaft power fourth boiler pass, validation range: `(0, nothing)`
-- `K8::Float64`: Fraction of low presure shaft power fourth boiler pass, validation range: `(0, nothing)`
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `T4::Float64`: Time Constant inlet steam, validation range: (0, nothing)
+- `K1::Float64`: Fraction of high presure shaft power, validation range: (0, nothing)
+- `K2::Float64`: Fraction of low presure shaft power, validation range: (0, nothing)
+- `T5::Float64`: Time constant for second boiler pass, validation range: (0, nothing)
+- `K3::Float64`: Fraction of high presure shaft power second boiler pass, validation range: (0, nothing)
+- `K4::Float64`: Fraction of low presure shaft power second boiler pass, validation range: (0, nothing)
+- `T6::Float64`: Time constant for third boiler pass, validation range: (0, nothing)
+- `K5::Float64`: Fraction of high presure shaft power third boiler pass, validation range: (0, nothing)
+- `K6::Float64`: Fraction of low presure shaft power third boiler pass, validation range: (0, nothing)
+- `T7::Float64`: Time constant for fourth boiler pass, validation range: (0, nothing)
+- `K7::Float64`: Fraction of high presure shaft power fourth boiler pass, validation range: (0, nothing)
+- `K8::Float64`: Fraction of low presure shaft power fourth boiler pass, validation range: (0, nothing)
+- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the IEEETurbineGov model are:
 	x_g1: First Governor integrator,
@@ -154,100 +154,100 @@ function IEEETurbineGov1(::Nothing)
     )
 end
 
-"""Get [`IEEETurbineGov1`](@ref) `K`."""
+"""Get IEEETurbineGov1 K."""
 get_K(value::IEEETurbineGov1) = value.K
-"""Get [`IEEETurbineGov1`](@ref) `T1`."""
+"""Get IEEETurbineGov1 T1."""
 get_T1(value::IEEETurbineGov1) = value.T1
-"""Get [`IEEETurbineGov1`](@ref) `T2`."""
+"""Get IEEETurbineGov1 T2."""
 get_T2(value::IEEETurbineGov1) = value.T2
-"""Get [`IEEETurbineGov1`](@ref) `T3`."""
+"""Get IEEETurbineGov1 T3."""
 get_T3(value::IEEETurbineGov1) = value.T3
-"""Get [`IEEETurbineGov1`](@ref) `U0`."""
+"""Get IEEETurbineGov1 U0."""
 get_U0(value::IEEETurbineGov1) = value.U0
-"""Get [`IEEETurbineGov1`](@ref) `U_c`."""
+"""Get IEEETurbineGov1 U_c."""
 get_U_c(value::IEEETurbineGov1) = value.U_c
-"""Get [`IEEETurbineGov1`](@ref) `valve_position_limits`."""
+"""Get IEEETurbineGov1 valve_position_limits."""
 get_valve_position_limits(value::IEEETurbineGov1) = value.valve_position_limits
-"""Get [`IEEETurbineGov1`](@ref) `T4`."""
+"""Get IEEETurbineGov1 T4."""
 get_T4(value::IEEETurbineGov1) = value.T4
-"""Get [`IEEETurbineGov1`](@ref) `K1`."""
+"""Get IEEETurbineGov1 K1."""
 get_K1(value::IEEETurbineGov1) = value.K1
-"""Get [`IEEETurbineGov1`](@ref) `K2`."""
+"""Get IEEETurbineGov1 K2."""
 get_K2(value::IEEETurbineGov1) = value.K2
-"""Get [`IEEETurbineGov1`](@ref) `T5`."""
+"""Get IEEETurbineGov1 T5."""
 get_T5(value::IEEETurbineGov1) = value.T5
-"""Get [`IEEETurbineGov1`](@ref) `K3`."""
+"""Get IEEETurbineGov1 K3."""
 get_K3(value::IEEETurbineGov1) = value.K3
-"""Get [`IEEETurbineGov1`](@ref) `K4`."""
+"""Get IEEETurbineGov1 K4."""
 get_K4(value::IEEETurbineGov1) = value.K4
-"""Get [`IEEETurbineGov1`](@ref) `T6`."""
+"""Get IEEETurbineGov1 T6."""
 get_T6(value::IEEETurbineGov1) = value.T6
-"""Get [`IEEETurbineGov1`](@ref) `K5`."""
+"""Get IEEETurbineGov1 K5."""
 get_K5(value::IEEETurbineGov1) = value.K5
-"""Get [`IEEETurbineGov1`](@ref) `K6`."""
+"""Get IEEETurbineGov1 K6."""
 get_K6(value::IEEETurbineGov1) = value.K6
-"""Get [`IEEETurbineGov1`](@ref) `T7`."""
+"""Get IEEETurbineGov1 T7."""
 get_T7(value::IEEETurbineGov1) = value.T7
-"""Get [`IEEETurbineGov1`](@ref) `K7`."""
+"""Get IEEETurbineGov1 K7."""
 get_K7(value::IEEETurbineGov1) = value.K7
-"""Get [`IEEETurbineGov1`](@ref) `K8`."""
+"""Get IEEETurbineGov1 K8."""
 get_K8(value::IEEETurbineGov1) = value.K8
-"""Get [`IEEETurbineGov1`](@ref) `P_ref`."""
+"""Get IEEETurbineGov1 P_ref."""
 get_P_ref(value::IEEETurbineGov1) = value.P_ref
-"""Get [`IEEETurbineGov1`](@ref) `ext`."""
+"""Get IEEETurbineGov1 ext."""
 get_ext(value::IEEETurbineGov1) = value.ext
-"""Get [`IEEETurbineGov1`](@ref) `states`."""
+"""Get IEEETurbineGov1 states."""
 get_states(value::IEEETurbineGov1) = value.states
-"""Get [`IEEETurbineGov1`](@ref) `n_states`."""
+"""Get IEEETurbineGov1 n_states."""
 get_n_states(value::IEEETurbineGov1) = value.n_states
-"""Get [`IEEETurbineGov1`](@ref) `internal`."""
+"""Get IEEETurbineGov1 internal."""
 get_internal(value::IEEETurbineGov1) = value.internal
 
-"""Set [`IEEETurbineGov1`](@ref) `K`."""
-set_K!(value::IEEETurbineGov1, val) = value.K = val
-"""Set [`IEEETurbineGov1`](@ref) `T1`."""
-set_T1!(value::IEEETurbineGov1, val) = value.T1 = val
-"""Set [`IEEETurbineGov1`](@ref) `T2`."""
-set_T2!(value::IEEETurbineGov1, val) = value.T2 = val
-"""Set [`IEEETurbineGov1`](@ref) `T3`."""
-set_T3!(value::IEEETurbineGov1, val) = value.T3 = val
-"""Set [`IEEETurbineGov1`](@ref) `U0`."""
-set_U0!(value::IEEETurbineGov1, val) = value.U0 = val
-"""Set [`IEEETurbineGov1`](@ref) `U_c`."""
-set_U_c!(value::IEEETurbineGov1, val) = value.U_c = val
-"""Set [`IEEETurbineGov1`](@ref) `valve_position_limits`."""
-set_valve_position_limits!(value::IEEETurbineGov1, val) = value.valve_position_limits = val
-"""Set [`IEEETurbineGov1`](@ref) `T4`."""
-set_T4!(value::IEEETurbineGov1, val) = value.T4 = val
-"""Set [`IEEETurbineGov1`](@ref) `K1`."""
-set_K1!(value::IEEETurbineGov1, val) = value.K1 = val
-"""Set [`IEEETurbineGov1`](@ref) `K2`."""
-set_K2!(value::IEEETurbineGov1, val) = value.K2 = val
-"""Set [`IEEETurbineGov1`](@ref) `T5`."""
-set_T5!(value::IEEETurbineGov1, val) = value.T5 = val
-"""Set [`IEEETurbineGov1`](@ref) `K3`."""
-set_K3!(value::IEEETurbineGov1, val) = value.K3 = val
-"""Set [`IEEETurbineGov1`](@ref) `K4`."""
-set_K4!(value::IEEETurbineGov1, val) = value.K4 = val
-"""Set [`IEEETurbineGov1`](@ref) `T6`."""
-set_T6!(value::IEEETurbineGov1, val) = value.T6 = val
-"""Set [`IEEETurbineGov1`](@ref) `K5`."""
-set_K5!(value::IEEETurbineGov1, val) = value.K5 = val
-"""Set [`IEEETurbineGov1`](@ref) `K6`."""
-set_K6!(value::IEEETurbineGov1, val) = value.K6 = val
-"""Set [`IEEETurbineGov1`](@ref) `T7`."""
-set_T7!(value::IEEETurbineGov1, val) = value.T7 = val
-"""Set [`IEEETurbineGov1`](@ref) `K7`."""
-set_K7!(value::IEEETurbineGov1, val) = value.K7 = val
-"""Set [`IEEETurbineGov1`](@ref) `K8`."""
-set_K8!(value::IEEETurbineGov1, val) = value.K8 = val
-"""Set [`IEEETurbineGov1`](@ref) `P_ref`."""
-set_P_ref!(value::IEEETurbineGov1, val) = value.P_ref = val
-"""Set [`IEEETurbineGov1`](@ref) `ext`."""
-set_ext!(value::IEEETurbineGov1, val) = value.ext = val
-"""Set [`IEEETurbineGov1`](@ref) `states`."""
-set_states!(value::IEEETurbineGov1, val) = value.states = val
-"""Set [`IEEETurbineGov1`](@ref) `n_states`."""
-set_n_states!(value::IEEETurbineGov1, val) = value.n_states = val
-"""Set [`IEEETurbineGov1`](@ref) `internal`."""
-set_internal!(value::IEEETurbineGov1, val) = value.internal = val
+"""Set IEEETurbineGov1 K."""
+set_K!(value::IEEETurbineGov1, val::Float64) = value.K = val
+"""Set IEEETurbineGov1 T1."""
+set_T1!(value::IEEETurbineGov1, val::Float64) = value.T1 = val
+"""Set IEEETurbineGov1 T2."""
+set_T2!(value::IEEETurbineGov1, val::Float64) = value.T2 = val
+"""Set IEEETurbineGov1 T3."""
+set_T3!(value::IEEETurbineGov1, val::Float64) = value.T3 = val
+"""Set IEEETurbineGov1 U0."""
+set_U0!(value::IEEETurbineGov1, val::Float64) = value.U0 = val
+"""Set IEEETurbineGov1 U_c."""
+set_U_c!(value::IEEETurbineGov1, val::Float64) = value.U_c = val
+"""Set IEEETurbineGov1 valve_position_limits."""
+set_valve_position_limits!(value::IEEETurbineGov1, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.valve_position_limits = val
+"""Set IEEETurbineGov1 T4."""
+set_T4!(value::IEEETurbineGov1, val::Float64) = value.T4 = val
+"""Set IEEETurbineGov1 K1."""
+set_K1!(value::IEEETurbineGov1, val::Float64) = value.K1 = val
+"""Set IEEETurbineGov1 K2."""
+set_K2!(value::IEEETurbineGov1, val::Float64) = value.K2 = val
+"""Set IEEETurbineGov1 T5."""
+set_T5!(value::IEEETurbineGov1, val::Float64) = value.T5 = val
+"""Set IEEETurbineGov1 K3."""
+set_K3!(value::IEEETurbineGov1, val::Float64) = value.K3 = val
+"""Set IEEETurbineGov1 K4."""
+set_K4!(value::IEEETurbineGov1, val::Float64) = value.K4 = val
+"""Set IEEETurbineGov1 T6."""
+set_T6!(value::IEEETurbineGov1, val::Float64) = value.T6 = val
+"""Set IEEETurbineGov1 K5."""
+set_K5!(value::IEEETurbineGov1, val::Float64) = value.K5 = val
+"""Set IEEETurbineGov1 K6."""
+set_K6!(value::IEEETurbineGov1, val::Float64) = value.K6 = val
+"""Set IEEETurbineGov1 T7."""
+set_T7!(value::IEEETurbineGov1, val::Float64) = value.T7 = val
+"""Set IEEETurbineGov1 K7."""
+set_K7!(value::IEEETurbineGov1, val::Float64) = value.K7 = val
+"""Set IEEETurbineGov1 K8."""
+set_K8!(value::IEEETurbineGov1, val::Float64) = value.K8 = val
+"""Set IEEETurbineGov1 P_ref."""
+set_P_ref!(value::IEEETurbineGov1, val::Float64) = value.P_ref = val
+"""Set IEEETurbineGov1 ext."""
+set_ext!(value::IEEETurbineGov1, val::Dict{String, Any}) = value.ext = val
+"""Set IEEETurbineGov1 states."""
+set_states!(value::IEEETurbineGov1, val::Vector{Symbol}) = value.states = val
+"""Set IEEETurbineGov1 n_states."""
+set_n_states!(value::IEEETurbineGov1, val::Int) = value.n_states = val
+"""Set IEEETurbineGov1 internal."""
+set_internal!(value::IEEETurbineGov1, val::InfrastructureSystemsInternal) = value.internal = val

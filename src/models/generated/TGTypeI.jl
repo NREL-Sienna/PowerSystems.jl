@@ -20,14 +20,14 @@ This file is auto-generated. Do not edit.
 Parameters of a Turbine Governor Type I.
 
 # Arguments
-- `R::Float64`: Droop parameter, validation range: `(0, nothing)`
-- `Ts::Float64`: Governor time constant, validation range: `(0, nothing)`
-- `Tc::Float64`: Servo time constant, validation range: `(0, nothing)`
-- `T3::Float64`: Transient gain time constant, validation range: `(0, nothing)`
-- `T4::Float64`: Power fraction time constant, validation range: `(0, nothing)`
-- `T5::Float64`: Reheat time constant, validation range: `(0, nothing)`
+- `R::Float64`: Droop parameter, validation range: (0, nothing)
+- `Ts::Float64`: Governor time constant, validation range: (0, nothing)
+- `Tc::Float64`: Servo time constant, validation range: (0, nothing)
+- `T3::Float64`: Transient gain time constant, validation range: (0, nothing)
+- `T4::Float64`: Power fraction time constant, validation range: (0, nothing)
+- `T5::Float64`: Reheat time constant, validation range: (0, nothing)
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
 	x_g1: Governor state,
@@ -88,52 +88,52 @@ function TGTypeI(::Nothing)
     )
 end
 
-"""Get [`TGTypeI`](@ref) `R`."""
+"""Get TGTypeI R."""
 get_R(value::TGTypeI) = value.R
-"""Get [`TGTypeI`](@ref) `Ts`."""
+"""Get TGTypeI Ts."""
 get_Ts(value::TGTypeI) = value.Ts
-"""Get [`TGTypeI`](@ref) `Tc`."""
+"""Get TGTypeI Tc."""
 get_Tc(value::TGTypeI) = value.Tc
-"""Get [`TGTypeI`](@ref) `T3`."""
+"""Get TGTypeI T3."""
 get_T3(value::TGTypeI) = value.T3
-"""Get [`TGTypeI`](@ref) `T4`."""
+"""Get TGTypeI T4."""
 get_T4(value::TGTypeI) = value.T4
-"""Get [`TGTypeI`](@ref) `T5`."""
+"""Get TGTypeI T5."""
 get_T5(value::TGTypeI) = value.T5
-"""Get [`TGTypeI`](@ref) `valve_position_limits`."""
+"""Get TGTypeI valve_position_limits."""
 get_valve_position_limits(value::TGTypeI) = value.valve_position_limits
-"""Get [`TGTypeI`](@ref) `P_ref`."""
+"""Get TGTypeI P_ref."""
 get_P_ref(value::TGTypeI) = value.P_ref
-"""Get [`TGTypeI`](@ref) `ext`."""
+"""Get TGTypeI ext."""
 get_ext(value::TGTypeI) = value.ext
-"""Get [`TGTypeI`](@ref) `states`."""
+"""Get TGTypeI states."""
 get_states(value::TGTypeI) = value.states
-"""Get [`TGTypeI`](@ref) `n_states`."""
+"""Get TGTypeI n_states."""
 get_n_states(value::TGTypeI) = value.n_states
-"""Get [`TGTypeI`](@ref) `internal`."""
+"""Get TGTypeI internal."""
 get_internal(value::TGTypeI) = value.internal
 
-"""Set [`TGTypeI`](@ref) `R`."""
-set_R!(value::TGTypeI, val) = value.R = val
-"""Set [`TGTypeI`](@ref) `Ts`."""
-set_Ts!(value::TGTypeI, val) = value.Ts = val
-"""Set [`TGTypeI`](@ref) `Tc`."""
-set_Tc!(value::TGTypeI, val) = value.Tc = val
-"""Set [`TGTypeI`](@ref) `T3`."""
-set_T3!(value::TGTypeI, val) = value.T3 = val
-"""Set [`TGTypeI`](@ref) `T4`."""
-set_T4!(value::TGTypeI, val) = value.T4 = val
-"""Set [`TGTypeI`](@ref) `T5`."""
-set_T5!(value::TGTypeI, val) = value.T5 = val
-"""Set [`TGTypeI`](@ref) `valve_position_limits`."""
-set_valve_position_limits!(value::TGTypeI, val) = value.valve_position_limits = val
-"""Set [`TGTypeI`](@ref) `P_ref`."""
-set_P_ref!(value::TGTypeI, val) = value.P_ref = val
-"""Set [`TGTypeI`](@ref) `ext`."""
-set_ext!(value::TGTypeI, val) = value.ext = val
-"""Set [`TGTypeI`](@ref) `states`."""
-set_states!(value::TGTypeI, val) = value.states = val
-"""Set [`TGTypeI`](@ref) `n_states`."""
-set_n_states!(value::TGTypeI, val) = value.n_states = val
-"""Set [`TGTypeI`](@ref) `internal`."""
-set_internal!(value::TGTypeI, val) = value.internal = val
+"""Set TGTypeI R."""
+set_R!(value::TGTypeI, val::Float64) = value.R = val
+"""Set TGTypeI Ts."""
+set_Ts!(value::TGTypeI, val::Float64) = value.Ts = val
+"""Set TGTypeI Tc."""
+set_Tc!(value::TGTypeI, val::Float64) = value.Tc = val
+"""Set TGTypeI T3."""
+set_T3!(value::TGTypeI, val::Float64) = value.T3 = val
+"""Set TGTypeI T4."""
+set_T4!(value::TGTypeI, val::Float64) = value.T4 = val
+"""Set TGTypeI T5."""
+set_T5!(value::TGTypeI, val::Float64) = value.T5 = val
+"""Set TGTypeI valve_position_limits."""
+set_valve_position_limits!(value::TGTypeI, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.valve_position_limits = val
+"""Set TGTypeI P_ref."""
+set_P_ref!(value::TGTypeI, val::Float64) = value.P_ref = val
+"""Set TGTypeI ext."""
+set_ext!(value::TGTypeI, val::Dict{String, Any}) = value.ext = val
+"""Set TGTypeI states."""
+set_states!(value::TGTypeI, val::Vector{Symbol}) = value.states = val
+"""Set TGTypeI n_states."""
+set_n_states!(value::TGTypeI, val::Int) = value.n_states = val
+"""Set TGTypeI internal."""
+set_internal!(value::TGTypeI, val::InfrastructureSystemsInternal) = value.internal = val

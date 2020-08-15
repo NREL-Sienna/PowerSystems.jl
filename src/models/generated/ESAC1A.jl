@@ -32,22 +32,22 @@ The exciter does not employ self-excitation, and the voltage regulator power is 
 Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds to ESAC1A in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
-- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, nothing)`
-- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, nothing)`
-- `Ka::Float64`: Regulator output gain, validation range: `(0, nothing)`
-- `Ta::Float64`: Regulator output time constant in s, validation range: `(0, nothing)`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: (0, nothing)
+- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: (0, nothing)
+- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: (0, nothing)
+- `Ka::Float64`: Regulator output gain, validation range: (0, nothing)
+- `Ta::Float64`: Regulator output time constant in s, validation range: (0, nothing)
 - `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
-- `Te::Float64`: Exciter field time constant in s, validation range: `("eps()", nothing)`
-- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, nothing)`
-- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", nothing)`
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
-- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, nothing)`
-- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter field time constant in s, validation range: (&quot;eps()&quot;, nothing)
+- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: (0, nothing)
+- `Tf::Float64`: Rate feedback time constant, validation range: (&quot;eps()&quot;, nothing)
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: (0, nothing)
+- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: (0, nothing)
+- `Ke::Float64`: Exciter field proportional constant, validation range: (0, nothing)
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage: (Vr_min, Vr_max)
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -143,92 +143,92 @@ function ESAC1A(::Nothing)
     )
 end
 
-"""Get [`ESAC1A`](@ref) `Tr`."""
+"""Get ESAC1A Tr."""
 get_Tr(value::ESAC1A) = value.Tr
-"""Get [`ESAC1A`](@ref) `Tb`."""
+"""Get ESAC1A Tb."""
 get_Tb(value::ESAC1A) = value.Tb
-"""Get [`ESAC1A`](@ref) `Tc`."""
+"""Get ESAC1A Tc."""
 get_Tc(value::ESAC1A) = value.Tc
-"""Get [`ESAC1A`](@ref) `Ka`."""
+"""Get ESAC1A Ka."""
 get_Ka(value::ESAC1A) = value.Ka
-"""Get [`ESAC1A`](@ref) `Ta`."""
+"""Get ESAC1A Ta."""
 get_Ta(value::ESAC1A) = value.Ta
-"""Get [`ESAC1A`](@ref) `Va_lim`."""
+"""Get ESAC1A Va_lim."""
 get_Va_lim(value::ESAC1A) = value.Va_lim
-"""Get [`ESAC1A`](@ref) `Te`."""
+"""Get ESAC1A Te."""
 get_Te(value::ESAC1A) = value.Te
-"""Get [`ESAC1A`](@ref) `Kf`."""
+"""Get ESAC1A Kf."""
 get_Kf(value::ESAC1A) = value.Kf
-"""Get [`ESAC1A`](@ref) `Tf`."""
+"""Get ESAC1A Tf."""
 get_Tf(value::ESAC1A) = value.Tf
-"""Get [`ESAC1A`](@ref) `Kc`."""
+"""Get ESAC1A Kc."""
 get_Kc(value::ESAC1A) = value.Kc
-"""Get [`ESAC1A`](@ref) `Kd`."""
+"""Get ESAC1A Kd."""
 get_Kd(value::ESAC1A) = value.Kd
-"""Get [`ESAC1A`](@ref) `Ke`."""
+"""Get ESAC1A Ke."""
 get_Ke(value::ESAC1A) = value.Ke
-"""Get [`ESAC1A`](@ref) `E_sat`."""
+"""Get ESAC1A E_sat."""
 get_E_sat(value::ESAC1A) = value.E_sat
-"""Get [`ESAC1A`](@ref) `Se`."""
+"""Get ESAC1A Se."""
 get_Se(value::ESAC1A) = value.Se
-"""Get [`ESAC1A`](@ref) `Vr_lim`."""
+"""Get ESAC1A Vr_lim."""
 get_Vr_lim(value::ESAC1A) = value.Vr_lim
-"""Get [`ESAC1A`](@ref) `V_ref`."""
+"""Get ESAC1A V_ref."""
 get_V_ref(value::ESAC1A) = value.V_ref
-"""Get [`ESAC1A`](@ref) `saturation_coeffs`."""
+"""Get ESAC1A saturation_coeffs."""
 get_saturation_coeffs(value::ESAC1A) = value.saturation_coeffs
-"""Get [`ESAC1A`](@ref) `ext`."""
+"""Get ESAC1A ext."""
 get_ext(value::ESAC1A) = value.ext
-"""Get [`ESAC1A`](@ref) `states`."""
+"""Get ESAC1A states."""
 get_states(value::ESAC1A) = value.states
-"""Get [`ESAC1A`](@ref) `n_states`."""
+"""Get ESAC1A n_states."""
 get_n_states(value::ESAC1A) = value.n_states
-"""Get [`ESAC1A`](@ref) `states_types`."""
+"""Get ESAC1A states_types."""
 get_states_types(value::ESAC1A) = value.states_types
-"""Get [`ESAC1A`](@ref) `internal`."""
+"""Get ESAC1A internal."""
 get_internal(value::ESAC1A) = value.internal
 
-"""Set [`ESAC1A`](@ref) `Tr`."""
-set_Tr!(value::ESAC1A, val) = value.Tr = val
-"""Set [`ESAC1A`](@ref) `Tb`."""
-set_Tb!(value::ESAC1A, val) = value.Tb = val
-"""Set [`ESAC1A`](@ref) `Tc`."""
-set_Tc!(value::ESAC1A, val) = value.Tc = val
-"""Set [`ESAC1A`](@ref) `Ka`."""
-set_Ka!(value::ESAC1A, val) = value.Ka = val
-"""Set [`ESAC1A`](@ref) `Ta`."""
-set_Ta!(value::ESAC1A, val) = value.Ta = val
-"""Set [`ESAC1A`](@ref) `Va_lim`."""
-set_Va_lim!(value::ESAC1A, val) = value.Va_lim = val
-"""Set [`ESAC1A`](@ref) `Te`."""
-set_Te!(value::ESAC1A, val) = value.Te = val
-"""Set [`ESAC1A`](@ref) `Kf`."""
-set_Kf!(value::ESAC1A, val) = value.Kf = val
-"""Set [`ESAC1A`](@ref) `Tf`."""
-set_Tf!(value::ESAC1A, val) = value.Tf = val
-"""Set [`ESAC1A`](@ref) `Kc`."""
-set_Kc!(value::ESAC1A, val) = value.Kc = val
-"""Set [`ESAC1A`](@ref) `Kd`."""
-set_Kd!(value::ESAC1A, val) = value.Kd = val
-"""Set [`ESAC1A`](@ref) `Ke`."""
-set_Ke!(value::ESAC1A, val) = value.Ke = val
-"""Set [`ESAC1A`](@ref) `E_sat`."""
-set_E_sat!(value::ESAC1A, val) = value.E_sat = val
-"""Set [`ESAC1A`](@ref) `Se`."""
-set_Se!(value::ESAC1A, val) = value.Se = val
-"""Set [`ESAC1A`](@ref) `Vr_lim`."""
-set_Vr_lim!(value::ESAC1A, val) = value.Vr_lim = val
-"""Set [`ESAC1A`](@ref) `V_ref`."""
-set_V_ref!(value::ESAC1A, val) = value.V_ref = val
-"""Set [`ESAC1A`](@ref) `saturation_coeffs`."""
-set_saturation_coeffs!(value::ESAC1A, val) = value.saturation_coeffs = val
-"""Set [`ESAC1A`](@ref) `ext`."""
-set_ext!(value::ESAC1A, val) = value.ext = val
-"""Set [`ESAC1A`](@ref) `states`."""
-set_states!(value::ESAC1A, val) = value.states = val
-"""Set [`ESAC1A`](@ref) `n_states`."""
-set_n_states!(value::ESAC1A, val) = value.n_states = val
-"""Set [`ESAC1A`](@ref) `states_types`."""
-set_states_types!(value::ESAC1A, val) = value.states_types = val
-"""Set [`ESAC1A`](@ref) `internal`."""
-set_internal!(value::ESAC1A, val) = value.internal = val
+"""Set ESAC1A Tr."""
+set_Tr!(value::ESAC1A, val::Float64) = value.Tr = val
+"""Set ESAC1A Tb."""
+set_Tb!(value::ESAC1A, val::Float64) = value.Tb = val
+"""Set ESAC1A Tc."""
+set_Tc!(value::ESAC1A, val::Float64) = value.Tc = val
+"""Set ESAC1A Ka."""
+set_Ka!(value::ESAC1A, val::Float64) = value.Ka = val
+"""Set ESAC1A Ta."""
+set_Ta!(value::ESAC1A, val::Float64) = value.Ta = val
+"""Set ESAC1A Va_lim."""
+set_Va_lim!(value::ESAC1A, val::Tuple{Float64, Float64}) = value.Va_lim = val
+"""Set ESAC1A Te."""
+set_Te!(value::ESAC1A, val::Float64) = value.Te = val
+"""Set ESAC1A Kf."""
+set_Kf!(value::ESAC1A, val::Float64) = value.Kf = val
+"""Set ESAC1A Tf."""
+set_Tf!(value::ESAC1A, val::Float64) = value.Tf = val
+"""Set ESAC1A Kc."""
+set_Kc!(value::ESAC1A, val::Float64) = value.Kc = val
+"""Set ESAC1A Kd."""
+set_Kd!(value::ESAC1A, val::Float64) = value.Kd = val
+"""Set ESAC1A Ke."""
+set_Ke!(value::ESAC1A, val::Float64) = value.Ke = val
+"""Set ESAC1A E_sat."""
+set_E_sat!(value::ESAC1A, val::Tuple{Float64, Float64}) = value.E_sat = val
+"""Set ESAC1A Se."""
+set_Se!(value::ESAC1A, val::Tuple{Float64, Float64}) = value.Se = val
+"""Set ESAC1A Vr_lim."""
+set_Vr_lim!(value::ESAC1A, val::Tuple{Float64, Float64}) = value.Vr_lim = val
+"""Set ESAC1A V_ref."""
+set_V_ref!(value::ESAC1A, val::Float64) = value.V_ref = val
+"""Set ESAC1A saturation_coeffs."""
+set_saturation_coeffs!(value::ESAC1A, val::Tuple{Float64, Float64}) = value.saturation_coeffs = val
+"""Set ESAC1A ext."""
+set_ext!(value::ESAC1A, val::Dict{String, Any}) = value.ext = val
+"""Set ESAC1A states."""
+set_states!(value::ESAC1A, val::Vector{Symbol}) = value.states = val
+"""Set ESAC1A n_states."""
+set_n_states!(value::ESAC1A, val::Int) = value.n_states = val
+"""Set ESAC1A states_types."""
+set_states_types!(value::ESAC1A, val::Vector{StateTypes.StateType}) = value.states_types = val
+"""Set ESAC1A internal."""
+set_internal!(value::ESAC1A, val::InfrastructureSystemsInternal) = value.internal = val

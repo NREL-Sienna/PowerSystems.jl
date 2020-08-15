@@ -21,14 +21,14 @@ This file is auto-generated. Do not edit.
 This exciter is based on an IEEE type SCRX solid state exciter.  The output field voltage is varied by a control system to maintain the system voltage at Vref.  Please note that this exciter model has no initialization capabilities - this means that it will respond to whatever inputs it receives regardless of the state of the machine model.
 
 # Arguments
-- `Ta::Float64`: Lead input constant in s, validation range: `(0, nothing)`
-- `Tb::Float64`: Lag input constant, validation range: `(0, nothing)`
-- `K::Float64`: Regulator Gain, validation range: `(0, nothing)`
-- `Te::Float64`: Regulator Time Constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Ta::Float64`: Lead input constant in s, validation range: (0, nothing)
+- `Tb::Float64`: Lag input constant, validation range: (0, nothing)
+- `K::Float64`: Regulator Gain, validation range: (0, nothing)
+- `Te::Float64`: Regulator Time Constant, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
 - `Efd_lim::Tuple{Float64, Float64}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
-- `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
-- `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, nothing)`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
+- `switch::Int`: Switch, validation range: (0, 1), action if invalid: error
+- `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: (0, nothing)
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vr1: First integrator,
@@ -90,56 +90,56 @@ function SCRX(::Nothing)
     )
 end
 
-"""Get [`SCRX`](@ref) `Ta`."""
+"""Get SCRX Ta."""
 get_Ta(value::SCRX) = value.Ta
-"""Get [`SCRX`](@ref) `Tb`."""
+"""Get SCRX Tb."""
 get_Tb(value::SCRX) = value.Tb
-"""Get [`SCRX`](@ref) `K`."""
+"""Get SCRX K."""
 get_K(value::SCRX) = value.K
-"""Get [`SCRX`](@ref) `Te`."""
+"""Get SCRX Te."""
 get_Te(value::SCRX) = value.Te
-"""Get [`SCRX`](@ref) `Efd_lim`."""
+"""Get SCRX Efd_lim."""
 get_Efd_lim(value::SCRX) = value.Efd_lim
-"""Get [`SCRX`](@ref) `switch`."""
+"""Get SCRX switch."""
 get_switch(value::SCRX) = value.switch
-"""Get [`SCRX`](@ref) `rc_rfd`."""
+"""Get SCRX rc_rfd."""
 get_rc_rfd(value::SCRX) = value.rc_rfd
-"""Get [`SCRX`](@ref) `V_ref`."""
+"""Get SCRX V_ref."""
 get_V_ref(value::SCRX) = value.V_ref
-"""Get [`SCRX`](@ref) `ext`."""
+"""Get SCRX ext."""
 get_ext(value::SCRX) = value.ext
-"""Get [`SCRX`](@ref) `states`."""
+"""Get SCRX states."""
 get_states(value::SCRX) = value.states
-"""Get [`SCRX`](@ref) `n_states`."""
+"""Get SCRX n_states."""
 get_n_states(value::SCRX) = value.n_states
-"""Get [`SCRX`](@ref) `states_types`."""
+"""Get SCRX states_types."""
 get_states_types(value::SCRX) = value.states_types
-"""Get [`SCRX`](@ref) `internal`."""
+"""Get SCRX internal."""
 get_internal(value::SCRX) = value.internal
 
-"""Set [`SCRX`](@ref) `Ta`."""
-set_Ta!(value::SCRX, val) = value.Ta = val
-"""Set [`SCRX`](@ref) `Tb`."""
-set_Tb!(value::SCRX, val) = value.Tb = val
-"""Set [`SCRX`](@ref) `K`."""
-set_K!(value::SCRX, val) = value.K = val
-"""Set [`SCRX`](@ref) `Te`."""
-set_Te!(value::SCRX, val) = value.Te = val
-"""Set [`SCRX`](@ref) `Efd_lim`."""
-set_Efd_lim!(value::SCRX, val) = value.Efd_lim = val
-"""Set [`SCRX`](@ref) `switch`."""
-set_switch!(value::SCRX, val) = value.switch = val
-"""Set [`SCRX`](@ref) `rc_rfd`."""
-set_rc_rfd!(value::SCRX, val) = value.rc_rfd = val
-"""Set [`SCRX`](@ref) `V_ref`."""
-set_V_ref!(value::SCRX, val) = value.V_ref = val
-"""Set [`SCRX`](@ref) `ext`."""
-set_ext!(value::SCRX, val) = value.ext = val
-"""Set [`SCRX`](@ref) `states`."""
-set_states!(value::SCRX, val) = value.states = val
-"""Set [`SCRX`](@ref) `n_states`."""
-set_n_states!(value::SCRX, val) = value.n_states = val
-"""Set [`SCRX`](@ref) `states_types`."""
-set_states_types!(value::SCRX, val) = value.states_types = val
-"""Set [`SCRX`](@ref) `internal`."""
-set_internal!(value::SCRX, val) = value.internal = val
+"""Set SCRX Ta."""
+set_Ta!(value::SCRX, val::Float64) = value.Ta = val
+"""Set SCRX Tb."""
+set_Tb!(value::SCRX, val::Float64) = value.Tb = val
+"""Set SCRX K."""
+set_K!(value::SCRX, val::Float64) = value.K = val
+"""Set SCRX Te."""
+set_Te!(value::SCRX, val::Float64) = value.Te = val
+"""Set SCRX Efd_lim."""
+set_Efd_lim!(value::SCRX, val::Tuple{Float64, Float64}) = value.Efd_lim = val
+"""Set SCRX switch."""
+set_switch!(value::SCRX, val::Int) = value.switch = val
+"""Set SCRX rc_rfd."""
+set_rc_rfd!(value::SCRX, val::Float64) = value.rc_rfd = val
+"""Set SCRX V_ref."""
+set_V_ref!(value::SCRX, val::Float64) = value.V_ref = val
+"""Set SCRX ext."""
+set_ext!(value::SCRX, val::Dict{String, Any}) = value.ext = val
+"""Set SCRX states."""
+set_states!(value::SCRX, val::Vector{Symbol}) = value.states = val
+"""Set SCRX n_states."""
+set_n_states!(value::SCRX, val::Int) = value.n_states = val
+"""Set SCRX states_types."""
+set_states_types!(value::SCRX, val::Vector{StateTypes.StateType}) = value.states_types = val
+"""Set SCRX internal."""
+set_internal!(value::SCRX, val::InfrastructureSystemsInternal) = value.internal = val

@@ -23,17 +23,17 @@ This file is auto-generated. Do not edit.
 Parameters of 6-states synchronous machine: Anderson-Fouad model
 
 # Arguments
-- `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
-- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
-- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
-- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
-- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
-- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
-- `Xq_pp::Float64`: Sub-Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
-- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
-- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
-- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
-- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
+- `R::Float64`: Resistance after EMF in machine per unit, validation range: (0, nothing)
+- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: (0, nothing)
+- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: (0, nothing)
+- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
+- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
+- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
+- `Xq_pp::Float64`: Sub-Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
+- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: (0, nothing)
+- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
+- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: (0, nothing)
+- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	ψq: q-axis stator flux,
@@ -109,64 +109,64 @@ function AndersonFouadMachine(::Nothing)
     )
 end
 
-"""Get [`AndersonFouadMachine`](@ref) `R`."""
+"""Get AndersonFouadMachine R."""
 get_R(value::AndersonFouadMachine) = value.R
-"""Get [`AndersonFouadMachine`](@ref) `Xd`."""
+"""Get AndersonFouadMachine Xd."""
 get_Xd(value::AndersonFouadMachine) = value.Xd
-"""Get [`AndersonFouadMachine`](@ref) `Xq`."""
+"""Get AndersonFouadMachine Xq."""
 get_Xq(value::AndersonFouadMachine) = value.Xq
-"""Get [`AndersonFouadMachine`](@ref) `Xd_p`."""
+"""Get AndersonFouadMachine Xd_p."""
 get_Xd_p(value::AndersonFouadMachine) = value.Xd_p
-"""Get [`AndersonFouadMachine`](@ref) `Xq_p`."""
+"""Get AndersonFouadMachine Xq_p."""
 get_Xq_p(value::AndersonFouadMachine) = value.Xq_p
-"""Get [`AndersonFouadMachine`](@ref) `Xd_pp`."""
+"""Get AndersonFouadMachine Xd_pp."""
 get_Xd_pp(value::AndersonFouadMachine) = value.Xd_pp
-"""Get [`AndersonFouadMachine`](@ref) `Xq_pp`."""
+"""Get AndersonFouadMachine Xq_pp."""
 get_Xq_pp(value::AndersonFouadMachine) = value.Xq_pp
-"""Get [`AndersonFouadMachine`](@ref) `Td0_p`."""
+"""Get AndersonFouadMachine Td0_p."""
 get_Td0_p(value::AndersonFouadMachine) = value.Td0_p
-"""Get [`AndersonFouadMachine`](@ref) `Tq0_p`."""
+"""Get AndersonFouadMachine Tq0_p."""
 get_Tq0_p(value::AndersonFouadMachine) = value.Tq0_p
-"""Get [`AndersonFouadMachine`](@ref) `Td0_pp`."""
+"""Get AndersonFouadMachine Td0_pp."""
 get_Td0_pp(value::AndersonFouadMachine) = value.Td0_pp
-"""Get [`AndersonFouadMachine`](@ref) `Tq0_pp`."""
+"""Get AndersonFouadMachine Tq0_pp."""
 get_Tq0_pp(value::AndersonFouadMachine) = value.Tq0_pp
-"""Get [`AndersonFouadMachine`](@ref) `ext`."""
+"""Get AndersonFouadMachine ext."""
 get_ext(value::AndersonFouadMachine) = value.ext
-"""Get [`AndersonFouadMachine`](@ref) `states`."""
+"""Get AndersonFouadMachine states."""
 get_states(value::AndersonFouadMachine) = value.states
-"""Get [`AndersonFouadMachine`](@ref) `n_states`."""
+"""Get AndersonFouadMachine n_states."""
 get_n_states(value::AndersonFouadMachine) = value.n_states
-"""Get [`AndersonFouadMachine`](@ref) `internal`."""
+"""Get AndersonFouadMachine internal."""
 get_internal(value::AndersonFouadMachine) = value.internal
 
-"""Set [`AndersonFouadMachine`](@ref) `R`."""
-set_R!(value::AndersonFouadMachine, val) = value.R = val
-"""Set [`AndersonFouadMachine`](@ref) `Xd`."""
-set_Xd!(value::AndersonFouadMachine, val) = value.Xd = val
-"""Set [`AndersonFouadMachine`](@ref) `Xq`."""
-set_Xq!(value::AndersonFouadMachine, val) = value.Xq = val
-"""Set [`AndersonFouadMachine`](@ref) `Xd_p`."""
-set_Xd_p!(value::AndersonFouadMachine, val) = value.Xd_p = val
-"""Set [`AndersonFouadMachine`](@ref) `Xq_p`."""
-set_Xq_p!(value::AndersonFouadMachine, val) = value.Xq_p = val
-"""Set [`AndersonFouadMachine`](@ref) `Xd_pp`."""
-set_Xd_pp!(value::AndersonFouadMachine, val) = value.Xd_pp = val
-"""Set [`AndersonFouadMachine`](@ref) `Xq_pp`."""
-set_Xq_pp!(value::AndersonFouadMachine, val) = value.Xq_pp = val
-"""Set [`AndersonFouadMachine`](@ref) `Td0_p`."""
-set_Td0_p!(value::AndersonFouadMachine, val) = value.Td0_p = val
-"""Set [`AndersonFouadMachine`](@ref) `Tq0_p`."""
-set_Tq0_p!(value::AndersonFouadMachine, val) = value.Tq0_p = val
-"""Set [`AndersonFouadMachine`](@ref) `Td0_pp`."""
-set_Td0_pp!(value::AndersonFouadMachine, val) = value.Td0_pp = val
-"""Set [`AndersonFouadMachine`](@ref) `Tq0_pp`."""
-set_Tq0_pp!(value::AndersonFouadMachine, val) = value.Tq0_pp = val
-"""Set [`AndersonFouadMachine`](@ref) `ext`."""
-set_ext!(value::AndersonFouadMachine, val) = value.ext = val
-"""Set [`AndersonFouadMachine`](@ref) `states`."""
-set_states!(value::AndersonFouadMachine, val) = value.states = val
-"""Set [`AndersonFouadMachine`](@ref) `n_states`."""
-set_n_states!(value::AndersonFouadMachine, val) = value.n_states = val
-"""Set [`AndersonFouadMachine`](@ref) `internal`."""
-set_internal!(value::AndersonFouadMachine, val) = value.internal = val
+"""Set AndersonFouadMachine R."""
+set_R!(value::AndersonFouadMachine, val::Float64) = value.R = val
+"""Set AndersonFouadMachine Xd."""
+set_Xd!(value::AndersonFouadMachine, val::Float64) = value.Xd = val
+"""Set AndersonFouadMachine Xq."""
+set_Xq!(value::AndersonFouadMachine, val::Float64) = value.Xq = val
+"""Set AndersonFouadMachine Xd_p."""
+set_Xd_p!(value::AndersonFouadMachine, val::Float64) = value.Xd_p = val
+"""Set AndersonFouadMachine Xq_p."""
+set_Xq_p!(value::AndersonFouadMachine, val::Float64) = value.Xq_p = val
+"""Set AndersonFouadMachine Xd_pp."""
+set_Xd_pp!(value::AndersonFouadMachine, val::Float64) = value.Xd_pp = val
+"""Set AndersonFouadMachine Xq_pp."""
+set_Xq_pp!(value::AndersonFouadMachine, val::Float64) = value.Xq_pp = val
+"""Set AndersonFouadMachine Td0_p."""
+set_Td0_p!(value::AndersonFouadMachine, val::Float64) = value.Td0_p = val
+"""Set AndersonFouadMachine Tq0_p."""
+set_Tq0_p!(value::AndersonFouadMachine, val::Float64) = value.Tq0_p = val
+"""Set AndersonFouadMachine Td0_pp."""
+set_Td0_pp!(value::AndersonFouadMachine, val::Float64) = value.Td0_pp = val
+"""Set AndersonFouadMachine Tq0_pp."""
+set_Tq0_pp!(value::AndersonFouadMachine, val::Float64) = value.Tq0_pp = val
+"""Set AndersonFouadMachine ext."""
+set_ext!(value::AndersonFouadMachine, val::Dict{String, Any}) = value.ext = val
+"""Set AndersonFouadMachine states."""
+set_states!(value::AndersonFouadMachine, val::Vector{Symbol}) = value.states = val
+"""Set AndersonFouadMachine n_states."""
+set_n_states!(value::AndersonFouadMachine, val::Int) = value.n_states = val
+"""Set AndersonFouadMachine internal."""
+set_internal!(value::AndersonFouadMachine, val::InfrastructureSystemsInternal) = value.internal = val

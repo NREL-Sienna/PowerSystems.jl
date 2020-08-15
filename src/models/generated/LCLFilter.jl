@@ -16,11 +16,11 @@ This file is auto-generated. Do not edit.
 Parameters of a LCL filter outside the converter, the states are in the grid's reference frame
 
 # Arguments
-- `lf::Float64`: Series inductance in p.u. of converter filter, validation range: `(0, nothing)`
-- `rf::Float64`: Series resistance in p.u. of converter filter, validation range: `(0, nothing)`
-- `cf::Float64`: Shunt capacitance in p.u. of converter filter, validation range: `(0, nothing)`
-- `lg::Float64`: Series inductance in p.u. of converter filter to the grid, validation range: `(0, nothing)`
-- `rg::Float64`: Series resistance in p.u. of converter filter to the grid, validation range: `(0, nothing)`
+- `lf::Float64`: Series inductance in p.u. of converter filter, validation range: (0, nothing)
+- `rf::Float64`: Series resistance in p.u. of converter filter, validation range: (0, nothing)
+- `cf::Float64`: Shunt capacitance in p.u. of converter filter, validation range: (0, nothing)
+- `lg::Float64`: Series inductance in p.u. of converter filter to the grid, validation range: (0, nothing)
+- `rg::Float64`: Series resistance in p.u. of converter filter to the grid, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the LCLFilter model are:
 	ir_cnv: Real current out of the converter,
@@ -75,36 +75,36 @@ function LCLFilter(::Nothing)
     )
 end
 
-"""Get [`LCLFilter`](@ref) `lf`."""
+"""Get LCLFilter lf."""
 get_lf(value::LCLFilter) = value.lf
-"""Get [`LCLFilter`](@ref) `rf`."""
+"""Get LCLFilter rf."""
 get_rf(value::LCLFilter) = value.rf
-"""Get [`LCLFilter`](@ref) `cf`."""
+"""Get LCLFilter cf."""
 get_cf(value::LCLFilter) = value.cf
-"""Get [`LCLFilter`](@ref) `lg`."""
+"""Get LCLFilter lg."""
 get_lg(value::LCLFilter) = value.lg
-"""Get [`LCLFilter`](@ref) `rg`."""
+"""Get LCLFilter rg."""
 get_rg(value::LCLFilter) = value.rg
-"""Get [`LCLFilter`](@ref) `ext`."""
+"""Get LCLFilter ext."""
 get_ext(value::LCLFilter) = value.ext
-"""Get [`LCLFilter`](@ref) `states`."""
+"""Get LCLFilter states."""
 get_states(value::LCLFilter) = value.states
-"""Get [`LCLFilter`](@ref) `n_states`."""
+"""Get LCLFilter n_states."""
 get_n_states(value::LCLFilter) = value.n_states
 
-"""Set [`LCLFilter`](@ref) `lf`."""
-set_lf!(value::LCLFilter, val) = value.lf = val
-"""Set [`LCLFilter`](@ref) `rf`."""
-set_rf!(value::LCLFilter, val) = value.rf = val
-"""Set [`LCLFilter`](@ref) `cf`."""
-set_cf!(value::LCLFilter, val) = value.cf = val
-"""Set [`LCLFilter`](@ref) `lg`."""
-set_lg!(value::LCLFilter, val) = value.lg = val
-"""Set [`LCLFilter`](@ref) `rg`."""
-set_rg!(value::LCLFilter, val) = value.rg = val
-"""Set [`LCLFilter`](@ref) `ext`."""
-set_ext!(value::LCLFilter, val) = value.ext = val
-"""Set [`LCLFilter`](@ref) `states`."""
-set_states!(value::LCLFilter, val) = value.states = val
-"""Set [`LCLFilter`](@ref) `n_states`."""
-set_n_states!(value::LCLFilter, val) = value.n_states = val
+"""Set LCLFilter lf."""
+set_lf!(value::LCLFilter, val::Float64) = value.lf = val
+"""Set LCLFilter rf."""
+set_rf!(value::LCLFilter, val::Float64) = value.rf = val
+"""Set LCLFilter cf."""
+set_cf!(value::LCLFilter, val::Float64) = value.cf = val
+"""Set LCLFilter lg."""
+set_lg!(value::LCLFilter, val::Float64) = value.lg = val
+"""Set LCLFilter rg."""
+set_rg!(value::LCLFilter, val::Float64) = value.rg = val
+"""Set LCLFilter ext."""
+set_ext!(value::LCLFilter, val::Dict{String, Any}) = value.ext = val
+"""Set LCLFilter states."""
+set_states!(value::LCLFilter, val::Vector{Symbol}) = value.states = val
+"""Set LCLFilter n_states."""
+set_n_states!(value::LCLFilter, val::Int) = value.n_states = val

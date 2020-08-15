@@ -26,10 +26,10 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 - `active_power_flow::Float64`
 - `reactive_power_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `error`
-- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `error`
-- `primary_shunt::Float64`: System per-unit value, validation range: `(0, 2)`, action if invalid: `error`
-- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
+- `r::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
+- `x::Float64`: System per-unit value, validation range: (-2, 4), action if invalid: error
+- `primary_shunt::Float64`: System per-unit value, validation range: (0, 2), action if invalid: error
+- `rate::Union{Nothing, Float64}`, validation range: (0, nothing), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -85,54 +85,54 @@ end
 
 
 InfrastructureSystems.get_name(value::Transformer2W) = value.name
-"""Get [`Transformer2W`](@ref) `available`."""
+"""Get Transformer2W available."""
 get_available(value::Transformer2W) = value.available
-"""Get [`Transformer2W`](@ref) `active_power_flow`."""
+"""Get Transformer2W active_power_flow."""
 get_active_power_flow(value::Transformer2W) = get_value(value, value.active_power_flow)
-"""Get [`Transformer2W`](@ref) `reactive_power_flow`."""
+"""Get Transformer2W reactive_power_flow."""
 get_reactive_power_flow(value::Transformer2W) = get_value(value, value.reactive_power_flow)
-"""Get [`Transformer2W`](@ref) `arc`."""
+"""Get Transformer2W arc."""
 get_arc(value::Transformer2W) = value.arc
-"""Get [`Transformer2W`](@ref) `r`."""
+"""Get Transformer2W r."""
 get_r(value::Transformer2W) = value.r
-"""Get [`Transformer2W`](@ref) `x`."""
+"""Get Transformer2W x."""
 get_x(value::Transformer2W) = value.x
-"""Get [`Transformer2W`](@ref) `primary_shunt`."""
+"""Get Transformer2W primary_shunt."""
 get_primary_shunt(value::Transformer2W) = value.primary_shunt
-"""Get [`Transformer2W`](@ref) `rate`."""
+"""Get Transformer2W rate."""
 get_rate(value::Transformer2W) = get_value(value, value.rate)
-"""Get [`Transformer2W`](@ref) `services`."""
+"""Get Transformer2W services."""
 get_services(value::Transformer2W) = value.services
-"""Get [`Transformer2W`](@ref) `ext`."""
+"""Get Transformer2W ext."""
 get_ext(value::Transformer2W) = value.ext
 
 InfrastructureSystems.get_forecasts(value::Transformer2W) = value.forecasts
-"""Get [`Transformer2W`](@ref) `internal`."""
+"""Get Transformer2W internal."""
 get_internal(value::Transformer2W) = value.internal
 
 
-InfrastructureSystems.set_name!(value::Transformer2W, val) = value.name = val
-"""Set [`Transformer2W`](@ref) `available`."""
-set_available!(value::Transformer2W, val) = value.available = val
-"""Set [`Transformer2W`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::Transformer2W, val) = value.active_power_flow = val
-"""Set [`Transformer2W`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::Transformer2W, val) = value.reactive_power_flow = val
-"""Set [`Transformer2W`](@ref) `arc`."""
-set_arc!(value::Transformer2W, val) = value.arc = val
-"""Set [`Transformer2W`](@ref) `r`."""
-set_r!(value::Transformer2W, val) = value.r = val
-"""Set [`Transformer2W`](@ref) `x`."""
-set_x!(value::Transformer2W, val) = value.x = val
-"""Set [`Transformer2W`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = val
-"""Set [`Transformer2W`](@ref) `rate`."""
-set_rate!(value::Transformer2W, val) = value.rate = val
-"""Set [`Transformer2W`](@ref) `services`."""
-set_services!(value::Transformer2W, val) = value.services = val
-"""Set [`Transformer2W`](@ref) `ext`."""
-set_ext!(value::Transformer2W, val) = value.ext = val
+InfrastructureSystems.set_name!(value::Transformer2W, val::String) = value.name = val
+"""Set Transformer2W available."""
+set_available!(value::Transformer2W, val::Bool) = value.available = val
+"""Set Transformer2W active_power_flow."""
+set_active_power_flow!(value::Transformer2W, val::Float64) = value.active_power_flow = val
+"""Set Transformer2W reactive_power_flow."""
+set_reactive_power_flow!(value::Transformer2W, val::Float64) = value.reactive_power_flow = val
+"""Set Transformer2W arc."""
+set_arc!(value::Transformer2W, val::Arc) = value.arc = val
+"""Set Transformer2W r."""
+set_r!(value::Transformer2W, val::Float64) = value.r = val
+"""Set Transformer2W x."""
+set_x!(value::Transformer2W, val::Float64) = value.x = val
+"""Set Transformer2W primary_shunt."""
+set_primary_shunt!(value::Transformer2W, val::Float64) = value.primary_shunt = val
+"""Set Transformer2W rate."""
+set_rate!(value::Transformer2W, val::Union{Nothing, Float64}) = value.rate = val
+"""Set Transformer2W services."""
+set_services!(value::Transformer2W, val::Vector{Service}) = value.services = val
+"""Set Transformer2W ext."""
+set_ext!(value::Transformer2W, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::Transformer2W, val) = value.forecasts = val
-"""Set [`Transformer2W`](@ref) `internal`."""
-set_internal!(value::Transformer2W, val) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::Transformer2W, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+"""Set Transformer2W internal."""
+set_internal!(value::Transformer2W, val::InfrastructureSystemsInternal) = value.internal = val

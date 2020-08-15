@@ -27,11 +27,11 @@ This file is auto-generated. Do not edit.
 - `active_power_flow::Float64`
 - `reactive_power_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `error`
-- `x::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `error`
-- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: `(0, 100)`, action if invalid: `error`
+- `r::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
+- `x::Float64`: System per-unit value, validation range: (0, 4), action if invalid: error
+- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: (0, 100), action if invalid: error
 - `rate::Float64`
-- `angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
+- `angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: (-1.571, 1.571), action if invalid: error
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -89,58 +89,58 @@ end
 
 
 InfrastructureSystems.get_name(value::Line) = value.name
-"""Get [`Line`](@ref) `available`."""
+"""Get Line available."""
 get_available(value::Line) = value.available
-"""Get [`Line`](@ref) `active_power_flow`."""
+"""Get Line active_power_flow."""
 get_active_power_flow(value::Line) = get_value(value, value.active_power_flow)
-"""Get [`Line`](@ref) `reactive_power_flow`."""
+"""Get Line reactive_power_flow."""
 get_reactive_power_flow(value::Line) = get_value(value, value.reactive_power_flow)
-"""Get [`Line`](@ref) `arc`."""
+"""Get Line arc."""
 get_arc(value::Line) = value.arc
-"""Get [`Line`](@ref) `r`."""
+"""Get Line r."""
 get_r(value::Line) = value.r
-"""Get [`Line`](@ref) `x`."""
+"""Get Line x."""
 get_x(value::Line) = value.x
-"""Get [`Line`](@ref) `b`."""
+"""Get Line b."""
 get_b(value::Line) = value.b
-"""Get [`Line`](@ref) `rate`."""
+"""Get Line rate."""
 get_rate(value::Line) = get_value(value, value.rate)
-"""Get [`Line`](@ref) `angle_limits`."""
+"""Get Line angle_limits."""
 get_angle_limits(value::Line) = value.angle_limits
-"""Get [`Line`](@ref) `services`."""
+"""Get Line services."""
 get_services(value::Line) = value.services
-"""Get [`Line`](@ref) `ext`."""
+"""Get Line ext."""
 get_ext(value::Line) = value.ext
 
 InfrastructureSystems.get_forecasts(value::Line) = value.forecasts
-"""Get [`Line`](@ref) `internal`."""
+"""Get Line internal."""
 get_internal(value::Line) = value.internal
 
 
-InfrastructureSystems.set_name!(value::Line, val) = value.name = val
-"""Set [`Line`](@ref) `available`."""
-set_available!(value::Line, val) = value.available = val
-"""Set [`Line`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::Line, val) = value.active_power_flow = val
-"""Set [`Line`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = val
-"""Set [`Line`](@ref) `arc`."""
-set_arc!(value::Line, val) = value.arc = val
-"""Set [`Line`](@ref) `r`."""
-set_r!(value::Line, val) = value.r = val
-"""Set [`Line`](@ref) `x`."""
-set_x!(value::Line, val) = value.x = val
-"""Set [`Line`](@ref) `b`."""
-set_b!(value::Line, val) = value.b = val
-"""Set [`Line`](@ref) `rate`."""
-set_rate!(value::Line, val) = value.rate = val
-"""Set [`Line`](@ref) `angle_limits`."""
-set_angle_limits!(value::Line, val) = value.angle_limits = val
-"""Set [`Line`](@ref) `services`."""
-set_services!(value::Line, val) = value.services = val
-"""Set [`Line`](@ref) `ext`."""
-set_ext!(value::Line, val) = value.ext = val
+InfrastructureSystems.set_name!(value::Line, val::String) = value.name = val
+"""Set Line available."""
+set_available!(value::Line, val::Bool) = value.available = val
+"""Set Line active_power_flow."""
+set_active_power_flow!(value::Line, val::Float64) = value.active_power_flow = val
+"""Set Line reactive_power_flow."""
+set_reactive_power_flow!(value::Line, val::Float64) = value.reactive_power_flow = val
+"""Set Line arc."""
+set_arc!(value::Line, val::Arc) = value.arc = val
+"""Set Line r."""
+set_r!(value::Line, val::Float64) = value.r = val
+"""Set Line x."""
+set_x!(value::Line, val::Float64) = value.x = val
+"""Set Line b."""
+set_b!(value::Line, val::NamedTuple{(:from, :to), Tuple{Float64, Float64}}) = value.b = val
+"""Set Line rate."""
+set_rate!(value::Line, val::Float64) = value.rate = val
+"""Set Line angle_limits."""
+set_angle_limits!(value::Line, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.angle_limits = val
+"""Set Line services."""
+set_services!(value::Line, val::Vector{Service}) = value.services = val
+"""Set Line ext."""
+set_ext!(value::Line, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::Line, val) = value.forecasts = val
-"""Set [`Line`](@ref) `internal`."""
-set_internal!(value::Line, val) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::Line, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+"""Set Line internal."""
+set_internal!(value::Line, val::InfrastructureSystemsInternal) = value.internal = val

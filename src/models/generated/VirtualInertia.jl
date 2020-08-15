@@ -15,10 +15,10 @@ This file is auto-generated. Do not edit.
 Parameters of a Virtual Inertia with SRF using VSM for active power controller
 
 # Arguments
-- `Ta::Float64`: VSM inertia constant, validation range: `(0, nothing)`
-- `kd::Float64`: VSM damping constant, validation range: `(0, nothing)`
-- `kω::Float64`: frequency droop gain, validation range: `(0, nothing)`
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `Ta::Float64`: VSM inertia constant, validation range: (0, nothing)
+- `kd::Float64`: VSM damping constant, validation range: (0, nothing)
+- `kω::Float64`: frequency droop gain, validation range: (0, nothing)
+- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the VirtualInertia model are:
 	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
@@ -62,32 +62,32 @@ function VirtualInertia(::Nothing)
     )
 end
 
-"""Get [`VirtualInertia`](@ref) `Ta`."""
+"""Get VirtualInertia Ta."""
 get_Ta(value::VirtualInertia) = value.Ta
-"""Get [`VirtualInertia`](@ref) `kd`."""
+"""Get VirtualInertia kd."""
 get_kd(value::VirtualInertia) = value.kd
-"""Get [`VirtualInertia`](@ref) `kω`."""
+"""Get VirtualInertia kω."""
 get_kω(value::VirtualInertia) = value.kω
-"""Get [`VirtualInertia`](@ref) `P_ref`."""
+"""Get VirtualInertia P_ref."""
 get_P_ref(value::VirtualInertia) = value.P_ref
-"""Get [`VirtualInertia`](@ref) `ext`."""
+"""Get VirtualInertia ext."""
 get_ext(value::VirtualInertia) = value.ext
-"""Get [`VirtualInertia`](@ref) `states`."""
+"""Get VirtualInertia states."""
 get_states(value::VirtualInertia) = value.states
-"""Get [`VirtualInertia`](@ref) `n_states`."""
+"""Get VirtualInertia n_states."""
 get_n_states(value::VirtualInertia) = value.n_states
 
-"""Set [`VirtualInertia`](@ref) `Ta`."""
-set_Ta!(value::VirtualInertia, val) = value.Ta = val
-"""Set [`VirtualInertia`](@ref) `kd`."""
-set_kd!(value::VirtualInertia, val) = value.kd = val
-"""Set [`VirtualInertia`](@ref) `kω`."""
-set_kω!(value::VirtualInertia, val) = value.kω = val
-"""Set [`VirtualInertia`](@ref) `P_ref`."""
-set_P_ref!(value::VirtualInertia, val) = value.P_ref = val
-"""Set [`VirtualInertia`](@ref) `ext`."""
-set_ext!(value::VirtualInertia, val) = value.ext = val
-"""Set [`VirtualInertia`](@ref) `states`."""
-set_states!(value::VirtualInertia, val) = value.states = val
-"""Set [`VirtualInertia`](@ref) `n_states`."""
-set_n_states!(value::VirtualInertia, val) = value.n_states = val
+"""Set VirtualInertia Ta."""
+set_Ta!(value::VirtualInertia, val::Float64) = value.Ta = val
+"""Set VirtualInertia kd."""
+set_kd!(value::VirtualInertia, val::Float64) = value.kd = val
+"""Set VirtualInertia kω."""
+set_kω!(value::VirtualInertia, val::Float64) = value.kω = val
+"""Set VirtualInertia P_ref."""
+set_P_ref!(value::VirtualInertia, val::Float64) = value.P_ref = val
+"""Set VirtualInertia ext."""
+set_ext!(value::VirtualInertia, val::Dict{String, Any}) = value.ext = val
+"""Set VirtualInertia states."""
+set_states!(value::VirtualInertia, val::Vector{Symbol}) = value.states = val
+"""Set VirtualInertia n_states."""
+set_n_states!(value::VirtualInertia, val::Int) = value.n_states = val

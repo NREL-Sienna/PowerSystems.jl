@@ -27,10 +27,10 @@ Data Structure for fixed renewable generation technologies.
 - `bus::Bus`
 - `active_power::Float64`
 - `reactive_power::Float64`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: (0, nothing), action if invalid: error
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
-- `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `power_factor::Float64`, validation range: (0, 1), action if invalid: error
+- `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -90,56 +90,56 @@ end
 
 
 InfrastructureSystems.get_name(value::RenewableFix) = value.name
-"""Get [`RenewableFix`](@ref) `available`."""
+"""Get RenewableFix available."""
 get_available(value::RenewableFix) = value.available
-"""Get [`RenewableFix`](@ref) `bus`."""
+"""Get RenewableFix bus."""
 get_bus(value::RenewableFix) = value.bus
-"""Get [`RenewableFix`](@ref) `active_power`."""
+"""Get RenewableFix active_power."""
 get_active_power(value::RenewableFix) = get_value(value, value.active_power)
-"""Get [`RenewableFix`](@ref) `reactive_power`."""
+"""Get RenewableFix reactive_power."""
 get_reactive_power(value::RenewableFix) = get_value(value, value.reactive_power)
-"""Get [`RenewableFix`](@ref) `rating`."""
+"""Get RenewableFix rating."""
 get_rating(value::RenewableFix) = get_value(value, value.rating)
-"""Get [`RenewableFix`](@ref) `prime_mover`."""
+"""Get RenewableFix prime_mover."""
 get_prime_mover(value::RenewableFix) = value.prime_mover
-"""Get [`RenewableFix`](@ref) `power_factor`."""
+"""Get RenewableFix power_factor."""
 get_power_factor(value::RenewableFix) = value.power_factor
-"""Get [`RenewableFix`](@ref) `base_power`."""
+"""Get RenewableFix base_power."""
 get_base_power(value::RenewableFix) = value.base_power
-"""Get [`RenewableFix`](@ref) `services`."""
+"""Get RenewableFix services."""
 get_services(value::RenewableFix) = value.services
-"""Get [`RenewableFix`](@ref) `dynamic_injector`."""
+"""Get RenewableFix dynamic_injector."""
 get_dynamic_injector(value::RenewableFix) = value.dynamic_injector
-"""Get [`RenewableFix`](@ref) `ext`."""
+"""Get RenewableFix ext."""
 get_ext(value::RenewableFix) = value.ext
 
 InfrastructureSystems.get_forecasts(value::RenewableFix) = value.forecasts
-"""Get [`RenewableFix`](@ref) `internal`."""
+"""Get RenewableFix internal."""
 get_internal(value::RenewableFix) = value.internal
 
 
-InfrastructureSystems.set_name!(value::RenewableFix, val) = value.name = val
-"""Set [`RenewableFix`](@ref) `available`."""
-set_available!(value::RenewableFix, val) = value.available = val
-"""Set [`RenewableFix`](@ref) `bus`."""
-set_bus!(value::RenewableFix, val) = value.bus = val
-"""Set [`RenewableFix`](@ref) `active_power`."""
-set_active_power!(value::RenewableFix, val) = value.active_power = val
-"""Set [`RenewableFix`](@ref) `reactive_power`."""
-set_reactive_power!(value::RenewableFix, val) = value.reactive_power = val
-"""Set [`RenewableFix`](@ref) `rating`."""
-set_rating!(value::RenewableFix, val) = value.rating = val
-"""Set [`RenewableFix`](@ref) `prime_mover`."""
-set_prime_mover!(value::RenewableFix, val) = value.prime_mover = val
-"""Set [`RenewableFix`](@ref) `power_factor`."""
-set_power_factor!(value::RenewableFix, val) = value.power_factor = val
-"""Set [`RenewableFix`](@ref) `base_power`."""
-set_base_power!(value::RenewableFix, val) = value.base_power = val
-"""Set [`RenewableFix`](@ref) `services`."""
-set_services!(value::RenewableFix, val) = value.services = val
-"""Set [`RenewableFix`](@ref) `ext`."""
-set_ext!(value::RenewableFix, val) = value.ext = val
+InfrastructureSystems.set_name!(value::RenewableFix, val::String) = value.name = val
+"""Set RenewableFix available."""
+set_available!(value::RenewableFix, val::Bool) = value.available = val
+"""Set RenewableFix bus."""
+set_bus!(value::RenewableFix, val::Bus) = value.bus = val
+"""Set RenewableFix active_power."""
+set_active_power!(value::RenewableFix, val::Float64) = value.active_power = val
+"""Set RenewableFix reactive_power."""
+set_reactive_power!(value::RenewableFix, val::Float64) = value.reactive_power = val
+"""Set RenewableFix rating."""
+set_rating!(value::RenewableFix, val::Float64) = value.rating = val
+"""Set RenewableFix prime_mover."""
+set_prime_mover!(value::RenewableFix, val::PrimeMovers.PrimeMover) = value.prime_mover = val
+"""Set RenewableFix power_factor."""
+set_power_factor!(value::RenewableFix, val::Float64) = value.power_factor = val
+"""Set RenewableFix base_power."""
+set_base_power!(value::RenewableFix, val::Float64) = value.base_power = val
+"""Set RenewableFix services."""
+set_services!(value::RenewableFix, val::Vector{Service}) = value.services = val
+"""Set RenewableFix ext."""
+set_ext!(value::RenewableFix, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::RenewableFix, val) = value.forecasts = val
-"""Set [`RenewableFix`](@ref) `internal`."""
-set_internal!(value::RenewableFix, val) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::RenewableFix, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+"""Set RenewableFix internal."""
+set_internal!(value::RenewableFix, val::InfrastructureSystemsInternal) = value.internal = val

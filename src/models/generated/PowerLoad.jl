@@ -28,7 +28,7 @@ Data structure for a static power load.
 - `model::Union{Nothing, LoadModels.LoadModel}`
 - `active_power::Float64`
 - `reactive_power::Float64`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: (0, nothing), action if invalid: warn
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
@@ -88,56 +88,56 @@ end
 
 
 InfrastructureSystems.get_name(value::PowerLoad) = value.name
-"""Get [`PowerLoad`](@ref) `available`."""
+"""Get PowerLoad available."""
 get_available(value::PowerLoad) = value.available
-"""Get [`PowerLoad`](@ref) `bus`."""
+"""Get PowerLoad bus."""
 get_bus(value::PowerLoad) = value.bus
-"""Get [`PowerLoad`](@ref) `model`."""
+"""Get PowerLoad model."""
 get_model(value::PowerLoad) = value.model
-"""Get [`PowerLoad`](@ref) `active_power`."""
+"""Get PowerLoad active_power."""
 get_active_power(value::PowerLoad) = get_value(value, value.active_power)
-"""Get [`PowerLoad`](@ref) `reactive_power`."""
+"""Get PowerLoad reactive_power."""
 get_reactive_power(value::PowerLoad) = get_value(value, value.reactive_power)
-"""Get [`PowerLoad`](@ref) `base_power`."""
+"""Get PowerLoad base_power."""
 get_base_power(value::PowerLoad) = value.base_power
-"""Get [`PowerLoad`](@ref) `max_active_power`."""
+"""Get PowerLoad max_active_power."""
 get_max_active_power(value::PowerLoad) = get_value(value, value.max_active_power)
-"""Get [`PowerLoad`](@ref) `max_reactive_power`."""
+"""Get PowerLoad max_reactive_power."""
 get_max_reactive_power(value::PowerLoad) = get_value(value, value.max_reactive_power)
-"""Get [`PowerLoad`](@ref) `services`."""
+"""Get PowerLoad services."""
 get_services(value::PowerLoad) = value.services
-"""Get [`PowerLoad`](@ref) `dynamic_injector`."""
+"""Get PowerLoad dynamic_injector."""
 get_dynamic_injector(value::PowerLoad) = value.dynamic_injector
-"""Get [`PowerLoad`](@ref) `ext`."""
+"""Get PowerLoad ext."""
 get_ext(value::PowerLoad) = value.ext
 
 InfrastructureSystems.get_forecasts(value::PowerLoad) = value.forecasts
-"""Get [`PowerLoad`](@ref) `internal`."""
+"""Get PowerLoad internal."""
 get_internal(value::PowerLoad) = value.internal
 
 
-InfrastructureSystems.set_name!(value::PowerLoad, val) = value.name = val
-"""Set [`PowerLoad`](@ref) `available`."""
-set_available!(value::PowerLoad, val) = value.available = val
-"""Set [`PowerLoad`](@ref) `bus`."""
-set_bus!(value::PowerLoad, val) = value.bus = val
-"""Set [`PowerLoad`](@ref) `model`."""
-set_model!(value::PowerLoad, val) = value.model = val
-"""Set [`PowerLoad`](@ref) `active_power`."""
-set_active_power!(value::PowerLoad, val) = value.active_power = val
-"""Set [`PowerLoad`](@ref) `reactive_power`."""
-set_reactive_power!(value::PowerLoad, val) = value.reactive_power = val
-"""Set [`PowerLoad`](@ref) `base_power`."""
-set_base_power!(value::PowerLoad, val) = value.base_power = val
-"""Set [`PowerLoad`](@ref) `max_active_power`."""
-set_max_active_power!(value::PowerLoad, val) = value.max_active_power = val
-"""Set [`PowerLoad`](@ref) `max_reactive_power`."""
-set_max_reactive_power!(value::PowerLoad, val) = value.max_reactive_power = val
-"""Set [`PowerLoad`](@ref) `services`."""
-set_services!(value::PowerLoad, val) = value.services = val
-"""Set [`PowerLoad`](@ref) `ext`."""
-set_ext!(value::PowerLoad, val) = value.ext = val
+InfrastructureSystems.set_name!(value::PowerLoad, val::String) = value.name = val
+"""Set PowerLoad available."""
+set_available!(value::PowerLoad, val::Bool) = value.available = val
+"""Set PowerLoad bus."""
+set_bus!(value::PowerLoad, val::Bus) = value.bus = val
+"""Set PowerLoad model."""
+set_model!(value::PowerLoad, val::Union{Nothing, LoadModels.LoadModel}) = value.model = val
+"""Set PowerLoad active_power."""
+set_active_power!(value::PowerLoad, val::Float64) = value.active_power = val
+"""Set PowerLoad reactive_power."""
+set_reactive_power!(value::PowerLoad, val::Float64) = value.reactive_power = val
+"""Set PowerLoad base_power."""
+set_base_power!(value::PowerLoad, val::Float64) = value.base_power = val
+"""Set PowerLoad max_active_power."""
+set_max_active_power!(value::PowerLoad, val::Float64) = value.max_active_power = val
+"""Set PowerLoad max_reactive_power."""
+set_max_reactive_power!(value::PowerLoad, val::Float64) = value.max_reactive_power = val
+"""Set PowerLoad services."""
+set_services!(value::PowerLoad, val::Vector{Service}) = value.services = val
+"""Set PowerLoad ext."""
+set_ext!(value::PowerLoad, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::PowerLoad, val) = value.forecasts = val
-"""Set [`PowerLoad`](@ref) `internal`."""
-set_internal!(value::PowerLoad, val) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::PowerLoad, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+"""Set PowerLoad internal."""
+set_internal!(value::PowerLoad, val::InfrastructureSystemsInternal) = value.internal = val

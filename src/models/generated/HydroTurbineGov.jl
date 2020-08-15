@@ -24,18 +24,18 @@ This file is auto-generated. Do not edit.
 Hydro Turbine-Governor.
 
 # Arguments
-- `R::Float64`: Permanent droop parameter, validation range: `(0, nothing)`
-- `r::Float64`: Temporary Droop, validation range: `(0, nothing)`
-- `Tr::Float64`: Governor time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
-- `Tf::Float64`: Filter Time constant, validation range: `("eps()", nothing)`
-- `Tg::Float64`: Servo time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `R::Float64`: Permanent droop parameter, validation range: (0, nothing)
+- `r::Float64`: Temporary Droop, validation range: (0, nothing)
+- `Tr::Float64`: Governor time constant, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
+- `Tf::Float64`: Filter Time constant, validation range: (&quot;eps()&quot;, nothing)
+- `Tg::Float64`: Servo time constant, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
 - `VELM::Float64`: gate velocity limit
 - `gate_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Gate position limits
-- `Tw::Float64`: water time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Tw::Float64`: water time constant, validation range: (&quot;eps()&quot;, nothing), action if invalid: error
 - `At::Float64`: Turbine gain
-- `D_T::Float64`: Turbine Damping, validation range: `(0, nothing)`
-- `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `D_T::Float64`: Turbine Damping, validation range: (0, nothing)
+- `q_nl::Float64`: No-power flow, validation range: (0, nothing)
+- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the HydroTurbineGov model are:
 	x_g1: filter_output,
@@ -110,68 +110,68 @@ function HydroTurbineGov(::Nothing)
     )
 end
 
-"""Get [`HydroTurbineGov`](@ref) `R`."""
+"""Get HydroTurbineGov R."""
 get_R(value::HydroTurbineGov) = value.R
-"""Get [`HydroTurbineGov`](@ref) `r`."""
+"""Get HydroTurbineGov r."""
 get_r(value::HydroTurbineGov) = value.r
-"""Get [`HydroTurbineGov`](@ref) `Tr`."""
+"""Get HydroTurbineGov Tr."""
 get_Tr(value::HydroTurbineGov) = value.Tr
-"""Get [`HydroTurbineGov`](@ref) `Tf`."""
+"""Get HydroTurbineGov Tf."""
 get_Tf(value::HydroTurbineGov) = value.Tf
-"""Get [`HydroTurbineGov`](@ref) `Tg`."""
+"""Get HydroTurbineGov Tg."""
 get_Tg(value::HydroTurbineGov) = value.Tg
-"""Get [`HydroTurbineGov`](@ref) `VELM`."""
+"""Get HydroTurbineGov VELM."""
 get_VELM(value::HydroTurbineGov) = value.VELM
-"""Get [`HydroTurbineGov`](@ref) `gate_position_limits`."""
+"""Get HydroTurbineGov gate_position_limits."""
 get_gate_position_limits(value::HydroTurbineGov) = value.gate_position_limits
-"""Get [`HydroTurbineGov`](@ref) `Tw`."""
+"""Get HydroTurbineGov Tw."""
 get_Tw(value::HydroTurbineGov) = value.Tw
-"""Get [`HydroTurbineGov`](@ref) `At`."""
+"""Get HydroTurbineGov At."""
 get_At(value::HydroTurbineGov) = value.At
-"""Get [`HydroTurbineGov`](@ref) `D_T`."""
+"""Get HydroTurbineGov D_T."""
 get_D_T(value::HydroTurbineGov) = value.D_T
-"""Get [`HydroTurbineGov`](@ref) `q_nl`."""
+"""Get HydroTurbineGov q_nl."""
 get_q_nl(value::HydroTurbineGov) = value.q_nl
-"""Get [`HydroTurbineGov`](@ref) `P_ref`."""
+"""Get HydroTurbineGov P_ref."""
 get_P_ref(value::HydroTurbineGov) = value.P_ref
-"""Get [`HydroTurbineGov`](@ref) `ext`."""
+"""Get HydroTurbineGov ext."""
 get_ext(value::HydroTurbineGov) = value.ext
-"""Get [`HydroTurbineGov`](@ref) `states`."""
+"""Get HydroTurbineGov states."""
 get_states(value::HydroTurbineGov) = value.states
-"""Get [`HydroTurbineGov`](@ref) `n_states`."""
+"""Get HydroTurbineGov n_states."""
 get_n_states(value::HydroTurbineGov) = value.n_states
-"""Get [`HydroTurbineGov`](@ref) `internal`."""
+"""Get HydroTurbineGov internal."""
 get_internal(value::HydroTurbineGov) = value.internal
 
-"""Set [`HydroTurbineGov`](@ref) `R`."""
-set_R!(value::HydroTurbineGov, val) = value.R = val
-"""Set [`HydroTurbineGov`](@ref) `r`."""
-set_r!(value::HydroTurbineGov, val) = value.r = val
-"""Set [`HydroTurbineGov`](@ref) `Tr`."""
-set_Tr!(value::HydroTurbineGov, val) = value.Tr = val
-"""Set [`HydroTurbineGov`](@ref) `Tf`."""
-set_Tf!(value::HydroTurbineGov, val) = value.Tf = val
-"""Set [`HydroTurbineGov`](@ref) `Tg`."""
-set_Tg!(value::HydroTurbineGov, val) = value.Tg = val
-"""Set [`HydroTurbineGov`](@ref) `VELM`."""
-set_VELM!(value::HydroTurbineGov, val) = value.VELM = val
-"""Set [`HydroTurbineGov`](@ref) `gate_position_limits`."""
-set_gate_position_limits!(value::HydroTurbineGov, val) = value.gate_position_limits = val
-"""Set [`HydroTurbineGov`](@ref) `Tw`."""
-set_Tw!(value::HydroTurbineGov, val) = value.Tw = val
-"""Set [`HydroTurbineGov`](@ref) `At`."""
-set_At!(value::HydroTurbineGov, val) = value.At = val
-"""Set [`HydroTurbineGov`](@ref) `D_T`."""
-set_D_T!(value::HydroTurbineGov, val) = value.D_T = val
-"""Set [`HydroTurbineGov`](@ref) `q_nl`."""
-set_q_nl!(value::HydroTurbineGov, val) = value.q_nl = val
-"""Set [`HydroTurbineGov`](@ref) `P_ref`."""
-set_P_ref!(value::HydroTurbineGov, val) = value.P_ref = val
-"""Set [`HydroTurbineGov`](@ref) `ext`."""
-set_ext!(value::HydroTurbineGov, val) = value.ext = val
-"""Set [`HydroTurbineGov`](@ref) `states`."""
-set_states!(value::HydroTurbineGov, val) = value.states = val
-"""Set [`HydroTurbineGov`](@ref) `n_states`."""
-set_n_states!(value::HydroTurbineGov, val) = value.n_states = val
-"""Set [`HydroTurbineGov`](@ref) `internal`."""
-set_internal!(value::HydroTurbineGov, val) = value.internal = val
+"""Set HydroTurbineGov R."""
+set_R!(value::HydroTurbineGov, val::Float64) = value.R = val
+"""Set HydroTurbineGov r."""
+set_r!(value::HydroTurbineGov, val::Float64) = value.r = val
+"""Set HydroTurbineGov Tr."""
+set_Tr!(value::HydroTurbineGov, val::Float64) = value.Tr = val
+"""Set HydroTurbineGov Tf."""
+set_Tf!(value::HydroTurbineGov, val::Float64) = value.Tf = val
+"""Set HydroTurbineGov Tg."""
+set_Tg!(value::HydroTurbineGov, val::Float64) = value.Tg = val
+"""Set HydroTurbineGov VELM."""
+set_VELM!(value::HydroTurbineGov, val::Float64) = value.VELM = val
+"""Set HydroTurbineGov gate_position_limits."""
+set_gate_position_limits!(value::HydroTurbineGov, val::NamedTuple{(:min, :max), Tuple{Float64, Float64}}) = value.gate_position_limits = val
+"""Set HydroTurbineGov Tw."""
+set_Tw!(value::HydroTurbineGov, val::Float64) = value.Tw = val
+"""Set HydroTurbineGov At."""
+set_At!(value::HydroTurbineGov, val::Float64) = value.At = val
+"""Set HydroTurbineGov D_T."""
+set_D_T!(value::HydroTurbineGov, val::Float64) = value.D_T = val
+"""Set HydroTurbineGov q_nl."""
+set_q_nl!(value::HydroTurbineGov, val::Float64) = value.q_nl = val
+"""Set HydroTurbineGov P_ref."""
+set_P_ref!(value::HydroTurbineGov, val::Float64) = value.P_ref = val
+"""Set HydroTurbineGov ext."""
+set_ext!(value::HydroTurbineGov, val::Dict{String, Any}) = value.ext = val
+"""Set HydroTurbineGov states."""
+set_states!(value::HydroTurbineGov, val::Vector{Symbol}) = value.states = val
+"""Set HydroTurbineGov n_states."""
+set_n_states!(value::HydroTurbineGov, val::Int) = value.n_states = val
+"""Set HydroTurbineGov internal."""
+set_internal!(value::HydroTurbineGov, val::InfrastructureSystemsInternal) = value.internal = val

@@ -78,46 +78,46 @@ end
 
 
 InfrastructureSystems.get_name(value::AGC) = value.name
-"""Get [`AGC`](@ref) `available`."""
+"""Get AGC available."""
 get_available(value::AGC) = value.available
-"""Get [`AGC`](@ref) `bias`."""
+"""Get AGC bias."""
 get_bias(value::AGC) = value.bias
-"""Get [`AGC`](@ref) `K_p`."""
+"""Get AGC K_p."""
 get_K_p(value::AGC) = value.K_p
-"""Get [`AGC`](@ref) `K_i`."""
+"""Get AGC K_i."""
 get_K_i(value::AGC) = value.K_i
-"""Get [`AGC`](@ref) `K_d`."""
+"""Get AGC K_d."""
 get_K_d(value::AGC) = value.K_d
-"""Get [`AGC`](@ref) `delta_t`."""
+"""Get AGC delta_t."""
 get_delta_t(value::AGC) = value.delta_t
-"""Get [`AGC`](@ref) `area`."""
+"""Get AGC area."""
 get_area(value::AGC) = value.area
-"""Get [`AGC`](@ref) `initial_ace`."""
+"""Get AGC initial_ace."""
 get_initial_ace(value::AGC) = value.initial_ace
-"""Get [`AGC`](@ref) `ext`."""
+"""Get AGC ext."""
 get_ext(value::AGC) = value.ext
-"""Get [`AGC`](@ref) `internal`."""
+"""Get AGC internal."""
 get_internal(value::AGC) = value.internal
 
 
-InfrastructureSystems.set_name!(value::AGC, val) = value.name = val
-"""Set [`AGC`](@ref) `available`."""
-set_available!(value::AGC, val) = value.available = val
-"""Set [`AGC`](@ref) `bias`."""
-set_bias!(value::AGC, val) = value.bias = val
-"""Set [`AGC`](@ref) `K_p`."""
-set_K_p!(value::AGC, val) = value.K_p = val
-"""Set [`AGC`](@ref) `K_i`."""
-set_K_i!(value::AGC, val) = value.K_i = val
-"""Set [`AGC`](@ref) `K_d`."""
-set_K_d!(value::AGC, val) = value.K_d = val
-"""Set [`AGC`](@ref) `delta_t`."""
-set_delta_t!(value::AGC, val) = value.delta_t = val
-"""Set [`AGC`](@ref) `area`."""
-set_area!(value::AGC, val) = value.area = val
-"""Set [`AGC`](@ref) `initial_ace`."""
-set_initial_ace!(value::AGC, val) = value.initial_ace = val
-"""Set [`AGC`](@ref) `ext`."""
-set_ext!(value::AGC, val) = value.ext = val
-"""Set [`AGC`](@ref) `internal`."""
-set_internal!(value::AGC, val) = value.internal = val
+InfrastructureSystems.set_name!(value::AGC, val::String) = value.name = val
+"""Set AGC available."""
+set_available!(value::AGC, val::Bool) = value.available = val
+"""Set AGC bias."""
+set_bias!(value::AGC, val::Float64) = value.bias = val
+"""Set AGC K_p."""
+set_K_p!(value::AGC, val::Float64) = value.K_p = val
+"""Set AGC K_i."""
+set_K_i!(value::AGC, val::Float64) = value.K_i = val
+"""Set AGC K_d."""
+set_K_d!(value::AGC, val::Float64) = value.K_d = val
+"""Set AGC delta_t."""
+set_delta_t!(value::AGC, val::Float64) = value.delta_t = val
+"""Set AGC area."""
+set_area!(value::AGC, val::Union{Nothing, Area}) = value.area = val
+"""Set AGC initial_ace."""
+set_initial_ace!(value::AGC, val::Float64) = value.initial_ace = val
+"""Set AGC ext."""
+set_ext!(value::AGC, val::Dict{String, Any}) = value.ext = val
+"""Set AGC internal."""
+set_internal!(value::AGC, val::InfrastructureSystemsInternal) = value.internal = val

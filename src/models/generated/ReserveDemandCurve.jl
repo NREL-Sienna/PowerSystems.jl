@@ -17,7 +17,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 # Arguments
 - `name::String`
 - `available::Bool`
-- `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_frame::Float64`: the relative saturation time_frame, validation range: (0, nothing), action if invalid: error
 - `operation_cost::TwoPartCost`: Cost for providing reserves  [`TwoPartCost`](@ref)
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -59,30 +59,30 @@ end
 
 
 InfrastructureSystems.get_name(value::ReserveDemandCurve) = value.name
-"""Get [`ReserveDemandCurve`](@ref) `available`."""
+"""Get ReserveDemandCurve available."""
 get_available(value::ReserveDemandCurve) = value.available
-"""Get [`ReserveDemandCurve`](@ref) `time_frame`."""
+"""Get ReserveDemandCurve time_frame."""
 get_time_frame(value::ReserveDemandCurve) = value.time_frame
-"""Get [`ReserveDemandCurve`](@ref) `operation_cost`."""
+"""Get ReserveDemandCurve operation_cost."""
 get_operation_cost(value::ReserveDemandCurve) = value.operation_cost
-"""Get [`ReserveDemandCurve`](@ref) `ext`."""
+"""Get ReserveDemandCurve ext."""
 get_ext(value::ReserveDemandCurve) = value.ext
 
 InfrastructureSystems.get_forecasts(value::ReserveDemandCurve) = value.forecasts
-"""Get [`ReserveDemandCurve`](@ref) `internal`."""
+"""Get ReserveDemandCurve internal."""
 get_internal(value::ReserveDemandCurve) = value.internal
 
 
-InfrastructureSystems.set_name!(value::ReserveDemandCurve, val) = value.name = val
-"""Set [`ReserveDemandCurve`](@ref) `available`."""
-set_available!(value::ReserveDemandCurve, val) = value.available = val
-"""Set [`ReserveDemandCurve`](@ref) `time_frame`."""
-set_time_frame!(value::ReserveDemandCurve, val) = value.time_frame = val
-"""Set [`ReserveDemandCurve`](@ref) `operation_cost`."""
-set_operation_cost!(value::ReserveDemandCurve, val) = value.operation_cost = val
-"""Set [`ReserveDemandCurve`](@ref) `ext`."""
-set_ext!(value::ReserveDemandCurve, val) = value.ext = val
+InfrastructureSystems.set_name!(value::ReserveDemandCurve, val::String) = value.name = val
+"""Set ReserveDemandCurve available."""
+set_available!(value::ReserveDemandCurve, val::Bool) = value.available = val
+"""Set ReserveDemandCurve time_frame."""
+set_time_frame!(value::ReserveDemandCurve, val::Float64) = value.time_frame = val
+"""Set ReserveDemandCurve operation_cost."""
+set_operation_cost!(value::ReserveDemandCurve, val::TwoPartCost) = value.operation_cost = val
+"""Set ReserveDemandCurve ext."""
+set_ext!(value::ReserveDemandCurve, val::Dict{String, Any}) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::ReserveDemandCurve, val) = value.forecasts = val
-"""Set [`ReserveDemandCurve`](@ref) `internal`."""
-set_internal!(value::ReserveDemandCurve, val) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::ReserveDemandCurve, val::InfrastructureSystems.Forecasts) = value.forecasts = val
+"""Set ReserveDemandCurve internal."""
+set_internal!(value::ReserveDemandCurve, val::InfrastructureSystemsInternal) = value.internal = val
