@@ -4403,6 +4403,192 @@
       "supertype": "AVR"
     },
     {
+      "struct_name": "EXPIC1",
+      "docstring": "Generic Proportional/Integral Excitation System",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vi_lim",
+          "comment": "Voltage error limits (regulator input) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Tc",
+          "comment": "First regulator denominator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tb",
+          "comment": "First regulator denominator (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tc1",
+          "comment": "Second regulator denominator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tb1",
+          "comment": "Second regulator denominator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ka",
+          "comment": "Voltage regulator gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ta",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Va_lim",
+          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Limits for exciter output (Vr_min, Vr_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kc",
+          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kf",
+          "comment": "Rate feedback gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tf",
+          "comment": "Rate feedback time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "K_lr",
+          "comment": "Exciter output current limiter gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "I_lr",
+          "comment": "Exciter output current limit reference",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second lead-lag state,\n\tVa: Regulator output state,\n\tVr3: Feedback output state",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Va, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "ST1A has 5 states",
+          "internal_default": 5,
+          "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "ST1A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
       "struct_name": "ESST4B",
       "docstring": "In these excitation systems, voltage (and also current in compounded systems) is transformed to an appropriate level. Rectifiers, either controlled or non-controlled, provide the necessary direct current for the generator field.\nParameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSLF",
       "fields": [
@@ -4559,7 +4745,7 @@
           "name": "θp_rad",
           "comment": "Potential circuit phase angle (radians)",
           "null_value": 0,
-          "default": "θp*pi()*inv(180)",
+          "default": "θp*π*inv(180)",
           "data_type": "Float64"
         },
         {
