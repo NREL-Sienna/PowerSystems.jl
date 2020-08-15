@@ -31,6 +31,7 @@ include("Transfer.jl")
 include("AVRFixed.jl")
 include("AVRSimple.jl")
 include("ESDC1A.jl")
+include("ESDC2A.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
 include("ESAC1A.jl")
@@ -340,6 +341,7 @@ export get_states_types
 export get_status
 export get_storage_capacity
 export get_storage_target
+export get_switch
 export get_tap
 export get_time_at_status
 export get_time_frame
@@ -631,6 +633,7 @@ export set_states_types!
 export set_status!
 export set_storage_capacity!
 export set_storage_target!
+export set_switch!
 export set_tap!
 export set_time_at_status!
 export set_time_frame!

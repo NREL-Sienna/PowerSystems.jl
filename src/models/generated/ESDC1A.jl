@@ -35,9 +35,9 @@ Parameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds
 - `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
 - `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(0, nothing)`
-- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", nothing)`, action if invalid: `error`
 - `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, nothing)`
-- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `(0, nothing)`
+- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
@@ -49,8 +49,8 @@ Parameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds
 	Vr2: Regulator Output,
 	Efd: Exciter Output, 
 	Vr3: Rate feedback integrator
-- `n_states::Int64`: The AVR Type I has 4 states
-- `states_types::Vector{StateTypes.StateType}`: AVR Type I has 4 differential states
+- `n_states::Int64`: The ESDC1A has 5 states
+- `states_types::Vector{StateTypes.StateType}`: ESDC1A I has 5 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ESDC1A <: AVR
@@ -90,16 +90,16 @@ mutable struct ESDC1A <: AVR
 	Efd: Exciter Output, 
 	Vr3: Rate feedback integrator"
     states::Vector{Symbol}
-    "The AVR Type I has 4 states"
+    "The ESDC1A has 5 states"
     n_states::Int64
-    "AVR Type I has 4 differential states"
+    "ESDC1A I has 5 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vr2, :Efd, :Vr3], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vr2, :Efd, :Vr3], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function ESDC1A(; Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
