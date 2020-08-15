@@ -64,8 +64,8 @@ Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main ex
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int64`
-- `states_types::Vector{StateTypes.StateType}`: EXAC1 has 5 states
+- `n_states::Int64`: EXAC2 has 5 states
+- `states_types::Vector{StateTypes.StateType}`: EXAC2 has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct EXAC2 <: AVR
@@ -119,8 +119,9 @@ mutable struct EXAC2 <: AVR
 	Ve: Integrator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
+    "EXAC2 has 5 states"
     n_states::Int64
-    "EXAC1 has 5 states"
+    "EXAC2 has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

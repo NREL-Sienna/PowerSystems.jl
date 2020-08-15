@@ -51,8 +51,8 @@ Parameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds
 	Vr2: Regulator Output,
 	Efd: Exciter Output, 
 	Vr3: Rate feedback integrator
-- `n_states::Int64`: The ESDC1A has 5 states
-- `states_types::Vector{StateTypes.StateType}`: ESDC1A I has 5 differential states
+- `n_states::Int64`: The ESDC2A has 5 states
+- `states_types::Vector{StateTypes.StateType}`: ESDC2A has 5 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ESDC2A <: AVR
@@ -94,16 +94,16 @@ mutable struct ESDC2A <: AVR
 	Efd: Exciter Output, 
 	Vr3: Rate feedback integrator"
     states::Vector{Symbol}
-    "The ESDC1A has 5 states"
+    "The ESDC2A has 5 states"
     n_states::Int64
-    "ESDC1A I has 5 differential states"
+    "ESDC2A has 5 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function ESDC2A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    ESDC2A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vr2, :Efd, :Vr3], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    ESDC2A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vr2, :Efd, :Vr3], 5, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function ESDC2A(; Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
