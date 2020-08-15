@@ -26,7 +26,7 @@ This file is auto-generated. Do not edit.
         saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -64,7 +64,7 @@ Generic Proportional/Integral Excitation System
 	Efd: Exciter output 
 	Vr3: First feedback integrator,
 	Vr4: second feedback integrator
-- `n_states::Int64`: EXPIC1 has 6 states
+- `n_states::Int`: EXPIC1 has 6 states
 - `states_types::Vector{StateTypes.StateType}`: EXPIC has 6 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -122,7 +122,7 @@ mutable struct EXPIC1 <: AVR
 	Vr4: second feedback integrator"
     states::Vector{Symbol}
     "EXPIC1 has 6 states"
-    n_states::Int64
+    n_states::Int
     "EXPIC has 6 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

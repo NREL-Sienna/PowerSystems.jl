@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         θp_rad::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -55,7 +55,7 @@ Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSL
 	Vr1: Regulator Integrator,
 	Vr2: Regulator Output,
 	Vm: Output integrator
-- `n_states::Int64`: ST4B has 4 states
+- `n_states::Int`: ST4B has 4 states
 - `states_types::Vector{StateTypes.StateType}`: ST4B has 4 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -103,7 +103,7 @@ mutable struct ESST4B <: AVR
 	Vm: Output integrator"
     states::Vector{Symbol}
     "ST4B has 4 states"
-    n_states::Int64
+    n_states::Int
     "ST4B has 4 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

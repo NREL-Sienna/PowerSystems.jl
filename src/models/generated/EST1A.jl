@@ -3,8 +3,8 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct EST1A <: AVR
-        UEL_flags::Int64
-        PSS_flags::Int64
+        UEL_flags::Int
+        PSS_flags::Int
         Tr::Float64
         Vi_lim::Tuple{Float64, Float64}
         Tc::Float64
@@ -23,7 +23,7 @@ This file is auto-generated. Do not edit.
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -32,8 +32,8 @@ This excitation system supplies power through a transformer from the generator t
 Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF
 
 # Arguments
-- `UEL_flags::Int64`: Code input for Underexcitization limiter (UEL) entry. Not supported., validation range: `(1, 3)`
-- `PSS_flags::Int64`: Code input for Power System Stabilizer (PSS) or (VOS) entry., validation range: `(1, 2)`
+- `UEL_flags::Int`: Code input for Underexcitization limiter (UEL) entry. Not supported., validation range: `(1, 3)`
+- `PSS_flags::Int`: Code input for Power System Stabilizer (PSS) or (VOS) entry., validation range: `(1, 2)`
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
 - `Vi_lim::Tuple{Float64, Float64}`: Voltage error limits (regulator input) (Vi_min, Vi_max)
 - `Tc::Float64`: First regulator denominator (lead) time constant in s, validation range: `(0, nothing)`
@@ -57,15 +57,15 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 	Vr2: Second lead-lag state,
 	Va: Regulator output state,
 	Vr3: Feedback output state
-- `n_states::Int64`: ST1A has 5 states
+- `n_states::Int`: ST1A has 5 states
 - `states_types::Vector{StateTypes.StateType}`: ST1A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct EST1A <: AVR
     "Code input for Underexcitization limiter (UEL) entry. Not supported."
-    UEL_flags::Int64
+    UEL_flags::Int
     "Code input for Power System Stabilizer (PSS) or (VOS) entry."
-    PSS_flags::Int64
+    PSS_flags::Int
     "Regulator input filter time constant in s"
     Tr::Float64
     "Voltage error limits (regulator input) (Vi_min, Vi_max)"
@@ -107,7 +107,7 @@ mutable struct EST1A <: AVR
 	Vr3: Feedback output state"
     states::Vector{Symbol}
     "ST1A has 5 states"
-    n_states::Int64
+    n_states::Int
     "ST1A has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

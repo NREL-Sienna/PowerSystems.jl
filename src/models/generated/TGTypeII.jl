@@ -10,7 +10,7 @@ This file is auto-generated. Do not edit.
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -25,7 +25,7 @@ Parameters of a Turbine Governor Type II.
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
 	x_g1: lead-lag state
-- `n_states::Int64`: TGTypeII has 1 state
+- `n_states::Int`: TGTypeII has 1 state
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TGTypeII <: TurbineGov
@@ -44,7 +44,7 @@ mutable struct TGTypeII <: TurbineGov
 	x_g1: lead-lag state"
     states::Vector{Symbol}
     "TGTypeII has 1 state"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

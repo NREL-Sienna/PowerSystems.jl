@@ -26,7 +26,7 @@ This file is auto-generated. Do not edit.
         saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -64,7 +64,7 @@ Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main ex
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int64`: EXAC2 has 5 states
+- `n_states::Int`: EXAC2 has 5 states
 - `states_types::Vector{StateTypes.StateType}`: EXAC2 has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -120,7 +120,7 @@ mutable struct EXAC2 <: AVR
 	Vr3: Feedback output state"
     states::Vector{Symbol}
     "EXAC2 has 5 states"
-    n_states::Int64
+    n_states::Int
     "EXAC2 has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

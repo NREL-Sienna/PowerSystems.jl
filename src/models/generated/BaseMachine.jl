@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         eq_p::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -20,7 +20,7 @@ Parameters of a Classic Machine: GENCLS in PSSE and PSLF
 - `eq_p::Float64`: Fixed EMF behind the impedance, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: BaseMachine has no states
-- `n_states::Int64`: BaseMachine has no states
+- `n_states::Int`: BaseMachine has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct BaseMachine <: Machine
@@ -34,7 +34,7 @@ mutable struct BaseMachine <: Machine
     "BaseMachine has no states"
     states::Vector{Symbol}
     "BaseMachine has no states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -19,7 +19,7 @@ Parameters of a AVR that returns a fixed voltage to the rotor winding
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: Fixed AVR has no states
-- `n_states::Int64`: Fixed AVR has no states
+- `n_states::Int`: Fixed AVR has no states
 - `states_types::Vector{StateTypes.StateType}`: Fixed AVR has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -32,7 +32,7 @@ mutable struct AVRFixed <: AVR
     "Fixed AVR has no states"
     states::Vector{Symbol}
     "Fixed AVR has no states"
-    n_states::Int64
+    n_states::Int
     "Fixed AVR has no states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

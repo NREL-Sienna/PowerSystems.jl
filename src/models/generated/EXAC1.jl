@@ -21,7 +21,7 @@ This file is auto-generated. Do not edit.
         saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -54,7 +54,7 @@ Parameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int64`
+- `n_states::Int`
 - `states_types::Vector{StateTypes.StateType}`: EXAC1 has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -99,7 +99,7 @@ mutable struct EXAC1 <: AVR
 	Ve: Integrator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
-    n_states::Int64
+    n_states::Int
     "EXAC1 has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

@@ -240,7 +240,7 @@
           "name": "number",
           "comment": "number associated with the bus",
           "null_value": "0",
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "null_value": "init",
@@ -2786,7 +2786,7 @@
           "comment": "Fixed AVR has no states",
           "null_value": 0,
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -2844,7 +2844,7 @@
           "name": "n_states",
           "comment": "Fixed AVR has 1 states",
           "internal_default": 1,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -3020,7 +3020,7 @@
           "name": "n_states",
           "comment": "The ESDC1A has 5 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -3196,7 +3196,7 @@
           "name": "n_states",
           "comment": "The ESDC2A has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -3352,7 +3352,7 @@
           "name": "n_states",
           "comment": "The IEEET1 has 5 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -3510,7 +3510,7 @@
           "name": "n_states",
           "comment": "The AVR Type I has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -3668,7 +3668,7 @@
           "name": "n_states",
           "comment": "AVR Type II has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -3973,7 +3973,7 @@
           "name": "n_states",
           "comment": "ESAC1A has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -4162,7 +4162,7 @@
           "name": "n_states",
           "comment": "EXAC1 has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -4345,7 +4345,7 @@
           "name": "n_states",
           "comment": "",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -4574,7 +4574,7 @@
           "name": "n_states",
           "comment": "EXAC2 has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -4803,7 +4803,7 @@
           "name": "n_states",
           "comment": "",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -4828,7 +4828,7 @@
           "name": "UEL_flags",
           "comment": "Code input for Underexcitization limiter (UEL) entry. Not supported.",
           "null_value": 1,
-          "data_type": "Int64",
+          "data_type": "Int",
           "valid_range": {
             "min": 1,
             "max": 3
@@ -4838,7 +4838,7 @@
           "name": "PSS_flags",
           "comment": "Code input for Power System Stabilizer (PSS) or (VOS) entry.",
           "null_value": 1,
-          "data_type": "Int64",
+          "data_type": "Int",
           "valid_range": {
             "min": 1,
             "max": 2
@@ -5009,7 +5009,7 @@
           "name": "n_states",
           "comment": "ST1A has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -5235,7 +5235,7 @@
           "name": "n_states",
           "comment": "EXPIC1 has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -5428,7 +5428,7 @@
           "name": "n_states",
           "comment": "ST4B has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -5495,7 +5495,7 @@
           "name": "n_states",
           "comment": "BaseMachine has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5672,7 +5672,7 @@
           "name": "n_states",
           "comment": "RoundRotorMachine has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5817,7 +5817,7 @@
           "name": "n_states",
           "comment": "SalientPoleMachine has 3 states",
           "internal_default": 3,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5958,7 +5958,7 @@
           "name": "n_states",
           "comment": "AndersonFouadMachine has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6121,7 +6121,7 @@
           "name": "n_states",
           "comment": "FullMachine has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6284,7 +6284,7 @@
           "name": "n_states",
           "comment": "MarconatoMachine has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6385,7 +6385,7 @@
           "name": "n_states",
           "comment": "OneDOneQMachine has 2 states",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6526,7 +6526,7 @@
           "name": "n_states",
           "comment": "SimpleAFMachine has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6689,7 +6689,7 @@
           "name": "n_states",
           "comment": "SimpleFullMachine has 3 states",
           "internal_default": 3,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6852,7 +6852,7 @@
           "name": "n_states",
           "comment": "SimpleMarconatoMachine has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6893,7 +6893,7 @@
           "name": "n_states",
           "comment": "PSSFixed has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6944,7 +6944,7 @@
           "name": "n_states",
           "comment": "PSSSimple has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6963,7 +6963,7 @@
           "name": "input_code",
           "comment": "Code input for stabilizar",
           "null_value": 1,
-          "data_type": "Int64",
+          "data_type": "Int",
           "valid_range": {
             "min": 1,
             "max": 6
@@ -6973,7 +6973,7 @@
           "name": "remote_bus_control",
           "comment": "Remot  Bus number for control.",
           "null_value": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "A1",
@@ -7155,7 +7155,7 @@
           "name": "n_states",
           "comment": "IEEEST has 7 states",
           "internal_default": 7,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -7206,7 +7206,7 @@
           "name": "n_states",
           "comment": "SingleMass has 1 state",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -7417,7 +7417,7 @@
           "name": "n_states",
           "comment": "FiveMassShaft has 10 states",
           "internal_default": 10,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -7469,7 +7469,7 @@
           "name": "n_states",
           "comment": "TGFixed has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -7587,7 +7587,7 @@
           "name": "n_states",
           "comment": "GasTG has 3 states",
           "internal_default": 3,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -7967,7 +7967,7 @@
           "name": "n_states",
           "comment": "GeneralGovModel has 10 states",
           "internal_default": 10,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -8056,7 +8056,7 @@
           "name": "n_states",
           "comment": "TGOV1 has 2 states",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -8200,7 +8200,7 @@
           "name": "n_states",
           "comment": "HYGOV has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -8428,7 +8428,7 @@
           "name": "n_states",
           "comment": "IEEEG1 has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -8536,7 +8536,7 @@
           "name": "n_states",
           "comment": "TGTypeI has 3 states",
           "internal_default": 3,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -8614,7 +8614,7 @@
           "name": "n_states",
           "comment": "TGTypeII has 1 state",
           "internal_default": 1,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -8665,7 +8665,7 @@
           "name": "n_states",
           "comment": "AverageConverter has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "Converter"
@@ -8700,7 +8700,7 @@
           "name": "n_states",
           "comment": "FixedDCSource has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -8781,7 +8781,7 @@
           "name": "n_states",
           "comment": "LCLFilter has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "Filter"
@@ -8836,7 +8836,7 @@
           "name": "n_states",
           "comment": "LCFilter has two states",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "Filter"
@@ -8891,7 +8891,7 @@
           "name": "n_states",
           "comment": "KauraPLL has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "FrequencyEstimator"
@@ -8957,7 +8957,7 @@
           "name": "n_states",
           "comment": "VirtualInertia has two states",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "ActivePowerControl"
@@ -9013,7 +9013,7 @@
           "name": "n_states",
           "comment": "ReactivePowerDroop has 1 state",
           "internal_default": 1,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "ReactivePowerControl"
@@ -9138,7 +9138,7 @@
           "name": "n_states",
           "comment": "CurrentControl has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "InnerControl"

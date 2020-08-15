@@ -13,13 +13,14 @@ This file is auto-generated. Do not edit.
         Te::Float64
         Kf::Float64
         Tf::Float64
+        switch::Int
         E_sat::Tuple{Float64, Float64}
         Se::Tuple{Float64, Float64}
         V_ref::Float64
         saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -38,6 +39,7 @@ Parameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds
 - `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", nothing)`, action if invalid: `error`
 - `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, nothing)`
 - `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
@@ -49,7 +51,7 @@ Parameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds
 	Vr2: Regulator Output,
 	Efd: Exciter Output, 
 	Vr3: Rate feedback integrator
-- `n_states::Int64`: The ESDC1A has 5 states
+- `n_states::Int`: The ESDC1A has 5 states
 - `states_types::Vector{StateTypes.StateType}`: ESDC1A I has 5 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -74,6 +76,8 @@ mutable struct ESDC1A <: AVR
     Kf::Float64
     "Excitation control system stabilizer time constant"
     Tf::Float64
+    "Switch"
+    switch::Int
     "Exciter output voltage for saturation factor: (E1, E2)"
     E_sat::Tuple{Float64, Float64}
     "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))"
@@ -91,19 +95,19 @@ mutable struct ESDC1A <: AVR
 	Vr3: Rate feedback integrator"
     states::Vector{Symbol}
     "The ESDC1A has 5 states"
-    n_states::Int64
+    n_states::Int
     "ESDC1A I has 5 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vr2, :Efd, :Vr3], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
+    ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vr2, :Efd, :Vr3], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function ESDC1A(; Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, E_sat, Se, V_ref, saturation_coeffs, ext, )
+function ESDC1A(; Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
+    ESDC1A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -119,6 +123,7 @@ function ESDC1A(::Nothing)
         Te=0,
         Kf=0,
         Tf=0,
+        switch=0,
         E_sat=(0.0, 0.0),
         Se=(0.0, 0.0),
         V_ref=0,
@@ -147,6 +152,8 @@ get_Te(value::ESDC1A) = value.Te
 get_Kf(value::ESDC1A) = value.Kf
 """Get [`ESDC1A`](@ref) `Tf`."""
 get_Tf(value::ESDC1A) = value.Tf
+"""Get [`ESDC1A`](@ref) `switch`."""
+get_switch(value::ESDC1A) = value.switch
 """Get [`ESDC1A`](@ref) `E_sat`."""
 get_E_sat(value::ESDC1A) = value.E_sat
 """Get [`ESDC1A`](@ref) `Se`."""
@@ -186,6 +193,8 @@ set_Te!(value::ESDC1A, val) = value.Te = val
 set_Kf!(value::ESDC1A, val) = value.Kf = val
 """Set [`ESDC1A`](@ref) `Tf`."""
 set_Tf!(value::ESDC1A, val) = value.Tf = val
+"""Set [`ESDC1A`](@ref) `switch`."""
+set_switch!(value::ESDC1A, val) = value.switch = val
 """Set [`ESDC1A`](@ref) `E_sat`."""
 set_E_sat!(value::ESDC1A, val) = value.E_sat = val
 """Set [`ESDC1A`](@ref) `Se`."""

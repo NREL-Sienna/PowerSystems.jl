@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -33,7 +33,7 @@ This exciter is based on an IEEE type SCRX solid state exciter.  The output fiel
 - `states::Vector{Symbol}`: The states are:
 	Vr1: First integrator,
 	Vr2: Second integrator
-- `n_states::Int64`: SCRX has 2 states
+- `n_states::Int`: SCRX has 2 states
 - `states_types::Vector{StateTypes.StateType}`: SCRX has 2 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -60,7 +60,7 @@ mutable struct SCRX <: AVR
 	Vr2: Second integrator"
     states::Vector{Symbol}
     "SCRX has 2 states"
-    n_states::Int64
+    n_states::Int
     "SCRX has 2 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
@@ -68,7 +68,7 @@ mutable struct SCRX <: AVR
 end
 
 function SCRX(Ta, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{String, Any}(), )
-    SCRX(Ta, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, [:Vr1, :Vr2], 4, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    SCRX(Ta, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, [:Vr1, :Vr2], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function SCRX(; Ta, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{String, Any}(), )

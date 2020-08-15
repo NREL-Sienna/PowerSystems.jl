@@ -18,7 +18,7 @@ This file is auto-generated. Do not edit.
         saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -45,7 +45,7 @@ This file is auto-generated. Do not edit.
 	Vr: Regulator Output,
 	Efd: Exciter Output, 
 	Vr3: Rate feedback integrator
-- `n_states::Int64`: The IEEET1 has 5 states
+- `n_states::Int`: The IEEET1 has 5 states
 - `states_types::Vector{StateTypes.StateType}`: IEEET1 I has 5 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -84,7 +84,7 @@ mutable struct IEEET1 <: AVR
 	Vr3: Rate feedback integrator"
     states::Vector{Symbol}
     "The IEEET1 has 5 states"
-    n_states::Int64
+    n_states::Int
     "IEEET1 I has 5 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

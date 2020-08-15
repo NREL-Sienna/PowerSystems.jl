@@ -38,7 +38,7 @@ This file is auto-generated. Do not edit.
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -90,7 +90,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 	x_g7: Supervisory Load Control, 
 	x_g8: Acceleration Control, 
 	x_g9 Temperature Detection Lead - Lag:
-- `n_states::Int64`: GeneralGovModel has 10 states
+- `n_states::Int`: GeneralGovModel has 10 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GeneralGovModel <: TurbineGov
@@ -174,7 +174,7 @@ mutable struct GeneralGovModel <: TurbineGov
 	x_g9 Temperature Detection Lead - Lag:"
     states::Vector{Symbol}
     "GeneralGovModel has 10 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

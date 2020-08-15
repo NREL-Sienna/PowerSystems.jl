@@ -3,8 +3,8 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct IEEEST <: PSS
-        input_code::Int64
-        remote_bus_control::Int64
+        input_code::Int
+        remote_bus_control::Int
         A1::Float64
         A2::Float64
         A3::Float64
@@ -23,15 +23,15 @@ This file is auto-generated. Do not edit.
         Vcl::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
 IEEE Stabilizing Model PSS. 
 
 # Arguments
-- `input_code::Int64`: Code input for stabilizar, validation range: `(1, 6)`
-- `remote_bus_control::Int64`: Remot  Bus number for control.
+- `input_code::Int`: Code input for stabilizar, validation range: `(1, 6)`
+- `remote_bus_control::Int`: Remot  Bus number for control.
 - `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`
 - `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`
 - `A3::Float64`: Filter coefficient, validation range: `(0, nothing)`
@@ -57,14 +57,14 @@ IEEE Stabilizing Model PSS.
 	x_p5: T1/T2 lead-lag integrator, 
 	x_p6: T3/T4 lead-lag integrator, 
 	:x_p7 last integer,
-- `n_states::Int64`: IEEEST has 7 states
+- `n_states::Int`: IEEEST has 7 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEEST <: PSS
     "Code input for stabilizar"
-    input_code::Int64
+    input_code::Int
     "Remot  Bus number for control."
-    remote_bus_control::Int64
+    remote_bus_control::Int
     "Filter coefficient"
     A1::Float64
     "Filter coefficient"
@@ -108,7 +108,7 @@ mutable struct IEEEST <: PSS
 	:x_p7 last integer,"
     states::Vector{Symbol}
     "IEEEST has 7 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

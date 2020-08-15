@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
     end
 
 Parameters of a Reactive Power droop controller
@@ -20,7 +20,7 @@ Parameters of a Reactive Power droop controller
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the ReactivePowerDroop model are:
 	q_oc: Filtered reactive output power
-- `n_states::Int64`: ReactivePowerDroop has 1 state
+- `n_states::Int`: ReactivePowerDroop has 1 state
 """
 mutable struct ReactivePowerDroop <: ReactivePowerControl
     "frequency droop gain"
@@ -34,7 +34,7 @@ mutable struct ReactivePowerDroop <: ReactivePowerControl
 	q_oc: Filtered reactive output power"
     states::Vector{Symbol}
     "ReactivePowerDroop has 1 state"
-    n_states::Int64
+    n_states::Int
 end
 
 function ReactivePowerDroop(kq, ωf, V_ref=1.0, ext=Dict{String, Any}(), )

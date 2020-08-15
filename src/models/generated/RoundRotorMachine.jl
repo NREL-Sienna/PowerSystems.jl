@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         γ_q2::Float64
         γ_qd::Float64
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -53,7 +53,7 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 	ed_p: d-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
 	ψ_kq: flux linkage in the first equivalent damping circuit in the d-axis
-- `n_states::Int64`: RoundRotorMachine has 4 states
+- `n_states::Int`: RoundRotorMachine has 4 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct RoundRotorMachine <: Machine
@@ -99,7 +99,7 @@ mutable struct RoundRotorMachine <: Machine
 	ψ_kq: flux linkage in the first equivalent damping circuit in the d-axis"
     states::Vector{Symbol}
     "RoundRotorMachine has 4 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

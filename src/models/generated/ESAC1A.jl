@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -56,7 +56,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int64`: ESAC1A has 5 states
+- `n_states::Int`: ESAC1A has 5 states
 - `states_types::Vector{StateTypes.StateType}`: ESAC1A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -104,7 +104,7 @@ mutable struct ESAC1A <: AVR
 	Vr3: Feedback output state"
     states::Vector{Symbol}
     "ESAC1A has 5 states"
-    n_states::Int64
+    n_states::Int
     "ESAC1A has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

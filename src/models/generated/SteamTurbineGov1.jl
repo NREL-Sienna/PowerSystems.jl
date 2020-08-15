@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         D_T::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -28,7 +28,7 @@ Steam Turbine-Governor.
 - `states::Vector{Symbol}`: The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
 	Pm: Turbine Power
-- `n_states::Int64`: TGOV1 has 2 states
+- `n_states::Int`: TGOV1 has 2 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SteamTurbineGov1 <: TurbineGov
@@ -50,7 +50,7 @@ mutable struct SteamTurbineGov1 <: TurbineGov
 	Pm: Turbine Power"
     states::Vector{Symbol}
     "TGOV1 has 2 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
