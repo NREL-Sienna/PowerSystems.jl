@@ -3675,6 +3675,122 @@
       "supertype": "AVR"
     },
     {
+      "struct_name": "SCRX",
+      "docstring": "This exciter is based on an IEEE type SCRX solid state exciter.  The output field voltage is varied by a control system to maintain the system voltage at Vref.  Please note that this exciter model has no initialization capabilities - this means that it will respond to whatever inputs it receives regardless of the state of the machine model.",
+      "fields": [
+        {
+          "name": "Ta",
+          "comment": "Lead input constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tb",
+          "comment": "Lag input constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K",
+          "comment": "Regulator Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Te",
+          "comment": "Regulator Time Constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Efd_lim",
+          "comment": "Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "switch",
+          "comment": "Switch",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "rc_rfd",
+          "comment": "Field current capability. Set = 0 for negative current capability. Typical value 10",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVr1: First integrator,\n\tVr2: Second integrator",
+          "internal_default": "[:Vr1, :Vr2]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "SCRX has 2 states",
+          "internal_default": 4,
+          "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "SCRX has 2 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
       "struct_name": "ESAC1A",
       "docstring": "This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds to ESAC1A in PSSE and PSLF",
       "fields": [

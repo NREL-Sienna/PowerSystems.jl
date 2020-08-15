@@ -35,6 +35,7 @@ include("ESDC2A.jl")
 include("IEEET1.jl")
 include("AVRTypeI.jl")
 include("AVRTypeII.jl")
+include("SCRX.jl")
 include("ESAC1A.jl")
 include("EXAC1A.jl")
 include("EXAC1.jl")
@@ -317,6 +318,7 @@ export get_rate
 export get_rated_current
 export get_rated_voltage
 export get_rating
+export get_rc_rfd
 export get_reactive_power
 export get_reactive_power_flow
 export get_reactive_power_limits
@@ -609,6 +611,7 @@ export set_rate!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!
+export set_rc_rfd!
 export set_reactive_power!
 export set_reactive_power_flow!
 export set_reactive_power_limits!
