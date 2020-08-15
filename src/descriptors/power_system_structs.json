@@ -4403,58 +4403,12 @@
       "supertype": "AVR"
     },
     {
-      "struct_name": "EXPIC1",
+      "struct_name": "EXPIC",
       "docstring": "Generic Proportional/Integral Excitation System",
       "fields": [
         {
           "name": "Tr",
           "comment": "Regulator input filter time constant in s",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Vi_lim",
-          "comment": "Voltage error limits (regulator input) (Vi_min, Vi_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
-        },
-        {
-          "name": "Tc",
-          "comment": "First regulator denominator (lead) time constant in s",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Tb",
-          "comment": "First regulator denominator (lag) time constant in s",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Tc1",
-          "comment": "Second regulator denominator (lead) time constant in s",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Tb1",
-          "comment": "Second regulator denominator (lead) time constant in s",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -4484,25 +4438,45 @@
         },
         {
           "name": "Va_lim",
-          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "comment": "Limits for pi controler (Vr_min, Vr_max)",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
         {
-          "name": "Vr_lim",
-          "comment": "Limits for exciter output (Vr_min, Vr_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
-        },
-        {
-          "name": "Kc",
-          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "name": "Ta_2",
+          "comment": "Voltage regulator time constant in s",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
             "max": null
           }
+        },
+        {
+          "name": "Ta_3",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ta_4",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
         },
         {
           "name": "Kf",
@@ -4515,18 +4489,19 @@
           }
         },
         {
-          "name": "Tf",
-          "comment": "Rate feedback time constant in s",
+          "name": "Tf_1",
+          "comment": "Rate Feedback time constant in s",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
             "max": null
-          }
+          },
+          "validation_actions": "error"
         },
         {
-          "name": "K_lr",
-          "comment": "Exciter output current limiter gain",
+          "name": "Tf_2",
+          "comment": "Rate Feedback time constant in s",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -4535,8 +4510,66 @@
           }
         },
         {
-          "name": "I_lr",
-          "comment": "Exciter output current limit reference",
+          "name": "Efd_lim",
+          "comment": "Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kp",
+          "comment": "Potential source gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ki",
+          "comment": "current source gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kc",
+          "comment": "Exciter regulation factor",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -4554,6 +4587,13 @@
             "min": 0,
             "max": null
           }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
         },
         {
           "name": "ext",
