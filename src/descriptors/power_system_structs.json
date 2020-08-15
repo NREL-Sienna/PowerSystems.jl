@@ -4197,7 +4197,7 @@
       "supertype": "AVR"
     },
     {
-      "struct_name": "ST1A",
+      "struct_name": "EST1A",
       "docstring": "This excitation system supplies power through a transformer from the generator terminals and its regulated by a controlled rectifier (via thyristors).\nParameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF",
       "fields": [
         {
@@ -4266,7 +4266,6 @@
             "max": null
           }
         },
-
         {
           "name": "Tb1",
           "comment": "Second regulator denominator (lead) time constant in s",
@@ -4303,7 +4302,6 @@
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
-
         {
           "name": "Vr_lim",
           "comment": "Limits for exciter output (Vr_min, Vr_max)",
@@ -4392,6 +4390,199 @@
         {
           "name": "states_types",
           "comment": "ST1A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "ESST4B",
+      "docstring": "In these excitation systems, voltage (and also current in compounded systems) is transformed to an appropriate level. Rectifiers, either controlled or non-controlled, provide the necessary direct current for the generator field.\nParameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSLF",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kp_r",
+          "comment": "Regulator propotional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ki_r",
+          "comment": "Regulator integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ta",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kp_m",
+          "comment": "Voltage regulator proportional gain output",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ki_m",
+          "comment": "Voltage regulator integral gain output",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vm_lim",
+          "comment": "Limits for inner loop output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kg",
+          "comment": "Feedback gain constant of the inner loop field regulator",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kp",
+          "comment": "Potential circuit (voltage) gain coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ki",
+          "comment": "Compound circuit (current) gain coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "VB_max",
+          "comment": "Maximum available exciter voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kc",
+          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xl",
+          "comment": "Reactance associated with potential source",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "θp",
+          "comment": "Potential circuit phase angle (degrees)",
+          "null_value": 0,
+          "data_type": "Float64"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "θp_rad",
+          "comment": "Potential circuit phase angle (radians)",
+          "null_value": 0,
+          "default": "θp*(pi()/180)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVt: Sensed Terminal Voltage,\n\tVr1: Regulator Integrator,\n\tVr2: Regulator Output,\n\tVm: Output integrator",
+          "internal_default": "[:Vt, :Vr1, :Vr2, :Vm]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "ST4B has 4 states",
+          "internal_default": 4,
+          "data_type": "Int64"
+        },
+        {
+          "name": "states_types",
+          "comment": "ST4B has 4 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
@@ -4766,7 +4957,6 @@
           "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
           "data_type": "Float64"
         },
-
         {
           "name": "states",
           "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",
@@ -6960,234 +7150,234 @@
       ],
       "supertype": "TurbineGov"
     },
+    {
+      "struct_name": "IEEETurbineGov1",
+      "docstring": "IEEE Type 1 Speed-Governing Model",
+      "fields": [
         {
-          "struct_name": "IEEETurbineGov1",
-          "docstring": "IEEE Type 1 Speed-Governing Model",
-          "fields": [
-            {
-              "name": "K",
-              "comment": "Governor Gain",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "T1",
-              "comment": "Input Filter Lag",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "T2",
-              "comment": "Input Filter Lead",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "T3",
-              "comment": "Valve position Time Constant",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "U0",
-              "comment": "Maximum Valve Opening Rate",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "U_c",
-              "comment": "Maximum Valve closing rate",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": null,
-                "max": 0.0
-              }
-            },
-            {
-              "name": "valve_position_limits",
-              "comment": "Valve position limits in MW",
-              "null_value": "(min=0.0, max=0.0)",
-              "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
-            },
-            {
-              "name": "T4",
-              "comment": "Time Constant inlet steam",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "K1",
-              "comment": "Fraction of high presure shaft power",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "K2",
-              "comment": "Fraction of low presure shaft power",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "T5",
-              "comment": "Time constant for second boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "K3",
-              "comment": "Fraction of high presure shaft power second boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "K4",
-              "comment": "Fraction of low presure shaft power second boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "T6",
-              "comment": "Time constant for third boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "K5",
-              "comment": "Fraction of high presure shaft power third boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "K6",
-              "comment": "Fraction of low presure shaft power third boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "T7",
-              "comment": "Time constant for fourth boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "K7",
-              "comment": "Fraction of high presure shaft power fourth boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "K8",
-              "comment": "Fraction of low presure shaft power fourth boiler pass",
-              "null_value": 0,
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "P_ref",
-              "comment": "Reference Power Set-point",
-              "null_value": 0,
-              "default": "1.0",
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              }
-            },
-            {
-              "name": "ext",
-              "data_type": "Dict{String, Any}",
-              "null_value": "Dict{String, Any}()",
-              "default": "Dict{String, Any}()"
-            },
-            {
-              "name": "states",
-              "comment": "The states of the IEEETurbineGov model are:\n\tx_g1: First Governor integrator,\n\tx_g2: Governor output,\n\tx_g3: First Turbine integrator, \n\tx_g4: Second Turbine Integrator, \n\tx_g5: Third Turbine Integrator, \n\tx_g6: Fourth Turbine Integrator, ",
-              "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6]",
-              "data_type": "Vector{Symbol}"
-            },
-            {
-              "name": "n_states",
-              "comment": "IEEEG1 has 6 states",
-              "internal_default": 6,
-              "data_type": "Int64"
-            },
-            {
-              "name": "internal",
-              "comment": "power system internal reference, do not modify",
-              "data_type": "InfrastructureSystemsInternal",
-              "internal_default": "InfrastructureSystemsInternal()"
-            }
-          ],
-          "supertype": "TurbineGov"
+          "name": "K",
+          "comment": "Governor Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
         },
+        {
+          "name": "T1",
+          "comment": "Input Filter Lag",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T2",
+          "comment": "Input Filter Lead",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T3",
+          "comment": "Valve position Time Constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "U0",
+          "comment": "Maximum Valve Opening Rate",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "U_c",
+          "comment": "Maximum Valve closing rate",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": null,
+            "max": 0.0
+          }
+        },
+        {
+          "name": "valve_position_limits",
+          "comment": "Valve position limits in MW",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T4",
+          "comment": "Time Constant inlet steam",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K1",
+          "comment": "Fraction of high presure shaft power",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K2",
+          "comment": "Fraction of low presure shaft power",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T5",
+          "comment": "Time constant for second boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K3",
+          "comment": "Fraction of high presure shaft power second boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K4",
+          "comment": "Fraction of low presure shaft power second boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T6",
+          "comment": "Time constant for third boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K5",
+          "comment": "Fraction of high presure shaft power third boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K6",
+          "comment": "Fraction of low presure shaft power third boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T7",
+          "comment": "Time constant for fourth boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K7",
+          "comment": "Fraction of high presure shaft power fourth boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K8",
+          "comment": "Fraction of low presure shaft power fourth boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the IEEETurbineGov model are:\n\tx_g1: First Governor integrator,\n\tx_g2: Governor output,\n\tx_g3: First Turbine integrator, \n\tx_g4: Second Turbine Integrator, \n\tx_g5: Third Turbine Integrator, \n\tx_g6: Fourth Turbine Integrator, ",
+          "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "IEEEG1 has 6 states",
+          "internal_default": 6,
+          "data_type": "Int64"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "TurbineGov"
+    },
     {
       "struct_name": "TGTypeI",
       "docstring": "Parameters of a Turbine Governor Type I.",

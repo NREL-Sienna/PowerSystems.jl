@@ -37,7 +37,8 @@ include("EXAC1A.jl")
 include("EXAC1.jl")
 include("EXAC2.jl")
 include("ESAC6A.jl")
-include("ST1A.jl")
+include("EST1A.jl")
+include("ESST4B.jl")
 include("BaseMachine.jl")
 include("RoundRotorMachine.jl")
 include("SalientPoleMachine.jl")
@@ -121,13 +122,20 @@ export get_Kd
 export get_Kd_gov
 export get_Ke
 export get_Kf
+export get_Kg
 export get_Kh
+export get_Ki
 export get_Ki_gov
 export get_Ki_load
+export get_Ki_m
 export get_Ki_mw
+export get_Ki_r
 export get_Kl
+export get_Kp
 export get_Kp_gov
 export get_Kp_load
+export get_Kp_m
+export get_Kp_r
 export get_Kt
 export get_Kv
 export get_L_1d
@@ -189,6 +197,7 @@ export get_Tw
 export get_U0
 export get_UEL_flags
 export get_U_c
+export get_VB_max
 export get_VELM
 export get_VFE_lim
 export get_VH_max
@@ -199,6 +208,7 @@ export get_V_ref
 export get_Va_lim
 export get_Vf
 export get_Vi_lim
+export get_Vm_lim
 export get_Vr_lim
 export get_Vr_max
 export get_Vr_min
@@ -340,6 +350,8 @@ export get_γ_q2
 export get_γ_qd
 export get_γd
 export get_γq
+export get_θp
+export get_θp_rad
 export get_τ_limits
 export get_ω_lp
 export get_ωad
@@ -395,13 +407,20 @@ export set_Kd!
 export set_Kd_gov!
 export set_Ke!
 export set_Kf!
+export set_Kg!
 export set_Kh!
+export set_Ki!
 export set_Ki_gov!
 export set_Ki_load!
+export set_Ki_m!
 export set_Ki_mw!
+export set_Ki_r!
 export set_Kl!
+export set_Kp!
 export set_Kp_gov!
 export set_Kp_load!
+export set_Kp_m!
+export set_Kp_r!
 export set_Kt!
 export set_Kv!
 export set_L_1d!
@@ -463,6 +482,7 @@ export set_Tw!
 export set_U0!
 export set_UEL_flags!
 export set_U_c!
+export set_VB_max!
 export set_VELM!
 export set_VFE_lim!
 export set_VH_max!
@@ -473,6 +493,7 @@ export set_V_ref!
 export set_Va_lim!
 export set_Vf!
 export set_Vi_lim!
+export set_Vm_lim!
 export set_Vr_lim!
 export set_Vr_max!
 export set_Vr_min!
@@ -614,6 +635,8 @@ export set_γ_q2!
 export set_γ_qd!
 export set_γd!
 export set_γq!
+export set_θp!
+export set_θp_rad!
 export set_τ_limits!
 export set_ω_lp!
 export set_ωad!
