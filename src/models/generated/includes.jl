@@ -36,6 +36,7 @@ include("ESAC1A.jl")
 include("EXAC1A.jl")
 include("EXAC1.jl")
 include("EXAC2.jl")
+include("ESAC6A.jl")
 include("ST1A.jl")
 include("BaseMachine.jl")
 include("RoundRotorMachine.jl")
@@ -174,6 +175,9 @@ export get_Te
 export get_Tf
 export get_Tf_load
 export get_Tg
+export get_Th
+export get_Tj
+export get_Tk
 export get_Tpelec
 export get_Tq0_p
 export get_Tq0_pp
@@ -186,6 +190,8 @@ export get_U0
 export get_UEL_flags
 export get_U_c
 export get_VELM
+export get_VFE_lim
+export get_VH_max
 export get_V_lim
 export get_V_lr
 export get_V_pss
@@ -443,6 +449,9 @@ export set_Te!
 export set_Tf!
 export set_Tf_load!
 export set_Tg!
+export set_Th!
+export set_Tj!
+export set_Tk!
 export set_Tpelec!
 export set_Tq0_p!
 export set_Tq0_pp!
@@ -455,6 +464,8 @@ export set_U0!
 export set_UEL_flags!
 export set_U_c!
 export set_VELM!
+export set_VFE_lim!
+export set_VH_max!
 export set_V_lim!
 export set_V_lr!
 export set_V_pss!
