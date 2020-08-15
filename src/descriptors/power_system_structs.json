@@ -3183,13 +3183,13 @@
         },
         {
           "name": "n_states",
-          "comment": "The ESDC1A has 5 states",
-          "internal_default": 4,
+          "comment": "The ESDC2A has 5 states",
+          "internal_default": 5,
           "data_type": "Int64"
         },
         {
           "name": "states_types",
-          "comment": "ESDC1A I has 5 differential states",
+          "comment": "ESDC2A has 5 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
@@ -4149,13 +4149,13 @@
         },
         {
           "name": "n_states",
-          "comment": "AC1A has 5 states",
+          "comment": "EXAC1 has 5 states",
           "internal_default": 5,
           "data_type": "Int64"
         },
         {
           "name": "states_types",
-          "comment": "AC1A has 5 states",
+          "comment": "EXAC1 has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
@@ -4561,13 +4561,13 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "EXAC2 has 5 states",
           "internal_default": 5,
           "data_type": "Int64"
         },
         {
           "name": "states_types",
-          "comment": "EXAC1 has 5 states",
+          "comment": "EXAC2 has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
@@ -4796,7 +4796,7 @@
         },
         {
           "name": "states_types",
-          "comment": "EXAC1 has 5 states",
+          "comment": "ESAC6A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
@@ -5016,7 +5016,7 @@
       "supertype": "AVR"
     },
     {
-      "struct_name": "EXPIC",
+      "struct_name": "EXPIC1",
       "docstring": "Generic Proportional/Integral Excitation System",
       "fields": [
         {
@@ -5222,14 +5222,14 @@
         },
         {
           "name": "n_states",
-          "comment": "EXPIC has 6 states",
+          "comment": "EXPIC1 has 6 states",
           "internal_default": 6,
           "data_type": "Int64"
         },
         {
           "name": "states_types",
           "comment": "EXPIC has 6 states",
-          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
@@ -5422,7 +5422,7 @@
         {
           "name": "states_types",
           "comment": "ST4B has 4 states",
-          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
