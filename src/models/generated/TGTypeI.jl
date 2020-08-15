@@ -9,8 +9,7 @@ This file is auto-generated. Do not edit.
         T3::Float64
         T4::Float64
         T5::Float64
-        P_min::Float64
-        P_max::Float64
+        valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
@@ -27,8 +26,7 @@ Parameters of a Turbine Governor Type I.
 - `T3::Float64`: Transient gain time constant, validation range: `(0, nothing)`
 - `T4::Float64`: Power fraction time constant, validation range: `(0, nothing)`
 - `T5::Float64`: Reheat time constant, validation range: `(0, nothing)`
-- `P_min::Float64`: Min Power into the Governor, validation range: `(0, nothing)`
-- `P_max::Float64`: Max Power into the Governor, validation range: `(0, nothing)`
+- `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
@@ -51,10 +49,8 @@ mutable struct TGTypeI <: TurbineGov
     T4::Float64
     "Reheat time constant"
     T5::Float64
-    "Min Power into the Governor"
-    P_min::Float64
-    "Max Power into the Governor"
-    P_max::Float64
+    "Valve position limits in MW"
+    valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Reference Power Set-point"
     P_ref::Float64
     ext::Dict{String, Any}
@@ -69,12 +65,12 @@ mutable struct TGTypeI <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, P_ref=1.0, ext=Dict{String, Any}(), )
-    TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, P_ref, ext, [:x_g1, :x_g2, :x_g3], 3, InfrastructureSystemsInternal(), )
+function TGTypeI(R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeI(R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref, ext, [:x_g1, :x_g2, :x_g3], 3, InfrastructureSystemsInternal(), )
 end
 
-function TGTypeI(; R, Ts, Tc, T3, T4, T5, P_min, P_max, P_ref=1.0, ext=Dict{String, Any}(), )
-    TGTypeI(R, Ts, Tc, T3, T4, T5, P_min, P_max, P_ref, ext, )
+function TGTypeI(; R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeI(R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,8 +82,7 @@ function TGTypeI(::Nothing)
         T3=0,
         T4=0,
         T5=0,
-        P_min=0,
-        P_max=0,
+        valve_position_limits=(min=0.0, max=0.0),
         P_ref=0,
         ext=Dict{String, Any}(),
     )
@@ -105,10 +100,8 @@ get_T3(value::TGTypeI) = value.T3
 get_T4(value::TGTypeI) = value.T4
 """Get [`TGTypeI`](@ref) `T5`."""
 get_T5(value::TGTypeI) = value.T5
-"""Get [`TGTypeI`](@ref) `P_min`."""
-get_P_min(value::TGTypeI) = value.P_min
-"""Get [`TGTypeI`](@ref) `P_max`."""
-get_P_max(value::TGTypeI) = value.P_max
+"""Get [`TGTypeI`](@ref) `valve_position_limits`."""
+get_valve_position_limits(value::TGTypeI) = value.valve_position_limits
 """Get [`TGTypeI`](@ref) `P_ref`."""
 get_P_ref(value::TGTypeI) = value.P_ref
 """Get [`TGTypeI`](@ref) `ext`."""
@@ -132,10 +125,8 @@ set_T3!(value::TGTypeI, val) = value.T3 = val
 set_T4!(value::TGTypeI, val) = value.T4 = val
 """Set [`TGTypeI`](@ref) `T5`."""
 set_T5!(value::TGTypeI, val) = value.T5 = val
-"""Set [`TGTypeI`](@ref) `P_min`."""
-set_P_min!(value::TGTypeI, val) = value.P_min = val
-"""Set [`TGTypeI`](@ref) `P_max`."""
-set_P_max!(value::TGTypeI, val) = value.P_max = val
+"""Set [`TGTypeI`](@ref) `valve_position_limits`."""
+set_valve_position_limits!(value::TGTypeI, val) = value.valve_position_limits = val
 """Set [`TGTypeI`](@ref) `P_ref`."""
 set_P_ref!(value::TGTypeI, val) = value.P_ref = val
 """Set [`TGTypeI`](@ref) `ext`."""

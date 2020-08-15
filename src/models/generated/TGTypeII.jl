@@ -6,8 +6,7 @@ This file is auto-generated. Do not edit.
         R::Float64
         T1::Float64
         T2::Float64
-        τ_min::Float64
-        τ_max::Float64
+        τ_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
@@ -21,8 +20,7 @@ Parameters of a Turbine Governor Type II.
 - `R::Float64`: Droop parameter, validation range: `(0, nothing)`
 - `T1::Float64`: Transient gain time constant, validation range: `(0, nothing)`
 - `T2::Float64`: Power fraction time constant, validation range: `(0, nothing)`
-- `τ_min::Float64`: Min Power into the Governor, validation range: `(0, nothing)`
-- `τ_max::Float64`: Max Power into the Governor, validation range: `(0, nothing)`
+- `τ_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Power into the governor limits
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
@@ -37,10 +35,8 @@ mutable struct TGTypeII <: TurbineGov
     T1::Float64
     "Power fraction time constant"
     T2::Float64
-    "Min Power into the Governor"
-    τ_min::Float64
-    "Max Power into the Governor"
-    τ_max::Float64
+    "Power into the governor limits"
+    τ_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Reference Power Set-point"
     P_ref::Float64
     ext::Dict{String, Any}
@@ -53,12 +49,12 @@ mutable struct TGTypeII <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function TGTypeII(R, T1, T2, τ_min, τ_max, P_ref=1.0, ext=Dict{String, Any}(), )
-    TGTypeII(R, T1, T2, τ_min, τ_max, P_ref, ext, [:xg], 1, InfrastructureSystemsInternal(), )
+function TGTypeII(R, T1, T2, τ_limits, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeII(R, T1, T2, τ_limits, P_ref, ext, [:xg], 1, InfrastructureSystemsInternal(), )
 end
 
-function TGTypeII(; R, T1, T2, τ_min, τ_max, P_ref=1.0, ext=Dict{String, Any}(), )
-    TGTypeII(R, T1, T2, τ_min, τ_max, P_ref, ext, )
+function TGTypeII(; R, T1, T2, τ_limits, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeII(R, T1, T2, τ_limits, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -67,8 +63,7 @@ function TGTypeII(::Nothing)
         R=0,
         T1=0,
         T2=0,
-        τ_min=0,
-        τ_max=0,
+        τ_limits=(min=0.0, max=0.0),
         P_ref=0,
         ext=Dict{String, Any}(),
     )
@@ -80,10 +75,8 @@ get_R(value::TGTypeII) = value.R
 get_T1(value::TGTypeII) = value.T1
 """Get [`TGTypeII`](@ref) `T2`."""
 get_T2(value::TGTypeII) = value.T2
-"""Get [`TGTypeII`](@ref) `τ_min`."""
-get_τ_min(value::TGTypeII) = value.τ_min
-"""Get [`TGTypeII`](@ref) `τ_max`."""
-get_τ_max(value::TGTypeII) = value.τ_max
+"""Get [`TGTypeII`](@ref) `τ_limits`."""
+get_τ_limits(value::TGTypeII) = value.τ_limits
 """Get [`TGTypeII`](@ref) `P_ref`."""
 get_P_ref(value::TGTypeII) = value.P_ref
 """Get [`TGTypeII`](@ref) `ext`."""
@@ -101,10 +94,8 @@ set_R!(value::TGTypeII, val) = value.R = val
 set_T1!(value::TGTypeII, val) = value.T1 = val
 """Set [`TGTypeII`](@ref) `T2`."""
 set_T2!(value::TGTypeII, val) = value.T2 = val
-"""Set [`TGTypeII`](@ref) `τ_min`."""
-set_τ_min!(value::TGTypeII, val) = value.τ_min = val
-"""Set [`TGTypeII`](@ref) `τ_max`."""
-set_τ_max!(value::TGTypeII, val) = value.τ_max = val
+"""Set [`TGTypeII`](@ref) `τ_limits`."""
+set_τ_limits!(value::TGTypeII, val) = value.τ_limits = val
 """Set [`TGTypeII`](@ref) `P_ref`."""
 set_P_ref!(value::TGTypeII, val) = value.P_ref = val
 """Set [`TGTypeII`](@ref) `ext`."""
