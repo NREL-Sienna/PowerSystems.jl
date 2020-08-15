@@ -70,10 +70,10 @@ HYGOV:
   TurbineGov: HydroTurbineGov
 }
 
-#IEEEG1:
-#- {
-#  TurbineGov: IEEETurbineGov1
-#}
+IEEEG1:
+- {
+  TurbineGov: IEEETurbineGov1
+}
 
 TGOV1:
 - {
