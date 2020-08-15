@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         Load_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -35,7 +35,7 @@ Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 	x_g1: Fuel valve opening,
 	x_g2: Fuel flow,
 	x_g3: Exhaust temperature load
-- `n_states::Int64`: GasTG has 3 states
+- `n_states::Int`: GasTG has 3 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GasTG <: TurbineGov
@@ -64,7 +64,7 @@ mutable struct GasTG <: TurbineGov
 	x_g3: Exhaust temperature load"
     states::Vector{Symbol}
     "GasTG has 3 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

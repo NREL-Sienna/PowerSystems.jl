@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -33,7 +33,7 @@ Parameters of a Turbine Governor Type I.
 	x_g1: Governor state,
 	x_g2: Servo state,
 	x_g3: Reheat state
-- `n_states::Int64`: TGTypeI has 3 states
+- `n_states::Int`: TGTypeI has 3 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TGTypeI <: TurbineGov
@@ -60,7 +60,7 @@ mutable struct TGTypeI <: TurbineGov
 	x_g3: Reheat state"
     states::Vector{Symbol}
     "TGTypeI has 3 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

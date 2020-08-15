@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         ki_pll::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
     end
 
 Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko.
@@ -25,7 +25,7 @@ IEEE Transactions on Industry applications 33.1 (1997): 58-63.
 	vq_pll: q-axis of the measured voltage in the PLL SRF,
 	ε_pll: Integrator state of the PI controller,
 	θ_pll: Phase angle displacement in the PLL SRF
-- `n_states::Int64`: KauraPLL has 4 states
+- `n_states::Int`: KauraPLL has 4 states
 """
 mutable struct KauraPLL <: FrequencyEstimator
     "PLL low-pass filter frequency (rad/sec)"
@@ -42,7 +42,7 @@ mutable struct KauraPLL <: FrequencyEstimator
 	θ_pll: Phase angle displacement in the PLL SRF"
     states::Vector{Symbol}
     "KauraPLL has 4 states"
-    n_states::Int64
+    n_states::Int
 end
 
 function KauraPLL(ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )

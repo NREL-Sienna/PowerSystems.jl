@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         Tq0_p::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -33,7 +33,7 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage
-- `n_states::Int64`: OneDOneQMachine has 2 states
+- `n_states::Int`: OneDOneQMachine has 2 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct OneDOneQMachine <: Machine
@@ -57,7 +57,7 @@ mutable struct OneDOneQMachine <: Machine
 	ed_p: d-axis transient voltage"
     states::Vector{Symbol}
     "OneDOneQMachine has 2 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

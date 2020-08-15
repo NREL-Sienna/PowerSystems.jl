@@ -17,7 +17,7 @@ This file is auto-generated. Do not edit.
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -42,7 +42,7 @@ Hydro Turbine-Governor.
 	x_g2: desired gate, 
 	x_g3: gate opening, 
 	x_g4: turbine flow
-- `n_states::Int64`: HYGOV has 4 states
+- `n_states::Int`: HYGOV has 4 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroTurbineGov <: TurbineGov
@@ -78,7 +78,7 @@ mutable struct HydroTurbineGov <: TurbineGov
 	x_g4: turbine flow"
     states::Vector{Symbol}
     "HYGOV has 4 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

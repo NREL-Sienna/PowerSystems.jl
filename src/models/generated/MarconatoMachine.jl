@@ -19,7 +19,7 @@ This file is auto-generated. Do not edit.
         γd::Float64
         γq::Float64
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -48,7 +48,7 @@ Parameters of 6-states synchronous machine: Marconato model
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
-- `n_states::Int64`: MarconatoMachine has 6 states
+- `n_states::Int`: MarconatoMachine has 6 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct MarconatoMachine <: Machine
@@ -88,7 +88,7 @@ mutable struct MarconatoMachine <: Machine
 	ed_pp: d-axis subtransient voltage"
     states::Vector{Symbol}
     "MarconatoMachine has 6 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

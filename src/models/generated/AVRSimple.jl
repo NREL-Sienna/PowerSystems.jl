@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -21,7 +21,7 @@ i.e. an integrator controller on EMF
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vf: field voltage
-- `n_states::Int64`: Fixed AVR has 1 states
+- `n_states::Int`: Fixed AVR has 1 states
 - `states_types::Vector{StateTypes.StateType}`: Simple AVR has 1 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -35,7 +35,7 @@ mutable struct AVRSimple <: AVR
 	Vf: field voltage"
     states::Vector{Symbol}
     "Fixed AVR has 1 states"
-    n_states::Int64
+    n_states::Int
     "Simple AVR has 1 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"

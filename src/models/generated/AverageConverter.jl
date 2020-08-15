@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         rated_current::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
     end
 
 Parameters of an average converter model
@@ -17,7 +17,7 @@ Parameters of an average converter model
 - `rated_current::Float64`: rated VA, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
-- `n_states::Int64`: AverageConverter has no states
+- `n_states::Int`: AverageConverter has no states
 """
 mutable struct AverageConverter <: Converter
     "rated voltage"
@@ -27,7 +27,7 @@ mutable struct AverageConverter <: Converter
     ext::Dict{String, Any}
     states::Vector{Symbol}
     "AverageConverter has no states"
-    n_states::Int64
+    n_states::Int
 end
 
 function AverageConverter(rated_voltage, rated_current, ext=Dict{String, Any}(), )

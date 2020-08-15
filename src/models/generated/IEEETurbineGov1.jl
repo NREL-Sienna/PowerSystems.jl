@@ -25,7 +25,7 @@ This file is auto-generated. Do not edit.
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -60,7 +60,7 @@ IEEE Type 1 Speed-Governing Model
 	x_g4: Second Turbine Integrator, 
 	x_g5: Third Turbine Integrator, 
 	x_g6: Fourth Turbine Integrator, 
-- `n_states::Int64`: IEEEG1 has 6 states
+- `n_states::Int`: IEEEG1 has 6 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEETurbineGov1 <: TurbineGov
@@ -114,7 +114,7 @@ mutable struct IEEETurbineGov1 <: TurbineGov
 	x_g6: Fourth Turbine Integrator, "
     states::Vector{Symbol}
     "IEEEG1 has 6 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
