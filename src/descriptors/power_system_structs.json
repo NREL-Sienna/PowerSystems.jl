@@ -2964,6 +2964,17 @@
           "validation_action": "error"
         },
         {
+          "name": "switch",
+          "comment": "Switch",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
           "name": "E_sat",
           "comment": "Exciter output voltage for saturation factor: (E1, E2)",
           "null_value": "(0.0, 0.0)",
