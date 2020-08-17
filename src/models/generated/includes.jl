@@ -190,6 +190,7 @@ export get_Ta
 export get_Ta_2
 export get_Ta_3
 export get_Ta_4
+export get_Ta_Tb
 export get_Tb
 export get_Tb1
 export get_Tc
@@ -495,6 +496,7 @@ export set_Ta!
 export set_Ta_2!
 export set_Ta_3!
 export set_Ta_4!
+export set_Ta_Tb!
 export set_Tb!
 export set_Tb1!
 export set_Tc!

@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct SCRX <: AVR
-        Ta::Float64
+        Ta_Tb::Float64
         Tb::Float64
         K::Float64
         Te::Float64
@@ -21,13 +21,13 @@ This file is auto-generated. Do not edit.
 This exciter is based on an IEEE type SCRX solid state exciter.  The output field voltage is varied by a control system to maintain the system voltage at Vref.  Please note that this exciter model has no initialization capabilities - this means that it will respond to whatever inputs it receives regardless of the state of the machine model.
 
 # Arguments
-- `Ta::Float64`: Lead input constant in s, validation range: `(0, nothing)`
-- `Tb::Float64`: Lag input constant, validation range: `(0, nothing)`
-- `K::Float64`: Regulator Gain, validation range: `(0, nothing)`
-- `Te::Float64`: Regulator Time Constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Ta_Tb::Float64`: Lead input constant ratio, validation range: `(0.05, 0.3)`, action if invalid: `error`
+- `Tb::Float64`: Lag input constant in s, validation range: `(5, 20)`, action if invalid: `error`
+- `K::Float64`: Regulator Gain, validation range: `(20, 100)`
+- `Te::Float64`: Regulator Time Constant, validation range: `(0, 1)`
 - `Efd_lim::Tuple{Float64, Float64}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
 - `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
-- `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, nothing)`
+- `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, 10)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -38,9 +38,9 @@ This exciter is based on an IEEE type SCRX solid state exciter.  The output fiel
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SCRX <: AVR
-    "Lead input constant in s"
-    Ta::Float64
-    "Lag input constant"
+    "Lead input constant ratio"
+    Ta_Tb::Float64
+    "Lag input constant in s"
     Tb::Float64
     "Regulator Gain"
     K::Float64
@@ -67,18 +67,18 @@ mutable struct SCRX <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function SCRX(Ta, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{String, Any}(), )
-    SCRX(Ta, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, [:Vr1, :Vr2], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function SCRX(Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{String, Any}(), )
+    SCRX(Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, [:Vr1, :Vr2], 2, [StateTypes.Differential, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
-function SCRX(; Ta, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{String, Any}(), )
-    SCRX(Ta, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, )
+function SCRX(; Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{String, Any}(), )
+    SCRX(Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
 function SCRX(::Nothing)
     SCRX(;
-        Ta=0,
+        Ta_Tb=0,
         Tb=0,
         K=0,
         Te=0,
@@ -90,8 +90,8 @@ function SCRX(::Nothing)
     )
 end
 
-"""Get [`SCRX`](@ref) `Ta`."""
-get_Ta(value::SCRX) = value.Ta
+"""Get [`SCRX`](@ref) `Ta_Tb`."""
+get_Ta_Tb(value::SCRX) = value.Ta_Tb
 """Get [`SCRX`](@ref) `Tb`."""
 get_Tb(value::SCRX) = value.Tb
 """Get [`SCRX`](@ref) `K`."""
@@ -117,8 +117,8 @@ get_states_types(value::SCRX) = value.states_types
 """Get [`SCRX`](@ref) `internal`."""
 get_internal(value::SCRX) = value.internal
 
-"""Set [`SCRX`](@ref) `Ta`."""
-set_Ta!(value::SCRX, val) = value.Ta = val
+"""Set [`SCRX`](@ref) `Ta_Tb`."""
+set_Ta_Tb!(value::SCRX, val) = value.Ta_Tb = val
 """Set [`SCRX`](@ref) `Tb`."""
 set_Tb!(value::SCRX, val) = value.Tb = val
 """Set [`SCRX`](@ref) `K`."""

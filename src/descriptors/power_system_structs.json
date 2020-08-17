@@ -3691,24 +3691,26 @@
       "docstring": "This exciter is based on an IEEE type SCRX solid state exciter.  The output field voltage is varied by a control system to maintain the system voltage at Vref.  Please note that this exciter model has no initialization capabilities - this means that it will respond to whatever inputs it receives regardless of the state of the machine model.",
       "fields": [
         {
-          "name": "Ta",
-          "comment": "Lead input constant in s",
+          "name": "Ta_Tb",
+          "comment": "Lead input constant ratio",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
-          }
+            "min": 0.05,
+            "max": 0.3
+          },
+          "validation_action": "error"
         },
         {
           "name": "Tb",
-          "comment": "Lag input constant",
+          "comment": "Lag input constant in s",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
-          }
+            "min": 5,
+            "max": 20
+          },
+          "validation_action": "error"
         },
         {
           "name": "K",
@@ -3716,8 +3718,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": 20,
+            "max": 100
           }
         },
         {
@@ -3726,10 +3728,9 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": "eps()",
-            "max": null
-          },
-          "validation_action": "error"
+            "min": 0,
+            "max": 1
+          }
         },
         {
           "name": "Efd_lim",
@@ -3755,7 +3756,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -3790,7 +3791,7 @@
         {
           "name": "states_types",
           "comment": "SCRX has 2 differential states",
-          "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
+          "internal_default": "[StateTypes.Differential, StateTypes.Hybrid]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
