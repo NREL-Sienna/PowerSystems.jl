@@ -7083,11 +7083,12 @@
           "valid_range": {
             "min": 1,
             "max": 6
-          }
+          },
+          "validation_action": "error"
         },
         {
           "name": "remote_bus_control",
-          "comment": "Remot  Bus number for control.",
+          "comment": "Remote  Bus number for control.",
           "null_value": 0,
           "data_type": "Int"
         },
@@ -7099,7 +7100,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "A2",
@@ -7109,7 +7111,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "A3",
@@ -7129,7 +7132,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "A5",
@@ -7139,7 +7143,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "A6",
@@ -7149,7 +7154,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T1",
@@ -7225,7 +7231,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ls_lim",
@@ -7242,7 +7249,7 @@
             "min": 0,
             "max": "1.25"
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Vcl",
@@ -7253,7 +7260,7 @@
             "min": 0,
             "max": "1.0"
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "ext",
@@ -7272,6 +7279,12 @@
           "comment": "IEEEST has 7 states",
           "internal_default": 7,
           "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "IEEEST has 7 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",

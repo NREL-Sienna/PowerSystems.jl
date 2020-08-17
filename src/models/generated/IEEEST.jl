@@ -24,30 +24,31 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
+        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
 IEEE Stabilizing Model PSS. 
 
 # Arguments
-- `input_code::Int`: Code input for stabilizar, validation range: `(1, 6)`
-- `remote_bus_control::Int`: Remot  Bus number for control.
-- `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`
-- `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`
+- `input_code::Int`: Code input for stabilizar, validation range: `(1, 6)`, action if invalid: `error`
+- `remote_bus_control::Int`: Remote  Bus number for control.
+- `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
 - `A3::Float64`: Filter coefficient, validation range: `(0, nothing)`
-- `A4::Float64`: Filter coefficient, validation range: `(0, nothing)`
-- `A5::Float64`: Filter coefficient, validation range: `(0, nothing)`
-- `A6::Float64`: Filter coefficient, validation range: `(0, nothing)`
+- `A4::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A5::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A6::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T1::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `T2::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `T3::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `T4::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `T5::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `T6::Float64`: Time constant, validation range: `("eps()", "2.0")`, action if invalid: `error`
-- `Ks::Float64`: Proportional gain, validation range: `(0, nothing)`
+- `Ks::Float64`: Proportional gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ls_lim::Tuple{Float64, Float64}`: PSS output limits for regulator output (Va_min, Va_max)
-- `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, "1.25")`, action if invalid: `error`
-- `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, "1.0")`, action if invalid: `error`
+- `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, "1.25")`, action if invalid: `warn`
+- `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, "1.0")`, action if invalid: `warn`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st filter integration,
@@ -58,12 +59,13 @@ IEEE Stabilizing Model PSS.
 	x_p6: T3/T4 lead-lag integrator, 
 	:x_p7 last integer,
 - `n_states::Int`: IEEEST has 7 states
+- `states_types::Vector{StateTypes.StateType}`: IEEEST has 7 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEEST <: PSS
     "Code input for stabilizar"
     input_code::Int
-    "Remot  Bus number for control."
+    "Remote  Bus number for control."
     remote_bus_control::Int
     "Filter coefficient"
     A1::Float64
@@ -109,12 +111,14 @@ mutable struct IEEEST <: PSS
     states::Vector{Symbol}
     "IEEEST has 7 states"
     n_states::Int
+    "IEEEST has 7 differential states"
+    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function IEEEST(input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext=Dict{String, Any}(), )
-    IEEEST(input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext, [:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7], 7, InfrastructureSystemsInternal(), )
+    IEEEST(input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext, [:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7], 7, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function IEEEST(; input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext=Dict{String, Any}(), )
@@ -188,6 +192,8 @@ get_ext(value::IEEEST) = value.ext
 get_states(value::IEEEST) = value.states
 """Get [`IEEEST`](@ref) `n_states`."""
 get_n_states(value::IEEEST) = value.n_states
+"""Get [`IEEEST`](@ref) `states_types`."""
+get_states_types(value::IEEEST) = value.states_types
 """Get [`IEEEST`](@ref) `internal`."""
 get_internal(value::IEEEST) = value.internal
 
@@ -233,5 +239,7 @@ set_ext!(value::IEEEST, val) = value.ext = val
 set_states!(value::IEEEST, val) = value.states = val
 """Set [`IEEEST`](@ref) `n_states`."""
 set_n_states!(value::IEEEST, val) = value.n_states = val
+"""Set [`IEEEST`](@ref) `states_types`."""
+set_states_types!(value::IEEEST, val) = value.states_types = val
 """Set [`IEEEST`](@ref) `internal`."""
 set_internal!(value::IEEEST, val) = value.internal = val
