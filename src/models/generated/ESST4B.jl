@@ -31,21 +31,21 @@ In these excitation systems, voltage (and also current in compounded systems) is
 Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`
-- `K_pr::Float64`: Regulator propotional gain, validation range: `(0, 75)`
-- `K_ir::Float64`: Regulator integral gain, validation range: `(0, 75)`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `K_pr::Float64`: Regulator propotional gain, validation range: `(0, 75)`, action if invalid: `warn`
+- `K_ir::Float64`: Regulator integral gain, validation range: `(0, 75)`, action if invalid: `warn`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (Vi_min, Vi_max)
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 1)`
-- `K_pm::Float64`: Voltage regulator proportional gain output, validation range: `(0, 1.2)`
-- `K_im::Float64`: Voltage regulator integral gain output, validation range: `(0, 18)`
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 1)`, action if invalid: `warn`
+- `K_pm::Float64`: Voltage regulator proportional gain output, validation range: `(0, 1.2)`, action if invalid: `warn`
+- `K_im::Float64`: Voltage regulator integral gain output, validation range: `(0, 18)`, action if invalid: `warn`
 - `Vm_lim::Tuple{Float64, Float64}`: Limits for inner loop output (Va_min, Va_max)
-- `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, 1.1)`
-- `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, 10)`
-- `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `(0, 1.1)`
-- `VB_max::Float64`: Maximum available exciter voltage, validation range: `(1, 20)`
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`
-- `Xl::Float64`: Reactance associated with potential source, validation range: `(0, 0.5)`
-- `θp::Float64`: Potential circuit phase angle (degrees), validation range: `(-90, 90)`
+- `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, 1.1)`, action if invalid: `warn`
+- `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, 10)`, action if invalid: `warn`
+- `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `(0, 1.1)`, action if invalid: `warn`
+- `VB_max::Float64`: Maximum available exciter voltage, validation range: `(1, 20)`, action if invalid: `warn`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`, action if invalid: `warn`
+- `Xl::Float64`: Reactance associated with potential source, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `θp::Float64`: Potential circuit phase angle (degrees), validation range: `(-90, 90)`, action if invalid: `error`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `θp_rad::Float64`: Potential circuit phase angle (radians)
 - `ext::Dict{String, Any}`

@@ -23,11 +23,11 @@ This exciter is based on an IEEE type SCRX solid state exciter.  The output fiel
 # Arguments
 - `Ta_Tb::Float64`: Lead input constant ratio, validation range: `(0.05, 0.3)`, action if invalid: `error`
 - `Tb::Float64`: Lag input constant in s, validation range: `(5, 20)`, action if invalid: `error`
-- `K::Float64`: Regulator Gain, validation range: `(20, 100)`
-- `Te::Float64`: Regulator Time Constant, validation range: `(0, 1)`
+- `K::Float64`: Regulator Gain, validation range: `(20, 100)`, action if invalid: `warn`
+- `Te::Float64`: Regulator Time Constant, validation range: `(0, 1)`, action if invalid: `warn`
 - `Efd_lim::Tuple{Float64, Float64}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
 - `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
-- `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, 10)`
+- `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, 10)`, action if invalid: `warn`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:

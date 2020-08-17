@@ -29,15 +29,15 @@ Is used to represent field-controlled dc commutator exciters with continuously a
 Parameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds to ESDC2A in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`
-- `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1.0)`
-- `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`
-- `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`, action if invalid: `warn`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1.0)`, action if invalid: `warn`
+- `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1.0, 1.0)`
+- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1.0, 1.0)`, action if invalid: `warn`
 - `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", 2.0)`, action if invalid: `error`
-- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, 0.3)`
+- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Excitation control system stabilizer time constant. Appropiate Data: 5.0 <= Tf/Kf <= 15.0, validation range: `("eps()", 1.5)`, action if invalid: `error`
 - `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)

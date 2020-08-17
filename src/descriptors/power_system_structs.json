@@ -2873,7 +2873,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -2883,7 +2884,8 @@
           "valid_range": {
             "min": 10,
             "max": 500
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -2893,7 +2895,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -2903,7 +2906,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -2913,7 +2917,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vr_lim",
@@ -3050,7 +3055,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -3060,7 +3066,8 @@
           "valid_range": {
             "min": 10,
             "max": 500
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -3070,7 +3077,8 @@
           "valid_range": {
             "min": 0,
             "max": 1.0
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -3080,7 +3088,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -3090,7 +3099,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vr_lim",
@@ -3106,7 +3116,8 @@
           "valid_range": {
             "min": -1.0,
             "max": 1.0
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Te",
@@ -3127,7 +3138,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -3226,7 +3238,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -3236,7 +3249,8 @@
           "valid_range": {
             "min": 10,
             "max": 500
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -3246,7 +3260,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vr_lim",
@@ -3283,7 +3298,8 @@
           "valid_range": {
             "min": "eps()",
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -3720,7 +3736,8 @@
           "valid_range": {
             "min": 20,
             "max": 100
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Te",
@@ -3730,7 +3747,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Efd_lim",
@@ -3757,7 +3775,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "V_ref",
@@ -3815,7 +3834,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -3825,7 +3845,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -3835,7 +3856,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -3845,7 +3867,8 @@
           "valid_range": {
             "min": 0,
             "max": 1000
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -3882,7 +3905,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -3903,7 +3927,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kd",
@@ -3913,7 +3938,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ke",
@@ -3923,7 +3949,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "E_sat",
@@ -4006,7 +4033,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -4016,7 +4044,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -4026,7 +4055,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -4036,7 +4066,8 @@
           "valid_range": {
             "min": 0,
             "max": 1000
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -4073,7 +4104,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -4094,7 +4126,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kd",
@@ -4104,7 +4137,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ke",
@@ -4197,7 +4231,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -4207,7 +4242,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -4217,7 +4253,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -4237,7 +4274,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vr_lim",
@@ -4264,7 +4302,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -4295,7 +4334,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ke",
@@ -4305,7 +4345,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "E_sat",
@@ -4382,7 +4423,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -4392,7 +4434,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -4402,7 +4445,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -4422,7 +4466,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Va_lim",
@@ -4466,7 +4511,8 @@
           "valid_range": {
             "min": 0,
             "max": 1.1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kh",
@@ -4476,7 +4522,8 @@
           "valid_range": {
             "min": 0,
             "max": 1.1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kf",
@@ -4486,7 +4533,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -4496,7 +4544,8 @@
           "valid_range": {
             "min": "eps()",
             "max": null
-          }
+          },
+          "validation_action": "error"
         },
         {
           "name": "Kc",
@@ -4506,7 +4555,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kd",
@@ -4516,7 +4566,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ke",
@@ -4526,7 +4577,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "V_lr",
@@ -4536,7 +4588,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "E_sat",
@@ -4613,7 +4666,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -4623,7 +4677,8 @@
           "valid_range": {
             "min": 0,
             "max": 1000
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -4633,7 +4688,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tk",
@@ -4643,7 +4699,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -4653,7 +4710,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -4663,7 +4721,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Va_lim",
@@ -4696,7 +4755,8 @@
           "valid_range": {
             "min": -5,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kh",
@@ -4706,7 +4766,8 @@
           "valid_range": {
             "min": 0,
             "max": 100
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "VH_max",
@@ -4716,7 +4777,8 @@
           "valid_range": {
             "min": 0,
             "max": 100
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Th",
@@ -4736,7 +4798,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kc",
@@ -4756,7 +4819,8 @@
           "valid_range": {
             "min": 0,
             "max": 2
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ke",
@@ -4766,7 +4830,8 @@
           "valid_range": {
             "min": 0,
             "max": 2
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "E_sat",
@@ -4843,7 +4908,8 @@
           "valid_range": {
             "min": 1,
             "max": 3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "PSS_flags",
@@ -4863,7 +4929,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vi_lim",
@@ -4879,7 +4946,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -4899,7 +4967,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb1",
@@ -4909,7 +4978,8 @@
           "valid_range": {
             "min": 0,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -4919,7 +4989,8 @@
           "valid_range": {
             "min": 50,
             "max": 1000
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -4929,7 +5000,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Va_lim",
@@ -4951,7 +5023,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kf",
@@ -4961,7 +5034,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -4971,7 +5045,8 @@
           "valid_range": {
             "min": "eps()",
             "max": 1.5
-          }
+          },
+          "validation_action": "error"
         },
         {
           "name": "K_lr",
@@ -4981,7 +5056,8 @@
           "valid_range": {
             "min": 0,
             "max": 5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "I_lr",
@@ -4991,7 +5067,8 @@
           "valid_range": {
             "min": 0,
             "max": 5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "V_ref",
@@ -5049,7 +5126,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -5059,7 +5137,8 @@
           "valid_range": {
             "min": 1,
             "max": 500
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -5069,7 +5148,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Va_lim",
@@ -5095,7 +5175,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta_4",
@@ -5105,7 +5186,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vr_lim",
@@ -5121,7 +5203,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf_1",
@@ -5142,7 +5225,8 @@
           "valid_range": {
             "min": 0,
             "max": 5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Efd_lim",
@@ -5158,7 +5242,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Te",
@@ -5168,7 +5253,8 @@
           "valid_range": {
             "min": 0,
             "max": 2
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "E_sat",
@@ -5190,7 +5276,8 @@
           "valid_range": {
             "min": 0,
             "max": 5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ki",
@@ -5210,7 +5297,8 @@
           "valid_range": {
             "min": 0,
             "max": 2
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "V_ref",
@@ -5275,7 +5363,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K_pr",
@@ -5285,7 +5374,8 @@
           "valid_range": {
             "min": 0,
             "max": 75
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K_ir",
@@ -5295,7 +5385,8 @@
           "valid_range": {
             "min": 0,
             "max": 75
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vr_lim",
@@ -5311,7 +5402,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K_pm",
@@ -5321,7 +5413,8 @@
           "valid_range": {
             "min": 0,
             "max": 1.2
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K_im",
@@ -5331,7 +5424,8 @@
           "valid_range": {
             "min": 0,
             "max": 18
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vm_lim",
@@ -5347,7 +5441,8 @@
           "valid_range": {
             "min": 0,
             "max": 1.1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kp",
@@ -5357,7 +5452,8 @@
           "valid_range": {
             "min": 0,
             "max": 10
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ki",
@@ -5367,7 +5463,8 @@
           "valid_range": {
             "min": 0,
             "max": 1.1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "VB_max",
@@ -5377,7 +5474,8 @@
           "valid_range": {
             "min": 1,
             "max": 20
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kc",
@@ -5387,7 +5485,8 @@
           "valid_range": {
             "min": 0,
             "max": 1
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Xl",
@@ -5397,7 +5496,8 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "θp",
@@ -5407,7 +5507,8 @@
           "valid_range": {
             "min": -90,
             "max": 90
-          }
+          },
+          "validation_action": "error"
         },
         {
           "name": "V_ref",
@@ -7992,7 +8093,7 @@
         {
           "name": "states_types",
           "comment": "GGOV1 has 10 differential states",
-          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StatesTypes.Hybrid]",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
@@ -8104,8 +8205,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.1
+          },
+          "validation_action": "warn"
         },
         {
           "name": "r",
@@ -8114,8 +8216,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 2
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tr",
@@ -8124,7 +8227,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 30
           },
           "validation_action": "error"
         },
@@ -8135,7 +8238,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 0.1
           },
           "valiation_action": "error"
         },
@@ -8146,7 +8249,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 1.0
           },
           "validation_action": "error"
         },
@@ -8154,7 +8257,12 @@
           "name": "VELM",
           "comment": "gate velocity limit",
           "null_value": 0,
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 0.3
+          },
+          "validation_action": "error"
         },
         {
           "name": "gate_position_limits",
@@ -8169,7 +8277,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 3.0
           },
           "validation_action": "error"
         },
@@ -8177,7 +8285,12 @@
           "name": "At",
           "comment": "Turbine gain",
           "null_value": 0,
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.8,
+            "max": 1.5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "D_T",
@@ -8186,8 +8299,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "q_nl",
@@ -8197,7 +8311,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "P_ref",
@@ -8227,6 +8342,12 @@
           "comment": "HYGOV has 4 states",
           "internal_default": 4,
           "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "HYGOV has 4 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
