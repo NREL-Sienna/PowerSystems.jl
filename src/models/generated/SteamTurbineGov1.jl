@@ -12,23 +12,25 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
+        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
-Steam Turbine-Governor. 
+Steam Turbine-Governor. TGOV1 in PSS/E.
 
 # Arguments
-- `R::Float64`: Droop parameter, validation range: `(0, nothing)`
-- `T1::Float64`: Governor time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `R::Float64`: Droop parameter, validation range: `(0, 0.1)`, action if invalid: `warn`
+- `T1::Float64`: Governor time constant, validation range: `("eps()", 0.5)`, action if invalid: `error`
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits
-- `T2::Float64`: Lead Lag Lead Time constant , validation range: `(0, nothing)`
-- `T3::Float64`: Lead Lag Lag Time constant , validation range: `("eps()", nothing)`, action if invalid: `error`
-- `D_T::Float64`: Turbine Damping, validation range: `(0, nothing)`
+- `T2::Float64`: Lead Lag Lead Time constant , validation range: `(0, nothing)`, action if invalid: `warn`
+- `T3::Float64`: Lead Lag Lag Time constant , validation range: `("eps()", 10)`, action if invalid: `error`
+- `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
 	Pm: Turbine Power
 - `n_states::Int`: TGOV1 has 2 states
+- `states_types::Vector{StateTypes.StateType}`: TGOV1 has 2 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SteamTurbineGov1 <: TurbineGov
@@ -51,12 +53,14 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     states::Vector{Symbol}
     "TGOV1 has 2 states"
     n_states::Int
+    "TGOV1 has 2 differential states"
+    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext=Dict{String, Any}(), )
-    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext, [:x_g1, :Pm], 2, InfrastructureSystemsInternal(), )
+    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext, [:x_g1, :Pm], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function SteamTurbineGov1(; R, T1, valve_position_limits, T2, T3, D_T, ext=Dict{String, Any}(), )
@@ -94,6 +98,8 @@ get_ext(value::SteamTurbineGov1) = value.ext
 get_states(value::SteamTurbineGov1) = value.states
 """Get [`SteamTurbineGov1`](@ref) `n_states`."""
 get_n_states(value::SteamTurbineGov1) = value.n_states
+"""Get [`SteamTurbineGov1`](@ref) `states_types`."""
+get_states_types(value::SteamTurbineGov1) = value.states_types
 """Get [`SteamTurbineGov1`](@ref) `internal`."""
 get_internal(value::SteamTurbineGov1) = value.internal
 
@@ -115,5 +121,7 @@ set_ext!(value::SteamTurbineGov1, val) = value.ext = val
 set_states!(value::SteamTurbineGov1, val) = value.states = val
 """Set [`SteamTurbineGov1`](@ref) `n_states`."""
 set_n_states!(value::SteamTurbineGov1, val) = value.n_states = val
+"""Set [`SteamTurbineGov1`](@ref) `states_types`."""
+set_states_types!(value::SteamTurbineGov1, val) = value.states_types = val
 """Set [`SteamTurbineGov1`](@ref) `internal`."""
 set_internal!(value::SteamTurbineGov1, val) = value.internal = val

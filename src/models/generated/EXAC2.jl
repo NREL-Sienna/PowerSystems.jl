@@ -36,23 +36,23 @@ The exciter does not employ self-excitation, and the voltage regulator power is 
 Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main exciter is used, feeding its output via non-controlled rectifiers. The Type AC2C model is similar to that of Type AC1C except for the inclusion of exciter time constant compensation and exciter field current limiting elements. EXAC2 in PSSE and PSLF.
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
-- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, nothing)`
-- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, nothing)`
-- `Ka::Float64`: Regulator output gain, validation range: `(0, nothing)`
-- `Ta::Float64`: Regulator output time constant in s, validation range: `(0, nothing)`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
+- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
+- `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`
+- `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
 - `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
-- `Kb::Float64`: Second Stage regulator gain, validation range: `("eps()", nothing)`
+- `Kb::Float64`: Second Stage regulator gain, validation range: `("eps()", 500)`, action if invalid: `error`
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage (Vr_min, Vr_max)
-- `Te::Float64`: Exciter field time constant, validation range: `("eps()", nothing)`
-- `Kl::Float64`: Exciter field current limiter gain, validation range: `(0, nothing)`
-- `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, nothing)`
-- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, nothing)`
-- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", nothing)`
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
-- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, nothing)`
-- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, nothing)`
-- `V_lr::Float64`: Maximum exciter field current, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter field time constant, validation range: `("eps()", 2)`, action if invalid: `error`
+- `Kl::Float64`: Exciter field current limiter gain, validation range: `(0, 1.1)`, action if invalid: `warn`
+- `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, 1.1)`, action if invalid: `warn`
+- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
+- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`, action if invalid: `warn`
+- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, 1)`, action if invalid: `warn`
+- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, 1)`, action if invalid: `warn`
+- `V_lr::Float64`: Maximum exciter field current, validation range: `(0, nothing)`, action if invalid: `warn`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`

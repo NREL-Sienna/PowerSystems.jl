@@ -18,23 +18,24 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
+        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
 Hydro Turbine-Governor.
 
 # Arguments
-- `R::Float64`: Permanent droop parameter, validation range: `(0, nothing)`
-- `r::Float64`: Temporary Droop, validation range: `(0, nothing)`
-- `Tr::Float64`: Governor time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
-- `Tf::Float64`: Filter Time constant, validation range: `("eps()", nothing)`
-- `Tg::Float64`: Servo time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
-- `VELM::Float64`: gate velocity limit
+- `R::Float64`: Permanent droop parameter, validation range: `(0, 0.1)`, action if invalid: `warn`
+- `r::Float64`: Temporary Droop, validation range: `(0, 2)`, action if invalid: `warn`
+- `Tr::Float64`: Governor time constant, validation range: `("eps()", 30)`, action if invalid: `error`
+- `Tf::Float64`: Filter Time constant, validation range: `("eps()", 0.1)`
+- `Tg::Float64`: Servo time constant, validation range: `("eps()", 1.0)`, action if invalid: `error`
+- `VELM::Float64`: gate velocity limit, validation range: `("eps()", 0.3)`, action if invalid: `error`
 - `gate_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Gate position limits
-- `Tw::Float64`: water time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
-- `At::Float64`: Turbine gain
-- `D_T::Float64`: Turbine Damping, validation range: `(0, nothing)`
-- `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`
+- `Tw::Float64`: water time constant, validation range: `("eps()", 3.0)`, action if invalid: `error`
+- `At::Float64`: Turbine gain, validation range: `(0.8, 1.5)`, action if invalid: `warn`
+- `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`, action if invalid: `warn`
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the HydroTurbineGov model are:
@@ -43,6 +44,7 @@ Hydro Turbine-Governor.
 	x_g3: gate opening, 
 	x_g4: turbine flow
 - `n_states::Int`: HYGOV has 4 states
+- `states_types::Vector{StateTypes.StateType}`: HYGOV has 4 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroTurbineGov <: TurbineGov
@@ -79,12 +81,14 @@ mutable struct HydroTurbineGov <: TurbineGov
     states::Vector{Symbol}
     "HYGOV has 4 states"
     n_states::Int
+    "HYGOV has 4 differential states"
+    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref=1.0, ext=Dict{String, Any}(), )
-    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref, ext, [:x_g1, :x_g2, :x_g3, :x_g4], 4, InfrastructureSystemsInternal(), )
+    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref, ext, [:x_g1, :x_g2, :x_g3, :x_g4], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function HydroTurbineGov(; R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref=1.0, ext=Dict{String, Any}(), )
@@ -140,6 +144,8 @@ get_ext(value::HydroTurbineGov) = value.ext
 get_states(value::HydroTurbineGov) = value.states
 """Get [`HydroTurbineGov`](@ref) `n_states`."""
 get_n_states(value::HydroTurbineGov) = value.n_states
+"""Get [`HydroTurbineGov`](@ref) `states_types`."""
+get_states_types(value::HydroTurbineGov) = value.states_types
 """Get [`HydroTurbineGov`](@ref) `internal`."""
 get_internal(value::HydroTurbineGov) = value.internal
 
@@ -173,5 +179,7 @@ set_ext!(value::HydroTurbineGov, val) = value.ext = val
 set_states!(value::HydroTurbineGov, val) = value.states = val
 """Set [`HydroTurbineGov`](@ref) `n_states`."""
 set_n_states!(value::HydroTurbineGov, val) = value.n_states = val
+"""Set [`HydroTurbineGov`](@ref) `states_types`."""
+set_states_types!(value::HydroTurbineGov, val) = value.states_types = val
 """Set [`HydroTurbineGov`](@ref) `internal`."""
 set_internal!(value::HydroTurbineGov, val) = value.internal = val
