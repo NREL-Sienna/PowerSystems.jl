@@ -32,18 +32,18 @@ The exciter does not employ self-excitation, and the voltage regulator power is 
 Parameters of IEEE Std 421.5 Type AC1A Excitacion System. EXAC1A in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
-- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, nothing)`
-- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, nothing)`
-- `Ka::Float64`: Regulator output gain, validation range: `(0, nothing)`
-- `Ta::Float64`: Regulator output time constant in s, validation range: `(0, nothing)`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`
+- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, 20)`
+- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`
+- `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`
+- `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`
 - `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
-- `Te::Float64`: Exciter field time constant in s, validation range: `("eps()", nothing)`
-- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, nothing)`
-- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", nothing)`
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
-- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, nothing)`
-- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter field time constant in s, validation range: `("eps()", 2)`, action if invalid: `error`
+- `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, 0.3)`
+- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", 1.5)`, action if invalid: `error`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`
+- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, 1)`
+- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, 1)`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage: (Vr_min, Vr_max)
@@ -56,8 +56,8 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. EXAC1A in PSSE and PSL
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int`: EXAC1 has 5 states
-- `states_types::Vector{StateTypes.StateType}`: EXAC1 has 5 states
+- `n_states::Int`: EXAC1A has 5 states
+- `states_types::Vector{StateTypes.StateType}`: EXAC1A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct EXAC1A <: AVR
@@ -103,9 +103,9 @@ mutable struct EXAC1A <: AVR
 	Ve: Integrator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
-    "EXAC1 has 5 states"
+    "EXAC1A has 5 states"
     n_states::Int
-    "EXAC1 has 5 states"
+    "EXAC1A has 5 states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
