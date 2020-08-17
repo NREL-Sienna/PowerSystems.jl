@@ -26,31 +26,32 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
+        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
 IEEE Type 1 Speed-Governing Model
 
 # Arguments
-- `K::Float64`: Governor Gain, validation range: `(0, nothing)`
-- `T1::Float64`: Input Filter Lag, validation range: `(0, nothing)`
-- `T2::Float64`: Input Filter Lead, validation range: `(0, nothing)`
-- `T3::Float64`: Valve position Time Constant, validation range: `(0, nothing)`
-- `U0::Float64`: Maximum Valve Opening Rate, validation range: `(0, nothing)`
-- `U_c::Float64`: Maximum Valve closing rate, validation range: `(nothing, 0.0)`
+- `K::Float64`: Governor Gain, validation range: `(5, 30)`, action if invalid: `warn`
+- `T1::Float64`: Input Filter Lag, validation range: `(0, 5)`, action if invalid: `warn`
+- `T2::Float64`: Input Filter Lead, validation range: `(0, 10)`, action if invalid: `warn`
+- `T3::Float64`: Valve position Time Constant, validation range: `("eps()", 1)`, action if invalid: `error`
+- `U0::Float64`: Maximum Valve Opening Rate, validation range: `(0.01, 0.03)`, action if invalid: `warn`
+- `U_c::Float64`: Maximum Valve closing rate, validation range: `(-0.3, 0.0)`, action if invalid: `warn`
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW
-- `T4::Float64`: Time Constant inlet steam, validation range: `(0, nothing)`
-- `K1::Float64`: Fraction of high presure shaft power, validation range: `(0, nothing)`
-- `K2::Float64`: Fraction of low presure shaft power, validation range: `(0, nothing)`
-- `T5::Float64`: Time constant for second boiler pass, validation range: `(0, nothing)`
-- `K3::Float64`: Fraction of high presure shaft power second boiler pass, validation range: `(0, nothing)`
-- `K4::Float64`: Fraction of low presure shaft power second boiler pass, validation range: `(0, nothing)`
-- `T6::Float64`: Time constant for third boiler pass, validation range: `(0, nothing)`
-- `K5::Float64`: Fraction of high presure shaft power third boiler pass, validation range: `(0, nothing)`
-- `K6::Float64`: Fraction of low presure shaft power third boiler pass, validation range: `(0, nothing)`
-- `T7::Float64`: Time constant for fourth boiler pass, validation range: `(0, nothing)`
-- `K7::Float64`: Fraction of high presure shaft power fourth boiler pass, validation range: `(0, nothing)`
-- `K8::Float64`: Fraction of low presure shaft power fourth boiler pass, validation range: `(0, nothing)`
+- `T4::Float64`: Time Constant inlet steam, validation range: `(0, 1.0)`, action if invalid: `warn`
+- `K1::Float64`: Fraction of high presure shaft power, validation range: `(-2, 1)`, action if invalid: `warn`
+- `K2::Float64`: Fraction of low presure shaft power, validation range: `(0, nothing)`, action if invalid: `warn`
+- `T5::Float64`: Time constant for second boiler pass, validation range: `(0, 10)`, action if invalid: `warn`
+- `K3::Float64`: Fraction of high presure shaft power second boiler pass, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `K4::Float64`: Fraction of low presure shaft power second boiler pass, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `T6::Float64`: Time constant for third boiler pass, validation range: `(0, 10)`, action if invalid: `warn`
+- `K5::Float64`: Fraction of high presure shaft power third boiler pass, validation range: `(0, 0.35)`, action if invalid: `warn`
+- `K6::Float64`: Fraction of low presure shaft power third boiler pass, validation range: `(0, 0.55)`, action if invalid: `warn`
+- `T7::Float64`: Time constant for fourth boiler pass, validation range: `(0, 10)`, action if invalid: `warn`
+- `K7::Float64`: Fraction of high presure shaft power fourth boiler pass, validation range: `(0, 0.3)`, action if invalid: `warn`
+- `K8::Float64`: Fraction of low presure shaft power fourth boiler pass, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the IEEETurbineGov model are:
@@ -61,6 +62,7 @@ IEEE Type 1 Speed-Governing Model
 	x_g5: Third Turbine Integrator, 
 	x_g6: Fourth Turbine Integrator, 
 - `n_states::Int`: IEEEG1 has 6 states
+- `states_types::Vector{StateTypes.StateType}`: IEEEG1 has 6 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEETurbineGov1 <: TurbineGov
@@ -115,12 +117,14 @@ mutable struct IEEETurbineGov1 <: TurbineGov
     states::Vector{Symbol}
     "IEEEG1 has 6 states"
     n_states::Int
+    "IEEEG1 has 6 differential states"
+    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function IEEETurbineGov1(K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref=1.0, ext=Dict{String, Any}(), )
-    IEEETurbineGov1(K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref, ext, [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6], 6, InfrastructureSystemsInternal(), )
+    IEEETurbineGov1(K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref, ext, [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6], 6, [StateTypes.Differential, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
 function IEEETurbineGov1(; K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref=1.0, ext=Dict{String, Any}(), )
@@ -200,6 +204,8 @@ get_ext(value::IEEETurbineGov1) = value.ext
 get_states(value::IEEETurbineGov1) = value.states
 """Get [`IEEETurbineGov1`](@ref) `n_states`."""
 get_n_states(value::IEEETurbineGov1) = value.n_states
+"""Get [`IEEETurbineGov1`](@ref) `states_types`."""
+get_states_types(value::IEEETurbineGov1) = value.states_types
 """Get [`IEEETurbineGov1`](@ref) `internal`."""
 get_internal(value::IEEETurbineGov1) = value.internal
 
@@ -249,5 +255,7 @@ set_ext!(value::IEEETurbineGov1, val) = value.ext = val
 set_states!(value::IEEETurbineGov1, val) = value.states = val
 """Set [`IEEETurbineGov1`](@ref) `n_states`."""
 set_n_states!(value::IEEETurbineGov1, val) = value.n_states = val
+"""Set [`IEEETurbineGov1`](@ref) `states_types`."""
+set_states_types!(value::IEEETurbineGov1, val) = value.states_types = val
 """Set [`IEEETurbineGov1`](@ref) `internal`."""
 set_internal!(value::IEEETurbineGov1, val) = value.internal = val

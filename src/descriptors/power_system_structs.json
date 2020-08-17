@@ -8107,7 +8107,7 @@
     },
     {
       "struct_name": "SteamTurbineGov1",
-      "docstring": "Steam Turbine-Governor. ",
+      "docstring": "Steam Turbine-Governor. TGOV1 in PSS/E.",
       "fields": [
         {
           "name": "R",
@@ -8116,8 +8116,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.1
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T1",
@@ -8126,7 +8127,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 0.5
           },
           "validation_action": "error"
         },
@@ -8144,7 +8145,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T3",
@@ -8153,7 +8155,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 10
           },
           "validation_action": "error"
         },
@@ -8164,8 +8166,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "ext",
@@ -8184,6 +8187,12 @@
           "comment": "TGOV1 has 2 states",
           "internal_default": 2,
           "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "TGOV1 has 2 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -8368,9 +8377,10 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
-          }
+            "min": 5,
+            "max": 30
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T1",
@@ -8379,8 +8389,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T2",
@@ -8389,8 +8400,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 10
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T3",
@@ -8398,9 +8410,10 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
-          }
+            "min": "eps()",
+            "max": 1
+          },
+          "validation_action": "error"
         },
         {
           "name": "U0",
@@ -8408,9 +8421,10 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
-          }
+            "min": 0.01,
+            "max": 0.03
+          },
+          "validation_action": "warn"
         },
         {
           "name": "U_c",
@@ -8418,9 +8432,10 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": null,
+            "min": -0.3,
             "max": 0.0
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "valve_position_limits",
@@ -8435,8 +8450,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 1.0
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K1",
@@ -8444,9 +8460,10 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
-          }
+            "min": -2,
+            "max": 1
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K2",
@@ -8456,7 +8473,8 @@
           "valid_range": {
             "min": 0,
             "max": null
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T5",
@@ -8465,8 +8483,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 10
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K3",
@@ -8475,8 +8494,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K4",
@@ -8485,8 +8505,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T6",
@@ -8495,8 +8516,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 10
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K5",
@@ -8505,8 +8527,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.35
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K6",
@@ -8515,8 +8538,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.55
+          },
+          "validation_action": "warn"
         },
         {
           "name": "T7",
@@ -8525,8 +8549,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 10
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K7",
@@ -8535,8 +8560,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.3
+          },
+          "validation_action": "warn"
         },
         {
           "name": "K8",
@@ -8545,8 +8571,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.3
+          },
+          "validation_action": "warn"
         },
         {
           "name": "P_ref",
@@ -8576,6 +8603,12 @@
           "comment": "IEEEG1 has 6 states",
           "internal_default": 6,
           "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "IEEEG1 has 6 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
