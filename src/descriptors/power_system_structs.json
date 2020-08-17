@@ -7506,7 +7506,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 0.1
           }
         },
         {
@@ -7516,7 +7516,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -7526,7 +7526,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -7536,7 +7536,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 5.0
           }
         },
         {
@@ -7546,7 +7546,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -7556,7 +7556,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 5
           }
         },
         {
@@ -7572,7 +7572,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -7603,6 +7603,12 @@
           "comment": "GasTG has 3 states",
           "internal_default": 3,
           "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "GAST has 3 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -7648,7 +7654,7 @@
             "min": "eps()",
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Tpelec",
@@ -7659,7 +7665,7 @@
             "min": "eps()",
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "speed_error_signal",
@@ -7676,7 +7682,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Ki_gov",
@@ -7687,7 +7693,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Kd_gov",
@@ -7698,7 +7704,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Td_gov",
@@ -7709,7 +7715,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "valve_position_limits",
@@ -7726,7 +7732,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "K_turb",
@@ -7737,7 +7743,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Wf_nl",
@@ -7748,7 +7754,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -7759,7 +7765,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -7770,7 +7776,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "T_eng",
@@ -7781,7 +7787,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Tf_load",
@@ -7792,7 +7798,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Kp_load",
@@ -7803,7 +7809,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Ki_load",
@@ -7814,7 +7820,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Ld_ref",
@@ -7825,7 +7831,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Dm",
@@ -7836,7 +7842,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "R_open",
@@ -7847,7 +7853,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "R_close",
@@ -7858,7 +7864,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Ki_mw",
@@ -7869,7 +7875,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "A_set",
@@ -7880,7 +7886,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -7891,7 +7897,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -7913,7 +7919,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "db",
@@ -7924,7 +7930,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Tsa",
@@ -7935,7 +7941,7 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "Tsb",
@@ -7946,14 +7952,13 @@
             "min": 0.0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "R_lim",
           "comment": "Maximum rate of load increa",
           "null_value": "(up = 0.0, down = 0.0)",
-          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
-          "validation_action": "error"
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}"
         },
         {
           "name": "P_ref",
@@ -7983,6 +7988,12 @@
           "comment": "GeneralGovModel has 10 states",
           "internal_default": 10,
           "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "GGOV1 has 10 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StatesTypes.Hybrid]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
