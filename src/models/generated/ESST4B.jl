@@ -4,12 +4,12 @@ This file is auto-generated. Do not edit.
 """
     mutable struct ESST4B <: AVR
         Tr::Float64
-        Kp_r::Float64
-        Ki_r::Float64
+        K_pr::Float64
+        K_ir::Float64
         Vr_lim::Tuple{Float64, Float64}
         Ta::Float64
-        Kp_m::Float64
-        Ki_m::Float64
+        K_pm::Float64
+        K_im::Float64
         Vm_lim::Tuple{Float64, Float64}
         Kg::Float64
         Kp::Float64
@@ -31,21 +31,21 @@ In these excitation systems, voltage (and also current in compounded systems) is
 Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
-- `Kp_r::Float64`: Regulator propotional gain, validation range: `(0, nothing)`
-- `Ki_r::Float64`: Regulator integral gain, validation range: `(0, nothing)`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`
+- `K_pr::Float64`: Regulator propotional gain, validation range: `(0, 75)`
+- `K_ir::Float64`: Regulator integral gain, validation range: `(0, 75)`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (Vi_min, Vi_max)
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
-- `Kp_m::Float64`: Voltage regulator proportional gain output, validation range: `(0, nothing)`
-- `Ki_m::Float64`: Voltage regulator integral gain output, validation range: `(0, nothing)`
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 1)`
+- `K_pm::Float64`: Voltage regulator proportional gain output, validation range: `(0, 1.2)`
+- `K_im::Float64`: Voltage regulator integral gain output, validation range: `(0, 18)`
 - `Vm_lim::Tuple{Float64, Float64}`: Limits for inner loop output (Va_min, Va_max)
-- `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, nothing)`
-- `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, nothing)`
-- `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `("eps()", nothing)`
-- `VB_max::Float64`: Maximum available exciter voltage, validation range: `(0, nothing)`
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
-- `Xl::Float64`: Reactance associated with potential source, validation range: `(0, nothing)`
-- `θp::Float64`: Potential circuit phase angle (degrees)
+- `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, 1.1)`
+- `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, 10)`
+- `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `(0, 1.1)`
+- `VB_max::Float64`: Maximum available exciter voltage, validation range: `(1, 20)`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`
+- `Xl::Float64`: Reactance associated with potential source, validation range: `(0, 0.5)`
+- `θp::Float64`: Potential circuit phase angle (degrees), validation range: `(-90, 90)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `θp_rad::Float64`: Potential circuit phase angle (radians)
 - `ext::Dict{String, Any}`
@@ -63,17 +63,17 @@ mutable struct ESST4B <: AVR
     "Regulator input filter time constant in s"
     Tr::Float64
     "Regulator propotional gain"
-    Kp_r::Float64
+    K_pr::Float64
     "Regulator integral gain"
-    Ki_r::Float64
+    K_ir::Float64
     "Voltage regulator limits (Vi_min, Vi_max)"
     Vr_lim::Tuple{Float64, Float64}
     "Voltage regulator time constant in s"
     Ta::Float64
     "Voltage regulator proportional gain output"
-    Kp_m::Float64
+    K_pm::Float64
     "Voltage regulator integral gain output"
-    Ki_m::Float64
+    K_im::Float64
     "Limits for inner loop output (Va_min, Va_max)"
     Vm_lim::Tuple{Float64, Float64}
     "Feedback gain constant of the inner loop field regulator"
@@ -110,24 +110,24 @@ mutable struct ESST4B <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function ESST4B(Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*π*inv(180), ext=Dict{String, Any}(), )
-    ESST4B(Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, [:Vt, :Vr1, :Vr2, :Vm], 4, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
+function ESST4B(Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*π*inv(180), ext=Dict{String, Any}(), )
+    ESST4B(Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, [:Vt, :Vr1, :Vr2, :Vm], 4, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
-function ESST4B(; Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*π*inv(180), ext=Dict{String, Any}(), )
-    ESST4B(Tr, Kp_r, Ki_r, Vr_lim, Ta, Kp_m, Ki_m, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, )
+function ESST4B(; Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*π*inv(180), ext=Dict{String, Any}(), )
+    ESST4B(Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
 function ESST4B(::Nothing)
     ESST4B(;
         Tr=0,
-        Kp_r=0,
-        Ki_r=0,
+        K_pr=0,
+        K_ir=0,
         Vr_lim=(0.0, 0.0),
         Ta=0,
-        Kp_m=0,
-        Ki_m=0,
+        K_pm=0,
+        K_im=0,
         Vm_lim=(0.0, 0.0),
         Kg=0,
         Kp=0,
@@ -144,18 +144,18 @@ end
 
 """Get [`ESST4B`](@ref) `Tr`."""
 get_Tr(value::ESST4B) = value.Tr
-"""Get [`ESST4B`](@ref) `Kp_r`."""
-get_Kp_r(value::ESST4B) = value.Kp_r
-"""Get [`ESST4B`](@ref) `Ki_r`."""
-get_Ki_r(value::ESST4B) = value.Ki_r
+"""Get [`ESST4B`](@ref) `K_pr`."""
+get_K_pr(value::ESST4B) = value.K_pr
+"""Get [`ESST4B`](@ref) `K_ir`."""
+get_K_ir(value::ESST4B) = value.K_ir
 """Get [`ESST4B`](@ref) `Vr_lim`."""
 get_Vr_lim(value::ESST4B) = value.Vr_lim
 """Get [`ESST4B`](@ref) `Ta`."""
 get_Ta(value::ESST4B) = value.Ta
-"""Get [`ESST4B`](@ref) `Kp_m`."""
-get_Kp_m(value::ESST4B) = value.Kp_m
-"""Get [`ESST4B`](@ref) `Ki_m`."""
-get_Ki_m(value::ESST4B) = value.Ki_m
+"""Get [`ESST4B`](@ref) `K_pm`."""
+get_K_pm(value::ESST4B) = value.K_pm
+"""Get [`ESST4B`](@ref) `K_im`."""
+get_K_im(value::ESST4B) = value.K_im
 """Get [`ESST4B`](@ref) `Vm_lim`."""
 get_Vm_lim(value::ESST4B) = value.Vm_lim
 """Get [`ESST4B`](@ref) `Kg`."""
@@ -189,18 +189,18 @@ get_internal(value::ESST4B) = value.internal
 
 """Set [`ESST4B`](@ref) `Tr`."""
 set_Tr!(value::ESST4B, val) = value.Tr = val
-"""Set [`ESST4B`](@ref) `Kp_r`."""
-set_Kp_r!(value::ESST4B, val) = value.Kp_r = val
-"""Set [`ESST4B`](@ref) `Ki_r`."""
-set_Ki_r!(value::ESST4B, val) = value.Ki_r = val
+"""Set [`ESST4B`](@ref) `K_pr`."""
+set_K_pr!(value::ESST4B, val) = value.K_pr = val
+"""Set [`ESST4B`](@ref) `K_ir`."""
+set_K_ir!(value::ESST4B, val) = value.K_ir = val
 """Set [`ESST4B`](@ref) `Vr_lim`."""
 set_Vr_lim!(value::ESST4B, val) = value.Vr_lim = val
 """Set [`ESST4B`](@ref) `Ta`."""
 set_Ta!(value::ESST4B, val) = value.Ta = val
-"""Set [`ESST4B`](@ref) `Kp_m`."""
-set_Kp_m!(value::ESST4B, val) = value.Kp_m = val
-"""Set [`ESST4B`](@ref) `Ki_m`."""
-set_Ki_m!(value::ESST4B, val) = value.Ki_m = val
+"""Set [`ESST4B`](@ref) `K_pm`."""
+set_K_pm!(value::ESST4B, val) = value.K_pm = val
+"""Set [`ESST4B`](@ref) `K_im`."""
+set_K_im!(value::ESST4B, val) = value.K_im = val
 """Set [`ESST4B`](@ref) `Vm_lim`."""
 set_Vm_lim!(value::ESST4B, val) = value.Vm_lim = val
 """Set [`ESST4B`](@ref) `Kg`."""

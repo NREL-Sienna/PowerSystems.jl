@@ -4861,7 +4861,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.1
           }
         },
         {
@@ -4877,7 +4877,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -4887,7 +4887,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 20
           }
         },
         {
@@ -4897,7 +4897,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -4907,7 +4907,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 20
           }
         },
         {
@@ -4916,8 +4916,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": 50,
+            "max": 1000
           }
         },
         {
@@ -4927,7 +4927,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -4949,7 +4949,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.3
           }
         },
         {
@@ -4959,7 +4959,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.3
           }
         },
         {
@@ -4969,7 +4969,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 1.5
           }
         },
         {
@@ -4979,7 +4979,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 5
           }
         },
         {
@@ -4989,7 +4989,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 5
           }
         },
         {
@@ -5273,27 +5273,27 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
-          "name": "Kp_r",
+          "name": "K_pr",
           "comment": "Regulator propotional gain",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 75
           }
         },
         {
-          "name": "Ki_r",
+          "name": "K_ir",
           "comment": "Regulator integral gain",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 75
           }
         },
         {
@@ -5309,27 +5309,27 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
-          "name": "Kp_m",
+          "name": "K_pm",
           "comment": "Voltage regulator proportional gain output",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1.2
           }
         },
         {
-          "name": "Ki_m",
+          "name": "K_im",
           "comment": "Voltage regulator integral gain output",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 18
           }
         },
         {
@@ -5345,7 +5345,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1.1
           }
         },
         {
@@ -5355,7 +5355,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -5364,8 +5364,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": "eps()",
-            "max": null
+            "min": 0,
+            "max": 1.1
           }
         },
         {
@@ -5374,8 +5374,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": 1,
+            "max": 20
           }
         },
         {
@@ -5385,7 +5385,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -5395,14 +5395,18 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
           "name": "θp",
           "comment": "Potential circuit phase angle (degrees)",
           "null_value": 0,
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "valid_range": {
+            "min": -90,
+            "max": 90
+          }
         },
         {
           "name": "V_ref",
