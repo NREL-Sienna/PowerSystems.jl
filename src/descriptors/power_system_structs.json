@@ -5047,7 +5047,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -5056,8 +5056,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": 1,
+            "max": 500
           }
         },
         {
@@ -5067,7 +5067,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -5119,7 +5119,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.3
           }
         },
         {
@@ -5129,7 +5129,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 15
           },
           "validation_actions": "error"
         },
@@ -5140,7 +5140,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 5
           }
         },
         {
@@ -5156,7 +5156,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -5166,7 +5166,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 2
           }
         },
         {
@@ -5188,7 +5188,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 5
           }
         },
         {
@@ -5198,7 +5198,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1.1
           }
         },
         {
@@ -5208,7 +5208,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 2
           }
         },
         {
@@ -5250,7 +5250,7 @@
         {
           "name": "states_types",
           "comment": "EXPIC has 6 states",
-          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {

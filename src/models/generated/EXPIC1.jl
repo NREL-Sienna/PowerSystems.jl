@@ -34,25 +34,25 @@ This file is auto-generated. Do not edit.
 Generic Proportional/Integral Excitation System
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
-- `Ka::Float64`: Voltage regulator gain, validation range: `(0, nothing)`
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`
+- `Ka::Float64`: Voltage regulator gain, validation range: `(1, 500)`
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 10)`
 - `Va_lim::Tuple{Float64, Float64}`: Limits for pi controler (Vr_min, Vr_max)
 - `Ta_2::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Ta_3::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Ta_4::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Kf::Float64`: Rate feedback gain, validation range: `(0, nothing)`
-- `Tf_1::Float64`: Rate Feedback time constant in s, validation range: `("eps()", nothing)`
-- `Tf_2::Float64`: Rate Feedback time constant in s, validation range: `(0, nothing)`
+- `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`
+- `Tf_1::Float64`: Rate Feedback time constant in s, validation range: `("eps()", 15)`
+- `Tf_2::Float64`: Rate Feedback time constant in s, validation range: `(0, 5)`
 - `Efd_lim::Tuple{Float64, Float64}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
-- `Ke::Float64`: Exciter constant, validation range: `(0, nothing)`
-- `Te::Float64`: Exciter time constant, validation range: `(0, nothing)`
+- `Ke::Float64`: Exciter constant, validation range: `(0, 1)`
+- `Te::Float64`: Exciter time constant, validation range: `(0, 2)`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `Kp::Float64`: Potential source gain, validation range: `(0, nothing)`
-- `Ki::Float64`: current source gain, validation range: `(0, nothing)`
-- `Kc::Float64`: Exciter regulation factor, validation range: `(0, nothing)`
+- `Kp::Float64`: Potential source gain, validation range: `(0, 5)`
+- `Ki::Float64`: current source gain, validation range: `(0, 1.1)`
+- `Kc::Float64`: Exciter regulation factor, validation range: `(0, 2)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
 - `ext::Dict{String, Any}`
@@ -130,7 +130,7 @@ mutable struct EXPIC1 <: AVR
 end
 
 function EXPIC1(Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    EXPIC1(Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Vf, :Vr3, :Vr4], 6, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    EXPIC1(Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Vf, :Vr3, :Vr4], 6, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
 function EXPIC1(; Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
