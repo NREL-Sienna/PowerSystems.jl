@@ -2872,7 +2872,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -2881,8 +2881,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": 10,
+            "max": 500
           }
         },
         {
@@ -2892,7 +2892,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -2938,7 +2938,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 1
           },
           "validation_action": "error"
         },
@@ -2948,9 +2948,10 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
-          }
+            "min": "eps()",
+            "max": 0.3
+          },
+          "validation_action": "error"
         },
         {
           "name": "Tf",
@@ -3024,8 +3025,8 @@
         },
         {
           "name": "states_types",
-          "comment": "ESDC1A I has 5 differential states",
-          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "comment": "ESDC1A has 5 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
@@ -3048,7 +3049,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -3057,8 +3058,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": 10,
+            "max": 500
           }
         },
         {
@@ -3068,7 +3069,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1.0
           }
         },
         {
@@ -3103,8 +3104,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": -1.0,
+            "max": 1.0
           }
         },
         {
@@ -3114,7 +3115,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 2.0
           },
           "validation_action": "error"
         },
@@ -3125,17 +3126,17 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.3
           }
         },
         {
           "name": "Tf",
-          "comment": "Excitation control system stabilizer time constant",
+          "comment": "Excitation control system stabilizer time constant. Appropiate Data: 5.0 <= Tf/Kf <= 15.0",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 1.5
           },
           "validation_action": "error"
         },
@@ -3201,7 +3202,7 @@
         {
           "name": "states_types",
           "comment": "ESDC2A has 5 differential states",
-          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
@@ -3224,7 +3225,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -3233,8 +3234,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": 10,
+            "max": 500
           }
         },
         {
@@ -3244,7 +3245,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -3259,8 +3260,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": -1,
+            "max": 1
           }
         },
         {
@@ -3270,7 +3271,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 1
           },
           "validation_action": "error"
         },
@@ -3280,13 +3281,13 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": "eps()",
+            "max": 0.3
           }
         },
         {
           "name": "Tf",
-          "comment": "Excitation control system stabilizer time constant",
+          "comment": "Excitation control system stabilizer time constant. Appropiate Data: 5 <= Tf/Kf <= 15",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -3350,14 +3351,14 @@
         },
         {
           "name": "n_states",
-          "comment": "The IEEET1 has 5 states",
+          "comment": "The IEEET1 has 4 states",
           "internal_default": 4,
           "data_type": "Int"
         },
         {
           "name": "states_types",
-          "comment": "IEEET1 I has 5 differential states",
-          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "comment": "IEEET1 I has 4 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {

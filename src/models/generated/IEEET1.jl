@@ -26,14 +26,14 @@ This file is auto-generated. Do not edit.
 1968 IEEE type 1 excitation system model
 
 # Arguments
-- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`
-- `Ka::Float64`: Amplifier Gain, validation range: `(0, nothing)`
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, nothing)`
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`
+- `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`
 - `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(0, nothing)`
-- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", nothing)`, action if invalid: `error`
-- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, nothing)`
-- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1, 1)`
+- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", 1)`, action if invalid: `error`
+- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `("eps()", 0.3)`
+- `Tf::Float64`: Excitation control system stabilizer time constant. Appropiate Data: 5 <= Tf/Kf <= 15, validation range: `("eps()", nothing)`, action if invalid: `error`
 - `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
@@ -45,8 +45,8 @@ This file is auto-generated. Do not edit.
 	Vr: Regulator Output,
 	Vf: Exciter Output, 
 	Vr3: Rate feedback integrator
-- `n_states::Int`: The IEEET1 has 5 states
-- `states_types::Vector{StateTypes.StateType}`: IEEET1 I has 5 differential states
+- `n_states::Int`: The IEEET1 has 4 states
+- `states_types::Vector{StateTypes.StateType}`: IEEET1 I has 4 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEET1 <: AVR
@@ -64,7 +64,7 @@ mutable struct IEEET1 <: AVR
     Te::Float64
     "Excitation control system stabilizer gain"
     Kf::Float64
-    "Excitation control system stabilizer time constant"
+    "Excitation control system stabilizer time constant. Appropiate Data: 5 <= Tf/Kf <= 15"
     Tf::Float64
     "Switch"
     switch::Int
@@ -83,16 +83,16 @@ mutable struct IEEET1 <: AVR
 	Vf: Exciter Output, 
 	Vr3: Rate feedback integrator"
     states::Vector{Symbol}
-    "The IEEET1 has 5 states"
+    "The IEEET1 has 4 states"
     n_states::Int
-    "IEEET1 I has 5 differential states"
+    "IEEET1 I has 4 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function IEEET1(Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    IEEET1(Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vf, :Vr2], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    IEEET1(Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vf, :Vr2], 4, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function IEEET1(; Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
