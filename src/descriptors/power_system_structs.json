@@ -3813,7 +3813,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -3823,7 +3823,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 20
           }
         },
         {
@@ -3833,7 +3833,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 20
           }
         },
         {
@@ -3843,7 +3843,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1000
           }
         },
         {
@@ -3853,7 +3853,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -3869,8 +3869,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
-          }
+            "max": 2
+          },
+          "validation_action": "error"
         },
         {
           "name": "Kf",
@@ -3879,7 +3880,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.3
           }
         },
         {
@@ -3889,8 +3890,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
-          }
+            "max": 1.5
+          },
+          "validation_action": "error"
         },
         {
           "name": "Kc",
@@ -3899,7 +3901,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -3909,7 +3911,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -3919,7 +3921,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -4603,7 +4605,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -4613,7 +4615,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1000
           }
         },
         {
@@ -4623,7 +4625,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -4633,7 +4635,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -4643,7 +4645,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 20
           }
         },
         {
@@ -4653,7 +4655,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 20
           }
         },
         {
@@ -4675,8 +4677,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
-          }
+            "max": 2.0
+          },
+          "validation_action": "error"
         },
         {
           "name": "VFE_lim",
@@ -4684,8 +4687,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
+            "min": -5,
+            "max": 20
           }
         },
         {
@@ -4695,7 +4698,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 100
           }
         },
         {
@@ -4705,7 +4708,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 100
           }
         },
         {
@@ -4714,8 +4717,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
-            "max": null
+            "min": 0,
+            "max": 1
           }
         },
         {
@@ -4724,8 +4727,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
-            "max": null
+            "min": 0,
+            "max": 1
           }
         },
         {
@@ -4735,7 +4738,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -4745,7 +4748,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 2
           }
         },
         {
@@ -4755,7 +4758,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 2
           }
         },
         {
@@ -4802,14 +4805,14 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "ESAC6A has 5 states",
           "internal_default": 5,
           "data_type": "Int"
         },
         {
           "name": "states_types",
           "comment": "ESAC6A has 5 states",
-          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {

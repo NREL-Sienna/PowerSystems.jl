@@ -35,23 +35,23 @@ Modified AC6A. Used to represent field-controlled alternator-rectifier excitatio
 Parameters of IEEE Std 421.5 Type AC6A Excitacion System. ESAC6A in PSSE and PSLF.
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, nothing)`
-- `Ka::Float64`: Regulator output gain, validation range: `(0, nothing)`
-- `Ta::Float64`: Regulator output lag time constant in s, validation range: `(0, nothing)`
-- `Tk::Float64`: Voltage Regulator lead time xonstant, validation range: `(0, nothing)`
-- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, nothing)`
-- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, nothing)`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`
+- `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`
+- `Ta::Float64`: Regulator output lag time constant in s, validation range: `(0, 10)`
+- `Tk::Float64`: Voltage Regulator lead time xonstant, validation range: `(0, 10)`
+- `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, 20)`
+- `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`
 - `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
 - `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage (Vr_min, Vr_max)
-- `Te::Float64`: Exciter field time constant, validation range: `("eps()", nothing)`
-- `VFE_lim::Float64`: Exciter field current limiter reference, validation range: `(0, nothing)`
-- `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, nothing)`
-- `VH_max::Float64`: Exciter field current limiter maximum output, validation range: `(0, nothing)`
-- `Th::Float64`: Exciter field current limiter denominator (lag) time constant, validation range: `(0.0, nothing)`
-- `Tj::Float64`: Exciter field current limiter numerator (lead) time constant, validation range: `(0.0, nothing)`
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, nothing)`
-- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, nothing)`
-- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter field time constant, validation range: `("eps()", 2.0)`, action if invalid: `error`
+- `VFE_lim::Float64`: Exciter field current limiter reference, validation range: `(-5, 20)`
+- `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, 100)`
+- `VH_max::Float64`: Exciter field current limiter maximum output, validation range: `(0, 100)`
+- `Th::Float64`: Exciter field current limiter denominator (lag) time constant, validation range: `(0, 1)`
+- `Tj::Float64`: Exciter field current limiter numerator (lead) time constant, validation range: `(0, 1)`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`
+- `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, 2)`
+- `Ke::Float64`: Exciter field proportional constant, validation range: `(0, 2)`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
@@ -63,7 +63,7 @@ Parameters of IEEE Std 421.5 Type AC6A Excitacion System. ESAC6A in PSSE and PSL
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int`
+- `n_states::Int`: ESAC6A has 5 states
 - `states_types::Vector{StateTypes.StateType}`: ESAC6A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -118,6 +118,7 @@ mutable struct ESAC6A <: AVR
 	Ve: Integrator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
+    "ESAC6A has 5 states"
     n_states::Int
     "ESAC6A has 5 states"
     states_types::Vector{StateTypes.StateType}
@@ -126,7 +127,7 @@ mutable struct ESAC6A <: AVR
 end
 
 function ESAC6A(Tr, Ka, Ta, Tk, Tb, Tc, Va_lim, Vr_lim, Te, VFE_lim, Kh, VH_max, Th, Tj, Kc, Kd, Ke, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    ESAC6A(Tr, Ka, Ta, Tk, Tb, Tc, Va_lim, Vr_lim, Te, VFE_lim, Kh, VH_max, Th, Tj, Kc, Kd, Ke, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    ESAC6A(Tr, Ka, Ta, Tk, Tb, Tc, Va_lim, Vr_lim, Te, VFE_lim, Kh, VH_max, Th, Tj, Kc, Kd, Ke, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
 function ESAC6A(; Tr, Ka, Ta, Tk, Tb, Tc, Va_lim, Vr_lim, Te, VFE_lim, Kh, VH_max, Th, Tj, Kc, Kd, Ke, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
