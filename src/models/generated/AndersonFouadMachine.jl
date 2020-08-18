@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         Tq0_pp::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -42,7 +42,7 @@ Parameters of 6-states synchronous machine: Anderson-Fouad model
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
-- `n_states::Int64`: AndersonFouadMachine has 6 states
+- `n_states::Int`: AndersonFouadMachine has 6 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AndersonFouadMachine <: Machine
@@ -78,7 +78,7 @@ mutable struct AndersonFouadMachine <: Machine
 	ed_pp: d-axis subtransient voltage"
     states::Vector{Symbol}
     "AndersonFouadMachine has 6 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

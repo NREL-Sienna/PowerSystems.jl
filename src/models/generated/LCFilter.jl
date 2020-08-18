@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         cf::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
     end
 
 Parameters of a LCL filter outside the converter
@@ -21,7 +21,7 @@ Parameters of a LCL filter outside the converter
 - `states::Vector{Symbol}`: The states of the LCFilter model are:
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter
-- `n_states::Int64`: LCFilter has two states
+- `n_states::Int`: LCFilter has two states
 """
 mutable struct LCFilter <: Filter
     "filter inductance"
@@ -36,7 +36,7 @@ mutable struct LCFilter <: Filter
 	ii_filter: Imaginary current out of the filter"
     states::Vector{Symbol}
     "LCFilter has two states"
-    n_states::Int64
+    n_states::Int
 end
 
 function LCFilter(lf, rf, cf, ext=Dict{String, Any}(), )

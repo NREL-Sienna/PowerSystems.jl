@@ -14,28 +14,30 @@ This file is auto-generated. Do not edit.
         Load_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
+        states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
 
 Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 
 # Arguments
-- `R::Float64`: Speed droop parameter, validation range: `("eps()", nothing)`
-- `T1::Float64`: Governor time constant in s, validation range: `("eps()", nothing)`
-- `T2::Float64`: Combustion chamber time constant, validation range: `("eps()", nothing)`
-- `T3::Float64`: Load limit time constant (exhaust gas measurement time), validation range: `("eps()", nothing)`
-- `AT::Float64`: Ambient temperature load limit, validation range: `(0, nothing)`
-- `Kt::Float64`: Load limit feedback gain, validation range: `(0, nothing)`
+- `R::Float64`: Speed droop parameter, validation range: `("eps()", 0.1)`
+- `T1::Float64`: Governor time constant in s, validation range: `("eps()", 0.5)`
+- `T2::Float64`: Combustion chamber time constant, validation range: `("eps()", 0.5)`
+- `T3::Float64`: Load limit time constant (exhaust gas measurement time), validation range: `("eps()", 5.0)`
+- `AT::Float64`: Ambient temperature load limit, validation range: `(0, 1)`
+- `Kt::Float64`: Load limit feedback gain, validation range: `(0, 5)`
 - `V_lim::Tuple{Float64, Float64}`: Operational control limits on fuel valve opening (V_min, V_max)
-- `D_turb::Float64`: Speed damping coefficient of gas turbine rotor, validation range: `(0, nothing)`
+- `D_turb::Float64`: Speed damping coefficient of gas turbine rotor, validation range: `(0, 0.5)`
 - `Load_ref::Float64`: Reference Load Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the GAST model are:
 	x_g1: Fuel valve opening,
 	x_g2: Fuel flow,
 	x_g3: Exhaust temperature load
-- `n_states::Int64`: GasTG has 3 states
+- `n_states::Int`: GasTG has 3 states
+- `states_types::Vector{StateTypes.StateType}`: GAST has 3 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GasTG <: TurbineGov
@@ -64,13 +66,15 @@ mutable struct GasTG <: TurbineGov
 	x_g3: Exhaust temperature load"
     states::Vector{Symbol}
     "GasTG has 3 states"
-    n_states::Int64
+    n_states::Int
+    "GAST has 3 differential states"
+    states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, Load_ref=1.0, ext=Dict{String, Any}(), )
-    GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, Load_ref, ext, [:x_g1, :x_g2, :x_g3], 3, InfrastructureSystemsInternal(), )
+    GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, Load_ref, ext, [:x_g1, :x_g2, :x_g3], 3, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function GasTG(; R, T1, T2, T3, AT, Kt, V_lim, D_turb, Load_ref=1.0, ext=Dict{String, Any}(), )
@@ -117,6 +121,8 @@ get_ext(value::GasTG) = value.ext
 get_states(value::GasTG) = value.states
 """Get [`GasTG`](@ref) `n_states`."""
 get_n_states(value::GasTG) = value.n_states
+"""Get [`GasTG`](@ref) `states_types`."""
+get_states_types(value::GasTG) = value.states_types
 """Get [`GasTG`](@ref) `internal`."""
 get_internal(value::GasTG) = value.internal
 
@@ -144,5 +150,7 @@ set_ext!(value::GasTG, val) = value.ext = val
 set_states!(value::GasTG, val) = value.states = val
 """Set [`GasTG`](@ref) `n_states`."""
 set_n_states!(value::GasTG, val) = value.n_states = val
+"""Set [`GasTG`](@ref) `states_types`."""
+set_states_types!(value::GasTG, val) = value.states_types = val
 """Set [`GasTG`](@ref) `internal`."""
 set_internal!(value::GasTG, val) = value.internal = val

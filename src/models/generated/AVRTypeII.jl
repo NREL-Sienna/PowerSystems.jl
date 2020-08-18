@@ -17,7 +17,7 @@ This file is auto-generated. Do not edit.
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -43,7 +43,7 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 	Vr1: First Lead-Lag state,
 	Vr2: Second lead-lag state,
 	Vm: Measured voltage
-- `n_states::Int64`: AVR Type II has 4 states
+- `n_states::Int`: AVR Type II has 4 states
 - `states_types::Vector{StateTypes.StateType}`: AVR Type II has 4 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -80,7 +80,7 @@ mutable struct AVRTypeII <: AVR
 	Vm: Measured voltage"
     states::Vector{Symbol}
     "AVR Type II has 4 states"
-    n_states::Int64
+    n_states::Int
     "AVR Type II has 4 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
