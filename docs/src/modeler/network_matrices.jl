@@ -4,7 +4,7 @@
 
 # # Network Matrices
 
-# Use this matrices wisely
+# Use these matrices wisely
 
 # ```@autodocs
 # Modules = [PowerSystems]
