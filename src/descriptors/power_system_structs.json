@@ -4693,7 +4693,7 @@
         },
         {
           "name": "Tk",
-          "comment": "Voltage Regulator lead time xonstant",
+          "comment": "Voltage Regulator lead time constant",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
