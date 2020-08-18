@@ -163,7 +163,6 @@ export get_L_f1d
 export get_L_ff
 export get_L_q
 export get_Ld_ref
-export get_Load_ref
 export get_Ls_lim
 export get_PSS_flags
 export get_P_ref
@@ -471,7 +470,6 @@ export set_L_f1d!
 export set_L_ff!
 export set_L_q!
 export set_Ld_ref!
-export set_Load_ref!
 export set_Ls_lim!
 export set_PSS_flags!
 export set_P_ref!
