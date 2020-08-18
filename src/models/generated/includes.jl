@@ -91,6 +91,8 @@ export get_Ae
 export get_At
 export get_Be
 export get_D
+export get_DB_h
+export get_DB_l
 export get_D_12
 export get_D_23
 export get_D_34
@@ -163,7 +165,6 @@ export get_L_f1d
 export get_L_ff
 export get_L_q
 export get_Ld_ref
-export get_Load_ref
 export get_Ls_lim
 export get_PSS_flags
 export get_P_ref
@@ -395,6 +396,8 @@ export set_Ae!
 export set_At!
 export set_Be!
 export set_D!
+export set_DB_h!
+export set_DB_l!
 export set_D_12!
 export set_D_23!
 export set_D_34!
@@ -467,7 +470,6 @@ export set_L_f1d!
 export set_L_ff!
 export set_L_q!
 export set_Ld_ref!
-export set_Load_ref!
 export set_Ls_lim!
 export set_PSS_flags!
 export set_P_ref!

@@ -3044,8 +3044,8 @@
         {
           "name": "Vr_lim",
           "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Ke",
@@ -3226,8 +3226,8 @@
         {
           "name": "Vr_lim",
           "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Ke",
@@ -3387,8 +3387,8 @@
         {
           "name": "Vr_lim",
           "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Ke",
@@ -3584,8 +3584,8 @@
         {
           "name": "Va_lim",
           "comment": "Limits for pi controler `(Va_min, Va_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Ae",
@@ -3728,8 +3728,8 @@
         {
           "name": "Va_lim",
           "comment": "Limits for pi controler `(Va_min, Va_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Ae",
@@ -3846,8 +3846,8 @@
         {
           "name": "Efd_lim",
           "comment": "Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "switch",
@@ -3976,8 +3976,8 @@
         {
           "name": "Va_lim",
           "comment": "Limits for regulator output `(Va_min, Va_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Te",
@@ -4060,8 +4060,8 @@
         {
           "name": "Vr_lim",
           "comment": "Limits for exciter field voltage: `(Vr_min, Vr_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "V_ref",
@@ -4175,8 +4175,8 @@
         {
           "name": "Va_lim",
           "comment": "Limits for regulator output `(Va_min, Va_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Te",
@@ -4258,8 +4258,8 @@
         {
           "name": "Vr_lim",
           "comment": "Limits for exciter field voltage: `(Vr_min, Vr_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "V_ref",
@@ -4373,8 +4373,8 @@
         {
           "name": "Vr_lim",
           "comment": "Limits for regulator output `(Vr_min, Vr_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Te",
@@ -4565,8 +4565,8 @@
         {
           "name": "Va_lim",
           "comment": "Limits for regulator output `(Va_min, Va_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Kb",
@@ -4582,8 +4582,8 @@
         {
           "name": "Vr_lim",
           "comment": "Limits for exciter field voltage `(Vr_min, Vr_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Te",
@@ -4820,14 +4820,14 @@
         {
           "name": "Va_lim",
           "comment": "Limits for regulator output `(Va_min, Va_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Vr_lim",
           "comment": "Limits for exciter field voltage `(Vr_min, Vr_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Te",
@@ -5099,14 +5099,14 @@
         {
           "name": "Va_lim",
           "comment": "Limits for regulator output `(Va_min, Va_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Vr_lim",
           "comment": "Limits for exciter output `(Vr_min, Vr_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Kc",
@@ -5247,8 +5247,8 @@
         {
           "name": "Va_lim",
           "comment": "Limits for pi controler `(Vr_min, Vr_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Ta_2",
@@ -5285,8 +5285,8 @@
         {
           "name": "Vr_lim",
           "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Kf",
@@ -5324,8 +5324,8 @@
         {
           "name": "Efd_lim",
           "comment": "Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Ke",
@@ -5484,8 +5484,8 @@
         {
           "name": "Vr_lim",
           "comment": "Voltage regulator limits (Vi_min, Vi_max)",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Ta",
@@ -5523,8 +5523,8 @@
         {
           "name": "Vm_lim",
           "comment": "Limits for inner loop output `(Vm_min, Vm_max)`",
-          "null_value": "(0.0, 0.0)",
-          "data_type": "Tuple{Float64, Float64}"
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Kg",
@@ -7783,7 +7783,7 @@
           }
         },
         {
-          "name": "Load_ref",
+          "name": "P_ref",
           "comment": "Reference Load Set-point",
           "null_value": 0,
           "default": "1.0",
@@ -8213,7 +8213,7 @@
     },
     {
       "struct_name": "SteamTurbineGov1",
-      "docstring": "Steam Turbine-Governor. TGOV1 in PSS/E.",
+      "docstring": "Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.",
       "fields": [
         {
           "name": "R",
@@ -8277,6 +8277,50 @@
           "validation_action": "warn"
         },
         {
+          "name": "DB_h",
+          "comment": "Deadband for overspeed",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "DB_l",
+          "comment": "Deadband for underspeed",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": null,
+            "max": 0
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T_rate",
+          "comment": "Turbine Rate (MW). If zero, generator base is used.",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
@@ -8284,8 +8328,8 @@
         },
         {
           "name": "states",
-          "comment": "The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tPm: Turbine Power",
-          "internal_default": "[:x_g1, :Pm]",
+          "comment": "The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tx_g2: Lead-lag state",
+          "internal_default": "[:x_g1, :x_g2]",
           "data_type": "Vector{Symbol}"
         },
         {
