@@ -8317,8 +8317,8 @@
         },
         {
           "name": "states",
-          "comment": "The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tPm: Turbine Power",
-          "internal_default": "[:x_g1, :Pm]",
+          "comment": "The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tx_g2: Lead-lag state",
+          "internal_default": "[:x_g1, :x_g2]",
           "data_type": "Vector{Symbol}"
         },
         {
