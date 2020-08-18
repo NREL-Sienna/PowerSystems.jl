@@ -37,7 +37,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. EXAC1A in PSSE and PSL
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`, action if invalid: `warn`
 - `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`
-- `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
+- `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output `(Va_min, Va_max)`
 - `Te::Float64`: Exciter field time constant in s, validation range: `("eps()", 2)`, action if invalid: `error`
 - `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", 1.5)`, action if invalid: `error`
@@ -71,7 +71,7 @@ mutable struct EXAC1A <: AVR
     Ka::Float64
     "Regulator output time constant in s"
     Ta::Float64
-    "Limits for regulator output (Va_min, Va_max)"
+    "Limits for regulator output `(Va_min, Va_max)`"
     Va_lim::Tuple{Float64, Float64}
     "Exciter field time constant in s"
     Te::Float64

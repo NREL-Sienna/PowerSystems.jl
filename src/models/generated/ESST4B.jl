@@ -38,7 +38,7 @@ Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSL
 - `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 1)`, action if invalid: `warn`
 - `K_pm::Float64`: Voltage regulator proportional gain output, validation range: `(0, 1.2)`, action if invalid: `warn`
 - `K_im::Float64`: Voltage regulator integral gain output, validation range: `(0, 18)`, action if invalid: `warn`
-- `Vm_lim::Tuple{Float64, Float64}`: Limits for inner loop output (Va_min, Va_max)
+- `Vm_lim::Tuple{Float64, Float64}`: Limits for inner loop output `(Vm_min, Vm_max)`
 - `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, 1.1)`, action if invalid: `warn`
 - `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, 10)`, action if invalid: `warn`
 - `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `(0, 1.1)`, action if invalid: `warn`
@@ -74,7 +74,7 @@ mutable struct ESST4B <: AVR
     K_pm::Float64
     "Voltage regulator integral gain output"
     K_im::Float64
-    "Limits for inner loop output (Va_min, Va_max)"
+    "Limits for inner loop output `(Vm_min, Vm_max)`"
     Vm_lim::Tuple{Float64, Float64}
     "Feedback gain constant of the inner loop field regulator"
     Kg::Float64

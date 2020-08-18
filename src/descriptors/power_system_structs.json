@@ -3462,7 +3462,7 @@
         },
         {
           "name": "Va_lim",
-          "comment": "Limits for pi controler `(Vr_min, Vr_max)`",
+          "comment": "Limits for pi controler `(Va_min, Va_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
@@ -3606,7 +3606,7 @@
         },
         {
           "name": "Va_lim",
-          "comment": "Limits for pi controler `(Vr_min, Vr_max)`",
+          "comment": "Limits for pi controler `(Va_min, Va_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
@@ -3854,7 +3854,7 @@
         },
         {
           "name": "Va_lim",
-          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "comment": "Limits for regulator output `(Va_min, Va_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
@@ -4053,7 +4053,7 @@
         },
         {
           "name": "Va_lim",
-          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "comment": "Limits for regulator output `(Va_min, Va_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
@@ -4443,7 +4443,7 @@
         },
         {
           "name": "Va_lim",
-          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "comment": "Limits for regulator output `(Va_min, Va_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
@@ -4698,7 +4698,7 @@
         },
         {
           "name": "Va_lim",
-          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "comment": "Limits for regulator output `(Va_min, Va_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
@@ -4977,7 +4977,7 @@
         },
         {
           "name": "Va_lim",
-          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "comment": "Limits for regulator output `(Va_min, Va_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
@@ -5401,7 +5401,7 @@
         },
         {
           "name": "Vm_lim",
-          "comment": "Limits for inner loop output (Va_min, Va_max)",
+          "comment": "Limits for inner loop output `(Vm_min, Vm_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
@@ -7208,7 +7208,7 @@
         },
         {
           "name": "Ls_lim",
-          "comment": "PSS output limits for regulator output (Va_min, Va_max)",
+          "comment": "PSS output limits for regulator output `(Ls_min, Ls_max)`",
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
