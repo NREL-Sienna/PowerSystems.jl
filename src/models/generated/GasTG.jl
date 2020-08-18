@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         Kt::Float64
         V_lim::Tuple{Float64, Float64}
         D_turb::Float64
-        Load_ref::Float64
+        P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
@@ -30,7 +30,7 @@ Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 - `Kt::Float64`: Load limit feedback gain, validation range: `(0, 5)`
 - `V_lim::Tuple{Float64, Float64}`: Operational control limits on fuel valve opening (V_min, V_max)
 - `D_turb::Float64`: Speed damping coefficient of gas turbine rotor, validation range: `(0, 0.5)`
-- `Load_ref::Float64`: Reference Load Set-point, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Load Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the GAST model are:
 	x_g1: Fuel valve opening,
@@ -58,7 +58,7 @@ mutable struct GasTG <: TurbineGov
     "Speed damping coefficient of gas turbine rotor"
     D_turb::Float64
     "Reference Load Set-point"
-    Load_ref::Float64
+    P_ref::Float64
     ext::Dict{String, Any}
     "The states of the GAST model are:
 	x_g1: Fuel valve opening,
@@ -73,12 +73,12 @@ mutable struct GasTG <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, Load_ref=1.0, ext=Dict{String, Any}(), )
-    GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, Load_ref, ext, [:x_g1, :x_g2, :x_g3], 3, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref=1.0, ext=Dict{String, Any}(), )
+    GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref, ext, [:x_g1, :x_g2, :x_g3], 3, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function GasTG(; R, T1, T2, T3, AT, Kt, V_lim, D_turb, Load_ref=1.0, ext=Dict{String, Any}(), )
-    GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, Load_ref, ext, )
+function GasTG(; R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref=1.0, ext=Dict{String, Any}(), )
+    GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -92,7 +92,7 @@ function GasTG(::Nothing)
         Kt=0,
         V_lim=(0.0, 0.0),
         D_turb=0,
-        Load_ref=0,
+        P_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -113,8 +113,8 @@ get_Kt(value::GasTG) = value.Kt
 get_V_lim(value::GasTG) = value.V_lim
 """Get [`GasTG`](@ref) `D_turb`."""
 get_D_turb(value::GasTG) = value.D_turb
-"""Get [`GasTG`](@ref) `Load_ref`."""
-get_Load_ref(value::GasTG) = value.Load_ref
+"""Get [`GasTG`](@ref) `P_ref`."""
+get_P_ref(value::GasTG) = value.P_ref
 """Get [`GasTG`](@ref) `ext`."""
 get_ext(value::GasTG) = value.ext
 """Get [`GasTG`](@ref) `states`."""
@@ -142,8 +142,8 @@ set_Kt!(value::GasTG, val) = value.Kt = val
 set_V_lim!(value::GasTG, val) = value.V_lim = val
 """Set [`GasTG`](@ref) `D_turb`."""
 set_D_turb!(value::GasTG, val) = value.D_turb = val
-"""Set [`GasTG`](@ref) `Load_ref`."""
-set_Load_ref!(value::GasTG, val) = value.Load_ref = val
+"""Set [`GasTG`](@ref) `P_ref`."""
+set_P_ref!(value::GasTG, val) = value.P_ref = val
 """Set [`GasTG`](@ref) `ext`."""
 set_ext!(value::GasTG, val) = value.ext = val
 """Set [`GasTG`](@ref) `states`."""

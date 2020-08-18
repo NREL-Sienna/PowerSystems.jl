@@ -7783,7 +7783,7 @@
           }
         },
         {
-          "name": "Load_ref",
+          "name": "P_ref",
           "comment": "Reference Load Set-point",
           "null_value": 0,
           "default": "1.0",
@@ -8308,6 +8308,17 @@
             "max": null
           },
           "validation_action": "warn"
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
         },
         {
           "name": "ext",
