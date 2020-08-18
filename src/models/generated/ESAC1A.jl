@@ -46,7 +46,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds
 - `Ke::Float64`: Exciter field proportional constant, validation range: `(0, 1)`, action if invalid: `warn`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage: (Vr_min, Vr_max)
+- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage: `(Vr_min, Vr_max)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x
 - `ext::Dict{String, Any}`
@@ -89,7 +89,7 @@ mutable struct ESAC1A <: AVR
     E_sat::Tuple{Float64, Float64}
     "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))"
     Se::Tuple{Float64, Float64}
-    "Limits for exciter field voltage: (Vr_min, Vr_max)"
+    "Limits for exciter field voltage: `(Vr_min, Vr_max)`"
     Vr_lim::Tuple{Float64, Float64}
     "Reference Voltage Set-point"
     V_ref::Float64

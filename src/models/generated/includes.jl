@@ -233,8 +233,6 @@ export get_Vf
 export get_Vi_lim
 export get_Vm_lim
 export get_Vr_lim
-export get_Vr_max
-export get_Vr_min
 export get_Wf_nl
 export get_X_th
 export get_Xd
@@ -539,8 +537,6 @@ export set_Vf!
 export set_Vi_lim!
 export set_Vm_lim!
 export set_Vr_lim!
-export set_Vr_max!
-export set_Vr_min!
 export set_Wf_nl!
 export set_X_th!
 export set_Xd!

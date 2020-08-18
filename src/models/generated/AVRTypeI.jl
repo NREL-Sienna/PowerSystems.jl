@@ -10,8 +10,7 @@ This file is auto-generated. Do not edit.
         Te::Float64
         Tf::Float64
         Tr::Float64
-        Vr_max::Float64
-        Vr_min::Float64
+        Va_lim::Tuple{Float64, Float64}
         Ae::Float64
         Be::Float64
         V_ref::Float64
@@ -32,8 +31,7 @@ Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 - `Te::Float64`: Field Circuit Time Constant in s, validation range: `(0, nothing)`
 - `Tf::Float64`: Stabilizer Time Constant in s, validation range: `(0, nothing)`
 - `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`
-- `Vr_max::Float64`: Maximum regulator voltage in pu, validation range: `(0, nothing)`
-- `Vr_min::Float64`: Minimum regulator voltage in pu, validation range: `(0, nothing)`
+- `Va_lim::Tuple{Float64, Float64}`: Limits for pi controler `(Vr_min, Vr_max)`
 - `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
@@ -62,10 +60,8 @@ mutable struct AVRTypeI <: AVR
     Tf::Float64
     "Voltage Measurement Time Constant in s"
     Tr::Float64
-    "Maximum regulator voltage in pu"
-    Vr_max::Float64
-    "Minimum regulator voltage in pu"
-    Vr_min::Float64
+    "Limits for pi controler `(Vr_min, Vr_max)`"
+    Va_lim::Tuple{Float64, Float64}
     "1st ceiling coefficient"
     Ae::Float64
     "2nd ceiling coefficient"
@@ -87,12 +83,12 @@ mutable struct AVRTypeI <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Va_lim, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function AVRTypeI(; Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, )
+function AVRTypeI(; Ka, Ke, Kf, Ta, Te, Tf, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Va_lim, Ae, Be, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -105,8 +101,7 @@ function AVRTypeI(::Nothing)
         Te=0,
         Tf=0,
         Tr=0,
-        Vr_max=0,
-        Vr_min=0,
+        Va_lim=(0.0, 0.0),
         Ae=0,
         Be=0,
         V_ref=0,
@@ -128,10 +123,8 @@ get_Te(value::AVRTypeI) = value.Te
 get_Tf(value::AVRTypeI) = value.Tf
 """Get [`AVRTypeI`](@ref) `Tr`."""
 get_Tr(value::AVRTypeI) = value.Tr
-"""Get [`AVRTypeI`](@ref) `Vr_max`."""
-get_Vr_max(value::AVRTypeI) = value.Vr_max
-"""Get [`AVRTypeI`](@ref) `Vr_min`."""
-get_Vr_min(value::AVRTypeI) = value.Vr_min
+"""Get [`AVRTypeI`](@ref) `Va_lim`."""
+get_Va_lim(value::AVRTypeI) = value.Va_lim
 """Get [`AVRTypeI`](@ref) `Ae`."""
 get_Ae(value::AVRTypeI) = value.Ae
 """Get [`AVRTypeI`](@ref) `Be`."""
@@ -163,10 +156,8 @@ set_Te!(value::AVRTypeI, val) = value.Te = val
 set_Tf!(value::AVRTypeI, val) = value.Tf = val
 """Set [`AVRTypeI`](@ref) `Tr`."""
 set_Tr!(value::AVRTypeI, val) = value.Tr = val
-"""Set [`AVRTypeI`](@ref) `Vr_max`."""
-set_Vr_max!(value::AVRTypeI, val) = value.Vr_max = val
-"""Set [`AVRTypeI`](@ref) `Vr_min`."""
-set_Vr_min!(value::AVRTypeI, val) = value.Vr_min = val
+"""Set [`AVRTypeI`](@ref) `Va_lim`."""
+set_Va_lim!(value::AVRTypeI, val) = value.Va_lim = val
 """Set [`AVRTypeI`](@ref) `Ae`."""
 set_Ae!(value::AVRTypeI, val) = value.Ae = val
 """Set [`AVRTypeI`](@ref) `Be`."""

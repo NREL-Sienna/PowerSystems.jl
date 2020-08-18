@@ -43,7 +43,7 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 - `Ka::Float64`: Voltage regulator gain, validation range: `(50, 1000)`, action if invalid: `warn`
 - `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
-- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter output (Vr_min, Vr_max)
+- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter output `(Vr_min, Vr_max)`
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Rate feedback time constant in s, validation range: `("eps()", 1.5)`, action if invalid: `error`
@@ -84,7 +84,7 @@ mutable struct ESST1A <: AVR
     Ta::Float64
     "Limits for regulator output (Va_min, Va_max)"
     Va_lim::Tuple{Float64, Float64}
-    "Limits for exciter output (Vr_min, Vr_max)"
+    "Limits for exciter output `(Vr_min, Vr_max)`"
     Vr_lim::Tuple{Float64, Float64}
     "Rectifier loading factor proportional to commutating reactance"
     Kc::Float64
