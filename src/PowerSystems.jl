@@ -77,9 +77,18 @@ export AVRFixed
 export AVRSimple
 export AVRTypeI
 export AVRTypeII
-export AC1A
-export ModifiedAC1A
-export ST1A
+export IEEET1
+export ESDC1A
+export ESDC2A
+export ESAC1A
+export ESAC6A
+export EXAC1
+export EXAC1A
+export EXAC2
+export EXPIC1
+export ESST1A
+export ESST4B
+export SCRX
 
 #Machine Exports
 export Machine
@@ -102,6 +111,7 @@ export SimpleFullMachine
 export PSS
 export PSSFixed
 export PSSSimple
+export IEEEST
 
 #Shaft Exports
 export Shaft
@@ -111,9 +121,13 @@ export FiveMassShaft
 #TG Exports
 export TurbineGov
 export TGFixed
-export GasTG
 export TGTypeI
 export TGTypeII
+export GasTG
+export GeneralGovModel
+export HydroTurbineGov
+export IEEETurbineGov1
+export SteamTurbineGov1
 
 # Converter Exports
 export Converter
@@ -395,6 +409,9 @@ include("utils/network_calculations/lodf_calculations.jl")
 
 #PowerFlow
 include("utils/power_flow.jl")
+
+#Conversions
+include("utils/conversion.jl")
 
 # Include Parsing files
 include("parsers/common.jl")

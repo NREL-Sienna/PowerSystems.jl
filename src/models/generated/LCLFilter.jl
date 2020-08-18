@@ -10,7 +10,7 @@ This file is auto-generated. Do not edit.
         rg::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
     end
 
 Parameters of a LCL filter outside the converter, the states are in the grid's reference frame
@@ -29,7 +29,7 @@ Parameters of a LCL filter outside the converter, the states are in the grid's r
 	vi_filter: Imaginary voltage at the filter's capacitor,
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter
-- `n_states::Int64`: LCLFilter has 6 states
+- `n_states::Int`: LCLFilter has 6 states
 """
 mutable struct LCLFilter <: Filter
     "Series inductance in p.u. of converter filter"
@@ -52,7 +52,7 @@ mutable struct LCLFilter <: Filter
 	ii_filter: Imaginary current out of the filter"
     states::Vector{Symbol}
     "LCLFilter has 6 states"
-    n_states::Int64
+    n_states::Int
 end
 
 function LCLFilter(lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )

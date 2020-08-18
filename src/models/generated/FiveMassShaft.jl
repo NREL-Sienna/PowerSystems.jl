@@ -23,7 +23,7 @@ This file is auto-generated. Do not edit.
         K_ex::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -62,7 +62,7 @@ Parameters of 5 mass-spring shaft model.
 	ω_lp: rotor speed of low pressure turbine,
 	δ_ex: rotor angle of exciter,
 	ω_lp: rotor speed of exciter
-- `n_states::Int64`: FiveMassShaft has 10 states
+- `n_states::Int`: FiveMassShaft has 10 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct FiveMassShaft <: Shaft
@@ -116,7 +116,7 @@ mutable struct FiveMassShaft <: Shaft
 	ω_lp: rotor speed of exciter"
     states::Vector{Symbol}
     "FiveMassShaft has 10 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

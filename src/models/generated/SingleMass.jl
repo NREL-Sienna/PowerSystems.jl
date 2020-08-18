@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         D::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -20,7 +20,7 @@ Parameters of single mass shaft model. Typically represents the rotor mass.
 - `states::Vector{Symbol}`: The states are:
 	δ: rotor angle,
 	ω: rotor speed
-- `n_states::Int64`: SingleMass has 1 state
+- `n_states::Int`: SingleMass has 1 state
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SingleMass <: Shaft
@@ -34,7 +34,7 @@ mutable struct SingleMass <: Shaft
 	ω: rotor speed"
     states::Vector{Symbol}
     "SingleMass has 1 state"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

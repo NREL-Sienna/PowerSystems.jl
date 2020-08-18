@@ -223,12 +223,11 @@ end
         T3 = 0.0,
         T4 = 0.0,
         T5 = 50.0,
-        P_min = 0.3,
-        P_max = 1.2,
+        valve_position_limits = (min = 0.3, max = 1.2),
     )
     @test typeI_tg isa PowerSystems.DynamicComponent
 
-    typeII_tg = TGTypeII(R = 0.05, T1 = 0.3, T2 = 0.1, τ_max = 1.0, τ_min = 0.1)
+    typeII_tg = TGTypeII(R = 0.05, T1 = 0.3, T2 = 0.1, τ_limits = (min = 0.1, max = 1.0))
     @test typeII_tg isa PowerSystems.DynamicComponent
 
     gast_tg = GasTG(
@@ -267,7 +266,7 @@ end
     )
     @test typeI_avr isa PowerSystems.DynamicComponent
 
-    ac1a_avr = AC1A(
+    ac1a_avr = ESAC1A(
         Tr = 0.0,
         Tb = 0.0,
         Tc = 0.0,
@@ -286,7 +285,7 @@ end
     )
     @test ac1a_avr isa PowerSystems.DynamicComponent
 
-    mod_ac1a_avr = ModifiedAC1A(
+    mod_ac1a_avr = EXAC1(
         Tr = 0.0,
         Tb = 0.0,
         Tc = 0.0,
@@ -304,7 +303,7 @@ end
     )
     @test mod_ac1a_avr isa PowerSystems.DynamicComponent
 
-    st1a_avr = ST1A(
+    st1a_avr = ESST1A(
         UEL_flags = 1,
         PSS_flags = 1,
         Tr = 0.0,

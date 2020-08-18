@@ -19,7 +19,7 @@ This file is auto-generated. Do not edit.
         inv_d_fluxlink::Array{Float64,2}
         inv_q_fluxlink::Array{Float64,2}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -50,7 +50,7 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 	ψf: field rotor flux,
 	ψ1d: d-axis rotor damping flux,
 	ψ1q: q-axis rotor damping flux
-- `n_states::Int64`: SimpleFullMachine has 3 states
+- `n_states::Int`: SimpleFullMachine has 3 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SimpleFullMachine <: Machine
@@ -89,7 +89,7 @@ mutable struct SimpleFullMachine <: Machine
 	ψ1q: q-axis rotor damping flux"
     states::Vector{Symbol}
     "SimpleFullMachine has 3 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
