@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct Bus <: Topology
-        number::Int64
+        number::Int
         name::String
         bustype::Union{Nothing, BusTypes.BusType}
         angle::Union{Nothing, Float64}
@@ -19,7 +19,7 @@ This file is auto-generated. Do not edit.
 A power-system bus.
 
 # Arguments
-- `number::Int64`: number associated with the bus
+- `number::Int`: number associated with the bus
 - `name::String`: the name of the bus
 - `bustype::Union{Nothing, BusTypes.BusType}`: bus type
 - `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`, action if invalid: `error`
@@ -33,7 +33,7 @@ A power-system bus.
 """
 mutable struct Bus <: Topology
     "number associated with the bus"
-    number::Int64
+    number::Int
     "the name of the bus"
     name::String
     "bus type"

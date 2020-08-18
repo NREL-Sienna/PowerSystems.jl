@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         Tq0_pp::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -44,7 +44,7 @@ Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
-- `n_states::Int64`: SimpleAFMachine has 4 states
+- `n_states::Int`: SimpleAFMachine has 4 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SimpleAFMachine <: Machine
@@ -78,7 +78,7 @@ mutable struct SimpleAFMachine <: Machine
 	ed_pp: d-axis subtransient voltage"
     states::Vector{Symbol}
     "SimpleAFMachine has 4 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

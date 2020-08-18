@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         voltage::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -16,7 +16,7 @@ Parameters of a Fixed DC Source that returns a fixed DC voltage
 - `voltage::Float64`: rated VA, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
-- `n_states::Int64`: FixedDCSource has no states
+- `n_states::Int`: FixedDCSource has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct FixedDCSource <: DCSource
@@ -25,7 +25,7 @@ mutable struct FixedDCSource <: DCSource
     ext::Dict{String, Any}
     states::Vector{Symbol}
     "FixedDCSource has no states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

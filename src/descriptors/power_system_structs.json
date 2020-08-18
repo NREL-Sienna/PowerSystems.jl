@@ -240,7 +240,7 @@
           "name": "number",
           "comment": "number associated with the bus",
           "null_value": "0",
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "null_value": "init",
@@ -2786,7 +2786,7 @@
           "comment": "Fixed AVR has no states",
           "null_value": 0,
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -2844,12 +2844,537 @@
           "name": "n_states",
           "comment": "Fixed AVR has 1 states",
           "internal_default": 1,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
           "comment": "Simple AVR has 1 differential states",
           "internal_default": "[StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "ESDC1A",
+      "docstring": "Self-excited shunt fields with the voltage regulator operating in a mode commonly termed buck-boost. \nParameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds to ESDC1A in PSSE and PSLF",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Voltage Measurement Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Amplifier Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 10,
+            "max": 500
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Amplifier Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tb",
+          "comment": "Regulator input Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tc",
+          "comment": "Regulator input Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter constant related to self-excited field",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter time constant, integration rate associated with exciter control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kf",
+          "comment": "Excitation control system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 0.3
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Tf",
+          "comment": "Excitation control system stabilizer time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "switch",
+          "comment": "Switch",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+          "internal_default": "[:Vt, :Vr1, :Vr2, :Vf, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "The ESDC1A has 5 states",
+          "internal_default": 5,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "ESDC1A has 5 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "ESDC2A",
+      "docstring": "Is used to represent field-controlled dc commutator exciters with continuously acting voltage regulators having power supplies derived from the generator or auxiliaries bus.\nParameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds to ESDC2A in PSSE and PSLF",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Voltage Measurement Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Amplifier Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 10,
+            "max": 500
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Amplifier Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1.0
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tb",
+          "comment": "Regulator input Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tc",
+          "comment": "Regulator input Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter constant related to self-excited field",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": -1.0,
+            "max": 1.0
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter time constant, integration rate associated with exciter control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 2.0
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kf",
+          "comment": "Excitation control system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.3
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tf",
+          "comment": "Excitation control system stabilizer time constant. Appropiate Data: 5.0 <= Tf/Kf <= 15.0",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 1.5
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "switch",
+          "comment": "Switch",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+          "internal_default": "[:Vt, :Vr1, :Vr2, :Vf, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "The ESDC2A has 5 states",
+          "internal_default": 5,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "ESDC2A has 5 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "IEEET1",
+      "docstring": "1968 IEEE type 1 excitation system model",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Voltage Measurement Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Amplifier Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 10,
+            "max": 500
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Amplifier Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter constant related to self-excited field",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": -1,
+            "max": 1
+          }
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter time constant, integration rate associated with exciter control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kf",
+          "comment": "Excitation control system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 0.3
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tf",
+          "comment": "Excitation control system stabilizer time constant. Appropiate Data: 5 <= Tf/Kf <= 15",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "switch",
+          "comment": "Switch",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVt: Terminal Voltage,\n\tVr: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+          "internal_default": "[:Vt, :Vr1, :Vf, :Vr2]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "The IEEET1 has 4 states",
+          "internal_default": 4,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "IEEET1 I has 4 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
@@ -3002,7 +3527,7 @@
           "name": "n_states",
           "comment": "The AVR Type I has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -3160,7 +3685,7 @@
           "name": "n_states",
           "comment": "AVR Type II has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
@@ -3178,8 +3703,128 @@
       "supertype": "AVR"
     },
     {
-      "struct_name": "AC1A",
-      "docstring": "This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC1A Excitacion System. ESAC1A in PSSE and PSLF",
+      "struct_name": "SCRX",
+      "docstring": "This exciter is based on an IEEE type SCRX solid state exciter.  The output field voltage is varied by a control system to maintain the system voltage at Vref.  Please note that this exciter model has no initialization capabilities - this means that it will respond to whatever inputs it receives regardless of the state of the machine model.",
+      "fields": [
+        {
+          "name": "Ta_Tb",
+          "comment": "Lead input constant ratio",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.05,
+            "max": 0.3
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Tb",
+          "comment": "Lag input constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 5,
+            "max": 20
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "K",
+          "comment": "Regulator Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 20,
+            "max": 100
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Te",
+          "comment": "Regulator Time Constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Efd_lim",
+          "comment": "Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "switch",
+          "comment": "Switch",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "rc_rfd",
+          "comment": "Field current capability. Set = 0 for negative current capability. Typical value 10",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVr1: First integrator,\n\tVr2: Second integrator",
+          "internal_default": "[:Vr1, :Vr2]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "SCRX has 2 states",
+          "internal_default": 2,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "SCRX has 2 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Hybrid]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "ESAC1A",
+      "docstring": "This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds to ESAC1A in PSSE and PSLF",
       "fields": [
         {
           "name": "Tr",
@@ -3188,8 +3833,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -3198,8 +3844,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 20
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -3208,8 +3855,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 20
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -3218,8 +3866,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 1000
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -3228,7 +3877,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 10
           }
         },
         {
@@ -3244,8 +3893,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
-          }
+            "max": 2
+          },
+          "validation_action": "error"
         },
         {
           "name": "Kf",
@@ -3254,8 +3904,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.3
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -3264,8 +3915,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
-          }
+            "max": 1.5
+          },
+          "validation_action": "error"
         },
         {
           "name": "Kc",
@@ -3274,8 +3926,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 1
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kd",
@@ -3284,8 +3937,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 1
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ke",
@@ -3294,7 +3948,206 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Limits for exciter field voltage: (Vr_min, Vr_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
             "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "ESAC1A has 5 states",
+          "internal_default": 5,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "ESAC1A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "EXAC1A",
+      "docstring": "Modified ESAC1A. This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC1A Excitacion System. EXAC1A in PSSE and PSLF",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tb",
+          "comment": "Regulator denominator (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 20
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tc",
+          "comment": "Regulator numerator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 20
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Regulator output gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1000
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Regulator output time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          }
+        },
+        {
+          "name": "Va_lim",
+          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter field time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 2
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kf",
+          "comment": "Rate feedback excitation system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.3
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tf",
+          "comment": "Rate feedback time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 1.5
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kc",
+          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kd",
+          "comment": "Demagnetizing factor, function of exciter alternator reactances",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter field proportional constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
           }
         },
         {
@@ -3347,13 +4200,13 @@
         },
         {
           "name": "n_states",
-          "comment": "AC1A has 5 states",
+          "comment": "EXAC1A has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
-          "comment": "AC1A has 5 states",
+          "comment": "EXAC1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
@@ -3367,8 +4220,8 @@
       "supertype": "AVR"
     },
     {
-      "struct_name": "ModifiedAC1A",
-      "docstring": "Parameters of Modified Type AC1A Excitacion System. EXAC1 in PSSE and PSLF",
+      "struct_name": "EXAC1",
+      "docstring": "Modified ESAC1A. This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF",
       "fields": [
         {
           "name": "Tr",
@@ -3377,8 +4230,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -3387,8 +4241,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 20
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tc",
@@ -3397,8 +4252,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 20
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -3407,7 +4263,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1000
           }
         },
         {
@@ -3417,8 +4273,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 10
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vr_lim",
@@ -3433,8 +4290,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
-          }
+            "max": 2
+          },
+          "validation_action": "error"
         },
         {
           "name": "Kf",
@@ -3443,8 +4301,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.3
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -3453,8 +4312,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
-          }
+            "max": 1.5
+          },
+          "validation_action": "error"
         },
         {
           "name": "Kc",
@@ -3463,7 +4323,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -3473,8 +4333,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 1
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ke",
@@ -3483,8 +4344,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 1
+          },
+          "validation_action": "warn"
         },
         {
           "name": "E_sat",
@@ -3530,13 +4392,13 @@
         },
         {
           "name": "n_states",
-          "comment": "",
+          "comment": "EXAC1 has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
-          "comment": "ModifiedAC1A has 5 states",
+          "comment": "EXAC1 has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes.StateType}"
         },
@@ -3550,24 +4412,510 @@
       "supertype": "AVR"
     },
     {
-      "struct_name": "ST1A",
+      "struct_name": "EXAC2",
+      "docstring": "Modified AC2. This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.\nThe exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.\nParameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main exciter is used, feeding its output via non-controlled rectifiers. The Type AC2C model is similar to that of Type AC1C except for the inclusion of exciter time constant compensation and exciter field current limiting elements. EXAC2 in PSSE and PSLF.",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tb",
+          "comment": "Regulator denominator (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 20
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tc",
+          "comment": "Regulator numerator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 20
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Regulator output gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1000
+          }
+        },
+        {
+          "name": "Ta",
+          "comment": "Regulator output time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Va_lim",
+          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kb",
+          "comment": "Second Stage regulator gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 500
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Limits for exciter field voltage (Vr_min, Vr_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter field time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 2
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kl",
+          "comment": "Exciter field current limiter gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1.1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kh",
+          "comment": "Exciter field current regulator feedback gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1.1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kf",
+          "comment": "Rate feedback excitation system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.3
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tf",
+          "comment": "Rate feedback time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Kc",
+          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kd",
+          "comment": "Demagnetizing factor, function of exciter alternator reactances",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter field proportional constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "V_lr",
+          "comment": "Maximum exciter field current",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "EXAC2 has 5 states",
+          "internal_default": 5,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "EXAC2 has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "ESAC6A",
+      "docstring": "Modified AC6A. Used to represent field-controlled alternator-rectifier excitation systems with system-supplied electronic voltage regulators. \nParameters of IEEE Std 421.5 Type AC6A Excitacion System. ESAC6A in PSSE and PSLF.",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Regulator output gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1000
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Regulator output lag time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tk",
+          "comment": "Voltage Regulator lead time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tb",
+          "comment": "Regulator denominator (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 20
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tc",
+          "comment": "Regulator numerator (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 20
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Va_lim",
+          "comment": "Limits for regulator output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Limits for exciter field voltage (Vr_min, Vr_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter field time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 2.0
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "VFE_lim",
+          "comment": "Exciter field current limiter reference",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": -5,
+            "max": 20
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kh",
+          "comment": "Exciter field current regulator feedback gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 100
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "VH_max",
+          "comment": "Exciter field current limiter maximum output",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 100
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Th",
+          "comment": "Exciter field current limiter denominator (lag) time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Tj",
+          "comment": "Exciter field current limiter numerator (lead) time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kc",
+          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Kd",
+          "comment": "Demagnetizing factor, function of exciter alternator reactances",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 2
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter field proportional constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 2
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "ESAC6A has 5 states",
+          "internal_default": 5,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "ESAC6A has 5 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "ESST1A",
       "docstring": "This excitation system supplies power through a transformer from the generator terminals and its regulated by a controlled rectifier (via thyristors).\nParameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF",
       "fields": [
         {
           "name": "UEL_flags",
           "comment": "Code input for Underexcitization limiter (UEL) entry. Not supported.",
           "null_value": 1,
-          "data_type": "Int64",
+          "data_type": "Int",
           "valid_range": {
             "min": 1,
             "max": 3
-          }
+          },
+          "validation_action": "warn"
         },
         {
           "name": "PSS_flags",
           "comment": "Code input for Power System Stabilizer (PSS) or (VOS) entry.",
           "null_value": 1,
-          "data_type": "Int64",
+          "data_type": "Int",
           "valid_range": {
             "min": 1,
             "max": 2
@@ -3580,8 +4928,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.1
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Vi_lim",
@@ -3596,8 +4945,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 10
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tb",
@@ -3606,7 +4956,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 20
           }
         },
         {
@@ -3616,10 +4966,10 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 10
+          },
+          "validation_action": "warn"
         },
-
         {
           "name": "Tb1",
           "comment": "Second regulator denominator (lead) time constant in s",
@@ -3627,8 +4977,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 20
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ka",
@@ -3636,9 +4987,10 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0,
-            "max": null
-          }
+            "min": 50,
+            "max": 1000
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Ta",
@@ -3647,8 +4999,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Va_lim",
@@ -3656,7 +5009,6 @@
           "null_value": "(0.0, 0.0)",
           "data_type": "Tuple{Float64, Float64}"
         },
-
         {
           "name": "Vr_lim",
           "comment": "Limits for exciter output (Vr_min, Vr_max)",
@@ -3670,8 +5022,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.3
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Kf",
@@ -3680,8 +5033,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 0.3
+          },
+          "validation_action": "warn"
         },
         {
           "name": "Tf",
@@ -3690,8 +5044,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
-          }
+            "max": 1.5
+          },
+          "validation_action": "error"
         },
         {
           "name": "K_lr",
@@ -3700,8 +5055,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "I_lr",
@@ -3710,8 +5066,9 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
-          }
+            "max": 5
+          },
+          "validation_action": "warn"
         },
         {
           "name": "V_ref",
@@ -3740,12 +5097,459 @@
           "name": "n_states",
           "comment": "ST1A has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "states_types",
           "comment": "ST1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "EXPIC1",
+      "docstring": "Generic Proportional/Integral Excitation System",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Voltage regulator gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 1,
+            "max": 500
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Va_lim",
+          "comment": "Limits for pi controler (Vr_min, Vr_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ta_2",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ta_3",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta_4",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (regulator output) (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kf",
+          "comment": "Rate feedback gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.3
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tf_1",
+          "comment": "Rate Feedback time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 15
+          },
+          "validation_actions": "error"
+        },
+        {
+          "name": "Tf_2",
+          "comment": "Rate Feedback time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Efd_lim",
+          "comment": "Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ke",
+          "comment": "Exciter constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 2
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "E_sat",
+          "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Se",
+          "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kp",
+          "comment": "Potential source gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ki",
+          "comment": "current source gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1.1
+          }
+        },
+        {
+          "name": "Kc",
+          "comment": "Exciter regulation factor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 2
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second regulator lead-lag state,\n\tVr2: Third regulator lead-lag state \n\tVf: Exciter output \n\tVr3: First feedback integrator,\n\tVr4: second feedback integrator",
+          "internal_default": "[:Vm, :Vr1, :Vr2, :Vf, :Vr3, :Vr4]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "EXPIC1 has 6 states",
+          "internal_default": 6,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "EXPIC has 6 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "ESST4B",
+      "docstring": "In these excitation systems, voltage (and also current in compounded systems) is transformed to an appropriate level. Rectifiers, either controlled or non-controlled, provide the necessary direct current for the generator field.\nParameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSLF",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Regulator input filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K_pr",
+          "comment": "Regulator propotional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 75
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K_ir",
+          "comment": "Regulator integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 75
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (Vi_min, Vi_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Ta",
+          "comment": "Voltage regulator time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K_pm",
+          "comment": "Voltage regulator proportional gain output",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1.2
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K_im",
+          "comment": "Voltage regulator integral gain output",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 18
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vm_lim",
+          "comment": "Limits for inner loop output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kg",
+          "comment": "Feedback gain constant of the inner loop field regulator",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1.1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kp",
+          "comment": "Potential circuit (voltage) gain coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ki",
+          "comment": "Compound circuit (current) gain coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1.1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "VB_max",
+          "comment": "Maximum available exciter voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 1,
+            "max": 20
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kc",
+          "comment": "Rectifier loading factor proportional to commutating reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Xl",
+          "comment": "Reactance associated with potential source",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "θp",
+          "comment": "Potential circuit phase angle (degrees)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": -90,
+            "max": 90
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "θp_rad",
+          "comment": "Potential circuit phase angle (radians)",
+          "null_value": 0,
+          "default": "θp*π*inv(180)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tVm: Sensed terminal voltage,\n\tVt: Sensed Terminal Voltage,\n\tVr1: Regulator Integrator,\n\tVr2: Regulator Output,\n\tVm: Output integrator",
+          "internal_default": "[:Vt, :Vr1, :Vr2, :Vm]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "ST4B has 4 states",
+          "internal_default": 4,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "ST4B has 4 states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
           "data_type": "Vector{StateTypes.StateType}"
         },
         {
@@ -3807,7 +5611,7 @@
           "name": "n_states",
           "comment": "BaseMachine has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -3984,7 +5788,7 @@
           "name": "n_states",
           "comment": "RoundRotorMachine has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -4119,7 +5923,6 @@
           "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
           "data_type": "Float64"
         },
-
         {
           "name": "states",
           "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",
@@ -4130,7 +5933,7 @@
           "name": "n_states",
           "comment": "SalientPoleMachine has 3 states",
           "internal_default": 3,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -4271,7 +6074,7 @@
           "name": "n_states",
           "comment": "AndersonFouadMachine has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -4434,7 +6237,7 @@
           "name": "n_states",
           "comment": "FullMachine has 5 states",
           "internal_default": 5,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -4597,7 +6400,7 @@
           "name": "n_states",
           "comment": "MarconatoMachine has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -4698,7 +6501,7 @@
           "name": "n_states",
           "comment": "OneDOneQMachine has 2 states",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -4839,7 +6642,7 @@
           "name": "n_states",
           "comment": "SimpleAFMachine has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5002,7 +6805,7 @@
           "name": "n_states",
           "comment": "SimpleFullMachine has 3 states",
           "internal_default": 3,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5165,7 +6968,7 @@
           "name": "n_states",
           "comment": "SimpleMarconatoMachine has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5206,7 +7009,7 @@
           "name": "n_states",
           "comment": "PSSFixed has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5257,7 +7060,231 @@
           "name": "n_states",
           "comment": "PSSSimple has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "PSS"
+    },
+    {
+      "struct_name": "IEEEST",
+      "docstring": "IEEE Stabilizing Model PSS. ",
+      "fields": [
+        {
+          "name": "input_code",
+          "comment": "Code input for stabilizar",
+          "null_value": 1,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 1,
+            "max": 6
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "remote_bus_control",
+          "comment": "Remote  Bus number for control.",
+          "null_value": 0,
+          "data_type": "Int"
+        },
+        {
+          "name": "A1",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "A2",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "A3",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "A4",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "A5",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "A6",
+          "comment": "Filter coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T1",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T2",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T3",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T4",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T5",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T6",
+          "comment": "Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": "2.0"
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Ks",
+          "comment": "Proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ls_lim",
+          "comment": "PSS output limits for regulator output (Va_min, Va_max)",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Vcu",
+          "comment": "Cutoff limiter upper bound",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": "1.25"
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vcl",
+          "comment": "Cutoff limiter lower bound",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": "1.0"
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states are:\n\tx_p1: 1st filter integration,\n\tx_p2: 2nd filter integration, \n\tx_p3: 3rd filter integration, \n\tx_p4: 4rd filter integration, \n\tx_p5: T1/T2 lead-lag integrator, \n\tx_p6: T3/T4 lead-lag integrator, \n\t:x_p7 last integer,",
+          "internal_default": "[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "IEEEST has 7 states",
+          "internal_default": 7,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "IEEEST has 7 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -5308,7 +7335,7 @@
           "name": "n_states",
           "comment": "SingleMass has 1 state",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5519,7 +7546,7 @@
           "name": "n_states",
           "comment": "FiveMassShaft has 10 states",
           "internal_default": 10,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5571,7 +7598,7 @@
           "name": "n_states",
           "comment": "TGFixed has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5593,7 +7620,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 0.1
           }
         },
         {
@@ -5603,7 +7630,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -5613,7 +7640,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -5623,7 +7650,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": null
+            "max": 5.0
           }
         },
         {
@@ -5633,7 +7660,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 1
           }
         },
         {
@@ -5643,7 +7670,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 5
           }
         },
         {
@@ -5659,7 +7686,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": null
+            "max": 0.5
           }
         },
         {
@@ -5689,7 +7716,912 @@
           "name": "n_states",
           "comment": "GasTG has 3 states",
           "internal_default": 3,
-          "data_type": "Int64"
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "GAST has 3 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "TurbineGov"
+    },
+    {
+      "struct_name": "GeneralGovModel",
+      "docstring": "GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a general purpose governor model used for a variety of prime movers controlled by proportional-integral-derivative (PID) governors including gas turbines.",
+      "fields": [
+        {
+          "name": "Rselect",
+          "comment": "Feedback signal for governor droop",
+          "null_value": 1,
+          "data_type": "Int",
+          "valid_range": {
+            "min": -2,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "fuel_flag",
+          "comment": "Flag Switch for fuel source characteristic",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "R",
+          "comment": "Speed droop parameter",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tpelec",
+          "comment": "Electrical power transducer time constant, seconds",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "speed_error_signal",
+          "comment": "Speed error signal limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Kp_gov",
+          "comment": "Governor proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ki_gov",
+          "comment": "Governor integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kd_gov",
+          "comment": "Governor derivative gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Td_gov",
+          "comment": "Governor derivative time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "valve_position_limits",
+          "comment": "Valve position limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T_act",
+          "comment": "Actuator time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K_turb",
+          "comment": "Turbine gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Wf_nl",
+          "comment": "No load fuel flow, pu",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tb",
+          "comment": "Turbine lag time constant, sec",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tc",
+          "comment": "Turbine lead time constant, sec",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T_eng",
+          "comment": "Transport lag time constant for diesel engine, sec",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tf_load",
+          "comment": "Load limiter time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Kp_load",
+          "comment": "Load limiter proportional gain for PI controller",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ki_load",
+          "comment": "Load integral gain for PI controller",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ld_ref",
+          "comment": "Load limiter integral gain for PI controller",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Dm",
+          "comment": "Mechanical damping coefficient, pu",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "R_open",
+          "comment": "Maximum valve opening rate, pu/sec",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "R_close",
+          "comment": "Maximum valve closing rate, pu/sec",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ki_mw",
+          "comment": "Power controller (reset) gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "A_set",
+          "comment": "Acceleration limiter setpoint, pu/sec",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Acceleration limiter gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Acceleration limiter time constant ",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "T_rate",
+          "comment": "Turbine rating",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "db",
+          "comment": "Speed governor deadband",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tsa",
+          "comment": "Temperature detection lead time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tsb",
+          "comment": "Temperature detection lag time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "R_lim",
+          "comment": "Maximum rate of load increa",
+          "null_value": "(up = 0.0, down = 0.0)",
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the GGOV1 model are:\n\tPe: Machine Electrical Power Measurement,\n\tx_g1: Governor differential control,\n\tx_g2: Governor integral control, \n\tx_g3: Turbine actuator, \n\tx_g4: Turbine Lead-Lag, \n\tx_g5: Turbine load limiter measurement, \n\tx_g6: Turbine Load Limiter Integral Control, \n\tx_g7: Supervisory Load Control, \n\tx_g8: Acceleration Control, \n\tx_g9 Temperature Detection Lead - Lag:",
+          "internal_default": "[:Pe, :x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7, :x_g8, :x_g9]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "GeneralGovModel has 10 states",
+          "internal_default": 10,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "GGOV1 has 10 differential states",
+          "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "TurbineGov"
+    },
+    {
+      "struct_name": "SteamTurbineGov1",
+      "docstring": "Steam Turbine-Governor. TGOV1 in PSS/E.",
+      "fields": [
+        {
+          "name": "R",
+          "comment": "Droop parameter",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T1",
+          "comment": "Governor time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 0.5
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "valve_position_limits",
+          "comment": "Valve position limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T2",
+          "comment": "Lead Lag Lead Time constant ",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T3",
+          "comment": "Lead Lag Lag Time constant ",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 10
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "D_T",
+          "comment": "Turbine Damping",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tPm: Turbine Power",
+          "internal_default": "[:x_g1, :Pm]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "TGOV1 has 2 states",
+          "internal_default": 2,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "TGOV1 has 2 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "TurbineGov"
+    },
+    {
+      "struct_name": "HydroTurbineGov",
+      "docstring": "Hydro Turbine-Governor.",
+      "fields": [
+        {
+          "name": "R",
+          "comment": "Permanent droop parameter",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "r",
+          "comment": "Temporary Droop",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 2
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tr",
+          "comment": "Governor time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 30
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "Tf",
+          "comment": "Filter Time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 0.1
+          },
+          "valiation_action": "error"
+        },
+        {
+          "name": "Tg",
+          "comment": "Servo time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 1.0
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "VELM",
+          "comment": "gate velocity limit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 0.3
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "gate_position_limits",
+          "comment": "Gate position limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Tw",
+          "comment": "water time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 3.0
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "At",
+          "comment": "Turbine gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.8,
+            "max": 1.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "D_T",
+          "comment": "Turbine Damping",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "q_nl",
+          "comment": "No-power flow",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the HydroTurbineGov model are:\n\tx_g1: filter_output,\n\tx_g2: desired gate, \n\tx_g3: gate opening, \n\tx_g4: turbine flow",
+          "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "HYGOV has 4 states",
+          "internal_default": 4,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "HYGOV has 4 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes.StateType}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "TurbineGov"
+    },
+    {
+      "struct_name": "IEEETurbineGov1",
+      "docstring": "IEEE Type 1 Speed-Governing Model",
+      "fields": [
+        {
+          "name": "K",
+          "comment": "Governor Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 5,
+            "max": 30
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T1",
+          "comment": "Input Filter Lag",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T2",
+          "comment": "Input Filter Lead",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T3",
+          "comment": "Valve position Time Constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 1
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "U0",
+          "comment": "Maximum Valve Opening Rate",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": 0.03
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "U_c",
+          "comment": "Maximum Valve closing rate",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": -0.3,
+            "max": 0.0
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "valve_position_limits",
+          "comment": "Valve position limits in MW",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T4",
+          "comment": "Time Constant inlet steam",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1.0
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K1",
+          "comment": "Fraction of high presure shaft power",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": -2,
+            "max": 1
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K2",
+          "comment": "Fraction of low presure shaft power",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T5",
+          "comment": "Time constant for second boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K3",
+          "comment": "Fraction of high presure shaft power second boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K4",
+          "comment": "Fraction of low presure shaft power second boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T6",
+          "comment": "Time constant for third boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K5",
+          "comment": "Fraction of high presure shaft power third boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.35
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K6",
+          "comment": "Fraction of low presure shaft power third boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.55
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T7",
+          "comment": "Time constant for fourth boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 10
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K7",
+          "comment": "Fraction of high presure shaft power fourth boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.3
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K8",
+          "comment": "Fraction of low presure shaft power fourth boiler pass",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.3
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the IEEETurbineGov model are:\n\tx_g1: First Governor integrator,\n\tx_g2: Governor output,\n\tx_g3: First Turbine integrator, \n\tx_g4: Second Turbine Integrator, \n\tx_g5: Third Turbine Integrator, \n\tx_g6: Fourth Turbine Integrator, ",
+          "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "IEEEG1 has 6 states",
+          "internal_default": 6,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "IEEEG1 has 6 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+          "data_type": "Vector{StateTypes.StateType}"
         },
         {
           "name": "internal",
@@ -5765,24 +8697,10 @@
           }
         },
         {
-          "name": "P_min",
-          "comment": "Min Power into the Governor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "P_max",
-          "comment": "Max Power into the Governor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "valve_position_limits",
+          "comment": "Valve position limits in MW",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "P_ref",
@@ -5811,7 +8729,7 @@
           "name": "n_states",
           "comment": "TGTypeI has 3 states",
           "internal_default": 3,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5857,24 +8775,10 @@
           }
         },
         {
-          "name": "τ_min",
-          "comment": "Min Power into the Governor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "τ_max",
-          "comment": "Max Power into the Governor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "τ_limits",
+          "comment": "Power into the governor limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "P_ref",
@@ -5903,7 +8807,7 @@
           "name": "n_states",
           "comment": "TGTypeII has 1 state",
           "internal_default": 1,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -5954,7 +8858,7 @@
           "name": "n_states",
           "comment": "AverageConverter has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "Converter"
@@ -5989,7 +8893,7 @@
           "name": "n_states",
           "comment": "FixedDCSource has no states",
           "internal_default": 0,
-          "data_type": "Int64"
+          "data_type": "Int"
         },
         {
           "name": "internal",
@@ -6070,7 +8974,7 @@
           "name": "n_states",
           "comment": "LCLFilter has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "Filter"
@@ -6125,7 +9029,7 @@
           "name": "n_states",
           "comment": "LCFilter has two states",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "Filter"
@@ -6180,7 +9084,7 @@
           "name": "n_states",
           "comment": "KauraPLL has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "FrequencyEstimator"
@@ -6246,7 +9150,7 @@
           "name": "n_states",
           "comment": "VirtualInertia has two states",
           "internal_default": 2,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "ActivePowerControl"
@@ -6302,7 +9206,7 @@
           "name": "n_states",
           "comment": "ReactivePowerDroop has 1 state",
           "internal_default": 1,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "ReactivePowerControl"
@@ -6427,7 +9331,7 @@
           "name": "n_states",
           "comment": "CurrentControl has 6 states",
           "internal_default": 6,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "InnerControl"
@@ -6540,7 +9444,7 @@
         },
         {
           "name": "participation_factor",
-          "data_type": "NamedTuple{(:up, :dn), Tuple{Float64, Float64}}"
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}"
         },
         {
           "name": "reserve_limit_dn",

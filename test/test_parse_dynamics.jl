@@ -68,3 +68,12 @@ end
     @test get_H(s) == 3.1
     @test get_D(s) == 2.0
 end
+
+@testset "2000-Bus Parsing" begin
+    texas2000_raw_file = joinpath(TAMU_DIR, "ACTIVSg2000.RAW")
+    texas2000_dyr_file = joinpath(PSSE_DYR_DIR, "ACTIVSg2000_dynamics.dyr")
+    sys = System(texas2000_raw_file, texas2000_dyr_file)
+    for g in get_components(ThermalStandard, sys)
+        @test !isnothing(get_dynamic_injector(g))
+    end
+end

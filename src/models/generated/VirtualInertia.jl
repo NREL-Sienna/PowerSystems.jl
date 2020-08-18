@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
     end
 
 Parameters of a Virtual Inertia with SRF using VSM for active power controller
@@ -23,7 +23,7 @@ Parameters of a Virtual Inertia with SRF using VSM for active power controller
 - `states::Vector{Symbol}`: The states of the VirtualInertia model are:
 	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
 	θ_oc: Phase angle displacement of the virtual synchronous generator model
-- `n_states::Int64`: VirtualInertia has two states
+- `n_states::Int`: VirtualInertia has two states
 """
 mutable struct VirtualInertia <: ActivePowerControl
     "VSM inertia constant"
@@ -40,7 +40,7 @@ mutable struct VirtualInertia <: ActivePowerControl
 	θ_oc: Phase angle displacement of the virtual synchronous generator model"
     states::Vector{Symbol}
     "VirtualInertia has two states"
-    n_states::Int64
+    n_states::Int
 end
 
 function VirtualInertia(Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), )

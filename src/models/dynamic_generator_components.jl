@@ -24,6 +24,6 @@ function get_avr_saturation(E::Tuple{Float64, Float64}, Se::Tuple{Float64, Float
         )
     B = Se[2] * E[2] / (E[2] - A)^2
 
-    @assert abs(B - Se[1] * E[1] / (E[1] - A)^2) <= 1e-6
+    @assert abs(B - Se[1] * E[1] / (E[1] - A)^2) <= 1e-2
     return (A, B)
 end
