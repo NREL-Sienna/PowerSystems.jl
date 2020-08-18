@@ -9,6 +9,9 @@ This file is auto-generated. Do not edit.
         T2::Float64
         T3::Float64
         D_T::Float64
+        DB_h::Float64
+        DB_l::Float64
+        T_rate::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
@@ -16,7 +19,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Steam Turbine-Governor. TGOV1 in PSS/E.
+Steam Turbine-Governor. TGOV1 or TGOV1DU in PSS/E.
 
 # Arguments
 - `R::Float64`: Droop parameter, validation range: `(0, 0.1)`, action if invalid: `warn`
@@ -25,6 +28,9 @@ Steam Turbine-Governor. TGOV1 in PSS/E.
 - `T2::Float64`: Lead Lag Lead Time constant , validation range: `(0, nothing)`, action if invalid: `warn`
 - `T3::Float64`: Lead Lag Lag Time constant , validation range: `("eps()", 10)`, action if invalid: `error`
 - `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `DB_h::Float64`: Deadband for overspeed, validation range: `(0, nothing)`, action if invalid: `warn`
+- `DB_l::Float64`: Deadband for underspeed, validation range: `(nothing, 0)`, action if invalid: `warn`
+- `T_rate::Float64`: Turbine Rate (MW). If zero, generator base is used., validation range: `(0, nothing)`, action if invalid: `warn`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
@@ -46,6 +52,12 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     T3::Float64
     "Turbine Damping"
     D_T::Float64
+    "Deadband for overspeed"
+    DB_h::Float64
+    "Deadband for underspeed"
+    DB_l::Float64
+    "Turbine Rate (MW). If zero, generator base is used."
+    T_rate::Float64
     ext::Dict{String, Any}
     "The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
@@ -59,12 +71,12 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     internal::InfrastructureSystemsInternal
 end
 
-function SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext=Dict{String, Any}(), )
-    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext, [:x_g1, :Pm], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, ext=Dict{String, Any}(), )
+    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, ext, [:x_g1, :Pm], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function SteamTurbineGov1(; R, T1, valve_position_limits, T2, T3, D_T, ext=Dict{String, Any}(), )
-    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, ext, )
+function SteamTurbineGov1(; R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, ext=Dict{String, Any}(), )
+    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,6 +88,9 @@ function SteamTurbineGov1(::Nothing)
         T2=0,
         T3=0,
         D_T=0,
+        DB_h=0,
+        DB_l=0,
+        T_rate=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -92,6 +107,12 @@ get_T2(value::SteamTurbineGov1) = value.T2
 get_T3(value::SteamTurbineGov1) = value.T3
 """Get [`SteamTurbineGov1`](@ref) `D_T`."""
 get_D_T(value::SteamTurbineGov1) = value.D_T
+"""Get [`SteamTurbineGov1`](@ref) `DB_h`."""
+get_DB_h(value::SteamTurbineGov1) = value.DB_h
+"""Get [`SteamTurbineGov1`](@ref) `DB_l`."""
+get_DB_l(value::SteamTurbineGov1) = value.DB_l
+"""Get [`SteamTurbineGov1`](@ref) `T_rate`."""
+get_T_rate(value::SteamTurbineGov1) = value.T_rate
 """Get [`SteamTurbineGov1`](@ref) `ext`."""
 get_ext(value::SteamTurbineGov1) = value.ext
 """Get [`SteamTurbineGov1`](@ref) `states`."""
@@ -115,6 +136,12 @@ set_T2!(value::SteamTurbineGov1, val) = value.T2 = val
 set_T3!(value::SteamTurbineGov1, val) = value.T3 = val
 """Set [`SteamTurbineGov1`](@ref) `D_T`."""
 set_D_T!(value::SteamTurbineGov1, val) = value.D_T = val
+"""Set [`SteamTurbineGov1`](@ref) `DB_h`."""
+set_DB_h!(value::SteamTurbineGov1, val) = value.DB_h = val
+"""Set [`SteamTurbineGov1`](@ref) `DB_l`."""
+set_DB_l!(value::SteamTurbineGov1, val) = value.DB_l = val
+"""Set [`SteamTurbineGov1`](@ref) `T_rate`."""
+set_T_rate!(value::SteamTurbineGov1, val) = value.T_rate = val
 """Set [`SteamTurbineGov1`](@ref) `ext`."""
 set_ext!(value::SteamTurbineGov1, val) = value.ext = val
 """Set [`SteamTurbineGov1`](@ref) `states`."""

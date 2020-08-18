@@ -91,6 +91,8 @@ export get_Ae
 export get_At
 export get_Be
 export get_D
+export get_DB_h
+export get_DB_l
 export get_D_12
 export get_D_23
 export get_D_34
@@ -395,6 +397,8 @@ export set_Ae!
 export set_At!
 export set_Be!
 export set_D!
+export set_DB_h!
+export set_DB_l!
 export set_D_12!
 export set_D_23!
 export set_D_34!

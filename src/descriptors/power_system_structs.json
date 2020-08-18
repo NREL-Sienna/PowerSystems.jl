@@ -8213,7 +8213,7 @@
     },
     {
       "struct_name": "SteamTurbineGov1",
-      "docstring": "Steam Turbine-Governor. TGOV1 in PSS/E.",
+      "docstring": "Steam Turbine-Governor. TGOV1 or TGOV1DU in PSS/E.",
       "fields": [
         {
           "name": "R",
@@ -8273,6 +8273,39 @@
           "valid_range": {
             "min": 0,
             "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "DB_h",
+          "comment": "Deadband for overspeed",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "DB_l",
+          "comment": "Deadband for underspeed",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": null,
+            "max": 0
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T_rate",
+          "comment": "Turbine Rate (MW). If zero, generator base is used.",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
           },
           "validation_action": "warn"
         },

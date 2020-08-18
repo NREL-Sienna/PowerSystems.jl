@@ -1,3 +1,6 @@
+#Additional constants for repeated structs
+const TGOV1DU = SteamTurbineGov1
+
 """
 Parse .dyr file into a dictionary indexed by bus number.
 Each bus number key has a dictionary indexed by component type and id.
