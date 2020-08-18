@@ -96,5 +96,6 @@ deploydocs(
     branch = "gh-pages",
     devbranch = "master",
     devurl = "dev",
+    push_preview=true,
     versions = ["stable" => "v^", "v#.#"],
 )
