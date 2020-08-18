@@ -38,7 +38,7 @@ Parameters of IEEE Std 421.5 Type AC6A Excitacion System. ESAC6A in PSSE and PSL
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`, action if invalid: `warn`
 - `Ta::Float64`: Regulator output lag time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
-- `Tk::Float64`: Voltage Regulator lead time xonstant, validation range: `(0, 10)`, action if invalid: `warn`
+- `Tk::Float64`: Voltage Regulator lead time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
@@ -74,7 +74,7 @@ mutable struct ESAC6A <: AVR
     Ka::Float64
     "Regulator output lag time constant in s"
     Ta::Float64
-    "Voltage Regulator lead time xonstant"
+    "Voltage Regulator lead time constant"
     Tk::Float64
     "Regulator denominator (lag) time constant in s"
     Tb::Float64
