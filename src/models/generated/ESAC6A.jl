@@ -41,8 +41,8 @@ Parameters of IEEE Std 421.5 Type AC6A Excitacion System. ESAC6A in PSSE and PSL
 - `Tk::Float64`: Voltage Regulator lead time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
-- `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
-- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage (Vr_min, Vr_max)
+- `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output `(Va_min, Va_max)`
+- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage `(Vr_min, Vr_max)`
 - `Te::Float64`: Exciter field time constant, validation range: `("eps()", 2.0)`, action if invalid: `error`
 - `VFE_lim::Float64`: Exciter field current limiter reference, validation range: `(-5, 20)`, action if invalid: `warn`
 - `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, 100)`, action if invalid: `warn`
@@ -80,9 +80,9 @@ mutable struct ESAC6A <: AVR
     Tb::Float64
     "Regulator numerator (lead) time constant in s"
     Tc::Float64
-    "Limits for regulator output (Va_min, Va_max)"
+    "Limits for regulator output `(Va_min, Va_max)`"
     Va_lim::Tuple{Float64, Float64}
-    "Limits for exciter field voltage (Vr_min, Vr_max)"
+    "Limits for exciter field voltage `(Vr_min, Vr_max)`"
     Vr_lim::Tuple{Float64, Float64}
     "Exciter field time constant"
     Te::Float64

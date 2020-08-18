@@ -7,7 +7,7 @@
 - Add StaticReserveGroup object (Thanks @andrewrosemberg)
 
 
-## 0.25.0 
+## 0.25.0
 
 - Bug fix in units settings when parsing TableData
 - Add defaults for ThermalStandard Fuel and Prime Mover (Thanks @raphaelsaavedra)
@@ -57,7 +57,7 @@
 - Renames of Fields in Structs to match code guidelines
 - Store RAW Electric Source Data (Z) in Thermal Generators
 - Implement UnitsInfo to return data in different bases accordingly
-- Update Autogeneration of structs. 
+- Update Autogeneration of structs.
 
 ## 0.21.0
 
@@ -71,13 +71,13 @@
 - Add AC1A, ST1A, GasTG structs for dynamic modeling.
 - Implement heuristic in pwl data to avoid NaN
 - Bug fixes with Regulation Devices
-- Improved testing. 
+- Improved testing.
 
 ## 0.20.0
 
-- Add Support for MultiStart Thermal Generation (a.k.a. PGLIB Model) 
-- Performance updates to Power Flow. 
-- Remove Make PF function. 
+- Add Support for MultiStart Thermal Generation (a.k.a. PGLIB Model)
+- Performance updates to Power Flow.
+- Remove Make PF function.
 - Fixin forecast handling of composed structs
 - Update to IS v0.11
 - Add SalientPoleGenerator and RoundRotorGenerator with saturation variants
@@ -87,7 +87,7 @@
 
 ## 0.19.0
 
-- Update for IS 0.9 
+- Update for IS 0.9
 - Change behaviour of get_component
 
 ## 0.18.5
@@ -281,8 +281,8 @@
 ## v0.4.3
 
 - Fix Parsing bug in Table data #362
-- Enable custom validation descriptors when parsing PSS/E and MATPOWER files
-- Enable multiple loads per bus when parsing PSS/E and MATPOWER files
+- Enable custom validation descriptors when parsing PSS/e and MATPOWER files
+- Enable multiple loads per bus when parsing PSS/e and MATPOWER files
 - Support multiple generators per bus and non-sequential bus indexing in power flow
 
 ## v0.4.2

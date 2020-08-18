@@ -37,7 +37,7 @@ Generic Proportional/Integral Excitation System
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `Ka::Float64`: Voltage regulator gain, validation range: `(1, 500)`, action if invalid: `warn`
 - `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
-- `Va_lim::Tuple{Float64, Float64}`: Limits for pi controler (Vr_min, Vr_max)
+- `Va_lim::Tuple{Float64, Float64}`: Limits for pi controler `(Vr_min, Vr_max)`
 - `Ta_2::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Ta_3::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ta_4::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -75,7 +75,7 @@ mutable struct EXPIC1 <: AVR
     Ka::Float64
     "Voltage regulator time constant in s"
     Ta::Float64
-    "Limits for pi controler (Vr_min, Vr_max)"
+    "Limits for pi controler `(Vr_min, Vr_max)`"
     Va_lim::Tuple{Float64, Float64}
     "Voltage regulator time constant in s"
     Ta_2::Float64

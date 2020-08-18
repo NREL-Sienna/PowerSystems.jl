@@ -548,7 +548,7 @@ const _induction_machine_dtypes = [
 
 """
 lookup array of data types for PTI file sections given by
-`field_name`, as enumerated by PSS/E Program Operation Manual.
+`field_name`, as enumerated by PSS/e Program Operation Manual.
 """
 const _pti_dtypes = Dict{String, Array}(
     "BUS" => _bus_dtypes,

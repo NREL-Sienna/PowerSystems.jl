@@ -10,8 +10,7 @@ This file is auto-generated. Do not edit.
         T4::Float64
         Te::Float64
         Tr::Float64
-        Vr_max::Float64
-        Vr_min::Float64
+        Va_lim::Tuple{Float64, Float64}
         Ae::Float64
         Be::Float64
         V_ref::Float64
@@ -32,8 +31,7 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `T4::Float64`: First zero in s, validation range: `(0, nothing)`
 - `Te::Float64`: Field Circuit Time Constant in s, validation range: `(0, nothing)`
 - `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`
-- `Vr_max::Float64`: Maximum regulator voltage in pu, validation range: `(0, nothing)`
-- `Vr_min::Float64`: Minimum regulator voltage in pu, validation range: `(0, nothing)`
+- `Va_lim::Tuple{Float64, Float64}`: Limits for pi controler `(Va_min, Va_max)`
 - `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
@@ -62,10 +60,8 @@ mutable struct AVRTypeII <: AVR
     Te::Float64
     "Voltage Measurement Time Constant in s"
     Tr::Float64
-    "Maximum regulator voltage in pu"
-    Vr_max::Float64
-    "Minimum regulator voltage in pu"
-    Vr_min::Float64
+    "Limits for pi controler `(Va_min, Va_max)`"
+    Va_lim::Tuple{Float64, Float64}
     "1st ceiling coefficient"
     Ae::Float64
     "2nd ceiling coefficient"
@@ -87,12 +83,12 @@ mutable struct AVRTypeII <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function AVRTypeII(; K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, )
+function AVRTypeII(; K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -105,8 +101,7 @@ function AVRTypeII(::Nothing)
         T4=0,
         Te=0,
         Tr=0,
-        Vr_max=0,
-        Vr_min=0,
+        Va_lim=(0.0, 0.0),
         Ae=0,
         Be=0,
         V_ref=0,
@@ -128,10 +123,8 @@ get_T4(value::AVRTypeII) = value.T4
 get_Te(value::AVRTypeII) = value.Te
 """Get [`AVRTypeII`](@ref) `Tr`."""
 get_Tr(value::AVRTypeII) = value.Tr
-"""Get [`AVRTypeII`](@ref) `Vr_max`."""
-get_Vr_max(value::AVRTypeII) = value.Vr_max
-"""Get [`AVRTypeII`](@ref) `Vr_min`."""
-get_Vr_min(value::AVRTypeII) = value.Vr_min
+"""Get [`AVRTypeII`](@ref) `Va_lim`."""
+get_Va_lim(value::AVRTypeII) = value.Va_lim
 """Get [`AVRTypeII`](@ref) `Ae`."""
 get_Ae(value::AVRTypeII) = value.Ae
 """Get [`AVRTypeII`](@ref) `Be`."""
@@ -163,10 +156,8 @@ set_T4!(value::AVRTypeII, val) = value.T4 = val
 set_Te!(value::AVRTypeII, val) = value.Te = val
 """Set [`AVRTypeII`](@ref) `Tr`."""
 set_Tr!(value::AVRTypeII, val) = value.Tr = val
-"""Set [`AVRTypeII`](@ref) `Vr_max`."""
-set_Vr_max!(value::AVRTypeII, val) = value.Vr_max = val
-"""Set [`AVRTypeII`](@ref) `Vr_min`."""
-set_Vr_min!(value::AVRTypeII, val) = value.Vr_min = val
+"""Set [`AVRTypeII`](@ref) `Va_lim`."""
+set_Va_lim!(value::AVRTypeII, val) = value.Va_lim = val
 """Set [`AVRTypeII`](@ref) `Ae`."""
 set_Ae!(value::AVRTypeII, val) = value.Ae = val
 """Set [`AVRTypeII`](@ref) `Be`."""

@@ -1,9 +1,11 @@
 # Constructing a System from raw data
 
 ## Supported Formats
-* PowerSystems table data
-* MATPOWER (parsed by PowerModels)
-* PSS/E (parsed by PowerModels)
+- PowerSystems table data (CSV Files)
+- MATPOWER (code copied with permision from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
+- PSS/e RAW Files (code copied with permision from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
+- PSS/e DYR Files
+
 
 ## PowerSystems Table Data
 This is a custom format that allows users to define power system component data
@@ -13,13 +15,13 @@ by category and column with custom names, types, and units.
 Components for each category must be defined in their own CSV file. The
 following categories are currently supported:
 
-* branch.csv
-* bus.csv
-* dc_branch.csv
-* gen.csv
-* load.csv
-* reserves.csv
-* storage.csv
+- branch.csv
+- bus.csv
+- dc_branch.csv
+- gen.csv
+- load.csv
+- reserves.csv
+- storage.csv
 
 These must reside in the directory passed when constructing PowerSystemTableData.
 
@@ -45,7 +47,7 @@ column names.
 For example, when parsing raw data for a generator the code expects a column
 called `name`. If the raw data instead defines that column as `GEN UID` then
 you can change the `custom_name` field under the `generator` category to
-`GEN UID` in your YAML file. 
+`GEN UID` in your YAML file.
 
 #### Per-unit conversion
 PowerSystems defines whether it expects a column value to be per-unit in
@@ -86,6 +88,7 @@ PowerSystems supports this metadata in either CSV or JSON formats. Refer to
 for an example.
 
 #### Performance considerations
+
 By default PowerSystems stores time series data in HDF5 files. It does not keep
 all of the data in memory. This means that every time you access a forecast
 PowerSystems will have to read the data from storage, which will add latency. If
@@ -100,6 +103,7 @@ available.
 
 
 ### Custom construction of generators
+
 PowerSystems supports custom construction of subtypes of the abstract type Generator based
 on `fuel` and `type`. The parsing code detects these fields in the raw data and then
 constructs the concrete type listed in the passed generator mapping file. The default file
@@ -126,10 +130,46 @@ data = PowerSystemTableData(
 sys = System(data, time_series_in_memory = true)
 ```
 
-## MATPOWER / PSS/E
-The following code will create a System from a MATPOWER or PSS/E file by first
+## MATPOWER / PSS/e
+
+The following code will create a System from a MATPOWER or PSS/e file by first
 parsing it with [PowerModels](https://github.com/lanl-ansi/PowerModels.jl).
 
 ```julia
 sys = System(PowerSystems.PowerModelsData("./case5.m"))
 ```
+
+### PSS/e dyr parsing
+
+PSS/e's dynamic model library is extensive, we currently support parsing a limited amount of models out of the box.
+
+**Machine models**
+
+- "GENSAE"
+- "GENSAL"
+- "GENROE"
+- "GENCLS"
+- "GENROU"
+
+**AVR Models**
+
+- "IEEET1"
+- "ESDC1A"
+- "ESAC1A"
+- "ESST4B"
+- "EXAC2"
+- "EXPIC1"
+- "ESAC6A"
+- "EXAC1"
+- "SCRX"
+- "ESDC2A"
+
+**Prime Movers**
+
+- "HYGOV"
+- "IEEEG1"
+- "GGOV1"
+
+**PSS models**
+
+- "IEEEST"

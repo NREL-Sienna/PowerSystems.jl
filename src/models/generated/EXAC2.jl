@@ -41,9 +41,9 @@ Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main ex
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`
 - `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
-- `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output (Va_min, Va_max)
+- `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output `(Va_min, Va_max)`
 - `Kb::Float64`: Second Stage regulator gain, validation range: `("eps()", 500)`, action if invalid: `error`
-- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage (Vr_min, Vr_max)
+- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage `(Vr_min, Vr_max)`
 - `Te::Float64`: Exciter field time constant, validation range: `("eps()", 2)`, action if invalid: `error`
 - `Kl::Float64`: Exciter field current limiter gain, validation range: `(0, 1.1)`, action if invalid: `warn`
 - `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, 1.1)`, action if invalid: `warn`
@@ -79,11 +79,11 @@ mutable struct EXAC2 <: AVR
     Ka::Float64
     "Regulator output time constant in s"
     Ta::Float64
-    "Limits for regulator output (Va_min, Va_max)"
+    "Limits for regulator output `(Va_min, Va_max)`"
     Va_lim::Tuple{Float64, Float64}
     "Second Stage regulator gain"
     Kb::Float64
-    "Limits for exciter field voltage (Vr_min, Vr_max)"
+    "Limits for exciter field voltage `(Vr_min, Vr_max)`"
     Vr_lim::Tuple{Float64, Float64}
     "Exciter field time constant"
     Te::Float64

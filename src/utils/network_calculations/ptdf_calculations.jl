@@ -98,7 +98,7 @@ end
 Builds the PTDF matrix from a group of branches and nodes. The return is a PTDF array indexed with the bus numbers.
 
 # Keyword arguments
-- `dist_slack::Vector{FLoat64}`: Vector of weights to be used as distributed slack bus.
+- `dist_slack::Vector{Float64}`: Vector of weights to be used as distributed slack bus.
     The distributed slack vector has to be the same length as the number of buses
 """
 function PTDF(branches, nodes, dist_slack::Vector{Float64} = [0.1])
@@ -116,7 +116,7 @@ end
 Builds the PTDF matrix from a system. The return is a PTDF array indexed with the bus numbers.
 
 # Keyword arguments
-- `dist_slack::Vector{FLoat64}`: Vector of weights to be used as distributed slack bus.
+- `dist_slack::Vector{Float64}`: Vector of weights to be used as distributed slack bus.
     The distributed slack vector has to be the same length as the number of buses
 """
 function PTDF(sys::System, dist_slack::Vector{Float64} = [0.1])

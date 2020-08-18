@@ -9,6 +9,7 @@ module PowerSystems
 # Exports
 
 export System
+export Topology
 export Bus
 export Arc
 export AggregationTopology
@@ -113,6 +114,7 @@ export PSSSimple
 export IEEEST
 
 #Shaft Exports
+export Shaft
 export SingleMass
 export FiveMassShaft
 
@@ -138,6 +140,7 @@ export FixedDCSource
 # Filter Exports
 export Filter
 export LCLFilter
+export LCFilter
 
 # FrequencyEstimator Exports
 export FrequencyEstimator
@@ -368,6 +371,7 @@ include("models/storage.jl")
 include("models/loads.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
+include("models/OuterControl.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
@@ -381,6 +385,10 @@ include("models/devices.jl")
 include("models/dynamic_generator.jl")
 include("models/dynamic_inverter.jl")
 include("models/dynamic_machines.jl")
+include("models/RoundRotorExponential.jl")
+include("models/RoundRotorQuadratic.jl")
+include("models/SalientPoleExponential.jl")
+include("models/SalientPoleQuadratic.jl")
 include("models/dynamic_branch.jl")
 
 include("models/supplemental_constructors.jl")
@@ -400,7 +408,7 @@ include("utils/network_calculations/ptdf_calculations.jl")
 include("utils/network_calculations/lodf_calculations.jl")
 
 #PowerFlow
-include("utils/power_flow/power_flow.jl")
+include("utils/power_flow.jl")
 
 #Conversions
 include("utils/conversion.jl")

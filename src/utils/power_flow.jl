@@ -1,7 +1,6 @@
 """
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
+Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 TapTransformer
-
 """
 function flow_val(b::TapTransformer)
     Y_t = get_series_admittance(b)
@@ -17,7 +16,6 @@ end
 """
 Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Line
-
 """
 function flow_val(b::ACBranch)
     Y_t = get_series_admittance(b)
@@ -32,7 +30,6 @@ end
 """
 Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Transformer2W
-
 """
 function flow_val(b::Transformer2W)
     Y_t = get_series_admittance(b)
@@ -52,7 +49,6 @@ end
 """
 Calculates the From - To complex power flow using external data of voltages of branch of type
 TapTransformer
-
 """
 function flow_func(b::TapTransformer, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
@@ -65,7 +61,6 @@ end
 """
 Calculates the From - To complex power flow using external data of voltages of branch of type
 Line
-
 """
 function flow_func(b::ACBranch, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
@@ -75,11 +70,8 @@ function flow_func(b::ACBranch, V_from::Complex{Float64}, V_to::Complex{Float64}
 end
 
 """
-    flow_func(b::Transformer2W, V_from::Complex, V_to::Complex)
-
 Calculates the From - To complex power flow using external data of voltages of branch of type
 Transformer2W
-
 """
 function flow_func(b::Transformer2W, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
@@ -131,7 +123,6 @@ end
 
 """
 Updates system voltages and powers with power flow results
-
 """
 function _write_pf_sol!(sys::System, nl_result)
     result = round.(nl_result.zero; digits = 7)
