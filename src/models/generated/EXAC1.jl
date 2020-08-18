@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         Tc::Float64
         Ka::Float64
         Ta::Float64
-        Vr_lim::Tuple{Float64, Float64}
+        Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Te::Float64
         Kf::Float64
         Tf::Float64
@@ -36,7 +36,7 @@ Parameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`
 - `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
-- `Vr_lim::Tuple{Float64, Float64}`: Limits for regulator output `(Vr_min, Vr_max)`
+- `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for regulator output `(Vr_min, Vr_max)`
 - `Te::Float64`: Exciter field time constant in s, validation range: `("eps()", 2)`, action if invalid: `error`
 - `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", 1.5)`, action if invalid: `error`
@@ -70,7 +70,7 @@ mutable struct EXAC1 <: AVR
     "Regulator output time constant in s"
     Ta::Float64
     "Limits for regulator output `(Vr_min, Vr_max)`"
-    Vr_lim::Tuple{Float64, Float64}
+    Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Exciter field time constant in s"
     Te::Float64
     "Rate feedback excitation system stabilizer gain"
@@ -123,7 +123,7 @@ function EXAC1(::Nothing)
         Tc=0,
         Ka=0,
         Ta=0,
-        Vr_lim=(0.0, 0.0),
+        Vr_lim=(min=0.0, max=0.0),
         Te=0,
         Kf=0,
         Tf=0,

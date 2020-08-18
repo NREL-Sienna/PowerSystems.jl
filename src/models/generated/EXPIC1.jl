@@ -6,15 +6,15 @@ This file is auto-generated. Do not edit.
         Tr::Float64
         Ka::Float64
         Ta::Float64
-        Va_lim::Tuple{Float64, Float64}
+        Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Ta_2::Float64
         Ta_3::Float64
         Ta_4::Float64
-        Vr_lim::Tuple{Float64, Float64}
+        Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Kf::Float64
         Tf_1::Float64
         Tf_2::Float64
-        Efd_lim::Tuple{Float64, Float64}
+        Efd_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Ke::Float64
         Te::Float64
         E_sat::Tuple{Float64, Float64}
@@ -37,15 +37,15 @@ Generic Proportional/Integral Excitation System
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `Ka::Float64`: Voltage regulator gain, validation range: `(1, 500)`, action if invalid: `warn`
 - `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
-- `Va_lim::Tuple{Float64, Float64}`: Limits for pi controler `(Vr_min, Vr_max)`
+- `Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for pi controler `(Vr_min, Vr_max)`
 - `Ta_2::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Ta_3::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ta_4::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
+- `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
 - `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf_1::Float64`: Rate Feedback time constant in s, validation range: `("eps()", 15)`
 - `Tf_2::Float64`: Rate Feedback time constant in s, validation range: `(0, 5)`, action if invalid: `warn`
-- `Efd_lim::Tuple{Float64, Float64}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
+- `Efd_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
 - `Ke::Float64`: Exciter constant, validation range: `(0, 1)`, action if invalid: `warn`
 - `Te::Float64`: Exciter time constant, validation range: `(0, 2)`, action if invalid: `warn`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
@@ -76,7 +76,7 @@ mutable struct EXPIC1 <: AVR
     "Voltage regulator time constant in s"
     Ta::Float64
     "Limits for pi controler `(Vr_min, Vr_max)`"
-    Va_lim::Tuple{Float64, Float64}
+    Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Voltage regulator time constant in s"
     Ta_2::Float64
     "Voltage regulator time constant in s"
@@ -84,7 +84,7 @@ mutable struct EXPIC1 <: AVR
     "Voltage regulator time constant in s"
     Ta_4::Float64
     "Voltage regulator limits (regulator output) (Vi_min, Vi_max)"
-    Vr_lim::Tuple{Float64, Float64}
+    Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Rate feedback gain"
     Kf::Float64
     "Rate Feedback time constant in s"
@@ -92,7 +92,7 @@ mutable struct EXPIC1 <: AVR
     "Rate Feedback time constant in s"
     Tf_2::Float64
     "Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)"
-    Efd_lim::Tuple{Float64, Float64}
+    Efd_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Exciter constant"
     Ke::Float64
     "Exciter time constant"
@@ -143,15 +143,15 @@ function EXPIC1(::Nothing)
         Tr=0,
         Ka=0,
         Ta=0,
-        Va_lim=(0.0, 0.0),
+        Va_lim=(min=0.0, max=0.0),
         Ta_2=0,
         Ta_3=0,
         Ta_4=0,
-        Vr_lim=(0.0, 0.0),
+        Vr_lim=(min=0.0, max=0.0),
         Kf=0,
         Tf_1=0,
         Tf_2=0,
-        Efd_lim=(0.0, 0.0),
+        Efd_lim=(min=0.0, max=0.0),
         Ke=0,
         Te=0,
         E_sat=(0.0, 0.0),

@@ -9,8 +9,8 @@ This file is auto-generated. Do not edit.
         Tk::Float64
         Tb::Float64
         Tc::Float64
-        Va_lim::Tuple{Float64, Float64}
-        Vr_lim::Tuple{Float64, Float64}
+        Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Te::Float64
         VFE_lim::Float64
         Kh::Float64
@@ -41,8 +41,8 @@ Parameters of IEEE Std 421.5 Type AC6A Excitacion System. ESAC6A in PSSE and PSL
 - `Tk::Float64`: Voltage Regulator lead time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `Tb::Float64`: Regulator denominator (lag) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
-- `Va_lim::Tuple{Float64, Float64}`: Limits for regulator output `(Va_min, Va_max)`
-- `Vr_lim::Tuple{Float64, Float64}`: Limits for exciter field voltage `(Vr_min, Vr_max)`
+- `Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for regulator output `(Va_min, Va_max)`
+- `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for exciter field voltage `(Vr_min, Vr_max)`
 - `Te::Float64`: Exciter field time constant, validation range: `("eps()", 2.0)`, action if invalid: `error`
 - `VFE_lim::Float64`: Exciter field current limiter reference, validation range: `(-5, 20)`, action if invalid: `warn`
 - `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, 100)`, action if invalid: `warn`
@@ -81,9 +81,9 @@ mutable struct ESAC6A <: AVR
     "Regulator numerator (lead) time constant in s"
     Tc::Float64
     "Limits for regulator output `(Va_min, Va_max)`"
-    Va_lim::Tuple{Float64, Float64}
+    Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Limits for exciter field voltage `(Vr_min, Vr_max)`"
-    Vr_lim::Tuple{Float64, Float64}
+    Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Exciter field time constant"
     Te::Float64
     "Exciter field current limiter reference"
@@ -143,8 +143,8 @@ function ESAC6A(::Nothing)
         Tk=0,
         Tb=0,
         Tc=0,
-        Va_lim=(0.0, 0.0),
-        Vr_lim=(0.0, 0.0),
+        Va_lim=(min=0.0, max=0.0),
+        Vr_lim=(min=0.0, max=0.0),
         Te=0,
         VFE_lim=0,
         Kh=0,

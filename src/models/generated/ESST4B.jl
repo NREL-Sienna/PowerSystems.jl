@@ -6,11 +6,11 @@ This file is auto-generated. Do not edit.
         Tr::Float64
         K_pr::Float64
         K_ir::Float64
-        Vr_lim::Tuple{Float64, Float64}
+        Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Ta::Float64
         K_pm::Float64
         K_im::Float64
-        Vm_lim::Tuple{Float64, Float64}
+        Vm_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Kg::Float64
         Kp::Float64
         Ki::Float64
@@ -34,11 +34,11 @@ Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSL
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `K_pr::Float64`: Regulator propotional gain, validation range: `(0, 75)`, action if invalid: `warn`
 - `K_ir::Float64`: Regulator integral gain, validation range: `(0, 75)`, action if invalid: `warn`
-- `Vr_lim::Tuple{Float64, Float64}`: Voltage regulator limits (Vi_min, Vi_max)
+- `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (Vi_min, Vi_max)
 - `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 1)`, action if invalid: `warn`
 - `K_pm::Float64`: Voltage regulator proportional gain output, validation range: `(0, 1.2)`, action if invalid: `warn`
 - `K_im::Float64`: Voltage regulator integral gain output, validation range: `(0, 18)`, action if invalid: `warn`
-- `Vm_lim::Tuple{Float64, Float64}`: Limits for inner loop output `(Vm_min, Vm_max)`
+- `Vm_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for inner loop output `(Vm_min, Vm_max)`
 - `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, 1.1)`, action if invalid: `warn`
 - `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, 10)`, action if invalid: `warn`
 - `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `(0, 1.1)`, action if invalid: `warn`
@@ -67,7 +67,7 @@ mutable struct ESST4B <: AVR
     "Regulator integral gain"
     K_ir::Float64
     "Voltage regulator limits (Vi_min, Vi_max)"
-    Vr_lim::Tuple{Float64, Float64}
+    Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Voltage regulator time constant in s"
     Ta::Float64
     "Voltage regulator proportional gain output"
@@ -75,7 +75,7 @@ mutable struct ESST4B <: AVR
     "Voltage regulator integral gain output"
     K_im::Float64
     "Limits for inner loop output `(Vm_min, Vm_max)`"
-    Vm_lim::Tuple{Float64, Float64}
+    Vm_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Feedback gain constant of the inner loop field regulator"
     Kg::Float64
     "Potential circuit (voltage) gain coefficient"
@@ -124,11 +124,11 @@ function ESST4B(::Nothing)
         Tr=0,
         K_pr=0,
         K_ir=0,
-        Vr_lim=(0.0, 0.0),
+        Vr_lim=(min=0.0, max=0.0),
         Ta=0,
         K_pm=0,
         K_im=0,
-        Vm_lim=(0.0, 0.0),
+        Vm_lim=(min=0.0, max=0.0),
         Kg=0,
         Kp=0,
         Ki=0,
