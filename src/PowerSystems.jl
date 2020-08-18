@@ -165,6 +165,8 @@ export AGC
 export ReserveDemandCurve
 export Transfer
 export StaticReserveGroup
+export StaticReserveNonSpinning
+export VariableReserveNonSpinning
 
 export PTDF
 export Ybus
