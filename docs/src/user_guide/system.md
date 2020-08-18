@@ -22,3 +22,7 @@ Dynamic components are those that define differential equations to run a transie
 - (Optional) Selecting which of the `Lines` (of the `Branch` vector) elements must be modeled of `DynamicLines` elements, that can be used to model lines with differential equations.
 
 To start we will define the data structures for the network.
+
+```@docs
+System
+```
