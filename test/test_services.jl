@@ -238,7 +238,7 @@ end
         end
     end
 
-    @test 8 == actual_count
+    @test 10 == actual_count
 end
 
 @testset "Test AGC Device and Regulation Services" begin
@@ -367,4 +367,43 @@ end
     add_service!(sys, service, devices)
     add_service!(sys, groupservice, contributing_services)
     @test_throws ArgumentError remove_component!(sys, service)
+end
+
+@testset "Test ReserveNonSpinning" begin
+    # create system 
+    sys = System(100)
+    # add buses and generators
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    # add StaticReserve
+    service = StaticReserveNonSpinning(nothing)
+    add_service!(sys, service, devices)
+
+    for device in devices
+        services = get_services(device)
+        @test length(services) == 1
+        @test services[1] isa Service
+        @test services[1] == service
+    end
+
+    services = collect(get_components(Service, sys))
+    @test length(services) == 1
+    @test services[1] == service
+
+    remove_component!(sys, service)
+
+    for device in devices
+        @test length(get_services(device)) == 0
+    end
 end
