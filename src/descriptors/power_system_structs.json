@@ -2469,6 +2469,65 @@
       "supertype": "Reserve{T}"
     },
     {
+      "struct_name": "StaticReserveNonSpinning",
+      "docstring": "Data Structure for a non-spinning reserve product for system simulations.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "accessor_module": "InfrastructureSystems",
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "name": "time_frame",
+          "comment": "the relative saturation time_frame",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "requirement",
+          "comment": "the static value of required reserves in system p.u.",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "operation_cost",
+          "null_value": "TwoPartCost(nothing)",
+          "data_type": "Union{Nothing, TwoPartCost}",
+          "default": "nothing",
+          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "ReserveNonSpinning"
+    },
+    {
       "struct_name": "StaticReserveGroup",
       "docstring": "Data Structure for a group reserve product for system simulations.",
       "parametric": "ReserveDirection",
@@ -2622,6 +2681,13 @@
           "default": "InfrastructureSystems.Forecasts()"
         },
         {
+          "name": "operation_cost",
+          "null_value": "TwoPartCost(nothing)",
+          "data_type": "Union{Nothing, TwoPartCost}",
+          "default": "nothing",
+          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+        },
+        {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
@@ -2629,6 +2695,61 @@
         }
       ],
       "supertype": "Reserve{T}"
+    },
+    {
+      "struct_name": "VariableReserveNonSpinning",
+      "docstring": "Data Structure for the procurement products for system simulations.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "accessor_module": "InfrastructureSystems",
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "name": "time_frame",
+          "comment": "the relative saturation time_frame",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "requirement",
+          "comment": "the required quantity of the product should be scaled by a Forecast",
+          "null_value": "0.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "forecasts",
+          "accessor_module": "InfrastructureSystems",
+          "comment": "internal forecast storage",
+          "null_value": "InfrastructureSystems.Forecasts()",
+          "data_type": "InfrastructureSystems.Forecasts",
+          "default": "InfrastructureSystems.Forecasts()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "ReserveNonSpinning"
     },
     {
       "struct_name": "AGC",
