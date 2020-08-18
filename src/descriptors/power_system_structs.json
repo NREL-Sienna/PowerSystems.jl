@@ -8213,7 +8213,7 @@
     },
     {
       "struct_name": "SteamTurbineGov1",
-      "docstring": "Steam Turbine-Governor. TGOV1 or TGOV1DU in PSS/E.",
+      "docstring": "Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.",
       "fields": [
         {
           "name": "R",

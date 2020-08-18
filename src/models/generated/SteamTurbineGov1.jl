@@ -19,7 +19,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Steam Turbine-Governor. TGOV1 or TGOV1DU in PSS/E.
+Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.
 
 # Arguments
 - `R::Float64`: Droop parameter, validation range: `(0, 0.1)`, action if invalid: `warn`
