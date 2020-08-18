@@ -22,43 +22,56 @@ features. The rest of this document provides example commands.
 jq . system.json
 ```
 
-## View the PowerSystems component hierarchy.
+## View the PowerSystems component types.
 
 ```
-jq '.components | keys' system.json
-jq '.components.Devices | keys' system.json
-jq '.components.Devices.StaticInjection | keys' system.json
-jq '.components.Devices.StaticInjection.Generator | keys' system.json
+jq '.data.components | keys' system.json
 ```
 
 ## View specific components.
 
 ```
-jq '.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard' system.json
-jq '.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard[0]' system.json
+jq '.data.components.ThermalStandard' system.json
 ```
 
-## Filter on a parameter.
+## Get the count of a component type.
 
 ```
-jq '.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard | .[] | select(.name == "107_CC_1")' system.json
-jq '.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard | .[] | select(.operation_cost.capacity > 3)' system.json
+jq '.data.components.Bus  | length' system.json
+```
+
+## View specific component by index.
+
+```
+jq '.data.components.ThermalStandard | .[0]' system.json
+```
+
+## View specific component by name.
+
+```
+jq '.data.components.ThermalStandard | .[] | select(.name == "107_CC_1")' system.json
+```
+
+## View the field names for a component.
+
+```
+jq '.data.components.ThermalStandard | .[0] | keys' system.json
+```
+
+## Filter on a field value.
+
+```
+jq '.data.components.ThermalStandard | .[] | select(.active_power > 2.3)' system.json
 ```
 
 ## Output a table with select fields.
 
 ```
-jq -r '["name", "econ.capacity"], (.components.Device.StaticInjection.Generator.ThermalGen.ThermalStandard | .[] | [.name, .operation_cost.capacity]) | @tsv' system.json
+jq -r '["name", "econ.capacity"], (.data.components.ThermalStandard | .[] | [.name, .active_power]) | @tsv' system.json
 ```
 
-## View the forecast types and initial_time values.
+## View the forecast information for a component.
 
-jq '.forecasts.data | keys' system.json
-
-## View the fields of a forecast.
-
-jq '.forecasts.data["PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"][0] | keys'
-
-## View the value of every field in an array of forecasts.
-
-jq '.forecasts.data["PowerSystems.ForecastKey(2020-01-01T00:00:00, Deterministic{Bus})"] | .[].initial_time'
+```
+jq '.data.components.ThermalStandard | .[0] | .forecasts' system.json
+```
