@@ -34,7 +34,7 @@ Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
-	Pm: Turbine Power
+	x_g2: Lead-lag state
 - `n_states::Int`: TGOV1 has 2 states
 - `states_types::Vector{StateTypes.StateType}`: TGOV1 has 2 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -61,7 +61,7 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     ext::Dict{String, Any}
     "The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
-	Pm: Turbine Power"
+	x_g2: Lead-lag state"
     states::Vector{Symbol}
     "TGOV1 has 2 states"
     n_states::Int
@@ -72,7 +72,7 @@ mutable struct SteamTurbineGov1 <: TurbineGov
 end
 
 function SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, ext=Dict{String, Any}(), )
-    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, ext, [:x_g1, :Pm], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, ext, [:x_g1, :x_g2], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
 function SteamTurbineGov1(; R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, ext=Dict{String, Any}(), )
