@@ -135,9 +135,9 @@ dyn_gen = dyn_gen_classic(static_gen)
 add_component!(omib_sys, dyn_gen)
 ```
 
-Then we can simply export our system data to a json file that can be later read as:
+Then we can simply export our system data such that it can be later read as:
 ```julia
-to_json(omib_sys, "omib_sys.json")
+to_json(omib_sys, "YOUR_DICT/omib_sys.json")
 ```
 
 ## Dynamic Lines case: Data creation
@@ -331,5 +331,5 @@ end
 ### Save the system in a JSON file
 
 ```julia
-to_json(threebus_sys, "threebus_sys.json")
+to_json(threebus_sys, "YOUR_DOCT/threebus_sys.json")
 ```
