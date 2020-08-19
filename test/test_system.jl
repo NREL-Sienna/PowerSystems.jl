@@ -134,6 +134,14 @@ end
         push!(unique_initial_times, get_initial_time(forecast))
     end
     @test initial_times == sort!(collect(unique_initial_times))
+
+    for initial_time in initial_times
+        forecasts = collect(iterate_forecasts(sys; initial_time = initial_time))
+        @test length(forecasts) > 0
+        for forecast in forecasts
+            @test get_initial_time(forecast) == initial_time
+        end
+    end
 end
 
 @testset "Test remove_component" begin

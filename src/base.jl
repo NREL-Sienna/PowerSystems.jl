@@ -1146,17 +1146,43 @@ function get_forecasts_resolution(sys::System)
 end
 
 """
-Iterate over all forecasts in order of initial time.
+Return an iterator of forecasts in order of initial time.
+
+Note that passing a filter function can be much slower than the other filtering parameters
+because it reads time series data from media.
+
+Call `collect` on the result to get an array.
+
+# Arguments
+- `data::SystemData`: system
+- `filter_func = nothing`: Only return forecasts for which this returns true.
+- `type = nothing`: Only return forecasts with this type.
+- `initial_time = nothing`: Only return forecasts matching this value.
+- `label = nothing`: Only return forecasts matching this value.
 
 # Examples
 ```julia
 for forecast in iterate_forecasts(sys)
     @show forecast
 end
+
+forecasts = collect(iterate_forecasts(sys; initial_time = DateTime("2020-01-01T00:00:00"))
 ```
 """
-function iterate_forecasts(sys::System)
-    return IS.iterate_forecasts(sys.data)
+function iterate_forecasts(
+    sys::System,
+    filter_func = nothing;
+    type = nothing,
+    initial_time = nothing,
+    label = nothing,
+)
+    return iterate_forecasts(
+        sys.data,
+        filter_func;
+        type = type,
+        initial_time = initial_time,
+        label = label,
+    )
 end
 
 """

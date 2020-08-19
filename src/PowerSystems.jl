@@ -321,6 +321,7 @@ import InfrastructureSystems:
     get_initial_time,
     get_resolution,
     get_name,
+    iterate_forecasts,
     UnitSystem,
     SystemUnitsSettings
 
