@@ -1,5 +1,14 @@
 # PowerSystems Change Log
 
+## 0.27.0
+
+- Add Support for non-spinning reserve (Thanks @andrewrosemberg)
+- Add costs to reserve products (Thanks @andrewrosemberg)
+- Improvements to documentation
+- Extend parsing of PSS/e dyr files 
+- Modifications to dynamic structs to support (min, max) tuples
+
+
 ## 0.26.0
 
 - Add conversion field to HydroStorage
