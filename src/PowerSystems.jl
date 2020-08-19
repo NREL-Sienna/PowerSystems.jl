@@ -205,6 +205,7 @@ export clear_components!
 export add_service!
 export remove_service!
 export clear_services!
+export get_services
 export has_service
 export has_forecasts
 export get_buses
@@ -280,6 +281,8 @@ export get_reserve_limit_dn
 export get_participation_factor
 export get_cost
 export get_units_base
+export get_active_power_limits
+export get_reactive_power_limits
 
 #################################################################################
 # Imports
