@@ -2,6 +2,7 @@
 
 ## 0.27.0
 
+- Change errors to warnings when validating impedance values in AC Branches
 - Add Support for non-spinning reserve (Thanks @andrewrosemberg)
 - Add costs to reserve products (Thanks @andrewrosemberg)
 - Improvements to documentation
