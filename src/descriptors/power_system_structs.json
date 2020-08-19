@@ -2750,6 +2750,13 @@
           "default": "InfrastructureSystems.Forecasts()"
         },
         {
+          "name": "operation_cost",
+          "null_value": "TwoPartCost(nothing)",
+          "data_type": "Union{Nothing, TwoPartCost}",
+          "default": "nothing",
+          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+        },
+        {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
