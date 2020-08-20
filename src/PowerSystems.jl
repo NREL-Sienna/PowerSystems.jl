@@ -281,8 +281,6 @@ export get_reserve_limit_dn
 export get_participation_factor
 export get_cost
 export get_units_base
-export get_active_power_limits
-export get_reactive_power_limits
 
 #################################################################################
 # Imports
