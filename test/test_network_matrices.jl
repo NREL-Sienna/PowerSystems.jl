@@ -497,14 +497,11 @@ end
     @test Ybus5[nodes_5[1], nodes_5[2]] == (-3.5234840209999647 + 35.234840209999646im)
 
     c_sys5_re() = System(
+        100.0,
         nodes_5,
         thermal_generators5(nodes_5),
         loads5(nodes_5),
         branches5(nodes_5),
-        nothing,
-        100.0,
-        nothing,
-        nothing,
     )
 
     t_sys5_re = c_sys5_re()

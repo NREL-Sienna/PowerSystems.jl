@@ -8,14 +8,6 @@
     @test get_max_active_power(re) <= get_rating(re)
     @test isa(get_max_reactive_power(re), Float64)
 
-    mutable struct TestDevice <: Device
-        name::String
-    end
-
-    mutable struct TestRenDevice <: RenewableGen
-        name::String
-    end
-
     @test_throws ArgumentError get_max_active_power(TestDevice("foo"))
     @test_throws ArgumentError get_max_active_power(TestRenDevice("foo"))
 end
