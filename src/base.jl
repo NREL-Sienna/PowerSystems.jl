@@ -28,10 +28,10 @@ A power system defined by fields for base_power, components, and forecasts.
 ```julia
 System(base_power)
 System(base_power, buses, components...)
-System(base_power, buses, generators, loads, branches, storage, services; annex, kwargs...)
+System(base_power, buses, generators, loads, branches, storage, services; kwargs...)
 System(base_power, buses, generators, loads; kwargs...)
 System(file; kwargs...)
-System(; buses, generators, loads, branches, storage, base_power, services, annex, kwargs...)
+System(; buses, generators, loads, branches, storage, base_power, services, kwargs...)
 System(; kwargs...)
 ```
 
@@ -41,7 +41,7 @@ System(; kwargs...)
 - `components...`: Each element must be an iterable containing subtypes of Component.
 
 # Keyword arguments
-- `annex::Dict`: Defines LoadZones if key :LoadZone is present
+- `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidRange if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
@@ -101,13 +101,7 @@ end
 """
 System constructor when components are constructed externally.
 """
-function System(
-    base_power::Float64,
-    buses::Vector{Bus},
-    components...;
-    annex = nothing,
-    kwargs...,
-)
+function System(base_power::Float64, buses::Vector{Bus}, components...; kwargs...)
     data = _create_system_data_from_kwargs(; kwargs...)
     sys = System(data, base_power; kwargs...)
 
@@ -117,13 +111,6 @@ function System(
 
     for component in Iterators.flatten(components)
         add_component!(sys, component)
-    end
-
-    load_zones = isnothing(annex) ? nothing : get(annex, :LoadZone, nothing)
-    if !isnothing(load_zones)
-        for lz in load_zones
-            add_component!(sys, lz)
-        end
     end
 
     if get(kwargs, :runchecks, true)
@@ -156,11 +143,10 @@ function System(
     storage = nothing,
     base_power = 100.0,
     services = nothing,
-    annex = nothing,
     kwargs...,
 )
     _services = isnothing(services) ? [] : services
-    return System(base_power, buses, generators, loads, _services; annex = annex, kwargs...)
+    return System(base_power, buses, generators, loads, _services; kwargs...)
 end
 
 """Constructs a System from a file path ending with .m, .RAW, or .json"""
