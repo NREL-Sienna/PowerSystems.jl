@@ -1,5 +1,10 @@
 # PowerSystems Change Log
 
+## 0.28.0
+
+- Export additional methods
+- Change System constructor that takes iterable arguments
+
 ## 0.27.0
 
 - Change errors to warnings when validating impedance values in AC Branches
