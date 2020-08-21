@@ -1106,7 +1106,8 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     )
     output_active_power_limits = (
         min = storage.output_active_power_limit_min,
-        max = isnothing(storage.output_active_power_limit_max) ? gen.active_power_limits_max : storage.output_active_power_limit_max,
+        max = isnothing(storage.output_active_power_limit_max) ?
+                  gen.active_power_limits_max : storage.output_active_power_limit_max,
     )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
