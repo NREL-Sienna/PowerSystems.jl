@@ -35,25 +35,19 @@ include(joinpath(BASE_DIR, "test", "data_14bus_pu.jl"))
 nodes_5 = nodes5()
 nodes_14 = nodes14()
 c_sys14() = System(
+    100.0,
     nodes_14,
     thermal_generators14(nodes_14),
     loads14(nodes_14),
     branches14(nodes_14),
-    nothing,
-    100.0,
-    nothing,
-    nothing,
 );
 
 c_sys5_re() = System(
+    100.0,
     nodes_5,
     vcat(thermal_generators5(nodes_5), renewable_generators5(nodes_5)),
     loads5(nodes_5),
     branches5(nodes_5),
-    nothing,
-    100.0,
-    nothing,
-    nothing,
 )
 
 pf_sys5_re = c_sys5_re()

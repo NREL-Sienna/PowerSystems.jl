@@ -84,7 +84,7 @@ end
 
 makedocs(
     modules = [PowerSystems],
-    format = Documenter.HTML(),
+    format = Documenter.HTML(prettyurls = haskey(ENV, "GITHUB_ACTIONS"),),
     sitename = "PowerSystems.jl",
     authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",
     pages = Any[p for p in pages]

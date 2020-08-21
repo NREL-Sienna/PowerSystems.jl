@@ -17,27 +17,20 @@ checksys = false
     # test.
 
     sys5 = System(
+        100.0,
         nodes_5,
         thermal_generators5(nodes_5),
-        loads5(nodes_5),
-        nothing,
-        nothing,
-        100.0,
-        nothing,
-        nothing;
+        loads5(nodes_5);
         runchecks = checksys,
     )
     clear_components!(sys5)
 
     sys5b = System(
+        100.0,
         nodes_5,
         thermal_generators5(nodes_5),
         loads5(nodes_5),
-        nothing,
-        battery5(nodes_5),
-        100.0,
-        nothing,
-        nothing;
+        battery5(nodes_5);
         runchecks = checksys,
     )
     clear_components!(sys5b)
@@ -48,27 +41,13 @@ checksys = false
     #sys5b = System(_sys5b)
 
     sys5bh = System(
+        100.0,
         nodes_5,
-        vcat(thermal_generators5(nodes_5), hydro_generators5(nodes_5)),
+        thermal_generators5(nodes_5),
+        hydro_generators5(nodes_5),
         loads5(nodes_5),
         branches5(nodes_5),
-        battery5(nodes_5),
-        100.0,
-        nothing,
-        nothing;
-        runchecks = checksys,
-    )
-    clear_components!(sys5bh)
-
-    sys5bh = System(;
-        buses = nodes_5,
-        generators = vcat(thermal_generators5(nodes_5), hydro_generators5(nodes_5)),
-        loads = loads5(nodes_5),
-        branches = branches5(nodes_5),
-        storage = battery5(nodes_5),
-        base_power = 100.0,
-        services = nothing,
-        annex = nothing,
+        battery5(nodes_5);
         runchecks = checksys,
     )
     clear_components!(sys5bh)
@@ -85,26 +64,21 @@ checksys = false
     end
 
     sys14b = PowerSystems.System(
+        100.0,
         nodes_14,
         thermal_generators14(nodes_14),
         loads14(nodes_14),
-        nothing,
-        battery14(nodes_14),
-        100.0,
-        nothing,
-        nothing;
+        battery14(nodes_14);
         runchecks = checksys,
     )
     clear_components!(sys14b)
     sys14b = PowerSystems.System(
+        100.0,
         nodes_14,
         thermal_generators14(nodes_14),
         loads14(nodes_14),
         branches14(nodes_14),
-        battery14(nodes_14),
-        100.0,
-        nothing,
-        nothing;
+        battery14(nodes_14);
         runchecks = checksys,
     )
     clear_components!(sys14b)

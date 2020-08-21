@@ -27,24 +27,21 @@ A power system defined by fields for base_power, components, and forecasts.
 
 ```julia
 System(base_power)
-System(components, base_power)
-System(buses, generators, loads, branches, storage, base_power, services, annex; kwargs...)
-System(buses, generators, loads, base_power; kwargs...)
+System(base_power, buses, components...)
+System(base_power, buses, generators, loads, branches, storage, services; kwargs...)
+System(base_power, buses, generators, loads; kwargs...)
 System(file; kwargs...)
-System(; buses, generators, loads, branches, storage, base_power, services, annex, kwargs...)
+System(; buses, generators, loads, branches, storage, base_power, services, kwargs...)
 System(; kwargs...)
 ```
 
 # Arguments
-- `buses::Vector{Bus}`: an array of buses
-- `generators::Vector{Generator}`: an array of generators of (possibly) different types
-- `loads::Vector{ElectricLoad}`: an array of load specifications that includes timing of the loads
-- `branches::Union{Nothing, Vector{Branch}}`: an array of branches; may be `nothing`
-- `storage::Union{Nothing, Vector{Storage}}`: an array of storage devices; may be `nothing`
 - `base_power::Float64`: the base power value for the system
-- `services::Union{Nothing, Vector{<:Service}}`: an array of services; may be `nothing`
+- `buses::Vector{Bus}`: an array of buses
+- `components...`: Each element must be an iterable containing subtypes of Component.
 
 # Keyword arguments
+- `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidRange if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
@@ -101,130 +98,31 @@ function System(data, base_power; kwargs...)
     return System(data, base_power, internal; kwargs...)
 end
 
-"""System constructor when components are constructed externally."""
-function System(
-    buses::Vector{Bus},
-    generators::Vector{<:Generator},
-    loads::Vector{<:ElectricLoad},
-    branches::Union{Nothing, Vector{<:Branch}},
-    storage::Union{Nothing, Vector{<:Storage}},
-    base_power::Float64,
-    services::Union{Nothing, Vector{<:Service}},
-    annex::Union{Nothing, Dict},
-    ;
-    kwargs...,
-)
-
+"""
+System constructor when components are constructed externally.
+"""
+function System(base_power::Float64, buses::Vector{Bus}, components...; kwargs...)
     data = _create_system_data_from_kwargs(; kwargs...)
-
     sys = System(data, base_power; kwargs...)
 
-    arrays = [buses, generators, loads]
-    if !isnothing(branches)
-        push!(arrays, branches)
-    end
-    if !isnothing(storage)
-        push!(arrays, storage)
-    end
-    if !isnothing(services)
-        push!(arrays, services)
+    for bus in buses
+        add_component!(sys, bus)
     end
 
-    error_detected = false
-    for component in Iterators.flatten(arrays)
-        try
-            add_component!(sys, component)
-        catch e
-            if isa(e, IS.InvalidRange)
-                error_detected = true
-            else
-                rethrow()
-            end
-        end
+    for component in Iterators.flatten(components)
+        add_component!(sys, component)
     end
 
-    load_zones = isnothing(annex) ? nothing : get(annex, :LoadZone, nothing)
-    if !isnothing(load_zones)
-        for lz in load_zones
-            try
-                add_component!(sys, lz)
-            catch e
-                if isa(e, IS.InvalidRange)
-                    error_detected = true
-                else
-                    rethrow()
-                end
-            end
-        end
-    end
-
-    runchecks = get(kwargs, :runchecks, true)
-
-    if error_detected
-        throw(IS.InvalidRange("Invalid value(s) detected"))
-    end
-
-    if runchecks
+    if get(kwargs, :runchecks, true)
         check!(sys)
     end
 
     return sys
 end
 
-"""System constructor without nothing-able arguments."""
-function System(
-    buses::Vector{Bus},
-    generators::Vector{<:Generator},
-    loads::Vector{<:ElectricLoad},
-    base_power::Float64,
-    ;
-    kwargs...,
-)
-    return System(
-        buses,
-        generators,
-        loads,
-        nothing,
-        nothing,
-        base_power,
-        nothing,
-        nothing,
-        nothing,
-        ;
-        kwargs...,
-    )
-end
-
-"""System constructor with keyword arguments."""
-function System(;
-    base_power = 100.0,
-    buses,
-    generators,
-    loads,
-    branches,
-    storage,
-    services,
-    annex,
-    kwargs...,
-)
-    return System(
-        buses,
-        generators,
-        loads,
-        branches,
-        storage,
-        base_power,
-        services,
-        annex,
-        ;
-        kwargs...,
-    )
-end
-
 """Constructs a non-functional System for demo purposes."""
 function System(
-    ::Nothing,
-    ;
+    ::Nothing;
     buses = [
         Bus(;
             number = 0,
@@ -245,21 +143,10 @@ function System(
     storage = nothing,
     base_power = 100.0,
     services = nothing,
-    annex = nothing,
     kwargs...,
 )
-    return System(
-        buses,
-        generators,
-        loads,
-        branches,
-        storage,
-        base_power,
-        services,
-        annex,
-        ;
-        kwargs...,
-    )
+    _services = isnothing(services) ? [] : services
+    return System(base_power, buses, generators, loads, _services; kwargs...)
 end
 
 """Constructs a System from a file path ending with .m, .RAW, or .json"""

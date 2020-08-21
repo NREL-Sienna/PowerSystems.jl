@@ -385,7 +385,7 @@
             "min": 0,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "null_value": "0.0",
@@ -396,7 +396,7 @@
             "min": 0,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "b",
@@ -407,7 +407,7 @@
             "min": 0,
             "max": 100
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "null_value": "0.0",
@@ -495,7 +495,7 @@
             "min": 0,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "null_value": "0.0",
@@ -506,7 +506,7 @@
             "min": 0,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "null_value": "(from=0.0, to=0.0)",
@@ -517,7 +517,7 @@
             "min": 0,
             "max": 2
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "flow_limits",
@@ -613,7 +613,7 @@
             "min": 0,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "null_value": "0.0",
@@ -624,7 +624,7 @@
             "min": -2,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "primary_shunt",
@@ -635,7 +635,7 @@
             "min": 0,
             "max": 2
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "tap",
@@ -738,7 +738,7 @@
             "min": -2,
             "max": 2
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "null_value": "0.0",
@@ -749,7 +749,7 @@
             "min": -2,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "primary_shunt",
@@ -760,7 +760,7 @@
             "min": 0,
             "max": 2
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "tap",
@@ -854,7 +854,7 @@
             "min": -2,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "null_value": "0.0",
@@ -865,7 +865,7 @@
             "min": -2,
             "max": 4
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "primary_shunt",
@@ -876,7 +876,7 @@
             "min": 0,
             "max": 2
           },
-          "validation_action": "error"
+          "validation_action": "warn"
         },
         {
           "name": "rate",
@@ -2460,6 +2460,13 @@
           "default": "Dict{String, Any}()"
         },
         {
+          "name": "operation_cost",
+          "null_value": "TwoPartCost(nothing)",
+          "data_type": "Union{Nothing, TwoPartCost}",
+          "default": "nothing",
+          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+        },
+        {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
@@ -2741,6 +2748,13 @@
           "null_value": "InfrastructureSystems.Forecasts()",
           "data_type": "InfrastructureSystems.Forecasts",
           "default": "InfrastructureSystems.Forecasts()"
+        },
+        {
+          "name": "operation_cost",
+          "null_value": "TwoPartCost(nothing)",
+          "data_type": "Union{Nothing, TwoPartCost}",
+          "default": "nothing",
+          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
         },
         {
           "name": "internal",

@@ -205,6 +205,7 @@ export clear_components!
 export add_service!
 export remove_service!
 export clear_services!
+export get_services
 export has_service
 export has_forecasts
 export get_buses

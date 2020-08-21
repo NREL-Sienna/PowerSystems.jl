@@ -1,5 +1,20 @@
 # PowerSystems Change Log
 
+## 0.28.0
+
+- Export additional methods
+- Change System constructor that takes iterable arguments
+
+## 0.27.0
+
+- Change errors to warnings when validating impedance values in AC Branches
+- Add Support for non-spinning reserve (Thanks @andrewrosemberg)
+- Add costs to reserve products (Thanks @andrewrosemberg)
+- Improvements to documentation
+- Extend parsing of PSS/e dyr files 
+- Modifications to dynamic structs to support (min, max) tuples
+
+
 ## 0.26.0
 
 - Add conversion field to HydroStorage

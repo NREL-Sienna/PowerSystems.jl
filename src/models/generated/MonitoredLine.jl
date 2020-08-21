@@ -28,9 +28,9 @@ This file is auto-generated. Do not edit.
 - `active_power_flow::Float64`
 - `reactive_power_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `error`
-- `x::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `error`
-- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: `(0, 2)`, action if invalid: `error`
+- `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
+- `x::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
+- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
 - `flow_limits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}`: TODO: throw warning above max SIL
 - `rate::Float64`: TODO: compare to SIL (warn) (theoretical limit)
 - `angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: `(-1.571, 1.571)`, action if invalid: `error`

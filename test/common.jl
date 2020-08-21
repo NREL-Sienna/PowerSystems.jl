@@ -2,6 +2,14 @@
 const DESCRIPTORS = joinpath(RTS_GMLC_DIR, "user_descriptors.yaml")
 const MULTISTART_MAPPING = joinpath(RTS_GMLC_DIR, "generator_mapping_multi_start.yaml")
 
+mutable struct TestDevice <: Device
+    name::String
+end
+
+mutable struct TestRenDevice <: RenewableGen
+    name::String
+end
+
 function create_rts_system(forecast_resolution = Dates.Hour(1))
     data = PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS)
     return System(data; forecast_resolution = forecast_resolution)
