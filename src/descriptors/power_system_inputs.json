@@ -664,7 +664,7 @@
             "default_value": null
         },
         {
-            "units": "MW",
+            "unit": "MW",
             "name": "requirement",
             "description": "reserve requirement",
             "unit_system": "SYSTEM_BASE"
@@ -730,7 +730,7 @@
         },
         {
             "name": "energy_level",
-            "unit": "kWh",
+            "unit": "MWh",
             "description": "Energy Level setpoint",
             "unit_system": "device_base",
             "default_value": 0.0
@@ -821,13 +821,13 @@
             "default_value": 1.0
         },
         {
-            "unit": "GWh",
+            "unit": "MWh",
             "name": "storage_capacity",
             "description": "Storage Capacity",
             "unit_system": "device_base"
         },
         {
-            "unit": "GWh",
+            "unit": "MWh",
             "name": "min_storage_capacity",
             "description": "Storage Capacity minimum",
             "unit_system": "device_base",

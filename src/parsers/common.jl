@@ -126,6 +126,14 @@ function convert_units!(
         value = deg2rad(value)
     elseif unit_conversion.From == "radian" && unit_conversion.To == "degree"
         value = rad2deg(value)
+    elseif unit_conversion.From == "GW" && unit_conversion.To == "MW"
+        value *= 1000
+    elseif unit_conversion.From == "GWh" && unit_conversion.To == "MWh"
+        value *= 1000
+    elseif unit_conversion.From == "kW" && unit_conversion.To == "MW"
+        value /= 1000
+    elseif unit_conversion.From == "kWh" && unit_conversion.To == "MWh"
+        value /= 1000
     else
         throw(DataFormatError("Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported"))
     end

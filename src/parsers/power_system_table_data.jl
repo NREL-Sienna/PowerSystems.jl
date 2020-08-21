@@ -527,6 +527,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     cost_colnames = zip(heat_rate_fields, output_point_fields)
 
     for gen in iterate_rows(data, GENERATOR::InputCategory)
+        @debug "making generator:" gen.name
         bus = get_bus(sys, gen.bus_id)
         if isnothing(bus)
             throw(DataFormatError("could not find $(gen.bus_id)"))
@@ -1105,7 +1106,7 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     )
     output_active_power_limits = (
         min = storage.output_active_power_limit_min,
-        max = storage.output_active_power_limit_max,
+        max = isnothing(storage.output_active_power_limit_max) ? gen.active_power_limits_max : storage.output_active_power_limit_max,
     )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
