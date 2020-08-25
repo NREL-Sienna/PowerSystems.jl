@@ -361,8 +361,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
-        branch_type = get_branch_type(branch.tap, alpha)
-
+        branch_type = get_branch_type(branch.tap, alpha, get(branch, :is_transformer, nothing))
         if branch_type == Line
             b = branch.primary_shunt / 2
             value = Line(

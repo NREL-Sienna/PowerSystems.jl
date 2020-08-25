@@ -250,6 +250,13 @@
             "description": "Transformer winding ratio",
             "default_value": 1.0
         }
+        ,
+        {
+            "name": "is_transformer",
+            "unit": "bool",
+            "description": "Transformer flag",
+            "default_value": null
+        }
     ],
     "generator": [
         {
