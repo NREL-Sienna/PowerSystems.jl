@@ -367,8 +367,8 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         tmpcost = ThreePartCost(nothing)
         cost = tmpcost.variable
         fixed = tmpcost.fixed
-        startup = tmpcost.startup
-        shutdn = tmpcost.shutdn
+        startup = tmpcost.start_up
+        shutdn = tmpcost.shut_down
     end
 
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
