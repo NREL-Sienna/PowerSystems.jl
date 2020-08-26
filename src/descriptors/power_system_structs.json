@@ -67,7 +67,7 @@
         },
         {
           "name": "shut_down",
-          "comment": "shutdown cost",
+          "comment": "shut-down cost",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -117,7 +117,7 @@
         },
         {
           "name": "shut_down",
-          "comment": "shutdown cost",
+          "comment": "shut-down cost",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -180,7 +180,7 @@
             },
             {
               "name": "shut_down",
-              "comment": "shutdown cost",
+              "comment": "shut-down cost",
               "null_value": "0.0",
               "data_type": "Float64",
               "valid_range": {
@@ -2212,7 +2212,7 @@
         },
         {
           "name": "power_trajectory",
-          "comment": "Power trajectory the unit will take during the start-up and shutdown ramp process",
+          "comment": "Power trajectory the unit will take during the start-up and shut-down ramp process",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:start_up, :shut_down), Tuple{Float64, Float64}}}",
           "valid_range": {

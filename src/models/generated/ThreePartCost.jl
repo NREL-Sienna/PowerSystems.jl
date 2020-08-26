@@ -17,7 +17,7 @@ Data Structure Operational Cost Data in Three parts fixed, variable cost and sta
 - `variable::VariableCost`: variable cost
 - `fixed::Float64`: fixed cost
 - `start_up::Float64`: start-up cost, validation range: `(0, nothing)`, action if invalid: `warn`
-- `shut_down::Float64`: shutdown cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -28,7 +28,7 @@ mutable struct ThreePartCost <: OperationalCost
     fixed::Float64
     "start-up cost"
     start_up::Float64
-    "shutdown cost"
+    "shut-down cost"
     shut_down::Float64
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts

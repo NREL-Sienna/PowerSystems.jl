@@ -45,7 +45,7 @@ Data Structure for thermal generation technologies.
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: `(0, nothing)`, action if invalid: `error`
-- `power_trajectory::Union{Nothing, NamedTuple{(:start_up, :shut_down), Tuple{Float64, Float64}}}`: Power trajectory the unit will take during the start-up and shutdown ramp process, validation range: `(0, nothing)`, action if invalid: `error`
+- `power_trajectory::Union{Nothing, NamedTuple{(:start_up, :shut_down), Tuple{Float64, Float64}}}`: Power trajectory the unit will take during the start-up and shut-down ramp process, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}`:  Time limits for start-up based on turbine temperature in hours
 - `start_types::Int`:  Number of start-up based on turbine temperature, validation range: `(1, 3)`, action if invalid: `error`
@@ -75,7 +75,7 @@ mutable struct ThermalMultiStart <: ThermalGen
     active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     reactive_power_limits::Union{Nothing, Min_Max}
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    "Power trajectory the unit will take during the start-up and shutdown ramp process"
+    "Power trajectory the unit will take during the start-up and shut-down ramp process"
     power_trajectory::Union{Nothing, NamedTuple{(:start_up, :shut_down), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
