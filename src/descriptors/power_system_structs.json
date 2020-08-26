@@ -110,12 +110,6 @@
           "data_type": "Float64"
         },
         {
-          "name": "ancillary_services",
-          "comment": "Bids for the ancillary services",
-          "null_value": "Dict{String, Float}()",
-          "data_type": "Float64"
-        },
-        {
           "name": "start_up",
           "comment": "start-up cost",
           "null_value": "(hot = START_COST, int = START_COST, cold = START_COST)",
@@ -131,6 +125,13 @@
             "max": null
           },
           "validation_action": "warn"
+        },
+        {
+          "name": "ancillary_services",
+          "comment": "Bids for the ancillary services",
+          "null_value": "Dict{String, Float}()",
+          "data_type": "Dict{String, Float64}",
+          "default": "Dict{String, Float}()"
         },
         {
           "name": "forecasts",
