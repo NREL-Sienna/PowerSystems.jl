@@ -15,7 +15,8 @@
     @test outer_control isa PowerSystems.DynamicComponent
     vsc = CurrentControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
     @test vsc isa PowerSystems.DynamicComponent
-    BESS_source = ZeroOrderBESS((sqrt(8)/sqrt(3))*690.0, (sqrt(3)/sqrt(8))*2750000.0, 370.0, 0.001, 4.63, 3200.0, 0.6, 4.0, 0.39, 10.34, 1.08)
+    BESS_source = ZeroOrderBESS((sqrt(8)/sqrt(3))*690.0, (sqrt(3)/sqrt(8))*2750000.0, 
+                              370.0, 0.001, 4.63, 3200.0, 0.6, 4.0, 0.39, 10.34, 1.08)
     @test BESS_source isa PowerSystems.DynamicComponent
 end
 

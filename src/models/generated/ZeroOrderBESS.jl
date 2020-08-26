@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         n_states::Int64
     end
 
-Parameters for the DC-side with a Battery Energy Storage System
+Parameters for the DC-side with a Battery Energy Storage System from paper at https://arxiv.org/abs/2007.11776
 
 # Arguments
 - `rated_voltage::Float64`: rated voltage, validation range: `(0, nothing)`

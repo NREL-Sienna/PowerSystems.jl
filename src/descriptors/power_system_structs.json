@@ -9057,7 +9057,7 @@
     },
     {
       "struct_name": "ZeroOrderBESS",
-      "docstring": "Parameters for the DC-side with a Battery Energy Storage System",
+      "docstring": "Parameters for the DC-side with a Battery Energy Storage System from paper at https://arxiv.org/abs/2007.11776",
       "fields": [
         {
           "name": "rated_voltage",
