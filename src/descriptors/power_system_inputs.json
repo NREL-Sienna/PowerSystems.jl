@@ -362,8 +362,8 @@
         },
         {
             "unit": "MMBTU",
-            "name": "start_up_heat_cold_cost",
-            "description": "Heat required to start_up from cold",
+            "name": "startup_heat_cold_cost",
+            "description": "Heat required to startup from cold",
             "default_value": null
         },
         {
@@ -555,7 +555,7 @@
         },
         {
             "unit": "$/start",
-            "name": "start_up_cost",
+            "name": "startup_cost",
             "description": "Cost associated with Start-up",
             "default_value": null
         },
@@ -602,8 +602,8 @@
             "default_value": null
         },
         {
-            "name": "start_up_ramp",
-            "description": "start_up ramp capability",
+            "name": "startup_ramp",
+            "description": "Startup ramp capability",
             "unit_system": "device_base",
             "base_reference": "base_mva",
             "default_value": null
