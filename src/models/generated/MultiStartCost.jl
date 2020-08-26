@@ -54,7 +54,7 @@ function MultiStartCost(::Nothing)
         variable=VariableCost((0.0, 0.0)),
         no_load=0.0,
         fixed=0.0,
-        startup=(hot = START_COST, warm = START_COST,cold = START_COST),
+        startup=(hot = START_COST, warm = START_COST, cold = START_COST),
         shutdn=0.0,
         forecasts=InfrastructureSystems.Forecasts(),
     )
