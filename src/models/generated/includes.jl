@@ -1,5 +1,6 @@
 include("TwoPartCost.jl")
 include("ThreePartCost.jl")
+include("MarketBidCost.jl")
 include("MultiStartCost.jl")
 include("Area.jl")
 include("LoadZone.jl")
@@ -251,6 +252,7 @@ export get_active_power_flow
 export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_to
+export get_ancillary_services
 export get_angle
 export get_angle_limits
 export get_arc
@@ -269,6 +271,7 @@ export get_db
 export get_delta_t
 export get_dynamic_injector
 export get_efficiency
+export get_energy_bid
 export get_eq_p
 export get_ext
 export get_fixed
@@ -316,6 +319,7 @@ export get_model
 export get_must_run
 export get_n_states
 export get_no_load
+export get_no_load_cost
 export get_number
 export get_operation_cost
 export get_output_active_power_limits
@@ -348,10 +352,12 @@ export get_rg
 export get_rv
 export get_saturation_coeffs
 export get_services
+export get_shut_down
 export get_shutdn
 export get_speed_error_signal
 export get_start_time_limits
 export get_start_types
+export get_start_up
 export get_startup
 export get_state_of_charge_limits
 export get_states
@@ -556,6 +562,7 @@ export set_active_power_flow!
 export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_to!
+export set_ancillary_services!
 export set_angle!
 export set_angle_limits!
 export set_arc!
@@ -574,6 +581,7 @@ export set_db!
 export set_delta_t!
 export set_dynamic_injector!
 export set_efficiency!
+export set_energy_bid!
 export set_eq_p!
 export set_ext!
 export set_fixed!
@@ -621,6 +629,7 @@ export set_model!
 export set_must_run!
 export set_n_states!
 export set_no_load!
+export set_no_load_cost!
 export set_number!
 export set_operation_cost!
 export set_output_active_power_limits!
@@ -653,10 +662,12 @@ export set_rg!
 export set_rv!
 export set_saturation_coeffs!
 export set_services!
+export set_shut_down!
 export set_shutdn!
 export set_speed_error_signal!
 export set_start_time_limits!
 export set_start_types!
+export set_start_up!
 export set_startup!
 export set_state_of_charge_limits!
 export set_states!

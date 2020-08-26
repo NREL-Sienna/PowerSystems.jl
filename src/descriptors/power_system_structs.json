@@ -94,35 +94,35 @@
       "supertype": "OperationalCost"
     },
     {
-      "struct_name": "MultiStartCost",
-      "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
+      "struct_name": "MarketBidCost",
+      "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
       "fields": [
         {
-          "name": "variable",
+          "name": "energy_bid",
           "comment": "variable cost",
           "null_value": "VariableCost((0.0, 0.0))",
           "data_type": "VariableCost"
         },
         {
-          "name": "no_load",
+          "name": "no_load_cost",
           "comment": "no load cost",
           "null_value": "0.0",
           "data_type": "Float64"
         },
         {
-          "name": "fixed",
-          "comment": "fixed cost",
-          "null_value": "0.0",
+          "name": "ancillary_services",
+          "comment": "Bids for the ancillary services",
+          "null_value": "Dict{String, Float}()",
           "data_type": "Float64"
         },
         {
-          "name": "startup",
+          "name": "start_up",
           "comment": "startup cost",
-          "null_value": "(hot = START_COST, warm = START_COST,cold = START_COST)",
-          "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
+          "null_value": "(hot = START_COST, int = START_COST, cold = START_COST)",
+          "data_type": "NamedTuple{(:hot, :int, :cold), NTuple{3, Float64}}"
         },
         {
-          "name": "shutdn",
+          "name": "shut_down",
           "comment": "shutdown cost",
           "null_value": "0.0",
           "data_type": "Float64",
@@ -149,6 +149,62 @@
       ],
       "supertype": "OperationalCost"
     },
+        {
+          "struct_name": "MultiStartCost",
+          "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
+          "fields": [
+            {
+              "name": "variable",
+              "comment": "variable cost",
+              "null_value": "VariableCost((0.0, 0.0))",
+              "data_type": "VariableCost"
+            },
+            {
+              "name": "no_load",
+              "comment": "no load cost",
+              "null_value": "0.0",
+              "data_type": "Float64"
+            },
+            {
+              "name": "fixed",
+              "comment": "fixed cost",
+              "null_value": "0.0",
+              "data_type": "Float64"
+            },
+            {
+              "name": "startup",
+              "comment": "startup cost",
+              "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
+              "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
+            },
+            {
+              "name": "shutdn",
+              "comment": "shutdown cost",
+              "null_value": "0.0",
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              },
+              "validation_action": "warn"
+            },
+            {
+              "name": "forecasts",
+              "accessor_module": "InfrastructureSystems",
+              "comment": "internal forecast storage",
+              "null_value": "InfrastructureSystems.Forecasts()",
+              "data_type": "InfrastructureSystems.Forecasts",
+              "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
+              "name": "internal",
+              "comment": "power system internal reference, do not modify",
+              "data_type": "InfrastructureSystemsInternal",
+              "internal_default": "InfrastructureSystemsInternal()"
+            }
+          ],
+          "supertype": "OperationalCost"
+        },
     {
       "struct_name": "Area",
       "docstring": "A collection of buses for control purposes.",
