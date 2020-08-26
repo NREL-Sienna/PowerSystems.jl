@@ -129,9 +129,9 @@
         {
           "name": "ancillary_services",
           "comment": "Bids for the ancillary services",
-          "null_value": "Dict{String, Float}()",
+          "null_value": "Dict{String, Float64}()",
           "data_type": "Dict{String, Float64}",
-          "default": "Dict{String, Float}()"
+          "default": "Dict{String, Float64}()"
         },
         {
           "name": "forecasts",
@@ -2214,7 +2214,7 @@
           "name": "power_trajectory",
           "comment": "Power trajectory the unit will take during the start-up and shut-down ramp process",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, NamedTuple{(:start_up, :shut_down), Tuple{Float64, Float64}}}",
+          "data_type": "Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}",
           "valid_range": {
             "min": 0,
             "max": null

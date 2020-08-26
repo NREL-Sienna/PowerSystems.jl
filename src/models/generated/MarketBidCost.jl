@@ -41,11 +41,11 @@ mutable struct MarketBidCost <: OperationalCost
     internal::InfrastructureSystemsInternal
 end
 
-function MarketBidCost(energy_bid, no_load_cost, start_up, shut_down, ancillary_services=Dict{String, Float}(), forecasts=InfrastructureSystems.Forecasts(), )
+function MarketBidCost(energy_bid, no_load_cost, start_up, shut_down, ancillary_services=Dict{String, Float64}(), forecasts=InfrastructureSystems.Forecasts(), )
     MarketBidCost(energy_bid, no_load_cost, start_up, shut_down, ancillary_services, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function MarketBidCost(; energy_bid, no_load_cost, start_up, shut_down, ancillary_services=Dict{String, Float}(), forecasts=InfrastructureSystems.Forecasts(), )
+function MarketBidCost(; energy_bid, no_load_cost, start_up, shut_down, ancillary_services=Dict{String, Float64}(), forecasts=InfrastructureSystems.Forecasts(), )
     MarketBidCost(energy_bid, no_load_cost, start_up, shut_down, ancillary_services, forecasts, )
 end
 
@@ -56,7 +56,7 @@ function MarketBidCost(::Nothing)
         no_load_cost=0.0,
         start_up=(hot = START_COST, int = START_COST, cold = START_COST),
         shut_down=0.0,
-        ancillary_services=Dict{String, Float}(),
+        ancillary_services=Dict{String, Float64}(),
         forecasts=InfrastructureSystems.Forecasts(),
     )
 end
