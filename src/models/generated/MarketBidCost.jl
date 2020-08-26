@@ -19,7 +19,7 @@ Compatible with most US Market bidding mechanisms
 - `energy_bid::VariableCost`: variable cost
 - `no_load_cost::Float64`: no load cost
 - `ancillary_services::Float64`: Bids for the ancillary services
-- `start_up::NamedTuple{(:hot, :int, :cold), NTuple{3, Float64}}`: startup cost
+- `start_up::NamedTuple{(:hot, :int, :cold), NTuple{3, Float64}}`: start-up cost
 - `shut_down::Float64`: shutdown cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -31,7 +31,7 @@ mutable struct MarketBidCost <: OperationalCost
     no_load_cost::Float64
     "Bids for the ancillary services"
     ancillary_services::Float64
-    "startup cost"
+    "start-up cost"
     start_up::NamedTuple{(:hot, :int, :cold), NTuple{3, Float64}}
     "shutdown cost"
     shut_down::Float64

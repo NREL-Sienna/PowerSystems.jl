@@ -353,12 +353,10 @@ export get_rv
 export get_saturation_coeffs
 export get_services
 export get_shut_down
-export get_shutdn
 export get_speed_error_signal
 export get_start_time_limits
 export get_start_types
 export get_start_up
-export get_startup
 export get_state_of_charge_limits
 export get_states
 export get_states_types
@@ -663,12 +661,10 @@ export set_rv!
 export set_saturation_coeffs!
 export set_services!
 export set_shut_down!
-export set_shutdn!
 export set_speed_error_signal!
 export set_start_time_limits!
 export set_start_types!
 export set_start_up!
-export set_startup!
 export set_state_of_charge_limits!
 export set_states!
 export set_states_types!

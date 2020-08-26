@@ -56,7 +56,7 @@
         },
         {
           "name": "start_up",
-          "comment": "startup cost",
+          "comment": "start-up cost",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -117,7 +117,7 @@
         },
         {
           "name": "start_up",
-          "comment": "startup cost",
+          "comment": "start-up cost",
           "null_value": "(hot = START_COST, int = START_COST, cold = START_COST)",
           "data_type": "NamedTuple{(:hot, :int, :cold), NTuple{3, Float64}}"
         },
@@ -172,13 +172,13 @@
               "data_type": "Float64"
             },
             {
-              "name": "startup",
-              "comment": "startup cost",
+              "name": "start_up",
+              "comment": "start-up cost",
               "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
               "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
             },
             {
-              "name": "shutdn",
+              "name": "shut_down",
               "comment": "shutdown cost",
               "null_value": "0.0",
               "data_type": "Float64",
@@ -2211,9 +2211,9 @@
         },
         {
           "name": "power_trajectory",
-          "comment": "Power trajectory the unit will take during the startup and shutdown ramp process",
+          "comment": "Power trajectory the unit will take during the start-up and shutdown ramp process",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}",
+          "data_type": "Union{Nothing, NamedTuple{(:start_up, :shut_down), Tuple{Float64, Float64}}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -2233,13 +2233,13 @@
         },
         {
           "name": "start_time_limits",
-          "comment": " Time limits for startup based on turbine temperature in hours",
+          "comment": " Time limits for start-up based on turbine temperature in hours",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
         },
         {
           "name": "start_types",
-          "comment": " Number of startup based on turbine temperature",
+          "comment": " Number of start-up based on turbine temperature",
           "null_value": "1",
           "data_type": "Int",
           "valid_range": {
