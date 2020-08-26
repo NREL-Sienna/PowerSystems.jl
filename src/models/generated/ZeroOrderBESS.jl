@@ -23,18 +23,18 @@ This file is auto-generated. Do not edit.
 Parameters for the DC-side with a Battery Energy Storage System
 
 # Arguments
-- `rated_voltage::Float64`: rated voltage, validation range: (0, nothing)
-- `rated_current::Float64`: rated current, validation range: (0, nothing)
-- `battery_voltage::Float64`: battery voltage, validation range: (0, nothing)
-- `battery_resistance::Float64`: battery_resistance, validation range: (0, nothing)
-- `dc_dc_inductor::Float64`: DC/DC inductance, validation range: (0, nothing)
-- `dc_link_capacitance::Float64`: DC-link capacitor, validation range: (0, nothing)
-- `fs::Float64`: DC/DC converter switching frequency, validation range: (0, nothing)
-- `kpv::Float64`: voltage controller proportional gain, validation range: (0, nothing)
-- `kiv::Float64`: voltage controller integral gain, validation range: (0, nothing)
-- `kpi::Float64`: current controller proportional gain, validation range: (0, nothing)
-- `kii::Float64`: current controller integral gain, validation range: (0, nothing)
-- `Vdc_ref::Float64`: Reference DC-Voltage Set-point, validation range: (0, nothing)
+- `rated_voltage::Float64`: rated voltage, validation range: `(0, nothing)`
+- `rated_current::Float64`: rated current, validation range: `(0, nothing)`
+- `battery_voltage::Float64`: battery voltage, validation range: `(0, nothing)`
+- `battery_resistance::Float64`: battery_resistance, validation range: `(0, nothing)`
+- `dc_dc_inductor::Float64`: DC/DC inductance, validation range: `(0, nothing)`
+- `dc_link_capacitance::Float64`: DC-link capacitor, validation range: `(0, nothing)`
+- `fs::Float64`: DC/DC converter switching frequency, validation range: `(0, nothing)`
+- `kpv::Float64`: voltage controller proportional gain, validation range: `(0, nothing)`
+- `kiv::Float64`: voltage controller integral gain, validation range: `(0, nothing)`
+- `kpi::Float64`: current controller proportional gain, validation range: `(0, nothing)`
+- `kii::Float64`: current controller integral gain, validation range: `(0, nothing)`
+- `Vdc_ref::Float64`: Reference DC-Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the ZeroOrderBESS model are:
 	v_dc: DC-link votlage,
@@ -106,64 +106,64 @@ function ZeroOrderBESS(::Nothing)
     )
 end
 
-"""Get ZeroOrderBESS rated_voltage."""
+"""Get [`ZeroOrderBESS`](@ref) `rated_voltage`."""
 get_rated_voltage(value::ZeroOrderBESS) = value.rated_voltage
-"""Get ZeroOrderBESS rated_current."""
+"""Get [`ZeroOrderBESS`](@ref) `rated_current`."""
 get_rated_current(value::ZeroOrderBESS) = value.rated_current
-"""Get ZeroOrderBESS battery_voltage."""
+"""Get [`ZeroOrderBESS`](@ref) `battery_voltage`."""
 get_battery_voltage(value::ZeroOrderBESS) = value.battery_voltage
-"""Get ZeroOrderBESS battery_resistance."""
+"""Get [`ZeroOrderBESS`](@ref) `battery_resistance`."""
 get_battery_resistance(value::ZeroOrderBESS) = value.battery_resistance
-"""Get ZeroOrderBESS dc_dc_inductor."""
+"""Get [`ZeroOrderBESS`](@ref) `dc_dc_inductor`."""
 get_dc_dc_inductor(value::ZeroOrderBESS) = value.dc_dc_inductor
-"""Get ZeroOrderBESS dc_link_capacitance."""
+"""Get [`ZeroOrderBESS`](@ref) `dc_link_capacitance`."""
 get_dc_link_capacitance(value::ZeroOrderBESS) = value.dc_link_capacitance
-"""Get ZeroOrderBESS fs."""
+"""Get [`ZeroOrderBESS`](@ref) `fs`."""
 get_fs(value::ZeroOrderBESS) = value.fs
-"""Get ZeroOrderBESS kpv."""
+"""Get [`ZeroOrderBESS`](@ref) `kpv`."""
 get_kpv(value::ZeroOrderBESS) = value.kpv
-"""Get ZeroOrderBESS kiv."""
+"""Get [`ZeroOrderBESS`](@ref) `kiv`."""
 get_kiv(value::ZeroOrderBESS) = value.kiv
-"""Get ZeroOrderBESS kpi."""
+"""Get [`ZeroOrderBESS`](@ref) `kpi`."""
 get_kpi(value::ZeroOrderBESS) = value.kpi
-"""Get ZeroOrderBESS kii."""
+"""Get [`ZeroOrderBESS`](@ref) `kii`."""
 get_kii(value::ZeroOrderBESS) = value.kii
-"""Get ZeroOrderBESS Vdc_ref."""
+"""Get [`ZeroOrderBESS`](@ref) `Vdc_ref`."""
 get_Vdc_ref(value::ZeroOrderBESS) = value.Vdc_ref
-"""Get ZeroOrderBESS ext."""
+"""Get [`ZeroOrderBESS`](@ref) `ext`."""
 get_ext(value::ZeroOrderBESS) = value.ext
-"""Get ZeroOrderBESS states."""
+"""Get [`ZeroOrderBESS`](@ref) `states`."""
 get_states(value::ZeroOrderBESS) = value.states
-"""Get ZeroOrderBESS n_states."""
+"""Get [`ZeroOrderBESS`](@ref) `n_states`."""
 get_n_states(value::ZeroOrderBESS) = value.n_states
 
-"""Set ZeroOrderBESS rated_voltage."""
+"""Set [`ZeroOrderBESS`](@ref) `rated_voltage`."""
 set_rated_voltage!(value::ZeroOrderBESS, val) = value.rated_voltage = val
-"""Set ZeroOrderBESS rated_current."""
+"""Set [`ZeroOrderBESS`](@ref) `rated_current`."""
 set_rated_current!(value::ZeroOrderBESS, val) = value.rated_current = val
-"""Set ZeroOrderBESS battery_voltage."""
+"""Set [`ZeroOrderBESS`](@ref) `battery_voltage`."""
 set_battery_voltage!(value::ZeroOrderBESS, val) = value.battery_voltage = val
-"""Set ZeroOrderBESS battery_resistance."""
+"""Set [`ZeroOrderBESS`](@ref) `battery_resistance`."""
 set_battery_resistance!(value::ZeroOrderBESS, val) = value.battery_resistance = val
-"""Set ZeroOrderBESS dc_dc_inductor."""
+"""Set [`ZeroOrderBESS`](@ref) `dc_dc_inductor`."""
 set_dc_dc_inductor!(value::ZeroOrderBESS, val) = value.dc_dc_inductor = val
-"""Set ZeroOrderBESS dc_link_capacitance."""
+"""Set [`ZeroOrderBESS`](@ref) `dc_link_capacitance`."""
 set_dc_link_capacitance!(value::ZeroOrderBESS, val) = value.dc_link_capacitance = val
-"""Set ZeroOrderBESS fs."""
+"""Set [`ZeroOrderBESS`](@ref) `fs`."""
 set_fs!(value::ZeroOrderBESS, val) = value.fs = val
-"""Set ZeroOrderBESS kpv."""
+"""Set [`ZeroOrderBESS`](@ref) `kpv`."""
 set_kpv!(value::ZeroOrderBESS, val) = value.kpv = val
-"""Set ZeroOrderBESS kiv."""
+"""Set [`ZeroOrderBESS`](@ref) `kiv`."""
 set_kiv!(value::ZeroOrderBESS, val) = value.kiv = val
-"""Set ZeroOrderBESS kpi."""
+"""Set [`ZeroOrderBESS`](@ref) `kpi`."""
 set_kpi!(value::ZeroOrderBESS, val) = value.kpi = val
-"""Set ZeroOrderBESS kii."""
+"""Set [`ZeroOrderBESS`](@ref) `kii`."""
 set_kii!(value::ZeroOrderBESS, val) = value.kii = val
-"""Set ZeroOrderBESS Vdc_ref."""
+"""Set [`ZeroOrderBESS`](@ref) `Vdc_ref`."""
 set_Vdc_ref!(value::ZeroOrderBESS, val) = value.Vdc_ref = val
-"""Set ZeroOrderBESS ext."""
+"""Set [`ZeroOrderBESS`](@ref) `ext`."""
 set_ext!(value::ZeroOrderBESS, val) = value.ext = val
-"""Set ZeroOrderBESS states."""
+"""Set [`ZeroOrderBESS`](@ref) `states`."""
 set_states!(value::ZeroOrderBESS, val) = value.states = val
-"""Set ZeroOrderBESS n_states."""
+"""Set [`ZeroOrderBESS`](@ref) `n_states`."""
 set_n_states!(value::ZeroOrderBESS, val) = value.n_states = val
