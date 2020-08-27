@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
         ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        operation_cost::ThreePartCost
+        operation_cost::OperationalCost
         rating_pump::Float64
         active_power_limits_pump::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         reactive_power_limits_pump::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
@@ -49,7 +49,7 @@ This file is auto-generated. Do not edit.
 - `reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::ThreePartCost`: Operation Cost of Generation [`ThreePartCost`](@ref)
+- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `rating_pump::Float64`: Thermal limited MVA Power Withdrawl of the pump. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
 - `active_power_limits_pump::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits_pump::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
@@ -85,8 +85,8 @@ mutable struct HydroPumpedStorage <: HydroGen
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    "Operation Cost of Generation [`ThreePartCost`](@ref)"
-    operation_cost::ThreePartCost
+    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    operation_cost::OperationalCost
     "Thermal limited MVA Power Withdrawl of the pump. <= Capacity"
     rating_pump::Float64
     active_power_limits_pump::NamedTuple{(:min, :max), Tuple{Float64, Float64}}

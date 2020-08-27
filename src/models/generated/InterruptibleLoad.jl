@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         max_active_power::Float64
         max_reactive_power::Float64
         base_power::Float64
-        operation_cost::TwoPartCost
+        operation_cost::OperationalCost
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -32,7 +32,7 @@ This file is auto-generated. Do not edit.
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
+- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -50,8 +50,8 @@ mutable struct InterruptibleLoad <: ControllableLoad
     max_reactive_power::Float64
     "Base power of the unit in MVA"
     base_power::Float64
-    "Operation Cost of Generation [`TwoPartCost`](@ref)"
-    operation_cost::TwoPartCost
+    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    operation_cost::OperationalCost
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
