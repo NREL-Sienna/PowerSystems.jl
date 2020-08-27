@@ -1825,9 +1825,9 @@
         },
         {
           "name": "storage_capacity",
-          "comment": "Maximum storage capacity in the upper reservoir (units can be p.u-hr or m^3).",
+          "comment": "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3).",
           "null_value": "0.0",
-          "data_type": "Float64",
+          "data_type": "Union{Float64, NamedTuple{(:up, :down)}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1848,9 +1848,9 @@
         },
         {
           "name": "initial_storage",
-          "comment": "Initial storage capacity in the upper reservoir (units can be p.u-hr or m^3).",
+          "comment": "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3).",
           "null_value": "0.0",
-          "data_type": "Float64",
+          "data_type": "Union{Float64, NamedTuple{(:up, :down)}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1862,7 +1862,7 @@
           "name": "storage_target",
           "comment": "Storage target of upper reservoir at the end of simulation as ratio of storage capacity.",
           "null_value": "0.0",
-          "data_type": "Float64",
+          "data_type": "Union{Float64. NamedTuple{(:up, :down)}}s",
           "default": "1.0"
         },
         {
@@ -2231,7 +2231,7 @@
         {
           "name": "operation_cost",
           "null_value": "ThreePartCost(nothing)",
-          "data_type": "ThreePartCost"
+          "data_type": "OperationalCost"
         },
         {
           "name": "base_power",
@@ -2711,9 +2711,9 @@
         {
           "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
-          "data_type": "Union{Nothing, TwoPartCost}",
+          "data_type": "Union{Nothing, OperationalCost}",
           "default": "nothing",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+          "comment": "Cost for providing reserves  [`OperationalCost`](@ref)"
         },
         {
           "name": "internal",
@@ -2770,9 +2770,9 @@
         {
           "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
-          "data_type": "Union{Nothing, TwoPartCost}",
+          "data_type": "Union{Nothing, OperationalCost}",
           "default": "nothing",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+          "comment": "Cost for providing reserves  [`OperationalCost`](@ref)"
         },
         {
           "name": "internal",
@@ -2863,8 +2863,8 @@
         {
           "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
-          "data_type": "TwoPartCost",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+          "data_type": "OperationalCost",
+          "comment": "Cost for providing reserves  [`OperationalCost`](@ref)"
         },
         {
           "name": "ext",
@@ -2939,9 +2939,9 @@
         {
           "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
-          "data_type": "Union{Nothing, TwoPartCost}",
+          "data_type": "Union{Nothing, OperationalCost}",
           "default": "nothing",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+          "comment": "Cost for providing reserves  [`OperationalCost`](@ref)"
         },
         {
           "name": "internal",
@@ -3001,9 +3001,9 @@
         {
           "name": "operation_cost",
           "null_value": "TwoPartCost(nothing)",
-          "data_type": "Union{Nothing, TwoPartCost}",
+          "data_type": "Union{Nothing, OperationalCost}",
           "default": "nothing",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
+          "comment": "Cost for providing reserves  [`OperationalCost`](@ref)"
         },
         {
           "name": "internal",

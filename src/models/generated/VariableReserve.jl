@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         requirement::Float64
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
-        operation_cost::Union{Nothing, TwoPartCost}
+        operation_cost::Union{Nothing, OperationalCost}
         internal::InfrastructureSystemsInternal
     end
 
@@ -22,7 +22,7 @@ Data Structure for the procurement products for system simulations.
 - `requirement::Float64`: the required quantity of the product should be scaled by a Forecast
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
-- `operation_cost::Union{Nothing, TwoPartCost}`: Cost for providing reserves  [`TwoPartCost`](@ref)
+- `operation_cost::Union{Nothing, OperationalCost}`: Cost for providing reserves  [`OperationalCost`](@ref)
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
@@ -35,8 +35,8 @@ mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
     ext::Dict{String, Any}
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts
-    "Cost for providing reserves  [`TwoPartCost`](@ref)"
-    operation_cost::Union{Nothing, TwoPartCost}
+    "Cost for providing reserves  [`OperationalCost`](@ref)"
+    operation_cost::Union{Nothing, OperationalCost}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

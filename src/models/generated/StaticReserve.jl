@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         time_frame::Float64
         requirement::Float64
         ext::Dict{String, Any}
-        operation_cost::Union{Nothing, TwoPartCost}
+        operation_cost::Union{Nothing, OperationalCost}
         internal::InfrastructureSystemsInternal
     end
 
@@ -20,7 +20,7 @@ Data Structure for a proportional reserve product for system simulations.
 - `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, action if invalid: `error`
 - `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
-- `operation_cost::Union{Nothing, TwoPartCost}`: Cost for providing reserves  [`TwoPartCost`](@ref)
+- `operation_cost::Union{Nothing, OperationalCost}`: Cost for providing reserves  [`OperationalCost`](@ref)
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
@@ -31,8 +31,8 @@ mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
     "the static value of required reserves in system p.u."
     requirement::Float64
     ext::Dict{String, Any}
-    "Cost for providing reserves  [`TwoPartCost`](@ref)"
-    operation_cost::Union{Nothing, TwoPartCost}
+    "Cost for providing reserves  [`OperationalCost`](@ref)"
+    operation_cost::Union{Nothing, OperationalCost}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
