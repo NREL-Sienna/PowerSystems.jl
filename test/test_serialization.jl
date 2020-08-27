@@ -1,3 +1,4 @@
+#=
 import JSON2
 
 function validate_serialization(sys::System; time_series_read_only = false)
@@ -164,3 +165,4 @@ end
     clear_forecasts!(sys2)
     @test !isempty(collect(PSY.iterate_forecasts(sys)))
 end
+=#
