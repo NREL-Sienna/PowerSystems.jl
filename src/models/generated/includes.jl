@@ -277,7 +277,6 @@ export get_dc_link_capacitance
 export get_delta_t
 export get_dynamic_injector
 export get_efficiency
-export get_energy_bid
 export get_eq_p
 export get_ext
 export get_fixed
@@ -328,7 +327,6 @@ export get_model
 export get_must_run
 export get_n_states
 export get_no_load
-export get_no_load_cost
 export get_number
 export get_operation_cost
 export get_output_active_power_limits
@@ -593,7 +591,6 @@ export set_dc_link_capacitance!
 export set_delta_t!
 export set_dynamic_injector!
 export set_efficiency!
-export set_energy_bid!
 export set_eq_p!
 export set_ext!
 export set_fixed!
@@ -644,7 +641,6 @@ export set_model!
 export set_must_run!
 export set_n_states!
 export set_no_load!
-export set_no_load_cost!
 export set_number!
 export set_operation_cost!
 export set_output_active_power_limits!

@@ -98,22 +98,22 @@
       "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
       "fields": [
         {
-          "name": "energy_bid",
-          "comment": "variable cost",
+          "name": "variable",
+          "comment": "variable cost representing the energy bid",
           "null_value": "VariableCost((0.0, 0.0))",
           "data_type": "VariableCost"
         },
         {
-          "name": "no_load_cost",
+          "name": "no_load",
           "comment": "no load cost",
           "null_value": "0.0",
           "data_type": "Float64"
         },
         {
           "name": "start_up",
-          "comment": "start-up cost",
-          "null_value": "(hot = START_COST, int = START_COST, cold = START_COST)",
-          "data_type": "NamedTuple{(:hot, :int, :cold), NTuple{3, Float64}}"
+          "comment": "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets",
+          "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
+          "data_type": "NamedTuple{(:hot, :warm :cold), NTuple{3, Float64}}"
         },
         {
           "name": "shut_down",
