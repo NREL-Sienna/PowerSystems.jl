@@ -129,9 +129,9 @@
         {
           "name": "ancillary_services",
           "comment": "Bids for the ancillary services",
-          "null_value": "Dict{String, Float64}()",
-          "data_type": "Dict{String, Float64}",
-          "default": "Dict{String, Float64}()"
+          "null_value": "IdDict{Any,Float64}()",
+          "data_type": "IdDict{Any,Float64}",
+          "default": "IdDict{Any,Float64}()"
         },
         {
           "name": "forecasts",
