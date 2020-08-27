@@ -374,8 +374,12 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
 
-    operation_cost =
-        ThreePartCost(; variable = cost, fixed = fixed, start_up = startup, shut_down = shutdn)
+    operation_cost = ThreePartCost(;
+        variable = cost,
+        fixed = fixed,
+        start_up = startup,
+        shut_down = shutdn,
+    )
 
     ext = Dict{String, Any}()
     if haskey(d, "r_source")
