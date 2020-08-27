@@ -1826,8 +1826,8 @@
         {
           "name": "storage_capacity",
           "comment": "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3).",
-          "null_value": "0.0",
-          "data_type": "Union{Float64, NamedTuple{(:up, :down)}}",
+          "null_value": "(up=0.0, down=0.0)",
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1849,8 +1849,8 @@
         {
           "name": "initial_storage",
           "comment": "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3).",
-          "null_value": "0.0",
-          "data_type": "Union{Float64, NamedTuple{(:up, :down)}}",
+          "null_value": "(up=0.0, down=0.0)",
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1861,9 +1861,9 @@
         {
           "name": "storage_target",
           "comment": "Storage target of upper reservoir at the end of simulation as ratio of storage capacity.",
-          "null_value": "0.0",
-          "data_type": "Union{Float64. NamedTuple{(:up, :down)}}s",
-          "default": "1.0"
+          "null_value": "(up=0.0, down=0.0)",
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
+          "default": "(up=1.0, down=1.0)"
         },
         {
           "name": "pump_efficiency",
