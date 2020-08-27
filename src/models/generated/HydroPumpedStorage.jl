@@ -21,10 +21,10 @@ This file is auto-generated. Do not edit.
         reactive_power_limits_pump::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
         ramp_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        storage_capacity::Float64
+        storage_capacity::Union{Float64, NamedTuple{(:up, :down)}}
         inflow::Float64
-        initial_storage::Float64
-        storage_target::Float64
+        initial_storage::Union{Float64, NamedTuple{(:up, :down)}}
+        storage_target::Union{Float64. NamedTuple{(:up, :down)}}s
         pump_efficiency::Float64
         conversion_factor::Float64
         services::Vector{Service}
@@ -55,10 +55,10 @@ This file is auto-generated. Do not edit.
 - `reactive_power_limits_pump::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
 - `ramp_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute of pump, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_capacity::Float64`: Maximum storage capacity in the upper reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
+- `storage_capacity::Union{Float64, NamedTuple{(:up, :down)}}`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `initial_storage::Float64`: Initial storage capacity in the upper reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_target::Float64`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
+- `initial_storage::Union{Float64, NamedTuple{(:up, :down)}}`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
+- `storage_target::Union{Float64. NamedTuple{(:up, :down)}}s`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
 - `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1.0)`, action if invalid: `warn`
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
 - `services::Vector{Service}`: Services that this device contributes to
@@ -95,14 +95,14 @@ mutable struct HydroPumpedStorage <: HydroGen
     ramp_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits of pump in hours"
     time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    "Maximum storage capacity in the upper reservoir (units can be p.u-hr or m^3)."
-    storage_capacity::Float64
+    "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)."
+    storage_capacity::Union{Float64, NamedTuple{(:up, :down)}}
     "Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr)"
     inflow::Float64
-    "Initial storage capacity in the upper reservoir (units can be p.u-hr or m^3)."
-    initial_storage::Float64
+    "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)."
+    initial_storage::Union{Float64, NamedTuple{(:up, :down)}}
     "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
-    storage_target::Float64
+    storage_target::Union{Float64. NamedTuple{(:up, :down)}}s
     "Efficiency of pump"
     pump_efficiency::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
