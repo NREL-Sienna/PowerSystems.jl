@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
     mutable struct MarketBidCost <: OperationalCost
         variable::VariableCost
         no_load::Float64
-        start_up::NamedTuple{(:hot, :warm :cold), NTuple{3, Float64}}
+        start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shut_down::Float64
         ancillary_services::Dict{String, Float64}
         forecasts::InfrastructureSystems.Forecasts
@@ -18,7 +18,7 @@ Compatible with most US Market bidding mechanisms
 # Arguments
 - `variable::VariableCost`: variable cost representing the energy bid
 - `no_load::Float64`: no load cost
-- `start_up::NamedTuple{(:hot, :warm :cold), NTuple{3, Float64}}`: start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets
+- `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets
 - `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `ancillary_services::Dict{String, Float64}`: Bids for the ancillary services
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
@@ -30,7 +30,7 @@ mutable struct MarketBidCost <: OperationalCost
     "no load cost"
     no_load::Float64
     "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets"
-    start_up::NamedTuple{(:hot, :warm :cold), NTuple{3, Float64}}
+    start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
     "shut-down cost"
     shut_down::Float64
     "Bids for the ancillary services"
