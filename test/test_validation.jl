@@ -178,7 +178,8 @@ end
         @test_throws(PSY.InvalidValue, add_component!(sys, badline))
     )
 end
-#= disabled until serialization is updated
+#=
+# disabled until serialization is updated
 @testset "Test field validation after deserialization" begin
     nodes = nodes5()
     sys = System(100.0, nodes, thermal_generators5(nodes), loads5(nodes))
