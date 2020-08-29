@@ -320,6 +320,7 @@ export get_n_states
 export get_no_load
 export get_number
 export get_operation_cost
+export get_outflow
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
@@ -631,6 +632,7 @@ export set_n_states!
 export set_no_load!
 export set_number!
 export set_operation_cost!
+export set_outflow!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!

@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         reactive_power_limits::Union{Nothing, Min_Max}
         ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        operation_cost::OperationalCost
+        operation_cost::ThreePartCost
         base_power::Float64
         time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         prime_mover::PrimeMovers.PrimeMover
@@ -39,7 +39,7 @@ Data Structure for thermal generation technologies.
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::OperationalCost`
+- `operation_cost::ThreePartCost`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
@@ -64,7 +64,7 @@ mutable struct ThermalStandard <: ThermalGen
     reactive_power_limits::Union{Nothing, Min_Max}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    operation_cost::OperationalCost
+    operation_cost::ThreePartCost
     "Base power of the unit in MVA"
     base_power::Float64
     "Minimum up and Minimum down time limits in hours"

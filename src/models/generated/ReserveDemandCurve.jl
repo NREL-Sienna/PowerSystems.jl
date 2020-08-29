@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         time_frame::Float64
-        operation_cost::OperationalCost
+        operation_cost::TwoPartCost
         ext::Dict{String, Any}
         forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
@@ -18,7 +18,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 - `name::String`
 - `available::Bool`
 - `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::OperationalCost`: Cost for providing reserves  [`OperationalCost`](@ref)
+- `operation_cost::TwoPartCost`: Cost for providing reserves  [`TwoPartCost`](@ref)
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -28,8 +28,8 @@ mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     available::Bool
     "the relative saturation time_frame"
     time_frame::Float64
-    "Cost for providing reserves  [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
+    "Cost for providing reserves  [`TwoPartCost`](@ref)"
+    operation_cost::TwoPartCost
     ext::Dict{String, Any}
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts

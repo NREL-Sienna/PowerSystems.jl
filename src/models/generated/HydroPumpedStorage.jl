@@ -23,6 +23,7 @@ This file is auto-generated. Do not edit.
         time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         storage_capacity::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
         inflow::Float64
+        outflow::Float64
         initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
         storage_target::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
         pump_efficiency::Float64
@@ -57,6 +58,7 @@ This file is auto-generated. Do not edit.
 - `time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_capacity::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
+- `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_target::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
 - `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1.0)`, action if invalid: `warn`
@@ -99,6 +101,8 @@ mutable struct HydroPumpedStorage <: HydroGen
     storage_capacity::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
     "Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr)"
     inflow::Float64
+    "Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr)"
+    outflow::Float64
     "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)."
     initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
     "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
@@ -118,12 +122,12 @@ mutable struct HydroPumpedStorage <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, initial_storage, storage_target=(up=1.0, down=1.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, initial_storage, storage_target, pump_efficiency, conversion_factor, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, pump_efficiency, conversion_factor, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, initial_storage, storage_target=(up=1.0, down=1.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, initial_storage, storage_target, pump_efficiency, conversion_factor, services, dynamic_injector, ext, forecasts, )
+function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, pump_efficiency, conversion_factor, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -149,6 +153,7 @@ function HydroPumpedStorage(::Nothing)
         time_limits_pump=nothing,
         storage_capacity=(up=0.0, down=0.0),
         inflow=0.0,
+        outflow=0.0,
         initial_storage=(up=0.0, down=0.0),
         storage_target=(up=0.0, down=0.0),
         pump_efficiency=0.0,
@@ -200,6 +205,8 @@ get_time_limits_pump(value::HydroPumpedStorage) = value.time_limits_pump
 get_storage_capacity(value::HydroPumpedStorage) = get_value(value, value.storage_capacity)
 """Get [`HydroPumpedStorage`](@ref) `inflow`."""
 get_inflow(value::HydroPumpedStorage) = value.inflow
+"""Get [`HydroPumpedStorage`](@ref) `outflow`."""
+get_outflow(value::HydroPumpedStorage) = value.outflow
 """Get [`HydroPumpedStorage`](@ref) `initial_storage`."""
 get_initial_storage(value::HydroPumpedStorage) = get_value(value, value.initial_storage)
 """Get [`HydroPumpedStorage`](@ref) `storage_target`."""
@@ -259,6 +266,8 @@ set_time_limits_pump!(value::HydroPumpedStorage, val) = value.time_limits_pump =
 set_storage_capacity!(value::HydroPumpedStorage, val) = value.storage_capacity = val
 """Set [`HydroPumpedStorage`](@ref) `inflow`."""
 set_inflow!(value::HydroPumpedStorage, val) = value.inflow = val
+"""Set [`HydroPumpedStorage`](@ref) `outflow`."""
+set_outflow!(value::HydroPumpedStorage, val) = value.outflow = val
 """Set [`HydroPumpedStorage`](@ref) `initial_storage`."""
 set_initial_storage!(value::HydroPumpedStorage, val) = value.initial_storage = val
 """Set [`HydroPumpedStorage`](@ref) `storage_target`."""
