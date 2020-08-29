@@ -6,8 +6,8 @@ This file is auto-generated. Do not edit.
         variable::VariableCost
         no_load::Float64
         fixed::Float64
-        startup::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
-        shutdn::Float64
+        start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
+        shut_down::Float64
         forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
@@ -18,8 +18,8 @@ Data Structure Operational Cost Data which includes fixed, variable cost, multip
 - `variable::VariableCost`: variable cost
 - `no_load::Float64`: no load cost
 - `fixed::Float64`: fixed cost
-- `startup::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: startup cost
-- `shutdn::Float64`: shutdown cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost
+- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -30,22 +30,22 @@ mutable struct MultiStartCost <: OperationalCost
     no_load::Float64
     "fixed cost"
     fixed::Float64
-    "startup cost"
-    startup::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
-    "shutdown cost"
-    shutdn::Float64
+    "start-up cost"
+    start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
+    "shut-down cost"
+    shut_down::Float64
     "internal forecast storage"
     forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function MultiStartCost(variable, no_load, fixed, startup, shutdn, forecasts=InfrastructureSystems.Forecasts(), )
-    MultiStartCost(variable, no_load, fixed, startup, shutdn, forecasts, InfrastructureSystemsInternal(), )
+function MultiStartCost(variable, no_load, fixed, start_up, shut_down, forecasts=InfrastructureSystems.Forecasts(), )
+    MultiStartCost(variable, no_load, fixed, start_up, shut_down, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function MultiStartCost(; variable, no_load, fixed, startup, shutdn, forecasts=InfrastructureSystems.Forecasts(), )
-    MultiStartCost(variable, no_load, fixed, startup, shutdn, forecasts, )
+function MultiStartCost(; variable, no_load, fixed, start_up, shut_down, forecasts=InfrastructureSystems.Forecasts(), )
+    MultiStartCost(variable, no_load, fixed, start_up, shut_down, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -54,8 +54,8 @@ function MultiStartCost(::Nothing)
         variable=VariableCost((0.0, 0.0)),
         no_load=0.0,
         fixed=0.0,
-        startup=(hot = START_COST, warm = START_COST,cold = START_COST),
-        shutdn=0.0,
+        start_up=(hot = START_COST, warm = START_COST, cold = START_COST),
+        shut_down=0.0,
         forecasts=InfrastructureSystems.Forecasts(),
     )
 end
@@ -66,10 +66,10 @@ get_variable(value::MultiStartCost) = value.variable
 get_no_load(value::MultiStartCost) = value.no_load
 """Get [`MultiStartCost`](@ref) `fixed`."""
 get_fixed(value::MultiStartCost) = value.fixed
-"""Get [`MultiStartCost`](@ref) `startup`."""
-get_startup(value::MultiStartCost) = value.startup
-"""Get [`MultiStartCost`](@ref) `shutdn`."""
-get_shutdn(value::MultiStartCost) = value.shutdn
+"""Get [`MultiStartCost`](@ref) `start_up`."""
+get_start_up(value::MultiStartCost) = value.start_up
+"""Get [`MultiStartCost`](@ref) `shut_down`."""
+get_shut_down(value::MultiStartCost) = value.shut_down
 
 InfrastructureSystems.get_forecasts(value::MultiStartCost) = value.forecasts
 """Get [`MultiStartCost`](@ref) `internal`."""
@@ -81,10 +81,10 @@ set_variable!(value::MultiStartCost, val) = value.variable = val
 set_no_load!(value::MultiStartCost, val) = value.no_load = val
 """Set [`MultiStartCost`](@ref) `fixed`."""
 set_fixed!(value::MultiStartCost, val) = value.fixed = val
-"""Set [`MultiStartCost`](@ref) `startup`."""
-set_startup!(value::MultiStartCost, val) = value.startup = val
-"""Set [`MultiStartCost`](@ref) `shutdn`."""
-set_shutdn!(value::MultiStartCost, val) = value.shutdn = val
+"""Set [`MultiStartCost`](@ref) `start_up`."""
+set_start_up!(value::MultiStartCost, val) = value.start_up = val
+"""Set [`MultiStartCost`](@ref) `shut_down`."""
+set_shut_down!(value::MultiStartCost, val) = value.shut_down = val
 
 InfrastructureSystems.set_forecasts!(value::MultiStartCost, val) = value.forecasts = val
 """Set [`MultiStartCost`](@ref) `internal`."""

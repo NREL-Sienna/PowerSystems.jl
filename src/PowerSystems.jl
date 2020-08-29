@@ -137,6 +137,7 @@ export AverageConverter
 # DC Source Exports
 export DCSource
 export FixedDCSource
+export ZeroOrderBESS
 
 # Filter Exports
 export Filter

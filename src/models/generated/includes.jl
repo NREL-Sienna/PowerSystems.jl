@@ -1,5 +1,6 @@
 include("TwoPartCost.jl")
 include("ThreePartCost.jl")
+include("MarketBidCost.jl")
 include("MultiStartCost.jl")
 include("Area.jl")
 include("LoadZone.jl")
@@ -72,6 +73,7 @@ include("TGTypeI.jl")
 include("TGTypeII.jl")
 include("AverageConverter.jl")
 include("FixedDCSource.jl")
+include("ZeroOrderBESS.jl")
 include("LCLFilter.jl")
 include("LCFilter.jl")
 include("KauraPLL.jl")
@@ -233,6 +235,7 @@ export get_V_ref
 export get_Va_lim
 export get_Vcl
 export get_Vcu
+export get_Vdc_ref
 export get_Vf
 export get_Vi_lim
 export get_Vm_lim
@@ -253,6 +256,7 @@ export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_pump
 export get_active_power_limits_to
+export get_ancillary_services
 export get_angle
 export get_angle_limits
 export get_arc
@@ -261,6 +265,8 @@ export get_available
 export get_b
 export get_base_power
 export get_base_voltage
+export get_battery_resistance
+export get_battery_voltage
 export get_bias
 export get_bus
 export get_bustype
@@ -268,6 +274,8 @@ export get_cf
 export get_contributing_services
 export get_conversion_factor
 export get_db
+export get_dc_dc_inductor
+export get_dc_link_capacitance
 export get_delta_t
 export get_dynamic_injector
 export get_efficiency
@@ -276,6 +284,7 @@ export get_ext
 export get_fixed
 export get_flow_limits
 export get_from
+export get_fs
 export get_fuel
 export get_fuel_flag
 export get_gate_position_limits
@@ -299,9 +308,11 @@ export get_kffi
 export get_kffv
 export get_ki_pll
 export get_kic
+export get_kii
 export get_kiv
 export get_kp_pll
 export get_kpc
+export get_kpi
 export get_kpv
 export get_kq
 export get_kω
@@ -355,11 +366,11 @@ export get_rg
 export get_rv
 export get_saturation_coeffs
 export get_services
-export get_shutdn
+export get_shut_down
 export get_speed_error_signal
 export get_start_time_limits
 export get_start_types
-export get_startup
+export get_start_up
 export get_state_of_charge_limits
 export get_states
 export get_states_types
@@ -545,6 +556,7 @@ export set_V_ref!
 export set_Va_lim!
 export set_Vcl!
 export set_Vcu!
+export set_Vdc_ref!
 export set_Vf!
 export set_Vi_lim!
 export set_Vm_lim!
@@ -565,6 +577,7 @@ export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_pump!
 export set_active_power_limits_to!
+export set_ancillary_services!
 export set_angle!
 export set_angle_limits!
 export set_arc!
@@ -573,6 +586,8 @@ export set_available!
 export set_b!
 export set_base_power!
 export set_base_voltage!
+export set_battery_resistance!
+export set_battery_voltage!
 export set_bias!
 export set_bus!
 export set_bustype!
@@ -580,6 +595,8 @@ export set_cf!
 export set_contributing_services!
 export set_conversion_factor!
 export set_db!
+export set_dc_dc_inductor!
+export set_dc_link_capacitance!
 export set_delta_t!
 export set_dynamic_injector!
 export set_efficiency!
@@ -588,6 +605,7 @@ export set_ext!
 export set_fixed!
 export set_flow_limits!
 export set_from!
+export set_fs!
 export set_fuel!
 export set_fuel_flag!
 export set_gate_position_limits!
@@ -611,9 +629,11 @@ export set_kffi!
 export set_kffv!
 export set_ki_pll!
 export set_kic!
+export set_kii!
 export set_kiv!
 export set_kp_pll!
 export set_kpc!
+export set_kpi!
 export set_kpv!
 export set_kq!
 export set_kω!
@@ -667,11 +687,11 @@ export set_rg!
 export set_rv!
 export set_saturation_coeffs!
 export set_services!
-export set_shutdn!
+export set_shut_down!
 export set_speed_error_signal!
 export set_start_time_limits!
 export set_start_types!
-export set_startup!
+export set_start_up!
 export set_state_of_charge_limits!
 export set_states!
 export set_states_types!

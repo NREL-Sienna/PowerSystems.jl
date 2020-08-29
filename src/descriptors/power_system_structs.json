@@ -55,8 +55,8 @@
           "data_type": "Float64"
         },
         {
-          "name": "startup",
-          "comment": "startup cost",
+          "name": "start_up",
+          "comment": "start-up cost",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -66,8 +66,8 @@
           "validation_action": "warn"
         },
         {
-          "name": "shutdn",
-          "comment": "shutdown cost",
+          "name": "shut_down",
+          "comment": "shut-down cost",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -94,12 +94,12 @@
       "supertype": "OperationalCost"
     },
     {
-      "struct_name": "MultiStartCost",
-      "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
+      "struct_name": "MarketBidCost",
+      "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
       "fields": [
         {
           "name": "variable",
-          "comment": "variable cost",
+          "comment": "variable cost representing the energy bid",
           "null_value": "VariableCost((0.0, 0.0))",
           "data_type": "VariableCost"
         },
@@ -110,20 +110,14 @@
           "data_type": "Float64"
         },
         {
-          "name": "fixed",
-          "comment": "fixed cost",
-          "null_value": "0.0",
-          "data_type": "Float64"
-        },
-        {
-          "name": "startup",
-          "comment": "startup cost",
-          "null_value": "(hot = START_COST, warm = START_COST,cold = START_COST)",
+          "name": "start_up",
+          "comment": "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets",
+          "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
           "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
         },
         {
-          "name": "shutdn",
-          "comment": "shutdown cost",
+          "name": "shut_down",
+          "comment": "shut-down cost",
           "null_value": "0.0",
           "data_type": "Float64",
           "valid_range": {
@@ -131,6 +125,13 @@
             "max": null
           },
           "validation_action": "warn"
+        },
+        {
+          "name": "ancillary_services",
+          "comment": "Bids for the ancillary services",
+          "null_value": "IdDict{Any,Float64}()",
+          "data_type": "IdDict{Any,Float64}",
+          "default": "IdDict{Any,Float64}()"
         },
         {
           "name": "forecasts",
@@ -149,6 +150,62 @@
       ],
       "supertype": "OperationalCost"
     },
+        {
+          "struct_name": "MultiStartCost",
+          "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
+          "fields": [
+            {
+              "name": "variable",
+              "comment": "variable cost",
+              "null_value": "VariableCost((0.0, 0.0))",
+              "data_type": "VariableCost"
+            },
+            {
+              "name": "no_load",
+              "comment": "no load cost",
+              "null_value": "0.0",
+              "data_type": "Float64"
+            },
+            {
+              "name": "fixed",
+              "comment": "fixed cost",
+              "null_value": "0.0",
+              "data_type": "Float64"
+            },
+            {
+              "name": "start_up",
+              "comment": "start-up cost",
+              "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
+              "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
+            },
+            {
+              "name": "shut_down",
+              "comment": "shut-down cost",
+              "null_value": "0.0",
+              "data_type": "Float64",
+              "valid_range": {
+                "min": 0,
+                "max": null
+              },
+              "validation_action": "warn"
+            },
+            {
+              "name": "forecasts",
+              "accessor_module": "InfrastructureSystems",
+              "comment": "internal forecast storage",
+              "null_value": "InfrastructureSystems.Forecasts()",
+              "data_type": "InfrastructureSystems.Forecasts",
+              "default": "InfrastructureSystems.Forecasts()"
+            },
+            {
+              "name": "internal",
+              "comment": "power system internal reference, do not modify",
+              "data_type": "InfrastructureSystemsInternal",
+              "internal_default": "InfrastructureSystemsInternal()"
+            }
+          ],
+          "supertype": "OperationalCost"
+        },
     {
       "struct_name": "Area",
       "docstring": "A collection of buses for control purposes.",
@@ -2415,7 +2472,7 @@
         },
         {
           "name": "power_trajectory",
-          "comment": "Power trajectory the unit will take during the startup and shutdown ramp process",
+          "comment": "Power trajectory the unit will take during the start-up and shut-down ramp process",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}",
           "valid_range": {
@@ -2437,13 +2494,13 @@
         },
         {
           "name": "start_time_limits",
-          "comment": " Time limits for startup based on turbine temperature in hours",
+          "comment": " Time limits for start-up based on turbine temperature in hours",
           "null_value": "nothing",
           "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
         },
         {
           "name": "start_types",
-          "comment": " Number of startup based on turbine temperature",
+          "comment": " Number of start-up based on turbine temperature",
           "null_value": "1",
           "data_type": "Int",
           "valid_range": {
@@ -9311,6 +9368,152 @@
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
           "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "DCSource"
+    },
+    {
+      "struct_name": "ZeroOrderBESS",
+      "docstring": "Parameters for the DC-side with a Battery Energy Storage System from paper at https://arxiv.org/abs/2007.11776",
+      "fields": [
+        {
+          "name": "rated_voltage",
+          "comment": "rated voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "rated_current",
+          "comment": "rated current",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "battery_voltage",
+          "comment": "battery voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "battery_resistance",
+          "comment": "battery_resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "dc_dc_inductor",
+          "comment": "DC/DC inductance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "dc_link_capacitance",
+          "comment": "DC-link capacitor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "fs",
+          "comment": "DC/DC converter switching frequency",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kpv",
+          "comment": "voltage controller proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kiv",
+          "comment": "voltage controller integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kpi",
+          "comment": "current controller proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kii",
+          "comment": "current controller integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vdc_ref",
+          "comment": "Reference DC-Voltage Set-point",
+          "null_value": 0,
+          "default": "1.1",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "comment": "The states of the ZeroOrderBESS model are:\n\tv_dc: DC-link votlage,\n\ti_b: Battery current,\n\t ν: integrator state of the voltage controller,\n\t ζ: integrator state of the PI current controller",
+          "internal_default": "[:v_dc, :i_b, :ν, :ζ]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "comment": "ZeroOrderBESS has 4 states",
+          "internal_default": 4,
+          "data_type": "Int64"
         }
       ],
       "supertype": "DCSource"
