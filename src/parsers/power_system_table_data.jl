@@ -726,19 +726,21 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     gen_type =
         get_generator_type(gen.fuel, get(gen, :unit_type, nothing), data.generator_mapping)
 
-    if gen_type == ThermalStandard
+    if isnothing(gen_type)
+        @error "Cannot recognize generator type" gen.name
+    elseif gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
     elseif gen_type == ThermalMultiStart
         generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
-    elseif !isnothing(gen_type) && gen_type <: HydroGen
+    elseif gen_type <: HydroGen
         generator = make_hydro_generator(gen_type, data, gen, cost_colnames, bus)
-    elseif !isnothing(gen_type) && gen_type <: RenewableGen
+    elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type == GenericBattery
         storage = get_storage_by_generator(data, gen.name)
         generator = make_storage(data, gen, storage, bus)
     else
-        @error "Skipping unsupported generator" gen_type
+        @error "Skipping unsupported generator" gen.name gen_type
     end
 
     return generator
