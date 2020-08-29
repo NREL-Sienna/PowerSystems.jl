@@ -1731,6 +1731,266 @@
       "supertype": "HydroGen"
     },
     {
+      "struct_name": "HydroPumpedStorage",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "accessor_module": "InfrastructureSystems",
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "name": "bus",
+          "null_value": "Bus(nothing)",
+          "data_type": "Bus"
+        },
+        {
+          "name": "active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "rating",
+          "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "prime_mover",
+          "comment": "Prime mover technology according to EIA 923",
+          "null_value": "PrimeMovers.HY",
+          "data_type": "PrimeMovers.PrimeMover"
+        },
+        {
+          "name": "active_power_limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power_limits",
+          "validation_action": "warn",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}",
+          "needs_conversion": true
+        },
+        {
+          "name": "ramp_limits",
+          "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "time_limits",
+          "comment": "Minimum up and Minimum down time limits in hours",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "operation_cost",
+          "null_value": "ThreePartCost(nothing)",
+          "data_type": "OperationalCost",
+          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
+        },
+        {
+          "name": "rating_pump",
+          "comment": "Thermal limited MVA Power Withdrawl of the pump. <= Capacity",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "active_power_limits_pump",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power_limits_pump",
+          "validation_action": "warn",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}",
+          "needs_conversion": true
+        },
+        {
+          "name": "ramp_limits_pump",
+          "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute of pump",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "time_limits_pump",
+          "comment": "Minimum up and Minimum down time limits of pump in hours",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "storage_capacity",
+          "comment": "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3).",
+          "null_value": "(up=0.0, down=0.0)",
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "inflow",
+          "comment": "Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr)",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "outflow",
+          "comment": "Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr)",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "initial_storage",
+          "comment": "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3).",
+          "null_value": "(up=0.0, down=0.0)",
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "error",
+          "needs_conversion": true
+        },
+        {
+          "name": "storage_target",
+          "comment": "Storage target of upper reservoir at the end of simulation as ratio of storage capacity.",
+          "null_value": "(up=0.0, down=0.0)",
+          "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
+          "default": "(up=1.0, down=1.0)"
+        },
+        {
+          "name": "pump_efficiency",
+          "comment": "Efficiency of pump",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "default": "1.0",
+          "valid_range": {
+            "min": 0,
+            "max": 1.0
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "conversion_factor",
+          "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr.",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "default": "1.0"
+        },
+        {
+          "name": "services",
+          "data_type": "Vector{Service}",
+          "comment": "Services that this device contributes to",
+          "null_value": "Device[]",
+          "default": "Device[]"
+        },
+        {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection device",
+          "null_value": "nothing",
+          "exclude_setter": true,
+          "default": "nothing"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "forecasts",
+          "accessor_module": "InfrastructureSystems",
+          "comment": "internal forecast storage",
+          "null_value": "InfrastructureSystems.Forecasts()",
+          "data_type": "InfrastructureSystems.Forecasts",
+          "default": "InfrastructureSystems.Forecasts()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()"
+        }
+      ],
+      "supertype": "HydroGen"
+    },
+    {
       "struct_name": "RenewableDispatch",
       "fields": [
         {

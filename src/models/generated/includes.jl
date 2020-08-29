@@ -18,6 +18,7 @@ include("FixedAdmittance.jl")
 include("PowerLoad.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
+include("HydroPumpedStorage.jl")
 include("RenewableDispatch.jl")
 include("RenewableFix.jl")
 include("ThermalStandard.jl")
@@ -253,6 +254,7 @@ export get_active_power
 export get_active_power_flow
 export get_active_power_limits
 export get_active_power_limits_from
+export get_active_power_limits_pump
 export get_active_power_limits_to
 export get_ancillary_services
 export get_angle
@@ -329,6 +331,7 @@ export get_n_states
 export get_no_load
 export get_number
 export get_operation_cost
+export get_outflow
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
@@ -336,18 +339,22 @@ export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
 export get_prime_mover
+export get_pump_efficiency
 export get_q_nl
 export get_r
 export get_ramp_limits
+export get_ramp_limits_pump
 export get_rate
 export get_rated_current
 export get_rated_voltage
 export get_rating
+export get_rating_pump
 export get_rc_rfd
 export get_reactive_power
 export get_reactive_power_flow
 export get_reactive_power_limits
 export get_reactive_power_limits_from
+export get_reactive_power_limits_pump
 export get_reactive_power_limits_to
 export get_rectifier_firing_angle
 export get_rectifier_tap_limits
@@ -375,6 +382,7 @@ export get_tap
 export get_time_at_status
 export get_time_frame
 export get_time_limits
+export get_time_limits_pump
 export get_to
 export get_valve_position_limits
 export get_variable
@@ -567,6 +575,7 @@ export set_active_power!
 export set_active_power_flow!
 export set_active_power_limits!
 export set_active_power_limits_from!
+export set_active_power_limits_pump!
 export set_active_power_limits_to!
 export set_ancillary_services!
 export set_angle!
@@ -643,6 +652,7 @@ export set_n_states!
 export set_no_load!
 export set_number!
 export set_operation_cost!
+export set_outflow!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
@@ -650,18 +660,22 @@ export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!
 export set_prime_mover!
+export set_pump_efficiency!
 export set_q_nl!
 export set_r!
 export set_ramp_limits!
+export set_ramp_limits_pump!
 export set_rate!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!
+export set_rating_pump!
 export set_rc_rfd!
 export set_reactive_power!
 export set_reactive_power_flow!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
+export set_reactive_power_limits_pump!
 export set_reactive_power_limits_to!
 export set_rectifier_firing_angle!
 export set_rectifier_tap_limits!
@@ -689,6 +703,7 @@ export set_tap!
 export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
+export set_time_limits_pump!
 export set_to!
 export set_valve_position_limits!
 export set_variable!

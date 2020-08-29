@@ -534,6 +534,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
         end
 
         generator = make_generator(data, gen, cost_colnames, bus)
+        @debug "adding gen:" generator
         if !isnothing(generator)
             add_component!(sys, generator)
         end
@@ -725,7 +726,9 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     gen_type =
         get_generator_type(gen.fuel, get(gen, :unit_type, nothing), data.generator_mapping)
 
-    if gen_type == ThermalStandard
+    if isnothing(gen_type)
+        @error "Cannot recognize generator type" gen.name
+    elseif gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
     elseif gen_type == ThermalMultiStart
         generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
@@ -737,7 +740,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
         storage = get_storage_by_generator(data, gen.name)
         generator = make_storage(data, gen, storage, bus)
     else
-        @error "Skipping unsupported generator" gen_type
+        @error "Skipping unsupported generator" gen.name gen_type
     end
 
     return generator
@@ -868,6 +871,7 @@ function make_reactive_params(gen)
 end
 
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
+    @debug "Making ThermaStandard" gen.name
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
@@ -909,6 +913,8 @@ function make_thermal_generator_multistart(
     bus,
 )
     thermal_gen = make_thermal_generator(data, gen, cost_colnames, bus)
+
+    @debug "Making ThermalMultiStart" gen.name
     base_power = get_base_power(thermal_gen)
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
@@ -976,6 +982,7 @@ function make_thermal_generator_multistart(
 end
 
 function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus)
+    @debug "Making HydroGen" gen.name
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
@@ -1054,6 +1061,7 @@ function make_renewable_generator(
     cost_colnames,
     bus,
 )
+    @debug "Making RenewableGen" gen.name
     generator = nothing
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
@@ -1065,6 +1073,7 @@ function make_renewable_generator(
     operation_cost = TwoPartCost(var_cost, fixed)
 
     if gen_type == RenewableDispatch
+        @debug("Creating $(gen.name) as RenewableDispatch")
         generator = RenewableDispatch(
             name = gen.name,
             available = gen.available,
@@ -1079,6 +1088,7 @@ function make_renewable_generator(
             base_power = base_power,
         )
     elseif gen_type == RenewableFix
+        @debug("Creating $(gen.name) as RenewableFix")
         generator = RenewableFix(
             name = gen.name,
             available = gen.available,
@@ -1098,6 +1108,7 @@ function make_renewable_generator(
 end
 
 function make_storage(data::PowerSystemTableData, gen, storage, bus)
+    @debug "Making Storge" storage.name
     state_of_charge_limits =
         (min = storage.min_storage_capacity, max = storage.storage_capacity)
     input_active_power_limits = (

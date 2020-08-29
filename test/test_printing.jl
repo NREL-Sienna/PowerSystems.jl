@@ -24,7 +24,8 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
 
     for (fieldname, fieldtype) in zip(fields, fieldtypes(T))
         if isnothing(getfield(obj, fieldname)) ||
-           fieldtype <: IS.InfrastructureSystemsInternal
+           fieldtype <: IS.InfrastructureSystemsInternal ||
+           fieldtype <: PowerSystems.OperationalCost
             continue
         end
         if fieldtype <: IS.InfrastructureSystemsType ||

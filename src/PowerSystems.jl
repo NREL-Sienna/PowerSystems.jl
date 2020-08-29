@@ -45,6 +45,7 @@ export Generator
 export HydroGen
 export HydroDispatch
 export HydroEnergyReservoir
+export HydroPumpedStorage
 
 export RenewableGen
 export RenewableFix
