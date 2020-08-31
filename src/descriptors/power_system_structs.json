@@ -344,6 +344,7 @@
           "internal_default": "InfrastructureSystemsInternal()"
         }
       ],
+      "custom_code": "IS.get_name(arc::Arc) = (get_name ∘ get_from)(arc) * \" -> \" * (get_name ∘ get_to)(arc)",
       "supertype": "Topology"
     },
     {
