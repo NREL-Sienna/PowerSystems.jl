@@ -8,7 +8,7 @@ end
 
 get_cost(vc::VariableCost) = vc.cost
 Base.length(vc::VariableCost) = length(vc.cost)
-Base.getindex(vc::VariableCost, ix::Int64) = getindex(vc.cost, ix)
+Base.getindex(vc::VariableCost, ix::Int) = getindex(vc.cost, ix)
 
 function get_breakpoint_upperbounds(vc::VariableCost{T}) where {T}
     throw(ArgumentError("Method not supported for VariableCost using $(T)"))

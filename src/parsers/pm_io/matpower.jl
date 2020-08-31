@@ -1437,7 +1437,7 @@ function _export_extra_data(
     postfix = "",
 )
     if isa(data[component], Int) ||
-       isa(data[component], Int64) ||
+       isa(data[component], Int) ||
        isa(data[component], Float64)
         println(io, "mpc.", component, " = ", data[component], ";")
         println(io)

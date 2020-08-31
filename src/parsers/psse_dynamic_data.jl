@@ -40,13 +40,13 @@ function _populate_args(param_map, val)
         #Typically uses for the resistance that is not available in .dyr files.
         if isa(_v, Float64)
             struct_args[ix] = _v
-            #If the parameter is an Int64, then use the integer as the key of the value in the dictionary.
-        elseif isa(_v, Int64)
+            #If the parameter is an Int, then use the integer as the key of the value in the dictionary.
+        elseif isa(_v, Int)
             struct_args[ix] = val[_v]
             #If the parameter is a tuple (as a string), then construct the tuple directly.
         else
             _t = strip(_v, ['(', ')'])
-            _t2int = parse.(Int64, split(_t, ','))
+            _t2int = parse.(Int, split(_t, ','))
             struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
         end
     end
@@ -126,11 +126,11 @@ function _parse_dyr_components(data::Dict)
     param_map = yaml_mapping["parameter_mapping"][1]
     #dic will contain the dictionary index by bus.
     #Each entry will be a dictionary, with id as keys, that contains the vector of components
-    dic = Dict{Int64, Any}()
+    dic = Dict{Int, Any}()
     component_table =
         Dict("Machine" => 1, "Shaft" => 2, "AVR" => 3, "TurbineGov" => 4, "PSS" => 5)
     for (bus_num, bus_data) in data
-        bus_dict = Dict{Int64, Any}()
+        bus_dict = Dict{Int, Any}()
         for (componentID, componentValues) in bus_data
             #Fill array of 5 components per generator
             temp = get!(bus_dict, componentID[2], Vector{Any}(undef, 5))
@@ -228,7 +228,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
     for g in collect(get_components(ThermalStandard, sys))
         _num = get_number(get_bus(g))
         _name = get_name(g)
-        _id = parse(Int64, split(_name, "-")[end])
+        _id = parse(Int, split(_name, "-")[end])
         temp_dict = get(bus_dict_gen, _num, nothing)
         if isnothing(temp_dict)
             @warn "Generator at bus $(_num), id $(_id), not found in Dynamic Data.\nVoltage Source will be used to model it."

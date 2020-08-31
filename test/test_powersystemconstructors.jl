@@ -114,7 +114,7 @@ end
             _func!(obj, val)
             @test val isa field_type
             #Test set function for different cases
-            if typeof(val) == Float64 || typeof(val) == Int64
+            if typeof(val) == Float64 || typeof(val) == Int
                 if !isnan(val)
                     aux = val + 1
                     _func!(obj, aux)

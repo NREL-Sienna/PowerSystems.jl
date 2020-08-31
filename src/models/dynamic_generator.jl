@@ -13,7 +13,7 @@
         avr::A
         prime_mover::TG
         pss::P
-        n_states::Int64
+        n_states::Int
         states::Vector{Symbol}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -30,7 +30,7 @@ a Prime Mover (o Turbine Governor) and Power System Stabilizer (PSS). It require
 - `avr <: AVR`: AVR model of the excitacion system.
 - `prime_mover <: TurbineGov`: Prime Mover and Turbine Governor model for mechanical power.
 - `pss <: PSS`: Power System Stabilizer model.
-- `n_states::Int64`: Number of states (will depend on the components).
+- `n_states::Int`: Number of states (will depend on the components).
 - `states::Vector{Symbol}`: Vector of states (will depend on the components).
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -49,7 +49,7 @@ mutable struct DynamicGenerator{
     avr::A
     prime_mover::TG
     pss::P
-    n_states::Int64
+    n_states::Int
     states::Vector{Symbol}
     ext::Dict{String, Any}
     internal::InfrastructureSystemsInternal

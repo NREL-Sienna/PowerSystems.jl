@@ -17,7 +17,7 @@ This file is auto-generated. Do not edit.
         Vdc_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
     end
 
 Parameters for the DC-side with a Battery Energy Storage System from paper at https://arxiv.org/abs/2007.11776
@@ -41,7 +41,7 @@ Parameters for the DC-side with a Battery Energy Storage System from paper at ht
 	i_b: Battery current,
 	 ν: integrator state of the voltage controller,
 	 ζ: integrator state of the PI current controller
-- `n_states::Int64`: ZeroOrderBESS has 4 states
+- `n_states::Int`: ZeroOrderBESS has 4 states
 """
 mutable struct ZeroOrderBESS <: DCSource
     "rated voltage"
@@ -76,7 +76,7 @@ mutable struct ZeroOrderBESS <: DCSource
 	 ζ: integrator state of the PI current controller"
     states::Vector{Symbol}
     "ZeroOrderBESS has 4 states"
-    n_states::Int64
+    n_states::Int
 end
 
 function ZeroOrderBESS(rated_voltage, rated_current, battery_voltage, battery_resistance, dc_dc_inductor, dc_link_capacitance, fs, kpv, kiv, kpi, kii, Vdc_ref=1.1, ext=Dict{String, Any}(), )
