@@ -46,8 +46,8 @@ function AVRSimple(Kv, V_ref=1.0, ext=Dict{String, Any}(), )
     AVRSimple(Kv, V_ref, ext, [:Vf], 1, [StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function AVRSimple(; Kv, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRSimple(Kv, V_ref, ext, )
+function AVRSimple(; Kv, V_ref=1.0, ext=Dict{String, Any}(), states=[:Vf], n_states=1, states_types=[StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
+    AVRSimple(Kv, V_ref, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -88,3 +88,4 @@ set_n_states!(value::AVRSimple, val) = value.n_states = val
 set_states_types!(value::AVRSimple, val) = value.states_types = val
 """Set [`AVRSimple`](@ref) `internal`."""
 set_internal!(value::AVRSimple, val) = value.internal = val
+

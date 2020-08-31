@@ -34,8 +34,8 @@ function PSSFixed(V_pss, ext=Dict{String, Any}(), )
     PSSFixed(V_pss, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
 end
 
-function PSSFixed(; V_pss, ext=Dict{String, Any}(), )
-    PSSFixed(V_pss, ext, )
+function PSSFixed(; V_pss, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, internal=InfrastructureSystemsInternal(), )
+    PSSFixed(V_pss, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -67,3 +67,4 @@ set_states!(value::PSSFixed, val) = value.states = val
 set_n_states!(value::PSSFixed, val) = value.n_states = val
 """Set [`PSSFixed`](@ref) `internal`."""
 set_internal!(value::PSSFixed, val) = value.internal = val
+

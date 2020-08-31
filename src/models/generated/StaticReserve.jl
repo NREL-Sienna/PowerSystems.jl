@@ -41,8 +41,8 @@ function StaticReserve{T}(name, available, time_frame, requirement, ext=Dict{Str
     StaticReserve{T}(name, available, time_frame, requirement, ext, operation_cost, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserve{T}(; name, available, time_frame, requirement, ext=Dict{String, Any}(), operation_cost=nothing, ) where T <: ReserveDirection
-    StaticReserve{T}(name, available, time_frame, requirement, ext, operation_cost, )
+function StaticReserve{T}(; name, available, time_frame, requirement, ext=Dict{String, Any}(), operation_cost=nothing, internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    StaticReserve{T}(name, available, time_frame, requirement, ext, operation_cost, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,3 +86,4 @@ set_ext!(value::StaticReserve, val) = value.ext = val
 set_operation_cost!(value::StaticReserve, val) = value.operation_cost = val
 """Set [`StaticReserve`](@ref) `internal`."""
 set_internal!(value::StaticReserve, val) = value.internal = val
+

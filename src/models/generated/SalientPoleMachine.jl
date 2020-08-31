@@ -90,8 +90,8 @@ function SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, S
     SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, [:eq_p, :ψ_kd, :ψq_pp], 3, InfrastructureSystemsInternal(), )
 end
 
-function SalientPoleMachine(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext=Dict{String, Any}(), )
-    SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext, )
+function SalientPoleMachine(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext=Dict{String, Any}(), γ_d1=(Xd_pp - Xl) / (Xd_p - Xl), γ_q1=(Xd_p - Xd_pp) / (Xd_p - Xl), γ_d2=(Xd_p - Xd_pp) / (Xd_p - Xl)^2, states=[:eq_p, :ψ_kd, :ψq_pp], n_states=3, internal=InfrastructureSystemsInternal(), )
+    SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se, ext, γ_d1, γ_q1, γ_d2, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -180,3 +180,4 @@ set_states!(value::SalientPoleMachine, val) = value.states = val
 set_n_states!(value::SalientPoleMachine, val) = value.n_states = val
 """Set [`SalientPoleMachine`](@ref) `internal`."""
 set_internal!(value::SalientPoleMachine, val) = value.internal = val
+

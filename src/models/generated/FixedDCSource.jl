@@ -34,8 +34,8 @@ function FixedDCSource(voltage, ext=Dict{String, Any}(), )
     FixedDCSource(voltage, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
 end
 
-function FixedDCSource(; voltage, ext=Dict{String, Any}(), )
-    FixedDCSource(voltage, ext, )
+function FixedDCSource(; voltage, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, internal=InfrastructureSystemsInternal(), )
+    FixedDCSource(voltage, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -67,3 +67,4 @@ set_states!(value::FixedDCSource, val) = value.states = val
 set_n_states!(value::FixedDCSource, val) = value.n_states = val
 """Set [`FixedDCSource`](@ref) `internal`."""
 set_internal!(value::FixedDCSource, val) = value.internal = val
+

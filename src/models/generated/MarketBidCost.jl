@@ -45,8 +45,8 @@ function MarketBidCost(variable, no_load, start_up, shut_down, ancillary_service
     MarketBidCost(variable, no_load, start_up, shut_down, ancillary_services, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function MarketBidCost(; variable, no_load, start_up, shut_down, ancillary_services=IdDict{Any,Float64}(), forecasts=InfrastructureSystems.Forecasts(), )
-    MarketBidCost(variable, no_load, start_up, shut_down, ancillary_services, forecasts, )
+function MarketBidCost(; variable, no_load, start_up, shut_down, ancillary_services=IdDict{Any,Float64}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    MarketBidCost(variable, no_load, start_up, shut_down, ancillary_services, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -90,3 +90,4 @@ set_ancillary_services!(value::MarketBidCost, val) = value.ancillary_services = 
 InfrastructureSystems.set_forecasts!(value::MarketBidCost, val) = value.forecasts = val
 """Set [`MarketBidCost`](@ref) `internal`."""
 set_internal!(value::MarketBidCost, val) = value.internal = val
+

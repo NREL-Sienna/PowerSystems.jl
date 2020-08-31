@@ -45,8 +45,8 @@ function VariableReserve{T}(name, available, time_frame, requirement, ext=Dict{S
     VariableReserve{T}(name, available, time_frame, requirement, ext, forecasts, operation_cost, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserve{T}(; name, available, time_frame, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), operation_cost=nothing, ) where T <: ReserveDirection
-    VariableReserve{T}(name, available, time_frame, requirement, ext, forecasts, operation_cost, )
+function VariableReserve{T}(; name, available, time_frame, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), operation_cost=nothing, internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, available, time_frame, requirement, ext, forecasts, operation_cost, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -95,3 +95,4 @@ InfrastructureSystems.set_forecasts!(value::VariableReserve, val) = value.foreca
 set_operation_cost!(value::VariableReserve, val) = value.operation_cost = val
 """Set [`VariableReserve`](@ref) `internal`."""
 set_internal!(value::VariableReserve, val) = value.internal = val
+

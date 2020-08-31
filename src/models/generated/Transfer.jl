@@ -36,8 +36,8 @@ function Transfer(name, available, requirement, ext=Dict{String, Any}(), forecas
     Transfer(name, available, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transfer(; name, available, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, available, requirement, ext, forecasts, )
+function Transfer(; name, available, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    Transfer(name, available, requirement, ext, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,3 +76,4 @@ set_ext!(value::Transfer, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::Transfer, val) = value.forecasts = val
 """Set [`Transfer`](@ref) `internal`."""
 set_internal!(value::Transfer, val) = value.internal = val
+

@@ -114,8 +114,8 @@ function ESST4B(Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_m
     ESST4B(Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, [:Vt, :Vr1, :Vr2, :Vm], 4, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
-function ESST4B(; Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*π*inv(180), ext=Dict{String, Any}(), )
-    ESST4B(Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, )
+function ESST4B(; Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref=1.0, θp_rad=θp*π*inv(180), ext=Dict{String, Any}(), states=[:Vt, :Vr1, :Vr2, :Vm], n_states=4, states_types=[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], internal=InfrastructureSystemsInternal(), )
+    ESST4B(Tr, K_pr, K_ir, Vr_lim, Ta, K_pm, K_im, Vm_lim, Kg, Kp, Ki, VB_max, Kc, Xl, θp, V_ref, θp_rad, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -231,3 +231,4 @@ set_n_states!(value::ESST4B, val) = value.n_states = val
 set_states_types!(value::ESST4B, val) = value.states_types = val
 """Set [`ESST4B`](@ref) `internal`."""
 set_internal!(value::ESST4B, val) = value.internal = val
+

@@ -44,8 +44,8 @@ function MultiStartCost(variable, no_load, fixed, start_up, shut_down, forecasts
     MultiStartCost(variable, no_load, fixed, start_up, shut_down, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function MultiStartCost(; variable, no_load, fixed, start_up, shut_down, forecasts=InfrastructureSystems.Forecasts(), )
-    MultiStartCost(variable, no_load, fixed, start_up, shut_down, forecasts, )
+function MultiStartCost(; variable, no_load, fixed, start_up, shut_down, forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    MultiStartCost(variable, no_load, fixed, start_up, shut_down, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,3 +89,4 @@ set_shut_down!(value::MultiStartCost, val) = value.shut_down = val
 InfrastructureSystems.set_forecasts!(value::MultiStartCost, val) = value.forecasts = val
 """Set [`MultiStartCost`](@ref) `internal`."""
 set_internal!(value::MultiStartCost, val) = value.internal = val
+

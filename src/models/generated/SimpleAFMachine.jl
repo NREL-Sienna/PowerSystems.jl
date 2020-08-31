@@ -87,8 +87,8 @@ function SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_
     SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext, [:eq_p, :ed_p, :eq_pp, :ed_pp], 4, InfrastructureSystemsInternal(), )
 end
 
-function SimpleAFMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext=Dict{String, Any}(), )
-    SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext, )
+function SimpleAFMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext=Dict{String, Any}(), states=[:eq_p, :ed_p, :eq_pp, :ed_pp], n_states=4, internal=InfrastructureSystemsInternal(), )
+    SimpleAFMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -170,3 +170,4 @@ set_states!(value::SimpleAFMachine, val) = value.states = val
 set_n_states!(value::SimpleAFMachine, val) = value.n_states = val
 """Set [`SimpleAFMachine`](@ref) `internal`."""
 set_internal!(value::SimpleAFMachine, val) = value.internal = val
+

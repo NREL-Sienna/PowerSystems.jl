@@ -40,8 +40,8 @@ function ThreePartCost(variable, fixed, start_up, shut_down, forecasts=Infrastru
     ThreePartCost(variable, fixed, start_up, shut_down, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ThreePartCost(; variable, fixed, start_up, shut_down, forecasts=InfrastructureSystems.Forecasts(), )
-    ThreePartCost(variable, fixed, start_up, shut_down, forecasts, )
+function ThreePartCost(; variable, fixed, start_up, shut_down, forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    ThreePartCost(variable, fixed, start_up, shut_down, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -80,3 +80,4 @@ set_shut_down!(value::ThreePartCost, val) = value.shut_down = val
 InfrastructureSystems.set_forecasts!(value::ThreePartCost, val) = value.forecasts = val
 """Set [`ThreePartCost`](@ref) `internal`."""
 set_internal!(value::ThreePartCost, val) = value.internal = val
+

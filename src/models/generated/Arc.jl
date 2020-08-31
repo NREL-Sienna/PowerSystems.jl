@@ -28,8 +28,8 @@ function Arc(from, to, )
     Arc(from, to, InfrastructureSystemsInternal(), )
 end
 
-function Arc(; from, to, )
-    Arc(from, to, )
+function Arc(; from, to, internal=InfrastructureSystemsInternal(), )
+    Arc(from, to, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -53,3 +53,4 @@ set_from!(value::Arc, val) = value.from = val
 set_to!(value::Arc, val) = value.to = val
 """Set [`Arc`](@ref) `internal`."""
 set_internal!(value::Arc, val) = value.internal = val
+

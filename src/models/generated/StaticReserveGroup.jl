@@ -37,8 +37,8 @@ function StaticReserveGroup{T}(name, available, requirement, ext=Dict{String, An
     StaticReserveGroup{T}(name, available, requirement, ext, contributing_services, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserveGroup{T}(; name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{Service}(), ) where T <: ReserveDirection
-    StaticReserveGroup{T}(name, available, requirement, ext, contributing_services, )
+function StaticReserveGroup{T}(; name, available, requirement, ext=Dict{String, Any}(), contributing_services=Vector{Service}(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    StaticReserveGroup{T}(name, available, requirement, ext, contributing_services, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -75,3 +75,4 @@ set_requirement!(value::StaticReserveGroup, val) = value.requirement = val
 set_ext!(value::StaticReserveGroup, val) = value.ext = val
 """Set [`StaticReserveGroup`](@ref) `internal`."""
 set_internal!(value::StaticReserveGroup, val) = value.internal = val
+

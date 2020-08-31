@@ -38,8 +38,8 @@ function PSSSimple(K_ω, K_p, ext=Dict{String, Any}(), )
     PSSSimple(K_ω, K_p, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
 end
 
-function PSSSimple(; K_ω, K_p, ext=Dict{String, Any}(), )
-    PSSSimple(K_ω, K_p, ext, )
+function PSSSimple(; K_ω, K_p, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, internal=InfrastructureSystemsInternal(), )
+    PSSSimple(K_ω, K_p, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,3 +76,4 @@ set_states!(value::PSSSimple, val) = value.states = val
 set_n_states!(value::PSSSimple, val) = value.n_states = val
 """Set [`PSSSimple`](@ref) `internal`."""
 set_internal!(value::PSSSimple, val) = value.internal = val
+

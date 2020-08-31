@@ -32,8 +32,8 @@ function TwoPartCost(variable, fixed, forecasts=InfrastructureSystems.Forecasts(
     TwoPartCost(variable, fixed, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function TwoPartCost(; variable, fixed, forecasts=InfrastructureSystems.Forecasts(), )
-    TwoPartCost(variable, fixed, forecasts, )
+function TwoPartCost(; variable, fixed, forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    TwoPartCost(variable, fixed, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -62,3 +62,4 @@ set_fixed!(value::TwoPartCost, val) = value.fixed = val
 InfrastructureSystems.set_forecasts!(value::TwoPartCost, val) = value.forecasts = val
 """Set [`TwoPartCost`](@ref) `internal`."""
 set_internal!(value::TwoPartCost, val) = value.internal = val
+

@@ -41,8 +41,8 @@ function ReserveDemandCurve{T}(name, available, time_frame, operation_cost, ext=
     ReserveDemandCurve{T}(name, available, time_frame, operation_cost, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function ReserveDemandCurve{T}(; name, available, time_frame, operation_cost, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), ) where T <: ReserveDirection
-    ReserveDemandCurve{T}(name, available, time_frame, operation_cost, ext, forecasts, )
+function ReserveDemandCurve{T}(; name, available, time_frame, operation_cost, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(name, available, time_frame, operation_cost, ext, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,3 +86,4 @@ set_ext!(value::ReserveDemandCurve, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::ReserveDemandCurve, val) = value.forecasts = val
 """Set [`ReserveDemandCurve`](@ref) `internal`."""
 set_internal!(value::ReserveDemandCurve, val) = value.internal = val
+
