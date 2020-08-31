@@ -581,6 +581,11 @@ function get_components(
     return IS.get_components(T, sys.data, filter_func)
 end
 
+# These are helper functions for debugging problems.
+# Searches components linearly, and so is slow compared to the other get_component functions
+get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
+get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
     for subtype in abstract_types
