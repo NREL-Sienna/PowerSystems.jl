@@ -8,8 +8,6 @@ This file is auto-generated. Do not edit.
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shut_down::Float64
         ancillary_services::IdDict{Any,Float64}
-        forecasts::InfrastructureSystems.Forecasts
-        internal::InfrastructureSystemsInternal
     end
 
 Data Structure Operational Cost to reflect market bids of energy and ancilliary services.
@@ -21,8 +19,6 @@ Compatible with most US Market bidding mechanisms
 - `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets
 - `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `ancillary_services::IdDict{Any,Float64}`: Bids for the ancillary services
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct MarketBidCost <: OperationalCost
     "variable cost representing the energy bid"
@@ -35,18 +31,11 @@ mutable struct MarketBidCost <: OperationalCost
     shut_down::Float64
     "Bids for the ancillary services"
     ancillary_services::IdDict{Any,Float64}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
 end
 
-function MarketBidCost(variable, no_load, start_up, shut_down, ancillary_services=IdDict{Any,Float64}(), forecasts=InfrastructureSystems.Forecasts(), )
-    MarketBidCost(variable, no_load, start_up, shut_down, ancillary_services, forecasts, InfrastructureSystemsInternal(), )
-end
 
-function MarketBidCost(; variable, no_load, start_up, shut_down, ancillary_services=IdDict{Any,Float64}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    MarketBidCost(variable, no_load, start_up, shut_down, ancillary_services, forecasts, internal, )
+function MarketBidCost(; variable, no_load, start_up, shut_down, ancillary_services=IdDict{Any,Float64}(), )
+    MarketBidCost(variable, no_load, start_up, shut_down, ancillary_services, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -57,7 +46,6 @@ function MarketBidCost(::Nothing)
         start_up=(hot = START_COST, warm = START_COST, cold = START_COST),
         shut_down=0.0,
         ancillary_services=IdDict{Any,Float64}(),
-        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -72,10 +60,6 @@ get_shut_down(value::MarketBidCost) = value.shut_down
 """Get [`MarketBidCost`](@ref) `ancillary_services`."""
 get_ancillary_services(value::MarketBidCost) = value.ancillary_services
 
-InfrastructureSystems.get_forecasts(value::MarketBidCost) = value.forecasts
-"""Get [`MarketBidCost`](@ref) `internal`."""
-get_internal(value::MarketBidCost) = value.internal
-
 """Set [`MarketBidCost`](@ref) `variable`."""
 set_variable!(value::MarketBidCost, val) = value.variable = val
 """Set [`MarketBidCost`](@ref) `no_load`."""
@@ -86,8 +70,4 @@ set_start_up!(value::MarketBidCost, val) = value.start_up = val
 set_shut_down!(value::MarketBidCost, val) = value.shut_down = val
 """Set [`MarketBidCost`](@ref) `ancillary_services`."""
 set_ancillary_services!(value::MarketBidCost, val) = value.ancillary_services = val
-
-InfrastructureSystems.set_forecasts!(value::MarketBidCost, val) = value.forecasts = val
-"""Set [`MarketBidCost`](@ref) `internal`."""
-set_internal!(value::MarketBidCost, val) = value.internal = val
 

@@ -16,7 +16,6 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
         internal::InfrastructureSystemsInternal
     end
 
@@ -36,7 +35,6 @@ This file is auto-generated. Do not edit.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct InterruptibleLoad <: ControllableLoad
@@ -57,18 +55,16 @@ mutable struct InterruptibleLoad <: ControllableLoad
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function InterruptibleLoad(; name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, forecasts, internal, )
+function InterruptibleLoad(; name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -87,7 +83,6 @@ function InterruptibleLoad(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
     )
 end
 
@@ -117,8 +112,6 @@ get_services(value::InterruptibleLoad) = value.services
 get_dynamic_injector(value::InterruptibleLoad) = value.dynamic_injector
 """Get [`InterruptibleLoad`](@ref) `ext`."""
 get_ext(value::InterruptibleLoad) = value.ext
-
-InfrastructureSystems.get_forecasts(value::InterruptibleLoad) = value.forecasts
 """Get [`InterruptibleLoad`](@ref) `internal`."""
 get_internal(value::InterruptibleLoad) = value.internal
 
@@ -146,8 +139,6 @@ set_operation_cost!(value::InterruptibleLoad, val) = value.operation_cost = val
 set_services!(value::InterruptibleLoad, val) = value.services = val
 """Set [`InterruptibleLoad`](@ref) `ext`."""
 set_ext!(value::InterruptibleLoad, val) = value.ext = val
-
-InfrastructureSystems.set_forecasts!(value::InterruptibleLoad, val) = value.forecasts = val
 """Set [`InterruptibleLoad`](@ref) `internal`."""
 set_internal!(value::InterruptibleLoad, val) = value.internal = val
 
