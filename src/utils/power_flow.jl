@@ -355,8 +355,8 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     x0 = zeros(N_BUS * 2)
 
     #Create Jacobian structure
-    J0_I = Int64[]
-    J0_J = Int64[]
+    J0_I = Int[]
+    J0_J = Int[]
     J0_V = Float64[]
 
     for ix_f in a
@@ -519,7 +519,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         end
     end
 
-    function jsp!(J::SparseArrays.SparseMatrixCSC{Float64, Int64}, X::Vector{Float64})
+    function jsp!(J::SparseArrays.SparseMatrixCSC{Float64, Int}, X::Vector{Float64})
         for ix_f in a
             F_ix_f_r = 2 * ix_f - 1
             F_ix_f_i = 2 * ix_f

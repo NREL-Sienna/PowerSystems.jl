@@ -7,7 +7,7 @@ Extends the branch type to add the information required for dynamic modeling of 
 """
 mutable struct DynamicBranch <: ACBranch
     branch::ACBranch
-    n_states::Int64
+    n_states::Int
     states::Vector{Symbol}
     internal::IS.InfrastructureSystemsInternal
 
@@ -100,7 +100,7 @@ set_internal!(value::DynamicBranch, val::InfrastructureSystemsInternal) =
 "Set branch"
 set_branch!(value::DynamicBranch, val::ACBranch) = value.branch = val
 "Set n_states"
-set_n_states!(value::DynamicBranch, val::Int64) = value.n_states = val
+set_n_states!(value::DynamicBranch, val::Int) = value.n_states = val
 "Set states"
 set_states!(value::DynamicBranch, val::Vector{Symbol}) = value.states = val
 

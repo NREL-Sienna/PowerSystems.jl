@@ -141,7 +141,7 @@ function read_bus!(sys::System, data; kwargs...)
     bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusTypes.MatpowerBusType)
-    bus_data = sort(collect(data["bus"]), by = x -> parse(Int64, x[1]))
+    bus_data = sort(collect(data["bus"]), by = x -> parse(Int, x[1]))
 
     if isempty(bus_data)
         @error "No bus data found" # TODO : need for a model without a bus

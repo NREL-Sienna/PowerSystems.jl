@@ -9513,7 +9513,7 @@
           "name": "n_states",
           "comment": "ZeroOrderBESS has 4 states",
           "internal_default": 4,
-          "data_type": "Int64"
+          "data_type": "Int"
         }
       ],
       "supertype": "DCSource"

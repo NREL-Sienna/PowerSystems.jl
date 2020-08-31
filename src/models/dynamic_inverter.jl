@@ -17,7 +17,7 @@ abstract type InverterComponent <: DynamicComponent end
         dc_source::DC
         freq_estimator::P
         filter::F
-        n_states::Int64
+        n_states::Int
         states::Vector{Symbol}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -35,7 +35,7 @@ a DC Source, a Frequency Estimator and a Filter. It requires a Static Injection 
 - `dc_source <: DCSource`: DC Source model.
 - `freq_estimator <: FrequencyEstimator`: Frequency Estimator (typically a PLL) model.
 - `filter <: Filter`: Filter model.
-- `n_states::Int64`: Number of states (will depend on the components).
+- `n_states::Int`: Number of states (will depend on the components).
 - `states::Vector{Symbol}`: Vector of states (will depend on the components).
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -56,7 +56,7 @@ mutable struct DynamicInverter{
     dc_source::DC
     freq_estimator::P
     filter::F
-    n_states::Int64
+    n_states::Int
     states::Vector{Symbol}
     ext::Dict{String, Any}
     internal::InfrastructureSystemsInternal
