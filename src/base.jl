@@ -1305,6 +1305,29 @@ function check_for_services_on_addition(sys::System, component::RegulationDevice
 end
 
 """
+Throws ArgumentError if any bus attached to the component is invalid.
+"""
+check_attached_buses(sys::System, component::Component) = nothing
+
+function check_attached_buses(sys::System, component::StaticInjection)
+    throw_if_not_attached(get_bus(component), sys)
+end
+
+function check_attached_buses(sys::System, component::Branch)
+    throw_if_not_attached(get_from_bus(component), sys)
+    throw_if_not_attached(get_to_bus(component), sys)
+end
+
+function check_attached_buses(sys::System, component::DynamicBranch)
+    check_attached_buses(sys, get_branch(component))
+end
+
+function check_attached_buses(sys::System, component::Arc)
+    throw_if_not_attached(get_from(component), sys)
+    throw_if_not_attached(get_to(component), sys)
+end
+
+"""
 Throws ArgumentError if a PowerSystems rule blocks addition to the system.
 
 This method is tied with handle_component_addition!. If the methods are re-implemented for
@@ -1390,7 +1413,20 @@ function handle_component_addition!(sys::System, component::RegulationDevice)
 end
 
 function handle_component_addition!(sys::System, component::DynamicBranch)
+    handle_component_addition_common!(sys, component)
     remove_component!(sys, component.branch)
+end
+
+function handle_component_addition_common!(sys::System, component::Branch)
+    # If this arc is already attached to the system, assign it to the branch.
+    # Else, add it to the system.
+    arc = get_arc(component)
+    _arc = get_component(Arc, sys, get_name(arc))
+    if isnothing(_arc)
+        add_component!(sys, arc)
+    else
+        set_arc!(component, _arc)
+    end
 end
 
 """
