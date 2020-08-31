@@ -819,11 +819,11 @@ references.
   with src's labels.
 """
 function copy_forecasts!(
-    src::InfrastructureSystemsType,
     dst::InfrastructureSystemsType,
+    src::InfrastructureSystemsType,
     label_mapping::Union{Nothing, Dict{String, String}} = nothing,
 )
-    IS.copy_forecasts!(src, dst, label_mapping)
+    IS.copy_forecasts!(dst, src, label_mapping)
 end
 
 """
@@ -1377,7 +1377,7 @@ function handle_component_addition!(sys::System, dynamic_injector::DynamicInject
 end
 
 function handle_component_addition!(sys::System, component::RegulationDevice)
-    copy_forecasts!(component.device, component)
+    copy_forecasts!(component, component.device)
     remove_component!(sys, component.device)
     # The line above removed the component setting so needs to be added back
     set_unit_system!(component.device, component.internal.units_info)
@@ -1533,7 +1533,7 @@ function convert_component!(
     )
     IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
-    copy_forecasts!(line, new_line)
+    copy_forecasts!(new_line, line)
     remove_component!(sys, line)
 end
 
@@ -1572,6 +1572,6 @@ function convert_component!(
     )
     IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
-    copy_forecasts!(line, new_line)
+    copy_forecasts!(new_line, line)
     remove_component!(sys, line)
 end
