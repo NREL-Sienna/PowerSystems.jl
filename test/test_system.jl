@@ -192,7 +192,7 @@ end
     ext = get_ext(sys)
     ext["data"] = 2
     @test get_ext(sys)["data"] == 2
-    clear_ext(sys)
+    clear_ext!(sys)
     @test isempty(get_ext(sys))
 end
 

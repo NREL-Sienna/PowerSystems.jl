@@ -247,7 +247,7 @@ export set_units_base_system!
 export to_json
 export check_forecast_consistency
 export validate_forecast_consistency
-export clear_ext
+export clear_ext!
 export convert_component!
 export set_area!
 export set_load_zone!

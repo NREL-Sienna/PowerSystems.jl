@@ -225,7 +225,7 @@ get_frequency(sys::System) = sys.frequency
 """
 Clear any value stored in ext.
 """
-clear_ext(sys::System) = IS.clear_ext(sys.internal)
+clear_ext!(sys::System) = IS.clear_ext!(sys.internal)
 
 function set_unit_system!(component::Component, settings::SystemUnitsSettings)
     component.internal.units_info = settings
