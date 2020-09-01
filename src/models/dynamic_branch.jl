@@ -50,7 +50,7 @@ function IS.serialize(component::T) where {T <: DynamicBranch}
     data = Dict{String, Any}()
     for name in fieldnames(T)
         val = getfield(component, name)
-        if name == :branch
+        if name === :branch
             # The device is not attached to the system, so serialize it and save the type.
             data[BRANCH_TYPE_KEY] = string(typeof(val))
         end
@@ -69,7 +69,7 @@ function IS.deserialize(
     vals = Dict{Symbol, Any}()
     for (field_name, field_type) in zip(fieldnames(T), fieldtypes(T))
         val = data[string(field_name)]
-        if field_name == :branch
+        if field_name === :branch
             type = get_component_type(data[BRANCH_TYPE_KEY])
             vals[field_name] = deserialize(type, val, component_cache)
         else

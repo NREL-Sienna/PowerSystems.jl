@@ -61,11 +61,11 @@ function IS.deserialize(::Type{T}, data::Dict) where {T <: OuterControl}
     vals = Dict{Symbol, Any}()
     for (field_name, field_type) in zip(fieldnames(OuterControl), fieldtypes(OuterControl))
         val = data[string(field_name)]
-        if field_name == :active_power
+        if field_name === :active_power
             vals[field_name] = deserialize(T.parameters[1], val)
-        elseif field_name == :reactive_power
+        elseif field_name === :reactive_power
             vals[field_name] = deserialize(T.parameters[2], val)
-        elseif field_name == :states
+        elseif field_name === :states
             vals[field_name] = [Symbol(x) for x in val]
         else
             vals[field_name] = deserialize(field_type, val)

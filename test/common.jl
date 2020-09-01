@@ -31,7 +31,7 @@ function compare_values_without_uuids(x::T, y::T) where {T <: IS.InfrastructureS
     match = true
 
     for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
-        if fieldname == :internal
+        if fieldname === :internal
             continue
         end
 
