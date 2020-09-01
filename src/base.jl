@@ -819,16 +819,16 @@ Efficiently add all forecasts in one component to another by copying the underly
 references.
 
 # Arguments
-- `src::Component`: Source component
 - `dst::Component`: Destination component
+- `src::Component`: Source component
 - `label_mapping::Dict = nothing`: Optionally map src labels to different dst labels.
   If provided and src has a forecast with a label not present in label_mapping, that
   forecast will not copied. If label_mapping is nothing then all forecasts will be copied
   with src's labels.
 """
 function copy_forecasts!(
-    src::Component,
     dst::Component,
+    src::Component,
     label_mapping::Union{Nothing, Dict{String, String}} = nothing,
 )
     IS.copy_forecasts!(dst, src, label_mapping)
