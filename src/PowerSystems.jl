@@ -17,7 +17,6 @@ export Area
 export LoadZone
 export get_aggregation_topology_accessor
 
-export PowerSystemType
 export Component
 export Device
 export get_max_active_power
@@ -200,6 +199,7 @@ export add_forecasts!
 export add_forecast!
 export remove_forecast!
 export clear_forecasts!
+export copy_forecasts!
 export add_component!
 export remove_component!
 export remove_components!
@@ -245,6 +245,9 @@ export get_base_power
 export get_frequency
 export set_units_base_system!
 export to_json
+export from_json
+export serialize
+export deserialize
 export check_forecast_consistency
 export validate_forecast_consistency
 export clear_ext!
@@ -255,7 +258,6 @@ export TamuSystem
 export PowerModelsData
 export add_dyn_injectors!
 export set_dynamic_injector!
-export set_static_injector!
 export get_machine
 export get_shaft
 export get_avr
@@ -295,8 +297,7 @@ import LinearAlgebra
 import Dates
 import TimeSeries
 import DataFrames
-import JSON
-import JSON2
+import JSON3
 import CSV
 import YAML
 import UUIDs
@@ -312,8 +313,10 @@ import InfrastructureSystems:
     Forecast,
     ScenarioBased,
     PiecewiseFunction,
+    InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
+    DeviceParameter,
     FlattenIteratorWrapper,
     LazyDictFromIterator,
     DataFormatError,
@@ -324,6 +327,11 @@ import InfrastructureSystems:
     get_initial_time,
     get_resolution,
     get_name,
+    to_json,
+    from_json,
+    serialize,
+    deserialize,
+    deserialize_parametric_type,
     iterate_forecasts,
     UnitSystem,
     SystemUnitsSettings
@@ -343,17 +351,14 @@ using DocStringExtensions
 # Includes
 
 """
-Supertype for all PowerSystems types.
+Supertype for all PowerSystems components.
 All subtypes must include a InfrastructureSystemsInternal member.
 Subtypes should call InfrastructureSystemsInternal() by default, but also must
 provide a constructor that allows existing values to be deserialized.
 """
-abstract type PowerSystemType <: IS.InfrastructureSystemsType end
-
-abstract type Component <: PowerSystemType end
+abstract type Component <: IS.InfrastructureSystemsComponent end
 # supertype for "devices" (bus, line, etc.)
 abstract type Device <: Component end
-abstract type DeviceParameter <: PowerSystemType end
 
 include("common.jl")
 include("models/static_models.jl")

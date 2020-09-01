@@ -266,6 +266,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
             #Add Dynamic Generator
             dyn_gen = DynamicGenerator(g, 1.0, temp_dict[_id]...)
             add_component!(sys, dyn_gen)
+            set_dynamic_injector!(g, dyn_gen)
         end
     end
 end

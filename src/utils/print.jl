@@ -28,10 +28,6 @@ function Base.summary(tech::DeviceParameter)
     return "$(typeof(tech))"
 end
 
-function Base.summary(arc::Arc)
-    return "$(get_name(get_from(arc))) -> $(get_name(get_to(arc))): ($(typeof(arc)))"
-end
-
 function Base.show(io::IO, ::MIME"text/plain", data::PowerSystemTableData)
     println(io, "$(typeof(data)):")
     println(io, "  directory:  $(data.directory)")

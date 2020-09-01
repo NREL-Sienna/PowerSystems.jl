@@ -47,7 +47,7 @@ System(; kwargs...)
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
 - `config_path::String`: specify path to validation config file
 """
-struct System <: PowerSystemType
+struct System <: IS.InfrastructureSystemsType
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
@@ -63,7 +63,7 @@ struct System <: PowerSystemType
     )
         # Note to devs: if you add parameters to kwargs then consider whether they need
         # special handling in the deserialization function in this file.
-        # See JSON2.read for System.
+        # See deserialize read for System.
 
         # Implement a strict check here to make sure that SYSTEM_KWARGS can be used
         # elsewhere.
@@ -93,8 +93,7 @@ function System(base_power; kwargs...)
 end
 
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
-function System(data, base_power; kwargs...)
-    internal = get(kwargs, :internal, IS.InfrastructureSystemsInternal())
+function System(data, base_power; internal = IS.InfrastructureSystemsInternal(), kwargs...)
     return System(data, base_power, internal; kwargs...)
 end
 
@@ -184,16 +183,13 @@ end
 """
 Serializes a system to a JSON string.
 """
-function to_json(sys::System, filename::AbstractString; force = false)
+function IS.to_json(sys::System, filename::AbstractString; force = false)
     IS.prepare_for_serialization!(sys.data, filename; force = force)
-    return IS.to_json(sys, filename)
-end
-
-"""
-Serializes a system an IO stream in JSON.
-"""
-function to_json(io::IO, sys::System)
-    return IS.to_json(io, sys)
+    data = to_json(sys)
+    open(filename, "w") do io
+        write(io, data)
+    end
+    @info "Serialized System to $filename"
 end
 
 function Base.deepcopy(sys::System)
@@ -283,22 +279,29 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
     set_unit_system!(component, sys.units_settings)
     @assert has_units_setting(component)
-    check_component_addition(sys, component)
-    check_for_services_on_addition(sys, component)
-
-    if Bus in fieldtypes(T)
-        throw_if_not_attached(get_bus(component), sys)
+    deserialization_in_progress = _is_deserialization_in_progress(sys)
+    if !deserialization_in_progress
+        check_component_addition(sys, component)
+        check_attached_buses(sys, component)
+        check_for_services_on_addition(sys, component)
     end
 
     if sys.runchecks && !validate_struct(sys, component)
         throw(IS.InvalidValue("Invalid value for $(component)"))
     end
 
-    IS.add_component!(sys.data, component; kwargs...)
+    IS.add_component!(
+        sys.data,
+        component;
+        deserialization_in_progress = deserialization_in_progress,
+        kwargs...,
+    )
 
-    # Whatever this may change should have been validated above in check_component_addition,
-    # so this should not fail.
-    handle_component_addition!(sys, component)
+    if !deserialization_in_progress
+        # Whatever this may change should have been validated above in
+        # check_component_addition, so this should not fail.
+        handle_component_addition!(sys, component)
+    end
     return
 end
 
@@ -816,16 +819,16 @@ Efficiently add all forecasts in one component to another by copying the underly
 references.
 
 # Arguments
-- `src::InfrastructureSystemsType`: Source component
-- `dst::InfrastructureSystemsType`: Destination component
+- `src::Component`: Source component
+- `dst::Component`: Destination component
 - `label_mapping::Dict = nothing`: Optionally map src labels to different dst labels.
   If provided and src has a forecast with a label not present in label_mapping, that
   forecast will not copied. If label_mapping is nothing then all forecasts will be copied
   with src's labels.
 """
 function copy_forecasts!(
-    dst::InfrastructureSystemsType,
-    src::InfrastructureSystemsType,
+    src::Component,
+    dst::Component,
     label_mapping::Union{Nothing, Dict{String, String}} = nothing,
 )
     IS.copy_forecasts!(dst, src, label_mapping)
@@ -909,7 +912,7 @@ end
 Generate initial times for a component.
 """
 function generate_initial_times(
-    component::IS.InfrastructureSystemsType,
+    component::Component,
     interval::Dates.Period,
     horizon::Int;
     initial_time::Union{Nothing, Dates.DateTime} = nothing,
@@ -939,7 +942,7 @@ Return a forecast for a subset of the time series range stored for these paramet
 """
 function get_forecast(
     ::Type{T},
-    component::IS.InfrastructureSystemsType,
+    component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
     horizon::Int,
@@ -982,7 +985,7 @@ end
 
 function get_forecast_values(
     ::Type{T},
-    component::IS.InfrastructureSystemsType,
+    component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
     horizon::Int,
@@ -1112,14 +1115,14 @@ function remove_forecast!(
 end
 
 """
-Validate an instance of a PowerSystemType against System data.
+Validate an instance of a InfrastructureSystemsType against System data.
 Returns true if the instance is valid.
 
 Users implementing this function for custom types should consider implementing
 InfrastructureSystems.validate_struct instead if the validation logic only requires data
 contained within the instance.
 """
-function validate_struct(sys::System, value::PowerSystemType)
+function validate_struct(sys::System, value::IS.InfrastructureSystemsType)
     return true
 end
 
@@ -1131,67 +1134,53 @@ function check!(sys::System)
     adequacy_check(sys)
 end
 
-function JSON2.write(io::IO, sys::System)
-    return JSON2.write(io, encode_for_json(sys))
-end
-
-function JSON2.write(sys::System)
-    return JSON2.write(encode_for_json(sys))
-end
-
-function encode_for_json(sys::T) where {T <: System}
-    fields = fieldnames(T)
-    final_fields = Vector{Symbol}()
-    vals = []
-
-    for field in fields
+function IS.serialize(sys::T) where {T <: System}
+    data = Dict{String, Any}()
+    for field in fieldnames(T)
         # Exclude bus_numbers because they will get rebuilt during deserialization.
         if field != :bus_numbers
-            push!(vals, getfield(sys, field))
-            push!(final_fields, field)
+            data[string(field)] = serialize(getfield(sys, field))
         end
     end
 
-    return NamedTuple{Tuple(final_fields)}(vals)
+    return data
 end
 
-function deserialize(
+function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
     time_series_read_only = false,
 )
-    return open(filename) do io
-        raw = JSON2.read(io, NamedTuple)
-
-        # Read any field that is defined in System but optional for the constructors and not
-        # already handled here.
-        handled = (:data, :units_settings, :bus_numbers, :internal)
-        kwargs = Dict{Symbol, Any}()
-        for field in setdiff(propertynames(raw), handled)
-            kwargs[field] = getproperty(raw, field)
-        end
-
-        units_settings = IS.convert_type(SystemUnitsSettings, raw.units_settings)
-        data = IS.deserialize(
-            IS.SystemData,
-            Component,
-            raw.data;
-            time_series_read_only = time_series_read_only,
-        )
-        internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
-        sys = System(data, units_settings; internal = internal)
-        for component in get_components(Component, sys)
-            set_unit_system!(component, units_settings)
-        end
-        return sys
+    raw = open(filename) do io
+        JSON3.read(io, Dict)
     end
+
+    # Read any field that is defined in System but optional for the constructors and not
+    # already handled here.
+    handled = ("data", "units_settings", "bus_numbers", "internal")
+    kwargs = Dict{String, Any}()
+    for field in setdiff(keys(raw), handled)
+        kwargs[field] = raw[field]
+    end
+
+    units_settings = IS.deserialize(SystemUnitsSettings, raw["units_settings"])
+    data = IS.deserialize(
+        IS.SystemData,
+        raw["data"];
+        time_series_read_only = time_series_read_only,
+    )
+    internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
+    sys = System(data, units_settings; internal = internal)
+    ext = get_ext(sys)
+    ext["deserialization_in_progress"] = true
+    deserialize_components!(sys, raw["data"]["components"])
+    pop!(ext, "deserialization_in_progress")
+    isempty(ext) && clear_ext!(sys)
+
+    return sys
 end
 
-function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::NamedTuple)
-    # TODO: This adds components through IS.SystemData instead of System, which is what
-    # should happen. There is a catch-22 between creating System and SystemData.
-    # This means that the restrictions in add_component! are not applied here.
-
+function deserialize_components!(sys::System, raw)
     # Maintain a lookup of UUID to component because some component types encode
     # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
@@ -1211,8 +1200,8 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
         include_types = nothing,
         post_add_func = nothing,
     )
-        for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-            c_type = get_component_type(c_type_sym)
+        for (c_type_str, components) in raw
+            c_type = get_component_type(c_type_str)
             c_type in parsed_types && continue
             if !isnothing(skip_types) && is_matching_type(c_type, skip_types)
                 continue
@@ -1220,9 +1209,9 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
             if !isnothing(include_types) && !is_matching_type(c_type, include_types)
                 continue
             end
-            for component in IS.get_components_raw(IS.SystemData, c_type, raw)
-                comp = IS.convert_type(c_type, component, component_cache)
-                IS.add_component!(data, comp)
+            for component in components
+                comp = deserialize(c_type, component, component_cache)
+                add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
@@ -1236,21 +1225,13 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
-    # Devices and StaticReserveGroup have services, skip one round.
-    deserialize_and_add!(; skip_types = [Device, StaticReserveGroup])
-    # DynamicInjection has to follow StaticInjection.
     deserialize_and_add!(;
-        include_types = [Device, StaticReserveGroup],
-        skip_types = [DynamicInjection, RegulationDevice],
+        include_types = [Arc, Service],
+        skip_types = [StaticReserveGroup],
     )
-    deserialize_and_add!(; include_types = [RegulationDevice])
-    deserialize_and_add!(;
-        include_types = [DynamicInjection],
-        post_add_func = dynamic_injector -> begin
-            static_injector = get_static_injector(dynamic_injector)
-            set_dynamic_injector!(static_injector, dynamic_injector)
-        end,
-    )
+    # Static injection devices can contain dynamic injection devices.
+    deserialize_and_add!(; include_types = [StaticReserveGroup, DynamicInjection])
+    deserialize_and_add!(;)
 end
 
 """
@@ -1285,6 +1266,11 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     end
 
     return buses
+end
+
+function _is_deserialization_in_progress(sys::System)
+    ext = get_ext(sys)
+    return get(ext, "deserialization_in_progress", false)
 end
 
 check_for_services_on_addition(sys::System, component::Component) = nothing
@@ -1377,39 +1363,25 @@ function check_component_addition(sys::System, bus::Bus)
     end
 end
 
-function check_component_addition(sys::System, dynamic_injector::DynamicInjection)
-    static_injector = get_static_injector(dynamic_injector)
-    throw_if_not_attached(static_injector, sys)
-
-    if !isnothing(get_dynamic_injector(static_injector))
-        name = get_name(static_injector)
-        throw(ArgumentError("static injector $name already has a dynamic injector"))
-    end
-end
-
-function check_component_removal(sys::System, static_injector::StaticInjection)
-    if !isnothing(get_dynamic_injector(static_injector))
-        name = get_name(static_injector)
-        throw(ArgumentError("$name cannot be removed with an attached dynamic injector"))
-    end
-end
-
 function handle_component_addition!(sys::System, bus::Bus)
     number = get_number(bus)
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
 end
 
-function handle_component_addition!(sys::System, dynamic_injector::DynamicInjection)
-    set_dynamic_injector!(get_static_injector(dynamic_injector), dynamic_injector)
-end
-
 function handle_component_addition!(sys::System, component::RegulationDevice)
     copy_forecasts!(component, component.device)
-    remove_component!(sys, component.device)
-    # The line above removed the component setting so needs to be added back
-    set_unit_system!(component.device, component.internal.units_info)
+    if !isnothing(get_component(typeof(component.device), sys, get_name(component.device)))
+        # This will not be true during deserialization, and so won't run then.
+        remove_component!(sys, component.device)
+        # The line above removed the component setting so needs to be added back
+        set_unit_system!(component.device, component.internal.units_info)
+    end
     return
+end
+
+function handle_component_addition!(sys::System, component::Branch)
+    handle_component_addition_common!(sys, component)
 end
 
 function handle_component_addition!(sys::System, component::DynamicBranch)
@@ -1442,10 +1414,6 @@ function handle_component_removal!(sys::System, device::Device)
     # This may have to be refactored if handle_component_removal! needs to be implemented
     # for a subtype.
     clear_services!(device)
-end
-
-function handle_component_removal!(sys::System, component::DynamicInjection)
-    set_dynamic_injector!(get_static_injector(component), nothing)
 end
 
 function handle_component_removal!(sys::System, service::Service)

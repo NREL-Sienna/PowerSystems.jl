@@ -33,9 +33,9 @@ end
 
 @testset "Generation Constructors" begin
     tThreePartCost = ThreePartCost(nothing)
-    @test tThreePartCost isa PowerSystemType
+    @test tThreePartCost isa IS.InfrastructureSystemsType
     tTwoPartCost = TwoPartCost(nothing)
-    @test tTwoPartCost isa PowerSystemType
+    @test tTwoPartCost isa IS.InfrastructureSystemsType
     tThermalGen = ThermalStandard(nothing)
     @test tThermalGen isa PowerSystems.Component
     tHydroDispatch = HydroDispatch(nothing)
