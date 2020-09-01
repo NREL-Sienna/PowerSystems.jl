@@ -10,7 +10,7 @@
     STORAGE
 end
 
-ENUMS = (
+const ENUMS = (
     AngleUnits.AngleUnit,
     BusTypes.BusType,
     InputCategory,
@@ -20,7 +20,9 @@ ENUMS = (
     ThermalFuels.ThermalFuel,
     UnitSystem,
 )
-ENUM_MAPPINGS = Dict()
+
+const ENUM_MAPPINGS = Dict()
+
 for enum in ENUMS
     ENUM_MAPPINGS[enum] = Dict()
     for value in instances(enum)
