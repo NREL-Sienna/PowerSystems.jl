@@ -413,29 +413,36 @@ end
         add_component!(sys, lines)
     end
 
+    # Names must be the same.
+    Gen1AVR.name = "bad_name"
+    @test_throws ArgumentError add_component!(sys, Gen1AVR, static_gen)
+
+    Gen1AVR.name = get_name(static_gen)
+    # static_injector must be passed.
+    @test_throws ArgumentError add_component!(sys, Gen1AVR)
+
+    # static_injector must be attached to the system.
+    @test_throws ArgumentError add_component!(sys, Gen1AVR, static_gen)
+
     add_component!(sys, static_gen)
     @test isnothing(get_dynamic_injector(static_gen))
 
-    add_component!(sys, Gen1AVR)
-    set_dynamic_injector!(static_gen, Gen1AVR)
+    add_component!(sys, Gen1AVR, static_gen)
     dynamics = collect(get_components(DynamicGenerator, sys))
     @test length(dynamics) == 1
     @test dynamics[1] == Gen1AVR
     @test get_dynamic_injector(static_gen) == Gen1AVR
 
     remove_component!(sys, Gen1AVR)
-    set_dynamic_injector!(static_gen, nothing)
     @test isnothing(get_dynamic_injector(static_gen))
-    add_component!(sys, Gen2AVR)
-    set_dynamic_injector!(static_gen, Gen2AVR)
+    add_component!(sys, Gen2AVR, static_gen)
     @test get_dynamic_injector(static_gen) === Gen2AVR
 
     # Rule: Can't set the pair injector if the current injector is already set.
     @test_throws ArgumentError set_dynamic_injector!(static_gen, Gen1AVR)
 
     # Rule: Can't remove a static injector if it is attached to a dynamic injector.
-    # TODO
-    #@test_throws ArgumentError remove_component!(sys, static_gen)
+    @test_throws ArgumentError remove_component!(sys, static_gen)
 
     #Rule: Can't add saturation if Se(1.2) <= Se(1.0)
     @test_throws IS.ConflictingInputsError PSY.get_quadratic_saturation((0.5, 0.1))

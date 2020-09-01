@@ -192,8 +192,7 @@ function create_system_with_dynamic_inverter()
         filt,
     ) #Output Filter
 
-    add_component!(sys, test_inverter)
-    set_dynamic_injector!(battery, test_inverter)
+    add_component!(sys, test_inverter, battery)
 
     return sys
 end

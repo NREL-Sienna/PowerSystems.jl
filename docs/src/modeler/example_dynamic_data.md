@@ -132,7 +132,7 @@ static_gen = get_component(Generator, omib_sys, "generator-102-1")
 #Creates the dynamic generator
 dyn_gen = dyn_gen_classic(static_gen)
 #Add the dynamic generator the system
-add_component!(omib_sys, dyn_gen)
+add_component!(omib_sys, dyn_gen, static_gen)
 ```
 
 Then we can simply export our system data such that it can be later read as:

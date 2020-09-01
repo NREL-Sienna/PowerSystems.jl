@@ -281,7 +281,7 @@ function add_component!(sys::System, component::T; kwargs...) where {T <: Compon
     @assert has_units_setting(component)
 
     check_attached_buses(sys, component)
-    check_component_addition(sys, component)
+    check_component_addition(sys, component; kwargs...)
 
     deserialization_in_progress = _is_deserialization_in_progress(sys)
     if !deserialization_in_progress
@@ -293,11 +293,12 @@ function add_component!(sys::System, component::T; kwargs...) where {T <: Compon
         throw(IS.InvalidValue("Invalid value for $(component)"))
     end
 
+    _kwargs = Dict(k => v for (k, v) in kwargs if k !== :static_injector)
     IS.add_component!(
         sys.data,
         component;
         deserialization_in_progress = deserialization_in_progress,
-        kwargs...,
+        _kwargs...,
     )
 
     if !deserialization_in_progress
@@ -305,9 +306,26 @@ function add_component!(sys::System, component::T; kwargs...) where {T <: Compon
         # check_component_addition, so this should not fail.
         # Doesn't run at deserialization time because the changes made by this function
         # occurred when the original addition ran and do not apply to that scenario.
-        handle_component_addition!(sys, component)
+        handle_component_addition!(sys, component; kwargs...)
     end
     return
+end
+
+"""
+Add a dynamic injector to the system.
+
+Throws ArgumentError if the name does not match the static_injector name.
+Throws ArgumentError if the static_injector is not attached to the system.
+
+All rules for the generic add_component! method also apply.
+"""
+function add_component!(
+    sys::System,
+    dyn_injector::DynamicInjection,
+    static_injector::StaticInjection;
+    kwargs...,
+)
+    add_component!(sys, dyn_injector; static_injector = static_injector, kwargs...)
 end
 
 """
@@ -1326,27 +1344,34 @@ Throws ArgumentError if a PowerSystems rule blocks addition to the system.
 This method is tied with handle_component_addition!. If the methods are re-implemented for
 a subtype then whatever is added in handle_component_addition! must be checked here.
 """
-check_component_addition(sys::System, component::Component) = nothing
+check_component_addition(sys::System, component::Component; kwargs...) = nothing
 
 """
 Throws ArgumentError if a PowerSystems rule blocks removal from the system.
 """
 check_component_removal(sys::System, component::Component) = nothing
 
+function check_component_removal(sys::System, static_injector::StaticInjection)
+    if get_dynamic_injector(static_injector) !== nothing
+        name = get_name(static_injector)
+        throw(ArgumentError("$name cannot be removed with an attached dynamic injector"))
+    end
+end
+
 """
 Refer to docstring for check_component_addition!
 """
-handle_component_addition!(sys::System, component::Component) = nothing
+handle_component_addition!(sys::System, component::Component; kwargs...) = nothing
 
 handle_component_removal!(sys::System, component::Component) = nothing
 
-function check_component_addition(sys::System, branch::Branch)
+function check_component_addition(sys::System, branch::Branch; kwargs...)
     arc = get_arc(branch)
     throw_if_not_attached(get_from(arc), sys)
     throw_if_not_attached(get_to(arc), sys)
 end
 
-function check_component_addition(sys::System, dyn_branch::DynamicBranch)
+function check_component_addition(sys::System, dyn_branch::DynamicBranch; kwargs...)
     if !_is_deserialization_in_progress(sys)
         throw_if_not_attached(dyn_branch.branch, sys)
     end
@@ -1355,7 +1380,25 @@ function check_component_addition(sys::System, dyn_branch::DynamicBranch)
     throw_if_not_attached(get_to(arc), sys)
 end
 
-function check_component_addition(sys::System, bus::Bus)
+function check_component_addition(sys::System, dyn_injector::DynamicInjection; kwargs...)
+    if _is_deserialization_in_progress(sys)
+        # Ordering of component addition makes these checks impossible.
+        return
+    end
+
+    static_injector = get(kwargs, :static_injector, nothing)
+    if static_injector === nothing
+        throw(ArgumentError("static_injector must be passed when adding a DynamicInjection"))
+    end
+
+    if get_name(dyn_injector) != get_name(static_injector)
+        throw(ArgumentError("static_injector must have the same name as the DynamicInjection"))
+    end
+
+    throw_if_not_attached(static_injector, sys)
+end
+
+function check_component_addition(sys::System, bus::Bus; kwargs...)
     number = get_number(bus)
     if number in sys.bus_numbers
         throw(ArgumentError("bus number $number is already stored in the system"))
@@ -1372,13 +1415,13 @@ function check_component_addition(sys::System, bus::Bus)
     end
 end
 
-function handle_component_addition!(sys::System, bus::Bus)
+function handle_component_addition!(sys::System, bus::Bus; kwargs...)
     number = get_number(bus)
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
 end
 
-function handle_component_addition!(sys::System, component::RegulationDevice)
+function handle_component_addition!(sys::System, component::RegulationDevice; kwargs...)
     copy_forecasts!(component, component.device)
     if !isnothing(get_component(typeof(component.device), sys, get_name(component.device)))
         # This will not be true during deserialization, and so won't run then.
@@ -1389,13 +1432,18 @@ function handle_component_addition!(sys::System, component::RegulationDevice)
     return
 end
 
-function handle_component_addition!(sys::System, component::Branch)
+function handle_component_addition!(sys::System, component::Branch; kwargs...)
     handle_component_addition_common!(sys, component)
 end
 
-function handle_component_addition!(sys::System, component::DynamicBranch)
+function handle_component_addition!(sys::System, component::DynamicBranch; kwargs...)
     handle_component_addition_common!(sys, component)
     remove_component!(sys, component.branch)
+end
+
+function handle_component_addition!(sys::System, dyn_injector::DynamicInjection; kwargs...)
+    static_injector = kwargs[:static_injector]
+    set_dynamic_injector!(static_injector, dyn_injector)
 end
 
 function handle_component_addition_common!(sys::System, component::Branch)
@@ -1437,6 +1485,22 @@ function handle_component_removal!(sys::System, value::T) where {T <: Aggregatio
             _remove_aggregration_topology!(device, value)
         end
     end
+end
+
+function handle_component_removal!(sys::System, dyn_injector::DynamicInjection)
+    injectors = get_components_by_name(StaticInjection, sys, get_name(dyn_injector))
+    found = false
+    for static_injector in injectors
+        _dyn_injector = get_dynamic_injector(static_injector)
+        _dyn_injector === nothing && continue
+        if _dyn_injector === dyn_injector
+            @assert !found
+            set_dynamic_injector!(static_injector, nothing)
+            found = true
+        end
+    end
+
+    @assert found
 end
 
 """
