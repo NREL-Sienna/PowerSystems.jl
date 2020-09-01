@@ -13,9 +13,9 @@ This file is auto-generated. Do not edit.
         active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
         ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        operation_cost::OperationalCost
         time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         base_power::Float64
+        operation_cost::OperationalCost
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -36,9 +36,9 @@ This file is auto-generated. Do not edit.
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -59,12 +59,12 @@ mutable struct HydroDispatch <: HydroGen
     reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Base power of the unit in MVA"
     base_power::Float64
+    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    operation_cost::OperationalCost
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -76,12 +76,12 @@ mutable struct HydroDispatch <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, time_limits, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, time_limits, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, time_limits, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, time_limits, base_power, services, dynamic_injector, ext, forecasts, )
+function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -97,9 +97,9 @@ function HydroDispatch(::Nothing)
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
         ramp_limits=nothing,
-        operation_cost=ThreePartCost(nothing),
         time_limits=nothing,
         base_power=0.0,
+        operation_cost=TwoPartCost(nothing),
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -127,12 +127,12 @@ get_active_power_limits(value::HydroDispatch) = get_value(value, value.active_po
 get_reactive_power_limits(value::HydroDispatch) = get_value(value, value.reactive_power_limits)
 """Get [`HydroDispatch`](@ref) `ramp_limits`."""
 get_ramp_limits(value::HydroDispatch) = get_value(value, value.ramp_limits)
-"""Get [`HydroDispatch`](@ref) `operation_cost`."""
-get_operation_cost(value::HydroDispatch) = value.operation_cost
 """Get [`HydroDispatch`](@ref) `time_limits`."""
 get_time_limits(value::HydroDispatch) = value.time_limits
 """Get [`HydroDispatch`](@ref) `base_power`."""
 get_base_power(value::HydroDispatch) = value.base_power
+"""Get [`HydroDispatch`](@ref) `operation_cost`."""
+get_operation_cost(value::HydroDispatch) = value.operation_cost
 """Get [`HydroDispatch`](@ref) `services`."""
 get_services(value::HydroDispatch) = value.services
 """Get [`HydroDispatch`](@ref) `dynamic_injector`."""
@@ -164,12 +164,12 @@ set_active_power_limits!(value::HydroDispatch, val) = value.active_power_limits 
 set_reactive_power_limits!(value::HydroDispatch, val) = value.reactive_power_limits = val
 """Set [`HydroDispatch`](@ref) `ramp_limits`."""
 set_ramp_limits!(value::HydroDispatch, val) = value.ramp_limits = val
-"""Set [`HydroDispatch`](@ref) `operation_cost`."""
-set_operation_cost!(value::HydroDispatch, val) = value.operation_cost = val
 """Set [`HydroDispatch`](@ref) `time_limits`."""
 set_time_limits!(value::HydroDispatch, val) = value.time_limits = val
 """Set [`HydroDispatch`](@ref) `base_power`."""
 set_base_power!(value::HydroDispatch, val) = value.base_power = val
+"""Set [`HydroDispatch`](@ref) `operation_cost`."""
+set_operation_cost!(value::HydroDispatch, val) = value.operation_cost = val
 """Set [`HydroDispatch`](@ref) `services`."""
 set_services!(value::HydroDispatch, val) = value.services = val
 """Set [`HydroDispatch`](@ref) `ext`."""

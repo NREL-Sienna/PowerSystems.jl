@@ -1491,12 +1491,6 @@
           "validation_action": "error"
         },
         {
-          "name": "operation_cost",
-          "null_value": "ThreePartCost(nothing)",
-          "data_type": "OperationalCost",
-          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
-        },
-        {
           "name": "base_power",
           "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
@@ -1541,6 +1535,13 @@
           },
           "validation_action": "error",
           "needs_conversion": true
+        },
+        {
+          "name": "operation_cost",
+          "null_value": "ThreePartCost(nothing)",
+          "data_type": "OperationalCost",
+          "default": "TwoPartCost(0.0, 0.0)",
+          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
         },
         {
           "name": "storage_target",
@@ -1671,12 +1672,6 @@
           "needs_conversion": true
         },
         {
-          "name": "operation_cost",
-          "null_value": "ThreePartCost(nothing)",
-          "data_type": "OperationalCost",
-          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
-        },
-        {
           "name": "time_limits",
           "comment": "Minimum up and Minimum down time limits in hours",
           "null_value": "nothing",
@@ -1697,6 +1692,13 @@
             "max": null
           },
           "validation_action": "warn"
+        },
+        {
+          "name": "operation_cost",
+          "null_value": "TwoPartCost(nothing)",
+          "data_type": "OperationalCost",
+          "default": "TwoPartCost(0.0, 0.0)",
+          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
         },
         {
           "name": "services",
@@ -1833,12 +1835,6 @@
           "validation_action": "error"
         },
         {
-          "name": "operation_cost",
-          "null_value": "ThreePartCost(nothing)",
-          "data_type": "OperationalCost",
-          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
-        },
-        {
           "name": "rating_pump",
           "comment": "Thermal limited MVA Power Withdrawl of the pump. <= Capacity",
           "null_value": "0.0",
@@ -1938,6 +1934,13 @@
           "null_value": "(up=0.0, down=0.0)",
           "data_type": "NamedTuple{(:up, :down), Tuple{Float64, Float64}}",
           "default": "(up=1.0, down=1.0)"
+        },
+        {
+          "name": "operation_cost",
+          "null_value": "TwoPartCost(nothing)",
+          "data_type": "OperationalCost",
+          "default": "TwoPartCost(0.0, 0.0)",
+          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
         },
         {
           "name": "pump_efficiency",
