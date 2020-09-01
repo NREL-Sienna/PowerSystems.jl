@@ -279,10 +279,13 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
     set_unit_system!(component, sys.units_settings)
     @assert has_units_setting(component)
+
+    check_attached_buses(sys, component)
+    check_component_addition(sys, component)
+
     deserialization_in_progress = _is_deserialization_in_progress(sys)
     if !deserialization_in_progress
-        check_component_addition(sys, component)
-        check_attached_buses(sys, component)
+        # Services are attached to devices at deserialization time.
         check_for_services_on_addition(sys, component)
     end
 
@@ -300,6 +303,8 @@ function add_component!(sys::System, component::T; kwargs...) where {T <: Compon
     if !deserialization_in_progress
         # Whatever this may change should have been validated above in
         # check_component_addition, so this should not fail.
+        # Doesn't run at deserialization time because the changes made by this function
+        # occurred when the original addition ran and do not apply to that scenario.
         handle_component_addition!(sys, component)
     end
     return
@@ -1229,9 +1234,11 @@ function deserialize_components!(sys::System, raw)
         include_types = [Arc, Service],
         skip_types = [StaticReserveGroup],
     )
+    deserialize_and_add!(; include_types = [Branch], skip_types = [DynamicBranch])
+    deserialize_and_add!(; include_types = [DynamicBranch])
     # Static injection devices can contain dynamic injection devices.
     deserialize_and_add!(; include_types = [StaticReserveGroup, DynamicInjection])
-    deserialize_and_add!(;)
+    deserialize_and_add!()
 end
 
 """
@@ -1340,7 +1347,9 @@ function check_component_addition(sys::System, branch::Branch)
 end
 
 function check_component_addition(sys::System, dyn_branch::DynamicBranch)
-    throw_if_not_attached(dyn_branch.branch, sys)
+    if !_is_deserialization_in_progress(sys)
+        throw_if_not_attached(dyn_branch.branch, sys)
+    end
     arc = get_arc(dyn_branch)
     throw_if_not_attached(get_from(arc), sys)
     throw_if_not_attached(get_to(arc), sys)
