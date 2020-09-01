@@ -10,8 +10,8 @@ const _ENCODE_AS_UUID_A = (
 const _ENCODE_AS_UUID_B = (Arc, Area, Bus, LoadZone, DynamicInjection, Vector{Service})
 @assert length(_ENCODE_AS_UUID_A) == length(_ENCODE_AS_UUID_B)
 
-should_encode_as_uuid(val) = mapreduce(x -> val isa x, |, _ENCODE_AS_UUID_B)
-should_encode_as_uuid(::Type{T}) where {T} = mapreduce(x -> T <: x, |, _ENCODE_AS_UUID_A)
+should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID_B)
+should_encode_as_uuid(::Type{T}) where {T} = any(x -> T <: x, _ENCODE_AS_UUID_A)
 
 function IS.serialize(component::T) where {T <: Component}
     data = Dict{String, Any}()
