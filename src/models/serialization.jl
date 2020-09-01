@@ -28,7 +28,7 @@ Serialize the value, encoding as UUIDs where necessary.
 function serialize_uuid_handling(val)
     if should_encode_as_uuid(val)
         if val isa Array
-            value = [IS.get_uuid(x) for x in val]
+            value = IS.get_uuid.(val)
         elseif val === nothing
             value = nothing
         else
