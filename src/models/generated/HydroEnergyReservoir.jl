@@ -122,7 +122,7 @@ function HydroEnergyReservoir(::Nothing)
         storage_capacity=0.0,
         inflow=0.0,
         initial_storage=0.0,
-        operation_cost=ThreePartCost(nothing),
+        operation_cost=TwoPartCost(nothing),
         storage_target=0.0,
         conversion_factor=0.0,
         services=Device[],
