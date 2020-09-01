@@ -182,7 +182,7 @@ function create_system_with_dynamic_inverter()
     add_component!(sys, battery)
 
     test_inverter = DynamicInverter(
-        battery,
+        get_name(battery),
         1.0, #ω_ref
         converter, #Converter
         outer_control, #OuterControl

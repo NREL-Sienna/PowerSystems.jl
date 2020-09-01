@@ -56,7 +56,7 @@ mutable struct DynamicGenerator{
 end
 
 function DynamicGenerator(
-    static_injector::Generator,
+    name::String,
     ω_ref::Float64,
     machine::M,
     shaft::S,
@@ -69,7 +69,7 @@ function DynamicGenerator(
     states = _calc_states(machine, shaft, avr, prime_mover, pss)
 
     return DynamicGenerator{M, S, A, TG, P}(
-        get_name(static_injector),
+        name,
         ω_ref,
         machine,
         shaft,
@@ -84,28 +84,18 @@ function DynamicGenerator(
 end
 
 function DynamicGenerator(;
-    name::Union{String, Generator},
+    name::String,
     ω_ref::Float64,
     machine::M,
     shaft::S,
     avr::A,
     prime_mover::TG,
     pss::P,
-    n_states = nothing,
-    states = nothing,
+    n_states = _calc_n_states(machine, shaft, avr, prime_mover, pss),
+    states = _calc_states(machine, shaft, avr, prime_mover, pss),
     ext::Dict{String, Any} = Dict{String, Any}(),
     internal = InfrastructureSystemsInternal(),
 ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
-    if name isa StaticInjection
-        name = get_name(name)
-    end
-    if n_states === nothing
-        @assert states === nothing
-        n_states = _calc_n_states(machine, shaft, avr, prime_mover, pss)
-        states = _calc_states(machine, shaft, avr, prime_mover, pss)
-    else
-        @assert states !== nothing
-    end
     DynamicGenerator(
         name,
         ω_ref,

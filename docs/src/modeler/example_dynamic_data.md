@@ -111,7 +111,7 @@ pss_none() = PSSFixed(0.0)
 
 function dyn_gen_classic(generator)
     return DynamicGenerator(
-        generator,
+        get_name(generator),
         1.0, #ω_ref
         machine_classic(), #machine
         shaft_damping(), #shaft
@@ -237,7 +237,7 @@ filt() = LCLFilter(lf = 0.08, rf = 0.003, cf = 0.074, lg = 0.2, rg = 0.01)
 #Construct the Inverter:
 function inv_case78(static_device)
     return DynamicInverter(
-        static_device,
+        get_name(static_device),
         1.0, # ω_ref,
         converter_high_power(), #converter
         outer_control(), #outer control
@@ -297,7 +297,7 @@ pss_none() = PSSFixed(0.0) #Vs
 #Construct the generator
 function dyn_gen_second_order(generator)
     return DynamicGenerator(
-        generator,
+        get_name(generator),
         1.0, # ω_ref,
         machine_oneDoneQ(), #machine
         shaft_no_damping(), #shaft

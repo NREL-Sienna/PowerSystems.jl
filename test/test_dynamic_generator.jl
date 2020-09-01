@@ -363,7 +363,7 @@ end
     )
 
     Gen1AVR = DynamicGenerator(
-        name = static_gen,
+        name = get_name(static_gen),
         ω_ref = 1.0,
         machine = Basic,
         shaft = BaseShaft,
@@ -373,7 +373,7 @@ end
     )
     @test Gen1AVR isa PowerSystems.Component
     Gen1AVRnoAVR = DynamicGenerator(
-        name = static_gen,
+        name = get_name(static_gen),
         ω_ref = 1.0,
         machine = Basic,
         shaft = BaseShaft,
@@ -384,7 +384,7 @@ end
     @test Gen1AVRnoAVR isa PowerSystems.Component
 
     Gen2AVRnoAVR = DynamicGenerator(
-        name = static_gen,
+        name = get_name(static_gen),
         ω_ref = 1.0,
         machine = oneDoneQ,
         shaft = BaseShaft,
@@ -395,7 +395,7 @@ end
     @test Gen2AVRnoAVR isa PowerSystems.Component
 
     Gen2AVR = DynamicGenerator(
-        name = static_gen,
+        name = get_name(static_gen),
         ω_ref = 1.0,
         machine = oneDoneQ,
         shaft = BaseShaft,

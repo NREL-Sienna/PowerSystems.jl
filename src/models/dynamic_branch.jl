@@ -10,33 +10,30 @@ mutable struct DynamicBranch <: ACBranch
     n_states::Int
     states::Vector{Symbol}
     internal::IS.InfrastructureSystemsInternal
+
+    function DynamicBranch(branch, n_states, states, internal)
+        @assert length(states) == n_states
+        new(branch, n_states, states, internal)
+    end
 end
+
+const DEFAULT_DYNAMIC_BRANCH_STATES = [:Il_R, :Il_I]
 
 function DynamicBranch(
     branch::T;
     internal = IS.InfrastructureSystemsInternal(),
 ) where {T <: ACBranch}
-    n_states = 2
-    states = [
-        :Il_R
-        :Il_I
-    ]
+    states = DEFAULT_DYNAMIC_BRANCH_STATES
+    n_states = length(states)
     DynamicBranch(branch, n_states, states, internal)
 end
 
 function DynamicBranch(;
     branch,
-    n_states = nothing,
-    states = nothing,
+    n_states = length(DEFAULT_DYNAMIC_BRANCH_STATES),
+    states = DEFAULT_DYNAMIC_BRANCH_STATES,
     internal = IS.InfrastructureSystemsInternal(),
 )
-    if n_states === nothing
-        @assert states === nothing
-        n_states = 2
-        states = [:Il_R :Il_I]
-    else
-        @assert states !== nothing
-    end
     DynamicBranch(branch, n_states, states, internal)
 end
 

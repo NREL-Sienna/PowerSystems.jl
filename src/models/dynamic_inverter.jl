@@ -63,7 +63,7 @@ mutable struct DynamicInverter{
 end
 
 function DynamicInverter(
-    static_injector::StaticInjection,
+    name::String,
     ω_ref::Float64,
     converter::C,
     outer_control::O,
@@ -98,7 +98,7 @@ function DynamicInverter(
     )
 
     return DynamicInverter{C, O, IC, DC, P, F}(
-        get_name(static_injector),
+        name,
         ω_ref,
         converter,
         outer_control,
@@ -114,7 +114,7 @@ function DynamicInverter(
 end
 
 function DynamicInverter(;
-    name::Union{String, StaticInjection},
+    name::String,
     ω_ref::Float64,
     converter::C,
     outer_control::O,
@@ -122,8 +122,22 @@ function DynamicInverter(;
     dc_source::DC,
     freq_estimator::P,
     filter::F,
-    n_states = nothing,
-    states = nothing,
+    n_states = _calc_n_states(
+        converter,
+        outer_control,
+        inner_control,
+        dc_source,
+        freq_estimator,
+        filter,
+    ),
+    states = _calc_states(
+        converter,
+        outer_control,
+        inner_control,
+        dc_source,
+        freq_estimator,
+        filter,
+    ),
     ext::Dict{String, Any} = Dict{String, Any}(),
     internal = IS.InfrastructureSystemsInternal(),
 ) where {
@@ -134,31 +148,6 @@ function DynamicInverter(;
     P <: FrequencyEstimator,
     F <: Filter,
 }
-    if name isa StaticInjection
-        name = get_name(name)
-    end
-    if n_states === nothing
-        @assert states === nothing
-        n_states = _calc_n_states(
-            converter,
-            outer_control,
-            inner_control,
-            dc_source,
-            freq_estimator,
-            filter,
-        )
-        states = _calc_states(
-            converter,
-            outer_control,
-            inner_control,
-            dc_source,
-            freq_estimator,
-            filter,
-        )
-    else
-        @assert states !== nothing
-    end
-
     DynamicInverter(
         name,
         ω_ref,
