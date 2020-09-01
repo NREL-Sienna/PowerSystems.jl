@@ -1483,7 +1483,7 @@
         },
         {
           "name": "operation_cost",
-          "null_value": "ThreePartCost(nothing)",
+          "null_value": "TwoPartCost(nothing)",
           "data_type": "OperationalCost",
           "default": "TwoPartCost(0.0, 0.0)",
           "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
