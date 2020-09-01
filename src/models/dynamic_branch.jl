@@ -30,12 +30,12 @@ function DynamicBranch(;
     states = nothing,
     internal = IS.InfrastructureSystemsInternal(),
 )
-    if isnothing(n_states)
-        @assert isnothing(states)
+    if n_states === nothing
+        @assert states === nothing
         n_states = 2
         states = [:Il_R :Il_I]
     else
-        @assert !isnothing(states)
+        @assert states !== nothing
     end
     DynamicBranch(branch, n_states, states, internal)
 end

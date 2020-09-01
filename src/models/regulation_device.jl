@@ -118,7 +118,7 @@ function IS.deserialize(
     vals = Dict{Symbol, Any}()
     for (name, type) in zip(fieldnames(T), fieldtypes(T))
         val = data[string(name)]
-        if isnothing(val)
+        if val === nothing
             vals[name] = val
         elseif type <: StaticInjection
             type = get_component_type(data[STATIC_INJECTOR_TYPE_KEY])

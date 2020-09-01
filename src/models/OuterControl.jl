@@ -48,11 +48,11 @@ function OuterControl(;
     states = nothing,
     n_states = nothing,
 )
-    if isnothing(states)
-        @assert isnothing(n_states)
+    if states === nothing
+        @assert n_states === nothing
         return OuterControl(active_power, reactive_power, ext)
     end
-    @assert !isnothing(n_states)
+    @assert n_states !== nothing
     return OuterControl(active_power, reactive_power, ext, states, n_states)
 end
 

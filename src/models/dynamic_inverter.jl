@@ -137,8 +137,8 @@ function DynamicInverter(;
     if name isa StaticInjection
         name = get_name(name)
     end
-    if isnothing(n_states)
-        @assert isnothing(states)
+    if n_states === nothing
+        @assert states === nothing
         n_states = _calc_n_states(
             converter,
             outer_control,
@@ -156,7 +156,7 @@ function DynamicInverter(;
             filter,
         )
     else
-        @assert !isnothing(states)
+        @assert states !== nothing
     end
 
     DynamicInverter(

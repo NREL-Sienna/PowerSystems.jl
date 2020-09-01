@@ -99,12 +99,12 @@ function DynamicGenerator(;
     if name isa StaticInjection
         name = get_name(name)
     end
-    if isnothing(n_states)
-        @assert isnothing(states)
+    if n_states === nothing
+        @assert states === nothing
         n_states = _calc_n_states(machine, shaft, avr, prime_mover, pss)
         states = _calc_states(machine, shaft, avr, prime_mover, pss)
     else
-        @assert !isnothing(states)
+        @assert states !== nothing
     end
     DynamicGenerator(
         name,

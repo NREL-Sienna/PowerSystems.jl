@@ -29,7 +29,7 @@ function serialize_uuid_handling(val)
     if should_encode_as_uuid(val)
         if val isa Array
             value = [IS.get_uuid(x) for x in val]
-        elseif isnothing(val)
+        elseif val === nothing
             value = nothing
         else
             value = IS.get_uuid(val)
@@ -74,7 +74,7 @@ end
 Deserialize the value, converting UUIDs to components where necessary.
 """
 function deserialize_uuid_handling(field_type, field_name, val, component_cache)
-    if isnothing(val)
+    if val === nothing
         value = val
     elseif should_encode_as_uuid(field_type)
         if field_type <: Vector
