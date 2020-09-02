@@ -235,7 +235,7 @@
     {
       "struct_name": "Bus",
       "docstring": "A power-system bus.",
-      "inner_constructor_check": "CheckBusParams",
+      "inner_constructor_check": "check_bus_params",
       "fields": [
         {
           "name": "number",

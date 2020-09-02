@@ -55,7 +55,7 @@ mutable struct Bus <: Topology
     internal::InfrastructureSystemsInternal
 
     function Bus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
-        (number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, ) = CheckBusParams(
+        (number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, ) = check_bus_params(
             number,
             name,
             bustype,
