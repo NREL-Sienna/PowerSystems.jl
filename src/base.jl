@@ -897,13 +897,12 @@ function are_forecasts_contiguous(sys::System)
     return IS.are_forecasts_contiguous(sys.data)
 end
 
-"""
-"""
 function are_forecasts_contiguous(component::Component)
     return IS.are_forecasts_contiguous(component)
 end
 
 """
+Generates all possible initial times for the stored forecasts. This should return the same
 result regardless of whether the forecasts have been stored as one contiguous array or
 chunks of contiguous arrays, such as one 365-day forecast vs 365 one-day forecasts.
 
