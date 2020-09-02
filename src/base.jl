@@ -63,7 +63,7 @@ struct System <: IS.InfrastructureSystemsType
     )
         # Note to devs: if you add parameters to kwargs then consider whether they need
         # special handling in the deserialization function in this file.
-        # See deserialize read for System.
+        # See deserialize for System.
 
         # Implement a strict check here to make sure that SYSTEM_KWARGS can be used
         # elsewhere.
