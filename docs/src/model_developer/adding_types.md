@@ -58,10 +58,10 @@ the parent's reference to that child.
 The source file `src/base.jl` provides functions that you can implement for
 your new type to manage these scenarios.
 
-- `check_component_addition(sys::System, component::Component)`
-- `handle_component_addition!(sys::System, component::Component)`
-- `check_component_removal(sys::System, component::Component)`
-- `handle_component_removal!(sys::System, component::Component)`
+- `check_component_addition(sys::System, component::Component; kwargs...)`
+- `handle_component_addition!(sys::System, component::Component; kwargs...)`
+- `check_component_removal(sys::System, component::Component; kwargs...)`
+- `handle_component_removal!(sys::System, component::Component; kwargs...)`
 
 The functions `add_component!()` and `remove_component!()` call the check
 function before performing actions and then call the handle function
@@ -81,28 +81,34 @@ file and then deserialize it back to a system. The main benefit is that
 deserializing is significantly faster than reconstructing the system from raw
 data files.
 
-For most structs with basic types (numbers, strings, arrays and dictionaries of
-numbers and strings) the library used by PowerSystems can convert structs
-between Julia and JSON with no work required by the user.
+### Struct Requirements for Serialization
+The serialization code converts structs to dictionaries where the struct fields
+become dictionary keys. The code imposes these requirements:
 
-In cases where a struct contains another PowerSystems component that is also
-stored in the system, extra work is required.  There are two reasons for this:
+1. The InfrastructureSystems methods `serialize` and `deserialize` must be
+   implemented for the struct. InfrastructureSystems implements a method that
+   covers all subtypes of `InfrastructureSystemsType`. All PowerSystems
+   components should be subtypes of `PowerSystems.Component` which is a subtype
+   `InfrastructureSystemsType`, so any new structs should be covered as well.
+2. All struct fields must be able to be encoded in JSON format or be covered be
+   covered by `serialize` and `deserialize` methods. Basic types, such as
+   numbers and strings or arrays and dictionaries of numbers and strings,
+   should just work. Complex containers with symbols may not.
+3. Structs relying on the default `deserialize` method must have a kwarg-only
+   constructor. The deserialization code constructs objects by splatting the
+   dictionary key/value pairs into the constructor.
+4. Structs that contain other PowerSystem components (like a generator contains
+   a bus) must serialize those components as UUIDs instead of actual values.
+   The deserialization code uses the UUIDs as a mechanism to restore a
+   reference to the actual object rather a new object with identical values. It
+   also significantly reduces the size of the JSON file.
 
-1. We don't want to duplicate JSON representations of the same component.
-2. The deserialization process needs to ensure that the parent component has a
-   reference to the child component. It should not contain a different instance
-   that is equivalent in content.
+Refer to `InfrastructureSystems.serialize_struct` for example behavior. New
+structs that are not subtypes of `InfrastructureSystemsType` may be able to
+call it directly.
 
-To accomplish these goals PowerSystems stores the child component's UUID in the
-JSON object instead of its value. The deserialization process ensures that the
-child is deserialized first. When it deserializes the parent it looks up the
-child's UUID in a dictionary and stores a reference to the value.
-
-PowerSystems implements this logic for many abstract types. For example, all
-subtypes of `Device` contain a `Bus`, and so PowerSystems solves this
-problem for all devices in one place.
-
-It's likely that your new type will just work. Here's how you can test it:
+### Testing a New Struct
+It's likely that a new type will just work. Here's how you can test it:
 
 ```julia
 using PowerSystems
@@ -119,5 +125,24 @@ sys2 = System("sys.json")
 get_component(MyType, sys, "component_name")
 ```
 
-If this doesn't work then we recommend you submit an issue on GitHub so that we
-can consult with you on the best way to solve the problem.
+### Handling Problems
+If this doesn't work then you likely need to implement custom
+`InfrastructureSystems.serialize` and `InfrastructureSystems.deserialize` methods
+for your type.  Here are some examples of potential problems and solutions:
+
+**Problem**: Your struct contains a field defined as an abstract type. The
+deserialization process doesn't know what concrete type to construct.
+
+*Solution*: Encode the concrete type into the serialized dictionary as a string.
+
+*Example*:  `serialize` and `deserialize` methods for `DynamicBranch` in
+`src/models/dynamic_branch.jl`.
+
+**Problem**: Similar to above in that a field is defined as an abstract type
+but the struct is parameterized on the actual concrete type.
+
+*Solution*: Use the fact that the concrete type is encoded into the serialized
+type of the struct and extract it in a customized `deserialze` method.
+
+*Example*: `deserialize` method for `OuterControl` in
+`src/models/OuterControl.jl`.
