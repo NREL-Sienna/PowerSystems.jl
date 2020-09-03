@@ -61,8 +61,8 @@ function Transformer2W(name, available, active_power_flow, reactive_power_flow, 
     Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -136,3 +136,4 @@ set_ext!(value::Transformer2W, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::Transformer2W, val) = value.forecasts = val
 """Set [`Transformer2W`](@ref) `internal`."""
 set_internal!(value::Transformer2W, val) = value.internal = val
+

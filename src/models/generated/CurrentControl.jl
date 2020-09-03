@@ -81,8 +81,8 @@ function CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=D
     CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, [:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], 6, )
 end
 
-function CurrentControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), )
-    CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, )
+function CurrentControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), states=[:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], n_states=6, )
+    CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -155,3 +155,4 @@ set_ext!(value::CurrentControl, val) = value.ext = val
 set_states!(value::CurrentControl, val) = value.states = val
 """Set [`CurrentControl`](@ref) `n_states`."""
 set_n_states!(value::CurrentControl, val) = value.n_states = val
+

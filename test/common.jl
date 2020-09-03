@@ -27,19 +27,19 @@ end
 
 """Allows comparison of structs that were created from different parsers which causes them
 to have different UUIDs."""
-function compare_values_without_uuids(x::T, y::T)::Bool where {T <: PowerSystemType}
+function compare_values_without_uuids(x::T, y::T) where {T <: IS.InfrastructureSystemsType}
     match = true
 
     for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
-        if fieldname == :internal
+        if fieldname === :internal
             continue
         end
 
         val1 = getfield(x, fieldname)
         val2 = getfield(y, fieldname)
 
-        # Recurse if this is a PowerSystemType.
-        if val1 isa PowerSystemType
+        # Recurse if this is an InfrastructureSystemsType
+        if val1 isa IS.InfrastructureSystemsType
             if !compare_values_without_uuids(val1, val2)
                 match = false
             end
@@ -182,7 +182,7 @@ function create_system_with_dynamic_inverter()
     add_component!(sys, battery)
 
     test_inverter = DynamicInverter(
-        battery,
+        get_name(battery),
         1.0, #ω_ref
         converter, #Converter
         outer_control, #OuterControl
@@ -192,7 +192,7 @@ function create_system_with_dynamic_inverter()
         filt,
     ) #Output Filter
 
-    add_component!(sys, test_inverter)
+    add_component!(sys, test_inverter, battery)
 
     return sys
 end

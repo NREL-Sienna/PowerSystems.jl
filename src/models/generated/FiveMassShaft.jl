@@ -125,8 +125,8 @@ function FiveMassShaft(H, H_hp, H_ip, H_lp, H_ex, D, D_hp, D_ip, D_lp, D_ex, D_1
     FiveMassShaft(H, H_hp, H_ip, H_lp, H_ex, D, D_hp, D_ip, D_lp, D_ex, D_12, D_23, D_34, D_45, K_hp, K_ip, K_lp, K_ex, ext, [:δ, :ω, :δ_hp, :ω_hp, :δ_ip, :ω_ip, :δ_lp, :ω_lp, :δ_ex, :ω_ex], 10, InfrastructureSystemsInternal(), )
 end
 
-function FiveMassShaft(; H, H_hp, H_ip, H_lp, H_ex, D, D_hp, D_ip, D_lp, D_ex, D_12, D_23, D_34, D_45, K_hp, K_ip, K_lp, K_ex, ext=Dict{String, Any}(), )
-    FiveMassShaft(H, H_hp, H_ip, H_lp, H_ex, D, D_hp, D_ip, D_lp, D_ex, D_12, D_23, D_34, D_45, K_hp, K_ip, K_lp, K_ex, ext, )
+function FiveMassShaft(; H, H_hp, H_ip, H_lp, H_ex, D, D_hp, D_ip, D_lp, D_ex, D_12, D_23, D_34, D_45, K_hp, K_ip, K_lp, K_ex, ext=Dict{String, Any}(), states=[:δ, :ω, :δ_hp, :ω_hp, :δ_ip, :ω_ip, :δ_lp, :ω_lp, :δ_ex, :ω_ex], n_states=10, internal=InfrastructureSystemsInternal(), )
+    FiveMassShaft(H, H_hp, H_ip, H_lp, H_ex, D, D_hp, D_ip, D_lp, D_ex, D_12, D_23, D_34, D_45, K_hp, K_ip, K_lp, K_ex, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -243,3 +243,4 @@ set_states!(value::FiveMassShaft, val) = value.states = val
 set_n_states!(value::FiveMassShaft, val) = value.n_states = val
 """Set [`FiveMassShaft`](@ref) `internal`."""
 set_internal!(value::FiveMassShaft, val) = value.internal = val
+

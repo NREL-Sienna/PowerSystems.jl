@@ -53,8 +53,8 @@ function TGTypeII(R, T1, T2, τ_limits, P_ref=1.0, ext=Dict{String, Any}(), )
     TGTypeII(R, T1, T2, τ_limits, P_ref, ext, [:xg], 1, InfrastructureSystemsInternal(), )
 end
 
-function TGTypeII(; R, T1, T2, τ_limits, P_ref=1.0, ext=Dict{String, Any}(), )
-    TGTypeII(R, T1, T2, τ_limits, P_ref, ext, )
+function TGTypeII(; R, T1, T2, τ_limits, P_ref=1.0, ext=Dict{String, Any}(), states=[:xg], n_states=1, internal=InfrastructureSystemsInternal(), )
+    TGTypeII(R, T1, T2, τ_limits, P_ref, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -106,3 +106,4 @@ set_states!(value::TGTypeII, val) = value.states = val
 set_n_states!(value::TGTypeII, val) = value.n_states = val
 """Set [`TGTypeII`](@ref) `internal`."""
 set_internal!(value::TGTypeII, val) = value.internal = val
+

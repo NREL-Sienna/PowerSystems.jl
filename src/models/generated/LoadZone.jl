@@ -33,8 +33,8 @@ function LoadZone(name, peak_active_power, peak_reactive_power, forecasts=Infras
     LoadZone(name, peak_active_power, peak_reactive_power, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function LoadZone(; name, peak_active_power, peak_reactive_power, forecasts=InfrastructureSystems.Forecasts(), )
-    LoadZone(name, peak_active_power, peak_reactive_power, forecasts, )
+function LoadZone(; name, peak_active_power, peak_reactive_power, forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    LoadZone(name, peak_active_power, peak_reactive_power, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -68,3 +68,4 @@ set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = val
 InfrastructureSystems.set_forecasts!(value::LoadZone, val) = value.forecasts = val
 """Set [`LoadZone`](@ref) `internal`."""
 set_internal!(value::LoadZone, val) = value.internal = val
+

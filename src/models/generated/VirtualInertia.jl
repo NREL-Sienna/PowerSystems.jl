@@ -47,8 +47,8 @@ function VirtualInertia(Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), )
     VirtualInertia(Ta, kd, kω, P_ref, ext, [:ω_oc, :θ_oc], 2, )
 end
 
-function VirtualInertia(; Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), )
-    VirtualInertia(Ta, kd, kω, P_ref, ext, )
+function VirtualInertia(; Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), states=[:ω_oc, :θ_oc], n_states=2, )
+    VirtualInertia(Ta, kd, kω, P_ref, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -91,3 +91,4 @@ set_ext!(value::VirtualInertia, val) = value.ext = val
 set_states!(value::VirtualInertia, val) = value.states = val
 """Set [`VirtualInertia`](@ref) `n_states`."""
 set_n_states!(value::VirtualInertia, val) = value.n_states = val
+

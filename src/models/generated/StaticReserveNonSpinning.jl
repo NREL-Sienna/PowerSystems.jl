@@ -41,8 +41,8 @@ function StaticReserveNonSpinning(name, available, time_frame, requirement, ext=
     StaticReserveNonSpinning(name, available, time_frame, requirement, ext, operation_cost, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserveNonSpinning(; name, available, time_frame, requirement, ext=Dict{String, Any}(), operation_cost=nothing, )
-    StaticReserveNonSpinning(name, available, time_frame, requirement, ext, operation_cost, )
+function StaticReserveNonSpinning(; name, available, time_frame, requirement, ext=Dict{String, Any}(), operation_cost=nothing, internal=InfrastructureSystemsInternal(), )
+    StaticReserveNonSpinning(name, available, time_frame, requirement, ext, operation_cost, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,3 +86,4 @@ set_ext!(value::StaticReserveNonSpinning, val) = value.ext = val
 set_operation_cost!(value::StaticReserveNonSpinning, val) = value.operation_cost = val
 """Set [`StaticReserveNonSpinning`](@ref) `internal`."""
 set_internal!(value::StaticReserveNonSpinning, val) = value.internal = val
+

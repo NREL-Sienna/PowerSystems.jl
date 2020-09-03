@@ -29,10 +29,10 @@ Hydro Turbine-Governor.
 - `r::Float64`: Temporary Droop, validation range: `(0, 2)`, action if invalid: `warn`
 - `Tr::Float64`: Governor time constant, validation range: `("eps()", 30)`, action if invalid: `error`
 - `Tf::Float64`: Filter Time constant, validation range: `("eps()", 0.1)`
-- `Tg::Float64`: Servo time constant, validation range: `("eps()", 1.0)`, action if invalid: `error`
+- `Tg::Float64`: Servo time constant, validation range: `("eps()", 1)`, action if invalid: `error`
 - `VELM::Float64`: gate velocity limit, validation range: `("eps()", 0.3)`, action if invalid: `error`
 - `gate_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Gate position limits
-- `Tw::Float64`: water time constant, validation range: `("eps()", 3.0)`, action if invalid: `error`
+- `Tw::Float64`: water time constant, validation range: `("eps()", 3)`, action if invalid: `error`
 - `At::Float64`: Turbine gain, validation range: `(0.8, 1.5)`, action if invalid: `warn`
 - `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -91,8 +91,8 @@ function HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D
     HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref, ext, [:x_g1, :x_g2, :x_g3, :x_g4], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function HydroTurbineGov(; R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref=1.0, ext=Dict{String, Any}(), )
-    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref, ext, )
+function HydroTurbineGov(; R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref=1.0, ext=Dict{String, Any}(), states=[:x_g1, :x_g2, :x_g3, :x_g4], n_states=4, states_types=[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
+    HydroTurbineGov(R, r, Tr, Tf, Tg, VELM, gate_position_limits, Tw, At, D_T, q_nl, P_ref, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -183,3 +183,4 @@ set_n_states!(value::HydroTurbineGov, val) = value.n_states = val
 set_states_types!(value::HydroTurbineGov, val) = value.states_types = val
 """Set [`HydroTurbineGov`](@ref) `internal`."""
 set_internal!(value::HydroTurbineGov, val) = value.internal = val
+

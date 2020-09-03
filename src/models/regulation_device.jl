@@ -66,6 +66,71 @@ function RegulationDevice(
     )
 end
 
+function RegulationDevice(;
+    device::T,
+    droop::Float64 = Inf,
+    participation_factor::NamedTuple{(:up, :dn), Tuple{Float64, Float64}} = (
+        up = 0.0,
+        dn = 0.0,
+    ),
+    reserve_limit_up::Float64 = 0.0,
+    reserve_limit_dn::Float64 = 0.0,
+    inertia::Float64 = 0.0,
+    cost::Float64 = 1.0,
+    forecasts = IS.Forecasts(),
+    internal = IS.InfrastructureSystemsInternal(),
+) where {T <: StaticInjection}
+    return RegulationDevice{T}(
+        device,
+        droop,
+        participation_factor,
+        reserve_limit_up,
+        reserve_limit_dn,
+        inertia,
+        cost,
+        forecasts,
+        internal,
+    )
+end
+
+const STATIC_INJECTOR_TYPE_KEY = "__static_injector_type"
+
+function IS.serialize(component::T) where {T <: RegulationDevice}
+    data = Dict{String, Any}()
+    for name in fieldnames(T)
+        val = getfield(component, name)
+        if val isa StaticInjection
+            # The device is not attached to the system, so serialize it and save the type.
+            data[STATIC_INJECTOR_TYPE_KEY] = string(typeof(val))
+        end
+        data[string(name)] = serialize_uuid_handling(val)
+    end
+
+    return data
+end
+
+function IS.deserialize(
+    ::Type{T},
+    data::Dict,
+    component_cache::Dict,
+) where {T <: RegulationDevice}
+    @debug T data
+    vals = Dict{Symbol, Any}()
+    for (name, type) in zip(fieldnames(T), fieldtypes(T))
+        val = data[string(name)]
+        if val === nothing
+            vals[name] = val
+        elseif type <: StaticInjection
+            type = get_component_type(data[STATIC_INJECTOR_TYPE_KEY])
+            vals[name] = deserialize(type, val, component_cache)
+        else
+            vals[name] = deserialize_uuid_handling(type, name, val, component_cache)
+        end
+    end
+
+    return RegulationDevice(; vals...)
+end
+
 IS.get_forecasts(value::RegulationDevice) = value.forecasts
 IS.get_name(value::RegulationDevice) = IS.get_name(value.device)
 get_internal(value::RegulationDevice) = value.internal

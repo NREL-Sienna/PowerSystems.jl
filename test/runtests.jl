@@ -4,6 +4,7 @@ using Dates
 using LinearAlgebra
 import TimeSeries
 import InteractiveUtils
+import JSON3
 
 import InfrastructureSystems
 import InfrastructureSystems: Deterministic, Probabilistic, ScenarioBased, Forecast

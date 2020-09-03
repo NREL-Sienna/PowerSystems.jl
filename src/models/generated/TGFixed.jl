@@ -39,8 +39,8 @@ function TGFixed(efficiency, P_ref=1.0, ext=Dict{String, Any}(), )
     TGFixed(efficiency, P_ref, ext, Vector{Symbol}(), 0, InfrastructureSystemsInternal(), )
 end
 
-function TGFixed(; efficiency, P_ref=1.0, ext=Dict{String, Any}(), )
-    TGFixed(efficiency, P_ref, ext, )
+function TGFixed(; efficiency, P_ref=1.0, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, internal=InfrastructureSystemsInternal(), )
+    TGFixed(efficiency, P_ref, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -77,3 +77,4 @@ set_states!(value::TGFixed, val) = value.states = val
 set_n_states!(value::TGFixed, val) = value.n_states = val
 """Set [`TGFixed`](@ref) `internal`."""
 set_internal!(value::TGFixed, val) = value.internal = val
+

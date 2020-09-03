@@ -10,8 +10,20 @@
     STORAGE
 end
 
-ENUM_MAPPINGS = Dict()
-for enum in (AngleUnits.AngleUnit, BusTypes.BusType, InputCategory, UnitSystem)
+const ENUMS = (
+    AngleUnits.AngleUnit,
+    BusTypes.BusType,
+    InputCategory,
+    LoadModels.LoadModel,
+    PrimeMovers.PrimeMover,
+    StateTypes.StateType,
+    ThermalFuels.ThermalFuel,
+    UnitSystem,
+)
+
+const ENUM_MAPPINGS = Dict()
+
+for enum in ENUMS
     ENUM_MAPPINGS[enum] = Dict()
     for value in instances(enum)
         ENUM_MAPPINGS[enum][lowercase(string(value))] = value

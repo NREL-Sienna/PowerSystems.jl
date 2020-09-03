@@ -58,8 +58,8 @@ function HVDCLine(name, available, active_power_flow, arc, active_power_limits_f
     HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function HVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, forecasts, )
+function HVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -133,3 +133,4 @@ set_ext!(value::HVDCLine, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::HVDCLine, val) = value.forecasts = val
 """Set [`HVDCLine`](@ref) `internal`."""
 set_internal!(value::HVDCLine, val) = value.internal = val
+

@@ -9,7 +9,7 @@ abstract type InverterComponent <: DynamicComponent end
         P <: FrequencyEstimator,
         F <: Filter,
     } <: DynamicInjection
-        static_injector::Union{Nothing, StaticInjection}
+        name::String
         ω_ref::Float64
         converter::C
         outer_control::O
@@ -27,7 +27,7 @@ A dynamic inverter is composed by 6 components, namely a Converter, an Outer Con
 a DC Source, a Frequency Estimator and a Filter. It requires a Static Injection device that is attached to it.
 
 # Arguments
-- `static_injector::Union{Nothing, StaticInjection}`: Static Injector attached to the dynamic inverter.
+- `name::String`: Name of inverter.
 - `ω_ref::Float64`: Frequency reference set-point in pu.
 - `converter <: Converter`: Converter model for the PWM transformation.
 - `outer_control <: OuterControl`: Outer-control controller model.
@@ -48,7 +48,7 @@ mutable struct DynamicInverter{
     P <: FrequencyEstimator,
     F <: Filter,
 } <: DynamicInjection
-    static_injector::Union{Nothing, StaticInjection}
+    name::String
     ω_ref::Float64
     converter::C
     outer_control::O
@@ -63,7 +63,7 @@ mutable struct DynamicInverter{
 end
 
 function DynamicInverter(
-    static_injector::StaticInjection,
+    name::String,
     ω_ref::Float64,
     converter::C,
     outer_control::O,
@@ -80,27 +80,25 @@ function DynamicInverter(
     P <: FrequencyEstimator,
     F <: Filter,
 }
-
-    n_states = (
-        converter.n_states +
-        outer_control.n_states +
-        inner_control.n_states +
-        dc_source.n_states +
-        freq_estimator.n_states +
-        filter.n_states
+    n_states = _calc_n_states(
+        converter,
+        outer_control,
+        inner_control,
+        dc_source,
+        freq_estimator,
+        filter,
     )
-
-    states = vcat(
-        converter.states,
-        outer_control.states,
-        inner_control.states,
-        dc_source.states,
-        freq_estimator.states,
-        filter.states,
+    states = _calc_states(
+        converter,
+        outer_control,
+        inner_control,
+        dc_source,
+        freq_estimator,
+        filter,
     )
 
     return DynamicInverter{C, O, IC, DC, P, F}(
-        static_injector,
+        name,
         ω_ref,
         converter,
         outer_control,
@@ -116,7 +114,7 @@ function DynamicInverter(
 end
 
 function DynamicInverter(;
-    static_injector::StaticInjection,
+    name::String,
     ω_ref::Float64,
     converter::C,
     outer_control::O,
@@ -124,7 +122,24 @@ function DynamicInverter(;
     dc_source::DC,
     freq_estimator::P,
     filter::F,
+    n_states = _calc_n_states(
+        converter,
+        outer_control,
+        inner_control,
+        dc_source,
+        freq_estimator,
+        filter,
+    ),
+    states = _calc_states(
+        converter,
+        outer_control,
+        inner_control,
+        dc_source,
+        freq_estimator,
+        filter,
+    ),
     ext::Dict{String, Any} = Dict{String, Any}(),
+    internal = IS.InfrastructureSystemsInternal(),
 ) where {
     C <: Converter,
     O <: OuterControl,
@@ -134,7 +149,7 @@ function DynamicInverter(;
     F <: Filter,
 }
     DynamicInverter(
-        static_injector,
+        name,
         ω_ref,
         converter,
         outer_control,
@@ -142,15 +157,16 @@ function DynamicInverter(;
         dc_source,
         freq_estimator,
         filter,
+        n_states,
+        states,
         ext,
+        internal,
     )
 end
 
-IS.get_name(device::DynamicInverter) = get_name(device.static_injector)
-get_bus(device::DynamicInverter) = get_bus(device.static_injector)
+IS.get_name(device::DynamicInverter) = device.name
 get_inverter_Sbase(device::DynamicInverter) = device.converter.s_rated
 get_ω_ref(device::DynamicInverter) = device.ω_ref
-get_base_power(device::DynamicInverter) = get_base_power(device.static_injector)
 get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states
 get_n_states(device::DynamicInverter) = device.n_states
@@ -160,7 +176,40 @@ get_inner_control(device::DynamicInverter) = device.inner_control
 get_dc_source(device::DynamicInverter) = device.dc_source
 get_freq_estimator(device::DynamicInverter) = device.freq_estimator
 get_filter(device::DynamicInverter) = device.filter
-get_static_injector(device::DynamicInverter) = device.static_injector
 get_internal(device::DynamicInverter) = device.internal
 get_P_ref(value::DynamicInverter) = get_P_ref(get_active_power(get_outer_control(value)))
 get_V_ref(value::DynamicInverter) = get_V_ref(get_reactive_power(get_outer_control(value)))
+
+function _calc_n_states(
+    converter,
+    outer_control,
+    inner_control,
+    dc_source,
+    freq_estimator,
+    filter,
+)
+    return converter.n_states +
+           outer_control.n_states +
+           inner_control.n_states +
+           dc_source.n_states +
+           freq_estimator.n_states +
+           filter.n_states
+end
+
+function _calc_states(
+    converter,
+    outer_control,
+    inner_control,
+    dc_source,
+    freq_estimator,
+    filter,
+)
+    return vcat(
+        converter.states,
+        outer_control.states,
+        inner_control.states,
+        dc_source.states,
+        freq_estimator.states,
+        filter.states,
+    )
+end

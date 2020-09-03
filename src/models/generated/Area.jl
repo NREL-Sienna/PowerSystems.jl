@@ -36,8 +36,8 @@ function Area(name, peak_active_power=0.0, peak_reactive_power=0.0, load_respons
     Area(name, peak_active_power, peak_reactive_power, load_response, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, forecasts=InfrastructureSystems.Forecasts(), )
-    Area(name, peak_active_power, peak_reactive_power, load_response, forecasts, )
+function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    Area(name, peak_active_power, peak_reactive_power, load_response, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,3 +76,4 @@ set_load_response!(value::Area, val) = value.load_response = val
 InfrastructureSystems.set_forecasts!(value::Area, val) = value.forecasts = val
 """Set [`Area`](@ref) `internal`."""
 set_internal!(value::Area, val) = value.internal = val
+

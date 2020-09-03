@@ -121,8 +121,8 @@ function IEEEST(input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, 
     IEEEST(input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext, [:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7], 7, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function IEEEST(; input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext=Dict{String, Any}(), )
-    IEEEST(input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext, )
+function IEEEST(; input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext=Dict{String, Any}(), states=[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7], n_states=7, states_types=[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
+    IEEEST(input_code, remote_bus_control, A1, A2, A3, A4, A5, A6, T1, T2, T3, T4, T5, T6, Ks, Ls_lim, Vcu, Vcl, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -243,3 +243,4 @@ set_n_states!(value::IEEEST, val) = value.n_states = val
 set_states_types!(value::IEEEST, val) = value.states_types = val
 """Set [`IEEEST`](@ref) `internal`."""
 set_internal!(value::IEEEST, val) = value.internal = val
+
