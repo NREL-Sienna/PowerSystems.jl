@@ -378,6 +378,7 @@ include("models/loads.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 include("models/OuterControl.jl")
+include("models/HybridSystem.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
