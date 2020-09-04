@@ -66,8 +66,8 @@ function OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext=Dict{String, A
     OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext, [:eq_p, :ed_p], 2, InfrastructureSystemsInternal(), )
 end
 
-function OneDOneQMachine(; R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext=Dict{String, Any}(), states=[:eq_p, :ed_p], n_states=2, internal=InfrastructureSystemsInternal(), )
-    OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext, states, n_states, internal, )
+function OneDOneQMachine(; R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext=Dict{String, Any}(), )
+    OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -129,4 +129,3 @@ set_states!(value::OneDOneQMachine, val) = value.states = val
 set_n_states!(value::OneDOneQMachine, val) = value.n_states = val
 """Set [`OneDOneQMachine`](@ref) `internal`."""
 set_internal!(value::OneDOneQMachine, val) = value.internal = val
-

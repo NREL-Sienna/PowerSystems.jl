@@ -25,7 +25,7 @@ Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 - `R::Float64`: Speed droop parameter, validation range: `("eps()", 0.1)`
 - `T1::Float64`: Governor time constant in s, validation range: `("eps()", 0.5)`
 - `T2::Float64`: Combustion chamber time constant, validation range: `("eps()", 0.5)`
-- `T3::Float64`: Load limit time constant (exhaust gas measurement time), validation range: `("eps()", 5)`
+- `T3::Float64`: Load limit time constant (exhaust gas measurement time), validation range: `("eps()", 5.0)`
 - `AT::Float64`: Ambient temperature load limit, validation range: `(0, 1)`
 - `Kt::Float64`: Load limit feedback gain, validation range: `(0, 5)`
 - `V_lim::Tuple{Float64, Float64}`: Operational control limits on fuel valve opening (V_min, V_max)
@@ -77,8 +77,8 @@ function GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref=1.0, ext=Dict{String,
     GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref, ext, [:x_g1, :x_g2, :x_g3], 3, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function GasTG(; R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref=1.0, ext=Dict{String, Any}(), states=[:x_g1, :x_g2, :x_g3], n_states=3, states_types=[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
-    GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref, ext, states, n_states, states_types, internal, )
+function GasTG(; R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref=1.0, ext=Dict{String, Any}(), )
+    GasTG(R, T1, T2, T3, AT, Kt, V_lim, D_turb, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -154,4 +154,3 @@ set_n_states!(value::GasTG, val) = value.n_states = val
 set_states_types!(value::GasTG, val) = value.states_types = val
 """Set [`GasTG`](@ref) `internal`."""
 set_internal!(value::GasTG, val) = value.internal = val
-

@@ -41,8 +41,8 @@ function ReactivePowerDroop(kq, ωf, V_ref=1.0, ext=Dict{String, Any}(), )
     ReactivePowerDroop(kq, ωf, V_ref, ext, [:q_oc], 1, )
 end
 
-function ReactivePowerDroop(; kq, ωf, V_ref=1.0, ext=Dict{String, Any}(), states=[:q_oc], n_states=1, )
-    ReactivePowerDroop(kq, ωf, V_ref, ext, states, n_states, )
+function ReactivePowerDroop(; kq, ωf, V_ref=1.0, ext=Dict{String, Any}(), )
+    ReactivePowerDroop(kq, ωf, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -80,4 +80,3 @@ set_ext!(value::ReactivePowerDroop, val) = value.ext = val
 set_states!(value::ReactivePowerDroop, val) = value.states = val
 """Set [`ReactivePowerDroop`](@ref) `n_states`."""
 set_n_states!(value::ReactivePowerDroop, val) = value.n_states = val
-

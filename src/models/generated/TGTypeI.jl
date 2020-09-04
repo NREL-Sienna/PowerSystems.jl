@@ -69,8 +69,8 @@ function TGTypeI(R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref=1.0, ext=Di
     TGTypeI(R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref, ext, [:x_g1, :x_g2, :x_g3], 3, InfrastructureSystemsInternal(), )
 end
 
-function TGTypeI(; R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref=1.0, ext=Dict{String, Any}(), states=[:x_g1, :x_g2, :x_g3], n_states=3, internal=InfrastructureSystemsInternal(), )
-    TGTypeI(R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref, ext, states, n_states, internal, )
+function TGTypeI(; R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref=1.0, ext=Dict{String, Any}(), )
+    TGTypeI(R, Ts, Tc, T3, T4, T5, valve_position_limits, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -137,4 +137,3 @@ set_states!(value::TGTypeI, val) = value.states = val
 set_n_states!(value::TGTypeI, val) = value.n_states = val
 """Set [`TGTypeI`](@ref) `internal`."""
 set_internal!(value::TGTypeI, val) = value.internal = val
-

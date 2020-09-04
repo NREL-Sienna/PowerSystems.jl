@@ -87,8 +87,8 @@ function AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Di
     AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function AVRTypeII(; K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), states=[:Vf, :Vr1, :Vr2, :Vm], n_states=4, states_types=[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
-    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref, ext, states, n_states, states_types, internal, )
+function AVRTypeII(; K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRTypeII(K0, T1, T2, T3, T4, Te, Tr, Va_lim, Ae, Be, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -174,4 +174,3 @@ set_n_states!(value::AVRTypeII, val) = value.n_states = val
 set_states_types!(value::AVRTypeII, val) = value.states_types = val
 """Set [`AVRTypeII`](@ref) `internal`."""
 set_internal!(value::AVRTypeII, val) = value.internal = val
-

@@ -34,8 +34,8 @@ function AverageConverter(rated_voltage, rated_current, ext=Dict{String, Any}(),
     AverageConverter(rated_voltage, rated_current, ext, Vector{Symbol}(), 0, )
 end
 
-function AverageConverter(; rated_voltage, rated_current, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, )
-    AverageConverter(rated_voltage, rated_current, ext, states, n_states, )
+function AverageConverter(; rated_voltage, rated_current, ext=Dict{String, Any}(), )
+    AverageConverter(rated_voltage, rated_current, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -68,4 +68,3 @@ set_ext!(value::AverageConverter, val) = value.ext = val
 set_states!(value::AverageConverter, val) = value.states = val
 """Set [`AverageConverter`](@ref) `n_states`."""
 set_n_states!(value::AverageConverter, val) = value.n_states = val
-

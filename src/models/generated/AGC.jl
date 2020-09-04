@@ -56,8 +56,8 @@ function AGC(name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initia
     AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, ext, InfrastructureSystemsInternal(), )
 end
 
-function AGC(; name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initial_ace=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, ext, internal, )
+function AGC(; name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initial_ace=0.0, ext=Dict{String, Any}(), )
+    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -121,4 +121,3 @@ set_initial_ace!(value::AGC, val) = value.initial_ace = val
 set_ext!(value::AGC, val) = value.ext = val
 """Set [`AGC`](@ref) `internal`."""
 set_internal!(value::AGC, val) = value.internal = val
-

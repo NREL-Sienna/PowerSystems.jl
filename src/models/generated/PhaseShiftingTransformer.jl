@@ -66,8 +66,8 @@ function PhaseShiftingTransformer(name, available, active_power_flow, reactive_p
     PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -151,4 +151,3 @@ set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::PhaseShiftingTransformer, val) = value.forecasts = val
 """Set [`PhaseShiftingTransformer`](@ref) `internal`."""
 set_internal!(value::PhaseShiftingTransformer, val) = value.internal = val
-

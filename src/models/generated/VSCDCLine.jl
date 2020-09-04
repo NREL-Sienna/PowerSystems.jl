@@ -61,8 +61,8 @@ function VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits
     VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function VSCDCLine(; name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, internal, )
+function VSCDCLine(; name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -141,4 +141,3 @@ set_ext!(value::VSCDCLine, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::VSCDCLine, val) = value.forecasts = val
 """Set [`VSCDCLine`](@ref) `internal`."""
 set_internal!(value::VSCDCLine, val) = value.internal = val
-

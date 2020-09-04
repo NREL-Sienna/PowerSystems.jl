@@ -64,8 +64,8 @@ function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x
     Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, internal, )
+function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -144,4 +144,3 @@ set_ext!(value::Line, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::Line, val) = value.forecasts = val
 """Set [`Line`](@ref) `internal`."""
 set_internal!(value::Line, val) = value.internal = val
-

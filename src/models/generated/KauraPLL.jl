@@ -49,8 +49,8 @@ function KauraPLL(ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )
     KauraPLL(ω_lp, kp_pll, ki_pll, ext, [:vd_pll, :vq_pll, :ε_pll, :θ_pll], 4, )
 end
 
-function KauraPLL(; ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), states=[:vd_pll, :vq_pll, :ε_pll, :θ_pll], n_states=4, )
-    KauraPLL(ω_lp, kp_pll, ki_pll, ext, states, n_states, )
+function KauraPLL(; ω_lp, kp_pll, ki_pll, ext=Dict{String, Any}(), )
+    KauraPLL(ω_lp, kp_pll, ki_pll, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -88,4 +88,3 @@ set_ext!(value::KauraPLL, val) = value.ext = val
 set_states!(value::KauraPLL, val) = value.states = val
 """Set [`KauraPLL`](@ref) `n_states`."""
 set_n_states!(value::KauraPLL, val) = value.n_states = val
-

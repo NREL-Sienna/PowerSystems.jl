@@ -44,8 +44,8 @@ function FixedAdmittance(name, available, bus, Y, services=Device[], ext=Dict{St
     FixedAdmittance(name, available, bus, Y, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function FixedAdmittance(; name, available, bus, Y, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    FixedAdmittance(name, available, bus, Y, services, ext, forecasts, internal, )
+function FixedAdmittance(; name, available, bus, Y, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    FixedAdmittance(name, available, bus, Y, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -94,4 +94,3 @@ set_ext!(value::FixedAdmittance, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::FixedAdmittance, val) = value.forecasts = val
 """Set [`FixedAdmittance`](@ref) `internal`."""
 set_internal!(value::FixedAdmittance, val) = value.internal = val
-

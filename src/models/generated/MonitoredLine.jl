@@ -69,8 +69,8 @@ function MonitoredLine(name, available, active_power_flow, reactive_power_flow, 
     MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, forecasts, internal, )
+function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -154,4 +154,3 @@ set_ext!(value::MonitoredLine, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::MonitoredLine, val) = value.forecasts = val
 """Set [`MonitoredLine`](@ref) `internal`."""
 set_internal!(value::MonitoredLine, val) = value.internal = val
-

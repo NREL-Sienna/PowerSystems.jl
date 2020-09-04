@@ -38,9 +38,9 @@ IEEE Type 1 Speed-Governing Model
 - `T2::Float64`: Input Filter Lead, validation range: `(0, 10)`, action if invalid: `warn`
 - `T3::Float64`: Valve position Time Constant, validation range: `("eps()", 1)`, action if invalid: `error`
 - `U0::Float64`: Maximum Valve Opening Rate, validation range: `(0.01, 0.03)`, action if invalid: `warn`
-- `U_c::Float64`: Maximum Valve closing rate, validation range: `(-0.3, 0)`, action if invalid: `warn`
+- `U_c::Float64`: Maximum Valve closing rate, validation range: `(-0.3, 0.0)`, action if invalid: `warn`
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW
-- `T4::Float64`: Time Constant inlet steam, validation range: `(0, 1)`, action if invalid: `warn`
+- `T4::Float64`: Time Constant inlet steam, validation range: `(0, 1.0)`, action if invalid: `warn`
 - `K1::Float64`: Fraction of high presure shaft power, validation range: `(-2, 1)`, action if invalid: `warn`
 - `K2::Float64`: Fraction of low presure shaft power, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T5::Float64`: Time constant for second boiler pass, validation range: `(0, 10)`, action if invalid: `warn`
@@ -127,8 +127,8 @@ function IEEETurbineGov1(K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, 
     IEEETurbineGov1(K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref, ext, [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6], 6, [StateTypes.Differential, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
-function IEEETurbineGov1(; K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref=1.0, ext=Dict{String, Any}(), states=[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6], n_states=6, states_types=[StateTypes.Differential, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], internal=InfrastructureSystemsInternal(), )
-    IEEETurbineGov1(K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref, ext, states, n_states, states_types, internal, )
+function IEEETurbineGov1(; K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref=1.0, ext=Dict{String, Any}(), )
+    IEEETurbineGov1(K, T1, T2, T3, U0, U_c, valve_position_limits, T4, K1, K2, T5, K3, K4, T6, K5, K6, T7, K7, K8, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -259,4 +259,3 @@ set_n_states!(value::IEEETurbineGov1, val) = value.n_states = val
 set_states_types!(value::IEEETurbineGov1, val) = value.states_types = val
 """Set [`IEEETurbineGov1`](@ref) `internal`."""
 set_internal!(value::IEEETurbineGov1, val) = value.internal = val
-

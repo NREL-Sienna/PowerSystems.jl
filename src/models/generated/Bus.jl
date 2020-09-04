@@ -76,8 +76,8 @@ function Bus(number, name, bustype, angle, magnitude, voltage_limits, base_volta
     Bus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
 end
 
-function Bus(; number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Bus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
+function Bus(; number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
+    Bus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -141,4 +141,3 @@ set_load_zone!(value::Bus, val) = value.load_zone = val
 set_ext!(value::Bus, val) = value.ext = val
 """Set [`Bus`](@ref) `internal`."""
 set_internal!(value::Bus, val) = value.internal = val
-

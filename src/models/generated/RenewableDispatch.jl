@@ -72,8 +72,8 @@ function RenewableDispatch(name, available, bus, active_power, reactive_power, r
     RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, internal, )
+function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -160,4 +160,3 @@ set_ext!(value::RenewableDispatch, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::RenewableDispatch, val) = value.forecasts = val
 """Set [`RenewableDispatch`](@ref) `internal`."""
 set_internal!(value::RenewableDispatch, val) = value.internal = val
-

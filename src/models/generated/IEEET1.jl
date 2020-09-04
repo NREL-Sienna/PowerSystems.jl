@@ -95,8 +95,8 @@ function IEEET1(Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0
     IEEET1(Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vf, :Vr2], 4, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function IEEET1(; Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), states=[:Vt, :Vr1, :Vf, :Vr2], n_states=4, states_types=[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
-    IEEET1(Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, states, n_states, states_types, internal, )
+function IEEET1(; Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
+    IEEET1(Tr, Ka, Ta, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -192,4 +192,3 @@ set_n_states!(value::IEEET1, val) = value.n_states = val
 set_states_types!(value::IEEET1, val) = value.states_types = val
 """Set [`IEEET1`](@ref) `internal`."""
 set_internal!(value::IEEET1, val) = value.internal = val
-

@@ -100,8 +100,8 @@ function FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d
     FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext, inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]]), inv([[-L_q L_aq]; [-L_aq L_1q]]), [:ψd, :ψq, :ψf, :ψ1d, :ψ1q], 5, InfrastructureSystemsInternal(), )
 end
 
-function FullMachine(; R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext=Dict{String, Any}(), inv_d_fluxlink=inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]]), inv_q_fluxlink=inv([[-L_q L_aq]; [-L_aq L_1q]]), states=[:ψd, :ψq, :ψf, :ψ1d, :ψ1q], n_states=5, internal=InfrastructureSystemsInternal(), )
-    FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext, inv_d_fluxlink, inv_q_fluxlink, states, n_states, internal, )
+function FullMachine(; R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext=Dict{String, Any}(), )
+    FullMachine(R, R_f, R_1d, R_1q, L_d, L_q, L_ad, L_aq, L_f1d, L_ff, L_1d, L_1q, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -111,14 +111,14 @@ function FullMachine(::Nothing)
         R_f=0,
         R_1d=0,
         R_1q=0,
-        L_d=1,
-        L_q=1,
-        L_ad=2,
-        L_aq=2,
-        L_f1d=1,
-        L_ff=2,
-        L_1d=1,
-        L_1q=1,
+        L_d=1.0,
+        L_q=1.0,
+        L_ad=2.0,
+        L_aq=2.0,
+        L_f1d=1.0,
+        L_ff=2.0,
+        L_1d=1.0,
+        L_1q=1.0,
         ext=Dict{String, Any}(),
     )
 end
@@ -196,4 +196,3 @@ set_states!(value::FullMachine, val) = value.states = val
 set_n_states!(value::FullMachine, val) = value.n_states = val
 """Set [`FullMachine`](@ref) `internal`."""
 set_internal!(value::FullMachine, val) = value.internal = val
-

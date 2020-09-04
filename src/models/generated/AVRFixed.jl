@@ -43,8 +43,8 @@ function AVRFixed(Vf, V_ref=1.0, ext=Dict{String, Any}(), )
     AVRFixed(Vf, V_ref, ext, Vector{Symbol}(), 0, Vector{StateTypes.StateType}(), InfrastructureSystemsInternal(), )
 end
 
-function AVRFixed(; Vf, V_ref=1.0, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, states_types=Vector{StateTypes.StateType}(), internal=InfrastructureSystemsInternal(), )
-    AVRFixed(Vf, V_ref, ext, states, n_states, states_types, internal, )
+function AVRFixed(; Vf, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRFixed(Vf, V_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -85,4 +85,3 @@ set_n_states!(value::AVRFixed, val) = value.n_states = val
 set_states_types!(value::AVRFixed, val) = value.states_types = val
 """Set [`AVRFixed`](@ref) `internal`."""
 set_internal!(value::AVRFixed, val) = value.internal = val
-

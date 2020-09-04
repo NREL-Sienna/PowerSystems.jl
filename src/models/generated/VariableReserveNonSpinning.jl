@@ -45,8 +45,8 @@ function VariableReserveNonSpinning(name, available, time_frame, requirement, ex
     VariableReserveNonSpinning(name, available, time_frame, requirement, ext, forecasts, operation_cost, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserveNonSpinning(; name, available, time_frame, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), operation_cost=nothing, internal=InfrastructureSystemsInternal(), )
-    VariableReserveNonSpinning(name, available, time_frame, requirement, ext, forecasts, operation_cost, internal, )
+function VariableReserveNonSpinning(; name, available, time_frame, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), operation_cost=nothing, )
+    VariableReserveNonSpinning(name, available, time_frame, requirement, ext, forecasts, operation_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -95,4 +95,3 @@ InfrastructureSystems.set_forecasts!(value::VariableReserveNonSpinning, val) = v
 set_operation_cost!(value::VariableReserveNonSpinning, val) = value.operation_cost = val
 """Set [`VariableReserveNonSpinning`](@ref) `internal`."""
 set_internal!(value::VariableReserveNonSpinning, val) = value.internal = val
-

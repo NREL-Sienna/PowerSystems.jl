@@ -83,8 +83,8 @@ function ZeroOrderBESS(rated_voltage, rated_current, battery_voltage, battery_re
     ZeroOrderBESS(rated_voltage, rated_current, battery_voltage, battery_resistance, dc_dc_inductor, dc_link_capacitance, fs, kpv, kiv, kpi, kii, Vdc_ref, ext, [:v_dc, :i_b, :ν, :ζ], 4, )
 end
 
-function ZeroOrderBESS(; rated_voltage, rated_current, battery_voltage, battery_resistance, dc_dc_inductor, dc_link_capacitance, fs, kpv, kiv, kpi, kii, Vdc_ref=1.1, ext=Dict{String, Any}(), states=[:v_dc, :i_b, :ν, :ζ], n_states=4, )
-    ZeroOrderBESS(rated_voltage, rated_current, battery_voltage, battery_resistance, dc_dc_inductor, dc_link_capacitance, fs, kpv, kiv, kpi, kii, Vdc_ref, ext, states, n_states, )
+function ZeroOrderBESS(; rated_voltage, rated_current, battery_voltage, battery_resistance, dc_dc_inductor, dc_link_capacitance, fs, kpv, kiv, kpi, kii, Vdc_ref=1.1, ext=Dict{String, Any}(), )
+    ZeroOrderBESS(rated_voltage, rated_current, battery_voltage, battery_resistance, dc_dc_inductor, dc_link_capacitance, fs, kpv, kiv, kpi, kii, Vdc_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -167,4 +167,3 @@ set_ext!(value::ZeroOrderBESS, val) = value.ext = val
 set_states!(value::ZeroOrderBESS, val) = value.states = val
 """Set [`ZeroOrderBESS`](@ref) `n_states`."""
 set_n_states!(value::ZeroOrderBESS, val) = value.n_states = val
-

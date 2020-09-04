@@ -96,8 +96,8 @@ function SimpleMarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_
     SimpleMarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext, ((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p), ((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p), [:eq_p, :ed_p, :eq_pp, :ed_pp], 4, InfrastructureSystemsInternal(), )
 end
 
-function SimpleMarconatoMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext=Dict{String, Any}(), γd=((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p), γq=((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p), states=[:eq_p, :ed_p, :eq_pp, :ed_pp], n_states=4, internal=InfrastructureSystemsInternal(), )
-    SimpleMarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext, γd, γq, states, n_states, internal, )
+function SimpleMarconatoMachine(; R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext=Dict{String, Any}(), )
+    SimpleMarconatoMachine(R, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Td0_p, Tq0_p, Td0_pp, Tq0_pp, T_AA, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -192,4 +192,3 @@ set_states!(value::SimpleMarconatoMachine, val) = value.states = val
 set_n_states!(value::SimpleMarconatoMachine, val) = value.n_states = val
 """Set [`SimpleMarconatoMachine`](@ref) `internal`."""
 set_internal!(value::SimpleMarconatoMachine, val) = value.internal = val
-

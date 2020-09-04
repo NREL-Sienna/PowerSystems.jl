@@ -64,8 +64,8 @@ function TapTransformer(name, available, active_power_flow, reactive_power_flow,
     TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, forecasts, internal, )
+function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, forecasts, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -144,4 +144,3 @@ set_ext!(value::TapTransformer, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::TapTransformer, val) = value.forecasts = val
 """Set [`TapTransformer`](@ref) `internal`."""
 set_internal!(value::TapTransformer, val) = value.internal = val
-

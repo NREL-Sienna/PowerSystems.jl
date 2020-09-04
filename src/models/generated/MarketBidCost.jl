@@ -70,4 +70,3 @@ set_start_up!(value::MarketBidCost, val) = value.start_up = val
 set_shut_down!(value::MarketBidCost, val) = value.shut_down = val
 """Set [`MarketBidCost`](@ref) `ancillary_services`."""
 set_ancillary_services!(value::MarketBidCost, val) = value.ancillary_services = val
-

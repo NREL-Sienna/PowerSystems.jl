@@ -79,8 +79,8 @@ function SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l,
     SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, P_ref, ext, [:x_g1, :x_g2], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function SteamTurbineGov1(; R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, P_ref=1.0, ext=Dict{String, Any}(), states=[:x_g1, :x_g2], n_states=2, states_types=[StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
-    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, P_ref, ext, states, n_states, states_types, internal, )
+function SteamTurbineGov1(; R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, P_ref=1.0, ext=Dict{String, Any}(), )
+    SteamTurbineGov1(R, T1, valve_position_limits, T2, T3, D_T, DB_h, DB_l, T_rate, P_ref, ext, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -161,4 +161,3 @@ set_n_states!(value::SteamTurbineGov1, val) = value.n_states = val
 set_states_types!(value::SteamTurbineGov1, val) = value.states_types = val
 """Set [`SteamTurbineGov1`](@ref) `internal`."""
 set_internal!(value::SteamTurbineGov1, val) = value.internal = val
-
