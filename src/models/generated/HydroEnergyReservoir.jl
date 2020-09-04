@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         reactive_power_limits::Union{Nothing, Min_Max}
         ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        operation_cost::TwoPartCost
+        operation_cost::OperationalCost
         base_power::Float64
         storage_capacity::Float64
         inflow::Float64
@@ -42,7 +42,7 @@ This file is auto-generated. Do not edit.
 - `reactive_power_limits::Union{Nothing, Min_Max}`, action if invalid: `warn`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
+- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
@@ -71,8 +71,8 @@ mutable struct HydroEnergyReservoir <: HydroGen
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    "Operation Cost of Generation [`TwoPartCost`](@ref)"
-    operation_cost::TwoPartCost
+    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    operation_cost::OperationalCost
     "Base power of the unit in MVA"
     base_power::Float64
     "Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)."
@@ -118,7 +118,7 @@ function HydroEnergyReservoir(::Nothing)
         reactive_power_limits=nothing,
         ramp_limits=nothing,
         time_limits=nothing,
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=ThreePartCost(nothing),
         base_power=0.0,
         storage_capacity=0.0,
         inflow=0.0,

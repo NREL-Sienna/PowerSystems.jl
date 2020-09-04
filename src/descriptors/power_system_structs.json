@@ -1437,9 +1437,9 @@
         },
         {
           "name": "operation_cost",
-          "null_value": "TwoPartCost(nothing)",
-          "data_type": "TwoPartCost",
-          "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
+          "null_value": "ThreePartCost(nothing)",
+          "data_type": "OperationalCost",
+          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
         },
         {
           "name": "base_power",
@@ -1614,6 +1614,12 @@
           },
           "validation_action": "error",
           "needs_conversion": true
+        },
+        {
+          "name": "operation_cost",
+          "null_value": "ThreePartCost(nothing)",
+          "data_type": "OperationalCost",
+          "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
         },
         {
           "name": "time_limits",
