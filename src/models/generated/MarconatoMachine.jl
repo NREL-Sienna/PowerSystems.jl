@@ -187,6 +187,4 @@ set_ext!(value::MarconatoMachine, val) = value.ext = val
 set_γd!(value::MarconatoMachine, val) = value.γd = val
 """Set [`MarconatoMachine`](@ref) `γq`."""
 set_γq!(value::MarconatoMachine, val) = value.γq = val
-"""Set [`MarconatoMachine`](@ref) `internal`."""
-set_internal!(value::MarconatoMachine, val) = value.internal = val
 

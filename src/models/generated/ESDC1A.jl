@@ -207,6 +207,4 @@ set_saturation_coeffs!(value::ESDC1A, val) = value.saturation_coeffs = val
 set_ext!(value::ESDC1A, val) = value.ext = val
 """Set [`ESDC1A`](@ref) `states_types`."""
 set_states_types!(value::ESDC1A, val) = value.states_types = val
-"""Set [`ESDC1A`](@ref) `internal`."""
-set_internal!(value::ESDC1A, val) = value.internal = val
 

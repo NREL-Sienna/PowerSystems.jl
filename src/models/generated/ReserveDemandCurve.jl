@@ -84,6 +84,4 @@ set_operation_cost!(value::ReserveDemandCurve, val) = value.operation_cost = val
 set_ext!(value::ReserveDemandCurve, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::ReserveDemandCurve, val) = value.forecasts = val
-"""Set [`ReserveDemandCurve`](@ref) `internal`."""
-set_internal!(value::ReserveDemandCurve, val) = value.internal = val
 

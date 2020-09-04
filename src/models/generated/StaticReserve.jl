@@ -84,6 +84,4 @@ set_requirement!(value::StaticReserve, val) = value.requirement = val
 set_ext!(value::StaticReserve, val) = value.ext = val
 """Set [`StaticReserve`](@ref) `operation_cost`."""
 set_operation_cost!(value::StaticReserve, val) = value.operation_cost = val
-"""Set [`StaticReserve`](@ref) `internal`."""
-set_internal!(value::StaticReserve, val) = value.internal = val
 

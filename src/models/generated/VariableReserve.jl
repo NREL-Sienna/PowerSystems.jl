@@ -93,6 +93,4 @@ set_ext!(value::VariableReserve, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::VariableReserve, val) = value.forecasts = val
 """Set [`VariableReserve`](@ref) `operation_cost`."""
 set_operation_cost!(value::VariableReserve, val) = value.operation_cost = val
-"""Set [`VariableReserve`](@ref) `internal`."""
-set_internal!(value::VariableReserve, val) = value.internal = val
 

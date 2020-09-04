@@ -139,6 +139,4 @@ set_services!(value::PowerLoad, val) = value.services = val
 set_ext!(value::PowerLoad, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::PowerLoad, val) = value.forecasts = val
-"""Set [`PowerLoad`](@ref) `internal`."""
-set_internal!(value::PowerLoad, val) = value.internal = val
 

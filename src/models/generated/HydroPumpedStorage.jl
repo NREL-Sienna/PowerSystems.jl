@@ -282,6 +282,4 @@ set_services!(value::HydroPumpedStorage, val) = value.services = val
 set_ext!(value::HydroPumpedStorage, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::HydroPumpedStorage, val) = value.forecasts = val
-"""Set [`HydroPumpedStorage`](@ref) `internal`."""
-set_internal!(value::HydroPumpedStorage, val) = value.internal = val
 

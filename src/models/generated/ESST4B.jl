@@ -225,6 +225,4 @@ set_θp_rad!(value::ESST4B, val) = value.θp_rad = val
 set_ext!(value::ESST4B, val) = value.ext = val
 """Set [`ESST4B`](@ref) `states_types`."""
 set_states_types!(value::ESST4B, val) = value.states_types = val
-"""Set [`ESST4B`](@ref) `internal`."""
-set_internal!(value::ESST4B, val) = value.internal = val
 

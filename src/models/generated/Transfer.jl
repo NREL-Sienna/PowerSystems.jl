@@ -74,6 +74,4 @@ set_requirement!(value::Transfer, val) = value.requirement = val
 set_ext!(value::Transfer, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::Transfer, val) = value.forecasts = val
-"""Set [`Transfer`](@ref) `internal`."""
-set_internal!(value::Transfer, val) = value.internal = val
 

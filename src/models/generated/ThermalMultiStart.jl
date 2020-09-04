@@ -234,6 +234,4 @@ set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
 set_ext!(value::ThermalMultiStart, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::ThermalMultiStart, val) = value.forecasts = val
-"""Set [`ThermalMultiStart`](@ref) `internal`."""
-set_internal!(value::ThermalMultiStart, val) = value.internal = val
 

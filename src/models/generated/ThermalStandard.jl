@@ -200,6 +200,4 @@ set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 set_ext!(value::ThermalStandard, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::ThermalStandard, val) = value.forecasts = val
-"""Set [`ThermalStandard`](@ref) `internal`."""
-set_internal!(value::ThermalStandard, val) = value.internal = val
 

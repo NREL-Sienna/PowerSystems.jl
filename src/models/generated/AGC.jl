@@ -119,6 +119,4 @@ set_area!(value::AGC, val) = value.area = val
 set_initial_ace!(value::AGC, val) = value.initial_ace = val
 """Set [`AGC`](@ref) `ext`."""
 set_ext!(value::AGC, val) = value.ext = val
-"""Set [`AGC`](@ref) `internal`."""
-set_internal!(value::AGC, val) = value.internal = val
 

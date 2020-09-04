@@ -152,6 +152,4 @@ set_services!(value::MonitoredLine, val) = value.services = val
 set_ext!(value::MonitoredLine, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::MonitoredLine, val) = value.forecasts = val
-"""Set [`MonitoredLine`](@ref) `internal`."""
-set_internal!(value::MonitoredLine, val) = value.internal = val
 
