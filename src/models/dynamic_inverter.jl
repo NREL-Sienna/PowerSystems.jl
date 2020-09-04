@@ -165,7 +165,6 @@ function DynamicInverter(;
 end
 
 IS.get_name(device::DynamicInverter) = device.name
-get_inverter_Sbase(device::DynamicInverter) = device.converter.s_rated
 get_ω_ref(device::DynamicInverter) = device.ω_ref
 get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states
