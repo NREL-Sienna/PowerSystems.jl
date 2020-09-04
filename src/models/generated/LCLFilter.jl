@@ -59,8 +59,8 @@ function LCLFilter(lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )
     LCLFilter(lf, rf, cf, lg, rg, ext, [:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 6, )
 end
 
-function LCLFilter(; lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )
-    LCLFilter(lf, rf, cf, lg, rg, ext, )
+function LCLFilter(; lf, rf, cf, lg, rg, ext=Dict{String, Any}(), states=[:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=6, )
+    LCLFilter(lf, rf, cf, lg, rg, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -108,3 +108,4 @@ set_ext!(value::LCLFilter, val) = value.ext = val
 set_states!(value::LCLFilter, val) = value.states = val
 """Set [`LCLFilter`](@ref) `n_states`."""
 set_n_states!(value::LCLFilter, val) = value.n_states = val
+

@@ -31,12 +31,12 @@ Parameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds
 # Arguments
 - `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`, action if invalid: `warn`
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1.0)`, action if invalid: `warn`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`, action if invalid: `warn`
 - `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1.0, 1.0)`, action if invalid: `warn`
-- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", 2.0)`, action if invalid: `error`
+- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1, 1)`, action if invalid: `warn`
+- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", 2)`, action if invalid: `error`
 - `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Excitation control system stabilizer time constant. Appropiate Data: 5.0 <= Tf/Kf <= 15.0, validation range: `("eps()", 1.5)`, action if invalid: `error`
 - `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
@@ -106,8 +106,8 @@ function ESDC2A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V
     ESDC2A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vt, :Vr1, :Vr2, :Vf, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function ESDC2A(; Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    ESDC2A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, )
+function ESDC2A(; Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), states=[:Vt, :Vr1, :Vr2, :Vf, :Vr3], n_states=5, states_types=[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
+    ESDC2A(Tr, Ka, Ta, Tb, Tc, Vr_lim, Ke, Te, Kf, Tf, switch, E_sat, Se, V_ref, saturation_coeffs, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -213,3 +213,4 @@ set_n_states!(value::ESDC2A, val) = value.n_states = val
 set_states_types!(value::ESDC2A, val) = value.states_types = val
 """Set [`ESDC2A`](@ref) `internal`."""
 set_internal!(value::ESDC2A, val) = value.internal = val
+

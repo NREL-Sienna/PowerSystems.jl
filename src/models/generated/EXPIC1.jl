@@ -133,8 +133,8 @@ function EXPIC1(Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Ef
     EXPIC1(Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Vf, :Vr3, :Vr4], 6, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
-function EXPIC1(; Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    EXPIC1(Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref, saturation_coeffs, ext, )
+function EXPIC1(; Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), states=[:Vm, :Vr1, :Vr2, :Vf, :Vr3, :Vr4], n_states=6, states_types=[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid], internal=InfrastructureSystemsInternal(), )
+    EXPIC1(Tr, Ka, Ta, Va_lim, Ta_2, Ta_3, Ta_4, Vr_lim, Kf, Tf_1, Tf_2, Efd_lim, Ke, Te, E_sat, Se, Kp, Ki, Kc, V_ref, saturation_coeffs, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -270,3 +270,4 @@ set_n_states!(value::EXPIC1, val) = value.n_states = val
 set_states_types!(value::EXPIC1, val) = value.states_types = val
 """Set [`EXPIC1`](@ref) `internal`."""
 set_internal!(value::EXPIC1, val) = value.internal = val
+

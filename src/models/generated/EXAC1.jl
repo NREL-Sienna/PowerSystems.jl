@@ -111,8 +111,8 @@ function EXAC1(Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_
     EXAC1(Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref, saturation_coeffs, ext, [:Vm, :Vr1, :Vr2, :Ve, :Vr3], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function EXAC1(; Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), )
-    EXAC1(Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref, saturation_coeffs, ext, )
+function EXAC1(; Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref=1.0, saturation_coeffs=PowerSystems.get_avr_saturation(E_sat, Se), ext=Dict{String, Any}(), states=[:Vm, :Vr1, :Vr2, :Ve, :Vr3], n_states=5, states_types=[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
+    EXAC1(Tr, Tb, Tc, Ka, Ta, Vr_lim, Te, Kf, Tf, Kc, Kd, Ke, E_sat, Se, V_ref, saturation_coeffs, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -223,3 +223,4 @@ set_n_states!(value::EXAC1, val) = value.n_states = val
 set_states_types!(value::EXAC1, val) = value.states_types = val
 """Set [`EXAC1`](@ref) `internal`."""
 set_internal!(value::EXAC1, val) = value.internal = val
+

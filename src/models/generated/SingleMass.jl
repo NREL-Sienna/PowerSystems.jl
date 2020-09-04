@@ -43,8 +43,8 @@ function SingleMass(H, D, ext=Dict{String, Any}(), )
     SingleMass(H, D, ext, [:δ, :ω], 2, InfrastructureSystemsInternal(), )
 end
 
-function SingleMass(; H, D, ext=Dict{String, Any}(), )
-    SingleMass(H, D, ext, )
+function SingleMass(; H, D, ext=Dict{String, Any}(), states=[:δ, :ω], n_states=2, internal=InfrastructureSystemsInternal(), )
+    SingleMass(H, D, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -81,3 +81,4 @@ set_states!(value::SingleMass, val) = value.states = val
 set_n_states!(value::SingleMass, val) = value.n_states = val
 """Set [`SingleMass`](@ref) `internal`."""
 set_internal!(value::SingleMass, val) = value.internal = val
+

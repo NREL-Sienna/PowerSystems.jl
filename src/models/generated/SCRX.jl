@@ -71,8 +71,8 @@ function SCRX(Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{Str
     SCRX(Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, [:Vr1, :Vr2], 2, [StateTypes.Differential, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
-function SCRX(; Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{String, Any}(), )
-    SCRX(Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, )
+function SCRX(; Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref=1.0, ext=Dict{String, Any}(), states=[:Vr1, :Vr2], n_states=2, states_types=[StateTypes.Differential, StateTypes.Hybrid], internal=InfrastructureSystemsInternal(), )
+    SCRX(Ta_Tb, Tb, K, Te, Efd_lim, switch, rc_rfd, V_ref, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -143,3 +143,4 @@ set_n_states!(value::SCRX, val) = value.n_states = val
 set_states_types!(value::SCRX, val) = value.states_types = val
 """Set [`SCRX`](@ref) `internal`."""
 set_internal!(value::SCRX, val) = value.internal = val
+

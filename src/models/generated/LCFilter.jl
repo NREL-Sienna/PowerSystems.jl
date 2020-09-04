@@ -43,8 +43,8 @@ function LCFilter(lf, rf, cf, ext=Dict{String, Any}(), )
     LCFilter(lf, rf, cf, ext, [:ir_filter, :ii_filter], 2, )
 end
 
-function LCFilter(; lf, rf, cf, ext=Dict{String, Any}(), )
-    LCFilter(lf, rf, cf, ext, )
+function LCFilter(; lf, rf, cf, ext=Dict{String, Any}(), states=[:ir_filter, :ii_filter], n_states=2, )
+    LCFilter(lf, rf, cf, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -82,3 +82,4 @@ set_ext!(value::LCFilter, val) = value.ext = val
 set_states!(value::LCFilter, val) = value.states = val
 """Set [`LCFilter`](@ref) `n_states`."""
 set_n_states!(value::LCFilter, val) = value.n_states = val
+

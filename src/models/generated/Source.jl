@@ -58,8 +58,8 @@ function Source(name, available, bus, active_power, reactive_power, R_th, X_th, 
     Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Source(; name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, services=Device[], ext=Dict{String, Any}(), )
-    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, services, ext, )
+function Source(; name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -128,3 +128,4 @@ set_services!(value::Source, val) = value.services = val
 set_ext!(value::Source, val) = value.ext = val
 """Set [`Source`](@ref) `internal`."""
 set_internal!(value::Source, val) = value.internal = val
+

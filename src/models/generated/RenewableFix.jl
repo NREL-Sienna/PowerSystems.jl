@@ -65,8 +65,8 @@ function RenewableFix(name, available, bus, active_power, reactive_power, rating
     RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services, dynamic_injector, ext, forecasts, )
+function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services, dynamic_injector, ext, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -143,3 +143,4 @@ set_ext!(value::RenewableFix, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::RenewableFix, val) = value.forecasts = val
 """Set [`RenewableFix`](@ref) `internal`."""
 set_internal!(value::RenewableFix, val) = value.internal = val
+

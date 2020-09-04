@@ -67,8 +67,8 @@ function InterruptibleLoad(name, available, bus, model, active_power, reactive_p
     InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function InterruptibleLoad(; name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, forecasts, )
+function InterruptibleLoad(; name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    InterruptibleLoad(name, available, bus, model, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -150,3 +150,4 @@ set_ext!(value::InterruptibleLoad, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::InterruptibleLoad, val) = value.forecasts = val
 """Set [`InterruptibleLoad`](@ref) `internal`."""
 set_internal!(value::InterruptibleLoad, val) = value.internal = val
+
