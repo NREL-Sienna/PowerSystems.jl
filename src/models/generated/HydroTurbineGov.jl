@@ -175,10 +175,6 @@ set_q_nl!(value::HydroTurbineGov, val) = value.q_nl = val
 set_P_ref!(value::HydroTurbineGov, val) = value.P_ref = val
 """Set [`HydroTurbineGov`](@ref) `ext`."""
 set_ext!(value::HydroTurbineGov, val) = value.ext = val
-"""Set [`HydroTurbineGov`](@ref) `states`."""
-set_states!(value::HydroTurbineGov, val) = value.states = val
-"""Set [`HydroTurbineGov`](@ref) `n_states`."""
-set_n_states!(value::HydroTurbineGov, val) = value.n_states = val
 """Set [`HydroTurbineGov`](@ref) `states_types`."""
 set_states_types!(value::HydroTurbineGov, val) = value.states_types = val
 """Set [`HydroTurbineGov`](@ref) `internal`."""

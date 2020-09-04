@@ -188,10 +188,6 @@ set_ext!(value::SimpleFullMachine, val) = value.ext = val
 set_inv_d_fluxlink!(value::SimpleFullMachine, val) = value.inv_d_fluxlink = val
 """Set [`SimpleFullMachine`](@ref) `inv_q_fluxlink`."""
 set_inv_q_fluxlink!(value::SimpleFullMachine, val) = value.inv_q_fluxlink = val
-"""Set [`SimpleFullMachine`](@ref) `states`."""
-set_states!(value::SimpleFullMachine, val) = value.states = val
-"""Set [`SimpleFullMachine`](@ref) `n_states`."""
-set_n_states!(value::SimpleFullMachine, val) = value.n_states = val
 """Set [`SimpleFullMachine`](@ref) `internal`."""
 set_internal!(value::SimpleFullMachine, val) = value.internal = val
 

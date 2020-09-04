@@ -224,10 +224,6 @@ set_V_ref!(value::ESAC1A, val) = value.V_ref = val
 set_saturation_coeffs!(value::ESAC1A, val) = value.saturation_coeffs = val
 """Set [`ESAC1A`](@ref) `ext`."""
 set_ext!(value::ESAC1A, val) = value.ext = val
-"""Set [`ESAC1A`](@ref) `states`."""
-set_states!(value::ESAC1A, val) = value.states = val
-"""Set [`ESAC1A`](@ref) `n_states`."""
-set_n_states!(value::ESAC1A, val) = value.n_states = val
 """Set [`ESAC1A`](@ref) `states_types`."""
 set_states_types!(value::ESAC1A, val) = value.states_types = val
 """Set [`ESAC1A`](@ref) `internal`."""

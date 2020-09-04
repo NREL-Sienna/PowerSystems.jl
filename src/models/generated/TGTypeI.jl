@@ -131,10 +131,6 @@ set_valve_position_limits!(value::TGTypeI, val) = value.valve_position_limits = 
 set_P_ref!(value::TGTypeI, val) = value.P_ref = val
 """Set [`TGTypeI`](@ref) `ext`."""
 set_ext!(value::TGTypeI, val) = value.ext = val
-"""Set [`TGTypeI`](@ref) `states`."""
-set_states!(value::TGTypeI, val) = value.states = val
-"""Set [`TGTypeI`](@ref) `n_states`."""
-set_n_states!(value::TGTypeI, val) = value.n_states = val
 """Set [`TGTypeI`](@ref) `internal`."""
 set_internal!(value::TGTypeI, val) = value.internal = val
 

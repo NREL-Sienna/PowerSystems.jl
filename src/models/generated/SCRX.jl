@@ -135,10 +135,6 @@ set_rc_rfd!(value::SCRX, val) = value.rc_rfd = val
 set_V_ref!(value::SCRX, val) = value.V_ref = val
 """Set [`SCRX`](@ref) `ext`."""
 set_ext!(value::SCRX, val) = value.ext = val
-"""Set [`SCRX`](@ref) `states`."""
-set_states!(value::SCRX, val) = value.states = val
-"""Set [`SCRX`](@ref) `n_states`."""
-set_n_states!(value::SCRX, val) = value.n_states = val
 """Set [`SCRX`](@ref) `states_types`."""
 set_states_types!(value::SCRX, val) = value.states_types = val
 """Set [`SCRX`](@ref) `internal`."""

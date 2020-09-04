@@ -376,10 +376,6 @@ set_R_lim!(value::GeneralGovModel, val) = value.R_lim = val
 set_P_ref!(value::GeneralGovModel, val) = value.P_ref = val
 """Set [`GeneralGovModel`](@ref) `ext`."""
 set_ext!(value::GeneralGovModel, val) = value.ext = val
-"""Set [`GeneralGovModel`](@ref) `states`."""
-set_states!(value::GeneralGovModel, val) = value.states = val
-"""Set [`GeneralGovModel`](@ref) `n_states`."""
-set_n_states!(value::GeneralGovModel, val) = value.n_states = val
 """Set [`GeneralGovModel`](@ref) `states_types`."""
 set_states_types!(value::GeneralGovModel, val) = value.states_types = val
 """Set [`GeneralGovModel`](@ref) `internal`."""

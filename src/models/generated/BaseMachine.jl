@@ -80,10 +80,6 @@ set_Xd_p!(value::BaseMachine, val) = value.Xd_p = val
 set_eq_p!(value::BaseMachine, val) = value.eq_p = val
 """Set [`BaseMachine`](@ref) `ext`."""
 set_ext!(value::BaseMachine, val) = value.ext = val
-"""Set [`BaseMachine`](@ref) `states`."""
-set_states!(value::BaseMachine, val) = value.states = val
-"""Set [`BaseMachine`](@ref) `n_states`."""
-set_n_states!(value::BaseMachine, val) = value.n_states = val
 """Set [`BaseMachine`](@ref) `internal`."""
 set_internal!(value::BaseMachine, val) = value.internal = val
 

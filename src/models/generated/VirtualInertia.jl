@@ -87,8 +87,4 @@ set_kω!(value::VirtualInertia, val) = value.kω = val
 set_P_ref!(value::VirtualInertia, val) = value.P_ref = val
 """Set [`VirtualInertia`](@ref) `ext`."""
 set_ext!(value::VirtualInertia, val) = value.ext = val
-"""Set [`VirtualInertia`](@ref) `states`."""
-set_states!(value::VirtualInertia, val) = value.states = val
-"""Set [`VirtualInertia`](@ref) `n_states`."""
-set_n_states!(value::VirtualInertia, val) = value.n_states = val
 

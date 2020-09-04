@@ -262,10 +262,6 @@ set_V_ref!(value::EXPIC1, val) = value.V_ref = val
 set_saturation_coeffs!(value::EXPIC1, val) = value.saturation_coeffs = val
 """Set [`EXPIC1`](@ref) `ext`."""
 set_ext!(value::EXPIC1, val) = value.ext = val
-"""Set [`EXPIC1`](@ref) `states`."""
-set_states!(value::EXPIC1, val) = value.states = val
-"""Set [`EXPIC1`](@ref) `n_states`."""
-set_n_states!(value::EXPIC1, val) = value.n_states = val
 """Set [`EXPIC1`](@ref) `states_types`."""
 set_states_types!(value::EXPIC1, val) = value.states_types = val
 """Set [`EXPIC1`](@ref) `internal`."""

@@ -77,10 +77,6 @@ set_Vf!(value::AVRFixed, val) = value.Vf = val
 set_V_ref!(value::AVRFixed, val) = value.V_ref = val
 """Set [`AVRFixed`](@ref) `ext`."""
 set_ext!(value::AVRFixed, val) = value.ext = val
-"""Set [`AVRFixed`](@ref) `states`."""
-set_states!(value::AVRFixed, val) = value.states = val
-"""Set [`AVRFixed`](@ref) `n_states`."""
-set_n_states!(value::AVRFixed, val) = value.n_states = val
 """Set [`AVRFixed`](@ref) `states_types`."""
 set_states_types!(value::AVRFixed, val) = value.states_types = val
 """Set [`AVRFixed`](@ref) `internal`."""

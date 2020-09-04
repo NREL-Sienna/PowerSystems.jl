@@ -151,8 +151,4 @@ set_ωad!(value::CurrentControl, val) = value.ωad = val
 set_kad!(value::CurrentControl, val) = value.kad = val
 """Set [`CurrentControl`](@ref) `ext`."""
 set_ext!(value::CurrentControl, val) = value.ext = val
-"""Set [`CurrentControl`](@ref) `states`."""
-set_states!(value::CurrentControl, val) = value.states = val
-"""Set [`CurrentControl`](@ref) `n_states`."""
-set_n_states!(value::CurrentControl, val) = value.n_states = val
 

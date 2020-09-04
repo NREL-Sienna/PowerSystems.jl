@@ -251,10 +251,6 @@ set_K8!(value::IEEETurbineGov1, val) = value.K8 = val
 set_P_ref!(value::IEEETurbineGov1, val) = value.P_ref = val
 """Set [`IEEETurbineGov1`](@ref) `ext`."""
 set_ext!(value::IEEETurbineGov1, val) = value.ext = val
-"""Set [`IEEETurbineGov1`](@ref) `states`."""
-set_states!(value::IEEETurbineGov1, val) = value.states = val
-"""Set [`IEEETurbineGov1`](@ref) `n_states`."""
-set_n_states!(value::IEEETurbineGov1, val) = value.n_states = val
 """Set [`IEEETurbineGov1`](@ref) `states_types`."""
 set_states_types!(value::IEEETurbineGov1, val) = value.states_types = val
 """Set [`IEEETurbineGov1`](@ref) `internal`."""

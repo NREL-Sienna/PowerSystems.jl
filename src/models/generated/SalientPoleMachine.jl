@@ -174,10 +174,6 @@ set_γ_d1!(value::SalientPoleMachine, val) = value.γ_d1 = val
 set_γ_q1!(value::SalientPoleMachine, val) = value.γ_q1 = val
 """Set [`SalientPoleMachine`](@ref) `γ_d2`."""
 set_γ_d2!(value::SalientPoleMachine, val) = value.γ_d2 = val
-"""Set [`SalientPoleMachine`](@ref) `states`."""
-set_states!(value::SalientPoleMachine, val) = value.states = val
-"""Set [`SalientPoleMachine`](@ref) `n_states`."""
-set_n_states!(value::SalientPoleMachine, val) = value.n_states = val
 """Set [`SalientPoleMachine`](@ref) `internal`."""
 set_internal!(value::SalientPoleMachine, val) = value.internal = val
 

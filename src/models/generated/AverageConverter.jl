@@ -64,8 +64,4 @@ set_rated_voltage!(value::AverageConverter, val) = value.rated_voltage = val
 set_rated_current!(value::AverageConverter, val) = value.rated_current = val
 """Set [`AverageConverter`](@ref) `ext`."""
 set_ext!(value::AverageConverter, val) = value.ext = val
-"""Set [`AverageConverter`](@ref) `states`."""
-set_states!(value::AverageConverter, val) = value.states = val
-"""Set [`AverageConverter`](@ref) `n_states`."""
-set_n_states!(value::AverageConverter, val) = value.n_states = val
 
