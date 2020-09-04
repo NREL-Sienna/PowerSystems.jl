@@ -15,7 +15,6 @@ This file is auto-generated. Do not edit.
         reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
         ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        operation_cost::OperationalCost
         rating_pump::Float64
         active_power_limits_pump::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         reactive_power_limits_pump::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}
@@ -26,6 +25,7 @@ This file is auto-generated. Do not edit.
         outflow::Float64
         initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
         storage_target::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+        operation_cost::OperationalCost
         pump_efficiency::Float64
         conversion_factor::Float64
         services::Vector{Service}
@@ -50,7 +50,6 @@ This file is auto-generated. Do not edit.
 - `reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `rating_pump::Float64`: Thermal limited MVA Power Withdrawl of the pump. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
 - `active_power_limits_pump::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits_pump::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
@@ -87,8 +86,6 @@ mutable struct HydroPumpedStorage <: HydroGen
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
     "Thermal limited MVA Power Withdrawl of the pump. <= Capacity"
     rating_pump::Float64
     active_power_limits_pump::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
@@ -107,6 +104,8 @@ mutable struct HydroPumpedStorage <: HydroGen
     initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
     "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
     storage_target::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    operation_cost::OperationalCost
     "Efficiency of pump"
     pump_efficiency::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
@@ -122,8 +121,8 @@ mutable struct HydroPumpedStorage <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, pump_efficiency, conversion_factor, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
 function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, operation_cost, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
@@ -145,7 +144,6 @@ function HydroPumpedStorage(::Nothing)
         reactive_power_limits=nothing,
         ramp_limits=nothing,
         time_limits=nothing,
-        operation_cost=ThreePartCost(nothing),
         rating_pump=0.0,
         active_power_limits_pump=(min=0.0, max=0.0),
         reactive_power_limits_pump=nothing,
@@ -156,6 +154,7 @@ function HydroPumpedStorage(::Nothing)
         outflow=0.0,
         initial_storage=(up=0.0, down=0.0),
         storage_target=(up=0.0, down=0.0),
+        operation_cost=TwoPartCost(nothing),
         pump_efficiency=0.0,
         conversion_factor=0.0,
         services=Device[],
@@ -189,8 +188,6 @@ get_reactive_power_limits(value::HydroPumpedStorage) = get_value(value, value.re
 get_ramp_limits(value::HydroPumpedStorage) = get_value(value, value.ramp_limits)
 """Get [`HydroPumpedStorage`](@ref) `time_limits`."""
 get_time_limits(value::HydroPumpedStorage) = value.time_limits
-"""Get [`HydroPumpedStorage`](@ref) `operation_cost`."""
-get_operation_cost(value::HydroPumpedStorage) = value.operation_cost
 """Get [`HydroPumpedStorage`](@ref) `rating_pump`."""
 get_rating_pump(value::HydroPumpedStorage) = get_value(value, value.rating_pump)
 """Get [`HydroPumpedStorage`](@ref) `active_power_limits_pump`."""
@@ -211,6 +208,8 @@ get_outflow(value::HydroPumpedStorage) = value.outflow
 get_initial_storage(value::HydroPumpedStorage) = get_value(value, value.initial_storage)
 """Get [`HydroPumpedStorage`](@ref) `storage_target`."""
 get_storage_target(value::HydroPumpedStorage) = value.storage_target
+"""Get [`HydroPumpedStorage`](@ref) `operation_cost`."""
+get_operation_cost(value::HydroPumpedStorage) = value.operation_cost
 """Get [`HydroPumpedStorage`](@ref) `pump_efficiency`."""
 get_pump_efficiency(value::HydroPumpedStorage) = value.pump_efficiency
 """Get [`HydroPumpedStorage`](@ref) `conversion_factor`."""
@@ -250,8 +249,6 @@ set_reactive_power_limits!(value::HydroPumpedStorage, val) = value.reactive_powe
 set_ramp_limits!(value::HydroPumpedStorage, val) = value.ramp_limits = val
 """Set [`HydroPumpedStorage`](@ref) `time_limits`."""
 set_time_limits!(value::HydroPumpedStorage, val) = value.time_limits = val
-"""Set [`HydroPumpedStorage`](@ref) `operation_cost`."""
-set_operation_cost!(value::HydroPumpedStorage, val) = value.operation_cost = val
 """Set [`HydroPumpedStorage`](@ref) `rating_pump`."""
 set_rating_pump!(value::HydroPumpedStorage, val) = value.rating_pump = val
 """Set [`HydroPumpedStorage`](@ref) `active_power_limits_pump`."""
@@ -272,6 +269,8 @@ set_outflow!(value::HydroPumpedStorage, val) = value.outflow = val
 set_initial_storage!(value::HydroPumpedStorage, val) = value.initial_storage = val
 """Set [`HydroPumpedStorage`](@ref) `storage_target`."""
 set_storage_target!(value::HydroPumpedStorage, val) = value.storage_target = val
+"""Set [`HydroPumpedStorage`](@ref) `operation_cost`."""
+set_operation_cost!(value::HydroPumpedStorage, val) = value.operation_cost = val
 """Set [`HydroPumpedStorage`](@ref) `pump_efficiency`."""
 set_pump_efficiency!(value::HydroPumpedStorage, val) = value.pump_efficiency = val
 """Set [`HydroPumpedStorage`](@ref) `conversion_factor`."""
@@ -284,4 +283,3 @@ set_ext!(value::HydroPumpedStorage, val) = value.ext = val
 InfrastructureSystems.set_forecasts!(value::HydroPumpedStorage, val) = value.forecasts = val
 """Set [`HydroPumpedStorage`](@ref) `internal`."""
 set_internal!(value::HydroPumpedStorage, val) = value.internal = val
-
