@@ -163,8 +163,4 @@ set_kii!(value::ZeroOrderBESS, val) = value.kii = val
 set_Vdc_ref!(value::ZeroOrderBESS, val) = value.Vdc_ref = val
 """Set [`ZeroOrderBESS`](@ref) `ext`."""
 set_ext!(value::ZeroOrderBESS, val) = value.ext = val
-"""Set [`ZeroOrderBESS`](@ref) `states`."""
-set_states!(value::ZeroOrderBESS, val) = value.states = val
-"""Set [`ZeroOrderBESS`](@ref) `n_states`."""
-set_n_states!(value::ZeroOrderBESS, val) = value.n_states = val
 

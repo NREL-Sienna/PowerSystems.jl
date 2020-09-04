@@ -80,10 +80,6 @@ set_Kv!(value::AVRSimple, val) = value.Kv = val
 set_V_ref!(value::AVRSimple, val) = value.V_ref = val
 """Set [`AVRSimple`](@ref) `ext`."""
 set_ext!(value::AVRSimple, val) = value.ext = val
-"""Set [`AVRSimple`](@ref) `states`."""
-set_states!(value::AVRSimple, val) = value.states = val
-"""Set [`AVRSimple`](@ref) `n_states`."""
-set_n_states!(value::AVRSimple, val) = value.n_states = val
 """Set [`AVRSimple`](@ref) `states_types`."""
 set_states_types!(value::AVRSimple, val) = value.states_types = val
 """Set [`AVRSimple`](@ref) `internal`."""

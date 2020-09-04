@@ -235,10 +235,6 @@ set_Vcu!(value::IEEEST, val) = value.Vcu = val
 set_Vcl!(value::IEEEST, val) = value.Vcl = val
 """Set [`IEEEST`](@ref) `ext`."""
 set_ext!(value::IEEEST, val) = value.ext = val
-"""Set [`IEEEST`](@ref) `states`."""
-set_states!(value::IEEEST, val) = value.states = val
-"""Set [`IEEEST`](@ref) `n_states`."""
-set_n_states!(value::IEEEST, val) = value.n_states = val
 """Set [`IEEEST`](@ref) `states_types`."""
 set_states_types!(value::IEEEST, val) = value.states_types = val
 """Set [`IEEEST`](@ref) `internal`."""

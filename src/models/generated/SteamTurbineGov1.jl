@@ -153,10 +153,6 @@ set_T_rate!(value::SteamTurbineGov1, val) = value.T_rate = val
 set_P_ref!(value::SteamTurbineGov1, val) = value.P_ref = val
 """Set [`SteamTurbineGov1`](@ref) `ext`."""
 set_ext!(value::SteamTurbineGov1, val) = value.ext = val
-"""Set [`SteamTurbineGov1`](@ref) `states`."""
-set_states!(value::SteamTurbineGov1, val) = value.states = val
-"""Set [`SteamTurbineGov1`](@ref) `n_states`."""
-set_n_states!(value::SteamTurbineGov1, val) = value.n_states = val
 """Set [`SteamTurbineGov1`](@ref) `states_types`."""
 set_states_types!(value::SteamTurbineGov1, val) = value.states_types = val
 """Set [`SteamTurbineGov1`](@ref) `internal`."""

@@ -84,8 +84,4 @@ set_kp_pll!(value::KauraPLL, val) = value.kp_pll = val
 set_ki_pll!(value::KauraPLL, val) = value.ki_pll = val
 """Set [`KauraPLL`](@ref) `ext`."""
 set_ext!(value::KauraPLL, val) = value.ext = val
-"""Set [`KauraPLL`](@ref) `states`."""
-set_states!(value::KauraPLL, val) = value.states = val
-"""Set [`KauraPLL`](@ref) `n_states`."""
-set_n_states!(value::KauraPLL, val) = value.n_states = val
 

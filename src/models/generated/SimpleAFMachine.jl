@@ -164,10 +164,6 @@ set_Td0_pp!(value::SimpleAFMachine, val) = value.Td0_pp = val
 set_Tq0_pp!(value::SimpleAFMachine, val) = value.Tq0_pp = val
 """Set [`SimpleAFMachine`](@ref) `ext`."""
 set_ext!(value::SimpleAFMachine, val) = value.ext = val
-"""Set [`SimpleAFMachine`](@ref) `states`."""
-set_states!(value::SimpleAFMachine, val) = value.states = val
-"""Set [`SimpleAFMachine`](@ref) `n_states`."""
-set_n_states!(value::SimpleAFMachine, val) = value.n_states = val
 """Set [`SimpleAFMachine`](@ref) `internal`."""
 set_internal!(value::SimpleAFMachine, val) = value.internal = val
 

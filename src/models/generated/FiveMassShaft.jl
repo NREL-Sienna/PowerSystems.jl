@@ -237,10 +237,6 @@ set_K_lp!(value::FiveMassShaft, val) = value.K_lp = val
 set_K_ex!(value::FiveMassShaft, val) = value.K_ex = val
 """Set [`FiveMassShaft`](@ref) `ext`."""
 set_ext!(value::FiveMassShaft, val) = value.ext = val
-"""Set [`FiveMassShaft`](@ref) `states`."""
-set_states!(value::FiveMassShaft, val) = value.states = val
-"""Set [`FiveMassShaft`](@ref) `n_states`."""
-set_n_states!(value::FiveMassShaft, val) = value.n_states = val
 """Set [`FiveMassShaft`](@ref) `internal`."""
 set_internal!(value::FiveMassShaft, val) = value.internal = val
 

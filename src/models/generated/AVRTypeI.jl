@@ -166,10 +166,6 @@ set_Be!(value::AVRTypeI, val) = value.Be = val
 set_V_ref!(value::AVRTypeI, val) = value.V_ref = val
 """Set [`AVRTypeI`](@ref) `ext`."""
 set_ext!(value::AVRTypeI, val) = value.ext = val
-"""Set [`AVRTypeI`](@ref) `states`."""
-set_states!(value::AVRTypeI, val) = value.states = val
-"""Set [`AVRTypeI`](@ref) `n_states`."""
-set_n_states!(value::AVRTypeI, val) = value.n_states = val
 """Set [`AVRTypeI`](@ref) `states_types`."""
 set_states_types!(value::AVRTypeI, val) = value.states_types = val
 """Set [`AVRTypeI`](@ref) `internal`."""

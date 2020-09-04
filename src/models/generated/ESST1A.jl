@@ -232,10 +232,6 @@ set_I_lr!(value::ESST1A, val) = value.I_lr = val
 set_V_ref!(value::ESST1A, val) = value.V_ref = val
 """Set [`ESST1A`](@ref) `ext`."""
 set_ext!(value::ESST1A, val) = value.ext = val
-"""Set [`ESST1A`](@ref) `states`."""
-set_states!(value::ESST1A, val) = value.states = val
-"""Set [`ESST1A`](@ref) `n_states`."""
-set_n_states!(value::ESST1A, val) = value.n_states = val
 """Set [`ESST1A`](@ref) `states_types`."""
 set_states_types!(value::ESST1A, val) = value.states_types = val
 """Set [`ESST1A`](@ref) `internal`."""

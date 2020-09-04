@@ -71,10 +71,6 @@ set_efficiency!(value::TGFixed, val) = value.efficiency = val
 set_P_ref!(value::TGFixed, val) = value.P_ref = val
 """Set [`TGFixed`](@ref) `ext`."""
 set_ext!(value::TGFixed, val) = value.ext = val
-"""Set [`TGFixed`](@ref) `states`."""
-set_states!(value::TGFixed, val) = value.states = val
-"""Set [`TGFixed`](@ref) `n_states`."""
-set_n_states!(value::TGFixed, val) = value.n_states = val
 """Set [`TGFixed`](@ref) `internal`."""
 set_internal!(value::TGFixed, val) = value.internal = val
 

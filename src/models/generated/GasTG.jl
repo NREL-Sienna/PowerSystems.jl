@@ -146,10 +146,6 @@ set_D_turb!(value::GasTG, val) = value.D_turb = val
 set_P_ref!(value::GasTG, val) = value.P_ref = val
 """Set [`GasTG`](@ref) `ext`."""
 set_ext!(value::GasTG, val) = value.ext = val
-"""Set [`GasTG`](@ref) `states`."""
-set_states!(value::GasTG, val) = value.states = val
-"""Set [`GasTG`](@ref) `n_states`."""
-set_n_states!(value::GasTG, val) = value.n_states = val
 """Set [`GasTG`](@ref) `states_types`."""
 set_states_types!(value::GasTG, val) = value.states_types = val
 """Set [`GasTG`](@ref) `internal`."""

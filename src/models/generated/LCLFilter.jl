@@ -104,8 +104,4 @@ set_lg!(value::LCLFilter, val) = value.lg = val
 set_rg!(value::LCLFilter, val) = value.rg = val
 """Set [`LCLFilter`](@ref) `ext`."""
 set_ext!(value::LCLFilter, val) = value.ext = val
-"""Set [`LCLFilter`](@ref) `states`."""
-set_states!(value::LCLFilter, val) = value.states = val
-"""Set [`LCLFilter`](@ref) `n_states`."""
-set_n_states!(value::LCLFilter, val) = value.n_states = val
 
