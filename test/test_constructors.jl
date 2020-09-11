@@ -97,30 +97,30 @@ end
     @test tVariableReserve isa PowerSystems.Service
 end
 
-@testset "Forecast Constructors" begin
+@testset "TimeSeriesData Constructors" begin
     tg = RenewableFix(nothing)
-    forecast_data = PowerSystems.TimeSeries.TimeArray(
+    time_series_data = PowerSystems.TimeSeries.TimeArray(
         [DateTime("01-01-01"), DateTime("01-01-01") + Hour(1)],
         [1.0, 1.0],
     )
     #Deterministic Tests
-    tDeterministicForecast =
+    tDeterministictime_series =
         PSY.Deterministic("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
-    @test tDeterministicForecast isa PowerSystems.Forecast
-    tDeterministicForecast = PSY.Deterministic("scalingfactor", forecast_data)
-    @test tDeterministicForecast isa PowerSystems.Forecast
+    @test tDeterministictime_series isa PowerSystems.TimeSeriesData
+    tDeterministictime_series = PSY.Deterministic("scalingfactor", time_series_data)
+    @test tDeterministictime_series isa PowerSystems.TimeSeriesData
     #Probabilistic Tests
-    tProbabilisticForecast =
+    tProbabilistictime_series =
         PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
-    @test tProbabilisticForecast isa PowerSystems.Forecast
-    tProbabilisticForecast = PSY.Probabilistic("scalingfactor", [1.0], forecast_data)
-    @test tProbabilisticForecast isa PowerSystems.Forecast
+    @test tProbabilistictime_series isa PowerSystems.TimeSeriesData
+    tProbabilistictime_series = PSY.Probabilistic("scalingfactor", [1.0], time_series_data)
+    @test tProbabilistictime_series isa PowerSystems.TimeSeriesData
     #Scenario Tests
-    tScenarioForecast =
+    tScenariotime_series =
         PSY.ScenarioBased("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
-    @test tScenarioForecast isa PowerSystems.Forecast
-    tScenarioForecast = PSY.ScenarioBased("scalingfactor", forecast_data)
-    @test tScenarioForecast isa PowerSystems.Forecast
+    @test tScenariotime_series isa PowerSystems.TimeSeriesData
+    tScenariotime_series = PSY.ScenarioBased("scalingfactor", time_series_data)
+    @test tScenariotime_series isa PowerSystems.TimeSeriesData
 end
 
 @testset "Regulation Device" begin

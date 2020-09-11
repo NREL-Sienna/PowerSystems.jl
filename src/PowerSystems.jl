@@ -183,7 +183,7 @@ export PrimeMovers
 export ThermalFuels
 export StateTypes
 
-export Forecast
+export TimeSeriesData
 export Deterministic
 export Probabilistic
 export ScenarioBased
@@ -195,11 +195,10 @@ export solve_powerflow!
 export solve_powerflow
 
 export parse_file
-export add_forecasts!
-export add_forecast!
-export remove_forecast!
-export clear_forecasts!
-export copy_forecasts!
+export add_time_series!
+export remove_time_series!
+export clear_time_series!
+export copy_time_series!
 export add_component!
 export remove_component!
 export remove_components!
@@ -209,7 +208,7 @@ export remove_service!
 export clear_services!
 export get_services
 export has_service
-export has_forecasts
+export has_time_series
 export get_buses
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
@@ -218,27 +217,27 @@ export get_contributing_device_mapping
 export ServiceContributingDevices
 export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
-export are_forecasts_contiguous
+export are_time_series_contiguous
 export generate_initial_times
 export get_component
 export get_components
 export get_components_by_name
 export get_available_components
-export get_forecast_labels
-export get_forecast_initial_times
-export get_forecast
-export get_forecast_values
-export get_forecasts_horizon
-export get_forecasts_initial_time
-export get_forecasts_interval
-export get_forecasts_resolution
+export get_time_series_labels
+export get_time_series_initial_times
+export get_time_series
+export get_time_series_values
+export get_time_series_horizon
+export get_time_series_initial_time
+export get_time_series_interval
+export get_time_series_resolution
 export get_horizon
 export get_initial_time
 export get_resolution
 export get_data
 export iterate_components
-export iterate_forecasts
-export make_forecasts
+export get_time_series_multiple
+export make_time_series
 export get_bus_numbers
 export get_name
 export get_base_power
@@ -248,8 +247,8 @@ export to_json
 export from_json
 export serialize
 export deserialize
-export check_forecast_consistency
-export validate_forecast_consistency
+export check_time_series_consistency
+export validate_time_series_consistency
 export clear_ext!
 export convert_component!
 export set_area!
@@ -310,7 +309,7 @@ import InfrastructureSystems:
     Components,
     Deterministic,
     Probabilistic,
-    Forecast,
+    TimeSeriesData,
     ScenarioBased,
     PiecewiseFunction,
     InfrastructureSystemsComponent,
@@ -332,7 +331,7 @@ import InfrastructureSystems:
     serialize,
     deserialize,
     deserialize_parametric_type,
-    iterate_forecasts,
+    get_time_series_multiple,
     UnitSystem,
     SystemUnitsSettings
 

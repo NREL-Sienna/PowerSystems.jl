@@ -31,7 +31,7 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
         # Account for the fact that type may be abstract.
         actual_type = typeof(val)
         if actual_type <: IS.InfrastructureSystemsType ||
-           actual_type <: IS.Forecasts ||
+           actual_type <: IS.TimeSeriesContainer ||
            actual_type <: Vector{<:Service}
             expected = string(actual_type)
         else
@@ -60,10 +60,10 @@ for component in iterate_components(sys)
     print(devnull, MIME"text/plain")
     @test !isempty(summary(component))
 end
-for forecast in iterate_forecasts(sys)
-    show(devnull, forecast)
+for time_series in get_time_series_multiple(sys)
+    show(devnull, time_series)
     show(devnull, MIME"text/plain")
-    @test !isempty(summary(forecast))
+    @test !isempty(summary(time_series))
 end
 
 @test !isempty(summary(sys))

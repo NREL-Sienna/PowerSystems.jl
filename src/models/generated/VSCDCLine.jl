@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         inverter_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -34,7 +34,7 @@ As implemented in Milano's Book, Page 397.
 - `inverter_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct VSCDCLine <: DCBranch
@@ -51,18 +51,18 @@ mutable struct VSCDCLine <: DCBranch
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function VSCDCLine(; name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, forecasts, internal, )
+function VSCDCLine(; name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    VSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -80,7 +80,7 @@ function VSCDCLine(::Nothing)
         inverter_firing_angle=(min=0.0, max=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -109,7 +109,7 @@ get_services(value::VSCDCLine) = value.services
 """Get [`VSCDCLine`](@ref) `ext`."""
 get_ext(value::VSCDCLine) = value.ext
 
-InfrastructureSystems.get_forecasts(value::VSCDCLine) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::VSCDCLine) = value.time_series_container
 """Get [`VSCDCLine`](@ref) `internal`."""
 get_internal(value::VSCDCLine) = value.internal
 
@@ -138,7 +138,7 @@ set_services!(value::VSCDCLine, val) = value.services = val
 """Set [`VSCDCLine`](@ref) `ext`."""
 set_ext!(value::VSCDCLine, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::VSCDCLine, val) = value.forecasts = val
+InfrastructureSystems.set_time_series_container!(value::VSCDCLine, val) = value.time_series_container = val
 """Set [`VSCDCLine`](@ref) `internal`."""
 set_internal!(value::VSCDCLine, val) = value.internal = val
 

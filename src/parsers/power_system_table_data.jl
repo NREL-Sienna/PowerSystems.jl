@@ -234,20 +234,20 @@ end
 Construct a System from PowerSystemTableData data.
 
 # Arguments
-- `forecast_resolution::Union{DateTime, Nothing}=nothing`: only store forecasts that match
+- `time_series_resolution::Union{DateTime, Nothing}=nothing`: only store time_series that match
   this resolution.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5 file
 - `time_series_directory=nothing`: Store time series data in directory instead of tmpfs
 - `runchecks::Bool=true`: Validate struct fields.
 
-Throws DataFormatError if forecasts with multiple resolutions are detected.
-- A forecast has a different resolution than others.
-- A forecast has a different horizon than others.
+Throws DataFormatError if time_series with multiple resolutions are detected.
+- A time_series has a different resolution than others.
+- A time_series has a different horizon than others.
 
 """
 function System(
     data::PowerSystemTableData;
-    forecast_resolution = nothing,
+    time_series_resolution = nothing,
     time_series_in_memory = false,
     time_series_directory = nothing,
     runchecks = true,
@@ -265,7 +265,7 @@ function System(
     loadzone_csv_parser!(sys, data)
     bus_csv_parser!(sys, data)
 
-    # Services and forecasts must be last.
+    # Services and time_series must be last.
     parsers = (
         (get_dataframe(data, BRANCH::InputCategory), branch_csv_parser!),
         (get_dataframe(data, DC_BRANCH::InputCategory), dc_branch_csv_parser!),
@@ -287,7 +287,7 @@ function System(
     )
 
     if !isnothing(timeseries_metadata_file)
-        add_forecasts!(sys, timeseries_metadata_file; resolution = forecast_resolution)
+        add_time_series!(sys, timeseries_metadata_file; resolution = time_series_resolution)
     end
 
     check!(sys)

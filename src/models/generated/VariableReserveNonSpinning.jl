@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         time_frame::Float64
         requirement::Float64
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         operation_cost::Union{Nothing, TwoPartCost}
         internal::InfrastructureSystemsInternal
     end
@@ -19,9 +19,9 @@ Data Structure for the procurement products for system simulations.
 - `name::String`
 - `available::Bool`
 - `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, action if invalid: `error`
-- `requirement::Float64`: the required quantity of the product should be scaled by a Forecast
+- `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `operation_cost::Union{Nothing, TwoPartCost}`: Cost for providing reserves  [`TwoPartCost`](@ref)
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -30,23 +30,23 @@ mutable struct VariableReserveNonSpinning <: ReserveNonSpinning
     available::Bool
     "the relative saturation time_frame"
     time_frame::Float64
-    "the required quantity of the product should be scaled by a Forecast"
+    "the required quantity of the product should be scaled by a TimeSeriesData"
     requirement::Float64
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "Cost for providing reserves  [`TwoPartCost`](@ref)"
     operation_cost::Union{Nothing, TwoPartCost}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function VariableReserveNonSpinning(name, available, time_frame, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), operation_cost=nothing, )
-    VariableReserveNonSpinning(name, available, time_frame, requirement, ext, forecasts, operation_cost, InfrastructureSystemsInternal(), )
+function VariableReserveNonSpinning(name, available, time_frame, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), operation_cost=nothing, )
+    VariableReserveNonSpinning(name, available, time_frame, requirement, ext, time_series_container, operation_cost, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserveNonSpinning(; name, available, time_frame, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), operation_cost=nothing, internal=InfrastructureSystemsInternal(), )
-    VariableReserveNonSpinning(name, available, time_frame, requirement, ext, forecasts, operation_cost, internal, )
+function VariableReserveNonSpinning(; name, available, time_frame, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), operation_cost=nothing, internal=InfrastructureSystemsInternal(), )
+    VariableReserveNonSpinning(name, available, time_frame, requirement, ext, time_series_container, operation_cost, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -57,7 +57,7 @@ function VariableReserveNonSpinning(::Nothing)
         time_frame=0.0,
         requirement=0.0,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
         operation_cost=TwoPartCost(nothing),
     )
 end
@@ -73,7 +73,7 @@ get_requirement(value::VariableReserveNonSpinning) = value.requirement
 """Get [`VariableReserveNonSpinning`](@ref) `ext`."""
 get_ext(value::VariableReserveNonSpinning) = value.ext
 
-InfrastructureSystems.get_forecasts(value::VariableReserveNonSpinning) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::VariableReserveNonSpinning) = value.time_series_container
 """Get [`VariableReserveNonSpinning`](@ref) `operation_cost`."""
 get_operation_cost(value::VariableReserveNonSpinning) = value.operation_cost
 """Get [`VariableReserveNonSpinning`](@ref) `internal`."""
@@ -90,7 +90,7 @@ set_requirement!(value::VariableReserveNonSpinning, val) = value.requirement = v
 """Set [`VariableReserveNonSpinning`](@ref) `ext`."""
 set_ext!(value::VariableReserveNonSpinning, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::VariableReserveNonSpinning, val) = value.forecasts = val
+InfrastructureSystems.set_time_series_container!(value::VariableReserveNonSpinning, val) = value.time_series_container = val
 """Set [`VariableReserveNonSpinning`](@ref) `operation_cost`."""
 set_operation_cost!(value::VariableReserveNonSpinning, val) = value.operation_cost = val
 """Set [`VariableReserveNonSpinning`](@ref) `internal`."""

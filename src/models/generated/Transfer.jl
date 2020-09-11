@@ -7,7 +7,7 @@ This file is auto-generated. Do not edit.
         available::Bool
         requirement::Float64
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -18,7 +18,7 @@ This file is auto-generated. Do not edit.
 - `available::Bool`
 - `requirement::Float64`
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Transfer <: Service
@@ -26,18 +26,18 @@ mutable struct Transfer <: Service
     available::Bool
     requirement::Float64
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, available, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, available, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
+function Transfer(name, available, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    Transfer(name, available, requirement, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function Transfer(; name, available, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    Transfer(name, available, requirement, ext, forecasts, internal, )
+function Transfer(; name, available, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    Transfer(name, available, requirement, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -47,7 +47,7 @@ function Transfer(::Nothing)
         available=false,
         requirement=0.0,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -60,7 +60,7 @@ get_requirement(value::Transfer) = value.requirement
 """Get [`Transfer`](@ref) `ext`."""
 get_ext(value::Transfer) = value.ext
 
-InfrastructureSystems.get_forecasts(value::Transfer) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::Transfer) = value.time_series_container
 """Get [`Transfer`](@ref) `internal`."""
 get_internal(value::Transfer) = value.internal
 
@@ -73,7 +73,7 @@ set_requirement!(value::Transfer, val) = value.requirement = val
 """Set [`Transfer`](@ref) `ext`."""
 set_ext!(value::Transfer, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::Transfer, val) = value.forecasts = val
+InfrastructureSystems.set_time_series_container!(value::Transfer, val) = value.time_series_container = val
 """Set [`Transfer`](@ref) `internal`."""
 set_internal!(value::Transfer, val) = value.internal = val
 

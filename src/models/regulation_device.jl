@@ -10,7 +10,7 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
     reserve_limit_dn::Float64
     inertia::Float64
     cost::Float64
-    forecasts::IS.Forecasts
+    time_series_container::IS.TimeSeriesContainer
     internal::IS.InfrastructureSystemsInternal
 
     function RegulationDevice{T}(
@@ -21,10 +21,10 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
         reserve_limit_dn::Float64,
         inertia::Float64,
         cost::Float64,
-        forecasts::IS.Forecasts = IS.Forecasts(),
+        time_series_container::IS.TimeSeriesContainer = IS.TimeSeriesContainer(),
         internal::IS.InfrastructureSystemsInternal = IS.InfrastructureSystemsInternal(),
     ) where {T <: StaticInjection}
-        # Note that forecasts are not forwarded to T. They get copied from T in
+        # Note that time_series are not forwarded to T. They get copied from T in
         # handle_component_addition!.
         new{T}(
             device,
@@ -34,7 +34,7 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
             reserve_limit_dn,
             inertia,
             cost,
-            forecasts,
+            time_series_container,
             internal,
         )
     end
@@ -77,7 +77,7 @@ function RegulationDevice(;
     reserve_limit_dn::Float64 = 0.0,
     inertia::Float64 = 0.0,
     cost::Float64 = 1.0,
-    forecasts = IS.Forecasts(),
+    time_series_container = IS.TimeSeriesContainer(),
     internal = IS.InfrastructureSystemsInternal(),
 ) where {T <: StaticInjection}
     return RegulationDevice{T}(
@@ -88,12 +88,12 @@ function RegulationDevice(;
         reserve_limit_dn,
         inertia,
         cost,
-        forecasts,
+        time_series_container,
         internal,
     )
 end
 
-IS.get_forecasts(value::RegulationDevice) = value.forecasts
+IS.get_time_series_container(value::RegulationDevice) = value.time_series_container
 IS.get_name(value::RegulationDevice) = IS.get_name(value.device)
 get_internal(value::RegulationDevice) = value.internal
 get_droop(value::RegulationDevice) = value.droop
@@ -113,7 +113,8 @@ set_reserve_limit_up!(value::RegulationDevice, val::Float64) = value.reserve_lim
 set_reserve_limit_dn!(value::RegulationDevice, val::Float64) = value.reserve_limit_dn = val
 set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
-IS.set_forecasts!(value::RegulationDevice, val::IS.Forecasts) = value.forecasts = val
+IS.set_time_series_container!(value::RegulationDevice, val::IS.TimeSeriesContainer) =
+    value.time_series_container = val
 function set_unit_system!(value::RegulationDevice, settings::SystemUnitsSettings)
     value.internal.units_info = value.device.internal.units_info = settings
     return
@@ -134,6 +135,6 @@ for RDT in RegulationDeviceSupportedTypes
     IS.@forward(
         (RegulationDevice{RDT}, :device),
         RDT,
-        [:get_internal, :get_name, :get_forecasts]
+        [:get_internal, :get_name, :get_time_series_container, :set_time_series_container!]
     )
 end

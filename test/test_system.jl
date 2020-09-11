@@ -12,7 +12,7 @@
     generators2 = get_components_by_name(ThermalGen, sys, get_name(generators[1]))
     @test length(generators2) == 1
     @test IS.get_uuid(generators2[1]) == IS.get_uuid(generators[1])
-    @test !has_forecasts(generators2[1])
+    @test !has_time_series(generators2[1])
 
     @test isnothing(get_component(ThermalStandard, sys, "not-a-name"))
     @test isempty(get_components_by_name(ThermalGen, sys, "not-a-name"))
@@ -42,46 +42,51 @@
         @test bus_number == bus.number
     end
 
-    initial_times = get_forecast_initial_times(sys)
+    initial_times = get_time_series_initial_times(sys)
     @assert length(initial_times) == 1
     initial_time = initial_times[1]
 
-    # Get forecasts with a label and without.
+    # Get time_series with a label and without.
     components = collect(get_components(HydroEnergyReservoir, sys))
     @test !isempty(components)
     component = components[1]
-    forecast = get_forecast(Deterministic, component, initial_time, "get_max_active_power")
-    @test forecast isa Deterministic
+    time_series =
+        get_time_series(Deterministic, component, initial_time, "get_max_active_power")
+    @test time_series isa Deterministic
 
-    # Test all versions of get_forecast_values()
-    values1 = get_forecast_values(component, forecast)
-    values2 =
-        get_forecast_values(Deterministic, component, initial_time, "get_max_active_power")
-    @test values1 == values2
-    values3 = get_forecast_values(
+    # Test all versions of get_time_series_values()
+    values1 = get_time_series_values(component, time_series)
+    values2 = get_time_series_values(
         Deterministic,
         component,
         initial_time,
         "get_max_active_power",
-        get_horizon(forecast),
+    )
+    @test values1 == values2
+    values3 = get_time_series_values(
+        Deterministic,
+        component,
+        initial_time,
+        "get_max_active_power",
+        get_horizon(time_series),
     )
     @test values1 == values3
 
-    horizon = get_forecasts_horizon(sys)
+    horizon = get_time_series_horizon(sys)
     @test horizon == 24
-    @test get_forecasts_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
-    @test get_forecasts_interval(sys) == Dates.Hour(0)
-    resolution = get_forecasts_resolution(sys)
+    @test get_time_series_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
+    @test get_time_series_interval(sys) == Dates.Hour(0)
+    resolution = get_time_series_resolution(sys)
     @test resolution == Dates.Hour(1)
 
     # Actual functionality is tested in InfrastructureSystems.
     @test generate_initial_times(sys, resolution, horizon)[1] == initial_time
     @test generate_initial_times(component, resolution, horizon)[1] == initial_time
-    @test are_forecasts_contiguous(sys)
-    @test are_forecasts_contiguous(component)
+    @test are_time_series_contiguous(sys)
+    @test are_time_series_contiguous(component)
 
-    clear_forecasts!(sys)
-    @test length(collect(iterate_forecasts(sys))) == 0
+    clear_time_series!(sys)
+    @test length(collect(get_time_series_multiple(sys))) == 0
 end
 
 @testset "Test handling of bus_numbers" begin
@@ -128,18 +133,18 @@ end
     components = get_components(Component, sys)
     @test i == length(components)
 
-    initial_times = get_forecast_initial_times(sys)
+    initial_times = get_time_series_initial_times(sys)
     unique_initial_times = Set{Dates.DateTime}()
-    for forecast in iterate_forecasts(sys)
-        push!(unique_initial_times, get_initial_time(forecast))
+    for time_series in get_time_series_multiple(sys)
+        push!(unique_initial_times, get_initial_time(time_series))
     end
     @test initial_times == sort!(collect(unique_initial_times))
 
     for initial_time in initial_times
-        forecasts = collect(iterate_forecasts(sys; initial_time = initial_time))
-        @test length(forecasts) > 0
-        for forecast in forecasts
-            @test get_initial_time(forecast) == initial_time
+        all_ts = collect(get_time_series_multiple(sys; initial_time = initial_time))
+        @test length(all_ts) > 0
+        for time_series in all_ts
+            @test get_initial_time(time_series) == initial_time
         end
     end
 end

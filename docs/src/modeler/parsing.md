@@ -69,15 +69,14 @@ for an example.
 
 ### Time series data
 PowerSystems requires a metadata file that maps components to their time series
-data in order to be able to automatically construct forecasts from raw data
+data in order to be able to automatically construct time_series from raw data
 files. The following fields are required for each time array:
 
 * simulation:  User description of simulation
 * category:  Type of component. Must map to PowerSystems abstract types (Bus,
   ElectricLoad, Generator, LoadZone, Reserve)
 * component_name:  Name of component
-* label:  Name of accessor function that can be called on the component to
-  retrieve the forecasted value.
+* label:  User-defined label for the time series data.
 * scaling_factor:  Controls normalization of the data. Use 1.0 for
   pre-normalized data. Use 'Max' to divide the timeseries by the max value in the
   column. Use any float for a custom scaling factor.
@@ -90,7 +89,7 @@ for an example.
 #### Performance considerations
 
 By default PowerSystems stores time series data in HDF5 files. It does not keep
-all of the data in memory. This means that every time you access a forecast
+all of the data in memory. This means that every time you access a time_series
 PowerSystems will have to read the data from storage, which will add latency. If
 you know ahead of time that all of your data will fit in memory then you can
 change this behavior by passing `time_series_in_memory = true` when you create
