@@ -54,16 +54,16 @@
         get_time_series(Deterministic, component, initial_time, "get_max_active_power")
     @test time_series isa Deterministic
 
-    # Test all versions of get_time_series_values()
-    values1 = get_time_series_values(component, time_series)
-    values2 = get_time_series_values(
+    # Test all versions of get_time_series_[array|timestamps|values]
+    values1 = get_time_series_array(component, time_series)
+    values2 = get_time_series_array(
         Deterministic,
         component,
         initial_time,
         "get_max_active_power",
     )
     @test values1 == values2
-    values3 = get_time_series_values(
+    values3 = get_time_series_array(
         Deterministic,
         component,
         initial_time,
@@ -71,6 +71,39 @@
         get_horizon(time_series),
     )
     @test values1 == values3
+
+    val = get_time_series_array(
+        Deterministic,
+        component,
+        initial_time,
+        "get_max_active_power",
+    )
+    @test val isa TimeSeries.TimeArray
+    val = get_time_series_timestamps(
+        Deterministic,
+        component,
+        initial_time,
+        "get_max_active_power",
+    )
+    @test val isa Array
+    @test val[1] isa Dates.DateTime
+    val = get_time_series_values(
+        Deterministic,
+        component,
+        initial_time,
+        "get_max_active_power",
+    )
+    @test val isa Array
+    @test val[1] isa AbstractFloat
+
+    val = get_time_series_array(component, time_series)
+    @test val isa TimeSeries.TimeArray
+    val = get_time_series_timestamps(component, time_series)
+    @test val isa Array
+    @test val[1] isa Dates.DateTime
+    val = get_time_series_values(component, time_series)
+    @test val isa Array
+    @test val[1] isa AbstractFloat
 
     horizon = get_time_series_horizon(sys)
     @test horizon == 24

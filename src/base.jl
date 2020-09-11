@@ -1008,31 +1008,71 @@ function get_time_series_labels(
 end
 
 """
-Return a TimeSeries.TimeArray where the time series data has been multiplied by the time_seriesed
-component field.
+Return a TimeSeries.TimeArray for the requested time series parameters.
+"""
+function get_time_series_array(
+    ::Type{T},
+    component::Component,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+    horizon::Union{Nothing, Int} = nothing,
+) where {T <: TimeSeriesData}
+    if horizon === nothing
+        return IS.get_time_series_array(T, PowerSystems, component, initial_time, label)
+    end
+
+    time_series = get_time_series(T, component, initial_time, label, horizon)
+    return IS.get_time_series_array(PowerSystems, component, time_series)
+end
+
+function get_time_series_array(component::Component, time_series::TimeSeriesData)
+    return IS.get_time_series_array(PowerSystems, component, time_series)
+end
+
+"""
+Return an Array of timestamps for the requested time series parameters.
+"""
+function get_time_series_timestamps(
+    ::Type{T},
+    component::Component,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+    horizon::Union{Nothing, Int} = nothing,
+) where {T <: TimeSeriesData}
+    return (TimeSeries.timestamp ∘ get_time_series_array)(
+        T,
+        component,
+        initial_time,
+        label,
+        horizon,
+    )
+end
+
+function get_time_series_timestamps(component::Component, time_series::TimeSeriesData)
+    return (TimeSeries.timestamp ∘ get_time_series_array)(component, time_series)
+end
+
+"""
+Return an Array of values for the requested time series parameters.
 """
 function get_time_series_values(
     ::Type{T},
     component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
+    horizon::Union{Nothing, Int} = nothing,
 ) where {T <: TimeSeriesData}
-    return IS.get_time_series_values(T, PowerSystems, component, initial_time, label)
-end
-
-function get_time_series_values(
-    ::Type{T},
-    component::Component,
-    initial_time::Dates.DateTime,
-    label::AbstractString,
-    horizon::Int,
-) where {T <: TimeSeriesData}
-    time_series = get_time_series(T, component, initial_time, label, horizon)
-    return IS.get_time_series_values(PowerSystems, component, time_series)
+    return (TimeSeries.values ∘ get_time_series_array)(
+        T,
+        component,
+        initial_time,
+        label,
+        horizon,
+    )
 end
 
 function get_time_series_values(component::Component, time_series::TimeSeriesData)
-    return IS.get_time_series_values(PowerSystems, component, time_series)
+    return (TimeSeries.values ∘ get_time_series_array)(component, time_series)
 end
 
 """
