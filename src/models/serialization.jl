@@ -14,9 +14,17 @@ should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID_B)
 should_encode_as_uuid(::Type{T}) where {T} = any(x -> T <: x, _ENCODE_AS_UUID_A)
 
 function IS.serialize(component::T) where {T <: Component}
+    @debug "serialize" component T
     data = Dict{String, Any}()
     for name in fieldnames(T)
         data[string(name)] = serialize_uuid_handling(getfield(component, name))
+    end
+
+    IS.add_serialization_metadata!(data, T)
+
+    # This is a temporary workaround until these types are not parameterized.
+    if T <: Reserve || T <: StaticReserveGroup
+        data[IS.METADATA_KEY][IS.CONSTRUCT_WITH_PARAMETERS_KEY] = true
     end
 
     return data
@@ -42,44 +50,45 @@ function serialize_uuid_handling(val)
 end
 
 function IS.deserialize(::Type{T}, data::Dict, component_cache::Dict) where {T <: Component}
-    @debug T data
+    @debug "deserialize Component" T data
     vals = Dict{Symbol, Any}()
     for (name, type) in zip(fieldnames(T), fieldtypes(T))
-        vals[name] =
-            deserialize_uuid_handling(type, name, data[string(name)], component_cache)
+        val = data[string(name)]
+        if val isa Dict && haskey(val, IS.METADATA_KEY)
+            vals[name] = deserialize_uuid_handling(
+                IS.get_type_from_serialization_metadata(IS.get_serialization_metadata(val)),
+                val,
+                component_cache,
+            )
+        else
+            vals[name] = deserialize_uuid_handling(type, val, component_cache)
+        end
     end
 
-    if !isempty(T.parameters)
-        return deserialize_parametric_type(T, PowerSystems, vals)
-    end
-
-    return T(; vals...)
+    type = IS.get_type_from_serialization_metadata(data[IS.METADATA_KEY])
+    return type(; vals...)
 end
 
 function IS.deserialize(::Type{Device}, data::Any)
     error("This form of IS.deserialize is not supported for Devices")
 end
 
-function IS.deserialize_parametric_type(
-    ::Type{T},
-    mod::Module,
-    data::Dict,
-) where {T <: Service}
-    # This exists because Services need to be constructed with the parametric type included.
-    # VariableReserve{ReserveUp}(...)
-    return T(; data...)
-end
-
 """
 Deserialize the value, converting UUIDs to components where necessary.
 """
-function deserialize_uuid_handling(field_type, field_name, val, component_cache)
+function deserialize_uuid_handling(field_type, val, component_cache)
+    @debug "deserialize_uuid_handling" field_type val
     if val === nothing
         value = val
     elseif should_encode_as_uuid(field_type)
         if field_type <: Vector
             _vals = field_type()
             for _val in val
+                if !haskey(_val, "value")
+                    @show _val
+                    @show field_type
+                    error("oops")
+                end
                 uuid = deserialize(Base.UUID, _val)
                 component = component_cache[uuid]
                 push!(_vals, component)
@@ -107,10 +116,4 @@ function deserialize_uuid_handling(field_type, field_name, val, component_cache)
     end
 
     return value
-end
-
-function get_component_type(component_type::String)
-    # This function will ensure that `component_type` contains a valid type expression,
-    # so it should be safe to eval.
-    return eval(IS.parse_serialized_type(component_type))
 end

@@ -1208,8 +1208,9 @@ function deserialize_components!(sys::System, raw)
     component_cache = Dict{Base.UUID, Component}()
 
     # Add each type to this as we parse.
-    parsed_types = Set()
+    parsed_types = Set{Symbol}()
 
+    # TODO DT: use `any`
     function is_matching_type(x, types)
         for t in types
             x <: t && return true
@@ -1223,8 +1224,8 @@ function deserialize_components!(sys::System, raw)
         post_add_func = nothing,
     )
         for (c_type_str, components) in raw
-            c_type = get_component_type(c_type_str)
-            c_type in parsed_types && continue
+            c_type = IS.get_serialized_type(c_type_str)
+            nameof(c_type) in parsed_types && continue
             if !isnothing(skip_types) && is_matching_type(c_type, skip_types)
                 continue
             end
@@ -1239,7 +1240,7 @@ function deserialize_components!(sys::System, raw)
                     post_add_func(comp)
                 end
             end
-            push!(parsed_types, c_type)
+            push!(parsed_types, nameof(c_type))
         end
     end
 
