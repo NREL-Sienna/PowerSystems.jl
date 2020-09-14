@@ -84,11 +84,6 @@ function deserialize_uuid_handling(field_type, val, component_cache)
         if field_type <: Vector
             _vals = field_type()
             for _val in val
-                if !haskey(_val, "value")
-                    @show _val
-                    @show field_type
-                    error("oops")
-                end
                 uuid = deserialize(Base.UUID, _val)
                 component = component_cache[uuid]
                 push!(_vals, component)

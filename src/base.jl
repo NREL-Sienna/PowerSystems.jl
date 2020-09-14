@@ -1203,19 +1203,27 @@ function IS.deserialize(
 end
 
 function deserialize_components!(sys::System, raw)
+    # Convert the array of components into type-specific arrays to allow addition by type.
+    data = Dict{Any, Vector{Dict}}()
+    for component in raw
+        type = IS.get_type_from_serialization_data(component)
+        components = get(data, type, nothing)
+        if components === nothing
+            components = Vector{Dict}()
+            data[type] = components
+        end
+        push!(components, component)
+    end
+
     # Maintain a lookup of UUID to component because some component types encode
     # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
 
     # Add each type to this as we parse.
-    parsed_types = Set{Symbol}()
+    parsed_types = Set()
 
-    # TODO DT: use `any`
-    function is_matching_type(x, types)
-        for t in types
-            x <: t && return true
-        end
-        return false
+    function is_matching_type(type, types)
+        return any(x -> type <: x, types)
     end
 
     function deserialize_and_add!(;
@@ -1223,24 +1231,23 @@ function deserialize_components!(sys::System, raw)
         include_types = nothing,
         post_add_func = nothing,
     )
-        for (c_type_str, components) in raw
-            c_type = IS.get_serialized_type(c_type_str)
-            nameof(c_type) in parsed_types && continue
-            if !isnothing(skip_types) && is_matching_type(c_type, skip_types)
+        for (type, components) in data
+            type in parsed_types && continue
+            if !isnothing(skip_types) && is_matching_type(type, skip_types)
                 continue
             end
-            if !isnothing(include_types) && !is_matching_type(c_type, include_types)
+            if !isnothing(include_types) && !is_matching_type(type, include_types)
                 continue
             end
             for component in components
-                comp = deserialize(c_type, component, component_cache)
+                comp = deserialize(type, component, component_cache)
                 add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
                 end
             end
-            push!(parsed_types, nameof(c_type))
+            push!(parsed_types, type)
         end
     end
 
