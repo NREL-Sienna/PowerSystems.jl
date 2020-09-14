@@ -93,44 +93,6 @@ function RegulationDevice(;
     )
 end
 
-const STATIC_INJECTOR_TYPE_KEY = "__static_injector_type"
-
-function IS.serialize(component::T) where {T <: RegulationDevice}
-    data = Dict{String, Any}()
-    for name in fieldnames(T)
-        val = getfield(component, name)
-        if val isa StaticInjection
-            # The device is not attached to the system, so serialize it and save the type.
-            data[STATIC_INJECTOR_TYPE_KEY] = string(typeof(val))
-        end
-        data[string(name)] = serialize_uuid_handling(val)
-    end
-
-    return data
-end
-
-function IS.deserialize(
-    ::Type{T},
-    data::Dict,
-    component_cache::Dict,
-) where {T <: RegulationDevice}
-    @debug T data
-    vals = Dict{Symbol, Any}()
-    for (name, type) in zip(fieldnames(T), fieldtypes(T))
-        val = data[string(name)]
-        if val === nothing
-            vals[name] = val
-        elseif type <: StaticInjection
-            type = get_component_type(data[STATIC_INJECTOR_TYPE_KEY])
-            vals[name] = deserialize(type, val, component_cache)
-        else
-            vals[name] = deserialize_uuid_handling(type, name, val, component_cache)
-        end
-    end
-
-    return RegulationDevice(; vals...)
-end
-
 IS.get_forecasts(value::RegulationDevice) = value.forecasts
 IS.get_name(value::RegulationDevice) = IS.get_name(value.device)
 get_internal(value::RegulationDevice) = value.internal
