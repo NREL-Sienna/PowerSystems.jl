@@ -141,7 +141,7 @@ end
     data = collect(1:24)
     ta = TimeSeries.TimeArray(dates, data, [get_name(l)])
     label = "active_power_flow"
-    time_series = Deterministic(label, ta)
+    time_series = Deterministic(label = label, data = ta)
     add_time_series!(sys, l, time_series)
     @test get_time_series(Deterministic, l, initial_time, label) isa Deterministic
     PSY.convert_component!(MonitoredLine, l, sys)

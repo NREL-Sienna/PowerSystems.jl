@@ -437,33 +437,27 @@ Adds time_series from a metadata file or metadata descriptors.
 """
 function add_time_series!(
     sys::System,
-    timeseries_metadata::Vector{IS.TimeSeriesFileMetadata};
+    file_metadata::Vector{IS.TimeSeriesFileMetadata};
     resolution = nothing,
 )
-    return IS.add_time_series!(
-        Component,
-        sys.data,
-        timeseries_metadata;
-        resolution = resolution,
-    )
+    return IS.add_time_series!(Component, sys.data, file_metadata; resolution = resolution)
 end
 
 function IS.add_time_series!(
     ::Type{<:Component},
     data::IS.SystemData,
-    time_series_cache::IS.TimeSeriesCache,
-    metadata::IS.TimeSeriesFileMetadata;
+    cache::IS.TimeSeriesCache,
+    file_metadata::IS.TimeSeriesFileMetadata;
     resolution = nothing,
 )
-    IS.set_component!(metadata, data, PowerSystems)
-    component = metadata.component
+    IS.set_component!(file_metadata, data, PowerSystems)
+    component = file_metadata.component
     if isnothing(component)
         return
     end
 
-    time_series, ts_data =
-        IS.make_time_series!(time_series_cache, metadata; resolution = resolution)
-    if isnothing(time_series)
+    ta, ts_metadata = IS.make_time_series!(cache, file_metadata; resolution = resolution)
+    if isnothing(ta)
         return
     end
 
@@ -472,21 +466,15 @@ function IS.add_time_series!(
         for bus in _get_buses(data, component)
             push!(uuids, IS.get_uuid(bus))
         end
-        for component_ in (
+        for _component in (
             load for
             load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
-            IS.add_time_series!(
-                data,
-                component_,
-                time_series,
-                ts_data,
-                skip_if_present = true,
-            )
+            IS.add_time_series!(data, _component, ta, ts_metadata, skip_if_present = true)
         end
     else
-        IS.add_time_series!(data, component, time_series, ts_data)
+        IS.add_time_series!(data, component, ta, ts_metadata)
     end
 end
 
@@ -797,7 +785,7 @@ function add_time_series!(sys::System, component::Component, time_series::TimeSe
 end
 
 """
-Add a time_series to a system from a CSV file.
+Add time series data to a system from a CSV file.
 
 See InfrastructureSystems.TimeSeriesFileMetadata for description of
 scaling_factor.
@@ -806,42 +794,42 @@ function add_time_series!(
     sys::System,
     filename::AbstractString,
     component::Component,
-    label::AbstractString,
+    label::AbstractString;
     scaling_factor::Union{String, Float64} = 1.0,
+    scaling_factor_multiplier::Union{Nothing, Function} = nothing,
 )
-    return IS.add_time_series!(sys.data, filename, component, label, scaling_factor)
+    return IS.add_time_series!(
+        sys.data,
+        filename,
+        component,
+        label;
+        scaling_factor = scaling_factor,
+        scaling_factor_multiplier = scaling_factor_multiplier,
+    )
 end
 
 """
-Add a time_series to a system from a TimeSeries.TimeArray.
+Add a time_series to a system from a TimeSeries.TimeArray or DataFrames.DataFrame.
 
 See InfrastructureSystems.TimeSeriesFileMetadata for description of
 scaling_factor.
 """
 function add_time_series!(
     sys::System,
-    ta::TimeSeries.TimeArray,
+    data::Union{TimeSeries.TimeArray, DataFrames.DataFrame},
     component,
-    label,
+    label;
     scaling_factor::Union{String, Float64} = 1.0,
+    scaling_factor_multiplier::Union{Nothing, Function} = nothing,
 )
-    return IS.add_time_series!(sys.data, ta, component, label, scaling_factor)
-end
-
-"""
-Add a time_series to a system from a DataFrames.DataFrame.
-
-See InfrastructureSystems.TimeSeriesFileMetadata for description of
-scaling_factor.
-"""
-function add_time_series!(
-    sys::System,
-    df::DataFrames.DataFrame,
-    component,
-    label,
-    scaling_factor::Union{String, Float64} = 1.0,
-)
-    return IS.add_time_series!(sys.data, df, component, label, scaling_factor)
+    return IS.add_time_series!(
+        sys.data,
+        data,
+        component,
+        label,
+        scaling_factor = scaling_factor,
+        scaling_factor_multiplier = scaling_factor_multiplier,
+    )
 end
 
 """
@@ -858,10 +846,16 @@ references.
 """
 function copy_time_series!(
     dst::Component,
-    src::Component,
+    src::Component;
     label_mapping::Union{Nothing, Dict{String, String}} = nothing,
+    scaling_factor_multiplier_mapping::Union{Nothing, Dict{String, String}} = nothing,
 )
-    IS.copy_time_series!(dst, src, label_mapping)
+    IS.copy_time_series!(
+        dst,
+        src,
+        label_mapping = label_mapping,
+        scaling_factor_multiplier_mapping = scaling_factor_multiplier_mapping,
+    )
 end
 
 """
@@ -897,7 +891,7 @@ function make_time_series(
     metadata::Vector{IS.TimeSeriesFileMetadata};
     resolution = nothing,
 )
-    return IS.make_time_series(sys.data, metadata, PowerSystems; resolution = resolution)
+    return IS.make_time_series!(sys.data, metadata; resolution = resolution)
 end
 
 """
@@ -1017,16 +1011,11 @@ function get_time_series_array(
     label::AbstractString,
     horizon::Union{Nothing, Int} = nothing,
 ) where {T <: TimeSeriesData}
-    if horizon === nothing
-        return IS.get_time_series_array(T, PowerSystems, component, initial_time, label)
-    end
-
-    time_series = get_time_series(T, component, initial_time, label, horizon)
-    return IS.get_time_series_array(PowerSystems, component, time_series)
+    return IS.get_time_series_array(T, component, initial_time, label, horizon)
 end
 
 function get_time_series_array(component::Component, time_series::TimeSeriesData)
-    return IS.get_time_series_array(PowerSystems, component, time_series)
+    return IS.get_time_series_array(component, time_series)
 end
 
 """
@@ -1039,17 +1028,11 @@ function get_time_series_timestamps(
     label::AbstractString,
     horizon::Union{Nothing, Int} = nothing,
 ) where {T <: TimeSeriesData}
-    return (TimeSeries.timestamp ∘ get_time_series_array)(
-        T,
-        component,
-        initial_time,
-        label,
-        horizon,
-    )
+    return IS.get_time_series_timestamps(T, component, initial_time, label, horizon)
 end
 
 function get_time_series_timestamps(component::Component, time_series::TimeSeriesData)
-    return (TimeSeries.timestamp ∘ get_time_series_array)(component, time_series)
+    return IS.get_time_series_timestamps(component, time_series)
 end
 
 """
@@ -1062,17 +1045,11 @@ function get_time_series_values(
     label::AbstractString,
     horizon::Union{Nothing, Int} = nothing,
 ) where {T <: TimeSeriesData}
-    return (TimeSeries.values ∘ get_time_series_array)(
-        T,
-        component,
-        initial_time,
-        label,
-        horizon,
-    )
+    return IS.get_time_series_values(T, component, initial_time, label, horizon)
 end
 
 function get_time_series_values(component::Component, time_series::TimeSeriesData)
-    return (TimeSeries.values ∘ get_time_series_array)(component, time_series)
+    return IS.get_time_series_values(component, time_series)
 end
 
 """

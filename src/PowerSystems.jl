@@ -332,7 +332,6 @@ import InfrastructureSystems:
     from_json,
     serialize,
     deserialize,
-    deserialize_parametric_type,
     get_time_series_multiple,
     UnitSystem,
     SystemUnitsSettings

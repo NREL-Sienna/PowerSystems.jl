@@ -50,58 +50,43 @@
     components = collect(get_components(HydroEnergyReservoir, sys))
     @test !isempty(components)
     component = components[1]
-    time_series =
-        get_time_series(Deterministic, component, initial_time, "get_max_active_power")
-    @test time_series isa Deterministic
+    ts = get_time_series(Deterministic, component, initial_time, "max_active_power")
+    @test ts isa Deterministic
 
     # Test all versions of get_time_series_[array|timestamps|values]
-    values1 = get_time_series_array(component, time_series)
-    values2 = get_time_series_array(
-        Deterministic,
-        component,
-        initial_time,
-        "get_max_active_power",
-    )
+    values1 = get_time_series_array(component, ts)
+    values2 =
+        get_time_series_array(Deterministic, component, initial_time, "max_active_power")
     @test values1 == values2
     values3 = get_time_series_array(
         Deterministic,
         component,
         initial_time,
-        "get_max_active_power",
-        get_horizon(time_series),
+        "max_active_power",
+        get_horizon(ts),
     )
     @test values1 == values3
 
-    val = get_time_series_array(
-        Deterministic,
-        component,
-        initial_time,
-        "get_max_active_power",
-    )
+    val = get_time_series_array(Deterministic, component, initial_time, "max_active_power")
     @test val isa TimeSeries.TimeArray
     val = get_time_series_timestamps(
         Deterministic,
         component,
         initial_time,
-        "get_max_active_power",
+        "max_active_power",
     )
     @test val isa Array
     @test val[1] isa Dates.DateTime
-    val = get_time_series_values(
-        Deterministic,
-        component,
-        initial_time,
-        "get_max_active_power",
-    )
+    val = get_time_series_values(Deterministic, component, initial_time, "max_active_power")
     @test val isa Array
     @test val[1] isa AbstractFloat
 
-    val = get_time_series_array(component, time_series)
+    val = get_time_series_array(component, ts)
     @test val isa TimeSeries.TimeArray
-    val = get_time_series_timestamps(component, time_series)
+    val = get_time_series_timestamps(component, ts)
     @test val isa Array
     @test val[1] isa Dates.DateTime
-    val = get_time_series_values(component, time_series)
+    val = get_time_series_values(component, ts)
     @test val isa Array
     @test val[1] isa AbstractFloat
 

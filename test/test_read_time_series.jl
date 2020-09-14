@@ -53,37 +53,38 @@ end
     timeseries = IS.read_time_series(timeseries_file)[Symbol(component_name)]
     max_value = maximum(TimeSeries.values(timeseries))
 
-    metadata = IS.TimeSeriesFileMetadata(
-        "DAY_AHEAD",
-        "Generator",
-        "122_HYDRO_1",
-        "active_power",
-        1.0,
-        timeseries_file,
-        [],
-        "DeterministicMetadata",
+    file_metadata = IS.TimeSeriesFileMetadata(
+        simulation = "DAY_AHEAD",
+        category = "Generator",
+        component_name = "122_HYDRO_1",
+        label = "active_power",
+        scaling_factor = 1.0,
+        data_file = timeseries_file,
+        percentiles = [],
+        time_series_type_module = "InfrastructureSystems",
+        time_series_type = "Deterministic",
     )
 
     # Test code path where no normalization occurs.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    add_time_series!(sys, [metadata])
+    add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries)
 
     # Test code path where timeseries is normalized by dividing by the max value.
-    metadata.scaling_factor = "Max"
+    file_metadata.scaling_factor = "Max"
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    add_time_series!(sys, [metadata])
+    add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries ./ max_value)
 
     # Test code path where timeseries is normalized by dividing by a custom value.
     sf = 95.0
-    metadata.scaling_factor = sf
+    file_metadata.scaling_factor = sf
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    add_time_series!(sys, [metadata])
+    add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries ./ sf)
@@ -105,7 +106,7 @@ end
     # Test with a filename.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
-    add_time_series!(sys, timeseries_file, component, label, 1.0)
+    add_time_series!(sys, timeseries_file, component, label; scaling_factor = 1.0)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.timestamp(get_data(time_series)) == TimeSeries.timestamp(timeseries)
@@ -114,7 +115,7 @@ end
     # Test with TimeSeries.TimeArray.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
-    add_time_series!(sys, timeseries, component, label, 1.0)
+    add_time_series!(sys, timeseries, component, label; scaling_factor = 1.0)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(timeseries)
@@ -123,29 +124,29 @@ end
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
     df = DataFrames.DataFrame(timeseries)
-    add_time_series!(sys, df, component, label, 1.0)
+    add_time_series!(sys, df, component, label; scaling_factor = 1.0)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
 end
 
 @testset "TimeSeriesData data matpower" begin
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
-    metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_da.json")
-    add_time_series!(sys, metadata)
+    file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_da.json")
+    add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 24)
 
     # Add the same files.
     # This will fail because the component-label pairs will be duplicated.
-    @test_throws ArgumentError add_time_series!(sys, metadata)
+    @test_throws ArgumentError add_time_series!(sys, file_metadata)
 
-    metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_rt.json")
+    file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_rt.json")
 
     ## This will fail because the resolutions are different.
-    @test_throws PowerSystems.DataFormatError add_time_series!(sys, metadata)
+    @test_throws PowerSystems.DataFormatError add_time_series!(sys, file_metadata)
 
     ## TODO: need a dataset with same resolution but different horizon.
 
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
-    add_time_series!(sys, metadata)
+    add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 288)
 end

@@ -99,28 +99,25 @@ end
 
 @testset "TimeSeriesData Constructors" begin
     tg = RenewableFix(nothing)
-    time_series_data = PowerSystems.TimeSeries.TimeArray(
+    data = PowerSystems.TimeSeries.TimeArray(
         [DateTime("01-01-01"), DateTime("01-01-01") + Hour(1)],
         [1.0, 1.0],
     )
     #Deterministic Tests
-    tDeterministictime_series =
-        PSY.Deterministic("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
-    @test tDeterministictime_series isa PowerSystems.TimeSeriesData
-    tDeterministictime_series = PSY.Deterministic("scalingfactor", time_series_data)
-    @test tDeterministictime_series isa PowerSystems.TimeSeriesData
+    ts = Deterministic("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
+    @test ts isa PowerSystems.TimeSeriesData
+    ts = Deterministic(label = "scalingfactor", data = data)
+    @test ts isa PowerSystems.TimeSeriesData
     #Probabilistic Tests
-    tProbabilistictime_series =
-        PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
-    @test tProbabilistictime_series isa PowerSystems.TimeSeriesData
-    tProbabilistictime_series = PSY.Probabilistic("scalingfactor", [1.0], time_series_data)
-    @test tProbabilistictime_series isa PowerSystems.TimeSeriesData
+    ts = Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
+    @test ts isa PowerSystems.TimeSeriesData
+    ts = Probabilistic(label = "scalingfactor", percentiles = [1.0], data = data)
+    @test ts isa PowerSystems.TimeSeriesData
     #Scenario Tests
-    tScenariotime_series =
-        PSY.ScenarioBased("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
-    @test tScenariotime_series isa PowerSystems.TimeSeriesData
-    tScenariotime_series = PSY.ScenarioBased("scalingfactor", time_series_data)
-    @test tScenariotime_series isa PowerSystems.TimeSeriesData
+    ts = ScenarioBased("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
+    @test ts isa PowerSystems.TimeSeriesData
+    ts = ScenarioBased("scalingfactor", data)
+    @test ts isa PowerSystems.TimeSeriesData
 end
 
 @testset "Regulation Device" begin
