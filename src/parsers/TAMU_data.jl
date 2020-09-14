@@ -100,7 +100,7 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
                 loads[!, ["timestamp", lname]],
                 c,
                 "max_active_power";
-                scaling_factor = Float64(maximum(loads[!, lname])),
+                normalization_factor = Float64(maximum(loads[!, lname])),
                 scaling_factor_multiplier = get_max_active_power,
             )
         end

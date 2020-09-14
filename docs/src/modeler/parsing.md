@@ -77,7 +77,7 @@ files. The following fields are required for each time array:
   ElectricLoad, Generator, LoadZone, Reserve)
 * component_name:  Name of component
 * label:  User-defined label for the time series data.
-* scaling_factor:  Controls normalization of the data. Use 1.0 for
+* normalization_factor:  Controls normalization of the data. Use 1.0 for
   pre-normalized data. Use 'Max' to divide the timeseries by the max value in the
   column. Use any float for a custom scaling factor.
 * data_file:  Path to the time series data file

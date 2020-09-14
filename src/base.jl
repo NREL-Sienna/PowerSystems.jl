@@ -788,14 +788,14 @@ end
 Add time series data to a system from a CSV file.
 
 See InfrastructureSystems.TimeSeriesFileMetadata for description of
-scaling_factor.
+normalization_factor.
 """
 function add_time_series!(
     sys::System,
     filename::AbstractString,
     component::Component,
     label::AbstractString;
-    scaling_factor::Union{String, Float64} = 1.0,
+    normalization_factor::Union{String, Float64} = 1.0,
     scaling_factor_multiplier::Union{Nothing, Function} = nothing,
 )
     return IS.add_time_series!(
@@ -803,7 +803,7 @@ function add_time_series!(
         filename,
         component,
         label;
-        scaling_factor = scaling_factor,
+        normalization_factor = normalization_factor,
         scaling_factor_multiplier = scaling_factor_multiplier,
     )
 end
@@ -812,14 +812,14 @@ end
 Add a time_series to a system from a TimeSeries.TimeArray or DataFrames.DataFrame.
 
 See InfrastructureSystems.TimeSeriesFileMetadata for description of
-scaling_factor.
+normalization_factor.
 """
 function add_time_series!(
     sys::System,
     data::Union{TimeSeries.TimeArray, DataFrames.DataFrame},
     component,
     label;
-    scaling_factor::Union{String, Float64} = 1.0,
+    normalization_factor::Union{String, Float64} = 1.0,
     scaling_factor_multiplier::Union{Nothing, Function} = nothing,
 )
     return IS.add_time_series!(
@@ -827,7 +827,7 @@ function add_time_series!(
         data,
         component,
         label,
-        scaling_factor = scaling_factor,
+        normalization_factor = normalization_factor,
         scaling_factor_multiplier = scaling_factor_multiplier,
     )
 end
