@@ -100,6 +100,7 @@ end
         ps_type in types_to_skip && continue
         obj = ps_type(nothing)
         for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
+            field_name == :internal && continue  # no setter
             if field_name === :name || field_name === :time_series_container
                 func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
                 _func! = getfield(
@@ -111,7 +112,6 @@ end
                 _func! = getfield(PowerSystems, Symbol("set_" * string(field_name) * "!"))
             end
             val = func(obj)
-            _func!(obj, val)
             @test val isa field_type
             #Test set function for different cases
             if typeof(val) == Float64 || typeof(val) == Int

@@ -294,7 +294,6 @@ export get_initial_energy
 export get_initial_storage
 export get_input_active_power_limits
 export get_input_code
-export get_internal
 export get_internal_angle
 export get_internal_voltage
 export get_inv_d_fluxlink
@@ -615,7 +614,6 @@ export set_initial_energy!
 export set_initial_storage!
 export set_input_active_power_limits!
 export set_input_code!
-export set_internal!
 export set_internal_angle!
 export set_internal_voltage!
 export set_inv_d_fluxlink!
