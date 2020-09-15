@@ -187,7 +187,6 @@ export TimeSeriesData
 export Deterministic
 export Probabilistic
 export Scenarios
-export PiecewiseFunction
 
 export get_dynamic_components
 
@@ -313,7 +312,6 @@ import InfrastructureSystems:
     Probabilistic,
     TimeSeriesData,
     Scenarios,
-    PiecewiseFunction,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
