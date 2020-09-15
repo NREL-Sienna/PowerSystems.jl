@@ -114,9 +114,9 @@ end
     ts = Probabilistic(label = "scalingfactor", percentiles = [1.0], data = data)
     @test ts isa PowerSystems.TimeSeriesData
     #Scenario Tests
-    ts = ScenarioBased("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
+    ts = Scenarios("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
     @test ts isa PowerSystems.TimeSeriesData
-    ts = ScenarioBased("scalingfactor", data)
+    ts = Scenarios("scalingfactor", data)
     @test ts isa PowerSystems.TimeSeriesData
 end
 
