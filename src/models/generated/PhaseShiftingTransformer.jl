@@ -149,6 +149,4 @@ set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::PhaseShiftingTransformer, val) = value.forecasts = val
-"""Set [`PhaseShiftingTransformer`](@ref) `internal`."""
-set_internal!(value::PhaseShiftingTransformer, val) = value.internal = val
 

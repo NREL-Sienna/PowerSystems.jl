@@ -82,6 +82,4 @@ set_V_ref!(value::AVRSimple, val) = value.V_ref = val
 set_ext!(value::AVRSimple, val) = value.ext = val
 """Set [`AVRSimple`](@ref) `states_types`."""
 set_states_types!(value::AVRSimple, val) = value.states_types = val
-"""Set [`AVRSimple`](@ref) `internal`."""
-set_internal!(value::AVRSimple, val) = value.internal = val
 

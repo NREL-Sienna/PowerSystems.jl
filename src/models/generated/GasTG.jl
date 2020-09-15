@@ -148,6 +148,4 @@ set_P_ref!(value::GasTG, val) = value.P_ref = val
 set_ext!(value::GasTG, val) = value.ext = val
 """Set [`GasTG`](@ref) `states_types`."""
 set_states_types!(value::GasTG, val) = value.states_types = val
-"""Set [`GasTG`](@ref) `internal`."""
-set_internal!(value::GasTG, val) = value.internal = val
 

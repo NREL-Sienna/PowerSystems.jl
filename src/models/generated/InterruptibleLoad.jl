@@ -148,6 +148,4 @@ set_services!(value::InterruptibleLoad, val) = value.services = val
 set_ext!(value::InterruptibleLoad, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::InterruptibleLoad, val) = value.forecasts = val
-"""Set [`InterruptibleLoad`](@ref) `internal`."""
-set_internal!(value::InterruptibleLoad, val) = value.internal = val
 

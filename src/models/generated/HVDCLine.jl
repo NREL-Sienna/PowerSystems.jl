@@ -131,6 +131,4 @@ set_services!(value::HVDCLine, val) = value.services = val
 set_ext!(value::HVDCLine, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::HVDCLine, val) = value.forecasts = val
-"""Set [`HVDCLine`](@ref) `internal`."""
-set_internal!(value::HVDCLine, val) = value.internal = val
 

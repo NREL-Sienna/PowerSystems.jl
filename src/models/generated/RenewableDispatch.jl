@@ -158,6 +158,4 @@ set_services!(value::RenewableDispatch, val) = value.services = val
 set_ext!(value::RenewableDispatch, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::RenewableDispatch, val) = value.forecasts = val
-"""Set [`RenewableDispatch`](@ref) `internal`."""
-set_internal!(value::RenewableDispatch, val) = value.internal = val
 

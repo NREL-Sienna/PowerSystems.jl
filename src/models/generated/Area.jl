@@ -74,6 +74,4 @@ set_peak_reactive_power!(value::Area, val) = value.peak_reactive_power = val
 set_load_response!(value::Area, val) = value.load_response = val
 
 InfrastructureSystems.set_forecasts!(value::Area, val) = value.forecasts = val
-"""Set [`Area`](@ref) `internal`."""
-set_internal!(value::Area, val) = value.internal = val
 

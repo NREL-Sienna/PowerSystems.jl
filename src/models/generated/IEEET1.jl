@@ -186,6 +186,4 @@ set_saturation_coeffs!(value::IEEET1, val) = value.saturation_coeffs = val
 set_ext!(value::IEEET1, val) = value.ext = val
 """Set [`IEEET1`](@ref) `states_types`."""
 set_states_types!(value::IEEET1, val) = value.states_types = val
-"""Set [`IEEET1`](@ref) `internal`."""
-set_internal!(value::IEEET1, val) = value.internal = val
 

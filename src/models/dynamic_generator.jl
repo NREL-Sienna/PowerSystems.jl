@@ -112,7 +112,6 @@ function DynamicGenerator(;
 end
 
 IS.get_name(device::DynamicGenerator) = device.name
-get_Sbase(device::DynamicGenerator) = device.machine.s_rated
 get_states(device::DynamicGenerator) = device.states
 get_n_states(device::DynamicGenerator) = device.n_states
 get_ω_ref(device::DynamicGenerator) = device.ω_ref

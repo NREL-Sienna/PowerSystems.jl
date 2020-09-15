@@ -134,6 +134,4 @@ set_services!(value::Transformer2W, val) = value.services = val
 set_ext!(value::Transformer2W, val) = value.ext = val
 
 InfrastructureSystems.set_forecasts!(value::Transformer2W, val) = value.forecasts = val
-"""Set [`Transformer2W`](@ref) `internal`."""
-set_internal!(value::Transformer2W, val) = value.internal = val
 
