@@ -19,7 +19,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
  - Storage (Batteries)
  - Load (Static, and curtailable)
  - Services (Reserves, transfers)
- - Forecasts (Deterministic, scenario, stochastic)
+ - TimeSeries (Deterministic, scenario, stochastic)
  - Dynamic Components
 
 ### Parsing capabilities in PowerSystems:

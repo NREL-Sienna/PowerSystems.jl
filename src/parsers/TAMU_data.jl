@@ -43,14 +43,14 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
         kwargs...,
     )
 
-    # add forecasts
+    # add time_series
     header_row = 2
 
     tamu_files = readdir(tamu_folder)
     load_file = joinpath(
         tamu_folder,
         tamu_files[occursin.("_load_time_series_MW.csv", tamu_files)][1],
-    ) # currently only adding MW load forecasts
+    ) # currently only adding MW load time_series
 
     !isfile(load_file) && throw(DataFormatError("Cannot find $load_file"))
 
@@ -95,12 +95,13 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
     )
         c = get_component(PowerLoad, sys, string(lname))
         if !isnothing(c)
-            add_forecast!(
+            add_time_series!(
                 sys,
                 loads[!, ["timestamp", lname]],
                 c,
-                "get_max_active_power",
-                Float64(maximum(loads[!, lname])),
+                "max_active_power";
+                normalization_factor = Float64(maximum(loads[!, lname])),
+                scaling_factor_multiplier = get_max_active_power,
             )
         end
     end

@@ -103,9 +103,6 @@ set_services!(value::DynamicBranch, val::Vector{Service}) = set_services!(value.
 """Set DynamicBranch ext."""
 set_ext!(value::DynamicBranch, val::Dict{String, Any}) = set_ext!(value.branch, val)
 
-"""Set DynamicBranch internal."""
-set_internal!(value::DynamicBranch, val::InfrastructureSystemsInternal) =
-    value.internal = val
 "Set branch"
 set_branch!(value::DynamicBranch, val::ACBranch) = value.branch = val
 "Set n_states"

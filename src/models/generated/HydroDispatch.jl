@@ -19,7 +19,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -42,7 +42,7 @@ This file is auto-generated. Do not edit.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroDispatch <: HydroGen
@@ -70,18 +70,18 @@ mutable struct HydroDispatch <: HydroGen
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, forecasts, internal, )
+function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -103,7 +103,7 @@ function HydroDispatch(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -140,7 +140,7 @@ get_dynamic_injector(value::HydroDispatch) = value.dynamic_injector
 """Get [`HydroDispatch`](@ref) `ext`."""
 get_ext(value::HydroDispatch) = value.ext
 
-InfrastructureSystems.get_forecasts(value::HydroDispatch) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::HydroDispatch) = value.time_series_container
 """Get [`HydroDispatch`](@ref) `internal`."""
 get_internal(value::HydroDispatch) = value.internal
 
@@ -175,5 +175,5 @@ set_services!(value::HydroDispatch, val) = value.services = val
 """Set [`HydroDispatch`](@ref) `ext`."""
 set_ext!(value::HydroDispatch, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::HydroDispatch, val) = value.forecasts = val
+InfrastructureSystems.set_time_series_container!(value::HydroDispatch, val) = value.time_series_container = val
 

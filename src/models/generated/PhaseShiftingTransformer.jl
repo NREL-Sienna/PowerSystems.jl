@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         rate::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -36,7 +36,7 @@ This file is auto-generated. Do not edit.
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PhaseShiftingTransformer <: ACBranch
@@ -56,18 +56,18 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, forecasts, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,7 +86,7 @@ function PhaseShiftingTransformer(::Nothing)
         rate=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -117,7 +117,7 @@ get_services(value::PhaseShiftingTransformer) = value.services
 """Get [`PhaseShiftingTransformer`](@ref) `ext`."""
 get_ext(value::PhaseShiftingTransformer) = value.ext
 
-InfrastructureSystems.get_forecasts(value::PhaseShiftingTransformer) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::PhaseShiftingTransformer) = value.time_series_container
 """Get [`PhaseShiftingTransformer`](@ref) `internal`."""
 get_internal(value::PhaseShiftingTransformer) = value.internal
 
@@ -148,5 +148,5 @@ set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 """Set [`PhaseShiftingTransformer`](@ref) `ext`."""
 set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::PhaseShiftingTransformer, val) = value.forecasts = val
+InfrastructureSystems.set_time_series_container!(value::PhaseShiftingTransformer, val) = value.time_series_container = val
 

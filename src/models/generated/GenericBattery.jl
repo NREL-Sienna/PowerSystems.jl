@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -44,7 +44,7 @@ Data structure for a generic battery
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GenericBattery <: Storage
@@ -71,18 +71,18 @@ mutable struct GenericBattery <: Storage
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function GenericBattery(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services, dynamic_injector, ext, forecasts, internal, )
+function GenericBattery(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -105,7 +105,7 @@ function GenericBattery(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -144,7 +144,7 @@ get_dynamic_injector(value::GenericBattery) = value.dynamic_injector
 """Get [`GenericBattery`](@ref) `ext`."""
 get_ext(value::GenericBattery) = value.ext
 
-InfrastructureSystems.get_forecasts(value::GenericBattery) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::GenericBattery) = value.time_series_container
 """Get [`GenericBattery`](@ref) `internal`."""
 get_internal(value::GenericBattery) = value.internal
 
@@ -181,5 +181,5 @@ set_services!(value::GenericBattery, val) = value.services = val
 """Set [`GenericBattery`](@ref) `ext`."""
 set_ext!(value::GenericBattery, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::GenericBattery, val) = value.forecasts = val
+InfrastructureSystems.set_time_series_container!(value::GenericBattery, val) = value.time_series_container = val
 

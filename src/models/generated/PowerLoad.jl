@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -34,7 +34,7 @@ Data structure for a static power load.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PowerLoad <: StaticLoad
@@ -53,18 +53,18 @@ mutable struct PowerLoad <: StaticLoad
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function PowerLoad(; name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, forecasts, internal, )
+function PowerLoad(; name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -82,7 +82,7 @@ function PowerLoad(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -111,7 +111,7 @@ get_dynamic_injector(value::PowerLoad) = value.dynamic_injector
 """Get [`PowerLoad`](@ref) `ext`."""
 get_ext(value::PowerLoad) = value.ext
 
-InfrastructureSystems.get_forecasts(value::PowerLoad) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::PowerLoad) = value.time_series_container
 """Get [`PowerLoad`](@ref) `internal`."""
 get_internal(value::PowerLoad) = value.internal
 
@@ -138,5 +138,5 @@ set_services!(value::PowerLoad, val) = value.services = val
 """Set [`PowerLoad`](@ref) `ext`."""
 set_ext!(value::PowerLoad, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::PowerLoad, val) = value.forecasts = val
+InfrastructureSystems.set_time_series_container!(value::PowerLoad, val) = value.time_series_container = val
 

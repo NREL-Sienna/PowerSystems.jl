@@ -47,7 +47,7 @@ end
     end_time = Dates.DateTime("2020-01-01T23:00:00")
     dates = collect(initial_time:Dates.Hour(1):end_time)
     data = collect(1:24)
-    label = "get_active_power"
+    label = "active_power"
     contributing_devices = Vector{Device}()
     for g in get_components(
         ThermalStandard,
@@ -58,8 +58,12 @@ end
             continue
         end
         ta = TimeSeries.TimeArray(dates, data, [Symbol(get_name(g))])
-        forecast = IS.Deterministic(label, ta)
-        add_forecast!(sys, g, forecast)
+        time_series = IS.Deterministic(
+            label = label,
+            data = ta,
+            scaling_factor_multiplier = get_active_power,
+        )
+        add_time_series!(sys, g, time_series)
 
         t = RegulationDevice(g, participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
         add_component!(sys, t)
@@ -71,35 +75,34 @@ end
     sys2, result = validate_serialization(sys; time_series_read_only = false)
     @test result
 
-    # Ensure the forecasts attached to the ThermalStandard got deserialized.
+    # Ensure the time_series attached to the ThermalStandard got deserialized.
     for rd in get_components(RegulationDevice, sys2)
-        @test get_forecast(Deterministic, rd, initial_time, label) isa Deterministic
+        @test get_time_series(Deterministic, rd, initial_time, label) isa Deterministic
     end
 
-    clear_forecasts!(sys2)
+    clear_time_series!(sys2)
 end
 
 @testset "Test JSON serialization of RTS data with immutable time series" begin
     sys = create_rts_system()
     sys2, result = validate_serialization(sys; time_series_read_only = true)
     @test result
-    @test_throws ErrorException clear_forecasts!(sys2)
+    @test_throws ErrorException clear_time_series!(sys2)
     # Full error checking is done in IS.
 end
 
 @testset "Test JSON serialization of matpower data" begin
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
 
-    # Add a Probabilistic forecast to get coverage serializing it.
+    # Add a Probabilistic time_series to get coverage serializing it.
     bus = Bus(nothing)
     bus.name = "Bus1234"
     add_component!(sys, bus)
     tg = RenewableFix(nothing)
     tg.bus = bus
     add_component!(sys, tg)
-    tProbabilisticForecast =
-        PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
-    add_forecast!(sys, tg, tProbabilisticForecast)
+    ts = PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
+    add_time_series!(sys, tg, ts)
 
     _, result = validate_serialization(sys)
     @test result
@@ -154,6 +157,6 @@ end
 @testset "Test deepcopy of a system" begin
     sys = create_rts_system()
     sys2 = deepcopy(sys)
-    clear_forecasts!(sys2)
-    @test !isempty(collect(PSY.iterate_forecasts(sys)))
+    clear_time_series!(sys2)
+    @test !isempty(collect(get_time_series_multiple(sys)))
 end

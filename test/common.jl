@@ -10,19 +10,19 @@ mutable struct TestRenDevice <: RenewableGen
     name::String
 end
 
-function create_rts_system(forecast_resolution = Dates.Hour(1))
+function create_rts_system(time_series_resolution = Dates.Hour(1))
     data = PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS)
-    return System(data; forecast_resolution = forecast_resolution)
+    return System(data; time_series_resolution = time_series_resolution)
 end
 
-function create_rts_multistart_system(forecast_resolution = Dates.Hour(1))
+function create_rts_multistart_system(time_series_resolution = Dates.Hour(1))
     data = PowerSystemTableData(
         RTS_GMLC_DIR,
         100.0,
         DESCRIPTORS;
         generator_mapping_file = MULTISTART_MAPPING,
     )
-    return System(data; forecast_resolution = forecast_resolution)
+    return System(data; time_series_resolution = time_series_resolution)
 end
 
 """Allows comparison of structs that were created from different parsers which causes them

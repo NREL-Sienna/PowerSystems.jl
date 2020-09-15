@@ -17,7 +17,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -38,7 +38,7 @@ This file is auto-generated. Do not edit.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct RenewableDispatch <: RenewableGen
@@ -62,18 +62,18 @@ mutable struct RenewableDispatch <: RenewableGen
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, forecasts, internal, )
+function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -93,7 +93,7 @@ function RenewableDispatch(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -126,7 +126,7 @@ get_dynamic_injector(value::RenewableDispatch) = value.dynamic_injector
 """Get [`RenewableDispatch`](@ref) `ext`."""
 get_ext(value::RenewableDispatch) = value.ext
 
-InfrastructureSystems.get_forecasts(value::RenewableDispatch) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::RenewableDispatch) = value.time_series_container
 """Get [`RenewableDispatch`](@ref) `internal`."""
 get_internal(value::RenewableDispatch) = value.internal
 
@@ -157,5 +157,5 @@ set_services!(value::RenewableDispatch, val) = value.services = val
 """Set [`RenewableDispatch`](@ref) `ext`."""
 set_ext!(value::RenewableDispatch, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::RenewableDispatch, val) = value.forecasts = val
+InfrastructureSystems.set_time_series_container!(value::RenewableDispatch, val) = value.time_series_container = val
 

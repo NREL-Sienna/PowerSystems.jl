@@ -70,8 +70,8 @@ jq '.data.components.ThermalStandard | .[] | select(.active_power > 2.3)' system
 jq -r '["name", "econ.capacity"], (.data.components.ThermalStandard | .[] | [.name, .active_power]) | @tsv' system.json
 ```
 
-## View the forecast information for a component.
+## View the time_series information for a component.
 
 ```
-jq '.data.components.ThermalStandard | .[0] | .forecasts' system.json
+jq '.data.components.ThermalStandard | .[0] | .time_series' system.json
 ```

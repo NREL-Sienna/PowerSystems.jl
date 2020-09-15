@@ -179,12 +179,12 @@
           "default": "0.0"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -217,12 +217,12 @@
           "data_type": "Float64"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -445,12 +445,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -564,12 +564,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -690,12 +690,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -806,12 +806,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -913,12 +913,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -999,12 +999,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -1086,12 +1086,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -1190,12 +1190,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -1246,12 +1246,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -1345,12 +1345,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -1538,12 +1538,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -1682,12 +1682,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -1944,12 +1944,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -2065,12 +2065,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -2175,12 +2175,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -2339,12 +2339,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -2533,12 +2533,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -2691,12 +2691,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -2920,12 +2920,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -2966,7 +2966,7 @@
         },
         {
           "name": "requirement",
-          "comment": "the required quantity of the product should be scaled by a Forecast",
+          "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
           "null_value": "0.0",
           "data_type": "Float64"
         },
@@ -2977,12 +2977,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "operation_cost",
@@ -3029,7 +3029,7 @@
         },
         {
           "name": "requirement",
-          "comment": "the required quantity of the product should be scaled by a Forecast",
+          "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
           "null_value": "0.0",
           "data_type": "Float64"
         },
@@ -3040,12 +3040,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "operation_cost",
@@ -3163,12 +3163,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
@@ -10214,8 +10214,8 @@
           }
         },
         {
-          "name": "forecasts",
-          "data_type": "InfrastructureSystems.Forecasts"
+          "name": "time_series_container",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer"
         },
         {
           "name": "internal",
