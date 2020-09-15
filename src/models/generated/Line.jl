@@ -142,6 +142,4 @@ set_services!(value::Line, val) = value.services = val
 set_ext!(value::Line, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::Line, val) = value.time_series_container = val
-"""Set [`Line`](@ref) `internal`."""
-set_internal!(value::Line, val) = value.internal = val
 

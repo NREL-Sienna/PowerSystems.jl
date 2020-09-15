@@ -182,6 +182,4 @@ set_services!(value::GenericBattery, val) = value.services = val
 set_ext!(value::GenericBattery, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::GenericBattery, val) = value.time_series_container = val
-"""Set [`GenericBattery`](@ref) `internal`."""
-set_internal!(value::GenericBattery, val) = value.internal = val
 

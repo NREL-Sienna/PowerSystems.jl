@@ -92,6 +92,4 @@ set_services!(value::FixedAdmittance, val) = value.services = val
 set_ext!(value::FixedAdmittance, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::FixedAdmittance, val) = value.time_series_container = val
-"""Set [`FixedAdmittance`](@ref) `internal`."""
-set_internal!(value::FixedAdmittance, val) = value.internal = val
 

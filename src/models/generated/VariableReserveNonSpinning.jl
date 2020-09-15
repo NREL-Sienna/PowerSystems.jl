@@ -93,6 +93,4 @@ set_ext!(value::VariableReserveNonSpinning, val) = value.ext = val
 InfrastructureSystems.set_time_series_container!(value::VariableReserveNonSpinning, val) = value.time_series_container = val
 """Set [`VariableReserveNonSpinning`](@ref) `operation_cost`."""
 set_operation_cost!(value::VariableReserveNonSpinning, val) = value.operation_cost = val
-"""Set [`VariableReserveNonSpinning`](@ref) `internal`."""
-set_internal!(value::VariableReserveNonSpinning, val) = value.internal = val
 

@@ -66,6 +66,4 @@ set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = val
 set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = val
 
 InfrastructureSystems.set_time_series_container!(value::LoadZone, val) = value.time_series_container = val
-"""Set [`LoadZone`](@ref) `internal`."""
-set_internal!(value::LoadZone, val) = value.internal = val
 

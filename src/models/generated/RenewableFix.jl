@@ -141,6 +141,4 @@ set_services!(value::RenewableFix, val) = value.services = val
 set_ext!(value::RenewableFix, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::RenewableFix, val) = value.time_series_container = val
-"""Set [`RenewableFix`](@ref) `internal`."""
-set_internal!(value::RenewableFix, val) = value.internal = val
 

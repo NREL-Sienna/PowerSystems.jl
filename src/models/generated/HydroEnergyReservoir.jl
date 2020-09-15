@@ -221,6 +221,4 @@ set_services!(value::HydroEnergyReservoir, val) = value.services = val
 set_ext!(value::HydroEnergyReservoir, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::HydroEnergyReservoir, val) = value.time_series_container = val
-"""Set [`HydroEnergyReservoir`](@ref) `internal`."""
-set_internal!(value::HydroEnergyReservoir, val) = value.internal = val
 

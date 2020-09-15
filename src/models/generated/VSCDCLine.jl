@@ -139,6 +139,4 @@ set_services!(value::VSCDCLine, val) = value.services = val
 set_ext!(value::VSCDCLine, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::VSCDCLine, val) = value.time_series_container = val
-"""Set [`VSCDCLine`](@ref) `internal`."""
-set_internal!(value::VSCDCLine, val) = value.internal = val
 

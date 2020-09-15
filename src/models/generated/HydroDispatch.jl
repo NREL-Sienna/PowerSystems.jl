@@ -176,6 +176,4 @@ set_services!(value::HydroDispatch, val) = value.services = val
 set_ext!(value::HydroDispatch, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::HydroDispatch, val) = value.time_series_container = val
-"""Set [`HydroDispatch`](@ref) `internal`."""
-set_internal!(value::HydroDispatch, val) = value.internal = val
 

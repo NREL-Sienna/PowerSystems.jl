@@ -152,6 +152,4 @@ set_services!(value::MonitoredLine, val) = value.services = val
 set_ext!(value::MonitoredLine, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::MonitoredLine, val) = value.time_series_container = val
-"""Set [`MonitoredLine`](@ref) `internal`."""
-set_internal!(value::MonitoredLine, val) = value.internal = val
 

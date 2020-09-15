@@ -148,6 +148,4 @@ set_services!(value::InterruptibleLoad, val) = value.services = val
 set_ext!(value::InterruptibleLoad, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::InterruptibleLoad, val) = value.time_series_container = val
-"""Set [`InterruptibleLoad`](@ref) `internal`."""
-set_internal!(value::InterruptibleLoad, val) = value.internal = val
 

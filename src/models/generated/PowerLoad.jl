@@ -139,6 +139,4 @@ set_services!(value::PowerLoad, val) = value.services = val
 set_ext!(value::PowerLoad, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::PowerLoad, val) = value.time_series_container = val
-"""Set [`PowerLoad`](@ref) `internal`."""
-set_internal!(value::PowerLoad, val) = value.internal = val
 

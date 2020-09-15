@@ -142,6 +142,4 @@ set_services!(value::TapTransformer, val) = value.services = val
 set_ext!(value::TapTransformer, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::TapTransformer, val) = value.time_series_container = val
-"""Set [`TapTransformer`](@ref) `internal`."""
-set_internal!(value::TapTransformer, val) = value.internal = val
 
