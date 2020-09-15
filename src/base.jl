@@ -23,7 +23,7 @@ const SYSTEM_KWARGS = Set((
 """
 System
 
-A power system defined by fields for base_power, components, and time_series.
+A power system defined by fields for base_power, components, and time series.
 
 ```julia
 System(base_power)
@@ -193,7 +193,7 @@ function IS.to_json(sys::System, filename::AbstractString; force = false)
 end
 
 function Base.deepcopy(sys::System)
-    # We store time_series data in an HDF5 file that would not be copied as part of deepcopy.
+    # We store time series in an HDF5 file that would not be copied as part of deepcopy.
     # The HDF5 file could have data buffered in memory, so we would have to close it, make
     # a copy, and attach it to a new system.
     # A simpler solution is to serialize to a tmp dir and deserialize.
@@ -415,25 +415,25 @@ function add_service!(
 end
 
 """
-Adds time_series from a metadata file or metadata descriptors.
+Adds time series data from a metadata file or metadata descriptors.
 
 # Arguments
 - `sys::System`: system
 - `metadata_file::AbstractString`: metadata file for timeseries
   that includes an array of IS.TimeSeriesFileMetadata instances or a vector.
-- `resolution::DateTime.Period=nothing`: skip time_series that don't match this resolution.
+- `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
 function add_time_series!(sys::System, metadata_file::AbstractString; resolution = nothing)
     return IS.add_time_series!(Component, sys.data, metadata_file; resolution = resolution)
 end
 
 """
-Adds time_series from a metadata file or metadata descriptors.
+Adds time series data from a metadata file or metadata descriptors.
 
 # Arguments
 - `sys::System`: system
 - `timeseries_metadata::Vector{IS.TimeSeriesFileMetadata}`: metadata for timeseries
-- `resolution::DateTime.Period=nothing`: skip time_series that don't match this resolution.
+- `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
 function add_time_series!(
     sys::System,
@@ -775,7 +775,7 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
 end
 
 """
-Add time_series to the system.
+Add time series data to the system.
 
 Throws ArgumentError if the component is not stored in the system.
 
@@ -809,7 +809,7 @@ function add_time_series!(
 end
 
 """
-Add a time_series to a system from a TimeSeries.TimeArray or DataFrames.DataFrame.
+Add a time series data to a system from a TimeSeries.TimeArray or DataFrames.DataFrame.
 
 See InfrastructureSystems.TimeSeriesFileMetadata for description of
 normalization_factor.
@@ -833,16 +833,19 @@ function add_time_series!(
 end
 
 """
-Efficiently add all time_series in one component to another by copying the underlying
+Efficiently add all time series data in one component to another by copying the underlying
 references.
 
 # Arguments
 - `dst::Component`: Destination component
 - `src::Component`: Source component
 - `label_mapping::Dict = nothing`: Optionally map src labels to different dst labels.
-  If provided and src has a time_series with a label not present in label_mapping, that
-  time_series will not copied. If label_mapping is nothing then all time_series will be copied
-  with src's labels.
+  If provided and src has a time series with a label not present in label_mapping, that
+  time series will not copied. If label_mapping is nothing then all time series will be
+  copied with src's labels.
+- `scaling_factor_multiplier_mapping::Dict = nothing`: Optionally map src
+  scaling_factor_multipliers to dst scaling_factor_multipliers. Same behaviors as
+  label_mapping.
 """
 function copy_time_series!(
     dst::Component,
@@ -859,12 +862,12 @@ function copy_time_series!(
 end
 
 """
-Return a vector of time_series from a metadata file.
+Return a vector of time series data from a metadata file.
 
 # Arguments
 - `data::SystemData`: system
 - `metadata_file::AbstractString`: path to metadata file
-- `resolution::{Nothing, Dates.Period}`: skip any time_series that don't match this resolution
+- `resolution::{Nothing, Dates.Period}`: skip data that doesn't match this resolution
 
 See InfrastructureSystems.TimeSeriesFileMetadata for description of what the file
 should contain.
@@ -879,12 +882,12 @@ function make_time_series(sys::System, metadata_file::AbstractString; resolution
 end
 
 """
-Return a vector of time_series from a vector of TimeSeriesFileMetadata values.
+Return a vector of time series data from a vector of TimeSeriesFileMetadata values.
 
 # Arguments
 - `data::SystemData`: system
 - `timeseries_metadata::Vector{TimeSeriesFileMetadata}`: metadata values
-- `resolution::{Nothing, Dates.Period}`: skip any time_series that don't match this resolution
+- `resolution::{Nothing, Dates.Period}`: skip data that doesn't match this resolution
 """
 function make_time_series(
     sys::System,
@@ -895,9 +898,9 @@ function make_time_series(
 end
 
 """
-Return true if time_series are stored contiguously.
+Return true if time series data are stored contiguously.
 
-Throws ArgumentError if there are no time_series stored.
+Throws ArgumentError if there are no time series stored.
 """
 function are_time_series_contiguous(sys::System)
     return IS.are_time_series_contiguous(sys.data)
@@ -908,17 +911,17 @@ function are_time_series_contiguous(component::Component)
 end
 
 """
-Generates all possible initial times for the stored time_series. This should return the same
-result regardless of whether the time_series have been stored as one contiguous array or
-chunks of contiguous arrays, such as one 365-day time_series vs 365 one-day time_series.
+Generates all possible initial times for the stored time series. This should return the same
+result regardless of whether the time series have been stored as one contiguous array or
+chunks of contiguous arrays, such as one 365-day time series vs 365 one-day time series.
 
-Throws ArgumentError if there are no time_series stored, interval is not a multiple of the
-system's time_series resolution, or if the stored time_series have overlapping timestamps.
+Throws ArgumentError if there are no time series stored, interval is not a multiple of the
+system's time series resolution, or if the stored time series have overlapping timestamps.
 
 # Arguments
 - `sys::System`: System.
 - `interval::Dates.Period`: Amount of time in between each initial time.
-- `horizon::Int`: Length of each time_series array.
+- `horizon::Int`: Length of each time series array.
 - `initial_time::Union{Nothing, Dates.DateTime}=nothing`: Start with this time. If nothing,
   use the first initial time.
 """
@@ -954,7 +957,7 @@ function generate_initial_times(
 end
 
 """
-Return a time_series for the entire time series range stored for these parameters.
+Return a TimeSeriesData for the entire time series range stored for these parameters.
 """
 function get_time_series(
     ::Type{T},
@@ -966,7 +969,7 @@ function get_time_series(
 end
 
 """
-Return a time_series for a subset of the time series range stored for these parameters.
+Return a TimeSeriesData for a subset of the time series range stored for these parameters.
 """
 function get_time_series(
     ::Type{T},
@@ -1053,49 +1056,49 @@ function get_time_series_values(component::Component, time_series::TimeSeriesDat
 end
 
 """
-Return sorted time_series initial times.
+Return sorted time series initial times.
 """
 function get_time_series_initial_times(sys::System)
     return IS.get_time_series_initial_times(sys.data)
 end
 
 """
-Return an iterable of NamedTuple keys for time_series stored for this component.
+Return an iterable of NamedTuple keys for time series stored for this component.
 """
 function get_time_series_keys(component::Component)
     return IS.get_time_series_keys(component)
 end
 
 """
-Return the horizon for all time_series.
+Return the horizon for all time series.
 """
 function get_time_series_horizon(sys::System)
     return IS.get_time_series_horizon(sys.data)
 end
 
 """
-Return the earliest initial_time for a time_series.
+Return the earliest initial_time for a time series.
 """
 function get_time_series_initial_time(sys::System)
     return IS.get_time_series_initial_time(sys.data)
 end
 
 """
-Return the interval for all time_series.
+Return the interval for all time series.
 """
 function get_time_series_interval(sys::System)
     return IS.get_time_series_interval(sys.data)
 end
 
 """
-Return the resolution for all time_series.
+Return the resolution for all time series.
 """
 function get_time_series_resolution(sys::System)
     return IS.get_time_series_resolution(sys.data)
 end
 
 """
-Return an iterator of time_series in order of initial time.
+Return an iterator of time series in order of initial time.
 
 Note that passing a filter function can be much slower than the other filtering parameters
 because it reads time series data from media.
@@ -1104,10 +1107,10 @@ Call `collect` on the result to get an array.
 
 # Arguments
 - `data::SystemData`: system
-- `filter_func = nothing`: Only return time_series for which this returns true.
-- `type = nothing`: Only return time_series with this type.
-- `initial_time = nothing`: Only return time_series matching this value.
-- `label = nothing`: Only return time_series matching this value.
+- `filter_func = nothing`: Only return time series for which this returns true.
+- `type = nothing`: Only return time series with this type.
+- `initial_time = nothing`: Only return time series matching this value.
+- `label = nothing`: Only return time series matching this value.
 
 # Examples
 ```julia
@@ -1135,21 +1138,21 @@ function IS.get_time_series_multiple(
 end
 
 """
-Remove all time_series from the system.
+Remove all time series data from the system.
 """
 function clear_time_series!(sys::System)
     return IS.clear_time_series!(sys.data)
 end
 
 """
-Throws DataFormatError if time_series have inconsistent parameters.
+Throws DataFormatError if time series data have inconsistent parameters.
 """
 function check_time_series_consistency(sys::System)
     IS.check_time_series_consistency(sys.data)
 end
 
 """
-Return true if all time_series have consistent parameters.
+Return true if all time series data have consistent parameters.
 """
 function validate_time_series_consistency(sys::System)
     return IS.validate_time_series_consistency(sys.data)
