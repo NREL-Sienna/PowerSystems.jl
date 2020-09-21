@@ -775,7 +775,7 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
 end
 
 """
-Add time series data to the system.
+Add time series data to a component.
 
 Throws ArgumentError if the component is not stored in the system.
 
@@ -785,51 +785,15 @@ function add_time_series!(sys::System, component::Component, time_series::TimeSe
 end
 
 """
-Add time series data to a system from a CSV file.
+Add the same time series data to multiple components.
 
-See InfrastructureSystems.TimeSeriesFileMetadata for description of
-normalization_factor.
-"""
-function add_time_series!(
-    sys::System,
-    filename::AbstractString,
-    component::Component,
-    label::AbstractString;
-    normalization_factor::Union{String, Float64} = 1.0,
-    scaling_factor_multiplier::Union{Nothing, Function} = nothing,
-)
-    return IS.add_time_series!(
-        sys.data,
-        filename,
-        component,
-        label;
-        normalization_factor = normalization_factor,
-        scaling_factor_multiplier = scaling_factor_multiplier,
-    )
-end
+This is significantly more efficent than calling add_time_series! for each component
+individually with the same data because in this case, only one time series array is stored.
 
+Throws ArgumentError if a component is not stored in the system.
 """
-Add a time series data to a system from a TimeSeries.TimeArray or DataFrames.DataFrame.
-
-See InfrastructureSystems.TimeSeriesFileMetadata for description of
-normalization_factor.
-"""
-function add_time_series!(
-    sys::System,
-    data::Union{TimeSeries.TimeArray, DataFrames.DataFrame},
-    component,
-    label;
-    normalization_factor::Union{String, Float64} = 1.0,
-    scaling_factor_multiplier::Union{Nothing, Function} = nothing,
-)
-    return IS.add_time_series!(
-        sys.data,
-        data,
-        component,
-        label,
-        normalization_factor = normalization_factor,
-        scaling_factor_multiplier = scaling_factor_multiplier,
-    )
+function add_time_series!(sys::System, components, time_series::TimeSeriesData)
+    return IS.add_time_series!(sys.data, components, time_series)
 end
 
 """

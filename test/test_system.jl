@@ -232,3 +232,34 @@ end
     set_units_base_system!(sys, "SYSTEM_BASE")
     @test get_units_base(sys) == "SYSTEM_BASE"
 end
+
+@testset "Test add_time_series multiple components" begin
+    sys = System(100.0)
+    bus = Bus(nothing)
+    bus.bustype = BusTypes.REF
+    add_component!(sys, bus)
+    components = []
+    len = 2
+    for i in 1:len
+        gen = ThermalStandard(nothing)
+        gen.name = string(i)
+        gen.bus = bus
+        add_component!(sys, gen)
+        push!(components, gen)
+    end
+
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    end_time = Dates.DateTime("2020-01-01T23:00:00")
+    dates = collect(initial_time:Dates.Hour(1):end_time)
+    data = collect(1:24)
+    ta = TimeSeries.TimeArray(dates, data, ["1"])
+    label = "max_active_power"
+    ts = Deterministic(label = label, data = ta)
+    add_time_series!(sys, components, ts)
+
+    for i in 1:len
+        component = get_component(ThermalStandard, sys, string(i))
+        ts = get_time_series(Deterministic, component, initial_time, label)
+        @test ts isa Deterministic
+    end
+end

@@ -80,13 +80,13 @@ end
     @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries ./ max_value)
 
     # Test code path where timeseries is normalized by dividing by a custom value.
-    sf = 95.0
-    file_metadata.normalization_factor = sf
+    nf = 95.0
+    file_metadata.normalization_factor = nf
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
-    @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries ./ sf)
+    @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries ./ nf)
 end
 
 @testset "Test single time_series addition" begin
@@ -100,30 +100,33 @@ end
         "Hydro",
         "DAY_AHEAD_hydro.csv",
     )
-    timeseries = IS.read_time_series(timeseries_file)[Symbol(component_name)]
+    ta = IS.read_time_series(timeseries_file)[Symbol(component_name)]
 
     # Test with a filename.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
-    add_time_series!(sys, timeseries_file, component, label; normalization_factor = 1.0)
+    ts = Deterministic(label, timeseries_file, component; normalization_factor = 1.0)
+    add_time_series!(sys, component, ts)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
-    @test TimeSeries.timestamp(get_data(time_series)) == TimeSeries.timestamp(timeseries)
-    @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(timeseries)
+    @test TimeSeries.timestamp(get_data(time_series)) == TimeSeries.timestamp(ta)
+    @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(ta)
 
     # Test with TimeSeries.TimeArray.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
-    add_time_series!(sys, timeseries, component, label; normalization_factor = 1.0)
+    ts = Deterministic(label, ta; normalization_factor = 1.0)
+    add_time_series!(sys, component, ts)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
-    @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(timeseries)
+    @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(ta)
 
     # Test with DataFrames.DataFrame.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
-    df = DataFrames.DataFrame(timeseries)
-    add_time_series!(sys, df, component, label; normalization_factor = 1.0)
+    df = DataFrames.DataFrame(ta)
+    ts = Deterministic(label, df; normalization_factor = 1.0)
+    add_time_series!(sys, component, ts)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
 end
