@@ -93,16 +93,15 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
             Symbol("Total Mvar Load"),
         ],
     )
-        c = get_component(PowerLoad, sys, string(lname))
-        if !isnothing(c)
-            add_time_series!(
-                sys,
-                loads[!, ["timestamp", lname]],
-                c,
-                "max_active_power";
+        component = get_component(PowerLoad, sys, string(lname))
+        if !isnothing(component)
+            ts = Deterministic(
+                "max_active_power",
+                loads[!, ["timestamp", lname]];
                 normalization_factor = Float64(maximum(loads[!, lname])),
                 scaling_factor_multiplier = get_max_active_power,
             )
+            add_time_series!(sys, component, ts)
         end
     end
 

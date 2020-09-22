@@ -188,6 +188,8 @@ export TimeSeriesData
 export Deterministic
 export Probabilistic
 export Scenarios
+export NormalizationFactor
+export NormalizationTypes
 
 export get_dynamic_components
 
@@ -332,6 +334,8 @@ import InfrastructureSystems:
     serialize,
     deserialize,
     get_time_series_multiple,
+    NormalizationFactor,
+    NormalizationTypes,
     UnitSystem,
     SystemUnitsSettings
 
