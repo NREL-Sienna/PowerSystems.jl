@@ -301,7 +301,8 @@ Add buses and areas to the System from the raw data.
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
         name = bus.name
-        bus_type = isnothing(bus.bus_type) ? nothing :
+        bus_type =
+            isnothing(bus.bus_type) ? nothing :
             get_enum_value(BusTypes.BusType, bus.bus_type)
         voltage_limits = make_minmaxlimits(bus.voltage_limits_min, bus.voltage_limits_max)
 
@@ -662,7 +663,8 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 bus_ids = buses[!, bus_id_column]
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
-                name = gen_type <: Storage ? get_storage_by_generator(data, gen.name).name :
+                name =
+                    gen_type <: Storage ? get_storage_by_generator(data, gen.name).name :
                     gen.name
                 sys_gen = get_component(
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
@@ -850,7 +852,8 @@ function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
     down_time = get(gen, down_column, nothing)
     down_time = typeof(down_time) == String ? tryparse(Float64, down_time) : down_time
 
-    timelimits = isnothing(up_time) && isnothing(down_time) ? nothing :
+    timelimits =
+        isnothing(up_time) && isnothing(down_time) ? nothing :
         (up = up_time, down = down_time)
     return timelimits
 end
@@ -926,7 +929,8 @@ function make_thermal_generator_multistart(
         var_cost =
             VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
     end
-    lag_hot = isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down :
+    lag_hot =
+        isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down :
         gen.hot_start_time
     lag_warm = isnothing(gen.warm_start_time) ? 0.0 : gen.warm_start_time
     lag_cold = isnothing(gen.cold_start_time) ? 0.0 : gen.cold_start_time
@@ -1118,7 +1122,7 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     output_active_power_limits = (
         min = storage.output_active_power_limit_min,
         max = isnothing(storage.output_active_power_limit_max) ?
-                  gen.active_power_limits_max : storage.output_active_power_limit_max,
+              gen.active_power_limits_max : storage.output_active_power_limit_max,
     )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
