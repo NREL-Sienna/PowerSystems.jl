@@ -101,8 +101,9 @@ end
     tg = RenewableFix(nothing)
     tg.bus = bus
     add_component!(sys, tg)
-    ts = PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
-    add_time_series!(sys, tg, ts)
+    # TODO 1.0
+    #ts = PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
+    #add_time_series!(sys, tg, ts)
 
     _, result = validate_serialization(sys)
     @test result
