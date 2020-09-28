@@ -140,16 +140,16 @@ end
     dates = collect(initial_time:Dates.Hour(1):Dates.DateTime("2020-01-01T23:00:00"))
     data = collect(1:24)
     ta = TimeSeries.TimeArray(dates, data, [get_name(l)])
-    label = "active_power_flow"
-    time_series = Deterministic(label = label, data = ta)
+    name = "active_power_flow"
+    time_series = SingleTimeSeries(name = name, data = ta)
     add_time_series!(sys, l, time_series)
-    @test get_time_series(Deterministic, l, initial_time, label) isa Deterministic
+    @test get_time_series(SingleTimeSeries, l, name) isa SingleTimeSeries
     PSY.convert_component!(MonitoredLine, l, sys)
     @test isnothing(get_component(Line, sys, "4"))
     mline = get_component(MonitoredLine, sys, "4")
     @test !isnothing(mline)
     @test get_name(mline) == "4"
-    @test get_time_series(Deterministic, mline, initial_time, label) isa Deterministic
+    @test get_time_series(SingleTimeSeries, mline, name) isa SingleTimeSeries
     @test_throws ErrorException convert_component!(
         Line,
         get_component(MonitoredLine, sys, "4"),
@@ -158,5 +158,5 @@ end
     convert_component!(Line, get_component(MonitoredLine, sys, "4"), sys, force = true)
     line = get_component(Line, sys, "4")
     @test !isnothing(mline)
-    @test get_time_series(Deterministic, line, initial_time, label) isa Deterministic
+    @test get_time_series(SingleTimeSeries, line, name) isa SingleTimeSeries
 end

@@ -187,6 +187,7 @@ export StateTypes
 export TimeSeriesData
 export Deterministic
 export Probabilistic
+export SingleTimeSeries
 export Scenarios
 export NormalizationFactor
 export NormalizationTypes
@@ -198,6 +199,7 @@ export solve_powerflow
 
 export parse_file
 export add_time_series!
+export add_time_series_from_file_metadata!
 export remove_time_series!
 export clear_time_series!
 export copy_time_series!
@@ -219,8 +221,6 @@ export get_contributing_device_mapping
 export ServiceContributingDevices
 export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
-export are_time_series_contiguous
-export generate_initial_times
 export get_component
 export get_components
 export get_components_by_name
@@ -229,9 +229,9 @@ export get_time_series
 export get_time_series_array
 export get_time_series_horizon
 export get_time_series_initial_time
-export get_time_series_initial_times
+#export get_time_series_initial_times
 export get_time_series_interval
-export get_time_series_labels
+export get_time_series_names
 export get_time_series_resolution
 export get_time_series_timestamps
 export get_time_series_values
@@ -241,9 +241,10 @@ export get_resolution
 export get_data
 export iterate_components
 export get_time_series_multiple
-export make_time_series
+#export make_time_series
 export get_bus_numbers
 export get_name
+export set_name!
 export get_base_power
 export get_frequency
 export set_units_base_system!
@@ -313,6 +314,7 @@ import InfrastructureSystems:
     Components,
     Deterministic,
     Probabilistic,
+    SingleTimeSeries,
     TimeSeriesData,
     Scenarios,
     InfrastructureSystemsComponent,
@@ -329,6 +331,7 @@ import InfrastructureSystems:
     get_initial_time,
     get_resolution,
     get_name,
+    set_name!,
     to_json,
     from_json,
     serialize,

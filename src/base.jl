@@ -423,8 +423,17 @@ Adds time series data from a metadata file or metadata descriptors.
   that includes an array of IS.TimeSeriesFileMetadata instances or a vector.
 - `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
-function add_time_series!(sys::System, metadata_file::AbstractString; resolution = nothing)
-    return IS.add_time_series!(Component, sys.data, metadata_file; resolution = resolution)
+function add_time_series_from_file_metadata!(
+    sys::System,
+    metadata_file::AbstractString;
+    resolution = nothing,
+)
+    return IS.add_time_series_from_file_metadata!(
+        sys.data,
+        Component,
+        metadata_file;
+        resolution = resolution,
+    )
 end
 
 """
@@ -435,20 +444,25 @@ Adds time series data from a metadata file or metadata descriptors.
 - `timeseries_metadata::Vector{IS.TimeSeriesFileMetadata}`: metadata for timeseries
 - `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
-function add_time_series!(
+function add_time_series_from_file_metadata!(
     sys::System,
     file_metadata::Vector{IS.TimeSeriesFileMetadata};
     resolution = nothing,
 )
-    return IS.add_time_series!(Component, sys.data, file_metadata; resolution = resolution)
+    return IS.add_time_series_from_file_metadata!(
+        sys.data,
+        Component,
+        file_metadata;
+        resolution = resolution,
+    )
 end
 
-function IS.add_time_series!(
-    ::Type{<:Component},
+function IS.add_time_series_from_file_metadata_internal!(
     data::IS.SystemData,
+    ::Type{<:Component},
     cache::IS.TimeSeriesCache,
-    file_metadata::IS.TimeSeriesFileMetadata;
-    resolution = nothing,
+    file_metadata::IS.TimeSeriesFileMetadata,
+    resolution,
 )
     IS.set_component!(file_metadata, data, PowerSystems)
     component = file_metadata.component
@@ -456,8 +470,8 @@ function IS.add_time_series!(
         return
     end
 
-    ta, ts_metadata = IS.make_time_series!(cache, file_metadata; resolution = resolution)
-    if isnothing(ta)
+    ts = IS.make_time_series!(cache, file_metadata, resolution)
+    if ts === nothing
         return
     end
 
@@ -471,10 +485,10 @@ function IS.add_time_series!(
             load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
-            IS.add_time_series!(data, _component, ta, ts_metadata, skip_if_present = true)
+            IS.add_time_series!(data, _component, ts; skip_if_present = true)
         end
     else
-        IS.add_time_series!(data, component, ta, ts_metadata)
+        IS.add_time_series!(data, component, ts)
     end
 end
 
@@ -803,28 +817,30 @@ references.
 # Arguments
 - `dst::Component`: Destination component
 - `src::Component`: Source component
-- `label_mapping::Dict = nothing`: Optionally map src labels to different dst labels.
-  If provided and src has a time series with a label not present in label_mapping, that
-  time series will not copied. If label_mapping is nothing then all time series will be
-  copied with src's labels.
+- `name_mapping::Dict = nothing`: Optionally map src names to different dst names.
+  If provided and src has a time series with a name not present in name_mapping, that
+  time series will not copied. If name_mapping is nothing then all time series will be
+  copied with src's names.
 - `scaling_factor_multiplier_mapping::Dict = nothing`: Optionally map src
   scaling_factor_multipliers to dst scaling_factor_multipliers. Same behaviors as
-  label_mapping.
+  name_mapping.
 """
 function copy_time_series!(
     dst::Component,
     src::Component;
-    label_mapping::Union{Nothing, Dict{String, String}} = nothing,
+    name_mapping::Union{Nothing, Dict{String, String}} = nothing,
     scaling_factor_multiplier_mapping::Union{Nothing, Dict{String, String}} = nothing,
 )
     IS.copy_time_series!(
         dst,
         src,
-        label_mapping = label_mapping,
+        name_mapping = name_mapping,
         scaling_factor_multiplier_mapping = scaling_factor_multiplier_mapping,
     )
 end
 
+#=
+# TODO 1.0: do we need this functionality? not currently present in IS
 """
 Return a vector of time series data from a metadata file.
 
@@ -860,65 +876,7 @@ function make_time_series(
 )
     return IS.make_time_series!(sys.data, metadata; resolution = resolution)
 end
-
-"""
-Return true if time series data are stored contiguously.
-
-Throws ArgumentError if there are no time series stored.
-"""
-function are_time_series_contiguous(sys::System)
-    return IS.are_time_series_contiguous(sys.data)
-end
-
-function are_time_series_contiguous(component::Component)
-    return IS.are_time_series_contiguous(component)
-end
-
-"""
-Generates all possible initial times for the stored time series. This should return the same
-result regardless of whether the time series have been stored as one contiguous array or
-chunks of contiguous arrays, such as one 365-day time series vs 365 one-day time series.
-
-Throws ArgumentError if there are no time series stored, interval is not a multiple of the
-system's time series resolution, or if the stored time series have overlapping timestamps.
-
-# Arguments
-- `sys::System`: System.
-- `interval::Dates.Period`: Amount of time in between each initial time.
-- `horizon::Int`: Length of each time series array.
-- `initial_time::Union{Nothing, Dates.DateTime}=nothing`: Start with this time. If nothing,
-  use the first initial time.
-"""
-function generate_initial_times(
-    sys::System,
-    interval::Dates.Period,
-    horizon::Int;
-    initial_time::Union{Nothing, Dates.DateTime} = nothing,
-)
-    return IS.generate_initial_times(
-        sys.data,
-        interval,
-        horizon;
-        initial_time = initial_time,
-    )
-end
-
-"""
-Generate initial times for a component.
-"""
-function generate_initial_times(
-    component::Component,
-    interval::Dates.Period,
-    horizon::Int;
-    initial_time::Union{Nothing, Dates.DateTime} = nothing,
-)
-    return IS.generate_initial_times(
-        component,
-        interval,
-        horizon;
-        initial_time = initial_time,
-    )
-end
+=#
 
 """
 Return a TimeSeriesData for the entire time series range stored for these parameters.
@@ -926,10 +884,9 @@ Return a TimeSeriesData for the entire time series range stored for these parame
 function get_time_series(
     ::Type{T},
     component::Component,
-    initial_time::Dates.DateTime,
-    label::AbstractString,
+    name::AbstractString,
 ) where {T <: TimeSeriesData}
-    return IS.get_time_series(T, component, initial_time, label)
+    return IS.get_time_series(T, component, name)
 end
 
 """
@@ -938,34 +895,29 @@ Return a TimeSeriesData for a subset of the time series range stored for these p
 function get_time_series(
     ::Type{T},
     component::Component,
-    initial_time::Dates.DateTime,
-    label::AbstractString,
+    name::AbstractString,
     horizon::Int,
 ) where {T <: TimeSeriesData}
-    return IS.get_time_series(T, component, initial_time, label, horizon)
+    return IS.get_time_series(T, component, name, horizon)
 end
 
-function get_time_series_initial_times(
-    ::Type{T},
-    component::Component,
-) where {T <: TimeSeriesData}
-    return IS.get_time_series_initial_times(T, component)
-end
+#function get_time_series_initial_times(
+#    ::Type{T},
+#    component::Component,
+#) where {T <: TimeSeriesData}
+#    return IS.get_time_series_initial_times(T, component)
+#end
+#
+#function get_time_series_initial_times(
+#    ::Type{T},
+#    component::Component,
+#    name::AbstractString,
+#) where {T <: TimeSeriesData}
+#    return IS.get_time_series_initial_times(T, component, name)
+#end
 
-function get_time_series_initial_times(
-    ::Type{T},
-    component::Component,
-    label::AbstractString,
-) where {T <: TimeSeriesData}
-    return IS.get_time_series_initial_times(T, component, label)
-end
-
-function get_time_series_labels(
-    ::Type{T},
-    component::Component,
-    initial_time::Dates.DateTime,
-) where {T <: TimeSeriesData}
-    return IS.get_time_series_labels(T, component, initial_time)
+function get_time_series_names(::Type{T}, component::Component) where {T <: TimeSeriesData}
+    return IS.get_time_series_names(T, component)
 end
 
 """
@@ -974,11 +926,19 @@ Return a TimeSeries.TimeArray for the requested time series parameters.
 function get_time_series_array(
     ::Type{T},
     component::Component,
-    initial_time::Dates.DateTime,
-    label::AbstractString,
-    horizon::Union{Nothing, Int} = nothing,
+    name::AbstractString;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+    count::Int = 1,
 ) where {T <: TimeSeriesData}
-    return IS.get_time_series_array(T, component, initial_time, label, horizon)
+    return IS.get_time_series_array(
+        T,
+        component,
+        name;
+        start_time = start_time,
+        len = len,
+        count = count,
+    )
 end
 
 function get_time_series_array(component::Component, time_series::TimeSeriesData)
@@ -991,11 +951,19 @@ Return an Array of timestamps for the requested time series parameters.
 function get_time_series_timestamps(
     ::Type{T},
     component::Component,
-    initial_time::Dates.DateTime,
-    label::AbstractString,
-    horizon::Union{Nothing, Int} = nothing,
+    name::AbstractString;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+    count::Int = 1,
 ) where {T <: TimeSeriesData}
-    return IS.get_time_series_timestamps(T, component, initial_time, label, horizon)
+    return IS.get_time_series_timestamps(
+        T,
+        component,
+        name;
+        start_time = start_time,
+        len = len,
+        count = count,
+    )
 end
 
 function get_time_series_timestamps(component::Component, time_series::TimeSeriesData)
@@ -1008,11 +976,19 @@ Return an Array of values for the requested time series parameters.
 function get_time_series_values(
     ::Type{T},
     component::Component,
-    initial_time::Dates.DateTime,
-    label::AbstractString,
-    horizon::Union{Nothing, Int} = nothing,
+    name::AbstractString;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+    count::Int = 1,
 ) where {T <: TimeSeriesData}
-    return IS.get_time_series_values(T, component, initial_time, label, horizon)
+    return IS.get_time_series_values(
+        T,
+        component,
+        name;
+        start_time = start_time,
+        len = len,
+        count = count,
+    )
 end
 
 function get_time_series_values(component::Component, time_series::TimeSeriesData)
@@ -1022,9 +998,9 @@ end
 """
 Return sorted time series initial times.
 """
-function get_time_series_initial_times(sys::System)
-    return IS.get_time_series_initial_times(sys.data)
-end
+#function get_time_series_initial_times(sys::System)
+#    return IS.get_time_series_initial_times(sys.data)
+#end
 
 """
 Return an iterable of NamedTuple keys for time series stored for this component.
@@ -1033,6 +1009,7 @@ function get_time_series_keys(component::Component)
     return IS.get_time_series_keys(component)
 end
 
+# TODO 1.0: decide what to do
 """
 Return the horizon for all time series.
 """
@@ -1073,8 +1050,7 @@ Call `collect` on the result to get an array.
 - `data::SystemData`: system
 - `filter_func = nothing`: Only return time series for which this returns true.
 - `type = nothing`: Only return time series with this type.
-- `initial_time = nothing`: Only return time series matching this value.
-- `label = nothing`: Only return time series matching this value.
+- `name = nothing`: Only return time series matching this value.
 
 # Examples
 ```julia
@@ -1082,23 +1058,16 @@ for time_series in get_time_series_multiple(sys)
     @show time_series
 end
 
-ts = collect(get_time_series_multiple(sys; initial_time = DateTime("2020-01-01T00:00:00"))
+ts = collect(get_time_series_multiple(sys; type = SingleTimeSeries))
 ```
 """
 function IS.get_time_series_multiple(
     sys::System,
     filter_func = nothing;
     type = nothing,
-    initial_time = nothing,
-    label = nothing,
+    name = nothing,
 )
-    return get_time_series_multiple(
-        sys.data,
-        filter_func;
-        type = type,
-        initial_time = initial_time,
-        label = label,
-    )
+    return get_time_series_multiple(sys.data, filter_func; type = type, name = name)
 end
 
 """
@@ -1129,10 +1098,9 @@ function remove_time_series!(
     ::Type{T},
     sys::System,
     component::Component,
-    initial_time::Dates.DateTime,
-    label::String,
+    name::String,
 ) where {T <: TimeSeriesData}
-    return IS.remove_time_series!(T, sys.data, component, initial_time, label)
+    return IS.remove_time_series!(T, sys.data, component, name)
 end
 
 """

@@ -103,21 +103,22 @@ end
         [DateTime("01-01-01"), DateTime("01-01-01") + Hour(1)],
         [1.0, 1.0],
     )
-    #Deterministic Tests
-    ts = Deterministic("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
+    #SingleTimeSeries Tests
+    ts = SingleTimeSeries("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
     @test ts isa PowerSystems.TimeSeriesData
-    ts = Deterministic(label = "scalingfactor", data = data)
+    ts = SingleTimeSeries(name = "scalingfactor", data = data)
     @test ts isa PowerSystems.TimeSeriesData
+    # TODO 1.0
     #Probabilistic Tests
-    ts = Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
-    @test ts isa PowerSystems.TimeSeriesData
-    ts = Probabilistic(label = "scalingfactor", percentiles = [1.0], data = data)
-    @test ts isa PowerSystems.TimeSeriesData
-    #Scenario Tests
-    ts = Scenarios("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
-    @test ts isa PowerSystems.TimeSeriesData
-    ts = Scenarios("scalingfactor", data)
-    @test ts isa PowerSystems.TimeSeriesData
+    #ts = Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
+    #@test ts isa PowerSystems.TimeSeriesData
+    #ts = Probabilistic(name = "scalingfactor", percentiles = [1.0], data = data)
+    #@test ts isa PowerSystems.TimeSeriesData
+    ##Scenario Tests
+    #ts = Scenarios("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
+    #@test ts isa PowerSystems.TimeSeriesData
+    #ts = Scenarios("scalingfactor", data)
+    #@test ts isa PowerSystems.TimeSeriesData
 end
 
 @testset "Regulation Device" begin

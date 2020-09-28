@@ -95,7 +95,7 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
     )
         component = get_component(PowerLoad, sys, string(lname))
         if !isnothing(component)
-            ts = Deterministic(
+            ts = SingleTimeSeries(
                 "max_active_power",
                 loads[!, ["timestamp", lname]];
                 normalization_factor = Float64(maximum(loads[!, lname])),
