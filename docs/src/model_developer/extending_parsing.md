@@ -1,4 +1,6 @@
-# Extending PowerSystemTableData parsing
+# Extending Parsing Capabilities
+
+## Extending PowerSystemTableData parsing
 
 This page describes how developers should read columns from raw data files.
 
@@ -7,9 +9,9 @@ DataFrames. The parsing code includes mapping functionality that allows you to
 use PowerSystems-standard names while letting the users define their own custom
 names.
 
-*Note*:  This assumes that you are familiar with this [user workflow](../man/parsing.md).
+*Note*:  This assumes that you are familiar with this [user workflow](../modeler/parsing.md).
 
-**Procedure**
+### Procedure
 
 1. Add an entry to the array of parameters for your category in
    `src/descriptors/power_system_inputs.json` according to the following:
@@ -40,3 +42,5 @@ end
 
 `iterate_rows` returns a NamedTuple where each `name` defined in
 `src/descriptors/power_system_inputs.json` is a field.
+
+## Extending PSS/e Dynamic Parsing Capabilities

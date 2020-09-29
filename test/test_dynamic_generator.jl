@@ -14,21 +14,21 @@ nodes_OMIB = [
 ]
 
 static_gen = ThermalStandard(
-    "TestGen",
-    true,
-    true,
-    nodes_OMIB[2],
-    0.40,
-    0.010,
-    0.5,
-    PrimeMovers.ST,
-    ThermalFuels.COAL,
-    (min = 0.0, max = 0.40),
-    (min = -0.30, max = 0.30),
-    nothing,
-    nothing,
-    ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
-    1.0,
+    name = "TestGen",
+    available = true,
+    status = true,
+    bus = nodes_OMIB[2],
+    active_power = 0.40,
+    reactive_power = 0.010,
+    rating = 0.5,
+    prime_mover = PrimeMovers.ST,
+    fuel = ThermalFuels.COAL,
+    active_power_limits = (min = 0.0, max = 0.40),
+    reactive_power_limits = (min = -0.30, max = 0.30),
+    time_limits = nothing,
+    ramp_limits = nothing,
+    operation_cost = ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
+    base_power = 1.0,
 )
 
 branch_OMIB = [Line(
@@ -223,12 +223,11 @@ end
         T3 = 0.0,
         T4 = 0.0,
         T5 = 50.0,
-        P_min = 0.3,
-        P_max = 1.2,
+        valve_position_limits = (min = 0.3, max = 1.2),
     )
     @test typeI_tg isa PowerSystems.DynamicComponent
 
-    typeII_tg = TGTypeII(R = 0.05, T1 = 0.3, T2 = 0.1, τ_max = 1.0, τ_min = 0.1)
+    typeII_tg = TGTypeII(R = 0.05, T1 = 0.3, T2 = 0.1, τ_limits = (min = 0.1, max = 1.0))
     @test typeII_tg isa PowerSystems.DynamicComponent
 
     gast_tg = GasTG(
@@ -260,14 +259,13 @@ end
         Te = 0.19,
         Tf = 1.0,
         Tr = 0.001,
-        Vr_max = 9.9,
-        Vr_min = 0.0,
+        Va_lim = (0.0, 0.0),
         Ae = 0.0006,
         Be = 0.9,
     )
     @test typeI_avr isa PowerSystems.DynamicComponent
 
-    ac1a_avr = AC1A(
+    ac1a_avr = ESAC1A(
         Tr = 0.0,
         Tb = 0.0,
         Tc = 0.0,
@@ -286,7 +284,7 @@ end
     )
     @test ac1a_avr isa PowerSystems.DynamicComponent
 
-    mod_ac1a_avr = ModifiedAC1A(
+    mod_ac1a_avr = EXAC1(
         Tr = 0.0,
         Tb = 0.0,
         Tc = 0.0,
@@ -304,7 +302,7 @@ end
     )
     @test mod_ac1a_avr isa PowerSystems.DynamicComponent
 
-    st1a_avr = ST1A(
+    st1a_avr = ESST1A(
         UEL_flags = 1,
         PSS_flags = 1,
         Tr = 0.0,
@@ -333,8 +331,7 @@ end
         T4 = 0.01,
         Te = 0.314,
         Tr = 0.001,
-        Vr_max = 5.0,
-        Vr_min = -5.0,
+        Va_lim = (-5.0, 5.0),
         Ae = 0.0039,
         Be = 1.555,
     )
@@ -366,7 +363,7 @@ end
     )
 
     Gen1AVR = DynamicGenerator(
-        static_injector = static_gen,
+        name = get_name(static_gen),
         ω_ref = 1.0,
         machine = Basic,
         shaft = BaseShaft,
@@ -376,7 +373,7 @@ end
     )
     @test Gen1AVR isa PowerSystems.Component
     Gen1AVRnoAVR = DynamicGenerator(
-        static_injector = static_gen,
+        name = get_name(static_gen),
         ω_ref = 1.0,
         machine = Basic,
         shaft = BaseShaft,
@@ -387,7 +384,7 @@ end
     @test Gen1AVRnoAVR isa PowerSystems.Component
 
     Gen2AVRnoAVR = DynamicGenerator(
-        static_injector = static_gen,
+        name = get_name(static_gen),
         ω_ref = 1.0,
         machine = oneDoneQ,
         shaft = BaseShaft,
@@ -398,7 +395,7 @@ end
     @test Gen2AVRnoAVR isa PowerSystems.Component
 
     Gen2AVR = DynamicGenerator(
-        static_injector = static_gen,
+        name = get_name(static_gen),
         ω_ref = 1.0,
         machine = oneDoneQ,
         shaft = BaseShaft,
@@ -416,29 +413,33 @@ end
         add_component!(sys, lines)
     end
 
-    # Rule: The static injector must be part of the system.
+    # Names must be the same.
+    Gen1AVR.name = "bad_name"
+    @test_throws ArgumentError add_component!(sys, Gen1AVR, static_gen)
+
+    Gen1AVR.name = get_name(static_gen)
+    # static_injector must be passed.
     @test_throws ArgumentError add_component!(sys, Gen1AVR)
+
+    # static_injector must be attached to the system.
+    @test_throws ArgumentError add_component!(sys, Gen1AVR, static_gen)
 
     add_component!(sys, static_gen)
     @test isnothing(get_dynamic_injector(static_gen))
 
-    add_component!(sys, Gen1AVR)
+    add_component!(sys, Gen1AVR, static_gen)
     dynamics = collect(get_components(DynamicGenerator, sys))
     @test length(dynamics) == 1
     @test dynamics[1] == Gen1AVR
     @test get_dynamic_injector(static_gen) == Gen1AVR
 
-    ## Rule: Can't add a dynamic injector when it's static injector is attached to another.
-    @test_throws ArgumentError add_component!(sys, Gen2AVR)
-
     remove_component!(sys, Gen1AVR)
     @test isnothing(get_dynamic_injector(static_gen))
-    add_component!(sys, Gen2AVR)
-    @test get_dynamic_injector(static_gen) == Gen2AVR
+    add_component!(sys, Gen2AVR, static_gen)
+    @test get_dynamic_injector(static_gen) === Gen2AVR
 
     # Rule: Can't set the pair injector if the current injector is already set.
     @test_throws ArgumentError set_dynamic_injector!(static_gen, Gen1AVR)
-    @test_throws ArgumentError set_static_injector!(Gen2AVR, static_gen)
 
     # Rule: Can't remove a static injector if it is attached to a dynamic injector.
     @test_throws ArgumentError remove_component!(sys, static_gen)

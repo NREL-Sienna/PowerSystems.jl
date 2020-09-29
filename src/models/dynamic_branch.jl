@@ -1,28 +1,81 @@
+"""
+Extends the branch type to add the information required for dynamic modeling of branches. Includes the fields for the states and the number of states
+
+
+# Arguments
+- `branch::ACBranch`
+"""
 mutable struct DynamicBranch <: ACBranch
     branch::ACBranch
-    n_states::Int64
+    n_states::Int
     states::Vector{Symbol}
     internal::IS.InfrastructureSystemsInternal
 
-    function DynamicBranch(
-        branch::T;
-        internal = IS.InfrastructureSystemsInternal(),
-    ) where {T <: ACBranch}
-        n_states = 2
-        states = [
-            :Il_R
-            :Il_I
-        ]
+    function DynamicBranch(branch, n_states, states, internal)
+        @assert length(states) == n_states
         new(branch, n_states, states, internal)
     end
 end
 
-function DynamicBranch(; branch)
-    DynamicBranch(branch)
+const DEFAULT_DYNAMIC_BRANCH_STATES = [:Il_R, :Il_I]
+
+function DynamicBranch(
+    branch::T;
+    internal = IS.InfrastructureSystemsInternal(),
+) where {T <: ACBranch}
+    states = DEFAULT_DYNAMIC_BRANCH_STATES
+    n_states = length(states)
+    DynamicBranch(branch, n_states, states, internal)
+end
+
+function DynamicBranch(;
+    branch,
+    n_states = length(DEFAULT_DYNAMIC_BRANCH_STATES),
+    states = DEFAULT_DYNAMIC_BRANCH_STATES,
+    internal = IS.InfrastructureSystemsInternal(),
+)
+    DynamicBranch(branch, n_states, states, internal)
 end
 
 function DynamicBranch(::Nothing)
     DynamicBranch(Line(nothing))
+end
+
+const BRANCH_TYPE_KEY = "__branch_type"
+
+function IS.serialize(component::T) where {T <: DynamicBranch}
+    data = Dict{String, Any}()
+    for name in fieldnames(T)
+        val = getfield(component, name)
+        if name === :branch
+            # The device is not attached to the system, so serialize it and save the type.
+            data[BRANCH_TYPE_KEY] = string(typeof(val))
+        end
+        data[string(name)] = serialize_uuid_handling(val)
+    end
+
+    return data
+end
+
+function IS.deserialize(
+    ::Type{T},
+    data::Dict,
+    component_cache::Dict,
+) where {T <: DynamicBranch}
+    @debug T data
+    vals = Dict{Symbol, Any}()
+    for (field_name, field_type) in zip(fieldnames(T), fieldtypes(T))
+        val = data[string(field_name)]
+        if field_name === :branch
+            type = get_component_type(data[BRANCH_TYPE_KEY])
+            vals[field_name] = deserialize(type, val, component_cache)
+        else
+            vals[field_name] =
+                deserialize_uuid_handling(field_type, field_name, val, component_cache)
+        end
+    end
+
+    return DynamicBranch(; vals...)
 end
 
 "Get branch"
@@ -93,42 +146,6 @@ set_internal!(value::DynamicBranch, val::InfrastructureSystemsInternal) =
 "Set branch"
 set_branch!(value::DynamicBranch, val::ACBranch) = value.branch = val
 "Set n_states"
-set_n_states!(value::DynamicBranch, val::Int64) = value.n_states = val
+set_n_states!(value::DynamicBranch, val::Int) = value.n_states = val
 "Set states"
 set_states!(value::DynamicBranch, val::Vector{Symbol}) = value.states = val
-
-function JSON2.write(io::IO, dynamic_branch::DynamicBranch)
-    return JSON2.write(io, encode_for_json(dynamic_branch))
-end
-
-function JSON2.write(dynamic_branch::DynamicBranch)
-    return JSON2.write(encode_for_json(dynamic_branch))
-end
-
-function encode_for_json(dynamic_branch::DynamicBranch)
-    # This requires custom code because the composed branch is defined as an abstract type.
-    # Record the concrete type of the instance in the JSON so that the deserialization
-    # code knows how to construct it.
-    fields = fieldnames(DynamicBranch)
-    final_fields = Vector{Symbol}()
-    vals = []
-
-    for field in fields
-        push!(vals, getfield(dynamic_branch, field))
-        push!(final_fields, field)
-    end
-
-    push!(final_fields, :branch_type)
-    push!(vals, typeof(dynamic_branch.branch))
-
-    return NamedTuple{Tuple(final_fields)}(vals)
-end
-
-function IS.convert_type(::Type{DynamicBranch}, data::NamedTuple, component_cache::Dict)
-    branch_type = get_component_type(Symbol(data.branch_type))
-    # Note: The arcs inside the raw JSON branch have bus UUIDs which need to be read from
-    # component_cache.
-    branch = IS.convert_type(branch_type, data.branch, component_cache)
-    internal = IS.convert_type(IS.InfrastructureSystemsInternal, data.internal)
-    return DynamicBranch(branch; internal = internal)
-end

@@ -5,7 +5,7 @@ os:
   - osx
   - windows
 julia:
-  - 1.4
+  - 1.5
   - nightly
 
 ## uncomment the following lines to allow failures on nightly julia

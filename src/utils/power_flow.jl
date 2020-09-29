@@ -1,7 +1,6 @@
 """
-Calculates the From - To comp[lex power flow (Flow injected at the bus) of branch of type
+Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 TapTransformer
-
 """
 function flow_val(b::TapTransformer)
     Y_t = get_series_admittance(b)
@@ -17,7 +16,6 @@ end
 """
 Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Line
-
 """
 function flow_val(b::ACBranch)
     Y_t = get_series_admittance(b)
@@ -32,7 +30,6 @@ end
 """
 Calculates the From - To complex power flow (Flow injected at the bus) of branch of type
 Transformer2W
-
 """
 function flow_val(b::Transformer2W)
     Y_t = get_series_admittance(b)
@@ -52,7 +49,6 @@ end
 """
 Calculates the From - To complex power flow using external data of voltages of branch of type
 TapTransformer
-
 """
 function flow_func(b::TapTransformer, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
@@ -65,7 +61,6 @@ end
 """
 Calculates the From - To complex power flow using external data of voltages of branch of type
 Line
-
 """
 function flow_func(b::ACBranch, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
@@ -75,11 +70,8 @@ function flow_func(b::ACBranch, V_from::Complex{Float64}, V_to::Complex{Float64}
 end
 
 """
-    flow_func(b::Transformer2W, V_from::Complex, V_to::Complex)
-
 Calculates the From - To complex power flow using external data of voltages of branch of type
 Transformer2W
-
 """
 function flow_func(b::Transformer2W, V_from::Complex{Float64}, V_to::Complex{Float64})
     Y_t = get_series_admittance(b)
@@ -131,7 +123,6 @@ end
 
 """
 Updates system voltages and powers with power flow results
-
 """
 function _write_pf_sol!(sys::System, nl_result)
     result = round.(nl_result.zero; digits = 7)
@@ -300,7 +291,7 @@ function solve_powerflow!(system::System; finite_diff = false, kwargs...)
     #Save per-unit flag
     settings_unit_cache = deepcopy(system.units_settings.unit_system)
     #Work in System per unit
-    set_units_base_system!(system, "system_base")
+    set_units_base_system!(system, "SYSTEM_BASE")
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
         PowerSystems._write_pf_sol!(system, res)
@@ -333,7 +324,7 @@ function solve_powerflow(system::System; finite_diff = false, kwargs...)
     #Save per-unit flag
     settings_unit_cache = deepcopy(system.units_settings.unit_system)
     #Work in System per unit
-    set_units_base_system!(system, "system_base")
+    set_units_base_system!(system, "SYSTEM_BASE")
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
         @info("PowerFlow solve converged, the results are exported in DataFrames")
@@ -364,8 +355,8 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     x0 = zeros(N_BUS * 2)
 
     #Create Jacobian structure
-    J0_I = Int64[]
-    J0_J = Int64[]
+    J0_I = Int[]
+    J0_J = Int[]
     J0_V = Float64[]
 
     for ix_f in a
@@ -528,7 +519,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         end
     end
 
-    function jsp!(J::SparseArrays.SparseMatrixCSC{Float64, Int64}, X::Vector{Float64})
+    function jsp!(J::SparseArrays.SparseMatrixCSC{Float64, Int}, X::Vector{Float64})
         for ix_f in a
             F_ix_f_r = 2 * ix_f - 1
             F_ix_f_i = 2 * ix_f

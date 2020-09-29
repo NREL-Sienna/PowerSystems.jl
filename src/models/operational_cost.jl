@@ -2,13 +2,52 @@ const VarCostArgs = Union{Float64, NTuple{2, Float64}, Vector{NTuple{2, Float64}
 
 abstract type OperationalCost <: DeviceParameter end
 
+function IS.serialize(val::T) where {T <: OperationalCost}
+    return Dict{String, Any}(
+        "value" => IS.serialize_struct(val),
+        IS.TYPE_KEY => string(T),
+    )
+end
+
+function IS.deserialize(::Type{<:OperationalCost}, data::Dict)
+    @debug "deserialize OperationalCost" data
+    return IS.deserialize_struct(
+        get_component_type(data[IS.TYPE_KEY]),
+        data["value"],
+    )
+end
+
 mutable struct VariableCost{T}
     cost::T
 end
 
+VariableCost(; cost) = VariableCost(cost)
+
+function IS.serialize(val::VariableCost)
+    return Dict{String, Any}("cost" => serialize(val.cost))
+end
+
+# The default implementation can't figure out the variable Union.
+
+function IS.deserialize(::Type{VariableCost}, data::Dict)
+    if data["cost"] isa Real
+        return VariableCost(Float64(data["cost"]))
+    elseif data["cost"][1] isa Array
+        variable = Vector{Tuple{Float64, Float64}}()
+        for array in data["cost"]
+            push!(variable, Tuple{Float64, Float64}(array))
+        end
+    else
+        @assert data["cost"] isa Tuple || data["cost"] isa Array
+        variable = Tuple{Float64, Float64}(data["cost"])
+    end
+
+    return VariableCost(variable)
+end
+
 get_cost(vc::VariableCost) = vc.cost
 Base.length(vc::VariableCost) = length(vc.cost)
-Base.getindex(vc::VariableCost, ix::Int64) = getindex(vc.cost, ix)
+Base.getindex(vc::VariableCost, ix::Int) = getindex(vc.cost, ix)
 
 function get_breakpoint_upperbounds(vc::VariableCost{T}) where {T}
     throw(ArgumentError("Method not supported for VariableCost using $(T)"))

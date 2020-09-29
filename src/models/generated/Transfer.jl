@@ -36,8 +36,8 @@ function Transfer(name, available, requirement, ext=Dict{String, Any}(), forecas
     Transfer(name, available, requirement, ext, forecasts, InfrastructureSystemsInternal(), )
 end
 
-function Transfer(; name, available, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transfer(name, available, requirement, ext, forecasts, )
+function Transfer(; name, available, requirement, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
+    Transfer(name, available, requirement, ext, forecasts, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -53,26 +53,27 @@ end
 
 
 InfrastructureSystems.get_name(value::Transfer) = value.name
-"""Get Transfer available."""
+"""Get [`Transfer`](@ref) `available`."""
 get_available(value::Transfer) = value.available
-"""Get Transfer requirement."""
+"""Get [`Transfer`](@ref) `requirement`."""
 get_requirement(value::Transfer) = value.requirement
-"""Get Transfer ext."""
+"""Get [`Transfer`](@ref) `ext`."""
 get_ext(value::Transfer) = value.ext
 
 InfrastructureSystems.get_forecasts(value::Transfer) = value.forecasts
-"""Get Transfer internal."""
+"""Get [`Transfer`](@ref) `internal`."""
 get_internal(value::Transfer) = value.internal
 
 
-InfrastructureSystems.set_name!(value::Transfer, val::String) = value.name = val
-"""Set Transfer available."""
-set_available!(value::Transfer, val::Bool) = value.available = val
-"""Set Transfer requirement."""
-set_requirement!(value::Transfer, val::Float64) = value.requirement = val
-"""Set Transfer ext."""
-set_ext!(value::Transfer, val::Dict{String, Any}) = value.ext = val
+InfrastructureSystems.set_name!(value::Transfer, val) = value.name = val
+"""Set [`Transfer`](@ref) `available`."""
+set_available!(value::Transfer, val) = value.available = val
+"""Set [`Transfer`](@ref) `requirement`."""
+set_requirement!(value::Transfer, val) = value.requirement = val
+"""Set [`Transfer`](@ref) `ext`."""
+set_ext!(value::Transfer, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::Transfer, val::InfrastructureSystems.Forecasts) = value.forecasts = val
-"""Set Transfer internal."""
-set_internal!(value::Transfer, val::InfrastructureSystemsInternal) = value.internal = val
+InfrastructureSystems.set_forecasts!(value::Transfer, val) = value.forecasts = val
+"""Set [`Transfer`](@ref) `internal`."""
+set_internal!(value::Transfer, val) = value.internal = val
+

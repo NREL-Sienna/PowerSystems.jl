@@ -10,14 +10,13 @@ This file is auto-generated. Do not edit.
         Te::Float64
         Tf::Float64
         Tr::Float64
-        Vr_max::Float64
-        Vr_min::Float64
+        Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Ae::Float64
         Be::Float64
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         states_types::Vector{StateTypes.StateType}
         internal::InfrastructureSystemsInternal
     end
@@ -25,25 +24,24 @@ This file is auto-generated. Do not edit.
 Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 
 # Arguments
-- `Ka::Float64`: Amplifier Gain, validation range: (0, nothing)
-- `Ke::Float64`: Field circuit integral deviation, validation range: (0, nothing)
-- `Kf::Float64`: Stabilizer Gain in s * pu/pu, validation range: (0, nothing)
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: (0, nothing)
-- `Te::Float64`: Field Circuit Time Constant in s, validation range: (0, nothing)
-- `Tf::Float64`: Stabilizer Time Constant in s, validation range: (0, nothing)
-- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: (0, nothing)
-- `Vr_max::Float64`: Maximum regulator voltage in pu, validation range: (0, nothing)
-- `Vr_min::Float64`: Minimum regulator voltage in pu, validation range: (0, nothing)
-- `Ae::Float64`: 1st ceiling coefficient, validation range: (0, nothing)
-- `Be::Float64`: 2nd ceiling coefficient, validation range: (0, nothing)
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: (0, nothing)
+- `Ka::Float64`: Amplifier Gain, validation range: `(0, nothing)`
+- `Ke::Float64`: Field circuit integral deviation, validation range: `(0, nothing)`
+- `Kf::Float64`: Stabilizer Gain in s * pu/pu, validation range: `(0, nothing)`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, nothing)`
+- `Te::Float64`: Field Circuit Time Constant in s, validation range: `(0, nothing)`
+- `Tf::Float64`: Stabilizer Time Constant in s, validation range: `(0, nothing)`
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`
+- `Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for pi controler `(Va_min, Va_max)`
+- `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
+- `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vf: Voltage field,
 	Vr1: Amplifier State,
 	Vr2: Stabilizing Feedback State,
 	Vm: Measured voltage
-- `n_states::Int64`: The AVR Type I has 4 states
+- `n_states::Int`: The AVR Type I has 4 states
 - `states_types::Vector{StateTypes.StateType}`: AVR Type I has 4 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -62,10 +60,8 @@ mutable struct AVRTypeI <: AVR
     Tf::Float64
     "Voltage Measurement Time Constant in s"
     Tr::Float64
-    "Maximum regulator voltage in pu"
-    Vr_max::Float64
-    "Minimum regulator voltage in pu"
-    Vr_min::Float64
+    "Limits for pi controler `(Va_min, Va_max)`"
+    Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "1st ceiling coefficient"
     Ae::Float64
     "2nd ceiling coefficient"
@@ -80,19 +76,19 @@ mutable struct AVRTypeI <: AVR
 	Vm: Measured voltage"
     states::Vector{Symbol}
     "The AVR Type I has 4 states"
-    n_states::Int64
+    n_states::Int
     "AVR Type I has 4 differential states"
     states_types::Vector{StateTypes.StateType}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
+    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Va_lim, Ae, Be, V_ref, ext, [:Vf, :Vr1, :Vr2, :Vm], 4, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function AVRTypeI(; Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Vr_max, Vr_min, Ae, Be, V_ref, ext, )
+function AVRTypeI(; Ka, Ke, Kf, Ta, Te, Tf, Tr, Va_lim, Ae, Be, V_ref=1.0, ext=Dict{String, Any}(), states=[:Vf, :Vr1, :Vr2, :Vm], n_states=4, states_types=[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
+    AVRTypeI(Ka, Ke, Kf, Ta, Te, Tf, Tr, Va_lim, Ae, Be, V_ref, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -105,8 +101,7 @@ function AVRTypeI(::Nothing)
         Te=0,
         Tf=0,
         Tr=0,
-        Vr_max=0,
-        Vr_min=0,
+        Va_lim=(min=0.0, max=0.0),
         Ae=0,
         Be=0,
         V_ref=0,
@@ -114,72 +109,65 @@ function AVRTypeI(::Nothing)
     )
 end
 
-"""Get AVRTypeI Ka."""
+"""Get [`AVRTypeI`](@ref) `Ka`."""
 get_Ka(value::AVRTypeI) = value.Ka
-"""Get AVRTypeI Ke."""
+"""Get [`AVRTypeI`](@ref) `Ke`."""
 get_Ke(value::AVRTypeI) = value.Ke
-"""Get AVRTypeI Kf."""
+"""Get [`AVRTypeI`](@ref) `Kf`."""
 get_Kf(value::AVRTypeI) = value.Kf
-"""Get AVRTypeI Ta."""
+"""Get [`AVRTypeI`](@ref) `Ta`."""
 get_Ta(value::AVRTypeI) = value.Ta
-"""Get AVRTypeI Te."""
+"""Get [`AVRTypeI`](@ref) `Te`."""
 get_Te(value::AVRTypeI) = value.Te
-"""Get AVRTypeI Tf."""
+"""Get [`AVRTypeI`](@ref) `Tf`."""
 get_Tf(value::AVRTypeI) = value.Tf
-"""Get AVRTypeI Tr."""
+"""Get [`AVRTypeI`](@ref) `Tr`."""
 get_Tr(value::AVRTypeI) = value.Tr
-"""Get AVRTypeI Vr_max."""
-get_Vr_max(value::AVRTypeI) = value.Vr_max
-"""Get AVRTypeI Vr_min."""
-get_Vr_min(value::AVRTypeI) = value.Vr_min
-"""Get AVRTypeI Ae."""
+"""Get [`AVRTypeI`](@ref) `Va_lim`."""
+get_Va_lim(value::AVRTypeI) = value.Va_lim
+"""Get [`AVRTypeI`](@ref) `Ae`."""
 get_Ae(value::AVRTypeI) = value.Ae
-"""Get AVRTypeI Be."""
+"""Get [`AVRTypeI`](@ref) `Be`."""
 get_Be(value::AVRTypeI) = value.Be
-"""Get AVRTypeI V_ref."""
+"""Get [`AVRTypeI`](@ref) `V_ref`."""
 get_V_ref(value::AVRTypeI) = value.V_ref
-"""Get AVRTypeI ext."""
+"""Get [`AVRTypeI`](@ref) `ext`."""
 get_ext(value::AVRTypeI) = value.ext
-"""Get AVRTypeI states."""
+"""Get [`AVRTypeI`](@ref) `states`."""
 get_states(value::AVRTypeI) = value.states
-"""Get AVRTypeI n_states."""
+"""Get [`AVRTypeI`](@ref) `n_states`."""
 get_n_states(value::AVRTypeI) = value.n_states
-"""Get AVRTypeI states_types."""
+"""Get [`AVRTypeI`](@ref) `states_types`."""
 get_states_types(value::AVRTypeI) = value.states_types
-"""Get AVRTypeI internal."""
+"""Get [`AVRTypeI`](@ref) `internal`."""
 get_internal(value::AVRTypeI) = value.internal
 
-"""Set AVRTypeI Ka."""
-set_Ka!(value::AVRTypeI, val::Float64) = value.Ka = val
-"""Set AVRTypeI Ke."""
-set_Ke!(value::AVRTypeI, val::Float64) = value.Ke = val
-"""Set AVRTypeI Kf."""
-set_Kf!(value::AVRTypeI, val::Float64) = value.Kf = val
-"""Set AVRTypeI Ta."""
-set_Ta!(value::AVRTypeI, val::Float64) = value.Ta = val
-"""Set AVRTypeI Te."""
-set_Te!(value::AVRTypeI, val::Float64) = value.Te = val
-"""Set AVRTypeI Tf."""
-set_Tf!(value::AVRTypeI, val::Float64) = value.Tf = val
-"""Set AVRTypeI Tr."""
-set_Tr!(value::AVRTypeI, val::Float64) = value.Tr = val
-"""Set AVRTypeI Vr_max."""
-set_Vr_max!(value::AVRTypeI, val::Float64) = value.Vr_max = val
-"""Set AVRTypeI Vr_min."""
-set_Vr_min!(value::AVRTypeI, val::Float64) = value.Vr_min = val
-"""Set AVRTypeI Ae."""
-set_Ae!(value::AVRTypeI, val::Float64) = value.Ae = val
-"""Set AVRTypeI Be."""
-set_Be!(value::AVRTypeI, val::Float64) = value.Be = val
-"""Set AVRTypeI V_ref."""
-set_V_ref!(value::AVRTypeI, val::Float64) = value.V_ref = val
-"""Set AVRTypeI ext."""
-set_ext!(value::AVRTypeI, val::Dict{String, Any}) = value.ext = val
-"""Set AVRTypeI states."""
-set_states!(value::AVRTypeI, val::Vector{Symbol}) = value.states = val
-"""Set AVRTypeI n_states."""
-set_n_states!(value::AVRTypeI, val::Int64) = value.n_states = val
-"""Set AVRTypeI states_types."""
-set_states_types!(value::AVRTypeI, val::Vector{StateTypes.StateType}) = value.states_types = val
-"""Set AVRTypeI internal."""
-set_internal!(value::AVRTypeI, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`AVRTypeI`](@ref) `Ka`."""
+set_Ka!(value::AVRTypeI, val) = value.Ka = val
+"""Set [`AVRTypeI`](@ref) `Ke`."""
+set_Ke!(value::AVRTypeI, val) = value.Ke = val
+"""Set [`AVRTypeI`](@ref) `Kf`."""
+set_Kf!(value::AVRTypeI, val) = value.Kf = val
+"""Set [`AVRTypeI`](@ref) `Ta`."""
+set_Ta!(value::AVRTypeI, val) = value.Ta = val
+"""Set [`AVRTypeI`](@ref) `Te`."""
+set_Te!(value::AVRTypeI, val) = value.Te = val
+"""Set [`AVRTypeI`](@ref) `Tf`."""
+set_Tf!(value::AVRTypeI, val) = value.Tf = val
+"""Set [`AVRTypeI`](@ref) `Tr`."""
+set_Tr!(value::AVRTypeI, val) = value.Tr = val
+"""Set [`AVRTypeI`](@ref) `Va_lim`."""
+set_Va_lim!(value::AVRTypeI, val) = value.Va_lim = val
+"""Set [`AVRTypeI`](@ref) `Ae`."""
+set_Ae!(value::AVRTypeI, val) = value.Ae = val
+"""Set [`AVRTypeI`](@ref) `Be`."""
+set_Be!(value::AVRTypeI, val) = value.Be = val
+"""Set [`AVRTypeI`](@ref) `V_ref`."""
+set_V_ref!(value::AVRTypeI, val) = value.V_ref = val
+"""Set [`AVRTypeI`](@ref) `ext`."""
+set_ext!(value::AVRTypeI, val) = value.ext = val
+"""Set [`AVRTypeI`](@ref) `states_types`."""
+set_states_types!(value::AVRTypeI, val) = value.states_types = val
+"""Set [`AVRTypeI`](@ref) `internal`."""
+set_internal!(value::AVRTypeI, val) = value.internal = val
+

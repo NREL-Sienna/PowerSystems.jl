@@ -93,7 +93,9 @@ function get_branch_type(
         is_transformer = (tap != 0.0) & (tap != 1.0)
     end
     if is_transformer
-        if alpha == 0.0
+        if tap == 1.0
+            branch_type = Transformer2W
+        elseif alpha == 0.0
             branch_type = TapTransformer
         else
             branch_type = PhaseShiftingTransformer
@@ -126,6 +128,14 @@ function convert_units!(
         value = deg2rad(value)
     elseif unit_conversion.From == "radian" && unit_conversion.To == "degree"
         value = rad2deg(value)
+    elseif unit_conversion.From == "GW" && unit_conversion.To == "MW"
+        value *= 1000
+    elseif unit_conversion.From == "GWh" && unit_conversion.To == "MWh"
+        value *= 1000
+    elseif unit_conversion.From == "kW" && unit_conversion.To == "MW"
+        value /= 1000
+    elseif unit_conversion.From == "kWh" && unit_conversion.To == "MWh"
+        value /= 1000
     else
         throw(DataFormatError("Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported"))
     end

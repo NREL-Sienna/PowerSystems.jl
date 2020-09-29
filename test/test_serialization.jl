@@ -1,5 +1,3 @@
-import JSON2
-
 function validate_serialization(sys::System; time_series_read_only = false)
     test_dir = mktempdir()
     orig_dir = pwd()
@@ -7,21 +5,16 @@ function validate_serialization(sys::System; time_series_read_only = false)
 
     try
         path = joinpath(test_dir, "test_system_serialization.json")
-        io = open(path, "w")
         @info "Serializing to $path"
         sys_ext = get_ext(sys)
         sys_ext["data"] = 5
         ext_test_bus_name = ""
-        try
-            IS.prepare_for_serialization!(sys.data, path; force = true)
-            bus = collect(get_components(PSY.Bus, sys))[1]
-            ext_test_bus_name = PSY.get_name(bus)
-            ext = PSY.get_ext(bus)
-            ext["test_field"] = 1
-            to_json(io, sys)
-        finally
-            close(io)
-        end
+        IS.prepare_for_serialization!(sys.data, path; force = true)
+        bus = collect(get_components(PSY.Bus, sys))[1]
+        ext_test_bus_name = PSY.get_name(bus)
+        ext = PSY.get_ext(bus)
+        ext["test_field"] = 1
+        to_json(sys, path)
 
         sys2 = System(path; time_series_read_only = time_series_read_only)
         sys_ext2 = get_ext(sys2)
@@ -125,6 +118,35 @@ end
     branch = collect(get_components(Branch, sys))[1]
     dynamic_branch = DynamicBranch(branch)
     add_component!(sys, dynamic_branch)
+    _, result = validate_serialization(sys)
+    @test result
+end
+
+@testset "Test JSON serialization of StaticGroupReserve" begin
+    sys = System(100)
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        # This prevents an error log message.
+        bus.bustype = BusTypes.REF
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    service = StaticReserve{ReserveDown}(nothing)
+    add_service!(sys, service, devices)
+
+    groupservice = StaticReserveGroup{ReserveDown}(nothing)
+    add_service!(sys, groupservice)
+    members = Vector{Service}()
+    push!(members, service)
+    set_contributing_services!(sys, groupservice, members)
     _, result = validate_serialization(sys)
     @test result
 end

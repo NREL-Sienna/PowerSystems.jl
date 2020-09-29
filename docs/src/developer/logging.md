@@ -1,4 +1,5 @@
 # Logging
+
 This document describes logging facilities available in the PowerSystems
 module. The examples assume the following imports:
 
@@ -34,15 +35,13 @@ The function provides lots of customization. Refer to the docstring for complete
 Create a `MultiLogger` from `Logging.ConsoleLogger` and `Logging.SimpleLogger`.
 Use `open_file_logger` to guarantee that all messages get flushed to the file.
 
-#### Example
-
 ```julia
 console_logger = ConsoleLogger(stderr, Logging.Error)
 
 open_file_logger("log.txt", Logging.Info) do file_logger
     multi_logger = MultiLogger([console_logger, file_logger])
     global_logger(multi_logger)
-    
+
     do_stuff()
 end
 ```
@@ -50,16 +49,14 @@ end
 **Note:** If someone may execute the code in the REPL then wrap that code in a
 try/finally block and reset the global logger upon exit.
 
-#### Example
-
 ```julia
 function run_tests()
     console_logger = ConsoleLogger(stderr, Logging.Error)
-    
+
     open_file_logger("log.txt", Logging.Info) do file_logger
         multi_logger = MultiLogger([console_logger, file_logger])
         global_logger(multi_logger)
-        
+
         do_stuff()
     end
 end

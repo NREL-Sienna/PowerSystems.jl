@@ -30,25 +30,28 @@
             "name": "rate",
             "unit": "MVA",
             "description": "Apparent power limit rating",
-            "unit_system": "system_base",
+            "unit_system": "SYSTEM_BASE",
             "default_value": "system_base_power"
         },
         {
             "name": "rectifier_firing_angle_max",
             "unit": "degree",
             "value_range": [],
-            "description": "Nominal maximum firing angle"
+            "description": "Nominal maximum firing angle",
+            "default_value": null
         },
         {
             "name": "rectifier_firing_angle_min",
             "unit": "degree",
             "value_range": [],
-            "description": "Minimum steady state firing angle"
+            "description": "Minimum steady state firing angle",
+            "default_value": null
         },
         {
             "name": "rectifier_xrc",
             "description": "Commutating transformer reactance/bridge",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": null
         },
         {
             "name": "rectifier_tap_limits_max",
@@ -66,18 +69,21 @@
             "name": "inverter_firing_angle_max",
             "unit": "degree",
             "value_range": [],
-            "description": "Nominal maximum firing angle"
+            "description": "Nominal maximum firing angle",
+            "default_value": null
         },
         {
             "name": "inverter_firing_angle_min",
             "unit": "degree",
             "value_range": [],
-            "description": "Minimum steady state firing angle"
+            "description": "Minimum steady state firing angle",
+            "default_value": null
         },
         {
             "name": "inverter_xrc",
             "description": "Commutating transformer reactance/bridge",
-            "unit_system": "device_base"
+            "unit_system": "device_base",
+            "default_value": null
         },
         {
             "name": "inverter_tap_limits_max",
@@ -94,7 +100,8 @@
         {
             "name": "loss",
             "unit": "%",
-            "description": "Power Losses on the Line"
+            "description": "Power Losses on the Line",
+            "default_value": 0.0
         },
         {
             "name": "min_active_power_limit_from",
@@ -162,7 +169,8 @@
         },
         {
             "name": "control_mode",
-            "description": "Control Mode"
+            "description": "Control Mode",
+            "default_value": "Power"
         },
         {
             "name": "dc_line_category",
@@ -206,7 +214,7 @@
             "unit": "MW",
             "name": "rate",
             "description": "Continuous MW flow limit",
-            "unit_system": "system_base"
+            "unit_system": "SYSTEM_BASE"
         },
         {
             "unit": "radian",
@@ -241,6 +249,13 @@
             "unit": "%",
             "description": "Transformer winding ratio",
             "default_value": 1.0
+        }
+        ,
+        {
+            "name": "is_transformer",
+            "unit": "bool",
+            "description": "Transformer flag",
+            "default_value": null
         }
     ],
     "generator": [
@@ -656,10 +671,10 @@
             "default_value": null
         },
         {
-            "units": "MW",
+            "unit": "MW",
             "name": "requirement",
             "description": "reserve requirement",
-            "unit_system": "system_base"
+            "unit_system": "SYSTEM_BASE"
         },
         {
             "unit": "seconds",
@@ -722,7 +737,7 @@
         },
         {
             "name": "energy_level",
-            "unit": "kWh",
+            "unit": "MWh",
             "description": "Energy Level setpoint",
             "unit_system": "device_base",
             "default_value": 0.0
@@ -813,13 +828,13 @@
             "default_value": 1.0
         },
         {
-            "unit": "GWh",
+            "unit": "MWh",
             "name": "storage_capacity",
             "description": "Storage Capacity",
             "unit_system": "device_base"
         },
         {
-            "unit": "GWh",
+            "unit": "MWh",
             "name": "min_storage_capacity",
             "description": "Storage Capacity minimum",
             "unit_system": "device_base",

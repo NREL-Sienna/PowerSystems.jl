@@ -117,7 +117,7 @@ end
 @testset "Test clear_services" begin
     gen = ThermalStandard(nothing)
     service = StaticReserve{ReserveDown}(nothing)
-    add_service!(gen, service)
+    PSY.add_service_internal!(gen, service)
     @test length(get_services(gen)) == 1
 
     remove_service!(gen, service)
@@ -136,7 +136,7 @@ end
     gen.name = "gen"
 
     service = StaticReserve{ReserveDown}(nothing)
-    add_service!(gen, service)
+    PSY.add_service_internal!(gen, service)
     @test length(get_services(gen)) == 1
 
     @test_throws ArgumentError add_component!(sys, gen)
@@ -163,11 +163,11 @@ end
         add_component!(sys, service)
     end
 
-    add_service!(devices[1], services[1])
-    add_service!(devices[2], services[1])
-    add_service!(devices[3], services[2])
-    add_service!(devices[4], services[2])
-    add_service!(devices[5], services[2])
+    PSY.add_service_internal!(devices[1], services[1])
+    PSY.add_service_internal!(devices[2], services[1])
+    PSY.add_service_internal!(devices[3], services[2])
+    PSY.add_service_internal!(devices[4], services[2])
+    PSY.add_service_internal!(devices[5], services[2])
 
     expected_contributing_devices1 = [devices[1], devices[2]]
     expected_contributing_devices2 = [devices[3], devices[4], devices[5]]
@@ -238,7 +238,7 @@ end
         end
     end
 
-    @test 8 == actual_count
+    @test 10 == actual_count
 end
 
 @testset "Test AGC Device and Regulation Services" begin
@@ -275,15 +275,135 @@ end
 
     device_without_regulation =
         first(get_components(HydroGen, sys, x -> get_area(get_bus(x)) == control_area))
-    @test_throws IS.ConflictingInputsError add_service!(
+    @test_throws IS.ConflictingInputsError PSY.add_service_internal!(
         device_without_regulation,
         AGC_service,
     )
 
     device_outside_area_ = get_component(ThermalStandard, sys, "213_CT_1")
     device_outside_area = RegulationDevice(device_outside_area_)
-    @test_throws IS.ConflictingInputsError add_service!(device_outside_area, AGC_service)
+    @test_throws IS.ConflictingInputsError PSY.add_service_internal!(
+        device_outside_area,
+        AGC_service,
+    )
 
-    @test_throws ArgumentError add_service!(contributing_devices[1], AGC_service)
+    @test_throws ArgumentError PSY.add_service_internal!(
+        contributing_devices[1],
+        AGC_service,
+    )
 
+end
+
+@testset "Test StaticReserveGroup" begin
+    # create system 
+    sys = System(100)
+    # add buses and generators
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    # add StaticReserve
+    service = StaticReserve{ReserveDown}(nothing)
+    add_service!(sys, service, devices)
+
+    # add StaticReserve
+    groupservice = StaticReserveGroup{ReserveDown}(nothing)
+    add_service!(sys, groupservice)
+
+    # add StaticReserveGroup
+    groupservices = collect(get_components(StaticReserveGroup, sys))
+    # test if StaticReserveGroup was added
+    @test length(groupservices) == 1
+    @test groupservices[1] == groupservice
+
+    # add contributing services
+    expected_contributing_services = Vector{Service}()
+    push!(expected_contributing_services, service)
+    set_contributing_services!(sys, groupservice, expected_contributing_services)
+    # get contributing services
+    contributing_services = get_contributing_services(groupservice)
+
+    # check if expected contributing services is iqual to contributing services  
+    sort!(contributing_services, by = x -> get_name(x))
+    @test contributing_services == expected_contributing_services
+end
+
+@testset "Test StaticReserveGroup errors" begin
+    sys = System(100)
+    bus = Bus(nothing)
+    groupservice = StaticReserveGroup{ReserveDown}(nothing)
+
+    # Bus is not a Service.
+    @test_throws MethodError set_contributing_services!(sys, groupservice, [bus])
+
+    # Service not in System
+    service = StaticReserve{ReserveDown}(nothing)
+    contributing_services = Vector{Service}()
+    push!(contributing_services, service)
+    @test_throws ArgumentError add_service!(sys, groupservice, contributing_services)
+
+    # Service in a StaticReserveGroup
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+    add_service!(sys, service, devices)
+    add_service!(sys, groupservice, contributing_services)
+    @test_throws ArgumentError remove_component!(sys, service)
+end
+
+@testset "Test ReserveNonSpinning" begin
+    # create system 
+    sys = System(100)
+    # add buses and generators
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    # add StaticReserve
+    service = StaticReserveNonSpinning(nothing)
+    add_service!(sys, service, devices)
+
+    for device in devices
+        services = get_services(device)
+        @test length(services) == 1
+        @test services[1] isa Service
+        @test services[1] == service
+    end
+
+    services = collect(get_components(Service, sys))
+    @test length(services) == 1
+    @test services[1] == service
+
+    remove_component!(sys, service)
+
+    for device in devices
+        @test length(get_services(device)) == 0
+    end
 end

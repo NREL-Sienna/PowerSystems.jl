@@ -9,6 +9,7 @@ module PowerSystems
 # Exports
 
 export System
+export Topology
 export Bus
 export Arc
 export AggregationTopology
@@ -16,7 +17,6 @@ export Area
 export LoadZone
 export get_aggregation_topology_accessor
 
-export PowerSystemType
 export Component
 export Device
 export get_max_active_power
@@ -44,6 +44,7 @@ export Generator
 export HydroGen
 export HydroDispatch
 export HydroEnergyReservoir
+export HydroPumpedStorage
 
 export RenewableGen
 export RenewableFix
@@ -76,9 +77,18 @@ export AVRFixed
 export AVRSimple
 export AVRTypeI
 export AVRTypeII
-export AC1A
-export ModifiedAC1A
-export ST1A
+export IEEET1
+export ESDC1A
+export ESDC2A
+export ESAC1A
+export ESAC6A
+export EXAC1
+export EXAC1A
+export EXAC2
+export EXPIC1
+export ESST1A
+export ESST4B
+export SCRX
 
 #Machine Exports
 export Machine
@@ -101,17 +111,23 @@ export SimpleFullMachine
 export PSS
 export PSSFixed
 export PSSSimple
+export IEEEST
 
 #Shaft Exports
+export Shaft
 export SingleMass
 export FiveMassShaft
 
 #TG Exports
 export TurbineGov
 export TGFixed
-export GasTG
 export TGTypeI
 export TGTypeII
+export GasTG
+export GeneralGovModel
+export HydroTurbineGov
+export IEEETurbineGov1
+export SteamTurbineGov1
 
 # Converter Exports
 export Converter
@@ -120,10 +136,12 @@ export AverageConverter
 # DC Source Exports
 export DCSource
 export FixedDCSource
+export ZeroOrderBESS
 
 # Filter Exports
 export Filter
 export LCLFilter
+export LCFilter
 
 # FrequencyEstimator Exports
 export FrequencyEstimator
@@ -150,6 +168,9 @@ export VariableReserve
 export AGC
 export ReserveDemandCurve
 export Transfer
+export StaticReserveGroup
+export StaticReserveNonSpinning
+export VariableReserveNonSpinning
 
 export PTDF
 export Ybus
@@ -178,6 +199,7 @@ export add_forecasts!
 export add_forecast!
 export remove_forecast!
 export clear_forecasts!
+export copy_forecasts!
 export add_component!
 export remove_component!
 export remove_components!
@@ -185,6 +207,7 @@ export clear_components!
 export add_service!
 export remove_service!
 export clear_services!
+export get_services
 export has_service
 export has_forecasts
 export get_buses
@@ -222,9 +245,12 @@ export get_base_power
 export get_frequency
 export set_units_base_system!
 export to_json
+export from_json
+export serialize
+export deserialize
 export check_forecast_consistency
 export validate_forecast_consistency
-export clear_ext
+export clear_ext!
 export convert_component!
 export set_area!
 export set_load_zone!
@@ -232,7 +258,6 @@ export TamuSystem
 export PowerModelsData
 export add_dyn_injectors!
 export set_dynamic_injector!
-export set_static_injector!
 export get_machine
 export get_shaft
 export get_avr
@@ -259,6 +284,7 @@ export get_reserve_limit_up
 export get_reserve_limit_dn
 export get_participation_factor
 export get_cost
+export get_units_base
 
 #################################################################################
 # Imports
@@ -271,8 +297,7 @@ import LinearAlgebra
 import Dates
 import TimeSeries
 import DataFrames
-import JSON
-import JSON2
+import JSON3
 import CSV
 import YAML
 import UUIDs
@@ -288,8 +313,10 @@ import InfrastructureSystems:
     Forecast,
     ScenarioBased,
     PiecewiseFunction,
+    InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
+    DeviceParameter,
     FlattenIteratorWrapper,
     LazyDictFromIterator,
     DataFormatError,
@@ -300,6 +327,12 @@ import InfrastructureSystems:
     get_initial_time,
     get_resolution,
     get_name,
+    to_json,
+    from_json,
+    serialize,
+    deserialize,
+    deserialize_parametric_type,
+    iterate_forecasts,
     UnitSystem,
     SystemUnitsSettings
 
@@ -318,17 +351,14 @@ using DocStringExtensions
 # Includes
 
 """
-Supertype for all PowerSystems types.
+Supertype for all PowerSystems components.
 All subtypes must include a InfrastructureSystemsInternal member.
 Subtypes should call InfrastructureSystemsInternal() by default, but also must
 provide a constructor that allows existing values to be deserialized.
 """
-abstract type PowerSystemType <: IS.InfrastructureSystemsType end
-
-abstract type Component <: PowerSystemType end
+abstract type Component <: IS.InfrastructureSystemsComponent end
 # supertype for "devices" (bus, line, etc.)
 abstract type Device <: Component end
-abstract type DeviceParameter <: PowerSystemType end
 
 include("common.jl")
 include("models/static_models.jl")
@@ -352,6 +382,7 @@ include("models/storage.jl")
 include("models/loads.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
+include("models/OuterControl.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
@@ -365,6 +396,10 @@ include("models/devices.jl")
 include("models/dynamic_generator.jl")
 include("models/dynamic_inverter.jl")
 include("models/dynamic_machines.jl")
+include("models/RoundRotorExponential.jl")
+include("models/RoundRotorQuadratic.jl")
+include("models/SalientPoleExponential.jl")
+include("models/SalientPoleQuadratic.jl")
 include("models/dynamic_branch.jl")
 
 include("models/supplemental_constructors.jl")
@@ -384,7 +419,10 @@ include("utils/network_calculations/ptdf_calculations.jl")
 include("utils/network_calculations/lodf_calculations.jl")
 
 #PowerFlow
-include("utils/power_flow/power_flow.jl")
+include("utils/power_flow.jl")
+
+#Conversions
+include("utils/conversion.jl")
 
 # Include Parsing files
 include("parsers/common.jl")

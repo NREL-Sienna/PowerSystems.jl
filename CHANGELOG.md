@@ -1,5 +1,40 @@
 # PowerSystems Change Log
 
+## 0.28.0
+
+- Export additional methods
+- Change System constructor that takes iterable arguments
+
+## 0.27.0
+
+- Change errors to warnings when validating impedance values in AC Branches
+- Add Support for non-spinning reserve (Thanks @andrewrosemberg)
+- Add costs to reserve products (Thanks @andrewrosemberg)
+- Improvements to documentation
+- Extend parsing of PSS/e dyr files 
+- Modifications to dynamic structs to support (min, max) tuples
+
+
+## 0.26.0
+
+- Add conversion field to HydroStorage
+- Bug fix in add_component for RegulationDevice
+- Add StaticReserveGroup object (Thanks @andrewrosemberg)
+
+
+## 0.25.0
+
+- Bug fix in units settings when parsing TableData
+- Add defaults for ThermalStandard Fuel and Prime Mover (Thanks @raphaelsaavedra)
+- Bug Fix cost data in TableData Parsing
+- Bump IS version and remove type inputs to setter functions
+
+## 0.24.1
+
+- Add pss/e .dyr file parsing support
+- Bug fixes in staturation data GENROU and GENROE
+- Bug fixes in TableData parsing
+
 ## 0.24.0
 
 - Change the use of @forward macros to avoid world of age errors
@@ -37,7 +72,7 @@
 - Renames of Fields in Structs to match code guidelines
 - Store RAW Electric Source Data (Z) in Thermal Generators
 - Implement UnitsInfo to return data in different bases accordingly
-- Update Autogeneration of structs. 
+- Update Autogeneration of structs.
 
 ## 0.21.0
 
@@ -51,13 +86,13 @@
 - Add AC1A, ST1A, GasTG structs for dynamic modeling.
 - Implement heuristic in pwl data to avoid NaN
 - Bug fixes with Regulation Devices
-- Improved testing. 
+- Improved testing.
 
 ## 0.20.0
 
-- Add Support for MultiStart Thermal Generation (a.k.a. PGLIB Model) 
-- Performance updates to Power Flow. 
-- Remove Make PF function. 
+- Add Support for MultiStart Thermal Generation (a.k.a. PGLIB Model)
+- Performance updates to Power Flow.
+- Remove Make PF function.
 - Fixin forecast handling of composed structs
 - Update to IS v0.11
 - Add SalientPoleGenerator and RoundRotorGenerator with saturation variants
@@ -67,7 +102,7 @@
 
 ## 0.19.0
 
-- Update for IS 0.9 
+- Update for IS 0.9
 - Change behaviour of get_component
 
 ## 0.18.5
@@ -261,8 +296,8 @@
 ## v0.4.3
 
 - Fix Parsing bug in Table data #362
-- Enable custom validation descriptors when parsing PSS/E and MATPOWER files
-- Enable multiple loads per bus when parsing PSS/E and MATPOWER files
+- Enable custom validation descriptors when parsing PSS/e and MATPOWER files
+- Enable multiple loads per bus when parsing PSS/e and MATPOWER files
 - Support multiple generators per bus and non-sequential bus indexing in power flow
 
 ## v0.4.2

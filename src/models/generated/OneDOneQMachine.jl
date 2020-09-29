@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         Tq0_p::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
@@ -22,18 +22,18 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
  transmission network dynamics is neglected.
 
 # Arguments
-- `R::Float64`: Resistance after EMF in machine per unit, validation range: (0, nothing)
-- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: (0, nothing)
-- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: (0, nothing)
-- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: (0, nothing)
-- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: (0, nothing)
-- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: (0, nothing)
-- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: (0, nothing)
+- `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
+- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
+- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
+- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
+- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
+- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
+- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage
-- `n_states::Int64`: OneDOneQMachine has 2 states
+- `n_states::Int`: OneDOneQMachine has 2 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct OneDOneQMachine <: Machine
@@ -57,7 +57,7 @@ mutable struct OneDOneQMachine <: Machine
 	ed_p: d-axis transient voltage"
     states::Vector{Symbol}
     "OneDOneQMachine has 2 states"
-    n_states::Int64
+    n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
@@ -66,8 +66,8 @@ function OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext=Dict{String, A
     OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext, [:eq_p, :ed_p], 2, InfrastructureSystemsInternal(), )
 end
 
-function OneDOneQMachine(; R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext=Dict{String, Any}(), )
-    OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext, )
+function OneDOneQMachine(; R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext=Dict{String, Any}(), states=[:eq_p, :ed_p], n_states=2, internal=InfrastructureSystemsInternal(), )
+    OneDOneQMachine(R, Xd, Xq, Xd_p, Xq_p, Td0_p, Tq0_p, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -84,48 +84,45 @@ function OneDOneQMachine(::Nothing)
     )
 end
 
-"""Get OneDOneQMachine R."""
+"""Get [`OneDOneQMachine`](@ref) `R`."""
 get_R(value::OneDOneQMachine) = value.R
-"""Get OneDOneQMachine Xd."""
+"""Get [`OneDOneQMachine`](@ref) `Xd`."""
 get_Xd(value::OneDOneQMachine) = value.Xd
-"""Get OneDOneQMachine Xq."""
+"""Get [`OneDOneQMachine`](@ref) `Xq`."""
 get_Xq(value::OneDOneQMachine) = value.Xq
-"""Get OneDOneQMachine Xd_p."""
+"""Get [`OneDOneQMachine`](@ref) `Xd_p`."""
 get_Xd_p(value::OneDOneQMachine) = value.Xd_p
-"""Get OneDOneQMachine Xq_p."""
+"""Get [`OneDOneQMachine`](@ref) `Xq_p`."""
 get_Xq_p(value::OneDOneQMachine) = value.Xq_p
-"""Get OneDOneQMachine Td0_p."""
+"""Get [`OneDOneQMachine`](@ref) `Td0_p`."""
 get_Td0_p(value::OneDOneQMachine) = value.Td0_p
-"""Get OneDOneQMachine Tq0_p."""
+"""Get [`OneDOneQMachine`](@ref) `Tq0_p`."""
 get_Tq0_p(value::OneDOneQMachine) = value.Tq0_p
-"""Get OneDOneQMachine ext."""
+"""Get [`OneDOneQMachine`](@ref) `ext`."""
 get_ext(value::OneDOneQMachine) = value.ext
-"""Get OneDOneQMachine states."""
+"""Get [`OneDOneQMachine`](@ref) `states`."""
 get_states(value::OneDOneQMachine) = value.states
-"""Get OneDOneQMachine n_states."""
+"""Get [`OneDOneQMachine`](@ref) `n_states`."""
 get_n_states(value::OneDOneQMachine) = value.n_states
-"""Get OneDOneQMachine internal."""
+"""Get [`OneDOneQMachine`](@ref) `internal`."""
 get_internal(value::OneDOneQMachine) = value.internal
 
-"""Set OneDOneQMachine R."""
-set_R!(value::OneDOneQMachine, val::Float64) = value.R = val
-"""Set OneDOneQMachine Xd."""
-set_Xd!(value::OneDOneQMachine, val::Float64) = value.Xd = val
-"""Set OneDOneQMachine Xq."""
-set_Xq!(value::OneDOneQMachine, val::Float64) = value.Xq = val
-"""Set OneDOneQMachine Xd_p."""
-set_Xd_p!(value::OneDOneQMachine, val::Float64) = value.Xd_p = val
-"""Set OneDOneQMachine Xq_p."""
-set_Xq_p!(value::OneDOneQMachine, val::Float64) = value.Xq_p = val
-"""Set OneDOneQMachine Td0_p."""
-set_Td0_p!(value::OneDOneQMachine, val::Float64) = value.Td0_p = val
-"""Set OneDOneQMachine Tq0_p."""
-set_Tq0_p!(value::OneDOneQMachine, val::Float64) = value.Tq0_p = val
-"""Set OneDOneQMachine ext."""
-set_ext!(value::OneDOneQMachine, val::Dict{String, Any}) = value.ext = val
-"""Set OneDOneQMachine states."""
-set_states!(value::OneDOneQMachine, val::Vector{Symbol}) = value.states = val
-"""Set OneDOneQMachine n_states."""
-set_n_states!(value::OneDOneQMachine, val::Int64) = value.n_states = val
-"""Set OneDOneQMachine internal."""
-set_internal!(value::OneDOneQMachine, val::InfrastructureSystemsInternal) = value.internal = val
+"""Set [`OneDOneQMachine`](@ref) `R`."""
+set_R!(value::OneDOneQMachine, val) = value.R = val
+"""Set [`OneDOneQMachine`](@ref) `Xd`."""
+set_Xd!(value::OneDOneQMachine, val) = value.Xd = val
+"""Set [`OneDOneQMachine`](@ref) `Xq`."""
+set_Xq!(value::OneDOneQMachine, val) = value.Xq = val
+"""Set [`OneDOneQMachine`](@ref) `Xd_p`."""
+set_Xd_p!(value::OneDOneQMachine, val) = value.Xd_p = val
+"""Set [`OneDOneQMachine`](@ref) `Xq_p`."""
+set_Xq_p!(value::OneDOneQMachine, val) = value.Xq_p = val
+"""Set [`OneDOneQMachine`](@ref) `Td0_p`."""
+set_Td0_p!(value::OneDOneQMachine, val) = value.Td0_p = val
+"""Set [`OneDOneQMachine`](@ref) `Tq0_p`."""
+set_Tq0_p!(value::OneDOneQMachine, val) = value.Tq0_p = val
+"""Set [`OneDOneQMachine`](@ref) `ext`."""
+set_ext!(value::OneDOneQMachine, val) = value.ext = val
+"""Set [`OneDOneQMachine`](@ref) `internal`."""
+set_internal!(value::OneDOneQMachine, val) = value.internal = val
+

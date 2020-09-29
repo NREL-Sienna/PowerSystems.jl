@@ -9,21 +9,21 @@ This file is auto-generated. Do not edit.
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
-        n_states::Int64
+        n_states::Int
     end
 
 Parameters of a Virtual Inertia with SRF using VSM for active power controller
 
 # Arguments
-- `Ta::Float64`: VSM inertia constant, validation range: (0, nothing)
-- `kd::Float64`: VSM damping constant, validation range: (0, nothing)
-- `kω::Float64`: frequency droop gain, validation range: (0, nothing)
-- `P_ref::Float64`: Reference Power Set-point, validation range: (0, nothing)
+- `Ta::Float64`: VSM inertia constant, validation range: `(0, nothing)`
+- `kd::Float64`: VSM damping constant, validation range: `(0, nothing)`
+- `kω::Float64`: frequency droop gain, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the VirtualInertia model are:
 	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
 	θ_oc: Phase angle displacement of the virtual synchronous generator model
-- `n_states::Int64`: VirtualInertia has two states
+- `n_states::Int`: VirtualInertia has two states
 """
 mutable struct VirtualInertia <: ActivePowerControl
     "VSM inertia constant"
@@ -40,15 +40,15 @@ mutable struct VirtualInertia <: ActivePowerControl
 	θ_oc: Phase angle displacement of the virtual synchronous generator model"
     states::Vector{Symbol}
     "VirtualInertia has two states"
-    n_states::Int64
+    n_states::Int
 end
 
 function VirtualInertia(Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), )
     VirtualInertia(Ta, kd, kω, P_ref, ext, [:ω_oc, :θ_oc], 2, )
 end
 
-function VirtualInertia(; Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), )
-    VirtualInertia(Ta, kd, kω, P_ref, ext, )
+function VirtualInertia(; Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), states=[:ω_oc, :θ_oc], n_states=2, )
+    VirtualInertia(Ta, kd, kω, P_ref, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -62,32 +62,29 @@ function VirtualInertia(::Nothing)
     )
 end
 
-"""Get VirtualInertia Ta."""
+"""Get [`VirtualInertia`](@ref) `Ta`."""
 get_Ta(value::VirtualInertia) = value.Ta
-"""Get VirtualInertia kd."""
+"""Get [`VirtualInertia`](@ref) `kd`."""
 get_kd(value::VirtualInertia) = value.kd
-"""Get VirtualInertia kω."""
+"""Get [`VirtualInertia`](@ref) `kω`."""
 get_kω(value::VirtualInertia) = value.kω
-"""Get VirtualInertia P_ref."""
+"""Get [`VirtualInertia`](@ref) `P_ref`."""
 get_P_ref(value::VirtualInertia) = value.P_ref
-"""Get VirtualInertia ext."""
+"""Get [`VirtualInertia`](@ref) `ext`."""
 get_ext(value::VirtualInertia) = value.ext
-"""Get VirtualInertia states."""
+"""Get [`VirtualInertia`](@ref) `states`."""
 get_states(value::VirtualInertia) = value.states
-"""Get VirtualInertia n_states."""
+"""Get [`VirtualInertia`](@ref) `n_states`."""
 get_n_states(value::VirtualInertia) = value.n_states
 
-"""Set VirtualInertia Ta."""
-set_Ta!(value::VirtualInertia, val::Float64) = value.Ta = val
-"""Set VirtualInertia kd."""
-set_kd!(value::VirtualInertia, val::Float64) = value.kd = val
-"""Set VirtualInertia kω."""
-set_kω!(value::VirtualInertia, val::Float64) = value.kω = val
-"""Set VirtualInertia P_ref."""
-set_P_ref!(value::VirtualInertia, val::Float64) = value.P_ref = val
-"""Set VirtualInertia ext."""
-set_ext!(value::VirtualInertia, val::Dict{String, Any}) = value.ext = val
-"""Set VirtualInertia states."""
-set_states!(value::VirtualInertia, val::Vector{Symbol}) = value.states = val
-"""Set VirtualInertia n_states."""
-set_n_states!(value::VirtualInertia, val::Int64) = value.n_states = val
+"""Set [`VirtualInertia`](@ref) `Ta`."""
+set_Ta!(value::VirtualInertia, val) = value.Ta = val
+"""Set [`VirtualInertia`](@ref) `kd`."""
+set_kd!(value::VirtualInertia, val) = value.kd = val
+"""Set [`VirtualInertia`](@ref) `kω`."""
+set_kω!(value::VirtualInertia, val) = value.kω = val
+"""Set [`VirtualInertia`](@ref) `P_ref`."""
+set_P_ref!(value::VirtualInertia, val) = value.P_ref = val
+"""Set [`VirtualInertia`](@ref) `ext`."""
+set_ext!(value::VirtualInertia, val) = value.ext = val
+

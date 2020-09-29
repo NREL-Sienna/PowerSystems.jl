@@ -2,7 +2,7 @@ import UUIDs
 
 """Recursively validates that the object and fields have UUIDs."""
 function validate_uuids(obj::T) where {T}
-    if !(obj isa PowerSystemType)
+    if !(obj isa Component)
         return true
     end
 

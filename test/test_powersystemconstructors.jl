@@ -17,27 +17,20 @@ checksys = false
     # test.
 
     sys5 = System(
+        100.0,
         nodes_5,
         thermal_generators5(nodes_5),
-        loads5(nodes_5),
-        nothing,
-        nothing,
-        100.0,
-        nothing,
-        nothing;
+        loads5(nodes_5);
         runchecks = checksys,
     )
     clear_components!(sys5)
 
     sys5b = System(
+        100.0,
         nodes_5,
         thermal_generators5(nodes_5),
         loads5(nodes_5),
-        nothing,
-        battery5(nodes_5),
-        100.0,
-        nothing,
-        nothing;
+        battery5(nodes_5);
         runchecks = checksys,
     )
     clear_components!(sys5b)
@@ -48,27 +41,13 @@ checksys = false
     #sys5b = System(_sys5b)
 
     sys5bh = System(
+        100.0,
         nodes_5,
-        vcat(thermal_generators5(nodes_5), hydro_generators5(nodes_5)),
+        thermal_generators5(nodes_5),
+        hydro_generators5(nodes_5),
         loads5(nodes_5),
         branches5(nodes_5),
-        battery5(nodes_5),
-        100.0,
-        nothing,
-        nothing;
-        runchecks = checksys,
-    )
-    clear_components!(sys5bh)
-
-    sys5bh = System(;
-        buses = nodes_5,
-        generators = vcat(thermal_generators5(nodes_5), hydro_generators5(nodes_5)),
-        loads = loads5(nodes_5),
-        branches = branches5(nodes_5),
-        storage = battery5(nodes_5),
-        base_power = 100.0,
-        services = nothing,
-        annex = nothing,
+        battery5(nodes_5);
         runchecks = checksys,
     )
     clear_components!(sys5bh)
@@ -85,26 +64,21 @@ checksys = false
     end
 
     sys14b = PowerSystems.System(
+        100.0,
         nodes_14,
         thermal_generators14(nodes_14),
         loads14(nodes_14),
-        nothing,
-        battery14(nodes_14),
-        100.0,
-        nothing,
-        nothing;
+        battery14(nodes_14);
         runchecks = checksys,
     )
     clear_components!(sys14b)
     sys14b = PowerSystems.System(
+        100.0,
         nodes_14,
         thermal_generators14(nodes_14),
         loads14(nodes_14),
         branches14(nodes_14),
-        battery14(nodes_14),
-        100.0,
-        nothing,
-        nothing;
+        battery14(nodes_14);
         runchecks = checksys,
     )
     clear_components!(sys14b)
@@ -122,11 +96,11 @@ end
     # If that isn't appropriate for this type, add it to types_to_skip below.
 
     types_to_skip = (System, TestDevice, TestRenDevice)
-    for ps_type in IS.get_all_concrete_subtypes(PowerSystemType)
+    for ps_type in IS.get_all_concrete_subtypes(Component)
         ps_type in types_to_skip && continue
         obj = ps_type(nothing)
         for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
-            if field_name == :name || field_name == :forecasts
+            if field_name === :name || field_name === :forecasts
                 func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
                 _func! = getfield(
                     InfrastructureSystems,
@@ -140,7 +114,7 @@ end
             _func!(obj, val)
             @test val isa field_type
             #Test set function for different cases
-            if typeof(val) == Float64 || typeof(val) == Int64
+            if typeof(val) == Float64 || typeof(val) == Int
                 if !isnan(val)
                     aux = val + 1
                     _func!(obj, aux)

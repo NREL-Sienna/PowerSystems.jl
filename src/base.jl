@@ -27,30 +27,27 @@ A power system defined by fields for base_power, components, and forecasts.
 
 ```julia
 System(base_power)
-System(components, base_power)
-System(buses, generators, loads, branches, storage, base_power, services, annex; kwargs...)
-System(buses, generators, loads, base_power; kwargs...)
+System(base_power, buses, components...)
+System(base_power, buses, generators, loads, branches, storage, services; kwargs...)
+System(base_power, buses, generators, loads; kwargs...)
 System(file; kwargs...)
-System(; buses, generators, loads, branches, storage, base_power, services, annex, kwargs...)
+System(; buses, generators, loads, branches, storage, base_power, services, kwargs...)
 System(; kwargs...)
 ```
 
 # Arguments
-- `buses::Vector{Bus}`: an array of buses
-- `generators::Vector{Generator}`: an array of generators of (possibly) different types
-- `loads::Vector{ElectricLoad}`: an array of load specifications that includes timing of the loads
-- `branches::Union{Nothing, Vector{Branch}}`: an array of branches; may be `nothing`
-- `storage::Union{Nothing, Vector{Storage}}`: an array of storage devices; may be `nothing`
 - `base_power::Float64`: the base power value for the system
-- `services::Union{Nothing, Vector{<:Service}}`: an array of services; may be `nothing`
+- `buses::Vector{Bus}`: an array of buses
+- `components...`: Each element must be an iterable containing subtypes of Component.
 
 # Keyword arguments
+- `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidRange if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
 - `config_path::String`: specify path to validation config file
 """
-struct System <: PowerSystemType
+struct System <: IS.InfrastructureSystemsType
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
@@ -66,7 +63,7 @@ struct System <: PowerSystemType
     )
         # Note to devs: if you add parameters to kwargs then consider whether they need
         # special handling in the deserialization function in this file.
-        # See JSON2.read for System.
+        # See deserialize for System.
 
         # Implement a strict check here to make sure that SYSTEM_KWARGS can be used
         # elsewhere.
@@ -84,7 +81,7 @@ struct System <: PowerSystemType
 end
 
 function System(data, base_power, internal; kwargs...)
-    unit_system_ = get(kwargs, :unit_system, "system_base")
+    unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
     unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
     units_settings = SystemUnitsSettings(base_power, unit_system)
     return System(data, units_settings, internal; kwargs...)
@@ -96,135 +93,35 @@ function System(base_power; kwargs...)
 end
 
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
-function System(data, base_power; kwargs...)
-    internal = get(kwargs, :internal, IS.InfrastructureSystemsInternal())
+function System(data, base_power; internal = IS.InfrastructureSystemsInternal(), kwargs...)
     return System(data, base_power, internal; kwargs...)
 end
 
-"""System constructor when components are constructed externally."""
-function System(
-    buses::Vector{Bus},
-    generators::Vector{<:Generator},
-    loads::Vector{<:ElectricLoad},
-    branches::Union{Nothing, Vector{<:Branch}},
-    storage::Union{Nothing, Vector{<:Storage}},
-    base_power::Float64,
-    services::Union{Nothing, Vector{<:Service}},
-    annex::Union{Nothing, Dict},
-    ;
-    kwargs...,
-)
-
+"""
+System constructor when components are constructed externally.
+"""
+function System(base_power::Float64, buses::Vector{Bus}, components...; kwargs...)
     data = _create_system_data_from_kwargs(; kwargs...)
-
     sys = System(data, base_power; kwargs...)
 
-    arrays = [buses, generators, loads]
-    if !isnothing(branches)
-        push!(arrays, branches)
-    end
-    if !isnothing(storage)
-        push!(arrays, storage)
-    end
-    if !isnothing(services)
-        push!(arrays, services)
+    for bus in buses
+        add_component!(sys, bus)
     end
 
-    error_detected = false
-    for component in Iterators.flatten(arrays)
-        try
-            add_component!(sys, component)
-        catch e
-            if isa(e, IS.InvalidRange)
-                error_detected = true
-            else
-                rethrow()
-            end
-        end
+    for component in Iterators.flatten(components)
+        add_component!(sys, component)
     end
 
-    load_zones = isnothing(annex) ? nothing : get(annex, :LoadZone, nothing)
-    if !isnothing(load_zones)
-        for lz in load_zones
-            try
-                add_component!(sys, lz)
-            catch e
-                if isa(e, IS.InvalidRange)
-                    error_detected = true
-                else
-                    rethrow()
-                end
-            end
-        end
-    end
-
-    runchecks = get(kwargs, :runchecks, true)
-
-    if error_detected
-        throw(IS.InvalidRange("Invalid value(s) detected"))
-    end
-
-    if runchecks
+    if get(kwargs, :runchecks, true)
         check!(sys)
     end
 
     return sys
 end
 
-"""System constructor without nothing-able arguments."""
-function System(
-    buses::Vector{Bus},
-    generators::Vector{<:Generator},
-    loads::Vector{<:ElectricLoad},
-    base_power::Float64,
-    ;
-    kwargs...,
-)
-    return System(
-        buses,
-        generators,
-        loads,
-        nothing,
-        nothing,
-        base_power,
-        nothing,
-        nothing,
-        nothing,
-        ;
-        kwargs...,
-    )
-end
-
-"""System constructor with keyword arguments."""
-function System(;
-    base_power = 100.0,
-    buses,
-    generators,
-    loads,
-    branches,
-    storage,
-    services,
-    annex,
-    kwargs...,
-)
-    return System(
-        buses,
-        generators,
-        loads,
-        branches,
-        storage,
-        base_power,
-        services,
-        annex,
-        ;
-        kwargs...,
-    )
-end
-
 """Constructs a non-functional System for demo purposes."""
 function System(
-    ::Nothing,
-    ;
+    ::Nothing;
     buses = [
         Bus(;
             number = 0,
@@ -245,21 +142,10 @@ function System(
     storage = nothing,
     base_power = 100.0,
     services = nothing,
-    annex = nothing,
     kwargs...,
 )
-    return System(
-        buses,
-        generators,
-        loads,
-        branches,
-        storage,
-        base_power,
-        services,
-        annex,
-        ;
-        kwargs...,
-    )
+    _services = isnothing(services) ? [] : services
+    return System(base_power, buses, generators, loads, _services; kwargs...)
 end
 
 """Constructs a System from a file path ending with .m, .RAW, or .json"""
@@ -297,16 +183,13 @@ end
 """
 Serializes a system to a JSON string.
 """
-function to_json(sys::System, filename::AbstractString; force = false)
+function IS.to_json(sys::System, filename::AbstractString; force = false)
     IS.prepare_for_serialization!(sys.data, filename; force = force)
-    return IS.to_json(sys, filename)
-end
-
-"""
-Serializes a system an IO stream in JSON.
-"""
-function to_json(io::IO, sys::System)
-    return IS.to_json(io, sys)
+    data = to_json(sys)
+    open(filename, "w") do io
+        write(io, data)
+    end
+    @info "Serialized System to $filename"
 end
 
 function Base.deepcopy(sys::System)
@@ -338,7 +221,7 @@ get_frequency(sys::System) = sys.frequency
 """
 Clear any value stored in ext.
 """
-clear_ext(sys::System) = IS.clear_ext(sys.internal)
+clear_ext!(sys::System) = IS.clear_ext!(sys.internal)
 
 function set_unit_system!(component::Component, settings::SystemUnitsSettings)
     component.internal.units_info = settings
@@ -358,6 +241,18 @@ function set_units_base_system!(system::System, settings::UnitSystem)
     system.units_settings.unit_system = settings
     @info "Unit System changed to $settings"
     return
+end
+
+function get_units_base(system::System)
+    return string(system.units_settings.unit_system)
+end
+
+function get_units_setting(component::T) where {T <: Component}
+    return component.internal.units_info
+end
+
+function has_units_setting(component::T) where {T <: Component}
+    return !isnothing(get_units_setting(component))
 end
 
 """
@@ -383,23 +278,54 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 """
 function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
     set_unit_system!(component, sys.units_settings)
-    @assert !isnothing(component.internal.units_info)
-    check_component_addition(sys, component)
-    check_for_services_on_addition(sys, component)
+    @assert has_units_setting(component)
 
-    if Bus in fieldtypes(T)
-        check_bus(sys, get_bus(component), component)
+    check_attached_buses(sys, component)
+    check_component_addition(sys, component; kwargs...)
+
+    deserialization_in_progress = _is_deserialization_in_progress(sys)
+    if !deserialization_in_progress
+        # Services are attached to devices at deserialization time.
+        check_for_services_on_addition(sys, component)
     end
 
     if sys.runchecks && !validate_struct(sys, component)
         throw(IS.InvalidValue("Invalid value for $(component)"))
     end
 
-    IS.add_component!(sys.data, component; kwargs...)
+    _kwargs = Dict(k => v for (k, v) in kwargs if k !== :static_injector)
+    IS.add_component!(
+        sys.data,
+        component;
+        deserialization_in_progress = deserialization_in_progress,
+        _kwargs...,
+    )
 
-    # Whatever this may change should have been validated above in check_component_addition,
-    # so this should not fail.
-    handle_component_addition!(sys, component)
+    if !deserialization_in_progress
+        # Whatever this may change should have been validated above in
+        # check_component_addition, so this should not fail.
+        # Doesn't run at deserialization time because the changes made by this function
+        # occurred when the original addition ran and do not apply to that scenario.
+        handle_component_addition!(sys, component; kwargs...)
+    end
+    return
+end
+
+"""
+Add a dynamic injector to the system.
+
+Throws ArgumentError if the name does not match the static_injector name.
+Throws ArgumentError if the static_injector is not attached to the system.
+
+All rules for the generic add_component! method also apply.
+"""
+function add_component!(
+    sys::System,
+    dyn_injector::DynamicInjection,
+    static_injector::StaticInjection;
+    kwargs...,
+)
+    add_component!(sys, dyn_injector; static_injector = static_injector, kwargs...)
 end
 
 """
@@ -420,12 +346,7 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
         if !(device_type <: Device)
             throw(ArgumentError("contributing_devices must be of type Device"))
         end
-
-        name = get_name(device)
-        sys_device = get_component(device_type, sys, name)
-        if isnothing(sys_device)
-            throw(ArgumentError("device $device_type $name is not part of the system"))
-        end
+        throw_if_not_attached(device, sys)
     end
 
     set_unit_system!(service, sys.units_settings)
@@ -433,8 +354,64 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
     IS.add_component!(sys.data, service; kwargs...)
 
     for device in contributing_devices
-        add_service!(device, service)
+        add_service_internal!(device, service)
     end
+end
+
+"""
+Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+
+# Arguments
+- `sys::System`: system
+- `service::StaticReserveGroup`: service to add
+"""
+function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+
+    for _service in get_contributing_services(service)
+        throw_if_not_attached(_service, sys)
+    end
+
+    set_unit_system!(service, sys.units_settings)
+    IS.add_component!(sys.data, service; kwargs...)
+end
+
+"""Set StaticReserveGroup contributing_services with check"""
+function set_contributing_services!(
+    sys::System,
+    service::StaticReserveGroup,
+    val::Vector{Service},
+)
+    for _service in val
+        throw_if_not_attached(_service, sys)
+    end
+    service.contributing_services = val
+end
+
+"""
+Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+
+# Arguments
+- `sys::System`: system
+- `service::StaticReserveGroup`: service to add
+- `contributing_services`: contributing services to the group
+"""
+function add_service!(
+    sys::System,
+    service::StaticReserveGroup,
+    contributing_services::Vector{Service};
+    kwargs...,
+)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+
+    set_contributing_services!(sys, service, contributing_services)
+
+    set_unit_system!(service, sys.units_settings)
+    IS.add_component!(sys.data, service; kwargs...)
 end
 
 """
@@ -558,6 +535,22 @@ function remove_component!(sys::System, component::T) where {T <: Component}
 end
 
 """
+Throws ArgumentError if a PowerSystems rule blocks removal from the system.
+"""
+function check_component_removal(sys::System, service::T) where {T <: Service}
+    if T == StaticReserveGroup
+        return
+    end
+    groupservices = get_components(StaticReserveGroup, sys)
+    for groupservice in groupservices
+        if service ∈ get_contributing_services(groupservice)
+            throw(ArgumentError("service $(get_name(service)) cannot be removed with an attached StaticReserveGroup"))
+            return
+        end
+    end
+end
+
+"""
 Remove a component from the system by its name.
 
 Throws ArgumentError if the component is not stored.
@@ -614,6 +607,11 @@ function get_components(
     return IS.get_components(T, sys.data, filter_func)
 end
 
+# These are helper functions for debugging problems.
+# Searches components linearly, and so is slow compared to the other get_component functions
+get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
+get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
     for subtype in abstract_types
@@ -650,18 +648,31 @@ function get_available_components(::Type{T}, sys::System) where {T <: Component}
     return get_components(T, sys, x -> get_available(x))
 end
 
+"""
+Return true if the component is attached to the system.
+"""
 function is_attached(component::T, sys::System) where {T <: Component}
-    return !isnothing(get_component(T, sys, get_name(component)))
+    return is_attached(T, get_name(component), sys)
+end
+
+function is_attached(::Type{T}, name, sys::System) where {T <: Component}
+    return !isnothing(get_component(T, sys, name))
+end
+
+"""
+Throws ArgumentError if the component is not attached to the system.
+"""
+function throw_if_not_attached(component::Component, sys::System)
+    if !is_attached(component, sys)
+        throw(ArgumentError("$(summary(component)) is not attached to the system"))
+    end
 end
 
 """
 Return a vector of devices contributing to the service.
 """
 function get_contributing_devices(sys::System, service::T) where {T <: Service}
-    if isnothing(get_component(T, sys, get_name(service)))
-        throw(ArgumentError("service $(get_name(service)) is not part of the system"))
-    end
-
+    throw_if_not_attached(service, sys)
     return [x for x in get_components(Device, sys) if has_service(x, service)]
 end
 
@@ -675,24 +686,30 @@ const ServiceContributingDevicesMapping =
     Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
 
 """
+Returns a ServiceContributingDevices object.
+"""
+function _get_contributing_devices(sys::System, service::T) where {T <: Service}
+    uuid = IS.get_uuid(service)
+    devices = ServiceContributingDevices(service, Vector{Device}())
+    for device in get_components(Device, sys)
+        for _service in get_services(device)
+            if IS.get_uuid(_service) == uuid
+                push!(devices.contributing_devices, device)
+                break
+            end
+        end
+    end
+    return devices
+end
+
+"""
 Return an instance of ServiceContributingDevicesMapping.
 """
 function get_contributing_device_mapping(sys::System)
     services = ServiceContributingDevicesMapping()
     for service in get_components(Service, sys)
-        uuid = IS.get_uuid(service)
-        devices = ServiceContributingDevices(service, Vector{Device}())
-        for device in get_components(Device, sys)
-            for _service in get_services(device)
-                if IS.get_uuid(_service) == uuid
-                    push!(devices.contributing_devices, device)
-                    break
-                end
-            end
-
-            key = ServiceContributingDevicesKey((typeof(service), get_name(service)))
-            services[key] = devices
-        end
+        key = ServiceContributingDevicesKey((typeof(service), get_name(service)))
+        services[key] = _get_contributing_devices(sys, service)
     end
 
     return services
@@ -825,19 +842,19 @@ Efficiently add all forecasts in one component to another by copying the underly
 references.
 
 # Arguments
-- `src::InfrastructureSystemsType`: Source component
-- `dst::InfrastructureSystemsType`: Destination component
+- `dst::Component`: Destination component
+- `src::Component`: Source component
 - `label_mapping::Dict = nothing`: Optionally map src labels to different dst labels.
   If provided and src has a forecast with a label not present in label_mapping, that
   forecast will not copied. If label_mapping is nothing then all forecasts will be copied
   with src's labels.
 """
 function copy_forecasts!(
-    src::InfrastructureSystemsType,
-    dst::InfrastructureSystemsType,
+    dst::Component,
+    src::Component,
     label_mapping::Union{Nothing, Dict{String, String}} = nothing,
 )
-    IS.copy_forecasts!(src, dst, label_mapping)
+    IS.copy_forecasts!(dst, src, label_mapping)
 end
 
 """
@@ -880,13 +897,12 @@ function are_forecasts_contiguous(sys::System)
     return IS.are_forecasts_contiguous(sys.data)
 end
 
-"""
-"""
 function are_forecasts_contiguous(component::Component)
     return IS.are_forecasts_contiguous(component)
 end
 
 """
+Generates all possible initial times for the stored forecasts. This should return the same
 result regardless of whether the forecasts have been stored as one contiguous array or
 chunks of contiguous arrays, such as one 365-day forecast vs 365 one-day forecasts.
 
@@ -918,7 +934,7 @@ end
 Generate initial times for a component.
 """
 function generate_initial_times(
-    component::IS.InfrastructureSystemsType,
+    component::Component,
     interval::Dates.Period,
     horizon::Int;
     initial_time::Union{Nothing, Dates.DateTime} = nothing,
@@ -948,7 +964,7 @@ Return a forecast for a subset of the time series range stored for these paramet
 """
 function get_forecast(
     ::Type{T},
-    component::IS.InfrastructureSystemsType,
+    component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
     horizon::Int,
@@ -991,7 +1007,7 @@ end
 
 function get_forecast_values(
     ::Type{T},
-    component::IS.InfrastructureSystemsType,
+    component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
     horizon::Int,
@@ -1047,17 +1063,43 @@ function get_forecasts_resolution(sys::System)
 end
 
 """
-Iterate over all forecasts in order of initial time.
+Return an iterator of forecasts in order of initial time.
+
+Note that passing a filter function can be much slower than the other filtering parameters
+because it reads time series data from media.
+
+Call `collect` on the result to get an array.
+
+# Arguments
+- `data::SystemData`: system
+- `filter_func = nothing`: Only return forecasts for which this returns true.
+- `type = nothing`: Only return forecasts with this type.
+- `initial_time = nothing`: Only return forecasts matching this value.
+- `label = nothing`: Only return forecasts matching this value.
 
 # Examples
 ```julia
 for forecast in iterate_forecasts(sys)
     @show forecast
 end
+
+forecasts = collect(iterate_forecasts(sys; initial_time = DateTime("2020-01-01T00:00:00"))
 ```
 """
-function iterate_forecasts(sys::System)
-    return IS.iterate_forecasts(sys.data)
+function iterate_forecasts(
+    sys::System,
+    filter_func = nothing;
+    type = nothing,
+    initial_time = nothing,
+    label = nothing,
+)
+    return iterate_forecasts(
+        sys.data,
+        filter_func;
+        type = type,
+        initial_time = initial_time,
+        label = label,
+    )
 end
 
 """
@@ -1095,14 +1137,14 @@ function remove_forecast!(
 end
 
 """
-Validate an instance of a PowerSystemType against System data.
+Validate an instance of a InfrastructureSystemsType against System data.
 Returns true if the instance is valid.
 
 Users implementing this function for custom types should consider implementing
 InfrastructureSystems.validate_struct instead if the validation logic only requires data
 contained within the instance.
 """
-function validate_struct(sys::System, value::PowerSystemType)
+function validate_struct(sys::System, value::IS.InfrastructureSystemsType)
     return true
 end
 
@@ -1114,67 +1156,53 @@ function check!(sys::System)
     adequacy_check(sys)
 end
 
-function JSON2.write(io::IO, sys::System)
-    return JSON2.write(io, encode_for_json(sys))
-end
-
-function JSON2.write(sys::System)
-    return JSON2.write(encode_for_json(sys))
-end
-
-function encode_for_json(sys::T) where {T <: System}
-    fields = fieldnames(T)
-    final_fields = Vector{Symbol}()
-    vals = []
-
-    for field in fields
+function IS.serialize(sys::T) where {T <: System}
+    data = Dict{String, Any}()
+    for field in fieldnames(T)
         # Exclude bus_numbers because they will get rebuilt during deserialization.
         if field != :bus_numbers
-            push!(vals, getfield(sys, field))
-            push!(final_fields, field)
+            data[string(field)] = serialize(getfield(sys, field))
         end
     end
 
-    return NamedTuple{Tuple(final_fields)}(vals)
+    return data
 end
 
-function deserialize(
+function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
     time_series_read_only = false,
 )
-    return open(filename) do io
-        raw = JSON2.read(io, NamedTuple)
-
-        # Read any field that is defined in System but optional for the constructors and not
-        # already handled here.
-        handled = (:data, :units_settings, :bus_numbers, :internal)
-        kwargs = Dict{Symbol, Any}()
-        for field in setdiff(propertynames(raw), handled)
-            kwargs[field] = getproperty(raw, field)
-        end
-
-        units_settings = IS.convert_type(SystemUnitsSettings, raw.units_settings)
-        data = IS.deserialize(
-            IS.SystemData,
-            Component,
-            raw.data;
-            time_series_read_only = time_series_read_only,
-        )
-        internal = IS.convert_type(InfrastructureSystemsInternal, raw.internal)
-        sys = System(data, units_settings; internal = internal)
-        for component in get_components(Component, sys)
-            set_unit_system!(component, units_settings)
-        end
-        return sys
+    raw = open(filename) do io
+        JSON3.read(io, Dict)
     end
+
+    # Read any field that is defined in System but optional for the constructors and not
+    # already handled here.
+    handled = ("data", "units_settings", "bus_numbers", "internal")
+    kwargs = Dict{String, Any}()
+    for field in setdiff(keys(raw), handled)
+        kwargs[field] = raw[field]
+    end
+
+    units_settings = IS.deserialize(SystemUnitsSettings, raw["units_settings"])
+    data = IS.deserialize(
+        IS.SystemData,
+        raw["data"];
+        time_series_read_only = time_series_read_only,
+    )
+    internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
+    sys = System(data, units_settings; internal = internal)
+    ext = get_ext(sys)
+    ext["deserialization_in_progress"] = true
+    deserialize_components!(sys, raw["data"]["components"])
+    pop!(ext, "deserialization_in_progress")
+    isempty(ext) && clear_ext!(sys)
+
+    return sys
 end
 
-function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::NamedTuple)
-    # TODO: This adds components through IS.SystemData instead of System, which is what
-    # should happen. There is a catch-22 between creating System and SystemData.
-    # This means that the restrictions in add_component! are not applied here.
-
+function deserialize_components!(sys::System, raw)
     # Maintain a lookup of UUID to component because some component types encode
     # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
@@ -1194,8 +1222,8 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
         include_types = nothing,
         post_add_func = nothing,
     )
-        for c_type_sym in IS.get_component_types_raw(IS.SystemData, raw)
-            c_type = get_component_type(c_type_sym)
+        for (c_type_str, components) in raw
+            c_type = get_component_type(c_type_str)
             c_type in parsed_types && continue
             if !isnothing(skip_types) && is_matching_type(c_type, skip_types)
                 continue
@@ -1203,9 +1231,9 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
             if !isnothing(include_types) && !is_matching_type(c_type, include_types)
                 continue
             end
-            for component in IS.get_components_raw(IS.SystemData, c_type, raw)
-                comp = IS.convert_type(c_type, component, component_cache)
-                IS.add_component!(data, comp)
+            for component in components
+                comp = deserialize(c_type, component, component_cache)
+                add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
@@ -1219,21 +1247,15 @@ function IS.deserialize_components(::Type{Component}, data::IS.SystemData, raw::
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
-    # Devices have services, skip one round.
-    deserialize_and_add!(; skip_types = [Device])
-    # DynamicInjection has to follow StaticInjection.
     deserialize_and_add!(;
-        include_types = [Device],
-        skip_types = [DynamicInjection, RegulationDevice],
+        include_types = [Arc, Service],
+        skip_types = [StaticReserveGroup],
     )
-    deserialize_and_add!(; include_types = [RegulationDevice])
-    deserialize_and_add!(;
-        include_types = [DynamicInjection],
-        post_add_func = dynamic_injector -> begin
-            static_injector = get_static_injector(dynamic_injector)
-            set_dynamic_injector!(static_injector, dynamic_injector)
-        end,
-    )
+    deserialize_and_add!(; include_types = [Branch], skip_types = [DynamicBranch])
+    deserialize_and_add!(; include_types = [DynamicBranch])
+    # Static injection devices can contain dynamic injection devices.
+    deserialize_and_add!(; include_types = [StaticReserveGroup, DynamicInjection])
+    deserialize_and_add!()
 end
 
 """
@@ -1270,6 +1292,11 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     return buses
 end
 
+function _is_deserialization_in_progress(sys::System)
+    ext = get_ext(sys)
+    return get(ext, "deserialization_in_progress", false)
+end
+
 check_for_services_on_addition(sys::System, component::Component) = nothing
 
 function check_for_services_on_addition(sys::System, component::Device)
@@ -1288,104 +1315,146 @@ function check_for_services_on_addition(sys::System, component::RegulationDevice
 end
 
 """
+Throws ArgumentError if any bus attached to the component is invalid.
+"""
+check_attached_buses(sys::System, component::Component) = nothing
+
+function check_attached_buses(sys::System, component::StaticInjection)
+    throw_if_not_attached(get_bus(component), sys)
+end
+
+function check_attached_buses(sys::System, component::Branch)
+    throw_if_not_attached(get_from_bus(component), sys)
+    throw_if_not_attached(get_to_bus(component), sys)
+end
+
+function check_attached_buses(sys::System, component::DynamicBranch)
+    check_attached_buses(sys, get_branch(component))
+end
+
+function check_attached_buses(sys::System, component::Arc)
+    throw_if_not_attached(get_from(component), sys)
+    throw_if_not_attached(get_to(component), sys)
+end
+
+"""
 Throws ArgumentError if a PowerSystems rule blocks addition to the system.
 
 This method is tied with handle_component_addition!. If the methods are re-implemented for
 a subtype then whatever is added in handle_component_addition! must be checked here.
 """
-check_component_addition(sys::System, component::Component) = nothing
+check_component_addition(sys::System, component::Component; kwargs...) = nothing
 
 """
 Throws ArgumentError if a PowerSystems rule blocks removal from the system.
 """
 check_component_removal(sys::System, component::Component) = nothing
 
-"""
-Refer to docstring for check_component_addition!
-"""
-handle_component_addition!(sys::System, component::Component) = nothing
-
-handle_component_removal!(sys::System, component::Component) = nothing
-
-function check_component_addition(sys::System, branch::Branch)
-    arc = get_arc(branch)
-    check_bus(sys, get_from(arc), arc)
-    check_bus(sys, get_to(arc), arc)
-end
-
-function check_component_addition(sys::System, dyn_branch::DynamicBranch)
-    if !is_attached(dyn_branch.branch, sys)
-        name = get_name(dyn_branch.branch)
-        throw(ArgumentError("static branch $name is not part of the system"))
-    end
-    arc = get_arc(dyn_branch)
-    check_bus(sys, get_from(arc), arc)
-    check_bus(sys, get_to(arc), arc)
-end
-
-function check_component_addition(sys::System, bus::Bus)
-    number = get_number(bus)
-    if number in sys.bus_numbers
-        throw(ArgumentError("bus number $number is already stored in the system"))
-    end
-
-    bus_area = get_area(bus)
-    if !isnothing(bus_area)
-        name = get_name(bus_area)
-        area = get_component(Area, sys, name)
-        if isnothing(area)
-            throw(ArgumentError("bus area $name is not stored in the system"))
-        end
-    end
-
-    bus_load_zone = get_load_zone(bus)
-    if !isnothing(bus_load_zone)
-        name = get_name(bus_load_zone)
-        load_zone = get_component(LoadZone, sys, get_name(bus_load_zone))
-        if isnothing(load_zone)
-            throw(ArgumentError("bus load_zone $name is not stored in the system"))
-        end
-    end
-end
-
-function check_component_addition(sys::System, dynamic_injector::DynamicInjection)
-    static_injector = get_static_injector(dynamic_injector)
-    if !is_attached(static_injector, sys)
-        name = get_name(static_injector)
-        throw(ArgumentError("static injector $name is not part of the system"))
-    end
-
-    if !isnothing(get_dynamic_injector(static_injector))
-        name = get_name(static_injector)
-        throw(ArgumentError("static injector $name already has a dynamic injector"))
-    end
-end
-
 function check_component_removal(sys::System, static_injector::StaticInjection)
-    if !isnothing(get_dynamic_injector(static_injector))
+    if get_dynamic_injector(static_injector) !== nothing
         name = get_name(static_injector)
         throw(ArgumentError("$name cannot be removed with an attached dynamic injector"))
     end
 end
 
-function handle_component_addition!(sys::System, bus::Bus)
+"""
+Refer to docstring for check_component_addition!
+"""
+handle_component_addition!(sys::System, component::Component; kwargs...) = nothing
+
+handle_component_removal!(sys::System, component::Component) = nothing
+
+function check_component_addition(sys::System, branch::Branch; kwargs...)
+    arc = get_arc(branch)
+    throw_if_not_attached(get_from(arc), sys)
+    throw_if_not_attached(get_to(arc), sys)
+end
+
+function check_component_addition(sys::System, dyn_branch::DynamicBranch; kwargs...)
+    if !_is_deserialization_in_progress(sys)
+        throw_if_not_attached(dyn_branch.branch, sys)
+    end
+    arc = get_arc(dyn_branch)
+    throw_if_not_attached(get_from(arc), sys)
+    throw_if_not_attached(get_to(arc), sys)
+end
+
+function check_component_addition(sys::System, dyn_injector::DynamicInjection; kwargs...)
+    if _is_deserialization_in_progress(sys)
+        # Ordering of component addition makes these checks impossible.
+        return
+    end
+
+    static_injector = get(kwargs, :static_injector, nothing)
+    if static_injector === nothing
+        throw(ArgumentError("static_injector must be passed when adding a DynamicInjection"))
+    end
+
+    if get_name(dyn_injector) != get_name(static_injector)
+        throw(ArgumentError("static_injector must have the same name as the DynamicInjection"))
+    end
+
+    throw_if_not_attached(static_injector, sys)
+end
+
+function check_component_addition(sys::System, bus::Bus; kwargs...)
+    number = get_number(bus)
+    if number in sys.bus_numbers
+        throw(ArgumentError("bus number $number is already stored in the system"))
+    end
+
+    area = get_area(bus)
+    if !isnothing(area)
+        throw_if_not_attached(area, sys)
+    end
+
+    load_zone = get_load_zone(bus)
+    if !isnothing(load_zone)
+        throw_if_not_attached(load_zone, sys)
+    end
+end
+
+function handle_component_addition!(sys::System, bus::Bus; kwargs...)
     number = get_number(bus)
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
 end
 
-function handle_component_addition!(sys::System, dynamic_injector::DynamicInjection)
-    set_dynamic_injector!(get_static_injector(dynamic_injector), dynamic_injector)
-end
-
-function handle_component_addition!(sys::System, component::RegulationDevice)
-    copy_forecasts!(component.device, component)
-    remove_component!(sys, component.device)
+function handle_component_addition!(sys::System, component::RegulationDevice; kwargs...)
+    copy_forecasts!(component, component.device)
+    if !isnothing(get_component(typeof(component.device), sys, get_name(component.device)))
+        # This will not be true during deserialization, and so won't run then.
+        remove_component!(sys, component.device)
+        # The line above removed the component setting so needs to be added back
+        set_unit_system!(component.device, component.internal.units_info)
+    end
     return
 end
 
-function handle_component_addition!(sys::System, component::DynamicBranch)
+function handle_component_addition!(sys::System, component::Branch; kwargs...)
+    handle_component_addition_common!(sys, component)
+end
+
+function handle_component_addition!(sys::System, component::DynamicBranch; kwargs...)
+    handle_component_addition_common!(sys, component)
     remove_component!(sys, component.branch)
+end
+
+function handle_component_addition!(sys::System, dyn_injector::DynamicInjection; kwargs...)
+    static_injector = kwargs[:static_injector]
+    set_dynamic_injector!(static_injector, dyn_injector)
+end
+
+function handle_component_addition_common!(sys::System, component::Branch)
+    # If this arc is already attached to the system, assign it to the branch.
+    # Else, add it to the system.
+    arc = get_arc(component)
+    _arc = get_component(Arc, sys, get_name(arc))
+    if isnothing(_arc)
+        add_component!(sys, arc)
+    else
+        set_arc!(component, _arc)
+    end
 end
 
 """
@@ -1403,10 +1472,6 @@ function handle_component_removal!(sys::System, device::Device)
     clear_services!(device)
 end
 
-function handle_component_removal!(sys::System, component::DynamicInjection)
-    set_dynamic_injector!(get_static_injector(component), nothing)
-end
-
 function handle_component_removal!(sys::System, service::Service)
     for device in get_components(Device, sys)
         _remove_service!(device, service)
@@ -1421,21 +1486,27 @@ function handle_component_removal!(sys::System, value::T) where {T <: Aggregatio
     end
 end
 
+function handle_component_removal!(sys::System, dyn_injector::DynamicInjection)
+    injectors = get_components_by_name(StaticInjection, sys, get_name(dyn_injector))
+    found = false
+    for static_injector in injectors
+        _dyn_injector = get_dynamic_injector(static_injector)
+        _dyn_injector === nothing && continue
+        if _dyn_injector === dyn_injector
+            @assert !found
+            set_dynamic_injector!(static_injector, nothing)
+            found = true
+        end
+    end
+
+    @assert found
+end
+
 """
 Return a sorted vector of bus numbers in the system.
 """
 function get_bus_numbers(sys::System)
     return sort(collect(sys.bus_numbers))
-end
-
-"""
-Throws ArgumentError if the bus is not stored in the system.
-"""
-function check_bus(sys::System, bus::Bus, component::Component)
-    name = get_name(bus)
-    if isnothing(get_component(Bus, sys, name))
-        throw(ArgumentError("$component has bus $name that is not stored in the system"))
-    end
 end
 
 function IS.compare_values(x::System, y::System)
@@ -1543,7 +1614,7 @@ function convert_component!(
     )
     IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
-    copy_forecasts!(line, new_line)
+    copy_forecasts!(new_line, line)
     remove_component!(sys, line)
 end
 
@@ -1582,6 +1653,6 @@ function convert_component!(
     )
     IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
-    copy_forecasts!(line, new_line)
+    copy_forecasts!(new_line, line)
     remove_component!(sys, line)
 end

@@ -134,6 +134,14 @@ end
         push!(unique_initial_times, get_initial_time(forecast))
     end
     @test initial_times == sort!(collect(unique_initial_times))
+
+    for initial_time in initial_times
+        forecasts = collect(iterate_forecasts(sys; initial_time = initial_time))
+        @test length(forecasts) > 0
+        for forecast in forecasts
+            @test get_initial_time(forecast) == initial_time
+        end
+    end
 end
 
 @testset "Test remove_component" begin
@@ -184,7 +192,7 @@ end
     ext = get_ext(sys)
     ext["data"] = 2
     @test get_ext(sys)["data"] == 2
-    clear_ext(sys)
+    clear_ext!(sys)
     @test isempty(get_ext(sys))
 end
 
@@ -193,4 +201,11 @@ end
     @test_logs (:warn, r"There are no .* Components in the System") match_mode = :any PSY.check!(
         sys,
     )
+end
+
+@testset "Test system units" begin
+    sys = create_rts_system()
+    @test get_units_base(sys) == "DEVICE_BASE"
+    set_units_base_system!(sys, "SYSTEM_BASE")
+    @test get_units_base(sys) == "SYSTEM_BASE"
 end

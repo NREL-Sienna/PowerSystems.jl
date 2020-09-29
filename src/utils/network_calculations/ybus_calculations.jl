@@ -4,15 +4,15 @@ Nodal admittance matrix (Ybus) is an N x N matrix describing a power system with
 The Ybus Struct is indexed using the Bus Numbers, no need for them to be sequential
 """
 struct Ybus{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{ComplexF64}
-    data::SparseArrays.SparseMatrixCSC{ComplexF64, Int64}
+    data::SparseArrays.SparseMatrixCSC{ComplexF64, Int}
     axes::Ax
     lookup::L
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
     b::ACBranch,
-    num_bus::Dict{Int64, Int64},
+    num_bus::Dict{Int, Int},
 )
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -30,9 +30,9 @@ function _ybus!(
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
     b::Transformer2W,
-    num_bus::Dict{Int64, Int64},
+    num_bus::Dict{Int, Int},
 )
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -48,9 +48,9 @@ function _ybus!(
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
     b::TapTransformer,
-    num_bus::Dict{Int64, Int64},
+    num_bus::Dict{Int, Int},
 )
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -72,9 +72,9 @@ function _ybus!(
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
     b::PhaseShiftingTransformer,
-    num_bus::Dict{Int64, Int64},
+    num_bus::Dict{Int, Int},
 )
     arc = get_arc(b)
     bus_from_no = num_bus[arc.from.number]
@@ -95,9 +95,9 @@ function _ybus!(
 end
 
 function _ybus!(
-    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64},
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
     fa::FixedAdmittance,
-    num_bus::Dict{Int64, Int64},
+    num_bus::Dict{Int, Int},
 )
     bus = get_bus(fa)
     bus_no = num_bus[get_number(bus)]
@@ -107,7 +107,7 @@ end
 
 function _buildybus(branches, nodes, fixed_admittances)
     buscount = length(nodes)
-    num_bus = Dict{Int64, Int64}()
+    num_bus = Dict{Int, Int}()
 
     for (ix, b) in enumerate(nodes)
         num_bus[get_number(b)] = ix
@@ -127,7 +127,7 @@ function _buildybus(branches, nodes, fixed_admittances)
     return SparseArrays.dropzeros!(ybus)
 end
 
-function _goderya(ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int64})
+function _goderya(ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int})
     node_count = size(ybus)[1]
     max_I = node_count^2
     I, J, val = SparseArrays.findnz(ybus)

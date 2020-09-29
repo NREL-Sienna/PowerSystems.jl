@@ -5,10 +5,8 @@ This file is auto-generated. Do not edit.
     mutable struct ThreePartCost <: OperationalCost
         variable::VariableCost
         fixed::Float64
-        startup::Float64
-        shutdn::Float64
-        forecasts::InfrastructureSystems.Forecasts
-        internal::InfrastructureSystemsInternal
+        start_up::Float64
+        shut_down::Float64
     end
 
 Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.
@@ -16,32 +14,23 @@ Data Structure Operational Cost Data in Three parts fixed, variable cost and sta
 # Arguments
 - `variable::VariableCost`: variable cost
 - `fixed::Float64`: fixed cost
-- `startup::Float64`: startup cost, validation range: (0, nothing), action if invalid: warn
-- `shutdn::Float64`: shutdown cost, validation range: (0, nothing), action if invalid: warn
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `start_up::Float64`: start-up cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
 """
 mutable struct ThreePartCost <: OperationalCost
     "variable cost"
     variable::VariableCost
     "fixed cost"
     fixed::Float64
-    "startup cost"
-    startup::Float64
-    "shutdown cost"
-    shutdn::Float64
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
-    "power system internal reference, do not modify"
-    internal::InfrastructureSystemsInternal
+    "start-up cost"
+    start_up::Float64
+    "shut-down cost"
+    shut_down::Float64
 end
 
-function ThreePartCost(variable, fixed, startup, shutdn, forecasts=InfrastructureSystems.Forecasts(), )
-    ThreePartCost(variable, fixed, startup, shutdn, forecasts, InfrastructureSystemsInternal(), )
-end
 
-function ThreePartCost(; variable, fixed, startup, shutdn, forecasts=InfrastructureSystems.Forecasts(), )
-    ThreePartCost(variable, fixed, startup, shutdn, forecasts, )
+function ThreePartCost(; variable, fixed, start_up, shut_down, )
+    ThreePartCost(variable, fixed, start_up, shut_down, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -49,34 +38,26 @@ function ThreePartCost(::Nothing)
     ThreePartCost(;
         variable=VariableCost((0.0, 0.0)),
         fixed=0.0,
-        startup=0.0,
-        shutdn=0.0,
-        forecasts=InfrastructureSystems.Forecasts(),
+        start_up=0.0,
+        shut_down=0.0,
     )
 end
 
-"""Get ThreePartCost variable."""
+"""Get [`ThreePartCost`](@ref) `variable`."""
 get_variable(value::ThreePartCost) = value.variable
-"""Get ThreePartCost fixed."""
+"""Get [`ThreePartCost`](@ref) `fixed`."""
 get_fixed(value::ThreePartCost) = value.fixed
-"""Get ThreePartCost startup."""
-get_startup(value::ThreePartCost) = value.startup
-"""Get ThreePartCost shutdn."""
-get_shutdn(value::ThreePartCost) = value.shutdn
+"""Get [`ThreePartCost`](@ref) `start_up`."""
+get_start_up(value::ThreePartCost) = value.start_up
+"""Get [`ThreePartCost`](@ref) `shut_down`."""
+get_shut_down(value::ThreePartCost) = value.shut_down
 
-InfrastructureSystems.get_forecasts(value::ThreePartCost) = value.forecasts
-"""Get ThreePartCost internal."""
-get_internal(value::ThreePartCost) = value.internal
+"""Set [`ThreePartCost`](@ref) `variable`."""
+set_variable!(value::ThreePartCost, val) = value.variable = val
+"""Set [`ThreePartCost`](@ref) `fixed`."""
+set_fixed!(value::ThreePartCost, val) = value.fixed = val
+"""Set [`ThreePartCost`](@ref) `start_up`."""
+set_start_up!(value::ThreePartCost, val) = value.start_up = val
+"""Set [`ThreePartCost`](@ref) `shut_down`."""
+set_shut_down!(value::ThreePartCost, val) = value.shut_down = val
 
-"""Set ThreePartCost variable."""
-set_variable!(value::ThreePartCost, val::VariableCost) = value.variable = val
-"""Set ThreePartCost fixed."""
-set_fixed!(value::ThreePartCost, val::Float64) = value.fixed = val
-"""Set ThreePartCost startup."""
-set_startup!(value::ThreePartCost, val::Float64) = value.startup = val
-"""Set ThreePartCost shutdn."""
-set_shutdn!(value::ThreePartCost, val::Float64) = value.shutdn = val
-
-InfrastructureSystems.set_forecasts!(value::ThreePartCost, val::InfrastructureSystems.Forecasts) = value.forecasts = val
-"""Set ThreePartCost internal."""
-set_internal!(value::ThreePartCost, val::InfrastructureSystemsInternal) = value.internal = val

@@ -4,26 +4,47 @@
 CurrentModule = PowerSystems
 ```
 
-`PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package Power Systems Modeling that provides a rigorous data model using Julia structures to enable power systems analysis in addition to stand-alone system analysis tools and model building. Each device is defined using a Julia Structure embedded in a hierarchy for types. This enables categorization of the devices by their operational characteristics and the data required to model them.
+**The Documentation is still under construction, some sections are unfinished. Please refer to the Model Library Section for the most up-to-date info**
 
-The storage of power system data has traditionally been done with general use tables based on the power flow problem. However, tables are not inherently designed to store data with mixed data representations or hierarchal structures. This limitation was addressed in the early 1990's with the advent of automation, spurred by increasingly complex data needs for power systems operations. The industry required standardized models to exchange larger and more complex sets of information, and so resorted to an object-oriented data model. The CIM was developed and later made a standard maintained by the IEC - Technical Committee 57 Working Group 13. The aim was to provide a standard definition for power system components that could be used in automated EMS and asset-management databases.
+`PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package that provides a rigorous data model using Julia structures to enable power systems modeling.
 
-From the computer engineering point-of-view, using tables would require to re-write a lot of code. In most languages with strongly type hierarchies, using a tree structure it is advantageous. This is particularly relevant for code re-use and data encapsulation. Collecting all potential devices is not possible; neither is it desirable. However, it is necessary to have the capability to extend the data model such that different user can store their data in an organized ontology.
+`PowerSystems.jl` provides tools to prepare and process data useful for electric energy systems modeling. This package serves two purposes:
 
-For instance, take the data hierarchy for thermal generation devices shown in Fig. \ref{fig:PS_thermal}. Generation is classified by the distinctive operational characteristics of the generators and then further categorized by the data required to model a specific technology.
+1. It facilitates the development and open sharing of large data sets for Power Systems modeling
+2. It provides a data model that imposes discipline on model specification, addressing the challenge of design and terminology choices when sharing code and data.
 
-For more detailed documentation of each object in the library, see the API/[PowerSystems](@ref) page.
+The main features include:
 
-## Installation
+- Extensive library of data structures for power systems modeling.
+- Parsing capabilities from common data formats (PSS/e raw and dyr, Matpower and CSV)
+- Network Matrices calculations
+- Utilities for fast iterations of components to develop models
 
-The latest stable release of PowerModels can be installed using the Julia package manager with
+`PowerSystems.jl` documentation and code are organized according to the needs of different users depending on their skillset and requirements. In broad terms there are three categories:
 
-```julia
-] add PowerSystems
+- **Modeler**: Users that want to run a particular analysis or experiment and use `PowerSystems.jl` to develop data sets.
+
+- **Model Developer**: Users that want to develop custom components and structs in order to exploit `PowerSystems.jl` features to produce custom data sets.
+
+- **Advanced Developers**: Users that want to add new core functionalities or fix bugs in the core capabilties of `PowerSystems.jl`. This user should also check [`InfrastructureSystems.jl`](https://github.com/NREL-SIIP/InfrastructureSystems.jl).
+
+`PowerSystems.jl` is an active project under development, and we welcome your feedback, suggestions, and bug reports.
+
+Extended examples of use can be found in [SIIP-Examples PowerSystems](https://github.com/NREL-SIIP/SIIPExamples.jl/tree/master/notebook/PowerSystems_examples)
+
+------------
+
+## Contents
+
+```@contents
+Pages = [
+    "user_guide/installation.md",
+    "user_guide/type_structure.md",
+    "modeler/parsing.md",
+    "modeler/data.md"
+]
+Depth = 3
 ```
 
-For the current development version, "checkout" this package with
-
-```julia
-] add PowerSystems#master
-```
+------------
+PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning (SIIP) initiative at the U.S. Department of Energy's National Renewable Energy Laboratory ([NREL](https://www.nrel.gov/))
