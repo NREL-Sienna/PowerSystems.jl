@@ -39,7 +39,7 @@ def generate_config(input_file):
                 new_field["validation_action"] = field["validation_action"]
             new_struct["fields"].append(new_field)
         items.append(new_struct)
-    return items
+    return {"auto_generated_structs": items}
 
 
 def generate_file(input_file, output_file):
