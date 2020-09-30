@@ -415,7 +415,7 @@ function add_service!(
 end
 
 """
-Adds time series data from a metadata file or metadata descriptors.
+Add time series data from a metadata file or metadata descriptors.
 
 # Arguments
 - `sys::System`: system
@@ -423,11 +423,7 @@ Adds time series data from a metadata file or metadata descriptors.
   that includes an array of IS.TimeSeriesFileMetadata instances or a vector.
 - `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
-function add_time_series_from_file_metadata!(
-    sys::System,
-    metadata_file::AbstractString;
-    resolution = nothing,
-)
+function add_time_series!(sys::System, metadata_file::AbstractString; resolution = nothing)
     return IS.add_time_series_from_file_metadata!(
         sys.data,
         Component,
@@ -437,14 +433,14 @@ function add_time_series_from_file_metadata!(
 end
 
 """
-Adds time series data from a metadata file or metadata descriptors.
+Add time series data from a metadata file or metadata descriptors.
 
 # Arguments
 - `sys::System`: system
 - `timeseries_metadata::Vector{IS.TimeSeriesFileMetadata}`: metadata for timeseries
 - `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
-function add_time_series_from_file_metadata!(
+function add_time_series!(
     sys::System,
     file_metadata::Vector{IS.TimeSeriesFileMetadata};
     resolution = nothing,
@@ -462,7 +458,6 @@ function IS.add_time_series_from_file_metadata_internal!(
     ::Type{<:Component},
     cache::IS.TimeSeriesCache,
     file_metadata::IS.TimeSeriesFileMetadata,
-    resolution,
 )
     IS.set_component!(file_metadata, data, PowerSystems)
     component = file_metadata.component
@@ -470,11 +465,7 @@ function IS.add_time_series_from_file_metadata_internal!(
         return
     end
 
-    ts = IS.make_time_series!(cache, file_metadata, resolution)
-    if ts === nothing
-        return
-    end
-
+    ts = IS.make_time_series!(cache, file_metadata)
     if component isa Area
         uuids = Set{UUIDs.UUID}()
         for bus in _get_buses(data, component)
@@ -801,7 +792,7 @@ end
 """
 Add the same time series data to multiple components.
 
-This is significantly more efficent than calling add_time_series! for each component
+This is significantly more efficent than calling `add_time_series!` for each component
 individually with the same data because in this case, only one time series array is stored.
 
 Throws ArgumentError if a component is not stored in the system.
@@ -877,29 +868,6 @@ function make_time_series(
     return IS.make_time_series!(sys.data, metadata; resolution = resolution)
 end
 =#
-
-"""
-Return a TimeSeriesData for the entire time series range stored for these parameters.
-"""
-function get_time_series(
-    ::Type{T},
-    component::Component,
-    name::AbstractString,
-) where {T <: TimeSeriesData}
-    return IS.get_time_series(T, component, name)
-end
-
-"""
-Return a TimeSeriesData for a subset of the time series range stored for these parameters.
-"""
-function get_time_series(
-    ::Type{T},
-    component::Component,
-    name::AbstractString,
-    horizon::Int,
-) where {T <: TimeSeriesData}
-    return IS.get_time_series(T, component, name, horizon)
-end
 
 #function get_time_series_initial_times(
 #    ::Type{T},

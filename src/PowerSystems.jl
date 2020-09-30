@@ -199,7 +199,6 @@ export solve_powerflow
 
 export parse_file
 export add_time_series!
-export add_time_series_from_file_metadata!
 export remove_time_series!
 export clear_time_series!
 export copy_time_series!
@@ -332,6 +331,7 @@ import InfrastructureSystems:
     get_resolution,
     get_name,
     set_name!,
+    get_time_series,
     to_json,
     from_json,
     serialize,

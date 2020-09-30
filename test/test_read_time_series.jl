@@ -66,7 +66,7 @@ end
 
     # Test code path where no normalization occurs.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    add_time_series_from_file_metadata!(sys, [file_metadata])
+    add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries)
@@ -74,7 +74,7 @@ end
     # Test code path where timeseries is normalized by dividing by the max value.
     file_metadata.normalization_factor = "Max"
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    add_time_series_from_file_metadata!(sys, [file_metadata])
+    add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries ./ max_value)
@@ -83,7 +83,7 @@ end
     nf = 95.0
     file_metadata.normalization_factor = nf
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    add_time_series_from_file_metadata!(sys, [file_metadata])
+    add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
     @test TimeSeries.values(time_series.data) == TimeSeries.values(timeseries ./ nf)
@@ -134,24 +134,21 @@ end
 @testset "TimeSeriesData data matpower" begin
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
     file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_da.json")
-    add_time_series_from_file_metadata!(sys, file_metadata)
+    add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 24)
 
     # Add the same files.
     # This will fail because the component-name pairs will be duplicated.
-    @test_throws ArgumentError add_time_series_from_file_metadata!(sys, file_metadata)
+    @test_throws ArgumentError add_time_series!(sys, file_metadata)
 
     file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_rt.json")
 
     ## This will fail because the resolutions are different.
-    @test_throws PowerSystems.DataFormatError add_time_series_from_file_metadata!(
-        sys,
-        file_metadata,
-    )
+    @test_throws PowerSystems.DataFormatError add_time_series!(sys, file_metadata)
 
     ## TODO: need a dataset with same resolution but different horizon.
 
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
-    add_time_series_from_file_metadata!(sys, file_metadata)
+    add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 288)
 end

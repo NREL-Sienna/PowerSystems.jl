@@ -287,11 +287,7 @@ function System(
     )
 
     if !isnothing(timeseries_metadata_file)
-        add_time_series_from_file_metadata!(
-            sys,
-            timeseries_metadata_file;
-            resolution = time_series_resolution,
-        )
+        add_time_series!(sys, timeseries_metadata_file; resolution = time_series_resolution)
     end
 
     check!(sys)
