@@ -23,7 +23,7 @@ const SYSTEM_KWARGS = Set((
 """
 System
 
-A power system defined by fields for base_power, components, and forecasts.
+A power system defined by fields for base_power, components, and time series.
 
 ```julia
 System(base_power)
@@ -193,7 +193,7 @@ function IS.to_json(sys::System, filename::AbstractString; force = false)
 end
 
 function Base.deepcopy(sys::System)
-    # We store forecast data in an HDF5 file that would not be copied as part of deepcopy.
+    # We store time series in an HDF5 file that would not be copied as part of deepcopy.
     # The HDF5 file could have data buffered in memory, so we would have to close it, make
     # a copy, and attach it to a new system.
     # A simpler solution is to serialize to a tmp dir and deserialize.
@@ -415,54 +415,49 @@ function add_service!(
 end
 
 """
-Adds forecasts from a metadata file or metadata descriptors.
+Adds time series data from a metadata file or metadata descriptors.
 
 # Arguments
 - `sys::System`: system
 - `metadata_file::AbstractString`: metadata file for timeseries
-  that includes an array of IS.TimeseriesFileMetadata instances or a vector.
-- `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
+  that includes an array of IS.TimeSeriesFileMetadata instances or a vector.
+- `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
-function add_forecasts!(sys::System, metadata_file::AbstractString; resolution = nothing)
-    return IS.add_forecasts!(Component, sys.data, metadata_file; resolution = resolution)
+function add_time_series!(sys::System, metadata_file::AbstractString; resolution = nothing)
+    return IS.add_time_series!(Component, sys.data, metadata_file; resolution = resolution)
 end
 
 """
-Adds forecasts from a metadata file or metadata descriptors.
+Adds time series data from a metadata file or metadata descriptors.
 
 # Arguments
 - `sys::System`: system
-- `timeseries_metadata::Vector{IS.TimeseriesFileMetadata}`: metadata for timeseries
-- `resolution::DateTime.Period=nothing`: skip forecast that don't match this resolution.
+- `timeseries_metadata::Vector{IS.TimeSeriesFileMetadata}`: metadata for timeseries
+- `resolution::DateTime.Period=nothing`: skip time series that don't match this resolution.
 """
-function add_forecasts!(
+function add_time_series!(
     sys::System,
-    timeseries_metadata::Vector{IS.TimeseriesFileMetadata};
+    file_metadata::Vector{IS.TimeSeriesFileMetadata};
     resolution = nothing,
 )
-    return IS.add_forecasts!(
-        Component,
-        sys.data,
-        timeseries_metadata;
-        resolution = resolution,
-    )
+    return IS.add_time_series!(Component, sys.data, file_metadata; resolution = resolution)
 end
 
-function IS.add_forecast!(
+function IS.add_time_series!(
     ::Type{<:Component},
     data::IS.SystemData,
-    forecast_cache::IS.ForecastCache,
-    metadata::IS.TimeseriesFileMetadata;
+    cache::IS.TimeSeriesCache,
+    file_metadata::IS.TimeSeriesFileMetadata;
     resolution = nothing,
 )
-    IS.set_component!(metadata, data, PowerSystems)
-    component = metadata.component
+    IS.set_component!(file_metadata, data, PowerSystems)
+    component = file_metadata.component
     if isnothing(component)
         return
     end
 
-    forecast, ts_data = IS.make_forecast!(forecast_cache, metadata; resolution = resolution)
-    if isnothing(forecast)
+    ta, ts_metadata = IS.make_time_series!(cache, file_metadata; resolution = resolution)
+    if isnothing(ta)
         return
     end
 
@@ -471,15 +466,15 @@ function IS.add_forecast!(
         for bus in _get_buses(data, component)
             push!(uuids, IS.get_uuid(bus))
         end
-        for component_ in (
+        for _component in (
             load for
             load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
-            IS.add_forecast!(data, component_, forecast, ts_data, skip_if_present = true)
+            IS.add_time_series!(data, _component, ta, ts_metadata, skip_if_present = true)
         end
     else
-        IS.add_forecast!(data, component, forecast, ts_data)
+        IS.add_time_series!(data, component, ta, ts_metadata)
     end
 end
 
@@ -780,139 +775,117 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
 end
 
 """
-Add forecast to the system.
+Add time series data to a component.
 
 Throws ArgumentError if the component is not stored in the system.
 
 """
-function add_forecast!(sys::System, component::Component, forecast::Forecast)
-    return IS.add_forecast!(sys.data, component, forecast)
+function add_time_series!(sys::System, component::Component, time_series::TimeSeriesData)
+    return IS.add_time_series!(sys.data, component, time_series)
 end
 
 """
-Add a forecast to a system from a CSV file.
+Add the same time series data to multiple components.
 
-See InfrastructureSystems.TimeseriesFileMetadata for description of
-scaling_factor.
+This is significantly more efficent than calling add_time_series! for each component
+individually with the same data because in this case, only one time series array is stored.
+
+Throws ArgumentError if a component is not stored in the system.
 """
-function add_forecast!(
-    sys::System,
-    filename::AbstractString,
-    component::Component,
-    label::AbstractString,
-    scaling_factor::Union{String, Float64} = 1.0,
-)
-    return IS.add_forecast!(sys.data, filename, component, label, scaling_factor)
+function add_time_series!(sys::System, components, time_series::TimeSeriesData)
+    return IS.add_time_series!(sys.data, components, time_series)
 end
 
 """
-Add a forecast to a system from a TimeSeries.TimeArray.
-
-See InfrastructureSystems.TimeseriesFileMetadata for description of
-scaling_factor.
-"""
-function add_forecast!(
-    sys::System,
-    ta::TimeSeries.TimeArray,
-    component,
-    label,
-    scaling_factor::Union{String, Float64} = 1.0,
-)
-    return IS.add_forecast!(sys.data, ta, component, label, scaling_factor)
-end
-
-"""
-Add a forecast to a system from a DataFrames.DataFrame.
-
-See InfrastructureSystems.TimeseriesFileMetadata for description of
-scaling_factor.
-"""
-function add_forecast!(
-    sys::System,
-    df::DataFrames.DataFrame,
-    component,
-    label,
-    scaling_factor::Union{String, Float64} = 1.0,
-)
-    return IS.add_forecast!(sys.data, df, component, label, scaling_factor)
-end
-
-"""
-Efficiently add all forecasts in one component to another by copying the underlying
+Efficiently add all time series data in one component to another by copying the underlying
 references.
 
 # Arguments
 - `dst::Component`: Destination component
 - `src::Component`: Source component
 - `label_mapping::Dict = nothing`: Optionally map src labels to different dst labels.
-  If provided and src has a forecast with a label not present in label_mapping, that
-  forecast will not copied. If label_mapping is nothing then all forecasts will be copied
-  with src's labels.
+  If provided and src has a time series with a label not present in label_mapping, that
+  time series will not copied. If label_mapping is nothing then all time series will be
+  copied with src's labels.
+- `scaling_factor_multiplier_mapping::Dict = nothing`: Optionally map src
+  scaling_factor_multipliers to dst scaling_factor_multipliers. Same behaviors as
+  label_mapping.
 """
-function copy_forecasts!(
+function copy_time_series!(
     dst::Component,
-    src::Component,
+    src::Component;
     label_mapping::Union{Nothing, Dict{String, String}} = nothing,
+    scaling_factor_multiplier_mapping::Union{Nothing, Dict{String, String}} = nothing,
 )
-    IS.copy_forecasts!(dst, src, label_mapping)
+    IS.copy_time_series!(
+        dst,
+        src,
+        label_mapping = label_mapping,
+        scaling_factor_multiplier_mapping = scaling_factor_multiplier_mapping,
+    )
 end
 
 """
-Return a vector of forecasts from a metadata file.
+Return a vector of time series data from a metadata file.
 
 # Arguments
 - `data::SystemData`: system
 - `metadata_file::AbstractString`: path to metadata file
-- `resolution::{Nothing, Dates.Period}`: skip any forecasts that don't match this resolution
+- `resolution::{Nothing, Dates.Period}`: skip data that doesn't match this resolution
 
-See InfrastructureSystems.TimeseriesFileMetadata for description of what the file
+See InfrastructureSystems.TimeSeriesFileMetadata for description of what the file
 should contain.
 """
-function make_forecasts(sys::System, metadata_file::AbstractString; resolution = nothing)
-    return IS.make_forecasts(sys.data, metadata_file, PowerSystems; resolution = resolution)
+function make_time_series(sys::System, metadata_file::AbstractString; resolution = nothing)
+    return IS.make_time_series(
+        sys.data,
+        metadata_file,
+        PowerSystems;
+        resolution = resolution,
+    )
 end
 
 """
-Return a vector of forecasts from a vector of TimeseriesFileMetadata values.
+Return a vector of time series data from a vector of TimeSeriesFileMetadata values.
 
 # Arguments
 - `data::SystemData`: system
-- `timeseries_metadata::Vector{TimeseriesFileMetadata}`: metadata values
-- `resolution::{Nothing, Dates.Period}`: skip any forecasts that don't match this resolution
+- `timeseries_metadata::Vector{TimeSeriesFileMetadata}`: metadata values
+- `resolution::{Nothing, Dates.Period}`: skip data that doesn't match this resolution
 """
-function make_forecasts(
+function make_time_series(
     sys::System,
-    metadata::Vector{IS.TimeseriesFileMetadata};
+    metadata::Vector{IS.TimeSeriesFileMetadata};
     resolution = nothing,
 )
-    return IS.make_forecasts(sys.data, metadata, PowerSystems; resolution = resolution)
+    return IS.make_time_series!(sys.data, metadata; resolution = resolution)
 end
 
 """
-Return true if forecasts are stored contiguously.
+Return true if time series data are stored contiguously.
 
-Throws ArgumentError if there are no forecasts stored.
+Throws ArgumentError if there are no time series stored.
 """
-function are_forecasts_contiguous(sys::System)
-    return IS.are_forecasts_contiguous(sys.data)
+function are_time_series_contiguous(sys::System)
+    return IS.are_time_series_contiguous(sys.data)
 end
 
-function are_forecasts_contiguous(component::Component)
-    return IS.are_forecasts_contiguous(component)
+function are_time_series_contiguous(component::Component)
+    return IS.are_time_series_contiguous(component)
 end
 
 """
-Generates all possible initial times for the stored forecasts. This should return the same
-result regardless of whether the forecasts have been stored as one contiguous array or
-chunks of contiguous arrays, such as one 365-day forecast vs 365 one-day forecasts.
+Generates all possible initial times for the stored time series. This should return the same
+result regardless of whether the time series have been stored as one contiguous array or
+chunks of contiguous arrays, such as one 365-day time series vs 365 one-day time series.
 
-Throws ArgumentError if there are no forecasts stored, interval is not a multiple of the
-system's forecast resolution, or if the stored forecasts have overlapping timestamps.
+Throws ArgumentError if there are no time series stored, interval is not a multiple of the
+system's time series resolution, or if the stored time series have overlapping timestamps.
 
 # Arguments
 - `sys::System`: System.
 - `interval::Dates.Period`: Amount of time in between each initial time.
-- `horizon::Int`: Length of each forecast array.
+- `horizon::Int`: Length of each time series array.
 - `initial_time::Union{Nothing, Dates.DateTime}=nothing`: Start with this time. If nothing,
   use the first initial time.
 """
@@ -948,122 +921,148 @@ function generate_initial_times(
 end
 
 """
-Return a forecast for the entire time series range stored for these parameters.
+Return a TimeSeriesData for the entire time series range stored for these parameters.
 """
-function get_forecast(
+function get_time_series(
     ::Type{T},
     component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
-) where {T <: Forecast}
-    return IS.get_forecast(T, component, initial_time, label)
+) where {T <: TimeSeriesData}
+    return IS.get_time_series(T, component, initial_time, label)
 end
 
 """
-Return a forecast for a subset of the time series range stored for these parameters.
+Return a TimeSeriesData for a subset of the time series range stored for these parameters.
 """
-function get_forecast(
-    ::Type{T},
-    component::Component,
-    initial_time::Dates.DateTime,
-    label::AbstractString,
-    horizon::Int,
-) where {T <: Forecast}
-    return IS.get_forecast(T, component, initial_time, label, horizon)
-end
-
-function get_forecast_initial_times(::Type{T}, component::Component) where {T <: Forecast}
-    return IS.get_forecast_initial_times(T, component)
-end
-
-function get_forecast_initial_times(
-    ::Type{T},
-    component::Component,
-    label::AbstractString,
-) where {T <: Forecast}
-    return IS.get_forecast_initial_times(T, component, label)
-end
-
-function get_forecast_labels(
-    ::Type{T},
-    component::Component,
-    initial_time::Dates.DateTime,
-) where {T <: Forecast}
-    return IS.get_forecast_labels(T, component, initial_time)
-end
-
-"""
-Return a TimeSeries.TimeArray where the forecast data has been multiplied by the forecasted
-component field.
-"""
-function get_forecast_values(
-    ::Type{T},
-    component::Component,
-    initial_time::Dates.DateTime,
-    label::AbstractString,
-) where {T <: Forecast}
-    return IS.get_forecast_values(T, PowerSystems, component, initial_time, label)
-end
-
-function get_forecast_values(
+function get_time_series(
     ::Type{T},
     component::Component,
     initial_time::Dates.DateTime,
     label::AbstractString,
     horizon::Int,
-) where {T <: Forecast}
-    forecast = get_forecast(T, component, initial_time, label, horizon)
-    return IS.get_forecast_values(PowerSystems, component, forecast)
+) where {T <: TimeSeriesData}
+    return IS.get_time_series(T, component, initial_time, label, horizon)
 end
 
-function get_forecast_values(component::Component, forecast::Forecast)
-    return IS.get_forecast_values(PowerSystems, component, forecast)
+function get_time_series_initial_times(
+    ::Type{T},
+    component::Component,
+) where {T <: TimeSeriesData}
+    return IS.get_time_series_initial_times(T, component)
 end
 
-"""
-Return sorted forecast initial times.
-"""
-function get_forecast_initial_times(sys::System)
-    return IS.get_forecast_initial_times(sys.data)
+function get_time_series_initial_times(
+    ::Type{T},
+    component::Component,
+    label::AbstractString,
+) where {T <: TimeSeriesData}
+    return IS.get_time_series_initial_times(T, component, label)
 end
 
-"""
-Return an iterable of NamedTuple keys for forecasts stored for this component.
-"""
-function get_forecast_keys(component::Component)
-    return IS.get_forecast_keys(component)
-end
-
-"""
-Return the horizon for all forecasts.
-"""
-function get_forecasts_horizon(sys::System)
-    return IS.get_forecasts_horizon(sys.data)
+function get_time_series_labels(
+    ::Type{T},
+    component::Component,
+    initial_time::Dates.DateTime,
+) where {T <: TimeSeriesData}
+    return IS.get_time_series_labels(T, component, initial_time)
 end
 
 """
-Return the earliest initial_time for a forecast.
+Return a TimeSeries.TimeArray for the requested time series parameters.
 """
-function get_forecasts_initial_time(sys::System)
-    return IS.get_forecasts_initial_time(sys.data)
+function get_time_series_array(
+    ::Type{T},
+    component::Component,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+    horizon::Union{Nothing, Int} = nothing,
+) where {T <: TimeSeriesData}
+    return IS.get_time_series_array(T, component, initial_time, label, horizon)
+end
+
+function get_time_series_array(component::Component, time_series::TimeSeriesData)
+    return IS.get_time_series_array(component, time_series)
 end
 
 """
-Return the interval for all forecasts.
+Return an Array of timestamps for the requested time series parameters.
 """
-function get_forecasts_interval(sys::System)
-    return IS.get_forecasts_interval(sys.data)
+function get_time_series_timestamps(
+    ::Type{T},
+    component::Component,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+    horizon::Union{Nothing, Int} = nothing,
+) where {T <: TimeSeriesData}
+    return IS.get_time_series_timestamps(T, component, initial_time, label, horizon)
+end
+
+function get_time_series_timestamps(component::Component, time_series::TimeSeriesData)
+    return IS.get_time_series_timestamps(component, time_series)
 end
 
 """
-Return the resolution for all forecasts.
+Return an Array of values for the requested time series parameters.
 """
-function get_forecasts_resolution(sys::System)
-    return IS.get_forecasts_resolution(sys.data)
+function get_time_series_values(
+    ::Type{T},
+    component::Component,
+    initial_time::Dates.DateTime,
+    label::AbstractString,
+    horizon::Union{Nothing, Int} = nothing,
+) where {T <: TimeSeriesData}
+    return IS.get_time_series_values(T, component, initial_time, label, horizon)
+end
+
+function get_time_series_values(component::Component, time_series::TimeSeriesData)
+    return IS.get_time_series_values(component, time_series)
 end
 
 """
-Return an iterator of forecasts in order of initial time.
+Return sorted time series initial times.
+"""
+function get_time_series_initial_times(sys::System)
+    return IS.get_time_series_initial_times(sys.data)
+end
+
+"""
+Return an iterable of NamedTuple keys for time series stored for this component.
+"""
+function get_time_series_keys(component::Component)
+    return IS.get_time_series_keys(component)
+end
+
+"""
+Return the horizon for all time series.
+"""
+function get_time_series_horizon(sys::System)
+    return IS.get_time_series_horizon(sys.data)
+end
+
+"""
+Return the earliest initial_time for a time series.
+"""
+function get_time_series_initial_time(sys::System)
+    return IS.get_time_series_initial_time(sys.data)
+end
+
+"""
+Return the interval for all time series.
+"""
+function get_time_series_interval(sys::System)
+    return IS.get_time_series_interval(sys.data)
+end
+
+"""
+Return the resolution for all time series.
+"""
+function get_time_series_resolution(sys::System)
+    return IS.get_time_series_resolution(sys.data)
+end
+
+"""
+Return an iterator of time series in order of initial time.
 
 Note that passing a filter function can be much slower than the other filtering parameters
 because it reads time series data from media.
@@ -1072,28 +1071,28 @@ Call `collect` on the result to get an array.
 
 # Arguments
 - `data::SystemData`: system
-- `filter_func = nothing`: Only return forecasts for which this returns true.
-- `type = nothing`: Only return forecasts with this type.
-- `initial_time = nothing`: Only return forecasts matching this value.
-- `label = nothing`: Only return forecasts matching this value.
+- `filter_func = nothing`: Only return time series for which this returns true.
+- `type = nothing`: Only return time series with this type.
+- `initial_time = nothing`: Only return time series matching this value.
+- `label = nothing`: Only return time series matching this value.
 
 # Examples
 ```julia
-for forecast in iterate_forecasts(sys)
-    @show forecast
+for time_series in get_time_series_multiple(sys)
+    @show time_series
 end
 
-forecasts = collect(iterate_forecasts(sys; initial_time = DateTime("2020-01-01T00:00:00"))
+ts = collect(get_time_series_multiple(sys; initial_time = DateTime("2020-01-01T00:00:00"))
 ```
 """
-function iterate_forecasts(
+function IS.get_time_series_multiple(
     sys::System,
     filter_func = nothing;
     type = nothing,
     initial_time = nothing,
     label = nothing,
 )
-    return iterate_forecasts(
+    return get_time_series_multiple(
         sys.data,
         filter_func;
         type = type,
@@ -1103,37 +1102,37 @@ function iterate_forecasts(
 end
 
 """
-Remove all forecasts from the system.
+Remove all time series data from the system.
 """
-function clear_forecasts!(sys::System)
-    return IS.clear_forecasts!(sys.data)
+function clear_time_series!(sys::System)
+    return IS.clear_time_series!(sys.data)
 end
 
 """
-Throws DataFormatError if forecasts have inconsistent parameters.
+Throws DataFormatError if time series data have inconsistent parameters.
 """
-function check_forecast_consistency(sys::System)
-    IS.check_forecast_consistency(sys.data)
+function check_time_series_consistency(sys::System)
+    IS.check_time_series_consistency(sys.data)
 end
 
 """
-Return true if all forecasts have consistent parameters.
+Return true if all time series data have consistent parameters.
 """
-function validate_forecast_consistency(sys::System)
-    return IS.validate_forecast_consistency(sys.data)
+function validate_time_series_consistency(sys::System)
+    return IS.validate_time_series_consistency(sys.data)
 end
 
 """
 Remove the time series data for a component.
 """
-function remove_forecast!(
+function remove_time_series!(
     ::Type{T},
     sys::System,
     component::Component,
     initial_time::Dates.DateTime,
     label::String,
-) where {T <: Forecast}
-    return IS.remove_forecast!(T, sys.data, component, initial_time, label)
+) where {T <: TimeSeriesData}
+    return IS.remove_time_series!(T, sys.data, component, initial_time, label)
 end
 
 """
@@ -1203,6 +1202,18 @@ function IS.deserialize(
 end
 
 function deserialize_components!(sys::System, raw)
+    # Convert the array of components into type-specific arrays to allow addition by type.
+    data = Dict{Any, Vector{Dict}}()
+    for component in raw
+        type = IS.get_type_from_serialization_data(component)
+        components = get(data, type, nothing)
+        if components === nothing
+            components = Vector{Dict}()
+            data[type] = components
+        end
+        push!(components, component)
+    end
+
     # Maintain a lookup of UUID to component because some component types encode
     # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
@@ -1210,11 +1221,8 @@ function deserialize_components!(sys::System, raw)
     # Add each type to this as we parse.
     parsed_types = Set()
 
-    function is_matching_type(x, types)
-        for t in types
-            x <: t && return true
-        end
-        return false
+    function is_matching_type(type, types)
+        return any(x -> type <: x, types)
     end
 
     function deserialize_and_add!(;
@@ -1222,24 +1230,23 @@ function deserialize_components!(sys::System, raw)
         include_types = nothing,
         post_add_func = nothing,
     )
-        for (c_type_str, components) in raw
-            c_type = get_component_type(c_type_str)
-            c_type in parsed_types && continue
-            if !isnothing(skip_types) && is_matching_type(c_type, skip_types)
+        for (type, components) in data
+            type in parsed_types && continue
+            if !isnothing(skip_types) && is_matching_type(type, skip_types)
                 continue
             end
-            if !isnothing(include_types) && !is_matching_type(c_type, include_types)
+            if !isnothing(include_types) && !is_matching_type(type, include_types)
                 continue
             end
             for component in components
-                comp = deserialize(c_type, component, component_cache)
+                comp = deserialize(type, component, component_cache)
                 add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
                 end
             end
-            push!(parsed_types, c_type)
+            push!(parsed_types, type)
         end
     end
 
@@ -1421,7 +1428,7 @@ function handle_component_addition!(sys::System, bus::Bus; kwargs...)
 end
 
 function handle_component_addition!(sys::System, component::RegulationDevice; kwargs...)
-    copy_forecasts!(component, component.device)
+    copy_time_series!(component, component.device)
     if !isnothing(get_component(typeof(component.device), sys, get_name(component.device)))
         # This will not be true during deserialization, and so won't run then.
         remove_component!(sys, component.device)
@@ -1609,12 +1616,12 @@ function convert_component!(
         line.angle_limits,
         line.services,
         line.ext,
-        InfrastructureSystems.Forecasts(),
+        InfrastructureSystems.TimeSeriesContainer(),
         line.internal,
     )
     IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
-    copy_forecasts!(new_line, line)
+    copy_time_series!(new_line, line)
     remove_component!(sys, line)
 end
 
@@ -1648,11 +1655,11 @@ function convert_component!(
         line.angle_limits,
         line.services,
         line.ext,
-        InfrastructureSystems.Forecasts(),
+        InfrastructureSystems.TimeSeriesContainer(),
         line.internal,
     )
     IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
-    copy_forecasts!(new_line, line)
+    copy_time_series!(new_line, line)
     remove_component!(sys, line)
 end

@@ -178,7 +178,7 @@ end
         @test_throws(PSY.InvalidValue, add_component!(sys, badline))
     )
 end
-#=
+
 # disabled until serialization is updated
 @testset "Test field validation after deserialization" begin
     nodes = nodes5()
@@ -222,4 +222,4 @@ end
         rm(path)
     end
 end
-=#
+

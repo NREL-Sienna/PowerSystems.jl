@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -32,7 +32,7 @@ a High voltage DC line.
 - `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HVDCLine <: DCBranch
@@ -48,18 +48,18 @@ mutable struct HVDCLine <: DCBranch
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function HVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, forecasts, internal, )
+function HVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    HVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,7 +76,7 @@ function HVDCLine(::Nothing)
         loss=(l0=0.0, l1=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -103,7 +103,7 @@ get_services(value::HVDCLine) = value.services
 """Get [`HVDCLine`](@ref) `ext`."""
 get_ext(value::HVDCLine) = value.ext
 
-InfrastructureSystems.get_forecasts(value::HVDCLine) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::HVDCLine) = value.time_series_container
 """Get [`HVDCLine`](@ref) `internal`."""
 get_internal(value::HVDCLine) = value.internal
 
@@ -130,7 +130,5 @@ set_services!(value::HVDCLine, val) = value.services = val
 """Set [`HVDCLine`](@ref) `ext`."""
 set_ext!(value::HVDCLine, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::HVDCLine, val) = value.forecasts = val
-"""Set [`HVDCLine`](@ref) `internal`."""
-set_internal!(value::HVDCLine, val) = value.internal = val
+InfrastructureSystems.set_time_series_container!(value::HVDCLine, val) = value.time_series_container = val
 

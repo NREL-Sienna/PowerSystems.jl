@@ -262,6 +262,4 @@ set_saturation_coeffs!(value::EXAC2, val) = value.saturation_coeffs = val
 set_ext!(value::EXAC2, val) = value.ext = val
 """Set [`EXAC2`](@ref) `states_types`."""
 set_states_types!(value::EXAC2, val) = value.states_types = val
-"""Set [`EXAC2`](@ref) `internal`."""
-set_internal!(value::EXAC2, val) = value.internal = val
 

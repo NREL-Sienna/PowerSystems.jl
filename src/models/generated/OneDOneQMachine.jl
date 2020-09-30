@@ -123,6 +123,4 @@ set_Td0_p!(value::OneDOneQMachine, val) = value.Td0_p = val
 set_Tq0_p!(value::OneDOneQMachine, val) = value.Tq0_p = val
 """Set [`OneDOneQMachine`](@ref) `ext`."""
 set_ext!(value::OneDOneQMachine, val) = value.ext = val
-"""Set [`OneDOneQMachine`](@ref) `internal`."""
-set_internal!(value::OneDOneQMachine, val) = value.internal = val
 

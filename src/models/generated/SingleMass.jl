@@ -75,6 +75,4 @@ set_H!(value::SingleMass, val) = value.H = val
 set_D!(value::SingleMass, val) = value.D = val
 """Set [`SingleMass`](@ref) `ext`."""
 set_ext!(value::SingleMass, val) = value.ext = val
-"""Set [`SingleMass`](@ref) `internal`."""
-set_internal!(value::SingleMass, val) = value.internal = val
 

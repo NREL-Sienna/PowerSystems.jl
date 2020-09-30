@@ -26,7 +26,7 @@ This file is auto-generated. Do not edit.
         must_run::Bool
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -56,7 +56,7 @@ Data Structure for thermal generation technologies.
 - `must_run::Bool`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ThermalMultiStart <: ThermalGen
@@ -93,18 +93,18 @@ mutable struct ThermalMultiStart <: ThermalGen
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function ThermalMultiStart(; name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, forecasts, internal, )
+function ThermalMultiStart(; name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -133,7 +133,7 @@ function ThermalMultiStart(::Nothing)
         must_run=false,
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -184,7 +184,7 @@ get_dynamic_injector(value::ThermalMultiStart) = value.dynamic_injector
 """Get [`ThermalMultiStart`](@ref) `ext`."""
 get_ext(value::ThermalMultiStart) = value.ext
 
-InfrastructureSystems.get_forecasts(value::ThermalMultiStart) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::ThermalMultiStart) = value.time_series_container
 """Get [`ThermalMultiStart`](@ref) `internal`."""
 get_internal(value::ThermalMultiStart) = value.internal
 
@@ -233,7 +233,5 @@ set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
 """Set [`ThermalMultiStart`](@ref) `ext`."""
 set_ext!(value::ThermalMultiStart, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::ThermalMultiStart, val) = value.forecasts = val
-"""Set [`ThermalMultiStart`](@ref) `internal`."""
-set_internal!(value::ThermalMultiStart, val) = value.internal = val
+InfrastructureSystems.set_time_series_container!(value::ThermalMultiStart, val) = value.time_series_container = val
 

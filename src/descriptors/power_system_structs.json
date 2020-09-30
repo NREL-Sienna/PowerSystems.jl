@@ -108,48 +108,48 @@
       ],
       "supertype": "OperationalCost"
     },
+    {
+      "struct_name": "MultiStartCost",
+      "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
+      "fields": [
         {
-          "struct_name": "MultiStartCost",
-          "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
-          "fields": [
-            {
-              "name": "variable",
-              "comment": "variable cost",
-              "null_value": "VariableCost((0.0, 0.0))",
-              "data_type": "VariableCost"
-            },
-            {
-              "name": "no_load",
-              "comment": "no load cost",
-              "null_value": "0.0",
-              "data_type": "Float64"
-            },
-            {
-              "name": "fixed",
-              "comment": "fixed cost",
-              "null_value": "0.0",
-              "data_type": "Float64"
-            },
-            {
-              "name": "start_up",
-              "comment": "start-up cost",
-              "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
-              "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
-            },
-            {
-              "name": "shut_down",
-              "comment": "shut-down cost",
-              "null_value": "0.0",
-              "data_type": "Float64",
-              "valid_range": {
-                "min": 0,
-                "max": null
-              },
-              "validation_action": "warn"
-            }
-          ],
-          "supertype": "OperationalCost"
+          "name": "variable",
+          "comment": "variable cost",
+          "null_value": "VariableCost((0.0, 0.0))",
+          "data_type": "VariableCost"
         },
+        {
+          "name": "no_load",
+          "comment": "no load cost",
+          "null_value": "0.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "fixed",
+          "comment": "fixed cost",
+          "null_value": "0.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "start_up",
+          "comment": "start-up cost",
+          "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
+          "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
+        },
+        {
+          "name": "shut_down",
+          "comment": "shut-down cost",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        }
+      ],
+      "supertype": "OperationalCost"
+    },
     {
       "struct_name": "Area",
       "docstring": "A collection of buses for control purposes.",
@@ -179,18 +179,19 @@
           "default": "0.0"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AggregationTopology"
@@ -216,18 +217,19 @@
           "data_type": "Float64"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AggregationTopology"
@@ -316,7 +318,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Topology"
@@ -341,7 +344,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "custom_code": "IS.get_name(arc::Arc) = (get_name ∘ get_from)(arc) * \" -> \" * (get_name ∘ get_to)(arc)",
@@ -441,18 +445,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ACBranch"
@@ -559,18 +564,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ACBranch"
@@ -684,18 +690,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ACBranch"
@@ -799,18 +806,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ACBranch"
@@ -905,18 +913,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ACBranch"
@@ -990,18 +999,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "DCBranch"
@@ -1076,18 +1086,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "DCBranch"
@@ -1179,18 +1190,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ControllableLoad"
@@ -1234,18 +1246,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ElectricLoad"
@@ -1332,18 +1345,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "StaticLoad"
@@ -1524,18 +1538,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "HydroGen"
@@ -1667,18 +1682,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "HydroGen"
@@ -1928,18 +1944,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "HydroGen"
@@ -2048,18 +2065,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "RenewableGen"
@@ -2157,18 +2175,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "RenewableGen"
@@ -2326,18 +2345,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ThermalGen"
@@ -2519,18 +2539,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ThermalGen"
@@ -2676,18 +2697,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Storage"
@@ -2747,7 +2769,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Reserve{T}"
@@ -2806,7 +2829,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ReserveNonSpinning"
@@ -2856,7 +2880,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Service"
@@ -2901,18 +2926,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Reserve{T}"
@@ -2946,7 +2972,7 @@
         },
         {
           "name": "requirement",
-          "comment": "the required quantity of the product should be scaled by a Forecast",
+          "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
           "null_value": "0.0",
           "data_type": "Float64"
         },
@@ -2957,12 +2983,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "operation_cost",
@@ -2975,7 +3001,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Reserve{T}"
@@ -3008,7 +3035,7 @@
         },
         {
           "name": "requirement",
-          "comment": "the required quantity of the product should be scaled by a Forecast",
+          "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
           "null_value": "0.0",
           "data_type": "Float64"
         },
@@ -3019,12 +3046,12 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "operation_cost",
@@ -3037,7 +3064,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "ReserveNonSpinning"
@@ -3109,7 +3137,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Service"
@@ -3140,18 +3169,19 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "forecasts",
+          "name": "time_series_container",
           "accessor_module": "InfrastructureSystems",
-          "comment": "internal forecast storage",
-          "null_value": "InfrastructureSystems.Forecasts()",
-          "data_type": "InfrastructureSystems.Forecasts",
-          "default": "InfrastructureSystems.Forecasts()"
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Service"
@@ -3212,7 +3242,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -3272,7 +3303,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -3456,7 +3488,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -3641,7 +3674,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -3803,7 +3837,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -3949,7 +3984,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -4095,7 +4131,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -4217,7 +4254,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -4418,7 +4456,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -4618,7 +4657,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -4812,7 +4852,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -5057,7 +5098,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -5301,7 +5343,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -5521,7 +5564,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -5760,7 +5804,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -5972,7 +6017,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "AVR"
@@ -6035,7 +6081,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -6214,7 +6261,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -6361,7 +6409,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -6504,7 +6553,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -6669,7 +6719,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -6834,7 +6885,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -6937,7 +6989,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -7080,7 +7133,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -7245,7 +7299,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -7410,7 +7465,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Machine"
@@ -7453,7 +7509,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "PSS"
@@ -7506,7 +7563,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "PSS"
@@ -7732,7 +7790,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "PSS"
@@ -7785,7 +7844,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Shaft"
@@ -7998,7 +8058,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "Shaft"
@@ -8052,7 +8113,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "TurbineGov"
@@ -8178,7 +8240,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "TurbineGov"
@@ -8565,7 +8628,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "TurbineGov"
@@ -8709,7 +8773,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "TurbineGov"
@@ -8875,7 +8940,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "TurbineGov"
@@ -9129,7 +9195,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "TurbineGov"
@@ -9239,7 +9306,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "TurbineGov"
@@ -9319,7 +9387,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "TurbineGov"
@@ -9409,7 +9478,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "DCSource"
@@ -10091,7 +10161,8 @@
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
-          "internal_default": "InfrastructureSystemsInternal()"
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "StaticInjection"
@@ -10149,8 +10220,8 @@
           }
         },
         {
-          "name": "forecasts",
-          "data_type": "InfrastructureSystems.Forecasts"
+          "name": "time_series_container",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer"
         },
         {
           "name": "internal",

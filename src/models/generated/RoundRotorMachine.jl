@@ -210,6 +210,4 @@ set_γ_d2!(value::RoundRotorMachine, val) = value.γ_d2 = val
 set_γ_q2!(value::RoundRotorMachine, val) = value.γ_q2 = val
 """Set [`RoundRotorMachine`](@ref) `γ_qd`."""
 set_γ_qd!(value::RoundRotorMachine, val) = value.γ_qd = val
-"""Set [`RoundRotorMachine`](@ref) `internal`."""
-set_internal!(value::RoundRotorMachine, val) = value.internal = val
 

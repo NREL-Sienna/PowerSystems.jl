@@ -11,8 +11,8 @@ import PowerSystems: LazyDictFromIterator
         create_func = [create_rts_system, create_rts_multistart_system]
         for f in create_func
             sys = f(resolution)
-            for forecast in iterate_forecasts(sys)
-                @test length(forecast) == len
+            for time_series in get_time_series_multiple(sys)
+                @test length(time_series) == len
             end
         end
     end
@@ -50,7 +50,8 @@ end
         function check_fields(chk_dat)
             for field in chk_dat.fields
                 n = get(chk_dat, :structname, nothing)
-                (cdmd, mpd) = isnothing(n) ? (cdmgen, mpgen) :
+                (cdmd, mpd) =
+                    isnothing(n) ? (cdmgen, mpgen) :
                     (getfield(cdmgen, n), getfield(mpgen, n))
                 cdmgen_val = getfield(cdmd, field)
                 mpgen_val = getfield(mpd, field)

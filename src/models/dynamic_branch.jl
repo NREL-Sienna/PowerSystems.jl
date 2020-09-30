@@ -41,43 +41,6 @@ function DynamicBranch(::Nothing)
     DynamicBranch(Line(nothing))
 end
 
-const BRANCH_TYPE_KEY = "__branch_type"
-
-function IS.serialize(component::T) where {T <: DynamicBranch}
-    data = Dict{String, Any}()
-    for name in fieldnames(T)
-        val = getfield(component, name)
-        if name === :branch
-            # The device is not attached to the system, so serialize it and save the type.
-            data[BRANCH_TYPE_KEY] = string(typeof(val))
-        end
-        data[string(name)] = serialize_uuid_handling(val)
-    end
-
-    return data
-end
-
-function IS.deserialize(
-    ::Type{T},
-    data::Dict,
-    component_cache::Dict,
-) where {T <: DynamicBranch}
-    @debug T data
-    vals = Dict{Symbol, Any}()
-    for (field_name, field_type) in zip(fieldnames(T), fieldtypes(T))
-        val = data[string(field_name)]
-        if field_name === :branch
-            type = get_component_type(data[BRANCH_TYPE_KEY])
-            vals[field_name] = deserialize(type, val, component_cache)
-        else
-            vals[field_name] =
-                deserialize_uuid_handling(field_type, field_name, val, component_cache)
-        end
-    end
-
-    return DynamicBranch(; vals...)
-end
-
 "Get branch"
 get_branch(value::DynamicBranch) = value.branch
 "Get n_states"
@@ -140,9 +103,6 @@ set_services!(value::DynamicBranch, val::Vector{Service}) = set_services!(value.
 """Set DynamicBranch ext."""
 set_ext!(value::DynamicBranch, val::Dict{String, Any}) = set_ext!(value.branch, val)
 
-"""Set DynamicBranch internal."""
-set_internal!(value::DynamicBranch, val::InfrastructureSystemsInternal) =
-    value.internal = val
 "Set branch"
 set_branch!(value::DynamicBranch, val::ACBranch) = value.branch = val
 "Set n_states"
