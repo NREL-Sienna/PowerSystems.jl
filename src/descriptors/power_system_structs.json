@@ -2314,6 +2314,12 @@
           "default": "nothing"
         },
         {
+          "name": "must_run",
+          "null_value": "false",
+          "data_type": "Bool",
+          "default": "false"
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
