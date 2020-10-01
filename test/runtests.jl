@@ -7,7 +7,6 @@ import InteractiveUtils
 import JSON3
 
 import InfrastructureSystems
-import InfrastructureSystems: Deterministic, Probabilistic, Scenarios, TimeSeriesData
 const IS = InfrastructureSystems
 using PowerSystems
 import PowerSystems: PowerSystemTableData

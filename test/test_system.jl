@@ -42,42 +42,30 @@
         @test bus_number == bus.number
     end
 
-    initial_times = get_time_series_initial_times(sys)
-    @assert length(initial_times) == 1
-    initial_time = initial_times[1]
+    #initial_times = get_time_series_initial_times(sys)
+    #@assert length(initial_times) == 1
+    #initial_time = initial_times[1]
 
-    # Get time_series with a label and without.
+    # Get time_series with a name and without.
     components = collect(get_components(HydroEnergyReservoir, sys))
     @test !isempty(components)
     component = components[1]
-    ts = get_time_series(Deterministic, component, initial_time, "max_active_power")
-    @test ts isa Deterministic
+    ts = get_time_series(SingleTimeSeries, component, "max_active_power")
+    @test ts isa SingleTimeSeries
 
     # Test all versions of get_time_series_[array|timestamps|values]
     values1 = get_time_series_array(component, ts)
-    values2 =
-        get_time_series_array(Deterministic, component, initial_time, "max_active_power")
+    values2 = get_time_series_array(SingleTimeSeries, component, "max_active_power")
     @test values1 == values2
-    values3 = get_time_series_array(
-        Deterministic,
-        component,
-        initial_time,
-        "max_active_power",
-        get_horizon(ts),
-    )
+    values3 = get_time_series_array(SingleTimeSeries, component, "max_active_power")
     @test values1 == values3
 
-    val = get_time_series_array(Deterministic, component, initial_time, "max_active_power")
+    val = get_time_series_array(SingleTimeSeries, component, "max_active_power")
     @test val isa TimeSeries.TimeArray
-    val = get_time_series_timestamps(
-        Deterministic,
-        component,
-        initial_time,
-        "max_active_power",
-    )
+    val = get_time_series_timestamps(SingleTimeSeries, component, "max_active_power")
     @test val isa Array
     @test val[1] isa Dates.DateTime
-    val = get_time_series_values(Deterministic, component, initial_time, "max_active_power")
+    val = get_time_series_values(SingleTimeSeries, component, "max_active_power")
     @test val isa Array
     @test val[1] isa AbstractFloat
 
@@ -90,18 +78,13 @@
     @test val isa Array
     @test val[1] isa AbstractFloat
 
-    horizon = get_time_series_horizon(sys)
-    @test horizon == 24
-    @test get_time_series_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
-    @test get_time_series_interval(sys) == Dates.Hour(0)
-    resolution = get_time_series_resolution(sys)
-    @test resolution == Dates.Hour(1)
-
-    # Actual functionality is tested in InfrastructureSystems.
-    @test generate_initial_times(sys, resolution, horizon)[1] == initial_time
-    @test generate_initial_times(component, resolution, horizon)[1] == initial_time
-    @test are_time_series_contiguous(sys)
-    @test are_time_series_contiguous(component)
+    # TODO 1.0
+    #horizon = get_time_series_horizon(sys)
+    #@test horizon == 24
+    #@test get_time_series_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
+    #@test get_time_series_interval(sys) == Dates.Hour(0)
+    #resolution = get_time_series_resolution(sys)
+    #@test resolution == Dates.Hour(1)
 
     clear_time_series!(sys)
     @test length(collect(get_time_series_multiple(sys))) == 0
@@ -151,20 +134,20 @@ end
     components = get_components(Component, sys)
     @test i == length(components)
 
-    initial_times = get_time_series_initial_times(sys)
-    unique_initial_times = Set{Dates.DateTime}()
-    for time_series in get_time_series_multiple(sys)
-        push!(unique_initial_times, get_initial_time(time_series))
-    end
-    @test initial_times == sort!(collect(unique_initial_times))
+    #initial_times = get_time_series_initial_times(sys)
+    #unique_initial_times = Set{Dates.DateTime}()
+    #for time_series in get_time_series_multiple(sys)
+    #    push!(unique_initial_times, get_initial_time(time_series))
+    #end
+    #@test initial_times == sort!(collect(unique_initial_times))
 
-    for initial_time in initial_times
-        all_ts = collect(get_time_series_multiple(sys; initial_time = initial_time))
-        @test length(all_ts) > 0
-        for time_series in all_ts
-            @test get_initial_time(time_series) == initial_time
-        end
-    end
+    #for initial_time in initial_times
+    #    all_ts = collect(get_time_series_multiple(sys; initial_time = initial_time))
+    #    @test length(all_ts) > 0
+    #    for time_series in all_ts
+    #        @test get_initial_time(time_series) == initial_time
+    #    end
+    #end
 end
 
 @testset "Test remove_component" begin
@@ -253,13 +236,13 @@ end
     dates = collect(initial_time:Dates.Hour(1):end_time)
     data = collect(1:24)
     ta = TimeSeries.TimeArray(dates, data, ["1"])
-    label = "max_active_power"
-    ts = Deterministic(label = label, data = ta)
+    name = "max_active_power"
+    ts = SingleTimeSeries(name = name, data = ta)
     add_time_series!(sys, components, ts)
 
     for i in 1:len
         component = get_component(ThermalStandard, sys, string(i))
-        ts = get_time_series(Deterministic, component, initial_time, label)
-        @test ts isa Deterministic
+        ts = get_time_series(SingleTimeSeries, component, name)
+        @test ts isa SingleTimeSeries
     end
 end

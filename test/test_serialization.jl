@@ -47,7 +47,7 @@ end
     end_time = Dates.DateTime("2020-01-01T23:00:00")
     dates = collect(initial_time:Dates.Hour(1):end_time)
     data = collect(1:24)
-    label = "active_power"
+    name = "active_power"
     contributing_devices = Vector{Device}()
     for g in get_components(
         ThermalStandard,
@@ -58,8 +58,8 @@ end
             continue
         end
         ta = TimeSeries.TimeArray(dates, data, [Symbol(get_name(g))])
-        time_series = IS.Deterministic(
-            label = label,
+        time_series = IS.SingleTimeSeries(
+            name = name,
             data = ta,
             scaling_factor_multiplier = get_active_power,
         )
@@ -77,7 +77,7 @@ end
 
     # Ensure the time_series attached to the ThermalStandard got deserialized.
     for rd in get_components(RegulationDevice, sys2)
-        @test get_time_series(Deterministic, rd, initial_time, label) isa Deterministic
+        @test get_time_series(SingleTimeSeries, rd, name) isa SingleTimeSeries
     end
 
     clear_time_series!(sys2)
@@ -101,8 +101,9 @@ end
     tg = RenewableFix(nothing)
     tg.bus = bus
     add_component!(sys, tg)
-    ts = PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
-    add_time_series!(sys, tg, ts)
+    # TODO 1.0
+    #ts = PSY.Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
+    #add_time_series!(sys, tg, ts)
 
     _, result = validate_serialization(sys)
     @test result

@@ -40,10 +40,10 @@ function PowerSystemTableData(
     end
     base_power = get(data, "base_power", DEFAULT_BASE_MVA)
 
-    for (label, category) in categories
-        val = get(data, label, nothing)
+    for (name, category) in categories
+        val = get(data, name, nothing)
         if isnothing(val)
-            @debug "key '$label' not found in input data, set to nothing"
+            @debug "key '$name' not found in input data, set to nothing"
         else
             category_to_df[category] = val
         end

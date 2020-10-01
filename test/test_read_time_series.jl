@@ -2,18 +2,18 @@ import DataFrames
 import Dates
 import TimeSeries
 
-function verify_time_series(sys::System, num_initial_times, num_time_series, horizon)
-    initial_times = get_time_series_initial_times(sys)
-    if length(initial_times) != num_initial_times
-        @error "count of initial_times doesn't match" num_initial_times initial_times
-        return false
-    end
+function verify_time_series(sys::System, num_initial_times, num_time_series, len)
+    #initial_times = get_time_series_initial_times(sys)
+    #if length(initial_times) != num_initial_times
+    #    @error "count of initial_times doesn't match" num_initial_times initial_times
+    #    return false
+    #end
 
     total_time_series = 0
     all_time_series = get_time_series_multiple(sys)
     for time_series in all_time_series
-        if IS.get_horizon(time_series) != horizon
-            @error "horizon doesn't match" IS.get_horizon(time_series) horizon
+        if length(time_series) != len
+            @error "length doesn't match" length(time_series) len
             return false
         end
         total_time_series += 1
@@ -56,12 +56,12 @@ end
         simulation = "DAY_AHEAD",
         category = "Generator",
         component_name = "122_HYDRO_1",
-        label = "active_power",
+        name = "active_power",
         normalization_factor = 1.0,
         data_file = timeseries_file,
         percentiles = [],
         time_series_type_module = "InfrastructureSystems",
-        time_series_type = "Deterministic",
+        time_series_type = "SingleTimeSeries",
     )
 
     # Test code path where no normalization occurs.
@@ -91,7 +91,7 @@ end
 
 @testset "Test single time_series addition" begin
     component_name = "122_HYDRO_1"
-    label = "active_power"
+    name = "active_power"
     timeseries_file = joinpath(
         DATA_DIR,
         "forecasts",
@@ -105,7 +105,7 @@ end
     # Test with a filename.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
-    ts = Deterministic(label, timeseries_file, component; normalization_factor = 1.0)
+    ts = SingleTimeSeries(name, timeseries_file, component; normalization_factor = 1.0)
     add_time_series!(sys, component, ts)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -115,7 +115,7 @@ end
     # Test with TimeSeries.TimeArray.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
-    ts = Deterministic(label, ta; normalization_factor = 1.0)
+    ts = SingleTimeSeries(name, ta; normalization_factor = 1.0)
     add_time_series!(sys, component, ts)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -125,7 +125,7 @@ end
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
     df = DataFrames.DataFrame(ta)
-    ts = Deterministic(label, df; normalization_factor = 1.0)
+    ts = SingleTimeSeries(name, df; normalization_factor = 1.0)
     add_time_series!(sys, component, ts)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -138,7 +138,7 @@ end
     @test verify_time_series(sys, 1, 5, 24)
 
     # Add the same files.
-    # This will fail because the component-label pairs will be duplicated.
+    # This will fail because the component-name pairs will be duplicated.
     @test_throws ArgumentError add_time_series!(sys, file_metadata)
 
     file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_rt.json")
