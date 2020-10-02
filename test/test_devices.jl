@@ -1,5 +1,4 @@
 @testset "Test special accessors" begin
-
     cdmsys = create_rts_system()
     th = first(get_components(ThermalStandard, cdmsys))
     re = first(get_components(RenewableDispatch, cdmsys))

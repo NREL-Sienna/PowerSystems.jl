@@ -460,7 +460,6 @@ end
     for brf in Br5NS_ids, brt in Br5NS_ids
         @test getindex(L5NS, string(brf), string(brt)) - Lodf_5[brf, brt] <= 1e-3
     end
-
 end
 
 @testset "Ybus Matrix" begin

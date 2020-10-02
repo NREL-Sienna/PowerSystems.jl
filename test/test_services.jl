@@ -291,7 +291,6 @@ end
         contributing_devices[1],
         AGC_service,
     )
-
 end
 
 @testset "Test StaticReserveGroup" begin

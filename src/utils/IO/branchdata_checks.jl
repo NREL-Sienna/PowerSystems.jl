@@ -44,7 +44,6 @@ function check_angle_limits!(line)
                 (min = max(line.angle_limits.min, min_limit), max = line.angle_limits.max)
         end
     else
-
         if line.angle_limits.max >= max_limit && line.angle_limits.min <= min_limit
             line.angle_limits = (min = min_limit, max = max_limit)
         elseif line.angle_limits.max >= max_limit && line.angle_limits.min >= min_limit
@@ -71,15 +70,12 @@ function linerate_calculation(l::Union{Line, MonitoredLine})
         diff_angle = abs(l.arc.from.angle - l.arc.to.angle)
         new_rate = y_mag * fr_vmax * to_vmax * cos(theta_max)
     else
-
         m_vmax = max(fr_vmax, to_vmax)
         c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2 * fr_vmax * to_vmax * cos(theta_max))
         new_rate = y_mag * m_vmax * c_max
-
     end
 
     return new_rate
-
 end
 
 function calculate_thermal_limits!(branch, basemva::Float64)
@@ -150,7 +146,6 @@ function check_SIL(line, basemva::Float64)
         sil = calculate_sil(line, basemva)
         @warn "Rate provided for $(line.name) is larger than the SIL $(sil) in the range of $(closestSIL)." maxlog =
             PS_MAX_LOG
-
     end
     return
 end

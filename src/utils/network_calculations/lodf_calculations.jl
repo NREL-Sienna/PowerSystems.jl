@@ -46,7 +46,6 @@ function LODF(branches, nodes, dist_slack::Vector{Float64} = [0.1])
     look_up = (_make_ax_ref(line_ax), _make_ax_ref(line_ax))
 
     return LODF(lodf, axes, look_up)
-
 end
 
 """

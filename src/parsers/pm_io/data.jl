@@ -407,7 +407,6 @@ function _make_per_unit!(data::Dict{String, <:Any}, mva_base::Real)
             _rescale_cost_model!(dcline, mva_base)
         end
     end
-
 end
 
 "Transforms network data into mixed-units (inverse of per-unit)"
@@ -546,7 +545,6 @@ function _make_mixed_units!(data::Dict{String, <:Any}, mva_base::Real)
             _rescale_cost_model!(dcline, 1.0 / mva_base)
         end
     end
-
 end
 
 ""
@@ -1234,7 +1232,6 @@ function correct_branch_directions!(data::Dict{String, <:Any})
         else
             push!(orientations, orientation)
         end
-
     end
 
     return modified
@@ -1527,7 +1524,6 @@ function check_storage_parameters(data::Dict{String, Any})
                 PS_MAX_LOG
         end
     end
-
 end
 
 """
@@ -1550,9 +1546,7 @@ function check_switch_parameters(data::Dict{String, <:Any})
         if haskey(switch, "current_rating") && switch["current_rating"] < 0.0
             throw(DataFormatError("switch $(switch["index"]) has a non-positive current_rating $(switch["current_rating"])"))
         end
-
     end
-
 end
 
 "checks bus types are consistent with generator connections, if not, fixes them"
@@ -1589,7 +1583,6 @@ function correct_bus_types!(data::Dict{String, <:Any})
                 bus["bus_type"] = 2
                 push!(modified, bus["index"])
             end
-
         end
     end
 
@@ -1943,7 +1936,6 @@ function standardize_cost_terms!(data::Dict{String, <:Any}; order = -1)
                 end
             end
         end
-
     end
 
     if comp_max_order <= order + 1
@@ -1962,7 +1954,6 @@ function standardize_cost_terms!(data::Dict{String, <:Any}; order = -1)
             _standardize_cost_terms!(network["dcline"], comp_max_order, "dcline")
         end
     end
-
 end
 
 "ensures all polynomial costs functions have at exactly comp_order terms"
@@ -2185,7 +2176,6 @@ function _propagate_topology_status!(data::Dict{String, <:Any})
                 updated = true
             end
         end
-
     end
 
     @info "topology status propagation fixpoint reached in $(iteration) rounds" maxlog =
@@ -2410,5 +2400,4 @@ function move_genfuel_and_gentype!(data::Dict{String, Any})
             delete!(data, toplevkeys[i])
         end
     end
-
 end

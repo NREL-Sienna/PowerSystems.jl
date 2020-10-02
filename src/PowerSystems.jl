@@ -224,18 +224,18 @@ export get_component
 export get_components
 export get_components_by_name
 export get_available_components
+export get_forecast_horizon
+export get_forecast_initial_timestamp
+export get_forecast_interval
+export get_forecast_window_count
 export get_time_series
 export get_time_series_array
-export get_time_series_horizon
-export get_time_series_initial_time
-#export get_time_series_initial_times
-export get_time_series_interval
-export get_time_series_names
 export get_time_series_resolution
 export get_time_series_timestamps
 export get_time_series_values
 export get_horizon
-export get_initial_time
+export generate_forecast_initial_times
+export get_forecast_total_period
 export get_resolution
 export get_data
 export iterate_components
@@ -325,12 +325,14 @@ import InfrastructureSystems:
     DataFormatError,
     InvalidRange,
     InvalidValue,
+    get_count,
     get_data,
     get_horizon,
-    get_initial_time,
     get_resolution,
+    get_window,
     get_name,
     set_name!,
+    iterate_windows,
     get_time_series,
     to_json,
     from_json,

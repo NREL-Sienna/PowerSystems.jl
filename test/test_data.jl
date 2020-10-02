@@ -1,5 +1,4 @@
 @testset "TestData" begin
-
     force = get(ENV, "PS_FORCE_DOWNLOAD", "false")
     if force == "true"
         force = true
@@ -12,5 +11,4 @@
     base = abspath(joinpath(@__DIR__, ".."))
     directory = abspath(download(PowerSystems.TestData; folder = base, force = force))
     @test directory == joinpath(base, "data")
-
 end # testset

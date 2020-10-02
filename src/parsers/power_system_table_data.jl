@@ -567,7 +567,6 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
             base_power = rawload.base_power,
         )
         add_component!(sys, load)
-
     end
 end
 
@@ -1267,7 +1266,6 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
             fields,
             _FieldInfo(name, custom_name, pu_conversion, unit_conversion, default_value),
         )
-
     end
 
     return fields

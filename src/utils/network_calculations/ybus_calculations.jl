@@ -119,7 +119,6 @@ function _buildybus(branches, nodes, fixed_admittances)
         end
 
         _ybus!(ybus, b, num_bus)
-
     end
     for fa in fixed_admittances
         _ybus!(ybus, fa, num_bus)

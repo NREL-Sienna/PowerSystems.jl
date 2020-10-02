@@ -869,21 +869,6 @@ function make_time_series(
 end
 =#
 
-#function get_time_series_initial_times(
-#    ::Type{T},
-#    component::Component,
-#) where {T <: TimeSeriesData}
-#    return IS.get_time_series_initial_times(T, component)
-#end
-#
-#function get_time_series_initial_times(
-#    ::Type{T},
-#    component::Component,
-#    name::AbstractString,
-#) where {T <: TimeSeriesData}
-#    return IS.get_time_series_initial_times(T, component, name)
-#end
-
 function get_time_series_names(::Type{T}, component::Component) where {T <: TimeSeriesData}
     return IS.get_time_series_names(T, component)
 end
@@ -963,48 +948,44 @@ function get_time_series_values(component::Component, time_series::TimeSeriesDat
     return IS.get_time_series_values(component, time_series)
 end
 
-"""
-Return sorted time series initial times.
-"""
-#function get_time_series_initial_times(sys::System)
-#    return IS.get_time_series_initial_times(sys.data)
-#end
-
-"""
-Return an iterable of NamedTuple keys for time series stored for this component.
-"""
 function get_time_series_keys(component::Component)
     return IS.get_time_series_keys(component)
 end
 
-# TODO 1.0: decide what to do
 """
-Return the horizon for all time series.
+Return the initial times for all forecasts.
 """
-function get_time_series_horizon(sys::System)
-    return IS.get_time_series_horizon(sys.data)
-end
+generate_forecast_initial_times(sys::System) = IS.generate_forecast_initial_times(sys.data)
 
 """
-Return the earliest initial_time for a time series.
+Return the total period covered by all forecasts.
 """
-function get_time_series_initial_time(sys::System)
-    return IS.get_time_series_initial_time(sys.data)
-end
+get_forecast_total_period(sys::System) = IS.get_forecast_total_period(sys.data)
 
 """
-Return the interval for all time series.
+Return the window count for all forecasts.
 """
-function get_time_series_interval(sys::System)
-    return IS.get_time_series_interval(sys.data)
-end
+get_forecast_window_count(sys::System) = IS.get_forecast_window_count(sys.data)
+
+"""
+Return the horizon for all forecasts.
+"""
+get_forecast_horizon(sys::System) = IS.get_forecast_horizon(sys.data)
+
+"""
+Return the initial_timestamp for all forecasts.
+"""
+get_forecast_initial_timestamp(sys::System) = IS.get_forecast_initial_timestamp(sys.data)
+
+"""
+Return the interval for all forecasts.
+"""
+get_forecast_interval(sys::System) = IS.get_forecast_interval(sys.data)
 
 """
 Return the resolution for all time series.
 """
-function get_time_series_resolution(sys::System)
-    return IS.get_time_series_resolution(sys.data)
-end
+get_time_series_resolution(sys::System) = IS.get_time_series_resolution(sys.data)
 
 """
 Return an iterator of time series in order of initial time.
