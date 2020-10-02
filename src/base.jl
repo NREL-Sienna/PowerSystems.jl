@@ -218,6 +218,12 @@ Return the system's frequency.
 """
 get_frequency(sys::System) = sys.frequency
 
+
+"""
+Return system's resolution
+"""
+get_resolution(sys::System) = IS.get_time_series_resolution(sys.data)
+
 """
 Clear any value stored in ext.
 """
