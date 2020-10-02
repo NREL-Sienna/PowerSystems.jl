@@ -218,7 +218,6 @@ Return the system's frequency.
 """
 get_frequency(sys::System) = sys.frequency
 
-
 """
 Return system's resolution
 """
