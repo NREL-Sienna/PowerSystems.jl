@@ -42,9 +42,8 @@
         @test bus_number == bus.number
     end
 
-    #initial_times = get_time_series_initial_times(sys)
-    #@assert length(initial_times) == 1
-    #initial_time = initial_times[1]
+    @test get_forecast_initial_times(sys) == []
+    @test get_time_series_resolution(sys) == Dates.Hour(1)
 
     # Get time_series with a name and without.
     components = collect(get_components(HydroEnergyReservoir, sys))
@@ -77,14 +76,6 @@
     val = get_time_series_values(component, ts)
     @test val isa Array
     @test val[1] isa AbstractFloat
-
-    # TODO 1.0
-    #horizon = get_time_series_horizon(sys)
-    #@test horizon == 24
-    #@test get_time_series_initial_time(sys) == Dates.DateTime("2020-01-01T00:00:00")
-    #@test get_time_series_interval(sys) == Dates.Hour(0)
-    #resolution = get_time_series_resolution(sys)
-    #@test resolution == Dates.Hour(1)
 
     clear_time_series!(sys)
     @test length(collect(get_time_series_multiple(sys))) == 0
@@ -133,21 +124,6 @@ end
 
     components = get_components(Component, sys)
     @test i == length(components)
-
-    #initial_times = get_time_series_initial_times(sys)
-    #unique_initial_times = Set{Dates.DateTime}()
-    #for time_series in get_time_series_multiple(sys)
-    #    push!(unique_initial_times, get_initial_time(time_series))
-    #end
-    #@test initial_times == sort!(collect(unique_initial_times))
-
-    #for initial_time in initial_times
-    #    all_ts = collect(get_time_series_multiple(sys; initial_time = initial_time))
-    #    @test length(all_ts) > 0
-    #    for time_series in all_ts
-    #        @test get_initial_time(time_series) == initial_time
-    #    end
-    #end
 end
 
 @testset "Test remove_component" begin
@@ -245,4 +221,40 @@ end
         ts = get_time_series(SingleTimeSeries, component, name)
         @test ts isa SingleTimeSeries
     end
+end
+
+@testset "Test forecast parameters" begin
+    sys = System(100.0)
+    bus = Bus(nothing)
+    bus.bustype = BusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.name = "gen"
+    gen.bus = bus
+    add_component!(sys, gen)
+
+    resolution = Dates.Hour(1)
+    initial_time = Dates.DateTime("2020-09-01")
+    second_time = initial_time + resolution
+    name = "test"
+    horizon = 24
+    data = SortedDict(initial_time => ones(horizon), second_time => ones(horizon))
+
+    forecast = Deterministic(
+        data = data,
+        name = name,
+        initial_timestamp = initial_time,
+        horizon = horizon,
+        resolution = resolution,
+    )
+    add_time_series!(sys, gen, forecast)
+
+    @test get_time_series_resolution(sys) == resolution
+    @test get_forecast_horizon(sys) == horizon
+    @test get_forecast_initial_timestamp(sys) == initial_time
+    @test get_forecast_interval(sys) == Dates.Millisecond(second_time - initial_time)
+    @test get_forecast_window_count(sys) == 2
+    @test Dates.Hour(get_forecast_total_period(sys)) ==
+          Dates.Hour(second_time - initial_time) + Dates.Hour(resolution * horizon)
+    @test get_forecast_initial_times(sys) == [initial_time, second_time]
 end

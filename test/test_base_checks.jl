@@ -9,5 +9,4 @@
 
     ordered = sort(unordered)
     PowerSystems.check_ascending_order(ordered, "test")
-
 end

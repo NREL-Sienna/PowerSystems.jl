@@ -1,5 +1,6 @@
 using Test
 using Logging
+using DataStructures
 using Dates
 using LinearAlgebra
 import TimeSeries

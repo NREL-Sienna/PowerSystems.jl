@@ -37,7 +37,6 @@ function Base.download(
     branch::String = "master",
     force::Bool = false,
 )
-
     if Sys.iswindows()
         POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.zip"
     else

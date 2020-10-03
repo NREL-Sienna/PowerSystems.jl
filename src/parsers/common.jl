@@ -123,7 +123,6 @@ function convert_units!(
     value::Float64,
     unit_conversion::NamedTuple{(:From, :To), Tuple{String, String}},
 )
-
     if unit_conversion.From == "degree" && unit_conversion.To == "radian"
         value = deg2rad(value)
     elseif unit_conversion.From == "radian" && unit_conversion.To == "degree"

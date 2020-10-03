@@ -680,7 +680,6 @@ function _merge_generic_data!(data::Dict{String, Any})
                     break # out of mp_matrix_names loop
                 end
             end
-
         end
     end
 

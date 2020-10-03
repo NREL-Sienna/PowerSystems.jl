@@ -3,12 +3,6 @@ import Dates
 import TimeSeries
 
 function verify_time_series(sys::System, num_initial_times, num_time_series, len)
-    #initial_times = get_time_series_initial_times(sys)
-    #if length(initial_times) != num_initial_times
-    #    @error "count of initial_times doesn't match" num_initial_times initial_times
-    #    return false
-    #end
-
     total_time_series = 0
     all_time_series = get_time_series_multiple(sys)
     for time_series in all_time_series
@@ -144,7 +138,7 @@ end
     file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_rt.json")
 
     ## This will fail because the resolutions are different.
-    @test_throws PowerSystems.DataFormatError add_time_series!(sys, file_metadata)
+    @test_throws IS.ConflictingInputsError add_time_series!(sys, file_metadata)
 
     ## TODO: need a dataset with same resolution but different horizon.
 
