@@ -234,7 +234,7 @@ export get_time_series_resolution
 export get_time_series_timestamps
 export get_time_series_values
 export get_horizon
-export generate_forecast_initial_times
+export get_forecast_initial_times
 export get_forecast_total_period
 export get_resolution
 export get_data

@@ -955,7 +955,7 @@ end
 """
 Return the initial times for all forecasts.
 """
-generate_forecast_initial_times(sys::System) = IS.generate_forecast_initial_times(sys.data)
+get_forecast_initial_times(sys::System) = IS.get_forecast_initial_times(sys.data)
 
 """
 Return the total period covered by all forecasts.

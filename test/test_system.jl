@@ -42,7 +42,7 @@
         @test bus_number == bus.number
     end
 
-    @test generate_forecast_initial_times(sys) == []
+    @test get_forecast_initial_times(sys) == []
     @test get_time_series_resolution(sys) == Dates.Hour(1)
 
     # Get time_series with a name and without.
@@ -256,5 +256,5 @@ end
     @test get_forecast_window_count(sys) == 2
     @test Dates.Hour(get_forecast_total_period(sys)) ==
           Dates.Hour(second_time - initial_time) + Dates.Hour(resolution * horizon)
-    @test generate_forecast_initial_times(sys) == [initial_time, second_time]
+    @test get_forecast_initial_times(sys) == [initial_time, second_time]
 end
