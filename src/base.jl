@@ -204,6 +204,11 @@ function Base.deepcopy(sys::System)
 end
 
 """
+Return the internal of the system
+"""
+IS.get_internal(sys::System) = sys.internal
+
+"""
 Return a user-modifiable dictionary to store extra information.
 """
 get_ext(sys::System) = IS.get_ext(sys.internal)
