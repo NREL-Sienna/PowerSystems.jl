@@ -240,13 +240,7 @@ end
     horizon = 24
     data = SortedDict(initial_time => ones(horizon), second_time => ones(horizon))
 
-    forecast = Deterministic(
-        data = data,
-        name = name,
-        initial_timestamp = initial_time,
-        horizon = horizon,
-        resolution = resolution,
-    )
+    forecast = Deterministic(data = data, name = name, resolution = resolution)
     add_time_series!(sys, gen, forecast)
 
     @test get_time_series_resolution(sys) == resolution
