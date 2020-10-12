@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct ThreePartCost <: OperationalCost
-        variable::VariableCost
+        variable::VarCostArgs
         fixed::Float64
         start_up::Float64
         shut_down::Float64
@@ -12,14 +12,14 @@ This file is auto-generated. Do not edit.
 Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.
 
 # Arguments
-- `variable::VariableCost`: variable cost
+- `variable::VarCostArgs`: variable cost
 - `fixed::Float64`: fixed cost
 - `start_up::Float64`: start-up cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
 """
 mutable struct ThreePartCost <: OperationalCost
     "variable cost"
-    variable::VariableCost
+    variable::VarCostArgs
     "fixed cost"
     fixed::Float64
     "start-up cost"
@@ -36,7 +36,7 @@ end
 # Constructor for demo purposes; non-functional.
 function ThreePartCost(::Nothing)
     ThreePartCost(;
-        variable=VariableCost((0.0, 0.0)),
+        variable=(0.0, 0.0),
         fixed=0.0,
         start_up=0.0,
         shut_down=0.0,

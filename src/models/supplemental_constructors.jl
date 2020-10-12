@@ -1,11 +1,11 @@
 """Accepts rating as a Float64 and then creates a TwoPartCost."""
 function TwoPartCost(variable_cost::T, args...) where {T <: VarCostArgs}
-    return TwoPartCost(VariableCost(variable_cost), args...)
+    return TwoPartCost(variable_cost, args...)
 end
 
 """Accepts rating as a Float64 and then creates a ThreePartCost."""
 function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
-    return ThreePartCost(VariableCost(variable_cost), args...)
+    return ThreePartCost(variable_cost, args...)
 end
 
 # FIXME: This function name implies that will return a struct named `PowerLoadPF`

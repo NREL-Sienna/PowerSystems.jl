@@ -35,7 +35,6 @@ export PhaseShiftingTransformer
 
 export ThreePartCost
 export TwoPartCost
-export VariableCost
 export MultiStartCost
 export MarketBidCost
 export get_slopes

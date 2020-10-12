@@ -3,19 +3,19 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct TwoPartCost <: OperationalCost
-        variable::VariableCost
+        variable::VarCostArgs
         fixed::Float64
     end
 
 Data Structure Operational Cost Data in two parts: fixed and variable cost.
 
 # Arguments
-- `variable::VariableCost`: variable cost
+- `variable::VarCostArgs`: variable cost
 - `fixed::Float64`: fixed cost, validation range: `(0, nothing)`, action if invalid: `warn`
 """
 mutable struct TwoPartCost <: OperationalCost
     "variable cost"
-    variable::VariableCost
+    variable::VarCostArgs
     "fixed cost"
     fixed::Float64
 end
@@ -28,7 +28,7 @@ end
 # Constructor for demo purposes; non-functional.
 function TwoPartCost(::Nothing)
     TwoPartCost(;
-        variable=VariableCost((0.0, 0.0)),
+        variable=(0.0, 0.0),
         fixed=0.0,
     )
 end
