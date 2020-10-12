@@ -24,7 +24,6 @@ end
 #     return VariableCost(variable)
 # end
 
-
 function get_breakpoint_upperbounds(vc::T) where {T}
     throw(ArgumentError("Method not supported for variable cost using $(T)"))
 end

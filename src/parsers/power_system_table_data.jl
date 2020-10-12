@@ -924,8 +924,7 @@ function make_thermal_generator_multistart(
         no_load_cost = 0.0
     else
         no_load_cost = var_cost[1][1]
-        var_cost =
-            [(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost]
+        var_cost = [(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost]
     end
     lag_hot =
         isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down :
