@@ -3,7 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct MarketBidCost <: OperationalCost
-        variable::VariableCost
+        variable::VarCostArgs
         no_load::Float64
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shut_down::Float64
@@ -14,7 +14,7 @@ Data Structure Operational Cost to reflect market bids of energy and ancilliary 
 Compatible with most US Market bidding mechanisms
 
 # Arguments
-- `variable::VariableCost`: variable cost representing the energy bid
+- `variable::VarCostArgs`: variable cost representing the energy bid
 - `no_load::Float64`: no load cost
 - `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets
 - `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -22,7 +22,7 @@ Compatible with most US Market bidding mechanisms
 """
 mutable struct MarketBidCost <: OperationalCost
     "variable cost representing the energy bid"
-    variable::VariableCost
+    variable::VarCostArgs
     "no load cost"
     no_load::Float64
     "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets"
@@ -41,7 +41,7 @@ end
 # Constructor for demo purposes; non-functional.
 function MarketBidCost(::Nothing)
     MarketBidCost(;
-        variable=VariableCost((0.0, 0.0)),
+        variable=(0.0, 0.0),
         no_load=0.0,
         start_up=(hot = START_COST, warm = START_COST, cold = START_COST),
         shut_down=0.0,
