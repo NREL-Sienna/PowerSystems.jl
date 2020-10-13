@@ -70,12 +70,6 @@
       "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
       "fields": [
         {
-          "name": "variable",
-          "comment": "variable cost representing the energy bid",
-          "null_value": "VariableCost((0.0, 0.0))",
-          "data_type": "VariableCost"
-        },
-        {
           "name": "no_load",
           "comment": "no load cost",
           "null_value": "0.0",
@@ -2906,12 +2900,6 @@
             "max": null
           },
           "validation_action": "error"
-        },
-        {
-          "name": "operation_cost",
-          "null_value": "TwoPartCost(nothing)",
-          "data_type": "TwoPartCost",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
         },
         {
           "name": "ext",
