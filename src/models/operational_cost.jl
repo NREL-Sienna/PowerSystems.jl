@@ -84,13 +84,3 @@ function get_slopes(vc::Vector{NTuple{2, Float64}})
     end
     return slopes
 end
-
-
-function get_variable_cost(ts::IS.TimeSeriesData, cost::Union{MarketBidCost, ReserveDemandCurve})
-    raw_data = IS.get_time_series(ts, cost, "variable_cost")
-    time_array = IS.get_time_series_array(cost, raw_data)
-    raw_data.data = TimeSeries.TimeArray( IS.get_time_series_timestamps(cost, raw_data), 
-        map(VariableCost, IS.get_time_series_values(cost, raw_data)))
-    return  raw_data
-end
-
