@@ -101,9 +101,9 @@
         {
           "name": "ancillary_services",
           "comment": "Bids for the ancillary services",
-          "null_value": "IdDict{String,IS.TimeSeriesMetadata}()",
-          "data_type": "IdDict{String,IS.TimeSeriesMetadata}",
-          "default": "IdDict{String,IS.TimeSeriesMetadata}()"
+          "null_value": "Dict{String,IS.TimeSeriesMetadata}()",
+          "data_type": "Dict{String,IS.TimeSeriesMetadata}",
+          "default": "Dict{String,IS.TimeSeriesMetadata}()"
         }
       ],
       "supertype": "OperationalCost"
@@ -2885,6 +2885,12 @@
       "docstring": "Data Structure for a operating reserve with demand curve product for system simulations.",
       "parametric": "ReserveDirection",
       "fields": [
+        {
+            "name": "variable",
+            "comment": "no load cost",
+            "null_value": "0.0",
+            "data_type": "Union{Nothing, IS.TimeSeriesKey}"
+        },
         {
           "null_value": "init",
           "name": "name",

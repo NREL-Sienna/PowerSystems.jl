@@ -3,6 +3,7 @@ This file is auto-generated. Do not edit.
 =#
 """
     mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
+        variable::Union{Nothing, IS.TimeSeriesKey}
         name::String
         available::Bool
         time_frame::Float64
@@ -14,6 +15,7 @@ This file is auto-generated. Do not edit.
 Data Structure for a operating reserve with demand curve product for system simulations.
 
 # Arguments
+- `variable::Union{Nothing, IS.TimeSeriesKey}`: no load cost
 - `name::String`
 - `available::Bool`
 - `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, action if invalid: `error`
@@ -22,6 +24,8 @@ Data Structure for a operating reserve with demand curve product for system simu
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
+    "no load cost"
+    variable::Union{Nothing, IS.TimeSeriesKey}
     name::String
     available::Bool
     "the relative saturation time_frame"
@@ -33,17 +37,18 @@ mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     internal::InfrastructureSystemsInternal
 end
 
-function ReserveDemandCurve{T}(name, available, time_frame, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
-    ReserveDemandCurve{T}(name, available, time_frame, ext, time_series_container, InfrastructureSystemsInternal(), )
+function ReserveDemandCurve{T}(variable, name, available, time_frame, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(variable, name, available, time_frame, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function ReserveDemandCurve{T}(; name, available, time_frame, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
-    ReserveDemandCurve{T}(name, available, time_frame, ext, time_series_container, internal, )
+function ReserveDemandCurve{T}(; variable, name, available, time_frame, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(variable, name, available, time_frame, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
 function ReserveDemandCurve{T}(::Nothing) where T <: ReserveDirection
     ReserveDemandCurve{T}(;
+        variable=0.0,
         name="init",
         available=false,
         time_frame=0.0,
@@ -52,6 +57,8 @@ function ReserveDemandCurve{T}(::Nothing) where T <: ReserveDirection
     )
 end
 
+"""Get [`ReserveDemandCurve`](@ref) `variable`."""
+get_variable(value::ReserveDemandCurve) = value.variable
 
 InfrastructureSystems.get_name(value::ReserveDemandCurve) = value.name
 """Get [`ReserveDemandCurve`](@ref) `available`."""
@@ -65,6 +72,8 @@ InfrastructureSystems.get_time_series_container(value::ReserveDemandCurve) = val
 """Get [`ReserveDemandCurve`](@ref) `internal`."""
 get_internal(value::ReserveDemandCurve) = value.internal
 
+"""Set [`ReserveDemandCurve`](@ref) `variable`."""
+set_variable!(value::ReserveDemandCurve, val) = value.variable = val
 
 InfrastructureSystems.set_name!(value::ReserveDemandCurve, val) = value.name = val
 """Set [`ReserveDemandCurve`](@ref) `available`."""
