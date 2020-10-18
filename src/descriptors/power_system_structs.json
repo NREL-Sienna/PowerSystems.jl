@@ -71,7 +71,7 @@
       "fields": [
         {
             "name": "variable",
-            "comment": "no load cost",
+            "comment": "Variable Cost TimeSeriesKey",
             "null_value": "0.0",
             "data_type": "Union{Nothing, IS.TimeSeriesKey}"
         },
@@ -2887,7 +2887,7 @@
       "fields": [
         {
             "name": "variable",
-            "comment": "no load cost",
+            "comment": "Variable Cost TimeSeriesKey",
             "null_value": "0.0",
             "data_type": "Union{Nothing, IS.TimeSeriesKey}"
         },

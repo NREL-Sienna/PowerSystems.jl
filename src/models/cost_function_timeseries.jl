@@ -1,18 +1,24 @@
 function get_variable_cost(
     ts::IS.TimeSeriesData,
-    ::Union{MarketBidCost, ReserveDemandCurve},
+    component::Component,
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
 )
-    data = TimeSeries.TimeArray(TimeSeries.timestamp(ts), map(VariableCost, ts.data))
-    return data
+    data = IS.get_time_series_array(component, ts, start_time = start_time, len = len)
+    time_stamps = TimeSeries.timestamp(data)
+    return TimeSeries.TimeArray(time_stamps, map(VariableCost, TimeSeries.values(data)))
 end
 
 function get_variable_cost(
     device::StaticInjection,
-    cost::Union{MarketBidCost, ReserveDemandCurve};
+    cost::OperationalCost;
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
     time_series_key = get_variable(cost)
+    if isnothing(time_series_key)
+        error("Cost component has a `nothing` stored in field `variable`, Please use `set_variable_cost!` to add variable cost forecast.")
+    end
     raw_data = IS.get_time_series_values(
         time_series_key.time_series_type,
         device,
@@ -106,7 +112,7 @@ function verify_device_eligibility(
 )
     contributing_devices = get_contributing_devices(sys, service)
     if !in(get_name(component), contributing_devices)
-        error("Device $(get_name(component)) isn't eligibility to contribute to service $(get_name(service)).")
+        error("Device $(get_name(component)) isn't eligible to contribute to service $(get_name(service)).")
     end
     return
 end
