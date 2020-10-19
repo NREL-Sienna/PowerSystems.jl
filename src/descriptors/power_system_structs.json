@@ -72,7 +72,7 @@
         {
             "name": "variable",
             "comment": "Variable Cost TimeSeriesKey",
-            "null_value": "0.0",
+            "null_value": "nothing",
             "data_type": "Union{Nothing, IS.TimeSeriesKey}"
         },
         {
@@ -101,9 +101,9 @@
         {
           "name": "ancillary_services",
           "comment": "Bids for the ancillary services",
-          "null_value": "Dict{String,IS.TimeSeriesMetadata}()",
-          "data_type": "Dict{String,IS.TimeSeriesMetadata}",
-          "default": "Dict{String,IS.TimeSeriesMetadata}()"
+          "null_value": "Vector{Service}()",
+          "data_type": "Vector{Service}",
+          "default": "Vector{Service}()"
         }
       ],
       "supertype": "OperationalCost"
@@ -2272,7 +2272,7 @@
         {
           "name": "operation_cost",
           "null_value": "ThreePartCost(nothing)",
-          "data_type": "ThreePartCost"
+          "data_type": "OperationalCost"
         },
         {
           "name": "base_power",
@@ -2888,7 +2888,7 @@
         {
             "name": "variable",
             "comment": "Variable Cost TimeSeriesKey",
-            "null_value": "0.0",
+            "null_value": "nothing",
             "data_type": "Union{Nothing, IS.TimeSeriesKey}"
         },
         {

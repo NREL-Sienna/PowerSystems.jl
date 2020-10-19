@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
 Data Structure for a operating reserve with demand curve product for system simulations.
 
 # Arguments
-- `variable::Union{Nothing, IS.TimeSeriesKey}`: no load cost
+- `variable::Union{Nothing, IS.TimeSeriesKey}`: Variable Cost TimeSeriesKey
 - `name::String`
 - `available::Bool`
 - `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, action if invalid: `error`
@@ -24,7 +24,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
-    "no load cost"
+    "Variable Cost TimeSeriesKey"
     variable::Union{Nothing, IS.TimeSeriesKey}
     name::String
     available::Bool
@@ -48,7 +48,7 @@ end
 # Constructor for demo purposes; non-functional.
 function ReserveDemandCurve{T}(::Nothing) where T <: ReserveDirection
     ReserveDemandCurve{T}(;
-        variable=0.0,
+        variable=nothing,
         name="init",
         available=false,
         time_frame=0.0,
