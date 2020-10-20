@@ -34,6 +34,27 @@ function get_variable_cost(
     return cost
 end
 
+function get_variable_cost(
+    service::ReserveDemandCurve;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+)
+    time_series_key = get_variable(service)
+    if isnothing(time_series_key)
+        error("Cost component has a `nothing` stored in field `variable`, Please use `set_variable_cost!` to add variable cost forecast.")
+    end
+    raw_data = IS.get_time_series(
+        IS.time_series_metadata_to_data(time_series_key.time_series_type),
+        service,
+        time_series_key.name,
+        start_time = start_time,
+        len = len,
+        count = 1,
+    )
+    cost = get_variable_cost(raw_data, service, start_time, len)
+    return cost
+end
+
 function get_services_bid(
     device::StaticInjection,
     cost::MarketBidCost,
