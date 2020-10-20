@@ -22,10 +22,9 @@ function get_variable_cost(
     if isnothing(time_series_key)
         error("Cost component has a `nothing` stored in field `variable`, Please use `set_variable_cost!` to add variable cost forecast.")
     end
-    raw_data = IS.get_time_series(
-        IS.time_series_metadata_to_data(time_series_key.time_series_type),
-        device,
-        time_series_key.name,
+    raw_data = IS.get_time_series_by_key(
+        time_series_key,
+        device;
         start_time = start_time,
         len = len,
         count = 1,
@@ -43,10 +42,9 @@ function get_variable_cost(
     if isnothing(time_series_key)
         error("Cost component has a `nothing` stored in field `variable`, Please use `set_variable_cost!` to add variable cost forecast.")
     end
-    raw_data = IS.get_time_series(
-        IS.time_series_metadata_to_data(time_series_key.time_series_type),
-        service,
-        time_series_key.name,
+    raw_data = IS.get_time_series_by_key(
+        time_series_key,
+        service;
         start_time = start_time,
         len = len,
         count = 1,
@@ -63,8 +61,8 @@ function get_services_bid(
     len::Union{Nothing, Int} = nothing,
 )
     time_series_key = get_variable(cost)
-    raw_data = IS.get_time_series(
-        IS.time_series_metadata_to_data(time_series_key.time_series_type),
+    raw_data = IS.get_time_series_by_key(
+        time_series_key,
         device,
         get_name(service),
         start_time = start_time,
@@ -81,8 +79,7 @@ function set_variable_cost!(
     time_series_data::IS.TimeSeriesData,
 )
     add_time_series!(sys, component, time_series_data)
-    metadata_type = IS.time_series_data_to_metadata(typeof(time_series_data))
-    key = IS.TimeSeriesKey(metadata_type, get_name(time_series_data))
+    key = IS.TimeSeriesKey(time_series_data)
     market_bid_cost = get_operation_cost(component)
     set_variable!(market_bid_cost, key)
     return
@@ -94,8 +91,7 @@ function set_variable_cost!(
     time_series_data::IS.TimeSeriesData,
 )
     add_time_series!(sys, component, time_series_data)
-    metadata_type = IS.time_series_data_to_metadata(typeof(time_series_data))
-    key = IS.TimeSeriesKey(metadata_type, get_name(time_series_data))
+    key = IS.TimeSeriesKey(time_series_data)
     set_variable!(component, key)
     return
 end
