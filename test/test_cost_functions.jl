@@ -64,3 +64,27 @@ end
     cost_forecast = get_variable_cost(generator, market_bid, start_time = initial_time)
     @test first(TimeSeries.values(cost_forecast)).cost == first(data_pwl[initial_time])
 end
+
+@testset "Test ReserveDemandCurve with Cost Timeseries" begin
+    initial_time = Dates.DateTime("2020-01-01")
+    resolution = Dates.Hour(1)
+    other_time = initial_time + resolution
+    name = "test"
+    horizon = 24
+    polynomial_cost = repeat([(999.0, 1.0)], 24)
+    data_polynomial =
+        SortedDict(initial_time => polynomial_cost, other_time => polynomial_cost)
+    pwl_cost = repeat([repeat([(999.0, 1.0)], 5)], 24)
+    data_pwl = SortedDict(initial_time => pwl_cost, other_time => pwl_cost)
+    for d in [data_polynomial, data_pwl]
+        @testset "Add deterministic from $(typeof(d)) to ReserveDemandCurve variable cost" begin
+            sys = System(100)
+            reserve = ReserveDemandCurve{ReserveUp}(nothing)
+            add_component!(sys, reserve)
+            forecast = IS.Deterministic("variable_cost", d, resolution)
+            set_variable_cost!(sys, reserve, forecast)
+            cost_forecast = get_variable_cost(reserve, start_time = initial_time)
+            @test first(TimeSeries.values(cost_forecast)).cost == first(d[initial_time])
+        end
+    end
+end
