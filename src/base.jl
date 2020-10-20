@@ -461,7 +461,7 @@ end
 function IS.add_time_series_from_file_metadata_internal!(
     data::IS.SystemData,
     ::Type{<:Component},
-    cache::IS.TimeSeriesCache,
+    cache::IS.TimeSeriesParsingCache,
     file_metadata::IS.TimeSeriesFileMetadata,
 )
     IS.set_component!(file_metadata, data, PowerSystems)

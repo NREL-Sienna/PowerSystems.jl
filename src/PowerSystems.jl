@@ -189,6 +189,8 @@ export Deterministic
 export Probabilistic
 export SingleTimeSeries
 export Scenarios
+export ForecastCache
+export StaticTimeSeriesCache
 export NormalizationFactor
 export NormalizationTypes
 
@@ -316,6 +318,8 @@ import InfrastructureSystems:
     SingleTimeSeries,
     TimeSeriesData,
     Scenarios,
+    ForecastCache,
+    StaticTimeSeriesCache,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
