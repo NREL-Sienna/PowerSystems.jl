@@ -18,15 +18,15 @@ mutable struct HybridSystem{
     electric_load::L
     storage::S
     renewable_unit::R
-    # PCC Data
-    "Thermal limited MVA Power Output of the unit. <= Capacity"
-    pcc_impedance::ComplexF64
-    rating::Float64
-    input_active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    output_active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    reactive_power_limits::Union{Nothing, Min_Max}
     base_power::Float64
     operation_cost::OperationalCost
+    # PCC Data
+    "Thermal limited MVA Power Output of the unit. <= Capacity"
+    interconnection_impedance::Union{Nothing, ComplexF64}
+    interconnection_rating::Union{Nothing, Float64}
+    input_active_power_limits::Union{Nothing, Min_Max}
+    output_active_power_limits::Union{Nothing, Min_Max}
+    reactive_power_limits::Union{Nothing, Min_Max}
     "corresponding dynamic injection device"
     services::Vector{Service}
     dynamic_injector::Union{Nothing, DynamicInjection}
@@ -48,13 +48,13 @@ function HybridSystem(;
     electric_load::L,
     storage::S,
     renewable_unit::R,
-    pcc_impedance,
-    rating,
-    input_active_power_limits,
-    output_active_power_limits,
-    reactive_power_limits,
     base_power,
     operation_cost,
+    interconnection_impedance = nothing,
+    interconnection_rating = nothing,
+    input_active_power_limits = nothing,
+    output_active_power_limits = nothing,
+    reactive_power_limits = nothing,
     services = Service[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
@@ -69,17 +69,17 @@ function HybridSystem(;
         bus,
         active_power,
         reactive_power,
-        thermal_unit::T,
-        electric_load::L,
-        storage::S,
-        renewable_unit::R,
-        pcc_impedance,
-        rating,
+        thermal_unit,
+        electric_load,
+        storage,
+        renewable_unit,
+        base_power,
+        operation_cost,
+        interconnection_impedance,
+        interconnection_rating,
         input_active_power_limits,
         output_active_power_limits,
         reactive_power_limits,
-        base_power,
-        operation_cost,
         services,
         dynamic_injector,
         ext,
@@ -97,6 +97,7 @@ function set_unit_system!(value::HybridSystem, settings::SystemUnitsSettings)
     value.renewable_unit.units_info = settings
     return
 end
+
 """Get [`HybridSystem`](@ref) `available`."""
 get_available(value::HybridSystem) = value.available
 """Get [`HybridSystem`](@ref) `status`."""
