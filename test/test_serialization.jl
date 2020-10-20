@@ -161,3 +161,61 @@ end
     clear_time_series!(sys2)
     @test !isempty(collect(get_time_series_multiple(sys)))
 end
+
+@testset "Test JSON serialization of MarketBidCost" begin
+    sys = System(100)
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        # This prevents an error log message.
+        bus.bustype = BusTypes.REF
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        initial_time = Dates.DateTime("2020-01-01T00:00:00")
+        end_time = Dates.DateTime("2020-01-01T23:00:00")
+        dates = collect(initial_time:Dates.Hour(1):end_time)
+        data = collect(1:24)
+        market_bid = MarketBidCost(nothing)
+        set_operation_cost!(gen, market_bid)
+        add_component!(sys, gen)
+        ta = TimeSeries.TimeArray(dates, data,)
+        time_series = IS.SingleTimeSeries(name = "variable_cost", data = ta)
+        set_variable_cost!(sys, gen, time_series)
+    end
+    _, result = validate_serialization(sys)
+    @test result
+end
+
+@testset "Test JSON serialization of StaticGroupReserve" begin
+    sys = System(100)
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        # This prevents an error log message.
+        bus.bustype = BusTypes.REF
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    end_time = Dates.DateTime("2020-01-01T23:00:00")
+    dates = collect(initial_time:Dates.Hour(1):end_time)
+    data = collect(1:24)
+
+    service = ReserveDemandCurve{ReserveDown}(nothing)
+    add_service!(sys, service, devices)
+    ta = TimeSeries.TimeArray(dates, data,)
+    time_series = IS.SingleTimeSeries(name = "variable_cost", data = ta)
+    set_variable_cost!(sys, service, time_series)
+
+    _, result = validate_serialization(sys)
+    @test result
+end
