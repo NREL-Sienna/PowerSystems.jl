@@ -181,7 +181,7 @@ end
         market_bid = MarketBidCost(nothing)
         set_operation_cost!(gen, market_bid)
         add_component!(sys, gen)
-        ta = TimeSeries.TimeArray(dates, data,)
+        ta = TimeSeries.TimeArray(dates, data)
         time_series = IS.SingleTimeSeries(name = "variable_cost", data = ta)
         set_variable_cost!(sys, gen, time_series)
     end
@@ -212,7 +212,7 @@ end
 
     service = ReserveDemandCurve{ReserveDown}(nothing)
     add_service!(sys, service, devices)
-    ta = TimeSeries.TimeArray(dates, data,)
+    ta = TimeSeries.TimeArray(dates, data)
     time_series = IS.SingleTimeSeries(name = "variable_cost", data = ta)
     set_variable_cost!(sys, service, time_series)
 
