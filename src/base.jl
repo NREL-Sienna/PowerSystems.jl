@@ -367,6 +367,23 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
 end
 
 """
+Similar to [`add_service!`](@ref) but for Service and Device already stored in the system.
+Performs validation checks on the device and the system
+
+# Arguments
+- `device::Device`: Device
+- `service::Service`: Service
+- `sys::System`: system
+"""
+function add_service!(device::Device, service::Service, sys::System)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+    throw_if_not_attached(device, sys)
+    add_service_internal!(device, service)
+end
+
+"""
 Similar to [`add_component!`](@ref) but for StaticReserveGroup.
 
 # Arguments
