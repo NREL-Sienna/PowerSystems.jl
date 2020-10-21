@@ -179,5 +179,5 @@ function IS.deserialize(::Type{HybridSystem}, data::Dict, component_cache::Dict)
 end
 
 function IS.serialize(component::HybridSystem)
-   error("Serialization of HybridSystem is not currently supported")
+    error("Serialization of HybridSystem is not currently supported")
 end

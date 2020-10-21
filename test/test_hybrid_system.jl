@@ -32,7 +32,7 @@
     other_time = initial_time + resolution
     name = "test"
     horizon = 24
-    data = Dict(initial_time => ones(horizon), other_time => 5.0*ones(horizon))
+    data = Dict(initial_time => ones(horizon), other_time => 5.0 * ones(horizon))
     forecast = Deterministic(name, data, resolution)
     add_time_series!(test_sys, h_sys, forecast)
     ts = get_time_series(Deterministic, h_sys, "test")
