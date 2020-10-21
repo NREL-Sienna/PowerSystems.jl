@@ -175,5 +175,9 @@ InfrastructureSystems.set_time_series_container!(value::HybridSystem, val) =
     value.time_series_container = val
 
 function IS.deserialize(::Type{HybridSystem}, data::Dict, component_cache::Dict)
-    error("Deserialization of hybrid systems is not currently supported")
+    error("Deserialization of HybridSystem is not currently supported")
+end
+
+function IS.serialize(component::HybridSystem)
+   error("Serialization of HybridSystem is not currently supported")
 end
