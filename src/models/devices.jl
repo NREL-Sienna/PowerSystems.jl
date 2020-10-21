@@ -1,3 +1,6 @@
+"""
+This function add a service to the component without checking if the component and the service are attached to the same system
+"""
 function add_service_internal!(device::Device, service::Service)
     services = get_services(device)
     for _service in services
