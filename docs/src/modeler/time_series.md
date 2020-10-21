@@ -54,7 +54,7 @@ StaticTimeSeries) into a System.
     forecast = Deterministic("max_active_power", data, resolution)
 ```
 - Load from CSV file. For Deterministic forecasts, each row represents one
-lookahead window. The first column must be the initial time and the rest must
+look-ahead window. The first column must be the initial time and the rest must
 be the forecast values. The CSV file must have no header in the first row.
 
 ```julia
@@ -281,3 +281,13 @@ You can now access either a Deterministic or the original SingleTimeSeries.
 `DeterministicSingleTimeSeries`. This type and `Determinsitic` are subtypes of
 `AbstractDeterministic` and implement all of the same methods (i.e., they
 behave identically).
+
+## Time Series Validation
+PowerSystems applies validation rules whenever users add time series to a
+System. It will throw an exception if any rule is violated.
+
+1. All time series data, static or forecasts, must have the same resolution.
+2. All forecasts must have identical parameters:  initial timestamp, horizon,
+   interval, look-ahead window count.
+
+Static time series instances may have different start times and lengths.
