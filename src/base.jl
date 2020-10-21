@@ -461,7 +461,7 @@ end
 function IS.add_time_series_from_file_metadata_internal!(
     data::IS.SystemData,
     ::Type{<:Component},
-    cache::IS.TimeSeriesCache,
+    cache::IS.TimeSeriesParsingCache,
     file_metadata::IS.TimeSeriesFileMetadata,
 )
     IS.set_component!(file_metadata, data, PowerSystems)
@@ -970,12 +970,19 @@ end
 Remove the time series data for a component.
 """
 function remove_time_series!(
-    ::Type{T},
     sys::System,
+    ::Type{T},
     component::Component,
     name::String,
 ) where {T <: TimeSeriesData}
-    return IS.remove_time_series!(T, sys.data, component, name)
+    return IS.remove_time_series!(sys.data, T, component, name)
+end
+
+"""
+Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
+"""
+function transform_single_time_series!(sys::System)
+    IS.transform_single_time_series!(sys.data)
 end
 
 """
