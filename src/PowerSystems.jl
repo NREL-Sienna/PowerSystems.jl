@@ -248,9 +248,14 @@ export get_resolution
 export get_data
 export iterate_components
 export get_time_series_multiple
+export get_variable_cost
+export get_services_bid
+export set_variable_cost!
+export set_service_bid!
 export iterate_windows
 export get_window
 export transform_single_time_series!
+
 #export make_time_series
 export get_bus_numbers
 export get_name
@@ -441,6 +446,9 @@ include("base.jl")
 #Data Checks
 include("utils/IO/system_checks.jl")
 include("utils/IO/branchdata_checks.jl")
+
+# cost function TimeSeries convertion
+include("models/cost_function_timeseries.jl")
 
 # network calculations
 include("utils/network_calculations/common.jl")

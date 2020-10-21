@@ -70,10 +70,10 @@
       "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
       "fields": [
         {
-          "name": "variable",
-          "comment": "variable cost representing the energy bid",
-          "null_value": "VariableCost((0.0, 0.0))",
-          "data_type": "VariableCost"
+            "name": "variable",
+            "comment": "Variable Cost TimeSeriesKey",
+            "null_value": "nothing",
+            "data_type": "Union{Nothing, IS.TimeSeriesKey}"
         },
         {
           "name": "no_load",
@@ -101,9 +101,9 @@
         {
           "name": "ancillary_services",
           "comment": "Bids for the ancillary services",
-          "null_value": "IdDict{Any,Float64}()",
-          "data_type": "IdDict{Any,Float64}",
-          "default": "IdDict{Any,Float64}()"
+          "null_value": "Vector{Service}()",
+          "data_type": "Vector{Service}",
+          "default": "Vector{Service}()"
         }
       ],
       "supertype": "OperationalCost"
@@ -2272,7 +2272,7 @@
         {
           "name": "operation_cost",
           "null_value": "ThreePartCost(nothing)",
-          "data_type": "ThreePartCost"
+          "data_type": "OperationalCost"
         },
         {
           "name": "base_power",
@@ -2886,6 +2886,12 @@
       "parametric": "ReserveDirection",
       "fields": [
         {
+            "name": "variable",
+            "comment": "Variable Cost TimeSeriesKey",
+            "null_value": "nothing",
+            "data_type": "Union{Nothing, IS.TimeSeriesKey}"
+        },
+        {
           "null_value": "init",
           "name": "name",
           "accessor_module": "InfrastructureSystems",
@@ -2906,12 +2912,6 @@
             "max": null
           },
           "validation_action": "error"
-        },
-        {
-          "name": "operation_cost",
-          "null_value": "TwoPartCost(nothing)",
-          "data_type": "TwoPartCost",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
         },
         {
           "name": "ext",
