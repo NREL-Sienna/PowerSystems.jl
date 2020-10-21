@@ -2,24 +2,19 @@
 Representation of a Hybrid System that collects renewable generation, load, thermal generation
 and storage
 """
-mutable struct HybridSystem{
-    T <: ThermalGen,
-    L <: ElectricLoad,
-    S <: Storage,
-    R <: RenewableGen,
-} <: StaticInjection
+mutable struct HybridSystem <: StaticInjection
     name::String
     available::Bool
     status::Bool
     bus::Bus
     active_power::Float64
     reactive_power::Float64
-    thermal_unit::T
-    electric_load::L
-    storage::S
-    renewable_unit::R
     base_power::Float64
     operation_cost::OperationalCost
+    thermal_unit::Union{Nothing, ThermalGen}
+    electric_load::Union{Nothing, ElectricLoad}
+    storage::Union{Nothing, Storage}
+    renewable_unit::Union{Nothing, RenewableGen}
     # PCC Data
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     interconnection_impedance::Union{Nothing, ComplexF64}
@@ -32,24 +27,24 @@ mutable struct HybridSystem{
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
     "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function HybridSystem(;
-    name,
-    available,
-    status,
-    bus,
-    active_power,
-    reactive_power,
-    thermal_unit::T,
-    electric_load::L,
-    storage::S,
-    renewable_unit::R,
-    base_power,
-    operation_cost,
+    name = "init",
+    available = false,
+    status = false,
+    bus = Bus(nothing),
+    active_power = 0.0,
+    reactive_power = 0.0,
+    base_power = 100.0,
+    operation_cost = TwoPartCost(nothing),
+    thermal_unit = nothing,
+    electric_load = nothing,
+    storage = nothing,
+    renewable_unit = nothing,
     interconnection_impedance = nothing,
     interconnection_rating = nothing,
     input_active_power_limits = nothing,
@@ -58,23 +53,22 @@ function HybridSystem(;
     services = Service[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    forecasts = InfrastructureSystems.Forecasts(),
+    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
-) where {T <: ThermalGen, L <: ElectricLoad, S <: Storage, R <: RenewableGen}
-
-    return HybridSystem{T, L, S, R}(
+)
+    return HybridSystem(
         name,
         available,
         status,
         bus,
         active_power,
         reactive_power,
+        base_power,
+        operation_cost,
         thermal_unit,
         electric_load,
         storage,
         renewable_unit,
-        base_power,
-        operation_cost,
         interconnection_impedance,
         interconnection_rating,
         input_active_power_limits,
@@ -83,18 +77,18 @@ function HybridSystem(;
         services,
         dynamic_injector,
         ext,
-        forecasts,
+        time_series_container,
         internal,
     )
-
 end
 
-IS.get_name(value::HybridSystem) = IS.get_name(value.device)
+IS.get_name(value::HybridSystem) = value.name
 function set_unit_system!(value::HybridSystem, settings::SystemUnitsSettings)
-    value.thermal_unit.units_info = settings
-    value.electric_load.units_info = settings
-    value.storage.units_info = settings
-    value.renewable_unit.units_info = settings
+    value.internal.units_info = settings
+    value.thermal_unit.internal.units_info = settings
+    value.electric_load.internal.units_info = settings
+    value.storage.internal.units_info = settings
+    value.renewable_unit.internal.units_info = settings
     return
 end
 
@@ -117,15 +111,18 @@ get_storage(value::HybridSystem) = value.storage
 """Get [`HybridSystem`](@ref) renewable unit"""
 get_renewable(value::HybridSystem) = value.renewable_unit
 """Get [`HybridSystem`](@ref) `rating`."""
-get_rating(value::HybridSystem) = get_value(value, value.rating)
+get_interconnection_rating(value::HybridSystem) = get_value(value, value.rating)
 """get [`HybridSystem`](@ref) PCC impedance"""
 get_pcc_impedance(value::HybridSystem) = value.pcc_impedance
 """Get [`HybridSystem`](@ref) `input_active_power_limits`."""
-get_input_active_power_limits(value::HybridSystem) = get_value(value, value.input_active_power_limits)
+get_input_active_power_limits(value::HybridSystem) =
+    get_value(value, value.input_active_power_limits)
 """Get [`HybridSystem`](@ref) `output_active_power_limits`."""
-get_output_active_power_limits(value::HybridSystem) = get_value(value, value.output_active_power_limits)
+get_output_active_power_limits(value::HybridSystem) =
+    get_value(value, value.output_active_power_limits)
 """Get [`HybridSystem`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::HybridSystem) = get_value(value, value.reactive_power_limits
+get_reactive_power_limits(value::HybridSystem) =
+    get_value(value, value.reactive_power_limits)
 """Get [`HybridSystem`](@ref) `base_power`."""
 get_base_power(value::HybridSystem) = value.base_power
 """Get [`HybridSystem`](@ref) `operation_cost`."""
@@ -136,30 +133,33 @@ get_services(value::HybridSystem) = value.services
 get_dynamic_injector(value::HybridSystem) = value.dynamic_injector
 """Get [`HybridSystem`](@ref) `ext`."""
 get_ext(value::HybridSystem) = value.ext
-IS.get_forecasts(value::HybridSystem) = value.forecasts
 
+InfrastructureSystems.get_time_series_container(value::HybridSystem) =
+    value.time_series_container
+"""Get [`HybridSystem`](@ref) `internal`."""
+get_internal(value::HybridSystem) = value.internal
 
 InfrastructureSystems.set_name!(value::HybridSystem, val) = value.name = val
 """Set [`HybridSystem`](@ref) `available`."""
 set_available!(value::HybridSystem, val) = value.available = val
 """Get [`HybridSystem`](@ref) `status`."""
-get_status(value::HybridSystem) = value.status
+set_status(value::HybridSystem, val) = value.status = val
 """Set [`HybridSystem`](@ref) `bus`."""
 set_bus!(value::HybridSystem, val) = value.bus = val
 """Set [`HybridSystem`](@ref) `rating`."""
-set_rating!(value::HybridSystem, val) = value.rating = val
+set_interconnection_rating!(value::HybridSystem, val) = value.rating = val
 """Set [`HybridSystem`](@ref) `active_power`."""
 set_active_power!(value::HybridSystem, val) = value.active_power = val
 """Set [`HybridSystem`](@ref) `reactive_power`."""
 set_reactive_power!(value::HybridSystem, val) = value.reactive_power = val
-"""Set [`HybridSystem`](@ref) `rating`."""
-set_rating!(value::HybridSystem, val) = value.rating = val
 """set [`HybridSystem`](@ref) pcc impedance"""
-set_pcc_impedance(value::HybridSystem, val) = value.pcc_impedance = val
+set_interconnection_impedance(value::HybridSystem, val) = value.pcc_impedance = val
 """Set [`HybridSystem`](@ref) `input_active_power_limits`."""
-set_input_active_power_limits!(value::HybridSystem, val) = value.input_active_power_limits = val
+set_input_active_power_limits!(value::HybridSystem, val) =
+    value.input_active_power_limits = val
 """Set [`HybridSystem`](@ref) `output_active_power_limits`."""
-set_output_active_power_limits!(value::HybridSystem, val) = value.output_active_power_limits = val
+set_output_active_power_limits!(value::HybridSystem, val) =
+    value.output_active_power_limits = val
 """Set [`HybridSystem`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HybridSystem, val) = value.reactive_power_limits = val
 """Set [`HybridSystem`](@ref) `base_power`."""
@@ -170,4 +170,14 @@ set_operation_cost!(value::HybridSystem, val) = value.operation_cost = val
 set_services!(value::HybridSystem, val) = value.services = val
 """Set [`HybridSystem`](@ref) `ext`."""
 set_ext!(value::HybridSystem, val) = value.ext = val
-InfrastructureSystems.set_forecasts!(value::HybridSystem, val) = value.forecasts = val
+
+InfrastructureSystems.set_time_series_container!(value::HybridSystem, val) =
+    value.time_series_container = val
+
+function IS.deserialize(::Type{HybridSystem}, data::Dict, component_cache::Dict)
+    error("Deserialization of HybridSystem is not currently supported")
+end
+
+function IS.serialize(component::HybridSystem)
+    error("Serialization of HybridSystem is not currently supported")
+end
