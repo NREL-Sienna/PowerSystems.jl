@@ -979,6 +979,13 @@ function remove_time_series!(
 end
 
 """
+Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
+"""
+function transform_single_time_series!(sys::System)
+    IS.transform_single_time_series!(sys.data)
+end
+
+"""
 Validate an instance of a InfrastructureSystemsType against System data.
 Returns true if the instance is valid.
 

@@ -244,6 +244,9 @@ export get_resolution
 export get_data
 export iterate_components
 export get_time_series_multiple
+export iterate_windows
+export get_window
+export transform_single_time_series!
 #export make_time_series
 export get_bus_numbers
 export get_name
