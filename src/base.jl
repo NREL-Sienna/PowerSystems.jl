@@ -352,7 +352,6 @@ function _add_service!(sys::System, service::Service, contributing_devices; kwar
     for device in contributing_devices
         add_service_internal!(device, service)
     end
-
 end
 
 """

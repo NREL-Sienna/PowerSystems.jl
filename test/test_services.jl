@@ -33,7 +33,6 @@
         @test length(get_services(device)) == 0
     end
 
-
     sys = System(100)
     devices = []
     for i in 1:2
