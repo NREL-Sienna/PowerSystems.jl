@@ -235,6 +235,8 @@ export get_time_series_array
 export get_time_series_resolution
 export get_time_series_timestamps
 export get_time_series_values
+export get_next_time_series_array
+export get_next_time
 export get_horizon
 export get_forecast_initial_times
 export get_forecast_total_period
@@ -341,6 +343,8 @@ import InfrastructureSystems:
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
+    get_next_time_series_array,
+    get_next_time,
     to_json,
     from_json,
     serialize,
