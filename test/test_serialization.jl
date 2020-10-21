@@ -16,6 +16,11 @@ function validate_serialization(sys::System; time_series_read_only = false)
         ext["test_field"] = 1
         to_json(sys, path)
 
+        data = open(path, "r") do io
+            JSON3.read(io)
+        end
+        @test data["data_format_version"] == PSY.DATA_FORMAT_VERSION
+
         sys2 = System(path; time_series_read_only = time_series_read_only)
         sys_ext2 = get_ext(sys2)
         sys_ext2["data"] != 5 && return false
