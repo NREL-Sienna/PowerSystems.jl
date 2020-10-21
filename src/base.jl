@@ -336,19 +336,7 @@ function add_component!(
     add_component!(sys, dyn_injector; static_injector = static_injector, kwargs...)
 end
 
-"""
-Similar to [`add_component!`](@ref) but for services.
-
-# Arguments
-- `sys::System`: system
-- `service::Service`: service to add
-- `contributing_devices`: Must be an iterable of type Device
-"""
-function add_service!(sys::System, service::Service, contributing_devices; kwargs...)
-    if sys.runchecks && !validate_struct(sys, service)
-        throw(InvalidValue("Invalid value for $service"))
-    end
-
+function _add_service!(sys::System, service::Service, contributing_devices; kwargs...)
     for device in contributing_devices
         device_type = typeof(device)
         if !(device_type <: Device)
@@ -364,6 +352,52 @@ function add_service!(sys::System, service::Service, contributing_devices; kwarg
     for device in contributing_devices
         add_service_internal!(device, service)
     end
+
+end
+
+"""
+Similar to [`add_component!`](@ref) but for services.
+
+# Arguments
+- `sys::System`: system
+- `service::Service`: service to add
+- `contributing_devices`: Must be an iterable of type Device
+"""
+function add_service!(sys::System, service::Service, contributing_devices; kwargs...)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+    _add_service!(sys, service, contributing_devices; kwargs...)
+end
+
+"""
+Similar to [`add_component!`](@ref) but for services.
+
+# Arguments
+- `sys::System`: system
+- `service::Service`: service to add
+- `contributing_device::Device`: Valid Device
+"""
+function add_service!(sys::System, service::Service, contributing_device::Device; kwargs...)
+    if sys.runchecks && !validate_struct(sys, service)
+        throw(InvalidValue("Invalid value for $service"))
+    end
+    _add_service!(sys, service, [contributing_device]; kwargs...)
+end
+
+"""
+Similar to [`add_service!`](@ref) but for Service and Device already stored in the system.
+Performs validation checks on the device and the system
+
+# Arguments
+- `device::Device`: Device
+- `service::Service`: Service
+- `sys::System`: system
+"""
+function add_service!(device::Device, service::Service, sys::System)
+    throw_if_not_attached(service, sys)
+    throw_if_not_attached(device, sys)
+    add_service_internal!(device, service)
 end
 
 """

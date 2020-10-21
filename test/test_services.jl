@@ -32,6 +32,27 @@
     for device in devices
         @test length(get_services(device)) == 0
     end
+
+
+    sys = System(100)
+    devices = []
+    for i in 1:2
+        bus = Bus(nothing)
+        bus.name = "bus" * string(i)
+        bus.number = i
+        add_component!(sys, bus)
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen" * string(i)
+        add_component!(sys, gen)
+        push!(devices, gen)
+    end
+
+    service = StaticReserve{ReserveDown}(nothing)
+    add_component!(sys, service)
+    test_device = get_component(ThermalStandard, sys, "gen1")
+    add_service!(test_device, service, sys)
+    @test PowerSystems.has_service(test_device, service)
 end
 
 @testset "Test add_component Service" begin
@@ -294,7 +315,7 @@ end
 end
 
 @testset "Test StaticReserveGroup" begin
-    # create system 
+    # create system
     sys = System(100)
     # add buses and generators
     devices = []
@@ -331,7 +352,7 @@ end
     # get contributing services
     contributing_services = get_contributing_services(groupservice)
 
-    # check if expected contributing services is iqual to contributing services  
+    # check if expected contributing services is iqual to contributing services
     sort!(contributing_services, by = x -> get_name(x))
     @test contributing_services == expected_contributing_services
 end
@@ -369,7 +390,7 @@ end
 end
 
 @testset "Test ReserveNonSpinning" begin
-    # create system 
+    # create system
     sys = System(100)
     # add buses and generators
     devices = []
