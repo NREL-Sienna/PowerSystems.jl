@@ -970,12 +970,12 @@ end
 Remove the time series data for a component.
 """
 function remove_time_series!(
-    ::Type{T},
     sys::System,
+    ::Type{T},
     component::Component,
     name::String,
 ) where {T <: TimeSeriesData}
-    return IS.remove_time_series!(T, sys.data, component, name)
+    return IS.remove_time_series!(sys.data, T, component, name)
 end
 
 """
