@@ -82,6 +82,34 @@ function HybridSystem(;
     )
 end
 
+# Constructor for demo purposes; non-functional.
+function HybridSystem(::Nothing)
+    HybridSystem(;
+        name = "init",
+        available = false,
+        status = false,
+        bus = Bus(nothing),
+        active_power = 0.0,
+        reactive_power = 0.0,
+        base_power = 100.0,
+        operation_cost = TwoPartCost(nothing),
+        thermal_unit = ThermalStandard(nothing),
+        electric_load = PowerLoad(nothing),
+        storage = GenericBattery(nothing),
+        renewable_unit = RenewableDispatch(nothing),
+        interconnection_impedance = nothing,
+        interconnection_rating = nothing,
+        input_active_power_limits = nothing,
+        output_active_power_limits = nothing,
+        reactive_power_limits = nothing,
+        services = Service[],
+        dynamic_injector = nothing,
+        ext = Dict{String, Any}(),
+        time_series_container = InfrastructureSystems.TimeSeriesContainer(),
+        internal = InfrastructureSystemsInternal(),
+    )
+end
+
 IS.get_name(value::HybridSystem) = value.name
 function set_unit_system!(value::HybridSystem, settings::SystemUnitsSettings)
     value.internal.units_info = settings
