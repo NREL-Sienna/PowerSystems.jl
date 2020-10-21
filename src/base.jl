@@ -20,6 +20,9 @@ const SYSTEM_KWARGS = Set((
     :unit_system,
 ))
 
+# This will be used in the future to handle serialization changes.
+const DATA_FORMAT_VERSION = "1.0.0"
+
 """
 System
 
@@ -1007,6 +1010,7 @@ end
 
 function IS.serialize(sys::T) where {T <: System}
     data = Dict{String, Any}()
+    data["data_format_version"] = DATA_FORMAT_VERSION
     for field in fieldnames(T)
         # Exclude bus_numbers because they will get rebuilt during deserialization.
         if field != :bus_numbers
