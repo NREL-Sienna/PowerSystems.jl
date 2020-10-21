@@ -60,11 +60,11 @@ function get_services_bid(
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
-    time_series_key = get_variable(cost)
+    variable_ts_key = get_variable(cost)
+    service_ts_key = IS.TimeSeriesKey(variable_ts_key.time_series_type, get_name(service))
     raw_data = IS.get_time_series_by_key(
-        time_series_key,
-        device,
-        get_name(service),
+        service_ts_key,
+        device;
         start_time = start_time,
         len = len,
         count = 1,
