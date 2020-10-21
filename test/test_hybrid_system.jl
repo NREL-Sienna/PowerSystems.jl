@@ -26,5 +26,5 @@
         operation_cost = TwoPartCost(nothing),
     )
     add_component!(test_sys, h_sys)
-    to_json(test_sys, "./test_sys.json", force = true)
+    @test_throws ErrorException to_json(test_sys, "./test_sys.json", force = true)
 end
