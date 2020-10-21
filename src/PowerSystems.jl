@@ -415,6 +415,7 @@ include("models/OuterControl.jl")
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/regulation_device.jl")
+include("models/HybridSystem.jl")
 
 #Methods for devices
 include("models/components.jl")

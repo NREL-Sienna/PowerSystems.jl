@@ -51,6 +51,7 @@ pages["Model Library"] = make_model_library(
         "DynamicInjection" => ["Dynamic Inverter" => "model_library/dynamic_inverter.md",
         "Dynamic Generator" => "model_library/dynamic_generator.md",
         ],
+        "StaticInjection" => ["HybridSystem" => "model_library/hybrid_device.md"],
         "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"]
         )
 )
