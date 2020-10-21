@@ -25,8 +25,8 @@ it in memory. Here is an example of how to do this:
 sys = System(100.0; time_series_in_memory = true)
 ```
 
-## Creating Forecasts
-PowerSystems supports several methods to load time series data into a System.
+## Creating Time Series Data
+PowerSystems supports several methods to load time series data (Forecasts or StaticTimeSeries) into a System.
 - Automated parsing during system construction.  Refer to the [parsing documentation](parsing.md).
 - Create from TimeSeries.TimeArray or DataFrames.DataFrame
 ```julia
@@ -51,7 +51,7 @@ PowerSystems supports several methods to load time series data into a System.
 ```
 
 ## Scaling factors
-Time series data can store actual component values (for instance MW) or scaling factors (0 - 1 values). By default PowerSystems treats the values in the forecasts as physical units. In order to specify them as scaling factors, you must pass the accessor function that provides the multiplier value. This value must be passed into the forecast when you create it.
+Time series data can store actual component values (for instance MW) or scaling factors (0 - 1 values). By default PowerSystems treats the values in the time series data as physical units. In order to specify them as scaling factors, you must pass the accessor function that provides the multiplier value. This value must be passed into the forecast when you create it.
 
 Example:
 
@@ -73,7 +73,7 @@ Adding time series data to a system requires a component that is already attache
     add_time_series!(sys, component, forecast)
 ```
 
-In order to save space in memory for the storage of time series data, time series can be shared across devices to avoid repetition. If the same forecast applies to multiple components then can call `add_time_series!` passing the collection of components that share the time series data. 
+In order to optimizw the storage of time series data, time series can be shared across devices to avoid repetition. If the same forecast applies to multiple components then can call `add_time_series!` passing the collection of components that share the time series data. 
 
 ```julia
     add_time_series!(sys, components, forecast)
