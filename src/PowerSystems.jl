@@ -70,6 +70,7 @@ export DynamicInjection
 export DynamicGenerator
 export DynamicInverter
 export DynamicBranch
+export HybridSystem
 export RegulationDevice
 
 #AVR Exports
