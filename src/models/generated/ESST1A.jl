@@ -46,7 +46,7 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 - `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for exciter output `(Vr_min, Vr_max)`
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `Tf::Float64`: Rate feedback time constant in s, validation range: `("eps()", 1.5)`, action if invalid: `error`
+- `Tf::Float64`: Rate feedback time constant in s, validation range: `(eps(), 1.5)`, action if invalid: `error`
 - `K_lr::Float64`: Exciter output current limiter gain, validation range: `(0, 5)`, action if invalid: `warn`
 - `I_lr::Float64`: Exciter output current limit reference, validation range: `(0, 5)`, action if invalid: `warn`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`

@@ -37,9 +37,9 @@ Parameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF
 - `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`
 - `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
 - `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for regulator output `(Vr_min, Vr_max)`
-- `Te::Float64`: Exciter field time constant in s, validation range: `("eps()", 2)`, action if invalid: `error`
+- `Te::Float64`: Exciter field time constant in s, validation range: `(eps(), 2)`, action if invalid: `error`
 - `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", 1.5)`, action if invalid: `error`
+- `Tf::Float64`: Rate feedback time constant, validation range: `(eps(), 1.5)`, action if invalid: `error`
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`
 - `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, 1)`, action if invalid: `warn`
 - `Ke::Float64`: Exciter field proportional constant, validation range: `(0, 1)`, action if invalid: `warn`

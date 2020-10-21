@@ -48,8 +48,8 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 # Arguments
 - `Rselect::Int`: Feedback signal for governor droop, validation range: `(-2, 1)`, action if invalid: `error`
 - `fuel_flag::Int`: Flag Switch for fuel source characteristic, validation range: `(0, 1)`, action if invalid: `error`
-- `R::Float64`: Speed droop parameter, validation range: `("eps()", nothing)`, action if invalid: `warn`
-- `Tpelec::Float64`: Electrical power transducer time constant, seconds, validation range: `("eps()", nothing)`, action if invalid: `warn`
+- `R::Float64`: Speed droop parameter, validation range: `(eps(), nothing)`, action if invalid: `warn`
+- `Tpelec::Float64`: Electrical power transducer time constant, seconds, validation range: `(eps(), nothing)`, action if invalid: `warn`
 - `speed_error_signal::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Speed error signal limits
 - `Kp_gov::Float64`: Governor proportional gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ki_gov::Float64`: Governor integral gain, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -72,7 +72,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `Ki_mw::Float64`: Power controller (reset) gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `A_set::Float64`: Acceleration limiter setpoint, pu/sec, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ka::Float64`: Acceleration limiter gain, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ta::Float64`: Acceleration limiter time constant , validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Ta::Float64`: Acceleration limiter time constant , validation range: `(eps(), nothing)`, action if invalid: `error`
 - `T_rate::Float64`: Turbine rating, validation range: `(0, nothing)`, action if invalid: `warn`
 - `db::Float64`: Speed governor deadband, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Tsa::Float64`: Temperature detection lead time constant, validation range: `(0, nothing)`, action if invalid: `warn`

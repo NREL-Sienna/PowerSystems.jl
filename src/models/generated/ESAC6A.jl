@@ -43,7 +43,7 @@ Parameters of IEEE Std 421.5 Type AC6A Excitacion System. ESAC6A in PSSE and PSL
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for regulator output `(Va_min, Va_max)`
 - `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for exciter field voltage `(Vr_min, Vr_max)`
-- `Te::Float64`: Exciter field time constant, validation range: `("eps()", 2)`, action if invalid: `error`
+- `Te::Float64`: Exciter field time constant, validation range: `(eps(), 2)`, action if invalid: `error`
 - `VFE_lim::Float64`: Exciter field current limiter reference, validation range: `(-5, 20)`, action if invalid: `warn`
 - `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, 100)`, action if invalid: `warn`
 - `VH_max::Float64`: Exciter field current limiter maximum output, validation range: `(0, 100)`, action if invalid: `warn`
