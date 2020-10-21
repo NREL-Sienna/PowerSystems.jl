@@ -2,24 +2,19 @@
 Representation of a Hybrid System that collects renewable generation, load, thermal generation
 and storage
 """
-mutable struct HybridSystem{
-    T <: ThermalGen,
-    L <: ElectricLoad,
-    S <: Storage,
-    R <: RenewableGen,
-} <: StaticInjection
+mutable struct HybridSystem <: StaticInjection
     name::String
     available::Bool
     status::Bool
     bus::Bus
     active_power::Float64
     reactive_power::Float64
-    thermal_unit::T
-    electric_load::L
-    storage::S
-    renewable_unit::R
     base_power::Float64
     operation_cost::OperationalCost
+    thermal_unit::Union{Nothing, ThermalGen}
+    electric_load::Union{Nothing, ElectricLoad}
+    storage::Union{Nothing, Storage}
+    renewable_unit::Union{Nothing, RenewableGen}
     # PCC Data
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     interconnection_impedance::Union{Nothing, ComplexF64}
@@ -32,24 +27,24 @@ mutable struct HybridSystem{
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
     "internal forecast storage"
-    forecasts::InfrastructureSystems.TimeSeriesContainer
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function HybridSystem(;
-    name,
-    available,
-    status,
-    bus,
-    active_power,
-    reactive_power,
-    thermal_unit::T,
-    electric_load::L,
-    storage::S,
-    renewable_unit::R,
-    base_power,
-    operation_cost,
+    name = "init",
+    available = false,
+    status = false,
+    bus = Bus(nothing),
+    active_power = 0.0,
+    reactive_power = 0.0,
+    base_power = 100.0,
+    operation_cost = TwoPartCost(nothing),
+    thermal_unit = nothing,
+    electric_load = nothing,
+    storage = nothing,
+    renewable_unit = nothing,
     interconnection_impedance = nothing,
     interconnection_rating = nothing,
     input_active_power_limits = nothing,
@@ -58,23 +53,23 @@ function HybridSystem(;
     services = Service[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    forecasts = InfrastructureSystems.TimeSeriesContainer(),
+    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
-) where {T <: ThermalGen, L <: ElectricLoad, S <: Storage, R <: RenewableGen}
+)
 
-    return HybridSystem{T, L, S, R}(
+    return HybridSystem(
         name,
         available,
         status,
         bus,
         active_power,
         reactive_power,
+        base_power,
+        operation_cost,
         thermal_unit,
         electric_load,
         storage,
         renewable_unit,
-        base_power,
-        operation_cost,
         interconnection_impedance,
         interconnection_rating,
         input_active_power_limits,
@@ -83,18 +78,19 @@ function HybridSystem(;
         services,
         dynamic_injector,
         ext,
-        forecasts,
+        time_series_container,
         internal,
     )
 
 end
 
-IS.get_name(value::HybridSystem) = IS.get_name(value.device)
+IS.get_name(value::HybridSystem) = value.name
 function set_unit_system!(value::HybridSystem, settings::SystemUnitsSettings)
-    value.thermal_unit.units_info = settings
-    value.electric_load.units_info = settings
-    value.storage.units_info = settings
-    value.renewable_unit.units_info = settings
+    value.internal.units_info = settings
+    value.thermal_unit.internal.units_info = settings
+    value.electric_load.internal.units_info = settings
+    value.storage.internal.units_info = settings
+    value.renewable_unit.internal.units_info = settings
     return
 end
 
@@ -172,3 +168,7 @@ set_services!(value::HybridSystem, val) = value.services = val
 set_ext!(value::HybridSystem, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::HybridSystem, val) = value.time_series_container = val
+
+function IS.deserialize(::Type{HybridSystem}, data::Dict, component_cache::Dict)
+    error("Deserialization of hybrid systems is not currently supported")
+end
