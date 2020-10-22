@@ -25,7 +25,7 @@ This cateogory of Time Series data usually comes in the following format:
 | 2020-09-01T01:00:00 | 101.0 |
 | 2020-09-01T02:00:00 |  99.0 |
 
-Where a column (or several columns) represent the time stamp associated with the value and
+Where a column (or several columns) represent the timestamp associated with the value and
 a column stores the values of interest.
 
 - **Forecasts**: Predicted values of a time-varying quantity that commonly features
@@ -55,5 +55,5 @@ horizon 24.
 
 - **Forecast window**: Represents the forecasted value starting at a particular initial time.
 
-Currently `PowerSystems.jl` does not support Forecasts of SingleTimeSeries with disimilar
+Currently `PowerSystems.jl` does not support Forecasts or SingleTimeSeries with disimilar
 intervals or resolution.

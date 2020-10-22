@@ -50,7 +50,7 @@ StaticTimeSeries) into a System.
 
 - Automated parsing during system construction, this method loads the data from CSV files. Refer to the [parsing documentation](parsing.md).
 
-- Create directly from data arranges in `TimeSeries.TimeArray` or `DataFrames.DataFrame`
+- Create directly from data in `TimeSeries.TimeArray` or `DataFrames.DataFrame`
 
 Examples:
 
