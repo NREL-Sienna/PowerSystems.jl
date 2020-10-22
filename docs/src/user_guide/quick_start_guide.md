@@ -55,5 +55,5 @@ horizon 24.
 
 - **Forecast window**: Represents the forecasted value starting at a particular initial time.
 
-Currently `PowerSystems.jl` does not support Forecasts of SingleTimeSeries with disimilar
+Currently `PowerSystems.jl` does not support Forecasts or SingleTimeSeries with disimilar
 intervals or resolution.
