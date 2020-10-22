@@ -43,7 +43,13 @@ end
         "Hydro",
         "DAY_AHEAD_hydro.csv",
     )
-    timeseries = IS.read_time_series(timeseries_file)[Symbol(component_name)]
+    gen = ThermalStandard(nothing)
+    gen.name = component_name
+    resolution = Dates.Hour(1)
+
+    # Parse the file directly in order to compare values.
+    ts_base = SingleTimeSeries(component_name, timeseries_file, gen, resolution)
+    timeseries = get_data(ts_base)
     max_value = maximum(TimeSeries.values(timeseries))
 
     file_metadata = IS.TimeSeriesFileMetadata(
@@ -54,6 +60,7 @@ end
         normalization_factor = 1.0,
         data_file = timeseries_file,
         percentiles = [],
+        resolution = resolution,
         time_series_type_module = "InfrastructureSystems",
         time_series_type = "SingleTimeSeries",
     )
@@ -94,12 +101,19 @@ end
         "Hydro",
         "DAY_AHEAD_hydro.csv",
     )
-    ta = IS.read_time_series(timeseries_file)[Symbol(component_name)]
+    resolution = Dates.Hour(1)
 
     # Test with a filename.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
     component = get_component(HydroEnergyReservoir, sys, component_name)
-    ts = SingleTimeSeries(name, timeseries_file, component; normalization_factor = 1.0)
+    ts = SingleTimeSeries(
+        name,
+        timeseries_file,
+        component,
+        resolution;
+        normalization_factor = 1.0,
+    )
+    ta = get_data(ts)
     add_time_series!(sys, component, ts)
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
