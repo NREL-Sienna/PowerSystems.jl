@@ -171,7 +171,7 @@ InfrastructureSystems.set_name!(value::HybridSystem, val) = value.name = val
 """Set [`HybridSystem`](@ref) `available`."""
 set_available!(value::HybridSystem, val) = value.available = val
 """Get [`HybridSystem`](@ref) `status`."""
-set_status(value::HybridSystem, val) = value.status = val
+set_status!(value::HybridSystem, val) = value.status = val
 """Set [`HybridSystem`](@ref) `bus`."""
 set_bus!(value::HybridSystem, val) = value.bus = val
 """Set [`HybridSystem`](@ref) `rating`."""
