@@ -149,7 +149,10 @@ automate this type of workflow.
 
 PowerSystems provides several methods to retrieve time series data. It is
 important that you choose the best one for your use case as there are
-performance implications.
+performance implications. When an accessor function is used to create the forecast,
+the `get_time_series_array` methods will apply the associated multiplier and return a
+different value than is stored. If you want to explore the data as it's stored rather than
+as it's intended for modeling use, refer to the next section.
 
 ### Get a TimeArray for a SingleTimeSeries
 
