@@ -15,7 +15,7 @@ mutable struct HybridSystem <: StaticInjection
     electric_load::Union{Nothing, ElectricLoad}
     storage::Union{Nothing, Storage}
     renewable_unit::Union{Nothing, RenewableGen}
-    # PCC Data
+    # interconnection Data
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     interconnection_impedance::Union{Nothing, ComplexF64}
     interconnection_rating::Union{Nothing, Float64}
@@ -139,9 +139,9 @@ get_storage(value::HybridSystem) = value.storage
 """Get [`HybridSystem`](@ref) renewable unit"""
 get_renewable_unit(value::HybridSystem) = value.renewable_unit
 """Get [`HybridSystem`](@ref) `rating`."""
-get_interconnection_rating(value::HybridSystem) = get_value(value, value.rating)
-"""get [`HybridSystem`](@ref) PCC impedance"""
-get_pcc_impedance(value::HybridSystem) = value.pcc_impedance
+get_interconnection_rating(value::HybridSystem) = get_value(value, value.interconnection_rating)
+"""get [`HybridSystem`](@ref) interconnection impedance"""
+get_interconnection_impedance(value::HybridSystem) = value.interconnection_impedance
 """Get [`HybridSystem`](@ref) `input_active_power_limits`."""
 get_input_active_power_limits(value::HybridSystem) =
     get_value(value, value.input_active_power_limits)
@@ -175,13 +175,21 @@ set_status!(value::HybridSystem, val) = value.status = val
 """Set [`HybridSystem`](@ref) `bus`."""
 set_bus!(value::HybridSystem, val) = value.bus = val
 """Set [`HybridSystem`](@ref) `rating`."""
-set_interconnection_rating!(value::HybridSystem, val) = value.rating = val
+set_interconnection_rating!(value::HybridSystem, val) = value.interconnection_rating = val
 """Set [`HybridSystem`](@ref) `active_power`."""
 set_active_power!(value::HybridSystem, val) = value.active_power = val
 """Set [`HybridSystem`](@ref) `reactive_power`."""
 set_reactive_power!(value::HybridSystem, val) = value.reactive_power = val
-"""set [`HybridSystem`](@ref) pcc impedance"""
-set_interconnection_impedance(value::HybridSystem, val) = value.pcc_impedance = val
+"""Get [`HybridSystem`](@ref) thermal unit"""
+set_thermal_unit!(value::HybridSystem, val::ThermalGen) = value.thermal_unit = val
+"""Get [`HybridSystem`](@ref) load"""
+set_electric_load!(value::HybridSystem, val::ElectricLoad) = value.electric_load = val
+"""Get [`HybridSystem`](@ref) storage unit"""
+set_storage!(value::HybridSystem, val::Storage) = value.storage = val
+"""Get [`HybridSystem`](@ref) renewable unit"""
+set_renewable_unit!(value::HybridSystem, val::RenewableGen) = value.renewable_unit = val
+"""set [`HybridSystem`](@ref) interconnection impedance"""
+set_interconnection_impedance!(value::HybridSystem, val) = value.interconnection_impedance = val
 """Set [`HybridSystem`](@ref) `input_active_power_limits`."""
 set_input_active_power_limits!(value::HybridSystem, val) =
     value.input_active_power_limits = val
