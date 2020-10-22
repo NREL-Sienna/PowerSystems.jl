@@ -131,13 +131,13 @@ get_active_power(value::HybridSystem) = get_value(value, value.active_power)
 """Get [`HybridSystem`](@ref) `reactive_power`."""
 get_reactive_power(value::HybridSystem) = get_value(value, value.reactive_power)
 """Get [`HybridSystem`](@ref) thermal unit"""
-get_thermal(value::HybridSystem) = value.thermal_unit
+get_thermal_unit(value::HybridSystem) = value.thermal_unit
 """Get [`HybridSystem`](@ref) load"""
-get_load(value::HybridSystem) = value.electric_load
+get_electric_load(value::HybridSystem) = value.electric_load
 """Get [`HybridSystem`](@ref) storage unit"""
 get_storage(value::HybridSystem) = value.storage
 """Get [`HybridSystem`](@ref) renewable unit"""
-get_renewable(value::HybridSystem) = value.renewable_unit
+get_renewable_unit(value::HybridSystem) = value.renewable_unit
 """Get [`HybridSystem`](@ref) `rating`."""
 get_interconnection_rating(value::HybridSystem) = get_value(value, value.rating)
 """get [`HybridSystem`](@ref) PCC impedance"""
