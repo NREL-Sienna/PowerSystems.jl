@@ -423,7 +423,7 @@ end
 function set_contributing_services!(
     sys::System,
     service::StaticReserveGroup,
-    val::Vector{Service},
+    val::Vector{<:Service},
 )
     for _service in val
         throw_if_not_attached(_service, sys)
@@ -442,7 +442,7 @@ Similar to [`add_component!`](@ref) but for StaticReserveGroup.
 function add_service!(
     sys::System,
     service::StaticReserveGroup,
-    contributing_services::Vector{Service};
+    contributing_services::Vector{<:Service};
     kwargs...,
 )
     if sys.runchecks && !validate_struct(sys, service)
