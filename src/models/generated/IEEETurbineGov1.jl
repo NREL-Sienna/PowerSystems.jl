@@ -36,7 +36,7 @@ IEEE Type 1 Speed-Governing Model
 - `K::Float64`: Governor Gain, validation range: `(5, 30)`, action if invalid: `warn`
 - `T1::Float64`: Input Filter Lag, validation range: `(0, 5)`, action if invalid: `warn`
 - `T2::Float64`: Input Filter Lead, validation range: `(0, 10)`, action if invalid: `warn`
-- `T3::Float64`: Valve position Time Constant, validation range: `("eps()", 1)`, action if invalid: `error`
+- `T3::Float64`: Valve position Time Constant, validation range: `(eps(), 1)`, action if invalid: `error`
 - `U0::Float64`: Maximum Valve Opening Rate, validation range: `(0.01, 0.03)`, action if invalid: `warn`
 - `U_c::Float64`: Maximum Valve closing rate, validation range: `(-0.3, 0)`, action if invalid: `warn`
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW

@@ -24,10 +24,10 @@ Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.
 
 # Arguments
 - `R::Float64`: Droop parameter, validation range: `(0, 0.1)`, action if invalid: `warn`
-- `T1::Float64`: Governor time constant, validation range: `("eps()", 0.5)`, action if invalid: `error`
+- `T1::Float64`: Governor time constant, validation range: `(eps(), 0.5)`, action if invalid: `error`
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits
 - `T2::Float64`: Lead Lag Lead Time constant , validation range: `(0, nothing)`, action if invalid: `warn`
-- `T3::Float64`: Lead Lag Lag Time constant , validation range: `("eps()", 10)`, action if invalid: `error`
+- `T3::Float64`: Lead Lag Lag Time constant , validation range: `(eps(), 10)`, action if invalid: `error`
 - `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `DB_h::Float64`: Deadband for overspeed, validation range: `(0, nothing)`, action if invalid: `warn`
 - `DB_l::Float64`: Deadband for underspeed, validation range: `(nothing, 0)`, action if invalid: `warn`

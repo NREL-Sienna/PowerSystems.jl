@@ -42,13 +42,13 @@ Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main ex
 - `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`
 - `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
 - `Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for regulator output `(Va_min, Va_max)`
-- `Kb::Float64`: Second Stage regulator gain, validation range: `("eps()", 500)`, action if invalid: `error`
+- `Kb::Float64`: Second Stage regulator gain, validation range: `(eps(), 500)`, action if invalid: `error`
 - `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for exciter field voltage `(Vr_min, Vr_max)`
-- `Te::Float64`: Exciter field time constant, validation range: `("eps()", 2)`, action if invalid: `error`
+- `Te::Float64`: Exciter field time constant, validation range: `(eps(), 2)`, action if invalid: `error`
 - `Kl::Float64`: Exciter field current limiter gain, validation range: `(0, 1.1)`, action if invalid: `warn`
 - `Kh::Float64`: Exciter field current regulator feedback gain, validation range: `(0, 1.1)`, action if invalid: `warn`
 - `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `Tf::Float64`: Rate feedback time constant, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Tf::Float64`: Rate feedback time constant, validation range: `(eps(), nothing)`, action if invalid: `error`
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`, action if invalid: `warn`
 - `Kd::Float64`: Demagnetizing factor, function of exciter alternator reactances, validation range: `(0, 1)`, action if invalid: `warn`
 - `Ke::Float64`: Exciter field proportional constant, validation range: `(0, 1)`, action if invalid: `warn`

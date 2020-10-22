@@ -31,9 +31,9 @@ This file is auto-generated. Do not edit.
 - `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`, action if invalid: `warn`
 - `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
 - `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1, 1)`
-- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", 1)`, action if invalid: `error`
-- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `("eps()", 0.3)`, action if invalid: `warn`
-- `Tf::Float64`: Excitation control system stabilizer time constant. Appropiate Data: 5 <= Tf/Kf <= 15, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `(eps(), 1)`, action if invalid: `error`
+- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(eps(), 0.3)`, action if invalid: `warn`
+- `Tf::Float64`: Excitation control system stabilizer time constant. Appropiate Data: 5 <= Tf/Kf <= 15, validation range: `(eps(), nothing)`, action if invalid: `error`
 - `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))

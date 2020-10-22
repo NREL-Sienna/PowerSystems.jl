@@ -139,7 +139,8 @@ get_storage(value::HybridSystem) = value.storage
 """Get [`HybridSystem`](@ref) renewable unit"""
 get_renewable_unit(value::HybridSystem) = value.renewable_unit
 """Get [`HybridSystem`](@ref) `rating`."""
-get_interconnection_rating(value::HybridSystem) = get_value(value, value.interconnection_rating)
+get_interconnection_rating(value::HybridSystem) =
+    get_value(value, value.interconnection_rating)
 """get [`HybridSystem`](@ref) interconnection impedance"""
 get_interconnection_impedance(value::HybridSystem) = value.interconnection_impedance
 """Get [`HybridSystem`](@ref) `input_active_power_limits`."""
@@ -189,7 +190,8 @@ set_storage!(value::HybridSystem, val::Storage) = value.storage = val
 """Get [`HybridSystem`](@ref) renewable unit"""
 set_renewable_unit!(value::HybridSystem, val::RenewableGen) = value.renewable_unit = val
 """set [`HybridSystem`](@ref) interconnection impedance"""
-set_interconnection_impedance!(value::HybridSystem, val) = value.interconnection_impedance = val
+set_interconnection_impedance!(value::HybridSystem, val) =
+    value.interconnection_impedance = val
 """Set [`HybridSystem`](@ref) `input_active_power_limits`."""
 set_input_active_power_limits!(value::HybridSystem, val) =
     value.input_active_power_limits = val
