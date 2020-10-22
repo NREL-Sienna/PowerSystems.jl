@@ -110,7 +110,7 @@ call it directly.
 ### Testing a New Struct
 It's likely that a new type will just work. Here's how you can test it:
 
-```julia
+```Julia
 using PowerSystems
 
 # Assume a system is built and stored in the variable sys.

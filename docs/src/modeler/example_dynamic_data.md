@@ -1,8 +1,6 @@
 # Creating a Dynamic System
 
-This tutorial briefly introduces how to create a system using `PowerSystems.jl` data structures. The tutorial will guide you to create the JSON data file for the tutorial 1. We start by calling `PowerSystems.jl`:
-
-```julia
+```Julia
 using PowerSystems
 const PSY = PowerSystems
 ```
@@ -11,7 +9,11 @@ The following describes the system creation for the OMIB case.
 
 ## Static System creation
 
-There are plenty of ways to define a static system (for Power Flow purposes), but the recommended option for users is to use a [PTI data format](https://labs.ece.uw.edu/pstca/formats/pti.txt) (`.raw` file) or a [Matpower data format](https://matpower.org/docs/manual.pdf) (`.m` file), since parsers are available. The following `OMIB.raw` file is used to create the OMIB system:
+There are plenty of ways to define a static system (for Power Flow purposes), but the
+recommended option for users is to use a [PTI data format](https://labs.ece.uw.edu/pstca/formats/pti.txt) (`.raw` file)
+or a [Matpower data format](https://matpower.org/docs/manual.pdf) (`.m` file),
+since parsers are available. The following `OMIB.raw` file is used to create the OMIB system:
+
 ```raw
 0, 100, 33, 0, 0, 60  / 24-Apr-2020 17:05:49 - MATPOWER 7.0.1-dev
 
@@ -41,15 +43,22 @@ There are plenty of ways to define a static system (for Power Flow purposes), bu
 0 / END OF INDUCTION MACHINE DATA
 Q
 ```
-Based on the description provided in PTI files, this is a two-bus system, on which the bus 101 (bus 1) is the reference bus at 1.05 pu, and bus 102 (bus 2) is PV bus, to be set at 1.04 pu. There is one 100 MVA generator connected at bus 2, producing 50 MW. There is an equivalent line connecting buses 1 and 2 with a reactance of ``0.05`` pu.
 
-```julia
+Based on the description provided in PTI files, this is a two-bus system, on which the bus
+101 (bus 1) is the reference bus at 1.05 pu, and bus 102 (bus 2) is PV bus, to be set at
+1.04 pu. There is one 100 MVA generator connected at bus 2, producing 50 MW. There is an
+equivalent line connecting buses 1 and 2 with a reactance of ``0.05`` pu.
+
+```Julia
 #To create the system you need to pass the location of the RAW file
 file_dir = "OMIB.raw"
 omib_sys = System(omib_file_dir)
 ```
-Note that this system does not have an injection device in bus 1 (the reference bus). We can add a source with small impedance directly using a function like:
-```julia
+
+Note that this system does not have an injection device in bus 1 (the reference bus).
+We can add a source with small impedance directly using a function like:
+
+```Julia
 function add_source_to_ref(sys::System)
     for g in get_components(StaticInjection, sys)
         isa(g, ElectricLoad) && continue
@@ -73,22 +82,30 @@ end
 
 add_source_to_ref(omib_sys)
 ```
-This function attempts to add a infinite source with ``X_{th} = 5\cdot 10^{-6}`` pu if no other device is already attached to the reference bus.
+
+This function attempts to add a infinite source with ``X_{th} = 5\cdot 10^{-6}`` pu if
+no other device is already attached to the reference bus.
 
 The system can be explored directly using functions like:
-```julia
+
+```Julia
 collect(get_components(Source, omib_sys))
 collect(get_components(Generators, omib_sys))
 ```
-By exploring those it can be seen that the generators are named as: `generator-bus_number-id`. Then, the generator attached at bus 2 is simply named `generator-102-1`.
+
+By exploring those it can be seen that the generators are named as: `generator-bus_number-id`.
+Then, the generator attached at bus 2 is simply named `generator-102-1`.
 
 ### Dynamic Injections
 
-We are now interested in attaching to the system the dynamic component that will be modeling our dynamic generator. Later versions will include a parser for `.dyr` files.
+We are now interested in attaching to the system the dynamic component that will be modeling
+our dynamic generator. Later versions will include a parser for `.dyr` files.
 
-Dynamic generator devices are composed by 5 components, namely, `machine`, `shaft`, `avr`, `tg` and `pss`. So we will be adding functions to create all of its components and the generator itself:
+Dynamic generator devices are composed by 5 components, namely, `machine`, `shaft`, `avr`,
+`tg` and `pss`. So we will be adding functions to create all of its components and the
+generator itself:
 
-```julia
+```Julia
 #Machine
 machine_classic() = BaseMachine(
     0.0, #R
@@ -122,11 +139,13 @@ function dyn_gen_classic(generator)
 end
 ```
 
-The last function receives a static generator, and creates a `DynamicGenerator` based on that specific static generator, with the specific components defined previously. This is a classic machine model without AVR, Turbine Governor and PSS.
+The last function receives a static generator, and creates a `DynamicGenerator` based on that
+specific static generator, with the specific components defined previously. This is a classic
+machine model without AVR, Turbine Governor and PSS.
 
 Then we can simply create the dynamic generator as:
 
-```julia
+```Julia
 #Collect the static gen in the system
 static_gen = get_component(Generator, omib_sys, "generator-102-1")
 #Creates the dynamic generator
@@ -136,13 +155,15 @@ add_component!(omib_sys, dyn_gen, static_gen)
 ```
 
 Then we can simply export our system data such that it can be later read as:
-```julia
+
+```Julia
 to_json(omib_sys, "YOUR_DIR/omib_sys.json")
 ```
 
 ## Dynamic Lines case: Data creation
 
-We will now create a three bus system with one inverter and one generator. In order to do so, we will parse the following `ThreebusInverter.raw` network:
+We will now create a three bus system with one inverter and one generator. In order to do so,
+we will parse the following `ThreebusInverter.raw` network:
 
 ```raw
 0, 100, 33, 0, 0, 60  / 24-Apr-2020 19:28:39 - MATPOWER 7.0.1-dev
@@ -180,19 +201,25 @@ We will now create a three bus system with one inverter and one generator. In or
 0 / END OF INDUCTION MACHINE DATA
 Q
 ```
-That describes a three bus connected system, with generators connected at bus 2 and 3, and loads in three buses. We can load the system and attach an infinite source on the reference bus:
-```julia
+
+That describes a three bus connected system, with generators connected at bus 2 and 3, and
+loads in three buses. We can load the system and attach an infinite source on the reference bus:
+
+```Julia
 sys_file_dir = "ThreeBusInverter.raw")
 threebus_sys = System(sys_file_dir)
 add_source_to_ref(threebus_sys)
 ```
-We will connect a One-d-one-q machine at bus 102, and a Virtual Synchronous Generator Inverter at bus 103. An inverter is composed by a `converter`, `outer control`, `inner control`, `dc source`, `frequency estimator` and a `filter`.
+
+We will connect a One-d-one-q machine at bus 102, and a Virtual Synchronous Generator Inverter
+at bus 103. An inverter is composed by a `converter`, `outer control`, `inner control`,
+`dc source`, `frequency estimator` and a `filter`.
 
 ### Dynamic Inverter definition
 
 We will create specific functions to create the components of the inverter as follows:
 
-```julia
+```Julia
 #Define converter as an AverageConverter
 converter_high_power() = AverageConverter(rated_voltage = 138.0, rated_current = 100.0)
 
@@ -249,13 +276,14 @@ function inv_case78(static_device)
 end
 ```
 
-The last function receives a static device, typically a generator, and defines a dynamic inverter based on the components already defined.
+The last function receives a static device, typically a generator, and defines a dynamic
+inverter based on the components already defined.
 
 ### Dynamic Generator definition
 
 Similarly we will construct a dynamic generator as follows:
 
-```julia
+```Julia
 #Create the machine
 machine_oneDoneQ() = OneDOneQMachine(
     0.0, #R
@@ -310,7 +338,7 @@ end
 
 ### Add the components to the system
 
-```julia
+```Julia
 for g in get_components(Generator, threebus_sys)
     #Find the generator at bus 102
     if get_number(get_bus(g)) == 102
@@ -330,6 +358,6 @@ end
 
 ### Save the system in a JSON file
 
-```julia
+```Julia
 to_json(threebus_sys, "YOUR_DIR/threebus_sys.json")
 ```

@@ -31,7 +31,7 @@ names.
 
 3. Parse the raw data like in this example:
 
-```julia
+```Julia
 
 function demo_bus_csv_parser!(data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
