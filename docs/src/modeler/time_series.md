@@ -1,5 +1,8 @@
 # Managing Time Series Data
 
+**Note**: This section assumes the reader is familiar with the definitions in the
+quick start guide
+
 PowerSystems supports two categories of time series data depending on the
 process to obtain the data:
 
@@ -45,22 +48,32 @@ sys = System(100.0; time_series_in_memory = true)
 PowerSystems supports several methods to load time series data (Forecasts or
 StaticTimeSeries) into a System.
 
-- Automated parsing during system construction. Refer to the
-[parsing documentation](parsing.md).
-- Create from TimeSeries.TimeArray or DataFrames.DataFrame
+- Automated parsing during system construction, this method loads the data from CSV files. Refer to the [parsing documentation](parsing.md).
+
+- Create directly from data arranges in `TimeSeries.TimeArray` or `DataFrames.DataFrame`
+
+Examples:
+
+When creating data for `SingleTimeSeries` the user can directly pass a
+`TimeSeries.TimeArray` to the constructor.
 
 ```julia
     resolution = Dates.Hour(1)
     dates = range(DateTime("2020-01-01T00:00:00"), step = resolution, length = 24)
     data = TimeArray(dates, ones(24))
-    ts = SingleTimeSeries("max_active_power", data)
+    time_series = SingleTimeSeries("max_active_power", data)
 ```
+
+When creating time series data that represents forecasts, the data can be stored in
+any `AbstractDict` where the key is the initial time of the forecast and the value
+field is the forecast value. The value fields in the dictionary can be regular
+vectors or `TimeSeries.TimeArray`.
 
 ```julia
     resolution = Dates.Hour(1)
     data = Dict(
-        DateTime("2020-01-01T00:00:00") => ones(24),
-        DateTime("2020-01-01T01:00:00") => ones(24),
+        DateTime("2020-01-01T00:00:00") => 10.0*ones(24),
+        DateTime("2020-01-01T01:00:00") => 5.0*ones(24),
     )
     forecast = Deterministic("max_active_power", data, resolution)
 ```
