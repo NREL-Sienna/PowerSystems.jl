@@ -1,21 +1,27 @@
 # Managing Time Series Data
+
 PowerSystems supports two categories of time series data depending on the
 process to obtain the data:
 
 - Static data: a single column of time series values for a component field
-(such as active power). This data commonly is obtained from historical
-information or the realization of a time-varying quantity.
+(such as active power) where each time period is represented by a single value.
+This data commonly is obtained from historical information or the realization of
+a time-varying quantity.
 - Forecasts: Predicted values of a time-varying quantity that commonly features
-a look-ahead. This data is used in simulation with receding horizons or data
-generated from forecasting algorithms.
+a look-ahead and can have multiple data values representing each time period.
+This data is used in simulation with receding horizons or data generated from
+forecasting algorithms.
 
 ## Types
 
 ### Static Time Series Data
+
 PowerSystems defines the Julia struct `SingleTimeSeries` to represent this data.
 
 ### Forecasts
+
 PowerSystems defines the following Julia structs to represent forecasts:
+
 - `Deterministic`: Point forecast without any uncertainty representation.
 - `Probabilistic`: Stores a discretized cumulative distribution functions
 (CDFs) or probability distribution functions (PDFs) at each time step in the
@@ -24,6 +30,7 @@ look-ahead window.
 with equal probability.
 
 ## Storage
+
 By default PowerSystems stores time series data in an HDF5 file. This prevents
 large datasets from overwhelming system memory. If you know that your dataset
 will fit in your computer's memory then you can increase performance by storing
@@ -34,17 +41,21 @@ sys = System(100.0; time_series_in_memory = true)
 ```
 
 ## Creating Time Series Data
+
 PowerSystems supports several methods to load time series data (Forecasts or
 StaticTimeSeries) into a System.
-- Automated parsing during system construction.  Refer to the
+
+- Automated parsing during system construction. Refer to the
 [parsing documentation](parsing.md).
 - Create from TimeSeries.TimeArray or DataFrames.DataFrame
+
 ```julia
     resolution = Dates.Hour(1)
     dates = range(DateTime("2020-01-01T00:00:00"), step = resolution, length = 24)
     data = TimeArray(dates, ones(24))
     ts = SingleTimeSeries("max_active_power", data)
 ```
+
 ```julia
     resolution = Dates.Hour(1)
     data = Dict(
@@ -53,6 +64,7 @@ StaticTimeSeries) into a System.
     )
     forecast = Deterministic("max_active_power", data, resolution)
 ```
+
 - Load from CSV file. For Deterministic forecasts, each row represents one
 look-ahead window. The first column must be the initial time and the rest must
 be the forecast values. The CSV file must have no header in the first row.
@@ -63,8 +75,10 @@ be the forecast values. The CSV file must have no header in the first row.
 ```
 
 ## Scaling factors
+
 Time series data can store actual component values (for instance MW) or scaling
-factors (0 - 1 values). By default PowerSystems treats the values in the time
+factors intended to be multiplied by a scalar to generate the component values.
+By default PowerSystems treats the values in the time
 series data as physical units. In order to specify them as scaling factors, you
 must pass the accessor function that provides the multiplier value. This value
 must be passed into the forecast when you create it.
@@ -93,6 +107,7 @@ value 50.0 and the scaling factor at some time point is 0.65, the forecast
 value will correspond to 32.5.
 
 ## Adding time series to the System
+
 Adding time series data to a system requires a component that is already
 attached to the system. Extending the example above:
 
@@ -113,6 +128,7 @@ This function stores a single copy of the data. Each component will store a
 reference to that data.
 
 ## Removing time series data
+
 Time series instances can be removed from a system like this:
 
 ```julia
@@ -129,8 +145,44 @@ automate this type of workflow.
     clear_time_series!(sys)
 ```
 
+## Retrieving time series data
+
+PowerSystems provides several methods to retrieve time series data. It is
+important that you choose the best one for your use case as there are
+performance implications.
+
+### Get a TimeArray for a SingleTimeSeries
+
+```julia
+    ta = get_time_series_array(
+        SingleTimeSeries,
+        component,
+        "max_active_power",
+        start_time = DateTime("2020-01-01T00:00:00"),
+        len = 24,
+    )
+```
+
+**Note**: The default behavior is to read all data, so specify `start_time` and
+`len` if you only need a subset of data.
+
+### Get a TimeArray for a Deterministic forecast
+
+For forecasts, the interfaces assume that modeling code will access one
+forecast window at a time. Here's how to get one window:
+
+```julia
+    ta = get_time_series_array(
+        Deterministic,
+        component,
+        "max_active_power",
+        start_time = DateTime("2020-01-01T00:00:00"),
+    )
+```
+
 ## Data exploration
-If you want to explore the time series data stored in a system then you will
+
+If you want to explore the time series data as it is stored in a system then you will
 want to use the `get_time_series` function.
 
 **Warning**: This will load all forecast windows into memory by default. Be
@@ -140,7 +192,7 @@ aware of how much data is stored.
 data. It will not apply a scaling factor multiplier.
 
 ```julia
-    forecat = get_time_series(Deterministic, component, "max_active_power")
+    forecast = get_time_series(Deterministic, component, "max_active_power")
 ```
 
 You can limit the data returned by specifying `start_time` and `count`.
@@ -169,44 +221,13 @@ or iterate over the look-ahead windows like this:
     end
 ```
 
-## Retrieving time series data for modeling
-PowerSystems provides several methods to retrieve time series data. It is
-important that you choose the best one for your use case as there are
-performance implications.
-
-### Get a TimeArray for a SingleTimeSeries
-```julia
-    ta = get_time_series_array(
-        SingleTimeSeries,
-        component,
-        "max_active_power",
-        start_time = DateTime("2020-01-01T00:00:00"),
-        len = 24,
-    )
-```
-
-**Note**: The default behavior is to read all data, so specify `start_time` and
-`len` if you only need a subset of data.
-
-### Get a TimeArray for a Deterministic forecast
-For forecasts, the interfaces assume that modeling code will access one
-forecast window at a time. Here's how to get one window:
-
-```julia
-    ta = get_time_series_array(
-        Deterministic,
-        component,
-        "max_active_power",
-        start_time = DateTime("2020-01-01T00:00:00"),
-    )
-```
-
 ## Using forecast data in simulations
+
 The interfaces documented up to this point are useful for the development of
 scripts and models that use a small amount of forecasting data or do not
-require multiple model updates using time series data. It is important to
+require accessing time series data multiple times. It is important to
 understand the performance implications of accessing
-forecast windows repeatedly like in the case of cost production modeling
+forecast windows repeatedly like in the case of production cost modeling
 simulations.
 
 If each forecast window contains an array of 24 floats and the windows cover an
@@ -214,12 +235,12 @@ entire year then each retrieval will involve a small disk read. This can slow
 down a simulation significantly, especially if the underlying storage uses
 spinning disks.
 
-PowerSystems provides an alternate interface that prefetches data into the
+PowerSystems provides an alternate interface that pre-fetches data into the
 system memory with large reads in order to mitigate this potential problem. The
 mechanism creates a cache of data and makes it available to the user.
 
-It is highly recommended that you use this interface for simulations. This is
-particularly relevant for simulations using large datasets.
+It is highly recommended that you use this interface for modeling implementations. This is
+particularly relevant for models using large datasets.
 
 ```julia
     cache = ForecastCache(Deterministic, component, "max_active_power")
@@ -238,14 +259,15 @@ Each iteration on the cache object will deliver the next forecast window.
 delivered.
 
 ## Transform static time series into forecasts
+
 A common workflow in developing models is transforming data generated from a
 realization and stored in a single column into deterministic forecasts to
 account for the effects of the look-ahead. Usually, this workflow leads to
 large data duplications in the overlapping windows between forecasts.
 
-PowerSystems provides a method to transform SingleTimeSeries data into
-Deterministic forecasts without duplicating any data. The resulting object
-behaves exactly like a Deterministic. Instead of storing windows at each
+PowerSystems provides a method to transform `SingleTimeSeries` data into
+`Deterministic` forecasts without duplicating any data. The resulting object
+behaves exactly like a `Deterministic`. Instead of storing windows at each
 initial time it provides a view into the existing data at incrementing offsets.
 
 Here's an example:
@@ -262,10 +284,10 @@ Here's an example:
     transform_single_time_series!(sys)
 ```
 
-This function transforms all SingleTimeSeries instances stored in the system.
+This function transforms all `SingleTimeSeries` instances stored in the system.
 You can also call it on a single component.
 
-You can now access either a Deterministic or the original SingleTimeSeries.
+You can now access either a `Deterministic` or the original `SingleTimeSeries`.
 
 ```julia
     ta_forecast = get_time_series_array(
@@ -278,13 +300,14 @@ You can now access either a Deterministic or the original SingleTimeSeries.
 ```
 
 **Note**: The actual type of the returned forecast will be
-`DeterministicSingleTimeSeries`. This type and `Determinsitic` are subtypes of
+`DeterministicSingleTimeSeries`. This type and `Deterministic` are subtypes of
 `AbstractDeterministic` and implement all of the same methods (i.e., they
 behave identically).
 
 ## Time Series Validation
+
 PowerSystems applies validation rules whenever users add time series to a
-System. It will throw an exception if any rule is violated.
+`System`. It will throw an exception if any rule is violated.
 
 1. All time series data, static or forecasts, must have the same resolution.
 2. All forecasts must have identical parameters:  initial timestamp, horizon,
