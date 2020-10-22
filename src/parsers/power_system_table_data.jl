@@ -121,11 +121,11 @@ function PowerSystemTableData(
     encountered_files = 0
     for d_file in files
         try
-            if match(REGEX_IS_FOLDER, d_file) != nothing
+            if match(REGEX_IS_FOLDER, d_file) !== nothing
                 @info "Parsing csv files in $d_file ..."
                 d_file_data = Dict{String, Any}()
                 for file in readdir(joinpath(directory, d_file))
-                    if match(REGEX_DEVICE_TYPE, file) != nothing
+                    if match(REGEX_DEVICE_TYPE, file) !== nothing
                         @info "Parsing csv data in $file ..."
                         encountered_files += 1
                         fpath = joinpath(directory, d_file, file)
@@ -139,7 +139,7 @@ function PowerSystemTableData(
                     @info "Successfully parsed $d_file"
                 end
 
-            elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
+            elseif match(REGEX_DEVICE_TYPE, d_file) !== nothing
                 @info "Parsing csv data in $d_file ..."
                 encountered_files += 1
                 fpath = joinpath(directory, d_file)
@@ -280,11 +280,8 @@ function System(
         end
     end
 
-    timeseries_metadata_file = get(
-        kwargs,
-        :timeseries_metadata_file,
-        getfield(data, :timeseries_metadata_file, nothing),
-    )
+    timeseries_metadata_file =
+        get(kwargs, :timeseries_metadata_file, getfield(data, :timeseries_metadata_file))
 
     if !isnothing(timeseries_metadata_file)
         add_time_series!(sys, timeseries_metadata_file; resolution = time_series_resolution)

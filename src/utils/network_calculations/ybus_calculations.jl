@@ -180,10 +180,10 @@ Builds a Ybus from the system. The return is a Ybus Array indexed with the bus n
 
 function Ybus(sys::System; check_connectivity::Bool = true)
     branches = get_components(ACBranch, sys)
-    nodes = sort(collect(get_components(Bus, sys)), by = x -> x.number)
+    nodes = sort!(collect(get_components(Bus, sys)), by = x -> x.number)
     fixed_admittances = get_components(FixedAdmittance, sys)
     # Get axis names
-    bus_ax = sort([get_number(bus) for bus in nodes])
+    bus_ax = sort!([get_number(bus) for bus in nodes])
     axes = (bus_ax, bus_ax)
     look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
     ybus = _buildybus(branches, nodes, fixed_admittances)
