@@ -21,6 +21,7 @@ This file is auto-generated. Do not edit.
         operation_cost::OperationalCost
         storage_target::Float64
         conversion_factor::Float64
+        time_at_status::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -49,6 +50,7 @@ This file is auto-generated. Do not edit.
 - `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
+- `time_at_status::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -85,6 +87,7 @@ mutable struct HydroEnergyReservoir <: HydroGen
     storage_target::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
     conversion_factor::Float64
+    time_at_status::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -96,12 +99,12 @@ mutable struct HydroEnergyReservoir <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=TwoPartCost(0.0, 0.0), storage_target=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=TwoPartCost(0.0, 0.0), storage_target=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=TwoPartCost(0.0, 0.0), storage_target=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, services, dynamic_injector, ext, time_series_container, internal, )
+function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=TwoPartCost(0.0, 0.0), storage_target=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -125,6 +128,7 @@ function HydroEnergyReservoir(::Nothing)
         operation_cost=TwoPartCost(nothing),
         storage_target=0.0,
         conversion_factor=0.0,
+        time_at_status=INFINITE_TIME,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -168,6 +172,8 @@ get_operation_cost(value::HydroEnergyReservoir) = value.operation_cost
 get_storage_target(value::HydroEnergyReservoir) = value.storage_target
 """Get [`HydroEnergyReservoir`](@ref) `conversion_factor`."""
 get_conversion_factor(value::HydroEnergyReservoir) = value.conversion_factor
+"""Get [`HydroEnergyReservoir`](@ref) `time_at_status`."""
+get_time_at_status(value::HydroEnergyReservoir) = value.time_at_status
 """Get [`HydroEnergyReservoir`](@ref) `services`."""
 get_services(value::HydroEnergyReservoir) = value.services
 """Get [`HydroEnergyReservoir`](@ref) `dynamic_injector`."""
@@ -215,6 +221,8 @@ set_operation_cost!(value::HydroEnergyReservoir, val) = value.operation_cost = v
 set_storage_target!(value::HydroEnergyReservoir, val) = value.storage_target = val
 """Set [`HydroEnergyReservoir`](@ref) `conversion_factor`."""
 set_conversion_factor!(value::HydroEnergyReservoir, val) = value.conversion_factor = val
+"""Set [`HydroEnergyReservoir`](@ref) `time_at_status`."""
+set_time_at_status!(value::HydroEnergyReservoir, val) = value.time_at_status = val
 """Set [`HydroEnergyReservoir`](@ref) `services`."""
 set_services!(value::HydroEnergyReservoir, val) = value.services = val
 """Set [`HydroEnergyReservoir`](@ref) `ext`."""

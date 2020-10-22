@@ -1517,6 +1517,12 @@
           "default": "1.0"
         },
         {
+          "null_value": "INFINITE_TIME",
+          "name": "time_at_status",
+          "data_type": "Float64",
+          "default": "INFINITE_TIME"
+        },
+        {
           "name": "services",
           "data_type": "Vector{Service}",
           "comment": "Services that this device contributes to",
@@ -1921,6 +1927,12 @@
           "null_value": "0.0",
           "data_type": "Float64",
           "default": "1.0"
+        },
+        {
+          "null_value": "INFINITE_TIME",
+          "name": "time_at_status",
+          "data_type": "Float64",
+          "default": "INFINITE_TIME"
         },
         {
           "name": "services",

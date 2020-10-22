@@ -28,6 +28,7 @@ This file is auto-generated. Do not edit.
         operation_cost::OperationalCost
         pump_efficiency::Float64
         conversion_factor::Float64
+        time_at_status::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -63,6 +64,7 @@ This file is auto-generated. Do not edit.
 - `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, action if invalid: `warn`
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
+- `time_at_status::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -111,6 +113,7 @@ mutable struct HydroPumpedStorage <: HydroGen
     pump_efficiency::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
     conversion_factor::Float64
+    time_at_status::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -122,12 +125,12 @@ mutable struct HydroPumpedStorage <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, services, dynamic_injector, ext, time_series_container, internal, )
+function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -158,6 +161,7 @@ function HydroPumpedStorage(::Nothing)
         operation_cost=TwoPartCost(nothing),
         pump_efficiency=0.0,
         conversion_factor=0.0,
+        time_at_status=INFINITE_TIME,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -215,6 +219,8 @@ get_operation_cost(value::HydroPumpedStorage) = value.operation_cost
 get_pump_efficiency(value::HydroPumpedStorage) = value.pump_efficiency
 """Get [`HydroPumpedStorage`](@ref) `conversion_factor`."""
 get_conversion_factor(value::HydroPumpedStorage) = value.conversion_factor
+"""Get [`HydroPumpedStorage`](@ref) `time_at_status`."""
+get_time_at_status(value::HydroPumpedStorage) = value.time_at_status
 """Get [`HydroPumpedStorage`](@ref) `services`."""
 get_services(value::HydroPumpedStorage) = value.services
 """Get [`HydroPumpedStorage`](@ref) `dynamic_injector`."""
@@ -276,6 +282,8 @@ set_operation_cost!(value::HydroPumpedStorage, val) = value.operation_cost = val
 set_pump_efficiency!(value::HydroPumpedStorage, val) = value.pump_efficiency = val
 """Set [`HydroPumpedStorage`](@ref) `conversion_factor`."""
 set_conversion_factor!(value::HydroPumpedStorage, val) = value.conversion_factor = val
+"""Set [`HydroPumpedStorage`](@ref) `time_at_status`."""
+set_time_at_status!(value::HydroPumpedStorage, val) = value.time_at_status = val
 """Set [`HydroPumpedStorage`](@ref) `services`."""
 set_services!(value::HydroPumpedStorage, val) = value.services = val
 """Set [`HydroPumpedStorage`](@ref) `ext`."""
