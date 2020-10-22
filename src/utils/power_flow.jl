@@ -126,7 +126,7 @@ Updates system voltages and powers with power flow results
 """
 function _write_pf_sol!(sys::System, nl_result)
     result = round.(nl_result.zero; digits = 7)
-    buses = enumerate(sort(collect(get_components(Bus, sys)), by = x -> get_number(x)))
+    buses = enumerate(sort!(collect(get_components(Bus, sys)), by = x -> get_number(x)))
     sys_basepower = get_base_power(sys)
 
     for (ix, bus) in buses
@@ -167,7 +167,7 @@ Return power flow results in dictionary of dataframes.
 function _write_results(sys::System, nl_result)
     @info("Voltages are exported in pu. Powers are exported in MW/MVAr.")
     result = round.(nl_result.zero; digits = 7)
-    buses = sort(collect(get_components(Bus, sys)), by = x -> get_number(x))
+    buses = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
     N_BUS = length(buses)
     bus_map = Dict(buses .=> 1:N_BUS)
     sys_basepower = get_base_power(sys)
@@ -339,7 +339,7 @@ function solve_powerflow(system::System; finite_diff = false, kwargs...)
 end
 
 function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
-    buses = sort(collect(get_components(Bus, system)), by = x -> get_number(x))
+    buses = sort!(collect(get_components(Bus, system)), by = x -> get_number(x))
     N_BUS = length(buses)
 
     # assumes the ordering in YBus is the same as in the buses.

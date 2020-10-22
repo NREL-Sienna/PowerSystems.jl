@@ -112,14 +112,15 @@ IS.@scoped_enum MatpowerBusType begin
     MATPOWER_ISOLATED = 4
 end
 
+const _BUS_TYPE_MAP = Dict(
+    MatpowerBusTypes.MATPOWER_ISOLATED => BusTypes.ISOLATED,
+    MatpowerBusTypes.MATPOWER_PQ => BusTypes.PQ,
+    MatpowerBusTypes.MATPOWER_PV => BusTypes.PV,
+    MatpowerBusTypes.MATPOWER_REF => BusTypes.REF,
+)
+
 function Base.convert(::Type{BusTypes.BusType}, x::MatpowerBusTypes.MatpowerBusType)
-    map = Dict(
-        MatpowerBusTypes.MATPOWER_ISOLATED => BusTypes.ISOLATED,
-        MatpowerBusTypes.MATPOWER_PQ => BusTypes.PQ,
-        MatpowerBusTypes.MATPOWER_PV => BusTypes.PV,
-        MatpowerBusTypes.MATPOWER_REF => BusTypes.REF,
-    )
-    return map[x]
+    return _BUS_TYPE_MAP[x]
 end
 
 # Disabling this because not all matpower files define areas even when bus definitions
@@ -141,7 +142,7 @@ function read_bus!(sys::System, data; kwargs...)
     bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusTypes.MatpowerBusType)
-    bus_data = sort(collect(data["bus"]), by = x -> parse(Int, x[1]))
+    bus_data = sort!(collect(data["bus"]), by = x -> parse(Int, x[1]))
 
     if isempty(bus_data)
         @error "No bus data found" # TODO : need for a model without a bus

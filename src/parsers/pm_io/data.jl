@@ -1408,7 +1408,7 @@ function _biggest_generator(gens)
             biggest_value = pmax
         end
     end
-    @assert(biggest_gen != nothing)
+    @assert(biggest_gen !== nothing)
     return biggest_gen
 end
 
@@ -1810,7 +1810,7 @@ function _simplify_pwl_cost!(id, comp, type_name, tolerance = 1e-2)
 
         m = (y2 - y1) / (x2 - x1)
 
-        if prev_slope == nothing || (abs(prev_slope - m) > tolerance)
+        if prev_slope === nothing || (abs(prev_slope - m) > tolerance)
             push!(smpl_cost, x1)
             push!(smpl_cost, y1)
             prev_slope = m
@@ -2202,7 +2202,7 @@ function _select_largest_component!(data::Dict{String, <:Any})
     ccs = calc_connected_components(data)
     @info "found $(length(ccs)) components" maxlog = PS_MAX_LOG
 
-    ccs_order = sort(collect(ccs); by = length)
+    ccs_order = sort!(collect(ccs); by = length)
     largest_cc = ccs_order[end]
 
     @info "largest component has $(length(largest_cc)) buses" maxlog = PS_MAX_LOG
@@ -2237,7 +2237,7 @@ function _correct_reference_buses!(data::Dict{String, <:Any})
     bus_gen = bus_gen_lookup(data["gen"], data["bus"])
 
     ccs = calc_connected_components(data)
-    ccs_order = sort(collect(ccs); by = length)
+    ccs_order = sort!(collect(ccs); by = length)
 
     bus_to_cc = Dict()
     for (i, cc) in enumerate(ccs_order)
