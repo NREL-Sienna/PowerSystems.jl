@@ -31,8 +31,8 @@ jobs:
       julia: 1.5
       env:
         jobs:
-          PACKAGE=PowerSimulations
-          PACKAGE=PowerSimulationsDynamics
+          - PACKAGE=PowerSimulations
+          - PACKAGE=PowerSimulationsDynamics
       script:
         - cd $HOME
         - julia -e 'const PKG_FOLDER = ENV["TRAVIS_BUILD_DIR"]; using Pkg; Pkg.develop(PackageSpec(path=PKG_FOLDER))'
