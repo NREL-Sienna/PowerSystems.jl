@@ -8,7 +8,6 @@ This file is auto-generated. Do not edit.
         time_frame::Float64
         requirement::Float64
         ext::Dict{String, Any}
-        operation_cost::Union{Nothing, TwoPartCost}
         internal::InfrastructureSystemsInternal
     end
 
@@ -20,7 +19,6 @@ Data Structure for a non-spinning reserve product for system simulations.
 - `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, action if invalid: `error`
 - `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
-- `operation_cost::Union{Nothing, TwoPartCost}`: Cost for providing reserves  [`TwoPartCost`](@ref)
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
@@ -31,18 +29,16 @@ mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
     "the static value of required reserves in system p.u."
     requirement::Float64
     ext::Dict{String, Any}
-    "Cost for providing reserves  [`TwoPartCost`](@ref)"
-    operation_cost::Union{Nothing, TwoPartCost}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserveNonSpinning(name, available, time_frame, requirement, ext=Dict{String, Any}(), operation_cost=nothing, )
-    StaticReserveNonSpinning(name, available, time_frame, requirement, ext, operation_cost, InfrastructureSystemsInternal(), )
+function StaticReserveNonSpinning(name, available, time_frame, requirement, ext=Dict{String, Any}(), )
+    StaticReserveNonSpinning(name, available, time_frame, requirement, ext, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserveNonSpinning(; name, available, time_frame, requirement, ext=Dict{String, Any}(), operation_cost=nothing, internal=InfrastructureSystemsInternal(), )
-    StaticReserveNonSpinning(name, available, time_frame, requirement, ext, operation_cost, internal, )
+function StaticReserveNonSpinning(; name, available, time_frame, requirement, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    StaticReserveNonSpinning(name, available, time_frame, requirement, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -53,7 +49,6 @@ function StaticReserveNonSpinning(::Nothing)
         time_frame=0.0,
         requirement=0.0,
         ext=Dict{String, Any}(),
-        operation_cost=TwoPartCost(nothing),
     )
 end
 
@@ -67,8 +62,6 @@ get_time_frame(value::StaticReserveNonSpinning) = value.time_frame
 get_requirement(value::StaticReserveNonSpinning) = value.requirement
 """Get [`StaticReserveNonSpinning`](@ref) `ext`."""
 get_ext(value::StaticReserveNonSpinning) = value.ext
-"""Get [`StaticReserveNonSpinning`](@ref) `operation_cost`."""
-get_operation_cost(value::StaticReserveNonSpinning) = value.operation_cost
 """Get [`StaticReserveNonSpinning`](@ref) `internal`."""
 get_internal(value::StaticReserveNonSpinning) = value.internal
 
@@ -82,6 +75,4 @@ set_time_frame!(value::StaticReserveNonSpinning, val) = value.time_frame = val
 set_requirement!(value::StaticReserveNonSpinning, val) = value.requirement = val
 """Set [`StaticReserveNonSpinning`](@ref) `ext`."""
 set_ext!(value::StaticReserveNonSpinning, val) = value.ext = val
-"""Set [`StaticReserveNonSpinning`](@ref) `operation_cost`."""
-set_operation_cost!(value::StaticReserveNonSpinning, val) = value.operation_cost = val
 
