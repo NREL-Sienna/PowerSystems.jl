@@ -21,7 +21,7 @@ Supports kwargs to supply formatters for different device types,
 such as `bus_name_formatter` or `gen_name_formatter`.
 
 # Examples
-```julia
+```Julia
 sys = System(
     pm_data, config_path = "ACTIVSg25k_validation.json",
     bus_name_formatter = x->string(x["name"]*"-"*string(x["index"])),
