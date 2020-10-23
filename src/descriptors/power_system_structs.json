@@ -2765,13 +2765,6 @@
           "default": "Dict{String, Any}()"
         },
         {
-          "name": "operation_cost",
-          "null_value": "TwoPartCost(nothing)",
-          "data_type": "Union{Nothing, TwoPartCost}",
-          "default": "nothing",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
-        },
-        {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
@@ -2823,13 +2816,6 @@
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
           "default": "Dict{String, Any}()"
-        },
-        {
-          "name": "operation_cost",
-          "null_value": "TwoPartCost(nothing)",
-          "data_type": "Union{Nothing, TwoPartCost}",
-          "default": "nothing",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
         },
         {
           "name": "internal",
@@ -2997,13 +2983,6 @@
           "default": "InfrastructureSystems.TimeSeriesContainer()"
         },
         {
-          "name": "operation_cost",
-          "null_value": "TwoPartCost(nothing)",
-          "data_type": "Union{Nothing, TwoPartCost}",
-          "default": "nothing",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
-        },
-        {
           "name": "internal",
           "comment": "power system internal reference, do not modify",
           "data_type": "InfrastructureSystemsInternal",
@@ -3058,13 +3037,6 @@
           "null_value": "InfrastructureSystems.TimeSeriesContainer()",
           "data_type": "InfrastructureSystems.TimeSeriesContainer",
           "default": "InfrastructureSystems.TimeSeriesContainer()"
-        },
-        {
-          "name": "operation_cost",
-          "null_value": "TwoPartCost(nothing)",
-          "data_type": "Union{Nothing, TwoPartCost}",
-          "default": "nothing",
-          "comment": "Cost for providing reserves  [`TwoPartCost`](@ref)"
         },
         {
           "name": "internal",
