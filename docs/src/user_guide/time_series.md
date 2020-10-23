@@ -92,7 +92,7 @@ large datasets from overwhelming system memory. If you know that your dataset
 will fit in your computer's memory then you can increase performance by storing
 it in memory. Here is an example of how to do this:
 
-```julia
+```Julia
 sys = System(100.0; time_series_in_memory = true)
 ```
 
@@ -101,7 +101,8 @@ sys = System(100.0; time_series_in_memory = true)
 PowerSystems supports several methods to load time series data (Forecasts or
 StaticTimeSeries) into a System.
 
-- Automated parsing during system construction, this method loads the data from CSV files. Refer to the [parsing documentation](parsing.md).
+- Automated parsing during system construction, this method loads the data from CSV files.
+Refer to the parsing [documentation](@ref parsing_time_series).
 
 - Create directly from data in `TimeSeries.TimeArray` or `DataFrames.DataFrame`
 
@@ -110,7 +111,7 @@ Examples:
 When creating data for `SingleTimeSeries` the user can directly pass a
 `TimeSeries.TimeArray` to the constructor.
 
-```julia
+```Julia
     resolution = Dates.Hour(1)
     dates = range(DateTime("2020-01-01T00:00:00"), step = resolution, length = 24)
     data = TimeArray(dates, ones(24))
@@ -122,7 +123,7 @@ any `AbstractDict` where the key is the initial time of the forecast and the val
 field is the forecast value. The value fields in the dictionary can be regular
 vectors or `TimeSeries.TimeArray`.
 
-```julia
+```Julia
     resolution = Dates.Hour(1)
     data = Dict(
         DateTime("2020-01-01T00:00:00") => 10.0*ones(24),
@@ -135,7 +136,7 @@ vectors or `TimeSeries.TimeArray`.
 look-ahead window. The first column must be the initial time and the rest must
 be the forecast values. The CSV file must have no header in the first row.
 
-```julia
+```Julia
     resolution = Dates.Hour(1)
     forecast = Deterministic("max_active_power", csv_filename, component, resolution)
 ```
@@ -151,7 +152,7 @@ must be passed into the forecast when you create it.
 
 Example:
 
-```julia
+```Julia
     resolution = Dates.Hour(1)
     data = Dict(
         DateTime("2020-01-01T00:00:00") => ones(24),
@@ -177,7 +178,7 @@ value will correspond to 32.5.
 Adding time series data to a system requires a component that is already
 attached to the system. Extending the example above:
 
-```julia
+```Julia
     add_time_series!(sys, component, forecast)
 ```
 
@@ -186,7 +187,7 @@ across devices to avoid duplication. If the same forecast applies to multiple
 components then can call `add_time_series!`, passing the collection of
 components that share the time series data.
 
-```julia
+```Julia
     add_time_series!(sys, components, forecast)
 ```
 
@@ -197,7 +198,7 @@ reference to that data.
 
 Time series instances can be removed from a system like this:
 
-```julia
+```Julia
     remove_time_series!(Deterministic, sys, "max_active_power")
 ```
 
@@ -207,7 +208,7 @@ most time series instances then consider using `clear_time_series!`. It
 will delete the HDF5 file and create a new one. PowerSystems has plans to
 automate this type of workflow.
 
-```julia
+```Julia
     clear_time_series!(sys)
 ```
 
@@ -222,7 +223,7 @@ as it's intended for modeling use, refer to the next section.
 
 ### Get a TimeArray for a SingleTimeSeries
 
-```julia
+```Julia
     ta = get_time_series_array(
         SingleTimeSeries,
         component,
@@ -240,7 +241,7 @@ as it's intended for modeling use, refer to the next section.
 For forecasts, the interfaces assume that modeling code will access one
 forecast window at a time. Here's how to get one window:
 
-```julia
+```Julia
     ta = get_time_series_array(
         Deterministic,
         component,
@@ -260,13 +261,13 @@ aware of how much data is stored.
 **Note**: Unlike the functions above this will only return the exact stored
 data. It will not apply a scaling factor multiplier.
 
-```julia
+```Julia
     forecast = get_time_series(Deterministic, component, "max_active_power")
 ```
 
 You can limit the data returned by specifying `start_time` and `count`.
 
-```julia
+```Julia
     forecast = get_time_series(
         Deterministic,
         component,
@@ -278,13 +279,13 @@ You can limit the data returned by specifying `start_time` and `count`.
 
 Once you have a forecast instance you can access a specific window like this:
 
-```julia
+```Julia
     window = get_window(forecast, DateTime("2020-01-09T00:00:00"))
 ```
 
 or iterate over the look-ahead windows like this:
 
-```julia
+```Julia
     for window in iterate_windows(forecast)
         @show window
     end
@@ -311,7 +312,7 @@ mechanism creates a cache of data and makes it available to the user.
 It is highly recommended that you use this interface for modeling implementations. This is
 particularly relevant for models using large datasets.
 
-```julia
+```Julia
     cache = ForecastCache(Deterministic, component, "max_active_power")
     window1 = get_next_time_series_array(cache)
     window2 = get_next_time_series_array(cache)
@@ -341,7 +342,7 @@ initial time it provides a view into the existing data at incrementing offsets.
 
 Here's an example:
 
-```julia
+```Julia
     # Create static time series data.
     resolution = Dates.Hour(1)
     dates = range(DateTime("2020-01-01T00:00:00"), step = resolution, length = 8760)
@@ -358,7 +359,7 @@ You can also call it on a single component.
 
 You can now access either a `Deterministic` or the original `SingleTimeSeries`.
 
-```julia
+```Julia
     ta_forecast = get_time_series_array(
         Deterministic,
         component,

@@ -1,17 +1,19 @@
-# Constructing a System from raw data
+# Constructing a System from RAW data
 
 ## Supported Formats
+
 - PowerSystems table data (CSV Files)
 - MATPOWER (code copied with permision from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
 - PSS/e RAW Files (code copied with permision from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
 - PSS/e DYR Files
 
-
 ## PowerSystems Table Data
+
 This is a custom format that allows users to define power system component data
 by category and column with custom names, types, and units.
 
 ### Categories
+
 Components for each category must be defined in their own CSV file. The
 following categories are currently supported:
 
@@ -26,6 +28,7 @@ following categories are currently supported:
 These must reside in the directory passed when constructing PowerSystemTableData.
 
 ### Customization
+
 Generate a configuration file (such as `user_descriptors.yaml`) from the
 defaults, which are stored in `src/descriptors/power_system_inputs.json`.
 
@@ -39,8 +42,8 @@ Note that the user-specific customizations are stored in YAML rather than JSON
 to allow for easier editing. The next few sections describe changes you can
 make to this YAML file.  Do not edit the default JSON file.
 
+### Column names
 
-#### Column names
 PowerSystems provides a mapping capability that allows you to keep your own
 column names.
 
@@ -50,24 +53,27 @@ you can change the `custom_name` field under the `generator` category to
 `GEN UID` in your YAML file.
 
 #### Per-unit conversion
+
 PowerSystems defines whether it expects a column value to be per-unit in
 `power_system_inputs.json`. If it expects per-unit but your values are not
 per-unit then you can set `system_per_unit: false` in `user_descriptors.yaml`
 and PowerSystems will automatically convert the values.
 
 #### Unit conversion
+
 PowerSystems provides a limited set of unit conversions. For example, if
 `power_system_inputs.json` indicates that a value's unit is degrees but
 your values are in radians then you can set `unit_conversion: radian` in
 your YAML file.
 
 #### Example file
+
 Refer to
 [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/user_descriptors.yaml)
 for an example.
 
+### Adding Time Series Data (@id parsing_time_series)
 
-### Time series data
 PowerSystems requires a metadata file that maps components to their time series
 data in order to be able to automatically construct time_series from raw data
 files. The following fields are required for each time array:
@@ -113,7 +119,7 @@ own file when constructing PowerSystemTableData.
 
 Here is an example of how to construct a System with all customizations listed on this page.
 
-```julia
+```Julia
 data_dir = "/data/my-data-dir"
 base_power = 100.0
 descriptors = "./user_descriptors.yaml"
@@ -134,7 +140,7 @@ sys = System(data, time_series_in_memory = true)
 The following code will create a System from a MATPOWER or PSS/e file by first
 parsing it with [PowerModels](https://github.com/lanl-ansi/PowerModels.jl).
 
-```julia
+```Julia
 sys = System(PowerSystems.PowerModelsData("./case5.m"))
 ```
 

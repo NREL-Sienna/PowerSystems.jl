@@ -277,7 +277,7 @@ Arguments available for `nlsolve`:
 
 
 ## Examples
-```julia
+```Julia
 solve_powerflow!(sys)
 # Passing NLsolve arguments
 solve_powerflow!(sys, method = :newton)
@@ -310,7 +310,7 @@ Similar to solve_powerflow!(sys) but does not update the system struct with resu
 Returns the results in a dictionary of dataframes.
 
 ## Examples
-```julia
+```Julia
 res = solve_powerflow(sys)
 # Passing NLsolve arguments
 res = solve_powerflow(sys, method = :newton)
