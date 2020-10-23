@@ -30,7 +30,7 @@ jobs:
     - stage: "Cross Package Testing"
       julia: 1.5
       env:
-        job:
+        jobs:
           - PACKAGE=PowerSimulations        
       script:
         - cd $HOME
