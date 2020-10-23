@@ -13,7 +13,7 @@ checksys = false
         nodes_5[i].angle = deg2rad(nodes_5[i].angle)
     end
 
-    # Components with forecasts cannot be added to multiple systems, so clear them on each
+    # Components with time_series cannot be added to multiple systems, so clear them on each
     # test.
 
     sys5 = System(
@@ -35,9 +35,9 @@ checksys = false
     )
     clear_components!(sys5b)
 
-    # GitHub issue #234 - fix forecasts5 in data file, use new format
+    # GitHub issue #234 - fix time_series5 in data file, use new format
     #_sys5b = PowerSystems._System(nodes_5, thermal_generators5(nodes_5), loads5(nodes_5), nothing, battery5(nodes_5),
-    #                              100.0, forecasts5, nothing, nothing)
+    #                              100.0, time_series5, nothing, nothing)
     #sys5b = System(_sys5b)
 
     sys5bh = System(
@@ -54,9 +54,9 @@ checksys = false
 
     # Test Data for 14 Bus
 
-    # GitHub issue #234 - fix forecasts5 in data file, use new format
+    # GitHub issue #234 - fix time_series5 in data file, use new format
     #_sys14 = PowerSystems._System(nodes_14, thermal_generators14, loads14, nothing, nothing,
-    #                            100.0, Dict{Symbol,Vector{<:Forecast}}(),nothing,nothing)
+    #                            100.0, Dict{Symbol,Vector{<:TimeSeriesData}}(),nothing,nothing)
     #sys14 = System(_sys14)
 
     for i in nodes_14
@@ -100,7 +100,8 @@ end
         ps_type in types_to_skip && continue
         obj = ps_type(nothing)
         for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
-            if field_name === :name || field_name === :forecasts
+            field_name == :internal && continue  # no setter
+            if field_name === :name || field_name === :time_series_container
                 func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
                 _func! = getfield(
                     InfrastructureSystems,
@@ -111,7 +112,6 @@ end
                 _func! = getfield(PowerSystems, Symbol("set_" * string(field_name) * "!"))
             end
             val = func(obj)
-            _func!(obj, val)
             @test val isa field_type
             #Test set function for different cases
             if typeof(val) == Float64 || typeof(val) == Int
@@ -140,16 +140,16 @@ end
     dates = collect(initial_time:Dates.Hour(1):Dates.DateTime("2020-01-01T23:00:00"))
     data = collect(1:24)
     ta = TimeSeries.TimeArray(dates, data, [get_name(l)])
-    label = "active_power_flow"
-    forecast = Deterministic(label, ta)
-    add_forecast!(sys, l, forecast)
-    @test get_forecast(Deterministic, l, initial_time, label) isa Deterministic
+    name = "active_power_flow"
+    time_series = SingleTimeSeries(name = name, data = ta)
+    add_time_series!(sys, l, time_series)
+    @test get_time_series(SingleTimeSeries, l, name) isa SingleTimeSeries
     PSY.convert_component!(MonitoredLine, l, sys)
     @test isnothing(get_component(Line, sys, "4"))
     mline = get_component(MonitoredLine, sys, "4")
     @test !isnothing(mline)
     @test get_name(mline) == "4"
-    @test get_forecast(Deterministic, mline, initial_time, label) isa Deterministic
+    @test get_time_series(SingleTimeSeries, mline, name) isa SingleTimeSeries
     @test_throws ErrorException convert_component!(
         Line,
         get_component(MonitoredLine, sys, "4"),
@@ -158,5 +158,5 @@ end
     convert_component!(Line, get_component(MonitoredLine, sys, "4"), sys, force = true)
     line = get_component(Line, sys, "4")
     @test !isnothing(mline)
-    @test get_forecast(Deterministic, line, initial_time, label) isa Deterministic
+    @test get_time_series(SingleTimeSeries, line, name) isa SingleTimeSeries
 end

@@ -139,6 +139,4 @@ set_area!(value::Bus, val) = value.area = val
 set_load_zone!(value::Bus, val) = value.load_zone = val
 """Set [`Bus`](@ref) `ext`."""
 set_ext!(value::Bus, val) = value.ext = val
-"""Set [`Bus`](@ref) `internal`."""
-set_internal!(value::Bus, val) = value.internal = val
 

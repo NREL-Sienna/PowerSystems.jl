@@ -127,7 +127,6 @@ Parses PSS(R)E-style Branch data into a PowerModels-style Dict. "source_id" is
 given by `["I", "J", "CKT"]` in PSS(R)E Branch specification.
 """
 function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-
     pm_data["branch"] = []
     if haskey(pti_data, "BRANCH")
         for (i, branch) in enumerate(pti_data["BRANCH"])
@@ -138,10 +137,12 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["br_r"] = pop!(branch, "R")
             sub_data["br_x"] = pop!(branch, "X")
             sub_data["g_fr"] = pop!(branch, "GI")
-            sub_data["b_fr"] = branch["BI"] == 0.0 && branch["B"] != 0.0 ? branch["B"] / 2 :
+            sub_data["b_fr"] =
+                branch["BI"] == 0.0 && branch["B"] != 0.0 ? branch["B"] / 2 :
                 pop!(branch, "BI")
             sub_data["g_to"] = pop!(branch, "GJ")
-            sub_data["b_to"] = branch["BJ"] == 0.0 && branch["B"] != 0.0 ? branch["B"] / 2 :
+            sub_data["b_to"] =
+                branch["BJ"] == 0.0 && branch["B"] != 0.0 ? branch["B"] / 2 :
                 pop!(branch, "BJ")
             sub_data["rate_a"] = pop!(branch, "RATEA")
             sub_data["rate_b"] = pop!(branch, "RATEB")
@@ -650,7 +651,8 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data = Dict{String, Any}()
 
             # Unit conversions?
-            power_demand = dcline["MDC"] == 1 ? abs(dcline["SETVL"]) :
+            power_demand =
+                dcline["MDC"] == 1 ? abs(dcline["SETVL"]) :
                 dcline["MDC"] == 2 ? abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000) : 0
 
             sub_data["f_bus"] = dcline["IPR"]
@@ -724,9 +726,10 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             # VSC intended to be one or bi-directional?
             sub_data["f_bus"] = pop!(dcside, "IBUS")
             sub_data["t_bus"] = pop!(acside, "IBUS")
-            sub_data["br_status"] = pop!(dcline, "MDC") == 0 ||
-            pop!(dcside, "TYPE") == 0 ||
-            pop!(acside, "TYPE") == 0 ?
+            sub_data["br_status"] =
+                pop!(dcline, "MDC") == 0 ||
+                pop!(dcside, "TYPE") == 0 ||
+                pop!(acside, "TYPE") == 0 ?
                 0 : 1
 
             sub_data["pf"] = 0.0
@@ -738,10 +741,12 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["vf"] = pop!(dcside, "MODE") == 1 ? pop!(dcside, "ACSET") : 1.0
             sub_data["vt"] = pop!(acside, "MODE") == 1 ? pop!(acside, "ACSET") : 1.0
 
-            sub_data["pmaxf"] = dcside["SMAX"] == 0.0 && dcside["IMAX"] == 0.0 ?
+            sub_data["pmaxf"] =
+                dcside["SMAX"] == 0.0 && dcside["IMAX"] == 0.0 ?
                 max(abs(dcside["MAXQ"]), abs(dcside["MINQ"])) :
                 min(pop!(dcside, "IMAX"), pop!(dcside, "SMAX"))
-            sub_data["pmaxt"] = acside["SMAX"] == 0.0 && acside["IMAX"] == 0.0 ?
+            sub_data["pmaxt"] =
+                acside["SMAX"] == 0.0 && acside["IMAX"] == 0.0 ?
                 max(abs(acside["MAXQ"]), abs(acside["MINQ"])) :
                 min(pop!(acside, "IMAX"), pop!(acside, "SMAX"))
             sub_data["pminf"] = -sub_data["pmaxf"]

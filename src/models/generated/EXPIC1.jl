@@ -43,7 +43,7 @@ Generic Proportional/Integral Excitation System
 - `Ta_4::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
 - `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `Tf_1::Float64`: Rate Feedback time constant in s, validation range: `("eps()", 15)`
+- `Tf_1::Float64`: Rate Feedback time constant in s, validation range: `(eps(), 15)`
 - `Tf_2::Float64`: Rate Feedback time constant in s, validation range: `(0, 5)`, action if invalid: `warn`
 - `Efd_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
 - `Ke::Float64`: Exciter constant, validation range: `(0, 1)`, action if invalid: `warn`
@@ -264,6 +264,4 @@ set_saturation_coeffs!(value::EXPIC1, val) = value.saturation_coeffs = val
 set_ext!(value::EXPIC1, val) = value.ext = val
 """Set [`EXPIC1`](@ref) `states_types`."""
 set_states_types!(value::EXPIC1, val) = value.states_types = val
-"""Set [`EXPIC1`](@ref) `internal`."""
-set_internal!(value::EXPIC1, val) = value.internal = val
 

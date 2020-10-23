@@ -56,25 +56,6 @@ function OuterControl(;
     return OuterControl(active_power, reactive_power, ext, states, n_states)
 end
 
-function IS.deserialize(::Type{T}, data::Dict) where {T <: OuterControl}
-    @debug "deserialize OuterControl" T data
-    vals = Dict{Symbol, Any}()
-    for (field_name, field_type) in zip(fieldnames(OuterControl), fieldtypes(OuterControl))
-        val = data[string(field_name)]
-        if field_name === :active_power
-            vals[field_name] = deserialize(T.parameters[1], val)
-        elseif field_name === :reactive_power
-            vals[field_name] = deserialize(T.parameters[2], val)
-        elseif field_name === :states
-            vals[field_name] = [Symbol(x) for x in val]
-        else
-            vals[field_name] = deserialize(field_type, val)
-        end
-    end
-
-    return OuterControl(; vals...)
-end
-
 get_active_power(value::OuterControl) = value.active_power
 get_reactive_power(value::OuterControl) = value.reactive_power
 get_ext(value::OuterControl) = value.ext

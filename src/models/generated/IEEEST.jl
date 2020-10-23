@@ -44,11 +44,11 @@ IEEE Stabilizing Model PSS.
 - `T3::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `T4::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
 - `T5::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
-- `T6::Float64`: Time constant, validation range: `("eps()", "2.0")`, action if invalid: `error`
+- `T6::Float64`: Time constant, validation range: `(eps(), 2.0)`, action if invalid: `error`
 - `Ks::Float64`: Proportional gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ls_lim::Tuple{Float64, Float64}`: PSS output limits for regulator output `(Ls_min, Ls_max)`
-- `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, "1.25")`, action if invalid: `warn`
-- `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, "1.0")`, action if invalid: `warn`
+- `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, 1.25)`, action if invalid: `warn`
+- `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, 1.0)`, action if invalid: `warn`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st filter integration,
@@ -237,6 +237,4 @@ set_Vcl!(value::IEEEST, val) = value.Vcl = val
 set_ext!(value::IEEEST, val) = value.ext = val
 """Set [`IEEEST`](@ref) `states_types`."""
 set_states_types!(value::IEEEST, val) = value.states_types = val
-"""Set [`IEEEST`](@ref) `internal`."""
-set_internal!(value::IEEEST, val) = value.internal = val
 

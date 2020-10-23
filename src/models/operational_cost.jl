@@ -2,21 +2,6 @@ const VarCostArgs = Union{Float64, NTuple{2, Float64}, Vector{NTuple{2, Float64}
 
 abstract type OperationalCost <: DeviceParameter end
 
-function IS.serialize(val::T) where {T <: OperationalCost}
-    return Dict{String, Any}(
-        "value" => IS.serialize_struct(val),
-        IS.TYPE_KEY => string(T),
-    )
-end
-
-function IS.deserialize(::Type{<:OperationalCost}, data::Dict)
-    @debug "deserialize OperationalCost" data
-    return IS.deserialize_struct(
-        get_component_type(data[IS.TYPE_KEY]),
-        data["value"],
-    )
-end
-
 mutable struct VariableCost{T}
     cost::T
 end

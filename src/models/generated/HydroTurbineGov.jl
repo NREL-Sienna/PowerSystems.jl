@@ -27,12 +27,12 @@ Hydro Turbine-Governor.
 # Arguments
 - `R::Float64`: Permanent droop parameter, validation range: `(0, 0.1)`, action if invalid: `warn`
 - `r::Float64`: Temporary Droop, validation range: `(0, 2)`, action if invalid: `warn`
-- `Tr::Float64`: Governor time constant, validation range: `("eps()", 30)`, action if invalid: `error`
-- `Tf::Float64`: Filter Time constant, validation range: `("eps()", 0.1)`
-- `Tg::Float64`: Servo time constant, validation range: `("eps()", 1)`, action if invalid: `error`
-- `VELM::Float64`: gate velocity limit, validation range: `("eps()", 0.3)`, action if invalid: `error`
+- `Tr::Float64`: Governor time constant, validation range: `(eps(), 30)`, action if invalid: `error`
+- `Tf::Float64`: Filter Time constant, validation range: `(eps(), 0.1)`
+- `Tg::Float64`: Servo time constant, validation range: `(eps(), 1)`, action if invalid: `error`
+- `VELM::Float64`: gate velocity limit, validation range: `(eps(), 0.3)`, action if invalid: `error`
 - `gate_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Gate position limits
-- `Tw::Float64`: water time constant, validation range: `("eps()", 3)`, action if invalid: `error`
+- `Tw::Float64`: water time constant, validation range: `(eps(), 3)`, action if invalid: `error`
 - `At::Float64`: Turbine gain, validation range: `(0.8, 1.5)`, action if invalid: `warn`
 - `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -177,6 +177,4 @@ set_P_ref!(value::HydroTurbineGov, val) = value.P_ref = val
 set_ext!(value::HydroTurbineGov, val) = value.ext = val
 """Set [`HydroTurbineGov`](@ref) `states_types`."""
 set_states_types!(value::HydroTurbineGov, val) = value.states_types = val
-"""Set [`HydroTurbineGov`](@ref) `internal`."""
-set_internal!(value::HydroTurbineGov, val) = value.internal = val
 

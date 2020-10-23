@@ -14,12 +14,12 @@ abstract type Windows <: AbstractOS end
 abstract type MacOS <: BSD end
 abstract type Linux <: BSD end
 
-if Sys.iswindows()
-    const os = Windows
+const os = if Sys.iswindows()
+    Windows
 elseif Sys.isapple()
-    const os = MacOS
+    MacOS
 else
-    const os = Linux
+    Linux
 end
 
 abstract type TestData end
@@ -37,7 +37,6 @@ function Base.download(
     branch::String = "master",
     force::Bool = false,
 )
-
     if Sys.iswindows()
         POWERSYSTEMSTESTDATA_URL = "https://github.com/NREL/PowerSystemsTestData/archive/$branch.zip"
     else

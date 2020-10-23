@@ -14,7 +14,6 @@ function orderedlimits(
 end
 
 function getresolution(ts::TimeSeries.TimeArray)
-
     tstamps = TimeSeries.timestamp(ts)
     timediffs = unique([tstamps[ix] - tstamps[ix - 1] for ix in 2:length(tstamps)])
 
@@ -54,7 +53,6 @@ end
 
 """Checks if a PowerSystemDevice has a field or subfield name."""
 function isafield(component::Component, field::Symbol)
-
     function _wrap(t, d = [])
         fn = fieldnames(typeof(t))
         for n in fn

@@ -172,7 +172,7 @@ function _parse_matpower_string(data_string::String)
 
     case = Dict{String, Any}()
 
-    if func_name != nothing
+    if func_name !== nothing
         case["name"] = func_name
     else
         @info(string("no case name found in matpower file.  The file seems to be missing \"function mpc = ...\""))
@@ -680,7 +680,6 @@ function _merge_generic_data!(data::Dict{String, Any})
                     break # out of mp_matrix_names loop
                 end
             end
-
         end
     end
 

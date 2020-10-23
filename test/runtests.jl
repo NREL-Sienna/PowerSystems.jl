@@ -1,5 +1,6 @@
 using Test
 using Logging
+using DataStructures
 using Dates
 using LinearAlgebra
 import TimeSeries
@@ -7,7 +8,6 @@ import InteractiveUtils
 import JSON3
 
 import InfrastructureSystems
-import InfrastructureSystems: Deterministic, Probabilistic, ScenarioBased, Forecast
 const IS = InfrastructureSystems
 using PowerSystems
 import PowerSystems: PowerSystemTableData
@@ -24,7 +24,7 @@ download(TestData; branch = "master")
 
 BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
 DATA_DIR = joinpath(BASE_DIR, "data")
-FORECASTS_DIR = joinpath(DATA_DIR, "forecasts")
+TIME_SERIES_DIR = joinpath(DATA_DIR, "forecasts")
 MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
 PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
 PSSE_DYR_DIR = joinpath(DATA_DIR, "psse_dyr")
@@ -87,7 +87,7 @@ end
 function get_logging_level(env_name::String, default)
     level = get(ENV, env_name, default)
     log_level = get(LOG_LEVELS, level, nothing)
-    if log_level == nothing
+    if log_level === nothing
         error("Invalid log level $level: Supported levels: $(values(LOG_LEVELS))")
     end
 

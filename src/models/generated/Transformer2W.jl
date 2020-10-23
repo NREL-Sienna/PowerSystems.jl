@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         rate::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -32,7 +32,7 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Transformer2W <: ACBranch
@@ -51,18 +51,18 @@ mutable struct Transformer2W <: ACBranch
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, forecasts, internal, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -79,7 +79,7 @@ function Transformer2W(::Nothing)
         rate=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -106,7 +106,7 @@ get_services(value::Transformer2W) = value.services
 """Get [`Transformer2W`](@ref) `ext`."""
 get_ext(value::Transformer2W) = value.ext
 
-InfrastructureSystems.get_forecasts(value::Transformer2W) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::Transformer2W) = value.time_series_container
 """Get [`Transformer2W`](@ref) `internal`."""
 get_internal(value::Transformer2W) = value.internal
 
@@ -133,7 +133,5 @@ set_services!(value::Transformer2W, val) = value.services = val
 """Set [`Transformer2W`](@ref) `ext`."""
 set_ext!(value::Transformer2W, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::Transformer2W, val) = value.forecasts = val
-"""Set [`Transformer2W`](@ref) `internal`."""
-set_internal!(value::Transformer2W, val) = value.internal = val
+InfrastructureSystems.set_time_series_container!(value::Transformer2W, val) = value.time_series_container = val
 

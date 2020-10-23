@@ -112,11 +112,11 @@ function Base.eltype(iter::PowerNetworkMatrixKeys)
 end
 function Base.iterate(iter::PowerNetworkMatrixKeys)
     next = iterate(iter.product_iter)
-    return next == nothing ? nothing : (PowerNetworkMatrixKey(next[1]), next[2])
+    return next === nothing ? nothing : (PowerNetworkMatrixKey(next[1]), next[2])
 end
 function Base.iterate(iter::PowerNetworkMatrixKeys, state)
     next = iterate(iter.product_iter, state)
-    return next == nothing ? nothing : (PowerNetworkMatrixKey(next[1]), next[2])
+    return next === nothing ? nothing : (PowerNetworkMatrixKey(next[1]), next[2])
 end
 function Base.keys(a::PowerNetworkMatrix)
     return PowerNetworkMatrixKeys(Base.Iterators.product(a.axes...))

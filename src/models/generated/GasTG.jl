@@ -22,10 +22,10 @@ This file is auto-generated. Do not edit.
 Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 
 # Arguments
-- `R::Float64`: Speed droop parameter, validation range: `("eps()", 0.1)`
-- `T1::Float64`: Governor time constant in s, validation range: `("eps()", 0.5)`
-- `T2::Float64`: Combustion chamber time constant, validation range: `("eps()", 0.5)`
-- `T3::Float64`: Load limit time constant (exhaust gas measurement time), validation range: `("eps()", 5)`
+- `R::Float64`: Speed droop parameter, validation range: `(eps(), 0.1)`
+- `T1::Float64`: Governor time constant in s, validation range: `(eps(), 0.5)`
+- `T2::Float64`: Combustion chamber time constant, validation range: `(eps(), 0.5)`
+- `T3::Float64`: Load limit time constant (exhaust gas measurement time), validation range: `(eps(), 5)`
 - `AT::Float64`: Ambient temperature load limit, validation range: `(0, 1)`
 - `Kt::Float64`: Load limit feedback gain, validation range: `(0, 5)`
 - `V_lim::Tuple{Float64, Float64}`: Operational control limits on fuel valve opening (V_min, V_max)
@@ -148,6 +148,4 @@ set_P_ref!(value::GasTG, val) = value.P_ref = val
 set_ext!(value::GasTG, val) = value.ext = val
 """Set [`GasTG`](@ref) `states_types`."""
 set_states_types!(value::GasTG, val) = value.states_types = val
-"""Set [`GasTG`](@ref) `internal`."""
-set_internal!(value::GasTG, val) = value.internal = val
 

@@ -61,6 +61,4 @@ get_internal(value::FixedDCSource) = value.internal
 set_voltage!(value::FixedDCSource, val) = value.voltage = val
 """Set [`FixedDCSource`](@ref) `ext`."""
 set_ext!(value::FixedDCSource, val) = value.ext = val
-"""Set [`FixedDCSource`](@ref) `internal`."""
-set_internal!(value::FixedDCSource, val) = value.internal = val
 

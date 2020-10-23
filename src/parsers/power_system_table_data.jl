@@ -40,10 +40,10 @@ function PowerSystemTableData(
     end
     base_power = get(data, "base_power", DEFAULT_BASE_MVA)
 
-    for (label, category) in categories
-        val = get(data, label, nothing)
+    for (name, category) in categories
+        val = get(data, name, nothing)
         if isnothing(val)
-            @debug "key '$label' not found in input data, set to nothing"
+            @debug "key '$name' not found in input data, set to nothing"
         else
             category_to_df[category] = val
         end
@@ -121,11 +121,11 @@ function PowerSystemTableData(
     encountered_files = 0
     for d_file in files
         try
-            if match(REGEX_IS_FOLDER, d_file) != nothing
+            if match(REGEX_IS_FOLDER, d_file) !== nothing
                 @info "Parsing csv files in $d_file ..."
                 d_file_data = Dict{String, Any}()
                 for file in readdir(joinpath(directory, d_file))
-                    if match(REGEX_DEVICE_TYPE, file) != nothing
+                    if match(REGEX_DEVICE_TYPE, file) !== nothing
                         @info "Parsing csv data in $file ..."
                         encountered_files += 1
                         fpath = joinpath(directory, d_file, file)
@@ -139,7 +139,7 @@ function PowerSystemTableData(
                     @info "Successfully parsed $d_file"
                 end
 
-            elseif match(REGEX_DEVICE_TYPE, d_file) != nothing
+            elseif match(REGEX_DEVICE_TYPE, d_file) !== nothing
                 @info "Parsing csv data in $d_file ..."
                 encountered_files += 1
                 fpath = joinpath(directory, d_file)
@@ -234,20 +234,20 @@ end
 Construct a System from PowerSystemTableData data.
 
 # Arguments
-- `forecast_resolution::Union{DateTime, Nothing}=nothing`: only store forecasts that match
+- `time_series_resolution::Union{DateTime, Nothing}=nothing`: only store time_series that match
   this resolution.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5 file
 - `time_series_directory=nothing`: Store time series data in directory instead of tmpfs
 - `runchecks::Bool=true`: Validate struct fields.
 
-Throws DataFormatError if forecasts with multiple resolutions are detected.
-- A forecast has a different resolution than others.
-- A forecast has a different horizon than others.
+Throws DataFormatError if time_series with multiple resolutions are detected.
+- A time_series has a different resolution than others.
+- A time_series has a different horizon than others.
 
 """
 function System(
     data::PowerSystemTableData;
-    forecast_resolution = nothing,
+    time_series_resolution = nothing,
     time_series_in_memory = false,
     time_series_directory = nothing,
     runchecks = true,
@@ -265,7 +265,7 @@ function System(
     loadzone_csv_parser!(sys, data)
     bus_csv_parser!(sys, data)
 
-    # Services and forecasts must be last.
+    # Services and time_series must be last.
     parsers = (
         (get_dataframe(data, BRANCH::InputCategory), branch_csv_parser!),
         (get_dataframe(data, DC_BRANCH::InputCategory), dc_branch_csv_parser!),
@@ -280,14 +280,11 @@ function System(
         end
     end
 
-    timeseries_metadata_file = get(
-        kwargs,
-        :timeseries_metadata_file,
-        getfield(data, :timeseries_metadata_file, nothing),
-    )
+    timeseries_metadata_file =
+        get(kwargs, :timeseries_metadata_file, getfield(data, :timeseries_metadata_file))
 
     if !isnothing(timeseries_metadata_file)
-        add_forecasts!(sys, timeseries_metadata_file; resolution = forecast_resolution)
+        add_time_series!(sys, timeseries_metadata_file; resolution = time_series_resolution)
     end
 
     check!(sys)
@@ -301,7 +298,8 @@ Add buses and areas to the System from the raw data.
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
         name = bus.name
-        bus_type = isnothing(bus.bus_type) ? nothing :
+        bus_type =
+            isnothing(bus.bus_type) ? nothing :
             get_enum_value(BusTypes.BusType, bus.bus_type)
         voltage_limits = make_minmaxlimits(bus.voltage_limits_min, bus.voltage_limits_max)
 
@@ -566,7 +564,6 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
             base_power = rawload.base_power,
         )
         add_component!(sys, load)
-
     end
 end
 
@@ -662,7 +659,8 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 bus_ids = buses[!, bus_id_column]
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
-                name = gen_type <: Storage ? get_storage_by_generator(data, gen.name).name :
+                name =
+                    gen_type <: Storage ? get_storage_by_generator(data, gen.name).name :
                     gen.name
                 sys_gen = get_component(
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
@@ -850,7 +848,8 @@ function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
     down_time = get(gen, down_column, nothing)
     down_time = typeof(down_time) == String ? tryparse(Float64, down_time) : down_time
 
-    timelimits = isnothing(up_time) && isnothing(down_time) ? nothing :
+    timelimits =
+        isnothing(up_time) && isnothing(down_time) ? nothing :
         (up = up_time, down = down_time)
     return timelimits
 end
@@ -926,7 +925,8 @@ function make_thermal_generator_multistart(
         var_cost =
             VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
     end
-    lag_hot = isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down :
+    lag_hot =
+        isnothing(gen.hot_start_time) ? get_time_limits(thermal_gen).down :
         gen.hot_start_time
     lag_warm = isnothing(gen.warm_start_time) ? 0.0 : gen.warm_start_time
     lag_cold = isnothing(gen.cold_start_time) ? 0.0 : gen.cold_start_time
@@ -1118,7 +1118,7 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     output_active_power_limits = (
         min = storage.output_active_power_limit_min,
         max = isnothing(storage.output_active_power_limit_max) ?
-                  gen.active_power_limits_max : storage.output_active_power_limit_max,
+              gen.active_power_limits_max : storage.output_active_power_limit_max,
     )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
@@ -1263,7 +1263,6 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
             fields,
             _FieldInfo(name, custom_name, pu_conversion, unit_conversion, default_value),
         )
-
     end
 
     return fields

@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -34,7 +34,7 @@ Data Structure for fixed renewable generation technologies.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct RenewableFix <: RenewableGen
@@ -55,18 +55,18 @@ mutable struct RenewableFix <: RenewableGen
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services, dynamic_injector, ext, forecasts, internal, )
+function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover, power_factor, base_power, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -84,7 +84,7 @@ function RenewableFix(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -113,7 +113,7 @@ get_dynamic_injector(value::RenewableFix) = value.dynamic_injector
 """Get [`RenewableFix`](@ref) `ext`."""
 get_ext(value::RenewableFix) = value.ext
 
-InfrastructureSystems.get_forecasts(value::RenewableFix) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::RenewableFix) = value.time_series_container
 """Get [`RenewableFix`](@ref) `internal`."""
 get_internal(value::RenewableFix) = value.internal
 
@@ -140,7 +140,5 @@ set_services!(value::RenewableFix, val) = value.services = val
 """Set [`RenewableFix`](@ref) `ext`."""
 set_ext!(value::RenewableFix, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::RenewableFix, val) = value.forecasts = val
-"""Set [`RenewableFix`](@ref) `internal`."""
-set_internal!(value::RenewableFix, val) = value.internal = val
+InfrastructureSystems.set_time_series_container!(value::RenewableFix, val) = value.time_series_container = val
 

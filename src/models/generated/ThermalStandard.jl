@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         reactive_power_limits::Union{Nothing, Min_Max}
         ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        operation_cost::ThreePartCost
+        operation_cost::OperationalCost
         base_power::Float64
         time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         prime_mover::PrimeMovers.PrimeMover
@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         time_at_status::Float64
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        forecasts::InfrastructureSystems.Forecasts
+        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -39,7 +39,7 @@ Data Structure for thermal generation technologies.
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::ThreePartCost`
+- `operation_cost::OperationalCost`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
@@ -48,7 +48,7 @@ Data Structure for thermal generation technologies.
 - `time_at_status::Float64`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ThermalStandard <: ThermalGen
@@ -64,7 +64,7 @@ mutable struct ThermalStandard <: ThermalGen
     reactive_power_limits::Union{Nothing, Min_Max}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-    operation_cost::ThreePartCost
+    operation_cost::OperationalCost
     "Base power of the unit in MVA"
     base_power::Float64
     "Minimum up and Minimum down time limits in hours"
@@ -79,18 +79,18 @@ mutable struct ThermalStandard <: ThermalGen
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal forecast storage"
-    forecasts::InfrastructureSystems.Forecasts
+    "internal time_series storage"
+    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits=nothing, prime_mover=PrimeMovers.OT, fuel=ThermalFuels.OTHER, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), )
-    ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits, prime_mover, fuel, services, time_at_status, dynamic_injector, ext, forecasts, InfrastructureSystemsInternal(), )
+function ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits=nothing, prime_mover=PrimeMovers.OT, fuel=ThermalFuels.OTHER, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits, prime_mover, fuel, services, time_at_status, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits=nothing, prime_mover=PrimeMovers.OT, fuel=ThermalFuels.OTHER, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), forecasts=InfrastructureSystems.Forecasts(), internal=InfrastructureSystemsInternal(), )
-    ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits, prime_mover, fuel, services, time_at_status, dynamic_injector, ext, forecasts, internal, )
+function ThermalStandard(; name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits=nothing, prime_mover=PrimeMovers.OT, fuel=ThermalFuels.OTHER, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits, prime_mover, fuel, services, time_at_status, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -115,7 +115,7 @@ function ThermalStandard(::Nothing)
         time_at_status=INFINITE_TIME,
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        forecasts=InfrastructureSystems.Forecasts(),
+        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -158,7 +158,7 @@ get_dynamic_injector(value::ThermalStandard) = value.dynamic_injector
 """Get [`ThermalStandard`](@ref) `ext`."""
 get_ext(value::ThermalStandard) = value.ext
 
-InfrastructureSystems.get_forecasts(value::ThermalStandard) = value.forecasts
+InfrastructureSystems.get_time_series_container(value::ThermalStandard) = value.time_series_container
 """Get [`ThermalStandard`](@ref) `internal`."""
 get_internal(value::ThermalStandard) = value.internal
 
@@ -199,7 +199,5 @@ set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 """Set [`ThermalStandard`](@ref) `ext`."""
 set_ext!(value::ThermalStandard, val) = value.ext = val
 
-InfrastructureSystems.set_forecasts!(value::ThermalStandard, val) = value.forecasts = val
-"""Set [`ThermalStandard`](@ref) `internal`."""
-set_internal!(value::ThermalStandard, val) = value.internal = val
+InfrastructureSystems.set_time_series_container!(value::ThermalStandard, val) = value.time_series_container = val
 
