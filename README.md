@@ -1,4 +1,4 @@
-# PowerSystems
+# PowerSystems.jl
 
 [![Build Status](https://travis-ci.com/NREL-SIIP/PowerSystems.jl.svg?branch=master)](https://travis-ci.com/NREL-SIIP/PowerSystems.jl)
 [![codecov](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl)
@@ -26,23 +26,6 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
  - MATPOWER CaseFormat
  - PSS/e - PTI Format
  - [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) table data format
-
-## Installation
-
-You can install it by typing
-
-```julia
-julia> ] add PowerSystems
-```
-
-## Usage
-
-Once installed, the `PowerSystems` package can by used by typing
-
-```julia
-using PowerSystems
-```
-
 
 ## Development
 
