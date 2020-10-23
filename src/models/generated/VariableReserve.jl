@@ -9,7 +9,6 @@ This file is auto-generated. Do not edit.
         requirement::Float64
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
-        operation_cost::Union{Nothing, TwoPartCost}
         internal::InfrastructureSystemsInternal
     end
 
@@ -22,7 +21,6 @@ Data Structure for the procurement products for system simulations.
 - `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `operation_cost::Union{Nothing, TwoPartCost}`: Cost for providing reserves  [`TwoPartCost`](@ref)
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
@@ -35,18 +33,16 @@ mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "Cost for providing reserves  [`TwoPartCost`](@ref)"
-    operation_cost::Union{Nothing, TwoPartCost}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function VariableReserve{T}(name, available, time_frame, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), operation_cost=nothing, ) where T <: ReserveDirection
-    VariableReserve{T}(name, available, time_frame, requirement, ext, time_series_container, operation_cost, InfrastructureSystemsInternal(), )
+function VariableReserve{T}(name, available, time_frame, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, available, time_frame, requirement, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserve{T}(; name, available, time_frame, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), operation_cost=nothing, internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
-    VariableReserve{T}(name, available, time_frame, requirement, ext, time_series_container, operation_cost, internal, )
+function VariableReserve{T}(; name, available, time_frame, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, available, time_frame, requirement, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -58,7 +54,6 @@ function VariableReserve{T}(::Nothing) where T <: ReserveDirection
         requirement=0.0,
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        operation_cost=TwoPartCost(nothing),
     )
 end
 
@@ -74,8 +69,6 @@ get_requirement(value::VariableReserve) = value.requirement
 get_ext(value::VariableReserve) = value.ext
 
 InfrastructureSystems.get_time_series_container(value::VariableReserve) = value.time_series_container
-"""Get [`VariableReserve`](@ref) `operation_cost`."""
-get_operation_cost(value::VariableReserve) = value.operation_cost
 """Get [`VariableReserve`](@ref) `internal`."""
 get_internal(value::VariableReserve) = value.internal
 
@@ -91,6 +84,4 @@ set_requirement!(value::VariableReserve, val) = value.requirement = val
 set_ext!(value::VariableReserve, val) = value.ext = val
 
 InfrastructureSystems.set_time_series_container!(value::VariableReserve, val) = value.time_series_container = val
-"""Set [`VariableReserve`](@ref) `operation_cost`."""
-set_operation_cost!(value::VariableReserve, val) = value.operation_cost = val
 
