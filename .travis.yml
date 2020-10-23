@@ -26,6 +26,16 @@ jobs:
   allow_failures:
     - julia: nightly
     - os: osx
+  include:
+    - stage: "Cross Package Testing"
+      julia: 1.5
+      env:
+        PACKAGE=PowerSimulations
+      script:
+        - cd $HOME
+        - julia -e 'const PKG_FOLDER = ENV["TRAVIS_BUILD_DIR"]; using Pkg; Pkg.develop(PackageSpec(path=PKG_FOLDER))'
+        - julia -e 'const PACKAGE = ENV["PACKAGE"]; using Pkg; Pkg.develop(PACKAGE); Pkg.instantiate(); Pkg.test(PACKAGE)'
+      after_success: skip
 after_success: julia -e '
   using Pkg;
   Pkg.add("Coverage");
