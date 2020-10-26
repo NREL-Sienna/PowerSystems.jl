@@ -165,6 +165,7 @@ export Reserve
 export ReserveDirection
 export ReserveUp
 export ReserveDown
+export ReserveSymmetric
 export StaticReserve
 export VariableReserve
 export AGC
