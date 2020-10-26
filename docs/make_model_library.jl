@@ -28,6 +28,7 @@ function _write_first_level_markdown(c::String)
                     Pages   = ["generated/$(c).jl"]
                     Order = [:type, :function]
                     Public = true
+                    Private = false
                     ```
                     """,
                 )

@@ -4,6 +4,8 @@
 CurrentModule = PowerSystems
 ```
 
+## Overview
+
 `PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package that provides a rigorous
 data model using Julia structures to enable power systems modeling. `PowerSystems.jl` is
 agnostic to a specific mathematical model and can be used for many model categories.
@@ -34,13 +36,10 @@ use `PowerSystems.jl` to develop data sets.
 to exploit `PowerSystems.jl` features to produce custom data sets.
 
 - **Advanced Developers**: Users that want to add new core functionalities or fix bugs in
-the core capabilties of `PowerSystems.jl`. This user should also
-check the documentation in [`InfrastructureSystems.jl`](https://github.com/NREL-SIIP/InfrastructureSystems.jl).
+the core capabilties of `PowerSystems.jl`.
 
 `PowerSystems.jl` is an active project under development, and we welcome your feedback,
 suggestions, and bug reports.
-
-Extended examples of use can be found in [SIIP-Examples PowerSystems](https://github.com/NREL-SIIP/SIIPExamples.jl/tree/master/notebook/PowerSystems_examples)
 
 ## Installation
 
