@@ -1,13 +1,17 @@
+""" Supertype for all generation technologies"""
 abstract type Generator <: StaticInjection end
 const Generators = Array{<:Generator, 1}
 
+""" Supertype for all Hydropower generation technologies"""
 abstract type HydroGen <: Generator end
 
 """
-Abstract Type to represent renewable generation devices. Requires the implementation of get_rating
-and get_power_factor methods
+Supertype for all renewable generation technologies
+Requires the implementation of `get_rating`and `get_power_factor` methods
 """
 abstract type RenewableGen <: Generator end
+
+""" Supertype for all Thermal generation technologies"""
 abstract type ThermalGen <: Generator end
 
 function IS.get_limits(

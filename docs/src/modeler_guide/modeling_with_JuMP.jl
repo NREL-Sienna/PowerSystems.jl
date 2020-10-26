@@ -1,13 +1,26 @@
 # # Modeling with JuMP
 
+# This page shows a minimal example of `PowerSystems.jl` used to develop and Economic Dispatch
+# model. The code  shows the stages to develop modeling code
+#
+# 1. Make the data set from power flow and time series data,
+# 2. Serialize the data,
+# 3. Pass the data and algorithm to the model.
+
+# One of the main uses of ``PowerSystems.jl` is not having re-run the data generatio for every
+# model execution. The model code shows an example of populating the constraints and cost
+# functions using accessor functions inside the model function. The example concludes by
+# reading the data created earlier and passing the algorithm with the data.
+
 using PowerSystems
+const PSY = PowerSystems
 using JuMP
 using Ipopt
 
 DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd())
-system_data = System(joinpath(DATA_DIR, "5bus_ts/case5_re.m"))
-add_time_series!(system, joinpath(DATA_DIR,"5bus_ts/timeseries_pointers_da.json"))
-to_json(system, "system_data.json")
+system_data = System(joinpath(DATA_DIR, "matpower/case5_re.m"))
+add_time_series!(system_data, joinpath(DATA_DIR,"forecasts/5bus_ts/timeseries_pointers_da.json"))
+to_json(system_data, "system_data.json")
 
 
 function ed_model(system::System, optimizer)

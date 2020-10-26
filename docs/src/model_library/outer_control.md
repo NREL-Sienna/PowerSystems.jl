@@ -7,6 +7,7 @@ Modules = [PowerSystems]
 Pages   = ["/OuterControl.jl"]
 Order = [:type, :function]
 Public = true
+Private = false
 ```
 
 ### Virtual Inertia
@@ -16,6 +17,7 @@ Modules = [PowerSystems]
 Pages   = ["generated/VirtualInertia.jl"]
 Order = [:type, :function]
 Public = true
+Private = false
 ```
 
 ### Reactive Power Droop
@@ -25,4 +27,5 @@ Modules = [PowerSystems]
 Pages   = ["generated/ReactivePowerDroop.jl"]
 Order = [:type, :function]
 Public = true
+Private = false
 ```

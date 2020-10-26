@@ -14,29 +14,25 @@ agnostic to a specific mathematical model and can be used for many model categor
 for electric energy systems modeling. This package serves two purposes:
 
 1. It facilitates the development and open sharing of large data sets for Power Systems modeling
-2. It provides a data model that imposes discipline on model specification, addressing the challenge
-of design and terminology choices when sharing code and data.
+2. It provides a data model that imposes discipline on model specification, addressing the challenge of design and terminology choices when sharing code and data.
 
 The main features include:
 
 - Comprehensive and extensible library of data structures for electric systems modeling.
 - Large scale data set development tools based on common text based data formats
- (PSS/e `.raw` and `.dyr`, and `MATPOWER`) and configurable tabular data (e.g. CSV)
- parsing capabilities.
+  (PSS/e `.raw` and `.dyr`, and `MATPOWER`) and configurable tabular data (e.g. CSV)
+  parsing capabilities.
 - Optimized container for component data and time series supporting serialization to
-portable file formats and configurable validation routines
+  portable file formats and configurable validation routines
 
 `PowerSystems.jl` documentation and code are organized according to the needs of different
 users depending on their skillset and requirements. In broad terms there are three categories:
 
-- **Modeler**: Users that want to run a particular analysis or experiment and
-use `PowerSystems.jl` to develop data sets.
+- **Modeler**: Users that want to run a particular analysis or experiment and use `PowerSystems.jl` to develop data sets.
 
-- **Model Developer**: Users that want to develop custom components and structs in order
-to exploit `PowerSystems.jl` features to produce custom data sets.
+- **Model Developer**: Users that want to develop custom components and structs in order to exploit `PowerSystems.jl` features to produce custom data sets.
 
-- **Advanced Developers**: Users that want to add new core functionalities or fix bugs in
-the core capabilties of `PowerSystems.jl`.
+- **Advanced Developers**: Users that want to add new core functionalities or fix bugs in the core capabilties of `PowerSystems.jl`.
 
 `PowerSystems.jl` is an active project under development, and we welcome your feedback,
 suggestions, and bug reports.
@@ -66,7 +62,7 @@ Pages = [
     "modeler/parsing.md",
     "modeler/data.md"
 ]
-Depth = 3
+Depth = 1
 ```
 
 ------------

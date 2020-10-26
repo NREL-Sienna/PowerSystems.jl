@@ -10,26 +10,29 @@ include(joinpath(@__DIR__, "make_model_library.jl"))
 pages = OrderedDict(
         "Welcome Page" => "index.md",
         "Tutorials" =>  "tutorials/intro_page.md",
-        "User Guide Reference" => Any[
-            "user_guide_reference/system.md",
-            "user_guide_reference/type_structure.md",
+        "User Guide" => Any[
+            "user_guide/quick_start_guide.md",
+            "user_guide/type_structure.md",
+            "user_guide/system.md",
         ],
-        "Modeler Reference" => Any[
-            "modeler_reference/time_series.md",
-            "modeler_reference/parsing.md",
-            "modeler_reference/data.md",
-            "modeler_reference/example_dynamic_data.md"
-        ],
-        "Model Developer Reference" => Any[
-            "Extending Parsing" => "model_developer_reference/extending_parsing.md",
-            "Adding Types" => "model_developer_reference/adding_custom_types.md",
-        ],
-        "Code Base Developer Reference" => Any[
-            "Developer Guide" => "code_base_developer_reference/developer.md",
-            "Developer Guide" => "code_base_developer_reference/adding_new_types.md",
-        ],
+        "Modeler Guide" =>
+            Any[
+            "modeler_guide/data.md",
+            "modeler_guide/time_series.md",
+            "modeler_guide/parsing.md",
+            "modeler_guide/example_dynamic_data.md"
+            ],
+        "Model Developer Guide" =>
+            Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
+            "Adding Types" => "model_developer_guide/adding_custom_types.md",
+            ],
+            "Code Base Developer Guide" =>
+            Any["Developer Guide" => "code_base_developer_guide/developer.md",
+            "Adding New Types" => "code_base_developer_guide/adding_new_types.md",
+            ],
         "Model Library" => Any[],
-        "Internal API" => "api/internal.md"
+        "Public API Reference" => "api/public.md",
+        "Internal API Reference" => "api/internal.md"
 )
 
 pages["Model Library"] = make_model_library(
@@ -60,11 +63,11 @@ pages["Model Library"] = make_model_library(
 # section name should be the name of the file for instance network_matrices.jl -> Network Matrices
 julia_file_filter = x -> occursin(".jl", x)
 folders = Dict(
-    "User Guide Reference" => filter(julia_file_filter, readdir("docs/src/user_guide_reference")),
+    "User Guide" => filter(julia_file_filter, readdir("docs/src/user_guide")),
     "Model Library" => filter(julia_file_filter, readdir("docs/src/model_library")),
-    "Modeler Reference" => filter(julia_file_filter, readdir("docs/src/modeler_reference")),
-    "Model Developer Reference" => filter(julia_file_filter, readdir("docs/src/model_developer_reference")),
-    "Code Base Developer Reference" => filter(julia_file_filter, readdir("docs/src/code_base_developer_reference")),
+    "Modeler Guide" => filter(julia_file_filter, readdir("docs/src/modeler_guide")),
+    "Model Developer Guide" => filter(julia_file_filter, readdir("docs/src/model_developer_guide")),
+    "Code Base Developer Guide" => filter(julia_file_filter, readdir("docs/src/code_base_developer_guide")),
 )
 
 for (section, folder) in folders
