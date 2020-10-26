@@ -6,11 +6,3 @@
 
 # The power flow solver uses [NLsolve.jl](https://github.com/JuliaNLSolvers/NLsolve.jl) under
 # the hood and takes any keyword argument accepted by NLsolve
-
-
-
-# ```@autodocs
-# Modules = [PowerSystems]
-# Pages = ["power_flow.jl"]
-# Public = true
-# ```

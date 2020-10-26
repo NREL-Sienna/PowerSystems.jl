@@ -25,7 +25,7 @@ The basic idea is that you include the existing type within your struct and
 then use a macro to automatically forward specific methods to that instance.
 
 A few PowerSystems structs use the macro `InfrastructureSystems.@forward` to
-do this. Refer to the struct `RoundRotorQuadratic` for an example of how to
+do this. Refer to the struct [`RoundRotorQuadratic`](@ref) for an example of how to
 use this.
 
 ## Custom Rules
@@ -59,17 +59,14 @@ supertype of your type.
 Note that you can call the helper functions `is_attached(component, system)`
 and `throw_if_not_attached(component, system)`.
 
-## JSON Serialization
+### Struct Requirements for Serialization of custom components
 
-PowerSystems provides functionality to serialize an entire system to a JSON
-file and then deserialize it back to a system. The main benefit is that
-deserializing is significantly faster than reconstructing the system from raw
-data files.
+One key feature of `PowerSystems.jl` is the serialization capabilities. Supporting
+serialization and de-serialization of custom components requires the implementation of
+several methods. The serialization code converts structs to dictionaries where the struct
+fields become dictionary keys.
 
-### Struct Requirements for Serialization
-
-The serialization code converts structs to dictionaries where the struct fields
-become dictionary keys. The code imposes these requirements:
+The code imposes these requirements:
 
 1. The InfrastructureSystems methods `serialize` and `deserialize` must be
    implemented for the struct. InfrastructureSystems implements a method that
@@ -92,6 +89,8 @@ become dictionary keys. The code imposes these requirements:
 Refer to `InfrastructureSystems.serialize_struct` for example behavior. New
 structs that are not subtypes of `InfrastructureSystemsType` may be able to
 call it directly.
+
+### Adding `PowerSystems.jl` as a dependency in a modeling package
 
 ```julia
 module MyModelingModule

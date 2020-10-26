@@ -1,9 +1,12 @@
+"""
+Abstract type to represent the structure and interconnectedness of the system
+"""
 abstract type Topology <: Component end
 
 """
 Represents a geographical region of system components.
 
-All subtypes must implement the method get_aggregation_topology_accessor.
+All subtypes must implement the method `get_aggregation_topology_accessor`.
 """
 abstract type AggregationTopology <: Topology end
 

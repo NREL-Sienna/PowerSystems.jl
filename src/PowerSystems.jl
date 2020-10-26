@@ -391,7 +391,8 @@ Subtypes should call InfrastructureSystemsInternal() by default, but also must
 provide a constructor that allows existing values to be deserialized.
 """
 abstract type Component <: IS.InfrastructureSystemsComponent end
-# supertype for "devices" (bus, line, etc.)
+
+""" Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end
 
 include("common.jl")
