@@ -1,57 +1,59 @@
 @testset "Test add/remove services" begin
-    sys = System(100)
-    devices = []
-    for i in 1:2
-        bus = Bus(nothing)
-        bus.name = "bus" * string(i)
-        bus.number = i
-        add_component!(sys, bus)
-        gen = ThermalStandard(nothing)
-        gen.bus = bus
-        gen.name = "gen" * string(i)
-        add_component!(sys, gen)
-        push!(devices, gen)
-    end
+    @testset "Case: $direction" for direction in [ReserveDown; ReserveUp; ReserveSymmetric]
+        sys = System(100)
+        devices = []
+        for i in 1:2
+            bus = Bus(nothing)
+            bus.name = "bus" * string(i)
+            bus.number = i
+            add_component!(sys, bus)
+            gen = ThermalStandard(nothing)
+            gen.bus = bus
+            gen.name = "gen" * string(i)
+            add_component!(sys, gen)
+            push!(devices, gen)
+        end
 
-    service = StaticReserve{ReserveDown}(nothing)
-    add_service!(sys, service, devices)
+        service = StaticReserve{direction}(nothing)
+        add_service!(sys, service, devices)
 
-    for device in devices
-        services = get_services(device)
+        for device in devices
+            services = get_services(device)
+            @test length(services) == 1
+            @test services[1] isa Service
+            @test services[1] == service
+        end
+
+        services = collect(get_components(Service, sys))
         @test length(services) == 1
-        @test services[1] isa Service
         @test services[1] == service
+
+        remove_component!(sys, service)
+
+        for device in devices
+            @test length(get_services(device)) == 0
+        end
+
+        sys = System(100)
+        devices = []
+        for i in 1:2
+            bus = Bus(nothing)
+            bus.name = "bus" * string(i)
+            bus.number = i
+            add_component!(sys, bus)
+            gen = ThermalStandard(nothing)
+            gen.bus = bus
+            gen.name = "gen" * string(i)
+            add_component!(sys, gen)
+            push!(devices, gen)
+        end
+
+        service = StaticReserve{direction}(nothing)
+        add_component!(sys, service)
+        test_device = get_component(ThermalStandard, sys, "gen1")
+        add_service!(test_device, service, sys)
+        @test PowerSystems.has_service(test_device, service)
     end
-
-    services = collect(get_components(Service, sys))
-    @test length(services) == 1
-    @test services[1] == service
-
-    remove_component!(sys, service)
-
-    for device in devices
-        @test length(get_services(device)) == 0
-    end
-
-    sys = System(100)
-    devices = []
-    for i in 1:2
-        bus = Bus(nothing)
-        bus.name = "bus" * string(i)
-        bus.number = i
-        add_component!(sys, bus)
-        gen = ThermalStandard(nothing)
-        gen.bus = bus
-        gen.name = "gen" * string(i)
-        add_component!(sys, gen)
-        push!(devices, gen)
-    end
-
-    service = StaticReserve{ReserveDown}(nothing)
-    add_component!(sys, service)
-    test_device = get_component(ThermalStandard, sys, "gen1")
-    add_service!(test_device, service, sys)
-    @test PowerSystems.has_service(test_device, service)
 end
 
 @testset "Test add_component Service" begin
