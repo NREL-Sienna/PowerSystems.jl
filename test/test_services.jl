@@ -260,7 +260,7 @@ end
         end
     end
 
-    @test 10 == actual_count
+    @test 13 == actual_count
 end
 
 @testset "Test AGC Device and Regulation Services" begin
