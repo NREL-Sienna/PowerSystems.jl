@@ -1,4 +1,4 @@
-# Type Structure
+# [Type Structure](@id type_structure)
 
 The abstract hierarchy enables categorization of the devices by their operational
 characteristics and modeling requirements.
