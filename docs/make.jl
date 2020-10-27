@@ -13,22 +13,20 @@ include(joinpath(@__DIR__, "make_model_library.jl"))
 
 pages = OrderedDict(
         "Welcome Page" => "index.md",
+        "Quick Start Guide" => "quick_start_guide.md",
         "Tutorials" =>  "tutorials/intro_page.md",
-        "User Guide" => Any[
-            "user_guide/quick_start_guide.md",
-            "user_guide/type_structure.md",
-            "user_guide/system.md",
-        ],
         "Modeler Guide" =>
             Any[
-            "modeler_guide/data.md",
-            "modeler_guide/time_series.md",
+            "modeler_guide/type_structure.md",
+            "modeler_guide/system.md",
             "modeler_guide/parsing.md",
-            "modeler_guide/example_dynamic_data.md"
+            "modeler_guide/time_series.md",
+            "modeler_guide/example_dynamic_data.md",
+            "modeler_guide/data.md",
             ],
         "Model Developer Guide" =>
             Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
-            "Adding Types" => "model_developer_guide/adding_custom_types.md",
+                "Adding Types" => "model_developer_guide/adding_custom_types.md",
             ],
             "Code Base Developer Guide" =>
             Any["Developer Guide" => "code_base_developer_guide/developer.md",
@@ -68,7 +66,6 @@ pages["Model Library"] = make_model_library(
 # section name should be the name of the file for instance network_matrices.jl -> Network Matrices
 julia_file_filter = x -> occursin(".jl", x)
 folders = Dict(
-    "User Guide" => filter(julia_file_filter, readdir("docs/src/user_guide")),
     "Model Library" => filter(julia_file_filter, readdir("docs/src/model_library")),
     "Modeler Guide" => filter(julia_file_filter, readdir("docs/src/modeler_guide")),
     "Model Developer Guide" => filter(julia_file_filter, readdir("docs/src/model_developer_guide")),
@@ -92,7 +89,7 @@ for (section, folder) in folders
 end
 
 makedocs(
-    modules = [PowerSystems],
+    modules = [PowerSystems, InfrastructureSystems],
     format = Documenter.HTML(prettyurls = haskey(ENV, "GITHUB_ACTIONS"),),
     sitename = "PowerSystems.jl",
     authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",

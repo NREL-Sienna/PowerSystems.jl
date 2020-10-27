@@ -101,12 +101,3 @@ function clear_services!(device::Device)
     services = get_services(device)
     empty!(services)
 end
-
-get_active_power_limits(::T) where {T <: Device} =
-    throw(ArgumentError("get_active_power_limits not implemented for $T"))
-get_reactive_power_limits(::T) where {T <: Device} =
-    throw(ArgumentError("get_reactive_power_limits not implemented for $T"))
-get_rating(::T) where {T <: Device} =
-    throw(ArgumentError("get_rating not implemented for $T"))
-get_power_factor(::T) where {T <: Device} =
-    throw(ArgumentError("get_power_factor not implemented for $T"))
