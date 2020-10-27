@@ -64,3 +64,30 @@ The serialization process stores 3 files
 1. System data file (`*.json` file)
 2. Validation data file (`*.json` file)
 3. Time Series data file (`*.h5` file)
+
+## Reducing REPL printing
+
+By default `PowerSystems.jl` outputs to the REPL all Logging values, this can be overwhealming
+in some cases. Use [`configure_logging`](@ref) to create a logger with your preferences
+(console and/or file, levels, etc.). For more detail refer to [`Logging`](@ref).
+
+**Example**: Set log output to only error messages
+
+```julia
+using PowerSystems
+using Logging
+configure_logging(console_level = Logging.Error)
+```
+
+**Note:** log messages are not automatically flushed to files. Call
+`flush(logger)` to make this happen.
+
+**Example**: Global logger configuration
+
+```julia
+logger = configure_logging(; filename="log.txt")
+@info "hello world"
+flush(logger)
+@error "some error"
+close(logger)
+```
