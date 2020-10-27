@@ -38,7 +38,7 @@ Public = true
 Private = false
 ```
 
-## Network Matrices
+## [Network Matrices](@id net_mat)
 
 ```@autodocs
 Modules = [PowerSystems]
@@ -49,7 +49,7 @@ Private = false
 Public = true
 ```
 
-## PowerFlow
+## [Power Flow](@if pf)
 
 ```@autodocs
 Modules = [PowerSystems]

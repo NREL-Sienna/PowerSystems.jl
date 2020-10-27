@@ -32,8 +32,7 @@ system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
 
 This example function implements a function where the modeler can choose the technology
 by its type and use the different implementations of [`get_max_active_power`](@ref). **Using
-the "dot" access to get a parameter value from a device is actively discouraged, use "getter"
-functions instead**
+the "dot" access to get a parameter value from a device is actively discouraged, use "getter" functions instead**
 
 Refer to [Modeling with JuMP](ref) for a more detailed use of `PowerSystems.jl` to develop
 a model
@@ -71,10 +70,11 @@ installed_capacity(system_data; technology = RenewableGen)
 ## Adding Time Series data to a system
 
 `PowerSystems.jl` provides interfaces to augment the data sets already created. You can also add time series data to a sytem from a CSV file or from several CSV files, more
-details in [`Time Series Data`](@ref).
+details in [`Time Series Data`](@ref). This example implements [`SingleTimeSeries`](@ref)
 
 ```@example generated_quick_start_guide
 using PowerSystems
+using TimeSeries
 using CSV
 const PSY = PowerSystems
 DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd())
@@ -96,15 +96,15 @@ new_renewable = RenewableDispatch(
 
 add_component!(system, new_renewable)
 
-csv_data = CSV.read(joinpath(DATA_DIR,"5bus_ts/gen/Renewable/WIND/da_wind5.csv"))
+csv_data = CSV.read(joinpath(DATA_DIR,"forecasts/5bus_ts/gen/Renewable/WIND/da_wind5.csv"))
 time_series_data_raw = TimeArray(csv_data, timestamp=:TimeStamp)
-forecast = SingleTimeSeries(name = "active_power", data = time_series_data_raw)
+time_series = SingleTimeSeries(name = "active_power", data = time_series_data_raw)
 
 #Add the forecast to the system and component
 add_time_series!(system, new_renewable, forecast)
 
 #Load forecasts from pointers file
-#FORECASTS_DIR = joinpath("src", "5bus_ts")
+#FORECASTS_DIR = joinpath("src", "forecasts/5bus_ts")
 #fname = joinpath(FORECASTS_DIR, "timeseries_pointers_load.json")
 #add_time_series!(system, fname)
 ```

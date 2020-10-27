@@ -72,7 +72,7 @@ Refer to
 [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/user_descriptors.yaml)
 for an example.
 
-### Adding Time Series Data (@id parsing_time_series)
+### [Adding Time Series Data](@id parsing_time_series)
 
 PowerSystems requires a metadata file that maps components to their time series
 data in order to be able to automatically construct time_series from raw data
@@ -119,7 +119,7 @@ own file when constructing PowerSystemTableData.
 
 Here is an example of how to construct a System with all customizations listed on this page.
 
-```Julia
+```julia
 data_dir = "/data/my-data-dir"
 base_power = 100.0
 descriptors = "./user_descriptors.yaml"
@@ -140,7 +140,7 @@ sys = System(data, time_series_in_memory = true)
 The following code will create a System from a MATPOWER or PSS/e file by first
 parsing it with [PowerModels](https://github.com/lanl-ansi/PowerModels.jl).
 
-```Julia
+```julia
 sys = System(PowerSystems.PowerModelsData("./case5.m"))
 ```
 

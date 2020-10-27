@@ -9,7 +9,7 @@ DataFrames. The parsing code includes mapping functionality that allows you to
 use PowerSystems-standard names while letting the users define their own custom
 names.
 
-*Note*:  This assumes that you are familiar with this [Constructing a System from RAW dat](@ref).
+*Note*:  This assumes that you are familiar with this [Constructing a System from RAW data](@ref).
 
 ### Procedure
 
@@ -31,7 +31,7 @@ names.
 
 3. Parse the raw data like in this example:
 
-```Julia
+```julia
 function demo_bus_csv_parser!(data::PowerSystemTableData)
     for bus in iterate_rows(data, BUS::InputCategory)
         @show bus.name, bus.max_active_power, bus.max_reactive_power

@@ -2,7 +2,7 @@
 
 PowerSystems data can be serialized and deserialized in JSON.
 
-```Julia
+```julia
 PowerSystems.to_json(system, "system.json")
 system = System("system.json")
 ```

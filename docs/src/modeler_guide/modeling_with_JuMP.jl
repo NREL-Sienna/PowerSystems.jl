@@ -7,7 +7,7 @@
 # 2. Serialize the data,
 # 3. Pass the data and algorithm to the model.
 
-# One of the main uses of ``PowerSystems.jl` is not having re-run the data generatio for every
+# One of the main uses of ``PowerSystems.jl` is not having re-run the data generation for every
 # model execution. The model code shows an example of populating the constraints and cost
 # functions using accessor functions inside the model function. The example concludes by
 # reading the data created earlier and passing the algorithm with the data.
@@ -24,15 +24,15 @@ to_json(system_data, "system_data.json")
 
 
 function ed_model(system::System, optimizer)
-    m = Model(optimizer)
-    time_periods = 24 #get_time_series_horizon(system)
+    ed_m = Model(optimizer)
+    time_periods = get_time_series_horizon(system)
     thermal_gens_names = get_name.(get_components(ThermalStandard, system))
-    @variable(m, pg[g in thermal_gens_names, t in time_periods] >= 0)
+    @variable(ed_m, pg[g in thermal_gens_names, t in time_periods] >= 0)
 
     for g in get_components(ThermalStandard, system), t in time_periods
         name = get_name(g)
-        @constraint(m, pg[name, t] >= get_active_power_limits(g).min)
-        @constraint(m, pg[name, t] <= get_active_power_limits(g).max)
+        @constraint(ed_m, pg[name, t] >= get_active_power_limits(g).min)
+        @constraint(ed_m, pg[name, t] <= get_active_power_limits(g).max)
     end
 
     net_load = zeros(time_periods)
@@ -45,17 +45,17 @@ function ed_model(system::System, optimizer)
     end
 
     for t in time_periods
-        @constraint(m, sum(pg[g, t] for g in thermal_gens_names) == net_load[t])
+        @constraint(ed_m, sum(pg[g, t] for g in thermal_gens_names) == net_load[t])
     end
 
-    @objective(m, Min, sum(
+    @objective(ed_m, Min, sum(
             pg[get_name(g), t]^2*get_cost(get_variable(get_operation_cost(g)))[1] +
             pg[get_name(g), t]*get_cost(get_variable(get_operation_cost(g)))[2]
             for g in get_components(ThermalGen, system), t in time_periods
                 )
             )
 
-    return optimize!(m)
+    return optimize!(ed_m)
 end
 
 system_data = System("system_data.json")

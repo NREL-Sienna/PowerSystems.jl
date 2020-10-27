@@ -106,7 +106,7 @@ end
 
 """
 Parse dictionary of dictionaries of data (from `_parse_dyr_file`) into a dictionary of struct components.
-The function receives the parsed dictionary and construct a dictionary indexed by bus, that containts a
+The function receives the parsed dictionary and constructs a dictionary indexed by bus, that contains a
 dictionary with each dynamic generator components (indexed via its id).
 
 Each dictionary indexed by id contains a vector with 5 of its components:
@@ -174,7 +174,7 @@ end
 
 """
 Parse dictionary of dictionaries of data (from `_parse_dyr_file`) into a dictionary of struct components.
-The function receives the parsed dictionary and construct a dictionary indexed by bus, that containts a
+The function receives the parsed dictionary and constructs a dictionary indexed by bus, that contains a
 dictionary with each dynamic generator components (indexed via its id).
 
 Each dictionary indexed by id contains a vector with 5 of its components:
@@ -187,7 +187,7 @@ Each dictionary indexed by id contains a vector with 5 of its components:
 Files must be parsed from a .raw file (PTI data format) and a .dyr file.
 
 ## Examples:
-```Julia
+```julia
 raw_file = "Example.raw"
 dyr_file = "Example.dyr"
 sys = System(raw_file, dyr_file)
@@ -212,7 +212,7 @@ Add to a system already created the dynamic components.
 The system should already be parsed from a .raw file.
 
 ## Examples:
-```Julia
+```julia
 dyr_file = "Example.dyr"
 add_dyn_injectors!(sys, dyr_file)
 ```

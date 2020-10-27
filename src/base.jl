@@ -28,7 +28,7 @@ System
 
 A power system defined by fields for base_power, components, and time series.
 
-```Julia
+```julia
 System(base_power)
 System(base_power, buses, components...)
 System(base_power, buses, generators, loads, branches, storage, services; kwargs...)
@@ -272,7 +272,7 @@ Throws InvalidRange if any of the component's field values are outside of define
 range.
 
 # Examples
-```Julia
+```julia
 sys = System(100.0)
 
 # Add a single component.
@@ -528,7 +528,7 @@ end
 Iterates over all components.
 
 # Examples
-```Julia
+```julia
 for component in iterate_components(sys)
     @show component
 end
@@ -623,7 +623,7 @@ Returns an iterator of components. T can be concrete or abstract.
 Call collect on the result if an array is desired.
 
 # Examples
-```Julia
+```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
 iter = PowerSystems.get_components(Generator, sys, x->(PowerSystems.get_available(x)))
@@ -964,7 +964,7 @@ Call `collect` on the result to get an array.
 - `name = nothing`: Only return time series matching this value.
 
 # Examples
-```Julia
+```julia
 for time_series in get_time_series_multiple(sys)
     @show time_series
 end
