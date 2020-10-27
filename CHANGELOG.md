@@ -1,5 +1,7 @@
 # PowerSystems Change Log
 
+## 1.0.0 Announcement
+
 After 1.0.0 release, the manual Changelog will no longer be maintained. Please refer to the [releases page](https://github.com/NREL-SIIP/PowerSystems.jl/releases) to follow up with the changes. 
 
 ## 0.28.0
