@@ -32,7 +32,7 @@ These must reside in the directory passed when constructing PowerSystemTableData
 Generate a configuration file (such as `user_descriptors.yaml`) from the
 defaults, which are stored in `src/descriptors/power_system_inputs.json`.
 
-```
+```python
 python ./bin/generate_config_file.py ./user_descriptors.yaml
 ```
 
@@ -106,7 +106,6 @@ default. You can change this by passing `time_series_directory = X` when you cre
 System. This is required if the time series data is larger than the amount of tmp space
 available.
 
-
 ### Custom construction of generators
 
 PowerSystems supports custom construction of subtypes of the abstract type Generator based
@@ -144,11 +143,12 @@ parsing it with [PowerModels](https://github.com/lanl-ansi/PowerModels.jl).
 sys = System(PowerSystems.PowerModelsData("./case5.m"))
 ```
 
-### PSS/e dyr parsing
+## PSS/e dyr parsing
 
-PSS/e's dynamic model library is extensive, we currently support parsing a limited amount of models out of the box.
+PSS/e's dynamic model library is extensive, we currently support parsing a limited amount
+of models out of the box.
 
-**Machine models**
+### Machine models
 
 - "GENSAE"
 - "GENSAL"
@@ -156,7 +156,7 @@ PSS/e's dynamic model library is extensive, we currently support parsing a limit
 - "GENCLS"
 - "GENROU"
 
-**AVR Models**
+### AVR Models
 
 - "IEEET1"
 - "ESDC1A"
@@ -169,12 +169,12 @@ PSS/e's dynamic model library is extensive, we currently support parsing a limit
 - "SCRX"
 - "ESDC2A"
 
-**Prime Movers**
+### Prime Movers
 
 - "HYGOV"
 - "IEEEG1"
 - "GGOV1"
 
-**PSS models**
+### PSS models
 
 - "IEEEST"

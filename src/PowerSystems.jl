@@ -66,6 +66,7 @@ export InterruptibleLoad
 export Storage
 export GenericBattery
 
+export DynamicComponent
 export DynamicInjection
 export DynamicGenerator
 export DynamicInverter
@@ -275,6 +276,7 @@ export set_area!
 export set_load_zone!
 export TamuSystem
 export PowerModelsData
+export PowerSystemTableData
 export add_dyn_injectors!
 export set_dynamic_injector!
 export get_machine
