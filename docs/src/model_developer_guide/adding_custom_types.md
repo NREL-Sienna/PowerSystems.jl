@@ -96,7 +96,7 @@ call it directly.
 module MyModelingModule
 
 using PowerSystems
-using InfrastructureSystems
+import InfrastructureSystems
 const PSY = PowerSystems
 const IS = InfrastructureSystems
 

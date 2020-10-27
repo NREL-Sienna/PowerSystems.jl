@@ -12,7 +12,7 @@ using PowerSystems
 const PSY = PowerSystems
 
 DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd())
-system_data = System(joinpath(DATA_DIR, "5bus_ts/case5_re.m")
+system = System(joinpath(DATA_DIR, "matpower/case5_re.m"))
 
 for g in get_components(ThermalStandard, system)
     external_field = get_ext(g)

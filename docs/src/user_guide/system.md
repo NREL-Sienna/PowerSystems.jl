@@ -13,20 +13,18 @@ at time of the query, and so avoids overwhelming the memory resources.
 ## Accessing components stored in the system
 
 `PowerSystems.jl` implements a wide variety of methods to search for components to
-aid in the development of models. The code bloc shows an example of
+aid in the development of models. The code block shows an example of
 retrieving components through the type hierarchy with the [`get_components`](@ref)
 function and exploiting the type hierarchy for modeling purposes.
 
-The default implementation of the function [`get_components`](@ref) takes the desired device type (concrete or abstract) and the system and it also accepts filter functions for a more refined search. The container is optimized for iteration over abstract or concrete component types
-as described by the [Type Structure](@ref). Given the potential size of the return,
-`PowerSystems.jl`returns Julia iterators in order to avoid unnecessary memory allocations.
+The default implementation of the function [`get_components`](@ref) takes the desired device type (concrete or abstract) and the system and it also accepts filter functions for a more refined search. The container is optimized for iteration over abstract or concrete component types as described by the [Type Structure](@ref). Given the potential size of the return, `PowerSystems.jl`returns Julia iterators in order to avoid unnecessary memory allocations.
 
 ```@example get_components
 using PowerSystems #hide
 const PSY = PowerSystems #hide
 DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd()) #hide
-system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
-thermal_gens = get_components(ThermalStandard, system_data)
+system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
+thermal_gens = get_components(ThermalStandard, system)
 ```
 
 The most common filtering requirement is by component name and for this case the method [`get_component`](@ref) returns a single component taking the device type, system and name as arguments.
@@ -35,8 +33,8 @@ The most common filtering requirement is by component name and for this case the
 using PowerSystems #hide
 const PSY = PowerSystems #hide
 DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd()) #hide
-system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
-my_thermal_gen = get_component(ThermalStandard, system_data, "323_CC_1")
+system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
+my_thermal_gen = get_component(ThermalStandard, system, "323_CC_1")
 ```
 
 ## JSON Serialization
@@ -52,8 +50,8 @@ The function that serializes the system [`to_json`](@ref) requires the system an
 using PowerSystems #hide
 const PSY = PowerSystems #hide
 DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd()) #hide
-system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
-to_json(system_data, "system.json")
+system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
+to_json(system, "system.json")
 ```
 
 The serialization process stores 3 files

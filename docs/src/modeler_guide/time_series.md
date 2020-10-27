@@ -6,14 +6,14 @@ The bulk of the data in many power system models is time series data, in order t
 organize the data the potential inherent complexity, `PowerSystems.jl` has a set of definitions
 to enable consistent modeling.
 
-- **Resolution**: The period of time between each discrete value in the data, all resolutions
-are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
-has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`
+- **Resolution**: The period of time between each discrete value in the data, all  resolutions
+  are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
+  has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`
 
 - **Static data**: a single column of time series values for a component field
-(such as active power) where each time period is represented by a single value.
-This data commonly is obtained from historical information or the realization of
-a time-varying quantity.
+  (such as active power) where each time period is represented by a single value.
+  This data commonly is obtained from historical information or the realization of
+  a time-varying quantity.
 
 This category of Time Series data usually comes in the following format:
 
@@ -43,47 +43,47 @@ Where a column (or several columns) represent the time stamp associated with the
 time of the forecast, and the columns represent the forecasted values.
 
 - **Interval**: The period of time between forecasts initial times. In `PowerSystems.jl` all
-intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
-simulation, the interval of the time series is usually `Hour(24)`, in the example above, the
-interval is `Hour(1)`.
+  intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
+  simulation, the interval of the time series is usually `Hour(24)`, in the example above, the
+  interval is `Hour(1)`.
 
 - **Horizon**: Is the count of discrete forecasted values, all horizons in `PowerSystems.jl`
-are represented with `Int`. For instance, many Day-ahead markets will have a forecast with a
-horizon 24.
+  are represented with `Int`. For instance, many Day-ahead markets will have a forecast with a
+  horizon 24.
 
 - **Forecast window**: Represents the forecasted value starting at a particular initial time.
 
-Currently `PowerSystems.jl` does not support Forecasts or SingleTimeSeries with dissimilar
-intervals or resolution.
+**Currently `PowerSystems.jl` does not support Forecasts or SingleTimeSeries with dissimilar
+intervals or resolution.**
 
 ## Types
 
-PowerSystems supports two categories of time series data depending on the
+`PowerSystems.jl` supports two categories of time series data depending on the
 process to obtain the data:
 
 - Static data: a single column of time series values for a component field
-(such as active power) where each time period is represented by a single value.
-This data commonly is obtained from historical information or the realization of
-a time-varying quantity.
+  (such as active power) where each time period is represented by a single value.
+  This data commonly is obtained from historical information or the realization of
+  a time-varying quantity.
 - Forecasts: Predicted values of a time-varying quantity that commonly features
-a look-ahead and can have multiple data values representing each time period.
-This data is used in simulation with receding horizons or data generated from
-forecasting algorithms.
+  a look-ahead and can have multiple data values representing each time period.
+  This data is used in simulation with receding horizons or data generated from
+  forecasting algorithms.
 
 ### Static Time Series Data
 
-PowerSystems defines the Julia struct `SingleTimeSeries` to represent this data.
+PowerSystems defines the Julia struct [`SingleTimeSeries`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries) to represent this data.
 
 ### Forecasts
 
 PowerSystems defines the following Julia structs to represent forecasts:
 
-- `Deterministic`: Point forecast without any uncertainty representation.
-- `Probabilistic`: Stores a discretized cumulative distribution functions
-(CDFs) or probability distribution functions (PDFs) at each time step in the
-look-ahead window.
-- `Scenarios`: Stores a set of probable trajectories for forecasted quantity
-with equal probability.
+- [`Deterministic`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Deterministic): Point forecast without any uncertainty representation.
+- [`Probabilistic`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Probabilistic): Stores a discretized cumulative distribution functions
+  (CDFs) or probability distribution functions (PDFs) at each time step in the
+  look-ahead window.
+- [`Scenarios`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Scenarios): Stores a set of probable trajectories for forecasted quantity
+  with equal probability.
 
 ## Storage
 
@@ -92,7 +92,7 @@ large datasets from overwhelming system memory. If you know that your dataset
 will fit in your computer's memory then you can increase performance by storing
 it in memory. Here is an example of how to do this:
 
-```Julia
+```julia
 sys = System(100.0; time_series_in_memory = true)
 ```
 
@@ -102,7 +102,7 @@ PowerSystems supports several methods to load time series data (Forecasts or
 StaticTimeSeries) into a System.
 
 - Automated parsing during system construction, this method loads the data from CSV files.
-Refer to the parsing [documentation](@ref parsing_time_series).
+  Refer to the parsing [documentation](@ref parsing_time_series).
 
 - Create directly from data in `TimeSeries.TimeArray` or `DataFrames.DataFrame`
 
@@ -111,7 +111,7 @@ Examples:
 When creating data for `SingleTimeSeries` the user can directly pass a
 `TimeSeries.TimeArray` to the constructor.
 
-```Julia
+```julia
     resolution = Dates.Hour(1)
     dates = range(DateTime("2020-01-01T00:00:00"), step = resolution, length = 24)
     data = TimeArray(dates, ones(24))
@@ -123,7 +123,7 @@ any `AbstractDict` where the key is the initial time of the forecast and the val
 field is the forecast value. The value fields in the dictionary can be regular
 vectors or `TimeSeries.TimeArray`.
 
-```Julia
+```julia
     resolution = Dates.Hour(1)
     data = Dict(
         DateTime("2020-01-01T00:00:00") => 10.0*ones(24),
@@ -133,10 +133,10 @@ vectors or `TimeSeries.TimeArray`.
 ```
 
 - Load from CSV file. For Deterministic forecasts, each row represents one
-look-ahead window. The first column must be the initial time and the rest must
-be the forecast values. The CSV file must have no header in the first row.
+  look-ahead window. The first column must be the initial time and the rest must
+  be the forecast values. The CSV file must have no header in the first row.
 
-```Julia
+```julia
     resolution = Dates.Hour(1)
     forecast = Deterministic("max_active_power", csv_filename, component, resolution)
 ```
@@ -152,7 +152,7 @@ must be passed into the forecast when you create it.
 
 Example:
 
-```Julia
+```julia
     resolution = Dates.Hour(1)
     data = Dict(
         DateTime("2020-01-01T00:00:00") => ones(24),
@@ -178,7 +178,7 @@ value will correspond to 32.5.
 Adding time series data to a system requires a component that is already
 attached to the system. Extending the example above:
 
-```Julia
+```julia
     add_time_series!(sys, component, forecast)
 ```
 
@@ -187,7 +187,7 @@ across devices to avoid duplication. If the same forecast applies to multiple
 components then can call `add_time_series!`, passing the collection of
 components that share the time series data.
 
-```Julia
+```julia
     add_time_series!(sys, components, forecast)
 ```
 
@@ -198,7 +198,7 @@ reference to that data.
 
 Time series instances can be removed from a system like this:
 
-```Julia
+```julia
     remove_time_series!(Deterministic, sys, "max_active_power")
 ```
 
@@ -208,7 +208,7 @@ most time series instances then consider using `clear_time_series!`. It
 will delete the HDF5 file and create a new one. PowerSystems has plans to
 automate this type of workflow.
 
-```Julia
+```julia
     clear_time_series!(sys)
 ```
 
@@ -223,7 +223,7 @@ as it's intended for modeling use, refer to the next section.
 
 ### Get a TimeArray for a SingleTimeSeries
 
-```Julia
+```julia
     ta = get_time_series_array(
         SingleTimeSeries,
         component,
@@ -241,7 +241,7 @@ as it's intended for modeling use, refer to the next section.
 For forecasts, the interfaces assume that modeling code will access one
 forecast window at a time. Here's how to get one window:
 
-```Julia
+```julia
     ta = get_time_series_array(
         Deterministic,
         component,
@@ -261,13 +261,13 @@ aware of how much data is stored.
 **Note**: Unlike the functions above this will only return the exact stored
 data. It will not apply a scaling factor multiplier.
 
-```Julia
+```julia
     forecast = get_time_series(Deterministic, component, "max_active_power")
 ```
 
 You can limit the data returned by specifying `start_time` and `count`.
 
-```Julia
+```julia
     forecast = get_time_series(
         Deterministic,
         component,
@@ -279,13 +279,13 @@ You can limit the data returned by specifying `start_time` and `count`.
 
 Once you have a forecast instance you can access a specific window like this:
 
-```Julia
+```julia
     window = get_window(forecast, DateTime("2020-01-09T00:00:00"))
 ```
 
 or iterate over the look-ahead windows like this:
 
-```Julia
+```julia
     for window in iterate_windows(forecast)
         @show window
     end
@@ -312,7 +312,7 @@ mechanism creates a cache of data and makes it available to the user.
 It is highly recommended that you use this interface for modeling implementations. This is
 particularly relevant for models using large datasets.
 
-```Julia
+```julia
     cache = ForecastCache(Deterministic, component, "max_active_power")
     window1 = get_next_time_series_array(cache)
     window2 = get_next_time_series_array(cache)
@@ -342,7 +342,7 @@ initial time it provides a view into the existing data at incrementing offsets.
 
 Here's an example:
 
-```Julia
+```julia
     # Create static time series data.
     resolution = Dates.Hour(1)
     dates = range(DateTime("2020-01-01T00:00:00"), step = resolution, length = 8760)
@@ -359,7 +359,7 @@ You can also call it on a single component.
 
 You can now access either a `Deterministic` or the original `SingleTimeSeries`.
 
-```Julia
+```julia
     ta_forecast = get_time_series_array(
         Deterministic,
         component,

@@ -19,5 +19,5 @@ implemented in the package.
 (e.g., [`Bus`](@ref), [`Arc`](@ref)), separate from the physical components.
 
 The hierarchy also includes components absent in standard data models, such as services.
-The services category includes reserves,transfers and [`AGC`](@ref). The power of `PowerSystems.jl`
+The services category includes reserves, transfers and [`AGC`](@ref). The power of `PowerSystems.jl`
 lies in providing the abstraction without an implicit mathematical representation of the component.

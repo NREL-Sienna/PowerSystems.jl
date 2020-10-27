@@ -41,13 +41,13 @@ suggestions, and bug reports.
 
 The latest stable release of PowerSystems can be installed using the Julia package manager with
 
-```Julia
+```julia
 ] add PowerSystems
 ```
 
 For the current development version, "checkout" this package with
 
-```Julia
+```julia
 ] add PowerSystems#master
 ```
 

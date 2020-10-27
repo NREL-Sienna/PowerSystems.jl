@@ -13,7 +13,7 @@ folder:
 - `directory::AbstractString`: directory containing RAW and CSV files
 
 # Examples
-```Julia
+```julia
 sys = TamuSystem(
     "./ACTIVSg25k",
     config_path = "ACTIVSg25k_validation.json",

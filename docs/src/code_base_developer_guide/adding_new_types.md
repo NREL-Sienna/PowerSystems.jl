@@ -25,7 +25,7 @@ for more information.
 
 It's likely that a new type will just work. Here's how you can test it:
 
-```Julia
+```julia
 using PowerSystems
 
 # Assume a system is built and stored in the variable sys.

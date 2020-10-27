@@ -1,6 +1,39 @@
-# Creating a Dynamic System
+# Dynamic Devices
 
-```Julia
+Each sub-type is composed of the corresponding dynamic components that define the model. As a result, it is possible to flexibly define dynamic data models and methods according to the analysis requirements. [`DynamicInjection`](@ref) components use parametric a parametric type pattern to materialize the full specification of the dynamic injection model with parameters. This design enable the use of parametric methods to specify the mathematical model of the dynamic components separately.
+
+[`DynamicInjection`](@ref) components also implement some additional information useful for the modeling like the usual states assumed by the model and the number. These values are derived from the documentation associated with the model, for instance PSS/e models provide parameters, states and variables. Although `PowerSystems.jl` doesn't assume a specific mathematical model for the components, the default values for these parameters are derived directly from the data model source.
+
+## Dynamic Generator
+
+Each generator is a data structure that is defined by the following components:
+
+- [Machine](@ref Machine): That defines the stator electro-magnetic dynamics.
+- [Shaft](@ref Shaft): That describes the rotor electro-mechanical dynamics.
+- [Automatic Voltage Regulator](@ref AVR): Electromotive dynamics to model an AVR controller.
+- [Power System Stabilizer](@ref PSS): Control dynamics to define an stabilization signal for the AVR.
+- [Prime Mover and Turbine Governor](@ref TurbineGov): Thermo-mechanical dynamics and associated controllers.
+
+```@raw html
+<img src="../../assets/gen_metamodel.png" width="75%"/>
+```
+
+Each inverter is a data structure that is defined by the following components:
+
+- [DC Source](@ref DCSource): Defines the dynamics of the DC side of the converter.
+- [Frequency Estimator](@ref FrequencyEstimator): That describes how the frequency of the grid can be estimated using the grid voltages. Typically a phase-locked loop (PLL).
+- [Outer Loop Control](@ref OuterControl): That describes the active and reactive power control dynamics.
+- [Inner Loop Control](@ref InnerControl): That can describe virtual impedance, voltage control and current control dynamics.
+- [Converter](@ref Converter): That describes the dynamics of the pulse width modulation (PWM) or space vector modulation (SVM).
+- [Filter](@ref Filter): Used to connect the converter output to the grid.
+
+```@raw html
+<img src="../../assets/inv_metamodel.png" width="75%"/>
+``` ⠀
+
+## Creating a System with Dynamic devices
+
+```julia
 using PowerSystems
 const PSY = PowerSystems
 ```
@@ -49,7 +82,7 @@ Based on the description provided in PTI files, this is a two-bus system, on whi
 1.04 pu. There is one 100 MVA generator connected at bus 2, producing 50 MW. There is an
 equivalent line connecting buses 1 and 2 with a reactance of ``0.05`` pu.
 
-```Julia
+```julia
 #To create the system you need to pass the location of the RAW file
 file_dir = "OMIB.raw"
 omib_sys = System(omib_file_dir)
@@ -58,7 +91,7 @@ omib_sys = System(omib_file_dir)
 Note that this system does not have an injection device in bus 1 (the reference bus).
 We can add a source with small impedance directly using a function like:
 
-```Julia
+```julia
 function add_source_to_ref(sys::System)
     for g in get_components(StaticInjection, sys)
         isa(g, ElectricLoad) && continue
@@ -88,7 +121,7 @@ no other device is already attached to the reference bus.
 
 The system can be explored directly using functions like:
 
-```Julia
+```julia
 collect(get_components(Source, omib_sys))
 collect(get_components(Generators, omib_sys))
 ```
@@ -105,7 +138,7 @@ Dynamic generator devices are composed by 5 components, namely, `machine`, `shaf
 `tg` and `pss`. So we will be adding functions to create all of its components and the
 generator itself:
 
-```Julia
+```julia
 #Machine
 machine_classic() = BaseMachine(
     0.0, #R
@@ -145,7 +178,7 @@ machine model without AVR, Turbine Governor and PSS.
 
 Then we can simply create the dynamic generator as:
 
-```Julia
+```julia
 #Collect the static gen in the system
 static_gen = get_component(Generator, omib_sys, "generator-102-1")
 #Creates the dynamic generator
@@ -156,7 +189,7 @@ add_component!(omib_sys, dyn_gen, static_gen)
 
 Then we can simply export our system data such that it can be later read as:
 
-```Julia
+```julia
 to_json(omib_sys, "YOUR_DIR/omib_sys.json")
 ```
 
@@ -205,7 +238,7 @@ Q
 That describes a three bus connected system, with generators connected at bus 2 and 3, and
 loads in three buses. We can load the system and attach an infinite source on the reference bus:
 
-```Julia
+```julia
 sys_file_dir = "ThreeBusInverter.raw")
 threebus_sys = System(sys_file_dir)
 add_source_to_ref(threebus_sys)
@@ -219,7 +252,7 @@ at bus 103. An inverter is composed by a `converter`, `outer control`, `inner co
 
 We will create specific functions to create the components of the inverter as follows:
 
-```Julia
+```julia
 #Define converter as an AverageConverter
 converter_high_power() = AverageConverter(rated_voltage = 138.0, rated_current = 100.0)
 
@@ -283,7 +316,7 @@ inverter based on the components already defined.
 
 Similarly we will construct a dynamic generator as follows:
 
-```Julia
+```julia
 #Create the machine
 machine_oneDoneQ() = OneDOneQMachine(
     0.0, #R
@@ -338,7 +371,7 @@ end
 
 ### Add the components to the system
 
-```Julia
+```julia
 for g in get_components(Generator, threebus_sys)
     #Find the generator at bus 102
     if get_number(get_bus(g)) == 102
@@ -358,6 +391,6 @@ end
 
 ### Save the system in a JSON file
 
-```Julia
+```julia
 to_json(threebus_sys, "YOUR_DIR/threebus_sys.json")
 ```
