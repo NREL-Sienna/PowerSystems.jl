@@ -206,6 +206,7 @@ export get_dynamic_components
 export solve_powerflow!
 export solve_powerflow
 
+export parse_file
 export add_time_series!
 export remove_time_series!
 export clear_time_series!
@@ -281,7 +282,7 @@ export PowerSystemTableData
 export add_dyn_injectors!
 export get_machine
 export get_shaft
-export get_av
+export get_avr
 export get_prime_mover
 export get_pss
 export get_converter
