@@ -22,9 +22,8 @@ Code can be loaded from Matpower files and return a summary of the system's comp
 time-series
 
 ```@repl generated_quick_start_guide
-using PowerSystems
-import InfrastructureSystems, Logging
-InfrastructureSystems.configure_logging(console_level = Logging.Error, set_global = false)
+using PowerSystems, Logging
+configure_logging(console_level = Logging.Error)
 DATA_DIR = "../../data" #hide
 system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
 ```
