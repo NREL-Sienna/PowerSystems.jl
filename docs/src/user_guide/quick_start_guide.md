@@ -8,12 +8,18 @@ EditURL = "<unknown>/docs/src/user_guide/quick_start_guide.jl"
 for data intake and straight forward extension of the data model. These features are enabled
 through three main features:
 
-- Abstract type hierarchy,
-- Optimized read/write data container (the container is called `System`),
+- [Abstract type hierarchy](@ref type_structure),
+- Optimized read/write data container (the container is called [`System`](@ref)
+)),
 - Utilities to facilitate modeling, extensions, and integration.
 
 You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-SIIP/PowerSystemsTestData)
 the data can be downloaded with the submodule `UtilsData`
+
+```julia
+using PowerSystems
+DATA_DIR = download(PowerSystems.UtilsData.TestData, folder = pwd())
+```
 
 ## Loading data
 
@@ -22,7 +28,7 @@ time-series
 
 ```@repl generated_quick_start_guide
 using PowerSystems
-DATA_DIR = download(PowerSystems.UtilsData.TestData, folder = pwd())
+DATA_DIR = "../../../data" #hide
 system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
 ```
 
