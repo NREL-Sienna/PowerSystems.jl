@@ -102,7 +102,7 @@ add_component!(system, new_renewable)
 ts_data = [0.98, 0.99, 0.99, 1.0, 0.99, 0.99, 0.99, 0.98, 0.95, 0.92, 0.90, 0.88, 0.84, 0.76,
            0.65, 0.52, 0.39, 0.28, 0.19, 0.15, 0.13, 0.11, 0.09, 0.06,]
 time_stamps = range(DateTime("2020-01-01"); step = Hour(1), length = 24)
-time_series_data_raw = TimeArray(time_stamps, csv_data)
+time_series_data_raw = TimeArray(time_stamps, ts_data)
 time_series = SingleTimeSeries(name = "active_power", data = time_series_data_raw)
 
 #Add the forecast to the system and component

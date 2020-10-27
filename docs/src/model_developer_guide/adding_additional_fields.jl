@@ -11,7 +11,7 @@
 using PowerSystems
 const PSY = PowerSystems
 
-DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd())
+DATA_DIR = "../../../data" #hide
 system = System(joinpath(DATA_DIR, "matpower/case5_re.m"))
 
 for g in get_components(ThermalStandard, system)

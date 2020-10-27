@@ -26,7 +26,7 @@ types as described by the [Type Structure](@ref). Given the potential size of th
 ```@example get_components
 using PowerSystems #hide
 const PSY = PowerSystems #hide
-DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd()) #hide
+DATA_DIR = "../../../data" #hide
 system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
 thermal_gens = get_components(ThermalStandard, system)
 ```
@@ -37,7 +37,7 @@ The most common filtering requirement is by component name and for this case the
 ```@example get_components
 using PowerSystems #hide
 const PSY = PowerSystems #hide
-DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd()) #hide
+DATA_DIR = "../../../data" #hide
 system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
 my_thermal_gen = get_component(ThermalStandard, system, "323_CC_1")
 ```
@@ -54,7 +54,7 @@ The function that serializes the system [`to_json`](@ref) requires the system an
 ```@example get_components
 using PowerSystems #hide
 const PSY = PowerSystems #hide
-DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd()) #hide
+DATA_DIR = "../../../data" #hide
 system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
 to_json(system, "system.json")
 ```
