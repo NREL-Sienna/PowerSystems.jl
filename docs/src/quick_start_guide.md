@@ -107,9 +107,4 @@ time_series = SingleTimeSeries(name = "active_power", data = time_series_data_ra
 
 #Add the forecast to the system and component
 add_time_series!(system, new_renewable, time_series)
-
-#Load time_series from pointer file
-FORECASTS_DIR = joinpath(DATA_DIR, "forecasts/5bus_ts")
-fname = joinpath(FORECASTS_DIR, "timeseries_pointers_da.json")
-add_time_series!(system, fname)
 ```
