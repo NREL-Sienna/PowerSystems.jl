@@ -95,7 +95,7 @@ call it directly.
 ```julia
 module MyModelingModule
 
-using PowerSystems
+import PowerSystems
 import InfrastructureSystems
 const PSY = PowerSystems
 const IS = InfrastructureSystems
@@ -113,7 +113,6 @@ function MyDevice(name::String)
 end
 
 PSY.get_name(val::MyDevice) = val.name
-get_name(val::MyDevice) = PSY.get_name(val)
 
 end
 ```

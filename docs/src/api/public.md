@@ -49,7 +49,7 @@ Private = false
 Public = true
 ```
 
-## [Power Flow](@if pf)
+## [Power Flow](@id pf)
 
 ```@autodocs
 Modules = [PowerSystems]

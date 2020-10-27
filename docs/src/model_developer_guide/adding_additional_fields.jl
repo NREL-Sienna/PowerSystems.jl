@@ -21,4 +21,4 @@ end
 
 gen_alta = get_component(ThermalStandard, system, "Alta")
 
-my_data = get_ext(gen_alta)["my_data]
+my_data = get_ext(gen_alta)["my_data"]

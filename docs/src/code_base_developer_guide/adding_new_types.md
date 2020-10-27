@@ -1,8 +1,8 @@
 # Adding PowerSystems Types
 
-This page describes how developers should add types to PowerSystems. Refer to
-this
-[guide](https://nrel-siip.github.io/InfrastructureSystems.jl/latest/man/guide/#Component-structs)
+This page describes how developers should add types to `PowerSystems.jl` Refer to
+the
+[managing components guide](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/components_and_container/)
 first.
 
 ## Auto-generating Structs
@@ -18,7 +18,7 @@ If you will need to write specialized functions for the type then you will
 probably want to write it manually.
 
 Refer to this
-[link](https://nrel-siip.github.io/InfrastructureSystems.jl/latest/man/guide/#Auto-Generation-of-component-structs)
+[link](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/)
 for more information.
 
 ### Testing a New Struct
