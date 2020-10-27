@@ -18,7 +18,7 @@ Components for each category must be defined in their own CSV file. The
 following categories are currently supported:
 
 - branch.csv
-- bus.csv
+- bus.csv (required)
 - dc_branch.csv
 - gen.csv
 - load.csv
@@ -54,17 +54,27 @@ you can change the `custom_name` field under the `generator` category to
 
 #### Per-unit conversion
 
-PowerSystems defines whether it expects a column value to be per-unit in
-`power_system_inputs.json`. If it expects per-unit but your values are not
-per-unit then you can set `system_per_unit: false` in `user_descriptors.yaml`
-and PowerSystems will automatically convert the values.
+PowerSystems defines whether it expects a column value to be per-unit system base,
+per-unit device base, or natural units in `power_system_inputs.json`. If it expects a
+per-unit convention that differs from your values then you can set the `unit_system` in
+`user_descriptors.yaml` and PowerSystems will automatically convert the values. For
+example, if you have a `max_active_power` value stored in natural units (MW), but
+`power_system_inputs.json` specifies `unit_system: device_base`, you can enter
+`unit_system: natural_units` in `user_descriptors.yaml` and PowerSystems will divide
+the value by the value of the corresponding entry in the column identified by the
+`base_reference` field in `power_system_inputs.json`. You can also override the
+`base_reference` setting by adding `base_reference: My Column` to make device base
+per-unit conversion by dividing the value by the entry in `My Column`. System base
+per-unit conversions always divide the value by the system `base_power` value
+instantiated when constructing a `System`.
 
 #### Unit conversion
 
 PowerSystems provides a limited set of unit conversions. For example, if
 `power_system_inputs.json` indicates that a value's unit is degrees but
-your values are in radians then you can set `unit_conversion: radian` in
-your YAML file.
+your values are in radians then you can set `unit: radian` in
+your YAML file. Other valid `unit` entries include `GW`, `GWh`, `MW`, `MWh`, `kW`,
+and `kWh`.
 
 #### Example file
 
@@ -78,15 +88,15 @@ PowerSystems requires a metadata file that maps components to their time series
 data in order to be able to automatically construct time_series from raw data
 files. The following fields are required for each time array:
 
-* simulation:  User description of simulation
-* category:  Type of component. Must map to PowerSystems abstract types (Bus,
+- simulation:  User description of simulation
+- category:  Type of component. Must map to PowerSystems abstract types (Bus,
   ElectricLoad, Generator, LoadZone, Reserve)
-* component_name:  Name of component
-* name:  User-defined name for the time series data.
-* normalization_factor:  Controls normalization of the data. Use 1.0 for
-  pre-normalized data. Use 'Max' to divide the timeseries by the max value in the
+- component_name:  Name of component
+- name:  User-defined name for the time series data.
+- normalization_factor:  Controls normalization of the data. Use 1.0 for
+  pre-normalized data. Use 'Max' to divide the time series by the max value in the
   column. Use any float for a custom scaling factor.
-* data_file:  Path to the time series data file
+- data_file:  Path to the time series data file
 
 PowerSystems supports this metadata in either CSV or JSON formats. Refer to
 [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/timeseries_pointers.json)
