@@ -80,6 +80,7 @@ details in [`Time Series Data`](@ref ts_data). This example implements
 using PowerSystems
 using TimeSeries
 using Dates
+DATA_DIR = "../../data" #hide
 system = System(joinpath(DATA_DIR, "matpower/case5.m"))
 
 new_renewable = RenewableDispatch(
