@@ -3,7 +3,7 @@
 ## Type Hierarchy
 
 All structs that correlate to power system components must be subtypes of the
-`Component` abstract type. Browse its type hierachy to choose an appropriate
+[`Component`](@ref) abstract type. Browse its type hierachy to choose an appropriate
 supertype for your new struct.
 
 ## Interfaces

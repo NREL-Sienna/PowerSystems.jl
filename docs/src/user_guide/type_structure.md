@@ -3,10 +3,6 @@
 The abstract hierarchy enables categorization of the devices by their operational
 characteristics and modeling requirements.
 
-```@raw html
-<img src="../../assets/AbstractTree.png" width="75%"/>
-``` ⠀
-
 For instance, generation is classified by the distinctive
 data requirements for modeling in three categories: [`ThermalGen`](@ref), [`RenewableGen`](@ref),
 and [`HydroGen`](@ref).
@@ -21,3 +17,9 @@ implemented in the package.
 The hierarchy also includes components absent in standard data models, such as services.
 The services category includes reserves, transfers and [`AGC`](@ref). The power of `PowerSystems.jl`
 lies in providing the abstraction without an implicit mathematical representation of the component.
+
+In [this tutorial](https://github.com/NREL-SIIP/SIIPExamples.jl/blob/master/notebook/PowerSystems_examples/PowerSystems_intro.ipynb) you can find a more detailed introduction to the type system and how to manipulate data
+
+```@raw html
+<img src="../../assets/AbstractTree.png" width="75%"/>
+``` ⠀

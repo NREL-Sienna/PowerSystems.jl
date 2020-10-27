@@ -1,12 +1,12 @@
-# # Modeling with JuMP
-
+# # [Modeling with JuMP](@id modeling_with_jump)
+#
 # This page shows a minimal example of `PowerSystems.jl` used to develop and Economic Dispatch
 # model. The code  shows the stages to develop modeling code
 #
 # 1. Make the data set from power flow and time series data,
 # 2. Serialize the data,
 # 3. Pass the data and algorithm to the model.
-
+#
 # One of the main uses of ``PowerSystems.jl` is not having re-run the data generation for every
 # model execution. The model code shows an example of populating the constraints and cost
 # functions using accessor functions inside the model function. The example concludes by
@@ -25,7 +25,7 @@ to_json(system_data, "system_data.json")
 
 function ed_model(system::System, optimizer)
     ed_m = Model(optimizer)
-    time_periods = get_time_series_horizon(system)
+    time_periods = 24
     thermal_gens_names = get_name.(get_components(ThermalStandard, system))
     @variable(ed_m, pg[g in thermal_gens_names, t in time_periods] >= 0)
 

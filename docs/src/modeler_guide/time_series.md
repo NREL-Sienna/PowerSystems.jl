@@ -1,4 +1,4 @@
-# Time Series Data
+# [Time Series Data](@id ts_data)
 
 ## Introduction
 
