@@ -17,7 +17,7 @@ const PSY = PowerSystems
 using JuMP
 using Ipopt
 
-DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd())
+DATA_DIR = "../../../data" #hide
 system_data = System(joinpath(DATA_DIR, "matpower/case5_re.m"))
 add_time_series!(system_data, joinpath(DATA_DIR,"forecasts/5bus_ts/timeseries_pointers_da.json"))
 to_json(system_data, "system_data.json")
