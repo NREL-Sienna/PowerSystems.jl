@@ -204,7 +204,6 @@ export get_dynamic_components
 export solve_powerflow!
 export solve_powerflow
 
-export parse_file
 export add_time_series!
 export remove_time_series!
 export clear_time_series!
@@ -278,10 +277,9 @@ export TamuSystem
 export PowerModelsData
 export PowerSystemTableData
 export add_dyn_injectors!
-export set_dynamic_injector!
 export get_machine
 export get_shaft
-export get_avr
+export get_av
 export get_prime_mover
 export get_pss
 export get_converter
@@ -306,6 +304,11 @@ export get_reserve_limit_dn
 export get_participation_factor
 export get_cost
 export get_units_base
+
+export configure_logging
+export open_file_logger
+export MultiLogger
+export LogEventTracker
 
 #################################################################################
 # Imports
@@ -370,7 +373,11 @@ import InfrastructureSystems:
     NormalizationFactor,
     NormalizationTypes,
     UnitSystem,
-    SystemUnitsSettings
+    SystemUnitsSettings,
+    configure_logging,
+    open_file_logger,
+    MultiLogger,
+    LogEventTracker
 
 const IS = InfrastructureSystems
 
@@ -397,7 +404,7 @@ abstract type Component <: IS.InfrastructureSystemsComponent end
 """ Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end
 
-include("common.jl")
+include("definitions.jl")
 include("models/static_models.jl")
 include("models/dynamic_models.jl")
 include("models/injection.jl")

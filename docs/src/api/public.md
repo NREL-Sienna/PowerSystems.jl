@@ -1,18 +1,50 @@
 # Public API Reference
 
-## Abstract Types
+## Modeling
 
 ```@autodocs
 Modules = [PowerSystems]
 Pages   = ["PowerSystems.jl",
-            "generation.jl",
-            "topological_elements.jl",
-            "components.jl",
-            "dynamic_models.jl",
-            "static_models.jl"]
-Order = [:type]
+           "branches.jl",
+           "components.jl",
+           "injection.jl",
+           "devices.jl",
+           "loads.jl",
+           "supplemental_constructors",
+           "generation.jl",
+           "storage.jl",
+           "services.jl",
+           "topological_elements.jl",
+           "dynamic_models.jl",
+           "static_models.jl",
+           "dynamic_models.jl",
+           "operational_cost.jl",
+           "definitions.jl"]
 Public = true
 Private = false
+```
+
+## TimeSeries
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["abstract_time_series.jl",
+           "deterministic.jl",
+           "probabilistic.jl",
+           "scenarios.jl",
+           "single_time_series.jl",
+           "forecasts.jl"]
+Order = [:type, :function]
+Filter = t -> t ∉ [InfrastructureSystems.get_internal,
+                   InfrastructureSystems.set_internal!]
+```
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["time_series_cache.jl"]
+Order = [:type, :function]
+Filter = t -> t ∈ [InfrastructureSystems.get_next_time_series_array!,
+                   InfrastructureSystems.get_next_time]
 ```
 
 ## System
@@ -20,37 +52,47 @@ Private = false
 ```@autodocs
 Modules = [PowerSystems]
 Pages   = ["base.jl"]
-Order = [:type, :function]
 Public = true
 Private = false
-```
-
-## Component Methods
-
-```@autodocs
-Modules = [PowerSystems]
-Pages   = ["components.jl"]
-Order = [:function]
-Public = true
-Private = false
+Filter = t -> t ∈ [System]
 ```
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["PowerSystems.jl", "generation.jl", "topological_elements.jl"]
-Order = [:function]
+Pages = ["parsers/power_system_table_data.jl",
+         "parsers/power_models_data.jl",
+         "parsers/TAMU_data.jl",
+         "parsers/psse_dynamic_data.jl"]
+Public = true
+Private = false
+Filter = t -> t ∈ [System]
+```
+
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["base.jl"]
+Public = true
+Private = false
+Filter = t -> t ∉ [System]
+```
+
+## Additional Component Methods
+
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["supplemental_accessors.jl"]
 Public = true
 Private = false
 ```
 
-## Dynamic Modeling Methods
-
 ```@autodocs
-Modules = [PowerSystems]
-Pages   = ["dynamic_models.jl"]
-Order = [:function]
-Public = true
-Private = false
+Modules = [InfrastructureSystems]
+Pages   = ["component.jl", "components.jl"]
+Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
+                   InfrastructureSystems.get_time_series_array,
+                   InfrastructureSystems.get_time_series_timestamps,
+                   InfrastructureSystems.get_time_series_values,
+                   ]
 ```
 
 ## [Network Matrices](@id net_mat)
@@ -71,4 +113,30 @@ Modules = [PowerSystems]
 Pages = ["power_flow.jl"]
 Public = true
 Private = false
+```
+
+## Parsing
+
+```@autodocs
+Modules = [PowerSystems]
+Pages = ["parsers/power_system_table_data.jl",
+         "parsers/power_models_data.jl",
+         "parsers/TAMU_data.jl",
+         "parsers/psse_dynamic_data.jl"]
+Public = true
+Private = false
+Filter = t -> t ∉ [System]
+```
+
+## Logging
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["logging.jl"]
+Order = [:type, :function]
+Filter = t -> t ∈ [InfrastructureSystems.configure_logging,
+                   InfrastructureSystems.open_file_logger,
+                   InfrastructureSystems.MultiLogger,
+                   InfrastructureSystems.LogEventTracker,
+                   ]
 ```

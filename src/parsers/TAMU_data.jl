@@ -22,7 +22,6 @@ sys = TamuSystem(
 )
 ```
 """
-
 function TamuSystem(tamu_folder::AbstractString; kwargs...)
     TAMU_CASE = basename(tamu_folder)
     raw_file = joinpath(tamu_folder, TAMU_CASE * ".RAW")

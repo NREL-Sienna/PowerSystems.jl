@@ -4,10 +4,10 @@ and storage.
 
 Each generator is a data structure that is defined by the following components:
 
-- [ThermalGen](@ref ThermalGen)
-- [Load](@ref ElectricLoad)
-- [Storage](@ref Storage)
-- [RenewableGen](@ref RenewableGen)
+- [ThermalGen](@ref PowerSystems.ThermalGen)
+- [Load](@ref PowerSystems.ElectricLoad)
+- [Storage](@ref PowerSystems.Storage)
+- [RenewableGen](@ref PowerSystems.RenewableGen)
 """
 mutable struct HybridSystem <: StaticInjection
     name::String

@@ -184,6 +184,40 @@ function System(file_path::AbstractString; kwargs...)
 end
 
 """
+Parse static and dynamic data directly from PSS/e text files. Automatically generates
+all the relationships between the available dynamic injection models and the static counterpart
+
+Each dictionary indexed by id contains a vector with 5 of its components:
+* Machine
+* Shaft
+* AVR
+* TurbineGov
+* PSS
+
+Files must be parsed from a .raw file (PTI data format) and a .dyr file.
+
+## Examples:
+```julia
+raw_file = "Example.raw"
+dyr_file = "Example.dyr"
+sys = System(raw_file, dyr_file)
+```
+
+"""
+function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
+    ext = splitext(sys_file)[2]
+    if lowercase(ext) in [".raw"]
+        pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
+        sys = System(PowerModelsData(sys_file; pm_kwargs...); kwargs...)
+    else
+        throw(DataFormatError("$sys_file is not a .raw file type"))
+    end
+    bus_dict_gen = _parse_dyr_components(dyr_file)
+    add_dyn_injectors!(sys, bus_dict_gen)
+    return sys
+end
+
+"""
 Serializes a system to a JSON string.
 """
 function IS.to_json(sys::System, filename::AbstractString; force = false)

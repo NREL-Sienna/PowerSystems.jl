@@ -20,7 +20,7 @@ function and exploiting the type hierarchy for modeling purposes.
 The default implementation of the function [`get_components`](@ref) takes the desired device
 type (concrete or abstract) and the system and it also accepts filter functions for a more
 refined search. The container is optimized for iteration over abstract or concrete component
-types as described by the [Type Structure](@ref). Given the potential size of the return,
+types as described by the [Type Structure](@ref type_structure). Given the potential size of the return,
 `PowerSystems.jl`returns Julia iterators in order to avoid unnecessary memory allocations.
 
 ```@example get_components

@@ -1,5 +1,6 @@
 const VarCostArgs = Union{Float64, NTuple{2, Float64}, Vector{NTuple{2, Float64}}}
 
+""" Super type for operational cost representation in the model"""
 abstract type OperationalCost <: DeviceParameter end
 
 mutable struct VariableCost{T}

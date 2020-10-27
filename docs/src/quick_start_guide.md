@@ -25,7 +25,7 @@ time-series
 using PowerSystems
 import InfrastructureSystems, Logging
 InfrastructureSystems.configure_logging(console_level = Logging.Error, set_global = false)
-DATA_DIR = "../../../data" #hide
+DATA_DIR = "../../data" #hide
 system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
 ```
 
@@ -84,7 +84,7 @@ using Dates
 system = System(joinpath(DATA_DIR, "matpower/case5.m"))
 
 new_renewable = RenewableDispatch(
-        name = "WindBusA",
+        name = "WindPowerNew",
         available = true,
         bus = get_component(Bus, system, "3"),
         active_power = 2.0,
@@ -106,10 +106,10 @@ time_series_data_raw = TimeArray(time_stamps, ts_data)
 time_series = SingleTimeSeries(name = "active_power", data = time_series_data_raw)
 
 #Add the forecast to the system and component
-add_time_series!(system, new_renewable, forecast)
+add_time_series!(system, new_renewable, time_series)
 
-#Load forecasts from pointers file
-#FORECASTS_DIR = joinpath("src", "forecasts/5bus_ts")
-#fname = joinpath(FORECASTS_DIR, "timeseries_pointers_load.json")
-#add_time_series!(system, fname)
+#Load time_series from pointer file
+FORECASTS_DIR = joinpath(DATA_DIR, "forecasts/5bus_ts")
+fname = joinpath(FORECASTS_DIR, "timeseries_pointers_da.json")
+add_time_series!(system, fname)
 ```

@@ -37,6 +37,10 @@ users depending on their skillset and requirements. In broad terms there are thr
 `PowerSystems.jl` is an active project under development, and we welcome your feedback,
 suggestions, and bug reports.
 
+**Note**: `PowerSystems.jl` uses [`InfrastructureSystems.jl`](https://github.com/NREL-SIIP/InfrastructureSystems.jl)
+as a utility library. Several methods are re-exported from `InfrastructureSystems.jl`.
+For most users there is no need to import `InfrastructureSystems.jl`.
+
 ## Installation
 
 The latest stable release of PowerSystems can be installed using the Julia package manager with
