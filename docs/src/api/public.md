@@ -128,7 +128,7 @@ Private = false
 Filter = t -> t ∉ [System]
 ```
 
-## Logging
+## [Logging](@id logging)
 
 ```@autodocs
 Modules = [InfrastructureSystems]
