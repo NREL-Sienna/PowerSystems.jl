@@ -4,7 +4,12 @@
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["PowerSystems.jl", "generation.jl", "topological_elements.jl", "components.jl"]
+Pages   = ["PowerSystems.jl",
+            "generation.jl",
+            "topological_elements.jl",
+            "components.jl",
+            "dynamic_models.jl",
+            "static_models.jl"]
 Order = [:type]
 Public = true
 Private = false
@@ -33,6 +38,16 @@ Private = false
 ```@autodocs
 Modules = [PowerSystems]
 Pages   = ["PowerSystems.jl", "generation.jl", "topological_elements.jl"]
+Order = [:function]
+Public = true
+Private = false
+```
+
+## Dynamic Modeling Methods
+
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["dynamic_models.jl"]
 Order = [:function]
 Public = true
 Private = false

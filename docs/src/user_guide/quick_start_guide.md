@@ -34,7 +34,7 @@ This example function implements a function where the modeler can choose the tec
 by its type and use the different implementations of [`get_max_active_power`](@ref). **Using
 the "dot" access to get a parameter value from a device is actively discouraged, use "getter" functions instead**
 
-Refer to [Modeling with JuMP](ref) for a more detailed use of `PowerSystems.jl` to develop
+Refer to [Modeling with JuMP](@ref modeling_with_jump) for a more detailed use of `PowerSystems.jl` to develop
 a model
 
 ```@example generated_quick_start_guide
@@ -69,13 +69,16 @@ installed_capacity(system_data; technology = RenewableGen)
 
 ## Adding Time Series data to a system
 
-`PowerSystems.jl` provides interfaces to augment the data sets already created. You can also add time series data to a sytem from a CSV file or from several CSV files, more
-details in [`Time Series Data`](@ref). This example implements [`SingleTimeSeries`](@ref)
+`PowerSystems.jl` provides interfaces to augment the data sets already created. You can also
+add time series data to a sytem from a CSV file or from several CSV files, more
+details in [`Time Series Data`](@ref ts_data). This example implements
+[`SingleTimeSeries`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries)
 
 ```@example generated_quick_start_guide
 using PowerSystems
 using TimeSeries
 using CSV
+using Dates
 const PSY = PowerSystems
 DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd())
 system = System(joinpath(DATA_DIR, "matpower/case5.m"))
@@ -97,7 +100,8 @@ new_renewable = RenewableDispatch(
 add_component!(system, new_renewable)
 
 csv_data = CSV.read(joinpath(DATA_DIR,"forecasts/5bus_ts/gen/Renewable/WIND/da_wind5.csv"))
-time_series_data_raw = TimeArray(csv_data, timestamp=:TimeStamp)
+time_stamps = range(DateTime("2020-01-01"); step = Hour(1), length = 24)
+time_series_data_raw = TimeArray(time_stamps, csv_data)
 time_series = SingleTimeSeries(name = "active_power", data = time_series_data_raw)
 
 #Add the forecast to the system and component
