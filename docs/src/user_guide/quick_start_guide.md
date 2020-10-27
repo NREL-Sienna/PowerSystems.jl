@@ -1,7 +1,3 @@
-```@meta
-EditURL = "<unknown>/docs/src/user_guide/quick_start_guide.jl"
-```
-
 # Quick Start Guide
 
 `PowerSystems.jl` is structured to enable intuitive data creation scripts, flexible interfaces
@@ -9,7 +5,7 @@ for data intake and straight forward extension of the data model. These features
 through three main features:
 
 - [Abstract type hierarchy](@ref type_structure),
-- Optimized read/write data container (the container is called [`System`](@ref))),
+- Optimized read/write data container (the container is called [`System`](@ref)),
 - Utilities to facilitate modeling, extensions, and integration.
 
 You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-SIIP/PowerSystemsTestData)
@@ -84,7 +80,6 @@ details in [`Time Series Data`](@ref ts_data). This example implements
 ```@example generated_quick_start_guide
 using PowerSystems
 using TimeSeries
-using CSV
 using Dates
 system = System(joinpath(DATA_DIR, "matpower/case5.m"))
 
@@ -104,7 +99,8 @@ new_renewable = RenewableDispatch(
 
 add_component!(system, new_renewable)
 
-csv_data = CSV.read(joinpath(DATA_DIR,"forecasts/5bus_ts/gen/Renewable/WIND/da_wind5.csv"))
+ts_data = [0.98, 0.99, 0.99, 1.0, 0.99, 0.99, 0.99, 0.98, 0.95, 0.92, 0.90, 0.88, 0.84, 0.76,
+           0.65, 0.52, 0.39, 0.28, 0.19, 0.15, 0.13, 0.11, 0.09, 0.06,]
 time_stamps = range(DateTime("2020-01-01"); step = Hour(1), length = 24)
 time_series_data_raw = TimeArray(time_stamps, csv_data)
 time_series = SingleTimeSeries(name = "active_power", data = time_series_data_raw)

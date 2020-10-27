@@ -2,6 +2,10 @@ using Documenter, PowerSystems
 import DataStructures: OrderedDict
 using Literate
 
+include(joinpath(@__DIR__, "../src/utils/data.jl"))
+import .UtilsData: TestData
+download(TestData; branch = "master")
+
 # This is commented out because the output is not user-friendly. Deliberation on how to best
 # communicate this information to users is ongoing.
 #include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
