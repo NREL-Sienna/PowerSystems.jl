@@ -51,7 +51,7 @@ data files.
 
 The function that serializes the system [`to_json`](@ref) requires the system and a file name
 
-```@example get_components
+```@example serialization
 using PowerSystems #hide
 const PSY = PowerSystems #hide
 DATA_DIR = "../../../data" #hide
