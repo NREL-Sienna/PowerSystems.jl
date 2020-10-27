@@ -9,8 +9,7 @@ for data intake and straight forward extension of the data model. These features
 through three main features:
 
 - [Abstract type hierarchy](@ref type_structure),
-- Optimized read/write data container (the container is called [`System`](@ref)
-)),
+- Optimized read/write data container (the container is called [`System`](@ref))),
 - Utilities to facilitate modeling, extensions, and integration.
 
 You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-SIIP/PowerSystemsTestData)
@@ -28,6 +27,8 @@ time-series
 
 ```@repl generated_quick_start_guide
 using PowerSystems
+import InfrastructureSystems, Logging
+InfrastructureSystems.configure_logging(console_level = Logging.Error, set_global = false)
 DATA_DIR = "../../../data" #hide
 system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
 ```
@@ -73,7 +74,7 @@ installed_capacity(system_data; technology = RenewableGen)
 
 -----
 
-## Adding Time Series data to a system
+## Adding Time Series data to a `System`
 
 `PowerSystems.jl` provides interfaces to augment the data sets already created. You can also
 add time series data to a sytem from a CSV file or from several CSV files, more
@@ -85,8 +86,6 @@ using PowerSystems
 using TimeSeries
 using CSV
 using Dates
-const PSY = PowerSystems
-DATA_DIR = download(PSY.UtilsData.TestData, folder = pwd())
 system = System(joinpath(DATA_DIR, "matpower/case5.m"))
 
 new_renewable = RenewableDispatch(
