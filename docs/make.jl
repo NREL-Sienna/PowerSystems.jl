@@ -22,6 +22,7 @@ pages = OrderedDict(
             "modeler_guide/parsing.md",
             "modeler_guide/time_series.md",
             "modeler_guide/example_dynamic_data.md",
+            "modeler_guide/system_dynamic_data.md",
             "modeler_guide/data.md",
             ],
         "Model Developer Guide" =>
