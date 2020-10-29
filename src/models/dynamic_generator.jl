@@ -13,6 +13,7 @@
         avr::A
         prime_mover::TG
         pss::P
+        base_power::Float64
         n_states::Int
         states::Vector{Symbol}
         ext::Dict{String, Any}
@@ -30,6 +31,7 @@ a Prime Mover (o Turbine Governor) and Power System Stabilizer (PSS). It require
 - `avr <: AVR`: AVR model of the excitacion system.
 - `prime_mover <: TurbineGov`: Prime Mover and Turbine Governor model for mechanical power.
 - `pss <: PSS`: Power System Stabilizer model.
+- `base_power::Float64`: Base power
 - `n_states::Int`: Number of states (will depend on the components).
 - `states::Vector{Symbol}`: Vector of states (will depend on the components).
 - `ext::Dict{String, Any}`
@@ -49,6 +51,7 @@ mutable struct DynamicGenerator{
     avr::A
     prime_mover::TG
     pss::P
+    base_power::Float64
     n_states::Int
     states::Vector{Symbol}
     ext::Dict{String, Any}
@@ -63,6 +66,7 @@ function DynamicGenerator(
     avr::A,
     prime_mover::TG,
     pss::P,
+    base_power::Float64 = 100.0,
     ext::Dict{String, Any} = Dict{String, Any}(),
 ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
     n_states = _calc_n_states(machine, shaft, avr, prime_mover, pss)
@@ -76,6 +80,7 @@ function DynamicGenerator(
         avr,
         prime_mover,
         pss,
+        base_power,
         n_states,
         states,
         ext,
@@ -91,6 +96,7 @@ function DynamicGenerator(;
     avr::A,
     prime_mover::TG,
     pss::P,
+    base_power::Float64 = 100.0,
     n_states = _calc_n_states(machine, shaft, avr, prime_mover, pss),
     states = _calc_states(machine, shaft, avr, prime_mover, pss),
     ext::Dict{String, Any} = Dict{String, Any}(),
@@ -104,6 +110,7 @@ function DynamicGenerator(;
         avr,
         prime_mover,
         pss,
+        base_power,
         n_states,
         states,
         ext,

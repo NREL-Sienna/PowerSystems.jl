@@ -17,6 +17,7 @@ abstract type InverterComponent <: DynamicComponent end
         dc_source::DC
         freq_estimator::P
         filter::F
+        base_power::Float64
         n_states::Int
         states::Vector{Symbol}
         ext::Dict{String, Any}
@@ -35,6 +36,7 @@ a DC Source, a Frequency Estimator and a Filter. It requires a Static Injection 
 - `dc_source <: DCSource`: DC Source model.
 - `freq_estimator <: FrequencyEstimator`: Frequency Estimator (typically a PLL) model.
 - `filter <: Filter`: Filter model.
+- `base_power::Float64`: Base power
 - `n_states::Int`: Number of states (will depend on the components).
 - `states::Vector{Symbol}`: Vector of states (will depend on the components).
 - `ext::Dict{String, Any}`
@@ -56,6 +58,7 @@ mutable struct DynamicInverter{
     dc_source::DC
     freq_estimator::P
     filter::F
+    base_power::Float64
     n_states::Int
     states::Vector{Symbol}
     ext::Dict{String, Any}
@@ -71,6 +74,7 @@ function DynamicInverter(
     dc_source::DC,
     freq_estimator::P,
     filter::F,
+    base_power::Float64 = 100.0,
     ext::Dict{String, Any} = Dict{String, Any}(),
 ) where {
     C <: Converter,
@@ -106,6 +110,7 @@ function DynamicInverter(
         dc_source,
         freq_estimator,
         filter,
+        base_power,
         n_states,
         states,
         ext,
@@ -122,6 +127,7 @@ function DynamicInverter(;
     dc_source::DC,
     freq_estimator::P,
     filter::F,
+    base_power::Float64 = 100.0,
     n_states = _calc_n_states(
         converter,
         outer_control,
@@ -157,6 +163,7 @@ function DynamicInverter(;
         dc_source,
         freq_estimator,
         filter,
+        base_power,
         n_states,
         states,
         ext,
