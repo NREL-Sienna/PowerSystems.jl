@@ -13,6 +13,7 @@ end
 const ENUMS = (
     AngleUnits.AngleUnit,
     BusTypes.BusType,
+    GeneratorCostModels.GeneratorCostModel,
     InputCategory,
     LoadModels.LoadModel,
     PrimeMovers.PrimeMover,
@@ -43,3 +44,17 @@ function get_enum_value(enum, value::String)
 
     return ENUM_MAPPINGS[enum][val]
 end
+
+Base.convert(::Type{AngleUnits.AngleUnit}, val::String) =
+    get_enum_value(AngleUnits.AngleUnit, val)
+Base.convert(::Type{BusTypes.BusType}, val::String) = get_enum_value(BusTypes.BusType, val)
+Base.convert(::Type{GeneratorCostModels.GeneratorCostModel}, val::String) =
+    get_enum_value(GeneratorCostModels.GeneratorCostModel, val)
+Base.convert(::Type{LoadModels.LoadModel}, val::String) =
+    get_enum_value(LoadModels.LoadModel, val)
+Base.convert(::Type{PrimeMovers.PrimeMover}, val::String) =
+    get_enum_value(PrimeMovers.PrimeMover, val)
+Base.convert(::Type{StateTypes.StateType}, val::String) =
+    get_enum_value(StateTypes.StateType, val)
+Base.convert(::Type{ThermalFuels.ThermalFuel}, val::String) =
+    get_enum_value(ThermalFuels.ThermalFuel, val)

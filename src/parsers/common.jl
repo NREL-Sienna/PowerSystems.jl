@@ -141,18 +141,18 @@ function convert_units!(
     return value
 end
 
-function Base.convert(::Type{ThermalFuels.ThermalFuel}, fuel::AbstractString)
+function parse_enum_mapping(::Type{ThermalFuels.ThermalFuel}, fuel::AbstractString)
     return STRING2FUEL[uppercase(fuel)]
 end
 
-function Base.convert(::Type{ThermalFuels.ThermalFuel}, fuel::Symbol)
-    return convert(ThermalFuels.ThermalFuel, string(fuel))
+function parse_enum_mapping(::Type{ThermalFuels.ThermalFuel}, fuel::Symbol)
+    return parse_enum_mapping(ThermalFuels.ThermalFuel, string(fuel))
 end
 
-function Base.convert(::Type{PrimeMovers.PrimeMover}, prime_mover::AbstractString)
+function parse_enum_mapping(::Type{PrimeMovers.PrimeMover}, prime_mover::AbstractString)
     return STRING2PRIMEMOVER[uppercase(prime_mover)]
 end
 
-function Base.convert(::Type{PrimeMovers.PrimeMover}, prime_mover::Symbol)
-    return convert(PrimeMovers.PrimeMover, string(prime_mover))
+function parse_enum_mapping(::Type{PrimeMovers.PrimeMover}, prime_mover::Symbol)
+    return parse_enum_mapping(PrimeMovers.PrimeMover, string(prime_mover))
 end

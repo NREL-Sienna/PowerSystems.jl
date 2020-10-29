@@ -877,8 +877,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     rating = calculate_rating(active_power_limits, reactive_power_limits)
     ramplimits = make_ramplimits(gen)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
-    primemover = convert(PrimeMovers.PrimeMover, gen.unit_type)
-    fuel = convert(ThermalFuels.ThermalFuel, gen.fuel)
+    primemover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type)
+    fuel = parse_enum_mapping(ThermalFuels.ThermalFuel, gen.fuel)
 
     base_power = gen.base_mva
     var_cost, fixed, fuel_cost =
@@ -1010,7 +1010,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             bus = bus,
             active_power = gen.active_power,
             reactive_power = reactive_power,
-            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
             rating = rating,
             active_power_limits = active_power_limits,
             reactive_power_limits = reactive_power_limits,
@@ -1031,7 +1031,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
             active_power_limits = active_power_limits,
             reactive_power_limits = reactive_power_limits,
             ramp_limits = ramp_limits,
@@ -1081,7 +1081,7 @@ function make_renewable_generator(
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
             reactive_power_limits = reactive_power_limits,
             power_factor = gen.power_factor,
             operation_cost = operation_cost,
@@ -1096,7 +1096,7 @@ function make_renewable_generator(
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
             power_factor = gen.power_factor,
             base_power = base_power,
         )
@@ -1126,7 +1126,7 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
         name = storage.name,
         available = storage.available,
         bus = bus,
-        prime_mover = convert(PrimeMovers.PrimeMover, gen.unit_type),
+        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
         initial_energy = storage.energy_level,
         state_of_charge_limits = state_of_charge_limits,
         rating = storage.rating,

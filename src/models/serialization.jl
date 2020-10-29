@@ -102,10 +102,6 @@ function deserialize_uuid_handling(field_type, val, component_cache)
         value = deserialize(field_type, val)
     elseif field_type <: Union{Nothing, InfrastructureSystemsType}
         value = deserialize(field_type.b, val)
-    elseif field_type <: Enum
-        value = get_enum_value(field_type, val)
-    elseif field_type <: Union{Nothing, Enum}
-        value = get_enum_value(field_type.b, val)
     else
         value = deserialize(field_type, val)
     end
