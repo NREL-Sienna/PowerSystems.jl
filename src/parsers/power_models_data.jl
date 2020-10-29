@@ -261,7 +261,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
         rating = calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
-        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, d["type"]),
         active_power_limits = (
             min = d["pmin"] * base_conversion,
             max = d["pmax"] * base_conversion,
@@ -291,7 +291,7 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
         rating = float(d["pmax"]) * base_conversion,
-        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, d["type"]),
         reactive_power_limits = (
             min = d["qmin"] * base_conversion,
             max = d["qmax"] * base_conversion,
@@ -313,7 +313,7 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
         rating = float(d["pmax"]) * base_conversion,
-        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, d["type"]),
         power_factor = 1.0,
         base_power = d["mbase"],
     )
@@ -396,8 +396,8 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
         rating = sqrt(d["pmax"]^2 + d["qmax"]^2) * base_conversion,
-        prime_mover = convert(PrimeMovers.PrimeMover, d["type"]),
-        fuel = convert(ThermalFuels.ThermalFuel, d["fuel"]),
+        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, d["type"]),
+        fuel = parse_enum_mapping(ThermalFuels.ThermalFuel, d["fuel"]),
         active_power_limits = (
             min = d["pmin"] * base_conversion,
             max = d["pmax"] * base_conversion,
