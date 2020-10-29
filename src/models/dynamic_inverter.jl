@@ -187,7 +187,6 @@ get_internal(device::DynamicInverter) = device.internal
 get_P_ref(value::DynamicInverter) = get_P_ref(get_active_power(get_outer_control(value)))
 get_V_ref(value::DynamicInverter) = get_V_ref(get_reactive_power(get_outer_control(value)))
 
-
 set_base_power!(value::DynamicInverter, val) = value.base_power = val
 
 function _calc_n_states(
