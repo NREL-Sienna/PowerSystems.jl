@@ -432,11 +432,13 @@ end
     @test length(dynamics) == 1
     @test dynamics[1] == Gen1AVR
     @test get_dynamic_injector(static_gen) == Gen1AVR
+    @test get_base_power(static_gen) == get_base_power(Gen1AVR)
 
     remove_component!(sys, Gen1AVR)
     @test isnothing(get_dynamic_injector(static_gen))
     add_component!(sys, Gen2AVR, static_gen)
     @test get_dynamic_injector(static_gen) === Gen2AVR
+    @test get_base_power(static_gen) == get_base_power(Gen2AVR)
 
     # Rule: Can't set the pair injector if the current injector is already set.
     @test_throws ArgumentError set_dynamic_injector!(static_gen, Gen1AVR)
