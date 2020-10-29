@@ -112,3 +112,14 @@ function StaticReserve(
         internal,
     )
 end
+
+""" RoundRotorMachine constructor for de-serialization"""
+function RoundRotorMachine(R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xl, Se::Array, ext, γ_d1, γ_q1, γ_d2, γ_q2, γ_qd, states, n_states, internal, )
+    RoundRotorMachine(R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xl, tuple(Se[1],Se[2]), ext, γ_d1, γ_q1, γ_d2, γ_q2, γ_qd, states, n_states, internal, )
+end
+
+""" SalientPoleMachine constructor for de-serialization"""
+function SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se::Array, ext, γ_d1, γ_q1, γ_d2, states, n_states, internal, )
+    @assert
+    SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, tuple(Se[1], Se[2]), ext, γ_d1, γ_q1, γ_d2, states, n_states, internal, )
+end
