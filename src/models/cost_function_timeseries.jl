@@ -1,3 +1,12 @@
+"""
+Returns variable cost bids time-series data.
+
+# Arguments
+- `ts::IS.TimeSeriesData`:TimeSeriesData
+- `component::Component`: Component
+- `start_time::Union{Nothing, Dates.DateTime} = nothing`: Time when the time-series data starts
+- `len::Union{Nothing, Int} = nothing`: Length of the time-series to be returned
+"""
 function get_variable_cost(
     ts::IS.TimeSeriesData,
     component::Component,
@@ -12,6 +21,15 @@ function get_variable_cost(
     return TimeSeries.TimeArray(time_stamps, map(VariableCost, TimeSeries.values(data)))
 end
 
+"""
+Returns variable cost bids time-series data for  MarketBidCost.
+
+# Arguments
+- `device::StaticInjection`: Static injection device
+- `cost::MarketBidCost`: Operations Cost
+- `start_time::Union{Nothing, Dates.DateTime} = nothing`: Time when the time-series data starts
+- `len::Union{Nothing, Int} = nothing`: Length of the time-series to be returned
+"""
 function get_variable_cost(
     device::StaticInjection,
     cost::OperationalCost;
@@ -33,6 +51,14 @@ function get_variable_cost(
     return cost
 end
 
+"""
+Returns variable cost time-series data for a ReserveDemandCurve.
+
+# Arguments
+- `service::ReserveDemandCurve`: ReserveDemandCurve
+- `start_time::Union{Nothing, Dates.DateTime} = nothing`: Time when the time-series data starts
+- `len::Union{Nothing, Int} = nothing`: Length of the time-series to be returned
+"""
 function get_variable_cost(
     service::ReserveDemandCurve;
     start_time::Union{Nothing, Dates.DateTime} = nothing,
@@ -53,6 +79,16 @@ function get_variable_cost(
     return cost
 end
 
+"""
+Returns service bids time-series data for a device that has MarketBidCost.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `cost::MarketBidCost`: Operations Cost
+- `service::Service`: Service
+- `start_time::Union{Nothing, Dates.DateTime} = nothing`: Time when the time-series data starts
+- `len::Union{Nothing, Int} = nothing`: Length of the time-series to be returned
+"""
 function get_services_bid(
     device::StaticInjection,
     cost::MarketBidCost,
@@ -73,6 +109,14 @@ function get_services_bid(
     return cost
 end
 
+"""
+Adds energy market bids time-series to the MarketBidCost.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `time_series_data::IS.TimeSeriesData`: TimeSeriesData
+"""
 function set_variable_cost!(
     sys::System,
     component::StaticInjection,
@@ -85,6 +129,14 @@ function set_variable_cost!(
     return
 end
 
+"""
+Adds energy market bids time-series to the ReserveDemandCurve.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `time_series_data::IS.TimeSeriesData`: TimeSeriesData
+"""
 function set_variable_cost!(
     sys::System,
     component::ReserveDemandCurve,
@@ -96,6 +148,15 @@ function set_variable_cost!(
     return
 end
 
+"""
+Adds service bids time-series data to the MarketBidCost.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `service::Service,`: Service for which the device is eligible to contribute
+- `time_series_data::IS.TimeSeriesData`: TimeSeriesData
+"""
 function set_service_bid!(
     sys::System,
     component::StaticInjection,
@@ -112,6 +173,14 @@ function set_service_bid!(
     return
 end
 
+"""
+Validates if a device is eligible to contribute to a service.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `service::Service,`: Service for which the device is eligible to contribute
+"""
 function verify_device_eligibility(
     sys::System,
     component::StaticInjection,
