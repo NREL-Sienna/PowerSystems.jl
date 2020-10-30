@@ -1017,13 +1017,13 @@ end
 """
 Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
 """
-function transform_single_time_series!(sys::System, horizon::Int, interval::Dates.Period)
-    IS.transform_single_time_series!(
-        sys.data,
-        IS.DeterministicSingleTimeSeries,
-        horizon,
-        interval,
-    )
+function transform_single_time_series!(
+    sys::System,
+    type::Type{T},
+    horizon::Int,
+    interval::Dates.Period,
+) where {T <: DeterministicSingleTimeSeries}
+    IS.transform_single_time_series!(sys.data, type, horizon, interval)
 end
 
 """
