@@ -350,7 +350,7 @@ Here's an example:
     add_time_series!(sys, component, ts)
 
     # Transform it to Deterministic
-    transform_single_time_series!(sys)
+    transform_single_time_series!(sys, DeterministicSingleTimeSeries, 24, Hour(24))
 ```
 
 This function transforms all `SingleTimeSeries` instances stored in the system.
