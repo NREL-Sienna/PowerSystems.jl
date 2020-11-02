@@ -193,6 +193,7 @@ export AbstractDeterministic
 export Deterministic
 export Probabilistic
 export SingleTimeSeries
+export DeterministicSingleTimeSeries
 export Scenarios
 export ForecastCache
 export StaticTimeSeriesCache
@@ -335,6 +336,7 @@ import InfrastructureSystems:
     Deterministic,
     Probabilistic,
     SingleTimeSeries,
+    DeterministicSingleTimeSeries,
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
