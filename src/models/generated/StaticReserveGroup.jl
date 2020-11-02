@@ -16,7 +16,7 @@ Data Structure for a group reserve product for system simulations.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, action if invalid: `error`
+- `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
 - `contributing_services::Vector{Service}`: Services that contribute for this requirement constraint
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify

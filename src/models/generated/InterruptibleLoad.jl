@@ -31,7 +31,7 @@ This file is auto-generated. Do not edit.
 - `reactive_power::Float64`
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device

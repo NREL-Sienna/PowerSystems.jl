@@ -17,7 +17,7 @@ Data Structure Operational Cost Data which includes fixed, variable cost, multip
 - `no_load::Float64`: no load cost
 - `fixed::Float64`: fixed cost
 - `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost
-- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 """
 mutable struct MultiStartCost <: OperationalCost
     "variable cost"

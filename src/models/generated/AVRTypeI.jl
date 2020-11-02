@@ -24,17 +24,17 @@ This file is auto-generated. Do not edit.
 Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 
 # Arguments
-- `Ka::Float64`: Amplifier Gain, validation range: `(0, nothing)`
-- `Ke::Float64`: Field circuit integral deviation, validation range: `(0, nothing)`
-- `Kf::Float64`: Stabilizer Gain in s * pu/pu, validation range: `(0, nothing)`
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, nothing)`
-- `Te::Float64`: Field Circuit Time Constant in s, validation range: `(0, nothing)`
-- `Tf::Float64`: Stabilizer Time Constant in s, validation range: `(0, nothing)`
-- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`
+- `Ka::Float64`: Amplifier Gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Ke::Float64`: Field circuit integral deviation, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Kf::Float64`: Stabilizer Gain in s * pu/pu, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Te::Float64`: Field Circuit Time Constant in s, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Tf::Float64`: Stabilizer Time Constant in s, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for pi controler `(Va_min, Va_max)`
-- `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
-- `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
+- `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vf: Voltage field,

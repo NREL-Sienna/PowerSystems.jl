@@ -17,8 +17,8 @@ Data Structure for a non-spinning reserve product for system simulations.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, action if invalid: `error`
-- `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, action if invalid: `error`
+- `time_frame::Float64`: the relative saturation time_frame, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
 - `operation_cost::Union{Nothing, TwoPartCost}`: Cost for providing reserves  [`TwoPartCost`](@ref)
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify

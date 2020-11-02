@@ -11,7 +11,7 @@ Data Structure Operational Cost Data in two parts: fixed and variable cost.
 
 # Arguments
 - `variable::VariableCost`: variable cost
-- `fixed::Float64`: fixed cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `fixed::Float64`: fixed cost, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 """
 mutable struct TwoPartCost <: OperationalCost
     "variable cost"

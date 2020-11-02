@@ -26,15 +26,15 @@ Parameters of 3-states salient-pole synchronous machine with quadratic/exponenti
 IEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.
 
 # Arguments
-- `R::Float64`: Armature resistance, validation range: `(0, nothing)`
-- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
-- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
-- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
-- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
-- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
-- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
-- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: `(0, nothing)`
-- `Xl::Float64`: Stator leakage reactance, validation range: `(0, nothing)`
+- `R::Float64`: Armature resistance, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xl::Float64`: Stator leakage reactance, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `Se::Tuple{Float64, Float64}`: Saturation factor at 1 and 1.2 pu flux: Se(eq_p) = B(eq_p-A)^2
 - `ext::Dict{String, Any}`
 - `γ_d1::Float64`: γ_d1 parameter

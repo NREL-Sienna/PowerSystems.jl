@@ -25,9 +25,9 @@ This struct acts as an infinity bus.
 - `bus::Bus`
 - `active_power::Float64`
 - `reactive_power::Float64`
-- `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
-- `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`
-- `internal_voltage::Float64`: Internal Voltage, validation range: `(0, nothing)`
+- `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `internal_voltage::Float64`: Internal Voltage, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `internal_angle::Float64`: Internal Angle
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`

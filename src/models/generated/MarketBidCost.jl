@@ -17,7 +17,7 @@ Compatible with most US Market bidding mechanisms
 - `variable::VariableCost`: variable cost representing the energy bid
 - `no_load::Float64`: no load cost
 - `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets
-- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `ancillary_services::IdDict{Any,Float64}`: Bids for the ancillary services
 """
 mutable struct MarketBidCost <: OperationalCost

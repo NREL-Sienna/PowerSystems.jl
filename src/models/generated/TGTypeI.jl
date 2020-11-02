@@ -20,14 +20,14 @@ This file is auto-generated. Do not edit.
 Parameters of a Turbine Governor Type I.
 
 # Arguments
-- `R::Float64`: Droop parameter, validation range: `(0, nothing)`
-- `Ts::Float64`: Governor time constant, validation range: `(0, nothing)`
-- `Tc::Float64`: Servo time constant, validation range: `(0, nothing)`
-- `T3::Float64`: Transient gain time constant, validation range: `(0, nothing)`
-- `T4::Float64`: Power fraction time constant, validation range: `(0, nothing)`
-- `T5::Float64`: Reheat time constant, validation range: `(0, nothing)`
+- `R::Float64`: Droop parameter, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Ts::Float64`: Governor time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Tc::Float64`: Servo time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `T3::Float64`: Transient gain time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `T4::Float64`: Power fraction time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `T5::Float64`: Reheat time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
 	x_g1: Governor state,

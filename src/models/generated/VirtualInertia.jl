@@ -15,10 +15,10 @@ This file is auto-generated. Do not edit.
 Parameters of a Virtual Inertia with SRF using VSM for active power controller
 
 # Arguments
-- `Ta::Float64`: VSM inertia constant, validation range: `(0, nothing)`
-- `kd::Float64`: VSM damping constant, validation range: `(0, nothing)`
-- `kω::Float64`: frequency droop gain, validation range: `(0, nothing)`
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `Ta::Float64`: VSM inertia constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kd::Float64`: VSM damping constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kω::Float64`: frequency droop gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the VirtualInertia model are:
 	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,

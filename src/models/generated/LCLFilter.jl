@@ -16,11 +16,11 @@ This file is auto-generated. Do not edit.
 Parameters of a LCL filter outside the converter, the states are in the grid's reference frame
 
 # Arguments
-- `lf::Float64`: Series inductance in p.u. of converter filter, validation range: `(0, nothing)`
-- `rf::Float64`: Series resistance in p.u. of converter filter, validation range: `(0, nothing)`
-- `cf::Float64`: Shunt capacitance in p.u. of converter filter, validation range: `(0, nothing)`
-- `lg::Float64`: Series inductance in p.u. of converter filter to the grid, validation range: `(0, nothing)`
-- `rg::Float64`: Series resistance in p.u. of converter filter to the grid, validation range: `(0, nothing)`
+- `lf::Float64`: Series inductance in p.u. of converter filter, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `rf::Float64`: Series resistance in p.u. of converter filter, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `cf::Float64`: Shunt capacitance in p.u. of converter filter, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `lg::Float64`: Series inductance in p.u. of converter filter to the grid, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `rg::Float64`: Series resistance in p.u. of converter filter to the grid, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the LCLFilter model are:
 	ir_cnv: Real current out of the converter,

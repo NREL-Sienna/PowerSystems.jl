@@ -22,10 +22,10 @@ A power-system bus.
 - `number::Int`: number associated with the bus
 - `name::String`: the name of the bus
 - `bustype::Union{Nothing, BusTypes.BusType}`: bus type
-- `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`, action if invalid: `error`
+- `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
 - `voltage_limits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
-- `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
+- `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `area::Union{Nothing, Area}`: the area containing the bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the bus
 - `ext::Dict{String, Any}`

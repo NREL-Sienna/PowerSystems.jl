@@ -16,8 +16,8 @@ Parameters of a simple proportional AVR in the derivative of EMF
 i.e. an integrator controller on EMF
 
 # Arguments
-- `Kv::Float64`: Proportional Gain, validation range: `(0, nothing)`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
+- `Kv::Float64`: Proportional Gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vf: field voltage

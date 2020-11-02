@@ -31,24 +31,24 @@ This file is auto-generated. Do not edit.
 IEEE Stabilizing Model PSS. 
 
 # Arguments
-- `input_code::Int`: Code input for stabilizar, validation range: `(1, 6)`, action if invalid: `error`
+- `input_code::Int`: Code input for stabilizar, validation range: `(1, 6)`, validation range: `(1, 6)`, action if invalid: `error`
 - `remote_bus_control::Int`: Remote  Bus number for control.
-- `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
-- `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
-- `A3::Float64`: Filter coefficient, validation range: `(0, nothing)`
-- `A4::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
-- `A5::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
-- `A6::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T1::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
-- `T2::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
-- `T3::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
-- `T4::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
-- `T5::Float64`: Time constant, validation range: `(0, 10)`, action if invalid: `warn`
-- `T6::Float64`: Time constant, validation range: `("eps()", "2.0")`, action if invalid: `error`
-- `Ks::Float64`: Proportional gain, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A3::Float64`: Filter coefficient, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `A4::Float64`: Filter coefficient, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A5::Float64`: Filter coefficient, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A6::Float64`: Filter coefficient, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `T1::Float64`: Time constant, validation range: `(0, 10)`, validation range: `(0, 10)`, action if invalid: `warn`
+- `T2::Float64`: Time constant, validation range: `(0, 10)`, validation range: `(0, 10)`, action if invalid: `warn`
+- `T3::Float64`: Time constant, validation range: `(0, 10)`, validation range: `(0, 10)`, action if invalid: `warn`
+- `T4::Float64`: Time constant, validation range: `(0, 10)`, validation range: `(0, 10)`, action if invalid: `warn`
+- `T5::Float64`: Time constant, validation range: `(0, 10)`, validation range: `(0, 10)`, action if invalid: `warn`
+- `T6::Float64`: Time constant, validation range: `("eps()", "2.0")`, validation range: `("eps()", "2.0")`, action if invalid: `error`
+- `Ks::Float64`: Proportional gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ls_lim::Tuple{Float64, Float64}`: PSS output limits for regulator output `(Ls_min, Ls_max)`
-- `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, "1.25")`, action if invalid: `warn`
-- `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, "1.0")`, action if invalid: `warn`
+- `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, "1.25")`, validation range: `(0, "1.25")`, action if invalid: `warn`
+- `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, "1.0")`, validation range: `(0, "1.0")`, action if invalid: `warn`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st filter integration,

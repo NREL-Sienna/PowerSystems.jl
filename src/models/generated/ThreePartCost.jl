@@ -14,8 +14,8 @@ Data Structure Operational Cost Data in Three parts fixed, variable cost and sta
 # Arguments
 - `variable::VariableCost`: variable cost
 - `fixed::Float64`: fixed cost
-- `start_up::Float64`: start-up cost, validation range: `(0, nothing)`, action if invalid: `warn`
-- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
+- `start_up::Float64`: start-up cost, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 """
 mutable struct ThreePartCost <: OperationalCost
     "variable cost"

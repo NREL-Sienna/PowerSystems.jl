@@ -29,12 +29,12 @@ This file is auto-generated. Do not edit.
 - `bus::Bus`
 - `active_power::Float64`
 - `reactive_power::Float64`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
 - `reactive_power_limits::Union{Nothing, Min_Max}`
-- `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
+- `power_factor::Float64`, validation range: `(0, 1)`, validation range: `(0, 1)`, action if invalid: `error`
 - `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`

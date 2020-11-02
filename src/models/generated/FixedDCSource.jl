@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
 Parameters of a Fixed DC Source that returns a fixed DC voltage
 
 # Arguments
-- `voltage::Float64`: rated VA, validation range: `(0, nothing)`
+- `voltage::Float64`: rated VA, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int`: FixedDCSource has no states

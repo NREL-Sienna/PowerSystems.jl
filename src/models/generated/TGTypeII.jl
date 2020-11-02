@@ -17,11 +17,11 @@ This file is auto-generated. Do not edit.
 Parameters of a Turbine Governor Type II.
 
 # Arguments
-- `R::Float64`: Droop parameter, validation range: `(0, nothing)`
-- `T1::Float64`: Transient gain time constant, validation range: `(0, nothing)`
-- `T2::Float64`: Power fraction time constant, validation range: `(0, nothing)`
+- `R::Float64`: Droop parameter, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `T1::Float64`: Transient gain time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `T2::Float64`: Power fraction time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `τ_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Power into the governor limits
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
 	x_g1: lead-lag state

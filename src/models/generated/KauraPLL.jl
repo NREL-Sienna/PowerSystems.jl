@@ -16,9 +16,9 @@ Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Bla
 IEEE Transactions on Industry applications 33.1 (1997): 58-63.
 
 # Arguments
-- `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: `(0, nothing)`
-- `kp_pll::Float64`: PLL proportional gain, validation range: `(0, nothing)`
-- `ki_pll::Float64`: PLL integral gain, validation range: `(0, nothing)`
+- `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kp_pll::Float64`: PLL proportional gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `ki_pll::Float64`: PLL integral gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the KauraPLL model are:
 	vd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),

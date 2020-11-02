@@ -22,13 +22,13 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
  transmission network dynamics is neglected.
 
 # Arguments
-- `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
-- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
-- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
-- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`
-- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
-- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
-- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
+- `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xd::Float64`: Reactance after EMF in d-axis per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xq::Float64`: Reactance after EMF in q-axis per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xd_p::Float64`: Transient reactance after EMF in d-axis per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis transient voltage,

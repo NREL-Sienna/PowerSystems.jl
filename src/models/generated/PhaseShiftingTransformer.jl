@@ -28,12 +28,12 @@ This file is auto-generated. Do not edit.
 - `active_power_flow::Float64`
 - `reactive_power_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
-- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `warn`
-- `primary_shunt::Float64`, validation range: `(0, 2)`, action if invalid: `warn`
-- `tap::Float64`, validation range: `(0, 2)`, action if invalid: `error`
-- `α::Float64`, validation range: `(-1.571, 1.571)`, action if invalid: `warn`
-- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
+- `r::Float64`: System per-unit value, validation range: `(0, 4)`, validation range: `(0, 4)`, action if invalid: `warn`
+- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, validation range: `(-2, 4)`, action if invalid: `warn`
+- `primary_shunt::Float64`, validation range: `(0, 2)`, validation range: `(0, 2)`, action if invalid: `warn`
+- `tap::Float64`, validation range: `(0, 2)`, validation range: `(0, 2)`, action if invalid: `error`
+- `α::Float64`, validation range: `(-1.571, 1.571)`, validation range: `(-1.571, 1.571)`, action if invalid: `warn`
+- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `forecasts::InfrastructureSystems.Forecasts`: internal forecast storage

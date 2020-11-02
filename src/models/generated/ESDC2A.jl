@@ -29,20 +29,20 @@ Is used to represent field-controlled dc commutator exciters with continuously a
 Parameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds to ESDC2A in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`, action if invalid: `warn`
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`, action if invalid: `warn`
-- `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`, validation range: `(10, 500)`, action if invalid: `warn`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`, validation range: `(0, 1)`, action if invalid: `warn`
+- `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1, 1)`, action if invalid: `warn`
-- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", 2)`, action if invalid: `error`
-- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `Tf::Float64`: Excitation control system stabilizer time constant. Appropiate Data: 5.0 <= Tf/Kf <= 15.0, validation range: `("eps()", 1.5)`, action if invalid: `error`
-- `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
+- `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1, 1)`, validation range: `(-1, 1)`, action if invalid: `warn`
+- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `("eps()", 2)`, validation range: `("eps()", 2)`, action if invalid: `error`
+- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(0, 0.3)`, validation range: `(0, 0.3)`, action if invalid: `warn`
+- `Tf::Float64`: Excitation control system stabilizer time constant. Appropiate Data: 5.0 <= Tf/Kf <= 15.0, validation range: `("eps()", 1.5)`, validation range: `("eps()", 1.5)`, action if invalid: `error`
+- `switch::Int`: Switch, validation range: `(0, 1)`, validation range: `(0, 1)`, action if invalid: `error`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:

@@ -36,16 +36,16 @@ This file is auto-generated. Do not edit.
 - `bus::Bus`
 - `active_power::Float64`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`, action if invalid: `warn`
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
@@ -159,7 +159,7 @@ get_base_power(value::HydroEnergyReservoir) = value.base_power
 """Get [`HydroEnergyReservoir`](@ref) `storage_capacity`."""
 get_storage_capacity(value::HydroEnergyReservoir) = get_value(value, value.storage_capacity)
 """Get [`HydroEnergyReservoir`](@ref) `inflow`."""
-get_inflow(value::HydroEnergyReservoir) = value.inflow
+get_inflow(value::HydroEnergyReservoir) = get_value(value, value.inflow)
 """Get [`HydroEnergyReservoir`](@ref) `initial_storage`."""
 get_initial_storage(value::HydroEnergyReservoir) = get_value(value, value.initial_storage)
 """Get [`HydroEnergyReservoir`](@ref) `operation_cost`."""

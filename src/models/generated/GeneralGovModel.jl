@@ -46,39 +46,39 @@ This file is auto-generated. Do not edit.
 GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a general purpose governor model used for a variety of prime movers controlled by proportional-integral-derivative (PID) governors including gas turbines.
 
 # Arguments
-- `Rselect::Int`: Feedback signal for governor droop, validation range: `(-2, 1)`, action if invalid: `error`
-- `fuel_flag::Int`: Flag Switch for fuel source characteristic, validation range: `(0, 1)`, action if invalid: `error`
-- `R::Float64`: Speed droop parameter, validation range: `("eps()", nothing)`, action if invalid: `warn`
-- `Tpelec::Float64`: Electrical power transducer time constant, seconds, validation range: `("eps()", nothing)`, action if invalid: `warn`
+- `Rselect::Int`: Feedback signal for governor droop, validation range: `(-2, 1)`, validation range: `(-2, 1)`, action if invalid: `error`
+- `fuel_flag::Int`: Flag Switch for fuel source characteristic, validation range: `(0, 1)`, validation range: `(0, 1)`, action if invalid: `error`
+- `R::Float64`: Speed droop parameter, validation range: `("eps()", nothing)`, validation range: `("eps()", nothing)`, action if invalid: `warn`
+- `Tpelec::Float64`: Electrical power transducer time constant, seconds, validation range: `("eps()", nothing)`, validation range: `("eps()", nothing)`, action if invalid: `warn`
 - `speed_error_signal::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Speed error signal limits
-- `Kp_gov::Float64`: Governor proportional gain, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ki_gov::Float64`: Governor integral gain, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Kd_gov::Float64`: Governor derivative gain, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Td_gov::Float64`: Governor derivative time constant, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Kp_gov::Float64`: Governor proportional gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Ki_gov::Float64`: Governor integral gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Kd_gov::Float64`: Governor derivative gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Td_gov::Float64`: Governor derivative time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits
-- `T_act::Float64`: Actuator time constant, validation range: `(0, nothing)`, action if invalid: `warn`
-- `K_turb::Float64`: Turbine gain, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Wf_nl::Float64`: No load fuel flow, pu, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tb::Float64`: Turbine lag time constant, sec, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tc::Float64`: Turbine lead time constant, sec, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T_eng::Float64`: Transport lag time constant for diesel engine, sec, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tf_load::Float64`: Load limiter time constant, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Kp_load::Float64`: Load limiter proportional gain for PI controller, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ki_load::Float64`: Load integral gain for PI controller, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ld_ref::Float64`: Load limiter integral gain for PI controller, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Dm::Float64`: Mechanical damping coefficient, pu, validation range: `(0, nothing)`, action if invalid: `warn`
-- `R_open::Float64`: Maximum valve opening rate, pu/sec, validation range: `(0, nothing)`, action if invalid: `warn`
-- `R_close::Float64`: Maximum valve closing rate, pu/sec, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ki_mw::Float64`: Power controller (reset) gain, validation range: `(0, nothing)`, action if invalid: `warn`
-- `A_set::Float64`: Acceleration limiter setpoint, pu/sec, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ka::Float64`: Acceleration limiter gain, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ta::Float64`: Acceleration limiter time constant , validation range: `("eps()", nothing)`, action if invalid: `error`
-- `T_rate::Float64`: Turbine rating, validation range: `(0, nothing)`, action if invalid: `warn`
-- `db::Float64`: Speed governor deadband, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tsa::Float64`: Temperature detection lead time constant, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0, nothing)`, action if invalid: `warn`
+- `T_act::Float64`: Actuator time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `K_turb::Float64`: Turbine gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Wf_nl::Float64`: No load fuel flow, pu, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tb::Float64`: Turbine lag time constant, sec, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tc::Float64`: Turbine lead time constant, sec, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `T_eng::Float64`: Transport lag time constant for diesel engine, sec, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tf_load::Float64`: Load limiter time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Kp_load::Float64`: Load limiter proportional gain for PI controller, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Ki_load::Float64`: Load integral gain for PI controller, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Ld_ref::Float64`: Load limiter integral gain for PI controller, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Dm::Float64`: Mechanical damping coefficient, pu, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `R_open::Float64`: Maximum valve opening rate, pu/sec, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `R_close::Float64`: Maximum valve closing rate, pu/sec, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Ki_mw::Float64`: Power controller (reset) gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `A_set::Float64`: Acceleration limiter setpoint, pu/sec, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Ka::Float64`: Acceleration limiter gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Ta::Float64`: Acceleration limiter time constant , validation range: `("eps()", nothing)`, validation range: `("eps()", nothing)`, action if invalid: `error`
+- `T_rate::Float64`: Turbine rating, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `db::Float64`: Speed governor deadband, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tsa::Float64`: Temperature detection lead time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Maximum rate of load increa
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,

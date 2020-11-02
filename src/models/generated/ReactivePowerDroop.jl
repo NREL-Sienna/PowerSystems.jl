@@ -14,9 +14,9 @@ This file is auto-generated. Do not edit.
 Parameters of a Reactive Power droop controller
 
 # Arguments
-- `kq::Float64`: frequency droop gain, validation range: `(0, nothing)`
-- `ωf::Float64`: filter frequency cutoff, validation range: `(0, nothing)`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
+- `kq::Float64`: frequency droop gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `ωf::Float64`: filter frequency cutoff, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the ReactivePowerDroop model are:
 	q_oc: Filtered reactive output power

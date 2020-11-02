@@ -28,7 +28,7 @@ Data structure for a static power load.
 - `model::Union{Nothing, LoadModels.LoadModel}`
 - `active_power::Float64`
 - `reactive_power::Float64`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
 - `services::Vector{Service}`: Services that this device contributes to

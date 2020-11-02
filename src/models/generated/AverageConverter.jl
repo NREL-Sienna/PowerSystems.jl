@@ -13,8 +13,8 @@ This file is auto-generated. Do not edit.
 Parameters of an average converter model
 
 # Arguments
-- `rated_voltage::Float64`: rated voltage, validation range: `(0, nothing)`
-- `rated_current::Float64`: rated VA, validation range: `(0, nothing)`
+- `rated_voltage::Float64`: rated voltage, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `rated_current::Float64`: rated VA, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int`: AverageConverter has no states

@@ -15,9 +15,9 @@ This file is auto-generated. Do not edit.
 Parameters of a Classic Machine: GENCLS in PSSE and PSLF
 
 # Arguments
-- `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
-- `Xd_p::Float64`: Reactance after EMF in machine per unit, validation range: `(0, nothing)`
-- `eq_p::Float64`: Fixed EMF behind the impedance, validation range: `(0, nothing)`
+- `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `Xd_p::Float64`: Reactance after EMF in machine per unit, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `eq_p::Float64`: Fixed EMF behind the impedance, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: BaseMachine has no states
 - `n_states::Int`: BaseMachine has no states

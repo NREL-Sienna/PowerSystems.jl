@@ -1467,7 +1467,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "initial_storage",
@@ -1848,7 +1849,8 @@
             "min": 0,
             "max": null
           },
-          "validation_action": "error"
+          "validation_action": "error",
+          "needs_conversion": true
         },
         {
           "name": "outflow",

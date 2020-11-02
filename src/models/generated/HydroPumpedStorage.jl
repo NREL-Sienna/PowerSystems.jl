@@ -43,25 +43,25 @@ This file is auto-generated. Do not edit.
 - `bus::Bus`
 - `active_power::Float64`
 - `reactive_power::Float64`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `rating_pump::Float64`: Thermal limited MVA Power Withdrawl of the pump. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating_pump::Float64`: Thermal limited MVA Power Withdrawl of the pump. <= Capacity, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `active_power_limits_pump::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits_pump::Union{Nothing, NamedTuple{(:min, :max), Tuple{Float64, Float64}}}`, action if invalid: `warn`
-- `ramp_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute of pump, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_capacity::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
+- `ramp_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute of pump, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `storage_capacity::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_target::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
 - `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
-- `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, action if invalid: `warn`
+- `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, validation range: `(0, 1)`, action if invalid: `warn`
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
@@ -202,7 +202,7 @@ get_time_limits_pump(value::HydroPumpedStorage) = value.time_limits_pump
 """Get [`HydroPumpedStorage`](@ref) `storage_capacity`."""
 get_storage_capacity(value::HydroPumpedStorage) = get_value(value, value.storage_capacity)
 """Get [`HydroPumpedStorage`](@ref) `inflow`."""
-get_inflow(value::HydroPumpedStorage) = value.inflow
+get_inflow(value::HydroPumpedStorage) = get_value(value, value.inflow)
 """Get [`HydroPumpedStorage`](@ref) `outflow`."""
 get_outflow(value::HydroPumpedStorage) = value.outflow
 """Get [`HydroPumpedStorage`](@ref) `initial_storage`."""

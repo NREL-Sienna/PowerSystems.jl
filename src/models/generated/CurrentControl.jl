@@ -23,16 +23,16 @@ Parameters of an inner loop current control PID using virtual impedance based on
 Electric Power Systems Research 122 (2015) 180–197.
 
 # Arguments
-- `kpv::Float64`: voltage controller proportional gain, validation range: `(0, nothing)`
-- `kiv::Float64`: voltage controller integral gain, validation range: `(0, nothing)`
-- `kffv::Float64`: Binary variable to enable feed-forward gain of voltage., validation range: `(0, nothing)`
-- `rv::Float64`: virtual resistance, validation range: `(0, nothing)`
-- `lv::Float64`: virtual inductance, validation range: `(0, nothing)`
-- `kpc::Float64`: current controller proportional gain, validation range: `(0, nothing)`
-- `kic::Float64`: current controller integral gain, validation range: `(0, nothing)`
-- `kffi::Float64`: Binary variable to enable feed-forward gain of current, validation range: `(0, nothing)`
-- `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: `(0, nothing)`
-- `kad::Float64`: active damping gain, validation range: `(0, nothing)`
+- `kpv::Float64`: voltage controller proportional gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kiv::Float64`: voltage controller integral gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kffv::Float64`: Binary variable to enable feed-forward gain of voltage., validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `rv::Float64`: virtual resistance, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `lv::Float64`: virtual inductance, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kpc::Float64`: current controller proportional gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kic::Float64`: current controller integral gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kffi::Float64`: Binary variable to enable feed-forward gain of current, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `kad::Float64`: active damping gain, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the VirtualInertia model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,

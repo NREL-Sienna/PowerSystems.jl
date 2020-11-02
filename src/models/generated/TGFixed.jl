@@ -15,8 +15,8 @@ Parameters of a fixed Turbine Governor that returns a fixed mechanical torque
  given by the product of P_ref*efficiency
 
 # Arguments
-- `efficiency::Float64`:  Efficiency factor that multiplies P_ref, validation range: `(0, nothing)`
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `efficiency::Float64`:  Efficiency factor that multiplies P_ref, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`
 - `n_states::Int`: TGFixed has no states

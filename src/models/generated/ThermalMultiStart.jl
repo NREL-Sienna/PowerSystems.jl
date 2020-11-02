@@ -39,18 +39,18 @@ Data Structure for thermal generation technologies.
 - `bus::Bus`
 - `active_power::Float64`, validation range: `active_power_limits`, action if invalid: `warn`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
 - `fuel::ThermalFuels.ThermalFuel`: Prime mover fuel according to EIA 923
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: `(0, nothing)`, action if invalid: `error`
-- `power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}`: Power trajectory the unit will take during the start-up and shut-down ramp process, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
+- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `power_trajectory::Union{Nothing, NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}}`: Power trajectory the unit will take during the start-up and shut-down ramp process, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `error`
 - `start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}`:  Time limits for start-up based on turbine temperature in hours
-- `start_types::Int`:  Number of start-up based on turbine temperature, validation range: `(1, 3)`, action if invalid: `error`
+- `start_types::Int`:  Number of start-up based on turbine temperature, validation range: `(1, 3)`, validation range: `(1, 3)`, action if invalid: `error`
 - `operation_cost::MultiStartCost`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
 - `time_at_status::Float64`
 - `must_run::Bool`

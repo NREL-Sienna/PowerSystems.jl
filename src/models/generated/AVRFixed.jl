@@ -15,8 +15,8 @@ This file is auto-generated. Do not edit.
 Parameters of a AVR that returns a fixed voltage to the rotor winding
 
 # Arguments
-- `Vf::Float64`: Fixed voltage field applied to the rotor winding, validation range: `(0, nothing)`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
+- `Vf::Float64`: Fixed voltage field applied to the rotor winding, validation range: `(0, nothing)`, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: Fixed AVR has no states
 - `n_states::Int`: Fixed AVR has no states

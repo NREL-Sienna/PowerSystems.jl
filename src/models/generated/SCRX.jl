@@ -21,14 +21,14 @@ This file is auto-generated. Do not edit.
 This exciter is based on an IEEE type SCRX solid state exciter.  The output field voltage is varied by a control system to maintain the system voltage at Vref.  Please note that this exciter model has no initialization capabilities - this means that it will respond to whatever inputs it receives regardless of the state of the machine model.
 
 # Arguments
-- `Ta_Tb::Float64`: Lead input constant ratio, validation range: `(0.05, 0.3)`, action if invalid: `error`
-- `Tb::Float64`: Lag input constant in s, validation range: `(5, 20)`, action if invalid: `error`
-- `K::Float64`: Regulator Gain, validation range: `(20, 100)`, action if invalid: `warn`
-- `Te::Float64`: Regulator Time Constant, validation range: `(0, 1)`, action if invalid: `warn`
+- `Ta_Tb::Float64`: Lead input constant ratio, validation range: `(0.05, 0.3)`, validation range: `(0.05, 0.3)`, action if invalid: `error`
+- `Tb::Float64`: Lag input constant in s, validation range: `(5, 20)`, validation range: `(5, 20)`, action if invalid: `error`
+- `K::Float64`: Regulator Gain, validation range: `(20, 100)`, validation range: `(20, 100)`, action if invalid: `warn`
+- `Te::Float64`: Regulator Time Constant, validation range: `(0, 1)`, validation range: `(0, 1)`, action if invalid: `warn`
 - `Efd_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
-- `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
-- `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, 10)`, action if invalid: `warn`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
+- `switch::Int`: Switch, validation range: `(0, 1)`, validation range: `(0, 1)`, action if invalid: `error`
+- `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, 10)`, validation range: `(0, 10)`, action if invalid: `warn`
+- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	Vr1: First integrator,
