@@ -206,7 +206,7 @@ get_time_limits_pump(value::HydroPumpedStorage) = value.time_limits_pump
 """Get [`HydroPumpedStorage`](@ref) `storage_capacity`."""
 get_storage_capacity(value::HydroPumpedStorage) = get_value(value, value.storage_capacity)
 """Get [`HydroPumpedStorage`](@ref) `inflow`."""
-get_inflow(value::HydroPumpedStorage) = value.inflow
+get_inflow(value::HydroPumpedStorage) = get_value(value, value.inflow)
 """Get [`HydroPumpedStorage`](@ref) `outflow`."""
 get_outflow(value::HydroPumpedStorage) = value.outflow
 """Get [`HydroPumpedStorage`](@ref) `initial_storage`."""
