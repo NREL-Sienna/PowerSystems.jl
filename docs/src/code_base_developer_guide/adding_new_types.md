@@ -5,11 +5,11 @@ the
 [managing components guide](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/components_and_container/)
 first.
 
-## Auto-generating Structs
+## [Auto-generating Structs](@id autogen)
 
-Most PowerSystems structs are auto-generated from the JSON descriptor file
+Most `PowerSystems.jl` structs are auto-generated from the JSON descriptor file
 `src/descriptors/power_system_structs.json`. You can add your new struct
-here or write it manually.
+here or write it manually when contributing code to the repository
 
 If all you need is the basic struct definition and getter/setter functions then
 you will likely find the auto-generation helpful.
@@ -21,21 +21,32 @@ Refer to this
 [link](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/)
 for more information.
 
-### Testing a New Struct
+### Testing the addition of new struct to the code base
 
-It's likely that a new type will just work. Here's how you can test it:
+In order to merge new structs to the code base, your struct needs to pass several tests.
+
+1. addition to `System`
+2. retrieval from `System`
+3. serialization/de-serialization
+
+The following code block is an example of the code that the new struct needs to pass
 
 ```julia
 using PowerSystems
 
-# Assume a system is built and stored in the variable sys.
-to_json(sys, "sys.json")
+sys = System(100.0)
+device = NewType(data)
 
-# Browse the JSON file to examine how PowerSystems stored your instance.
-# This method requires installation of jq.
-jq . sys.json | less
+# add your component to the system
+add_component!(sys, device)
+retrived_device = get_component(NewType, sys, "component_name")
+
+# Serialize
+to_json(sys, "sys.json")
 
 # Re-create the system and find your component.
 sys2 = System("sys.json")
-get_component(MyType, sys, "component_name")
+serialized_device = get_component(NewType, sys, "component_name")
+
+@test get_name(retrieved_device) == get_name(serialized_device)
 ```

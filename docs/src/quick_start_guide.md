@@ -1,14 +1,13 @@
 # Quick Start Guide
 
-`PowerSystems.jl` is structured to enable intuitive data creation scripts, flexible interfaces
-for data intake and straight forward extension of the data model. These features are enabled
-through three main features:
+PowerSystems.jl is structured to enable data creation scripts, flexible interfaces for data
+intake and extension of the data model. These features are enabled through three main features:
 
 - [Abstract type hierarchy](@ref type_structure),
 - Optimized read/write data container (the container is called [`System`](@ref)),
 - Utilities to facilitate modeling, extensions, and integration.
 
-You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-SIIP/PowerSystemsTestData)
+You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-SIIP/PowerSystemsTestData),
 the data can be downloaded with the submodule `UtilsData`
 
 ```julia
@@ -18,15 +17,16 @@ DATA_DIR = download(PowerSystems.UtilsData.TestData, folder = pwd())
 
 ## Loading data
 
-Code can be loaded from Matpower files and return a summary of the system's components and
-time-series
+Data can be loaded from several file formats and return a summary of the system's components and
+time-series.
 
 ```@repl generated_quick_start_guide
-using PowerSystems, Logging
-configure_logging(console_level = Logging.Error)
+using PowerSystems
 DATA_DIR = "../../data" #hide
 system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
 ```
+
+More details about parsing text files from different formats in [this section](@ref parsing)
 
 -----
 
@@ -49,19 +49,19 @@ function installed_capacity(system::System; technology::Type{T} = Generator) whe
 end
 ```
 
-total installed capacity
+- Total installed capacity
 
 ```@example generated_quick_start_guide
 installed_capacity(system_data)
 ```
 
-installed capacity of the thermal generation
+- Installed capacity of the thermal generation
 
 ```@example generated_quick_start_guide
 installed_capacity(system_data; technology = ThermalStandard)
 ```
 
-installed capacity of renewable generation
+- Installed capacity of renewable generation
 
 ```@example generated_quick_start_guide
 installed_capacity(system_data; technology = RenewableGen)
@@ -72,7 +72,7 @@ installed_capacity(system_data; technology = RenewableGen)
 ## Adding Time Series data to a `System`
 
 `PowerSystems.jl` provides interfaces to augment the data sets already created. You can also
-add time series data to a sytem from a CSV file or from several CSV files, more
+add time series data to a system from one or more CSV files, more
 details in [`Time Series Data`](@ref ts_data). This example implements
 [`SingleTimeSeries`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries)
 
@@ -107,9 +107,4 @@ time_series = SingleTimeSeries(name = "active_power", data = time_series_data_ra
 
 #Add the forecast to the system and component
 add_time_series!(system, new_renewable, time_series)
-
-#Load time_series from pointer file
-FORECASTS_DIR = joinpath(DATA_DIR, "forecasts/5bus_ts")
-fname = joinpath(FORECASTS_DIR, "timeseries_pointers_da.json")
-add_time_series!(system, fname)
 ```
