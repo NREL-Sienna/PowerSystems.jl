@@ -27,9 +27,9 @@ Where a column (or several columns) represent the timestamp associated with the 
 a column stores the values of interest.
 
 - **Forecasts**: Predicted values of a time-varying quantity that commonly features
-a look-ahead and can have multiple data values representing each time period.
-This data is used in simulation with receding horizons or data generated from
-forecasting algorithms.
+  a look-ahead and can have multiple data values representing each time period.
+  This data is used in simulation with receding horizons or data generated from
+  forecasting algorithms.
 
 Forecast data usually comes in the following format:
 
