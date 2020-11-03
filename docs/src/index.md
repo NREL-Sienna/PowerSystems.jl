@@ -32,7 +32,7 @@ users depending on their skillset and requirements. In broad terms there are thr
 
 - **Model Developer**: Users that want to develop custom components and structs in order to exploit `PowerSystems.jl` features to produce custom data sets.
 
-- **Advanced Developers**: Users that want to add new core functionalities or fix bugs in the core capabilties of `PowerSystems.jl`.
+- **Code Base Developers**: Users that want to add new core functionalities or fix bugs in the core capabilities of `PowerSystems.jl`.
 
 `PowerSystems.jl` is an active project under development, and we welcome your feedback,
 suggestions, and bug reports.

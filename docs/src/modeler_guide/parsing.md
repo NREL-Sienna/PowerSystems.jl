@@ -1,4 +1,4 @@
-# Constructing a System from RAW data
+# [Constructing a System from RAW data](@id parsing)
 
 ## Supported Formats
 

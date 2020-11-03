@@ -2,7 +2,7 @@
 #
 # All components currently implemented in `PowerSystems.jl` have an `ext` field that contains
 # an empty `Dictionary`. This empty dictionary can be accessed with the method `get_ext`.
-#shows an example of adding additional data to the [`ThermalStandard`](@ref) structs for other
+# shows an example of adding additional data to the [`ThermalStandard`](@ref) structs for other
 # modeling requirements.
 
 # This method is useful if there is no requirement to create new behaviours for components of

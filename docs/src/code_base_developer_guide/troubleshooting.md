@@ -1,5 +1,7 @@
 # Troubleshooting code development
 
+## Issues with Serialization/De-Serialization
+
 If this doesn't work then you likely need to implement custom
 `InfrastructureSystems.serialize` and `InfrastructureSystems.deserialize` methods
 for your type.  Here are some examples of potential problems and solutions:

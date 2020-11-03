@@ -19,11 +19,11 @@ pages = OrderedDict(
             Any[
             "modeler_guide/type_structure.md",
             "modeler_guide/system.md",
-            "modeler_guide/parsing.md",
             "modeler_guide/time_series.md",
             "modeler_guide/example_dynamic_data.md",
             "modeler_guide/system_dynamic_data.md",
-            "modeler_guide/data.md",
+            "modeler_guide/market_bid_cost.md",
+            "modeler_guide/parsing.md"
             ],
         "Model Developer Guide" =>
             Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
