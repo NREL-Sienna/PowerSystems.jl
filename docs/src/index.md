@@ -56,20 +56,6 @@ For the current development version, "checkout" this package with
 ```
 
 ------------
-
-## Contents
-
-```@contents
-Pages = [
-    "user_guide/installation.md",
-    "user_guide/type_structure.md",
-    "modeler/parsing.md",
-    "modeler/data.md"
-]
-Depth = 1
-```
-
-------------
 PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning
 (SIIP) initiative at the U.S. Department of Energy's National Renewable Energy
 Laboratory ([NREL](https://www.nrel.gov/))
