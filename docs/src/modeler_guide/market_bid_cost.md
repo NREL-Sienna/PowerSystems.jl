@@ -33,7 +33,7 @@ generator = ThermalStandard(
         operation_cost = MarketBidCost(
             nothing,
             0.0,
-            (hot = 393.28, warm = 455.37, cold = 703.76),,
+            (hot = 393.28, warm = 455.37, cold = 703.76),
             0.75,
             Vector{Service}()
             ),
