@@ -31,7 +31,7 @@ system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
 thermal_gens = get_components(ThermalStandard, system)
 ```
 
-It is also possible to execute [`get_components`](@ref) using abstract typed from the
+It is also possible to execute [`get_components`](@ref) with abstract types from the
 [abstract tree](@ref type_structure). For instance, it is possible to retrieve all renewable
 generators
 
