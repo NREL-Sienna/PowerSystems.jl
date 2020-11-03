@@ -104,7 +104,7 @@ flush(logger)
 close(logger)
 ```
 
-## Viewing PowerSystems Data in the Terminal
+## Viewing PowerSystems Data in JSON Format
 
 PowerSystems data can be serialized and deserialized in JSON. This section shows how to
 explore the data outside of Julia using the terminal
