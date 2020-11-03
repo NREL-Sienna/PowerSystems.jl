@@ -163,7 +163,7 @@ get_base_power(value::HydroEnergyReservoir) = value.base_power
 """Get [`HydroEnergyReservoir`](@ref) `storage_capacity`."""
 get_storage_capacity(value::HydroEnergyReservoir) = get_value(value, value.storage_capacity)
 """Get [`HydroEnergyReservoir`](@ref) `inflow`."""
-get_inflow(value::HydroEnergyReservoir) = value.inflow
+get_inflow(value::HydroEnergyReservoir) = get_value(value, value.inflow)
 """Get [`HydroEnergyReservoir`](@ref) `initial_storage`."""
 get_initial_storage(value::HydroEnergyReservoir) = get_value(value, value.initial_storage)
 """Get [`HydroEnergyReservoir`](@ref) `operation_cost`."""
