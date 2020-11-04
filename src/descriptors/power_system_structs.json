@@ -2500,7 +2500,7 @@
         {
           "name": "operation_cost",
           "null_value": "MultiStartCost(nothing)",
-          "data_type": "MultiStartCost"
+          "data_type": "OperationalCost"
         },
         {
           "name": "base_power",
