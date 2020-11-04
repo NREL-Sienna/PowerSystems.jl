@@ -28,6 +28,7 @@ function _write_first_level_markdown(c::String)
                     Pages   = ["generated/$(c).jl"]
                     Order = [:type, :function]
                     Public = true
+                    Private = false
                     ```
                     """,
                 )
@@ -53,6 +54,7 @@ function _write_second_level_markdown(input::DataType, subtypes::Vector{DataType
                         Pages   = ["/$(T).jl"]
                         Order = [:type, :function]
                         Public = true
+                        Private = false
                         ```
 
                         """,

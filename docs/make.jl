@@ -2,6 +2,10 @@ using Documenter, PowerSystems
 import DataStructures: OrderedDict
 using Literate
 
+include(joinpath(@__DIR__, "../src/utils/data.jl"))
+import .UtilsData: TestData
+download(TestData; branch = "master")
+
 # This is commented out because the output is not user-friendly. Deliberation on how to best
 # communicate this information to users is ongoing.
 #include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
@@ -9,27 +13,30 @@ include(joinpath(@__DIR__, "make_model_library.jl"))
 
 pages = OrderedDict(
         "Welcome Page" => "index.md",
-        "User Guide" => Any[
-            "user_guide/installation.md",
-            "user_guide/quick_start_guide.md",
-            "user_guide/system.md",
-        ],
-        "Modeler" => Any[
-            "modeler/parsing.md",
-            "modeler/data.md",
-            "modeler/example_dynamic_data.md"
-        ],
-        "Model Developer" => Any[
-            "Extending Parsing" => "model_developer/extending_parsing.md",
-            "Adding Types" => "model_developer/adding_types.md",
-        ],
-        "Developer" => Any[
-            "Style Guide" => "developer/style.md",
-            "Testing" => "developer/testing.md",
-            "Logging" => "developer/logging.md",
-        ],
+        "Quick Start Guide" => "quick_start_guide.md",
+        "Tutorials" =>  "tutorials/intro_page.md",
+        "Modeler Guide" =>
+            Any[
+            "modeler_guide/type_structure.md",
+            "modeler_guide/system.md",
+            "modeler_guide/time_series.md",
+            "modeler_guide/example_dynamic_data.md",
+            "modeler_guide/system_dynamic_data.md",
+            "modeler_guide/market_bid_cost.md",
+            "modeler_guide/parsing.md"
+            ],
+        "Model Developer Guide" =>
+            Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
+                "Adding Types" => "model_developer_guide/adding_custom_types.md",
+            ],
+            "Code Base Developer Guide" =>
+            Any["Developer Guide" => "code_base_developer_guide/developer.md",
+            "Adding New Types" => "code_base_developer_guide/adding_new_types.md",
+            "Troubleshooting" => "code_base_developer_guide/troubleshooting.md"
+            ],
         "Model Library" => Any[],
-        "Internal API" => "api/internal.md"
+        "Public API Reference" => "api/public.md",
+        "Internal API Reference" => "api/internal.md"
 )
 
 pages["Model Library"] = make_model_library(
@@ -60,11 +67,10 @@ pages["Model Library"] = make_model_library(
 # section name should be the name of the file for instance network_matrices.jl -> Network Matrices
 julia_file_filter = x -> occursin(".jl", x)
 folders = Dict(
-    "User Guide" => filter(julia_file_filter, readdir("docs/src/user_guide")),
     "Model Library" => filter(julia_file_filter, readdir("docs/src/model_library")),
-    "Modeler" => filter(julia_file_filter, readdir("docs/src/modeler")),
-    "Model Developer" => filter(julia_file_filter, readdir("docs/src/model_developer")),
-    "Developer" => filter(julia_file_filter, readdir("docs/src/developer")),
+    "Modeler Guide" => filter(julia_file_filter, readdir("docs/src/modeler_guide")),
+    "Model Developer Guide" => filter(julia_file_filter, readdir("docs/src/model_developer_guide")),
+    "Code Base Developer Guide" => filter(julia_file_filter, readdir("docs/src/code_base_developer_guide")),
 )
 
 for (section, folder) in folders
@@ -77,14 +83,14 @@ for (section, folder) in folders
                           outputdir;
                           name = outputfile,
                           credit = false,
-                          execute=true)
+                          documenter = true)
         subsection = titlecase(replace(split(file, ".")[1], "_" => " "))
         push!(pages[section], ("$subsection" =>  joinpath("$section_folder_name", "$(outputfile).md")))
     end
 end
 
 makedocs(
-    modules = [PowerSystems],
+    modules = [PowerSystems, InfrastructureSystems],
     format = Documenter.HTML(prettyurls = haskey(ENV, "GITHUB_ACTIONS"),),
     sitename = "PowerSystems.jl",
     authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",

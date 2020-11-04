@@ -1,4 +1,4 @@
-# Time Series Data
+# [Time Series Data](@id ts_data)
 
 ## Introduction
 
@@ -6,14 +6,14 @@ The bulk of the data in many power system models is time series data, in order t
 organize the data the potential inherent complexity, `PowerSystems.jl` has a set of definitions
 to enable consistent modeling.
 
-- **Resolution**: The period of time between each discrete value in the data, all resolutions
-are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
-has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`
+- **Resolution**: The period of time between each discrete value in the data, all  resolutions
+  are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
+  has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`
 
 - **Static data**: a single column of time series values for a component field
-(such as active power) where each time period is represented by a single value.
-This data commonly is obtained from historical information or the realization of
-a time-varying quantity.
+  (such as active power) where each time period is represented by a single value.
+  This data commonly is obtained from historical information or the realization of
+  a time-varying quantity.
 
 This category of Time Series data usually comes in the following format:
 
@@ -27,9 +27,9 @@ Where a column (or several columns) represent the timestamp associated with the 
 a column stores the values of interest.
 
 - **Forecasts**: Predicted values of a time-varying quantity that commonly features
-a look-ahead and can have multiple data values representing each time period.
-This data is used in simulation with receding horizons or data generated from
-forecasting algorithms.
+  a look-ahead and can have multiple data values representing each time period.
+  This data is used in simulation with receding horizons or data generated from
+  forecasting algorithms.
 
 Forecast data usually comes in the following format:
 
@@ -43,47 +43,47 @@ Where a column (or several columns) represent the time stamp associated with the
 time of the forecast, and the columns represent the forecasted values.
 
 - **Interval**: The period of time between forecasts initial times. In `PowerSystems.jl` all
-intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
-simulation, the interval of the time series is usually `Hour(24)`, in the example above, the
-interval is `Hour(1)`.
+  intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
+  simulation, the interval of the time series is usually `Hour(24)`, in the example above, the
+  interval is `Hour(1)`.
 
 - **Horizon**: Is the count of discrete forecasted values, all horizons in `PowerSystems.jl`
-are represented with `Int`. For instance, many Day-ahead markets will have a forecast with a
-horizon 24.
+  are represented with `Int`. For instance, many Day-ahead markets will have a forecast with a
+  horizon 24.
 
 - **Forecast window**: Represents the forecasted value starting at a particular initial time.
 
-Currently `PowerSystems.jl` does not support Forecasts or SingleTimeSeries with dissimilar
-intervals or resolution.
+**Currently `PowerSystems.jl` does not support Forecasts or SingleTimeSeries with dissimilar
+intervals or resolution.**
 
 ## Types
 
-PowerSystems supports two categories of time series data depending on the
+`PowerSystems.jl` supports two categories of time series data depending on the
 process to obtain the data:
 
 - Static data: a single column of time series values for a component field
-(such as active power) where each time period is represented by a single value.
-This data commonly is obtained from historical information or the realization of
-a time-varying quantity.
+  (such as active power) where each time period is represented by a single value.
+  This data commonly is obtained from historical information or the realization of
+  a time-varying quantity.
 - Forecasts: Predicted values of a time-varying quantity that commonly features
-a look-ahead and can have multiple data values representing each time period.
-This data is used in simulation with receding horizons or data generated from
-forecasting algorithms.
+  a look-ahead and can have multiple data values representing each time period.
+  This data is used in simulation with receding horizons or data generated from
+  forecasting algorithms.
 
 ### Static Time Series Data
 
-PowerSystems defines the Julia struct `SingleTimeSeries` to represent this data.
+PowerSystems defines the Julia struct [`SingleTimeSeries`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries) to represent this data.
 
 ### Forecasts
 
 PowerSystems defines the following Julia structs to represent forecasts:
 
-- `Deterministic`: Point forecast without any uncertainty representation.
-- `Probabilistic`: Stores a discretized cumulative distribution functions
-(CDFs) or probability distribution functions (PDFs) at each time step in the
-look-ahead window.
-- `Scenarios`: Stores a set of probable trajectories for forecasted quantity
-with equal probability.
+- [`Deterministic`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Deterministic): Point forecast without any uncertainty representation.
+- [`Probabilistic`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Probabilistic): Stores a discretized cumulative distribution functions
+  (CDFs) or probability distribution functions (PDFs) at each time step in the
+  look-ahead window.
+- [`Scenarios`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Scenarios): Stores a set of probable trajectories for forecasted quantity
+  with equal probability.
 
 ## Storage
 
@@ -101,7 +101,8 @@ sys = System(100.0; time_series_in_memory = true)
 PowerSystems supports several methods to load time series data (Forecasts or
 StaticTimeSeries) into a System.
 
-- Automated parsing during system construction, this method loads the data from CSV files. Refer to the [parsing documentation](parsing.md).
+- Automated parsing during system construction, this method loads the data from CSV files.
+  Refer to the parsing [documentation](@ref parsing_time_series).
 
 - Create directly from data in `TimeSeries.TimeArray` or `DataFrames.DataFrame`
 
@@ -132,8 +133,8 @@ vectors or `TimeSeries.TimeArray`.
 ```
 
 - Load from CSV file. For Deterministic forecasts, each row represents one
-look-ahead window. The first column must be the initial time and the rest must
-be the forecast values. The CSV file must have no header in the first row.
+  look-ahead window. The first column must be the initial time and the rest must
+  be the forecast values. The CSV file must have no header in the first row.
 
 ```julia
     resolution = Dates.Hour(1)

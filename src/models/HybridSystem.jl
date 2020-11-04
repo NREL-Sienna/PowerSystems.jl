@@ -1,6 +1,13 @@
 """
 Representation of a Hybrid System that collects renewable generation, load, thermal generation
-and storage
+and storage.
+
+Each generator is a data structure that is defined by the following components:
+
+- [ThermalGen](@ref PowerSystems.ThermalGen)
+- [Load](@ref PowerSystems.ElectricLoad)
+- [Storage](@ref PowerSystems.Storage)
+- [RenewableGen](@ref PowerSystems.RenewableGen)
 """
 mutable struct HybridSystem <: StaticInjection
     name::String
