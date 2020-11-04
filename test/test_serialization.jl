@@ -169,6 +169,7 @@ end
 
 @testset "Test JSON serialization of MarketBidCost" begin
     sys = System(100)
+    generators = [ThermalStandard(nothing), ThermalMultiStart(nothing)]
     for i in 1:2
         bus = Bus(nothing)
         bus.name = "bus" * string(i)
@@ -176,7 +177,7 @@ end
         # This prevents an error log message.
         bus.bustype = BusTypes.REF
         add_component!(sys, bus)
-        gen = ThermalStandard(nothing)
+        gen = generators[i]
         gen.bus = bus
         gen.name = "gen" * string(i)
         initial_time = Dates.DateTime("2020-01-01T00:00:00")
@@ -194,7 +195,7 @@ end
     @test result
 end
 
-@testset "Test JSON serialization of StaticGroupReserve" begin
+@testset "Test JSON serialization of ReserveDemandCurve" begin
     sys = System(100)
     devices = []
     for i in 1:2
