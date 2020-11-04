@@ -119,4 +119,4 @@ end
 
 It is possible to use advanced future for the autogeneration of structs. It is not mandatory
 to use these tools to create custom struct but it can be useful if you need to generate multiple
-structst for your model. The details are in [this section](@ref type_structure).
+custom structs for your model. The details are in [this section](@ref type_structure).

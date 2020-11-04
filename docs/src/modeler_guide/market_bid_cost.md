@@ -8,7 +8,7 @@ and ancillary services jointly.
 
 ### Step 1: Constructiong device with MarketBidCost
 
-When using MarketBidCost, the user can add the cost struct to the , at this point the actual
+When using MarketBidCost, the user can add the cost struct to the device, at this point the actual
 cost bids aren't expected to be populated/passed. The code below shows how we can create a
 thermal device with MarketBidCost.
 
