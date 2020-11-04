@@ -13,7 +13,7 @@ cost bids aren't expected to be populated/passed. The code below shows how we ca
 thermal device with MarketBidCost.
 
 ```@example
-Using PowerSystems
+using PowerSystems
 bus = Bus(1, "nodeE", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 
 generator = ThermalStandard(
@@ -38,7 +38,7 @@ generator = ThermalStandard(
             Vector{Service}()
             ),
         base_power = 100.0,
-    ),
+    )
 
 ```
 
@@ -53,11 +53,11 @@ pairs (cost in $/p.u-hr & power-point in p.u-hr), which is modeled same as TwoPa
 ThreePartCost. Code below shows an example of how to build a TimeSeriesData.
 
 ```@example
-Using PowerSystems
+using PowerSystems, Dates
 data =
     Dict(Dates.DateTime("2020-01-01") => [
         [(0.0, 0.05), (290.1, 0.0733), (582.72, 0.0967), (894.1, 0.120)],
-        [(0.0, 0.05), (300.1, 0.0733), (600.72, 0.0967), (900.1, 0.120)]
+        [(0.0, 0.05), (300.1, 0.0733), (600.72, 0.0967), (900.1, 0.120)],]
     )
 time_series_data = Deterministic(
     name = "variable_cost",
@@ -71,7 +71,8 @@ time_series_data = Deterministic(
 To add energy market bids time-series to the MarketBidCost, the use of `set_variable_cost!` is recommended.
 
 ```@example
-Using PowerSystems
+using PowerSystems, Dates
+
 bus = Bus(1, "nodeE", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 generator = ThermalStandard(
     name = "Brighton",
@@ -122,8 +123,8 @@ Similar to adding energy market bids,  for adding bids for ancillary services th
 `set_service_bid!` is recommended.
 
 ```@example
-using PowerSystems
-using Dates
+using PowerSystems, Dates
+
 bus = Bus(1, "nodeE", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 service = VariableReserve{ReserveUp}("test_reserve", true, 0.6, 2.0)
 generator = ThermalStandard(
