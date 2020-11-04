@@ -1,0 +1,32 @@
+name: CrossPackageTest
+
+on:
+  push:
+    branches: [master]
+    tags: [v*]
+  pull_request:
+
+jobs:
+  test:
+    name: Julia v${{ matrix.julia-version }} - ${{ matrix.package_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: [1]
+        os: [ubuntu-latest]
+        package_name: [PowerSimulations, PowerSimulationsDynamics]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: x64
+      - uses: julia-actions/julia-buildpkg@latest
+      - name: Clone ${{matrix.package_name}}
+        uses: actions/checkout@v2
+        with:
+          repository: NREL-SIIP/${{matrix.package_name}}.jl
+          path: "${{matrix.package_name}}.jl"
+      - name: Run the tests
+        run: julia --project="${{matrix.package_name}}.jl" -e "using Pkg; Pkg.develop(PackageSpec(path=\"./\")); Pkg.update(); Pkg.test()"
+        shell: bash
