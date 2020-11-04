@@ -1,0 +1,6 @@
+{
+    "extensions": [
+        "julialang.language-julia"
+    ],
+    "image": "ghcr.io/julia-vscode/julia-devcontainer"
+}
