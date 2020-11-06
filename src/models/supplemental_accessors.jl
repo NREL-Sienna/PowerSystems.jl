@@ -14,12 +14,12 @@ _remove_aggregration_topology!(bus::Bus, ::Area) = bus.area = nothing
 """
 Calculate the admittance of AC branches
 """
-get_series_susceptance(b::ACBranch) = 1 / get_x(b)
-get_series_susceptance(b::TapTransformer) = 1 / (get_x(b) * get_tap(b))
+get_series_susceptance(b::ACBranch) = - 1 / get_x(b)
+get_series_susceptance(b::TapTransformer) = - 1 / (get_x(b) * get_tap(b))
 function get_series_susceptance(b::PhaseShiftingTransformer)
     y = 1 / (get_r(b) + get_x(b) * 1im)
-    y_a = y / (get_tap(b) * exp(get_α(b) * 1im * (π / 180)))
-    return 1 / imag(y_a)
+    y_a = y / (get_tap(b) * exp(get_α(b) * 1im))
+    return imag(y_a)
 end
 
 get_series_admittance(b::ACBranch) = 1 / (get_r(b) + get_x(b) * 1im)
