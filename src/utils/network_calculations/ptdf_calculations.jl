@@ -61,24 +61,24 @@ function _buildptdf(branches, nodes, dist_slack::Vector{Float64})
     if dist_slack[1] == 0.1 && length(dist_slack) == 1
         (B, bipiv, binfo) = getrf!(B)
         binfo_check(binfo)
-        S_ = gemm(
+        S = gemm(
             'N',
             'N',
             gemm('N', 'T', inv_X, A[setdiff(1:end, slack_position), :]),
             getri!(B, bipiv),
         )
-        S = hcat(S_[:, 1:(slack_position - 1)], zeros(linecount), S_[:, slack_position:end])
+        @views S = hcat(S[:, 1:(slack_position - 1)], zeros(linecount), S[:, slack_position:end])
     elseif dist_slack[1] != 0.1 && length(dist_slack) == buscount
         @info "Distributed bus"
         (B, bipiv, binfo) = getrf!(B)
         binfo_check(binfo)
-        S_ = gemm(
+        S = gemm(
             'N',
             'N',
             gemm('N', 'T', inv_X, A[setdiff(1:end, slack_position), :]),
             getri!(B, bipiv),
         )
-        S = hcat(S_[:, 1:(slack_position - 1)], zeros(linecount), S_[:, slack_position:end])
+        @views S = hcat(S[:, 1:(slack_position - 1)], zeros(linecount), S[:, slack_position:end])
         slack_array = dist_slack / sum(dist_slack)
         slack_array = reshape(slack_array, buscount, 1)
         S = S - gemm('N', 'N', gemm('N', 'N', S, slack_array), ones(1, buscount))
