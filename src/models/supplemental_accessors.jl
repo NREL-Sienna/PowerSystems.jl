@@ -17,7 +17,7 @@ Calculate the admittance of AC branches
 get_series_susceptance(b::ACBranch) = imag(1 / (get_r(b) + get_x(b) * 1im))
 function get_series_susceptance(b::TapTransformer)
     y = 1 / (get_r(b) + get_x(b) * 1im)
-    y_a = y / (get_tap(b))
+    y_a = y / get_tap(b)
     return imag(y_a)
 end
 function get_series_susceptance(b::PhaseShiftingTransformer)
