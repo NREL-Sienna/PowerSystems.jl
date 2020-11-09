@@ -16,7 +16,6 @@ Calculate the admittance of AC branches
 """
 get_series_susceptance(b::ACBranch) = 1 / get_x(b)
 
-
 """
 Returns the series susceptance of a controllable transformer following the convention
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
