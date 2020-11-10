@@ -47,29 +47,33 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
     return match
 end
 
-sys = create_rts_system()
-@test are_type_and_fields_in_output(iterate(get_components(Bus, sys))[1])
-@test are_type_and_fields_in_output(iterate(get_components(Generator, sys))[1])
-@test are_type_and_fields_in_output(iterate(get_components(ThermalGen, sys))[1])
-@test are_type_and_fields_in_output(iterate(get_components(Branch, sys))[1])
-@test are_type_and_fields_in_output(iterate(get_components(ElectricLoad, sys))[1])
+@testset "Test printing of system and components" begin
+    sys = create_rts_system()
+    @test are_type_and_fields_in_output(iterate(get_components(Bus, sys))[1])
+    @test are_type_and_fields_in_output(iterate(get_components(Generator, sys))[1])
+    @test are_type_and_fields_in_output(iterate(get_components(ThermalGen, sys))[1])
+    @test are_type_and_fields_in_output(iterate(get_components(Branch, sys))[1])
+    @test are_type_and_fields_in_output(iterate(get_components(ElectricLoad, sys))[1])
 
-# Just make sure nothing blows up.
-for component in iterate_components(sys)
-    print(devnull, component)
-    print(devnull, MIME"text/plain")
-    @test !isempty(summary(component))
+    # Just make sure nothing blows up.
+    for component in iterate_components(sys)
+        print(devnull, component)
+        print(devnull, MIME"text/plain")
+        @test !isempty(summary(component))
+    end
+    for time_series in get_time_series_multiple(sys)
+        show(devnull, time_series)
+        show(devnull, MIME"text/plain")
+        @test !isempty(summary(time_series))
+    end
+
+    @test !isempty(summary(sys))
+
+    @test isnothing(show(
+        IOBuffer(),
+        "text/plain",
+        PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS),
+    ))
+
+    @test isnothing(show(IOBuffer(), "text/plain", sys))
 end
-for time_series in get_time_series_multiple(sys)
-    show(devnull, time_series)
-    show(devnull, MIME"text/plain")
-    @test !isempty(summary(time_series))
-end
-
-@test !isempty(summary(sys))
-
-@test isnothing(show(
-    IOBuffer(),
-    "text/plain",
-    PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS),
-))
