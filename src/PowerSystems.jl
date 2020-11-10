@@ -270,8 +270,6 @@ export to_json
 export from_json
 export serialize
 export deserialize
-export check_time_series_consistency
-export validate_time_series_consistency
 export clear_ext!
 export convert_component!
 export set_area!

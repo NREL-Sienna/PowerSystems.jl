@@ -944,10 +944,6 @@ function make_time_series(
 end
 =#
 
-function get_time_series_names(::Type{T}, component::Component) where {T <: TimeSeriesData}
-    return IS.get_time_series_names(T, component)
-end
-
 """
 Return the initial times for all forecasts.
 """
@@ -1020,20 +1016,6 @@ Remove all time series data from the system.
 """
 function clear_time_series!(sys::System)
     return IS.clear_time_series!(sys.data)
-end
-
-"""
-Throws DataFormatError if time series data have inconsistent parameters.
-"""
-function check_time_series_consistency(sys::System)
-    IS.check_time_series_consistency(sys.data)
-end
-
-"""
-Return true if all time series data have consistent parameters.
-"""
-function validate_time_series_consistency(sys::System)
-    return IS.validate_time_series_consistency(sys.data)
 end
 
 """
