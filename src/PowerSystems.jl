@@ -321,6 +321,7 @@ import LinearAlgebra: LAPACK.getri!
 import LinearAlgebra: LAPACK.getrf!
 import LinearAlgebra: BLAS.gemm
 import LinearAlgebra
+import Logging
 import Dates
 import TimeSeries
 import DataFrames
@@ -378,7 +379,6 @@ import InfrastructureSystems:
     NormalizationTypes,
     UnitSystem,
     SystemUnitsSettings,
-    configure_logging,
     open_file_logger,
     MultiLogger,
     LogEventTracker
@@ -414,6 +414,7 @@ include("models/dynamic_models.jl")
 include("models/injection.jl")
 
 # Include utilities
+include("utils/logging.jl")
 include("utils/IO/base_checks.jl")
 
 # PowerSystems models
