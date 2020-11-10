@@ -131,12 +131,8 @@ Filter = t -> t ∉ [System]
 ## [Logging](@id logging)
 
 ```@autodocs
-Modules = [InfrastructureSystems]
-Pages   = ["logging.jl"]
-Order = [:type, :function]
-Filter = t -> t ∈ [InfrastructureSystems.configure_logging,
-                   InfrastructureSystems.open_file_logger,
-                   InfrastructureSystems.MultiLogger,
-                   InfrastructureSystems.LogEventTracker,
-                   ]
+Modules = [PowerSystems]
+Pages = ["utils/logging.jl"]
+Public = true
+Private = false
 ```

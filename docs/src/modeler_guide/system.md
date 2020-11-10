@@ -97,7 +97,7 @@ configure_logging(console_level = Logging.Error)
 **Example**: Global logger configuration
 
 ```julia
-logger = configure_logging(; filename="log.txt")
+logger = configure_logging(filename = "log.txt")
 @info "hello world"
 flush(logger)
 @error "some error"
