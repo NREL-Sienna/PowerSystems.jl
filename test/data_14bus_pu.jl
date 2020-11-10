@@ -655,7 +655,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThreePartCost((430.292599, 2000.0), 0.0, 0.0, 0.0),
-        base_power = 1.0,
+        base_power = 100.0,
     ),
     ThermalStandard(
         name = "Bus2",
@@ -672,7 +672,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThreePartCost((2500.0, 2000.0), 0.0, 0.0, 0.0),
-        base_power = 1.0,
+        base_power = 100.0,
     ),
     ThermalStandard(
         name = "Bus3",
@@ -689,7 +689,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
-        base_power = 1.0,
+        base_power = 100.0,
     ),
     ThermalStandard(
         name = "Bus6",
@@ -706,7 +706,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
-        base_power = 1.0,
+        base_power = 100.0,
     ),
     ThermalStandard(
         name = "Bus8",
@@ -723,7 +723,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
-        base_power = 1.0,
+        base_power = 100.0,
     ),
 ]
 
@@ -960,5 +960,5 @@ battery14(nodes14) = [GenericBattery(
     reactive_power = 0.0,
     reactive_power_limits = (min = -50.0, max = 50.0),
     efficiency = (in = 0.80, out = 0.90),
-    base_power = 1.0,
+    base_power = 100.0,
 )]
