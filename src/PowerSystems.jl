@@ -242,6 +242,7 @@ export get_time_series_array
 export get_time_series_resolution
 export get_time_series_timestamps
 export get_time_series_values
+export get_time_series_names
 export get_next_time_series_array!
 export get_next_time
 export get_horizon
@@ -270,8 +271,6 @@ export to_json
 export from_json
 export serialize
 export deserialize
-export check_time_series_consistency
-export validate_time_series_consistency
 export clear_ext!
 export convert_component!
 export set_area!
@@ -368,6 +367,7 @@ import InfrastructureSystems:
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
+    get_time_series_names,
     get_next_time_series_array!,
     get_next_time,
     to_json,

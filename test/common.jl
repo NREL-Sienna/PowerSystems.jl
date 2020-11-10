@@ -196,3 +196,62 @@ function create_system_with_dynamic_inverter()
 
     return sys
 end
+
+function test_accessors(component)
+    ps_type = typeof(component)
+    @debug "test_accessors" ps_type
+
+    for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
+        if field_name === :name || field_name === :time_series_container
+            func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
+            _func! =
+                getfield(InfrastructureSystems, Symbol("set_" * string(field_name) * "!"))
+        else
+            getter_name = Symbol("get_" * string(field_name))
+            if !hasproperty(PowerSystems, getter_name)
+                continue
+            end
+            func = getfield(PowerSystems, getter_name)
+            if !hasmethod(func, (ps_type,))
+                continue
+            end
+            setter_name = Symbol("set_" * string(field_name) * "!")
+            # In some cases there is a getter but no setter.
+            if hasproperty(PowerSystems, setter_name)
+                _func! = getfield(PowerSystems, setter_name)
+            else
+                _func! = nothing
+            end
+        end
+
+        val = func(component)
+        @test val isa field_type
+        try
+            if typeof(val) == Float64 || typeof(val) == Int
+                if !isnan(val)
+                    aux = val + 1
+                    if _func! !== nothing
+                        _func!(component, aux)
+                        @test func(component) == aux
+                    end
+                end
+            elseif typeof(val) == String
+                aux = val * "1"
+                if _func! !== nothing
+                    _func!(component, aux)
+                    @test func(component) == aux
+                end
+            elseif typeof(val) == Bool
+                aux = !val
+                if _func! !== nothing
+                    _func!(component, aux)
+                    @test func(component) == aux
+                end
+            else
+                _func! !== nothing && _func!(component, val)
+            end
+        catch MethodError
+            continue
+        end
+    end
+end

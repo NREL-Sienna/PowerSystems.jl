@@ -94,42 +94,18 @@ end
     # it's because not all fields in that type are defined in power_system_structs.json
     # with nullable values. Consider adding them so that this "demo-constructor" works.
     # If that isn't appropriate for this type, add it to types_to_skip below.
+    # You can also call test_accessors wherever an instance has been created.
 
     types_to_skip = (System, TestDevice, TestRenDevice)
-    for ps_type in IS.get_all_concrete_subtypes(Component)
+    types = vcat(
+        IS.get_all_concrete_subtypes(Component),
+        IS.get_all_concrete_subtypes(DynamicComponent),
+    )
+    sort!(types, by = x -> string(x))
+    for ps_type in types
         ps_type in types_to_skip && continue
-        obj = ps_type(nothing)
-        for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
-            field_name == :internal && continue  # no setter
-            if field_name === :name || field_name === :time_series_container
-                func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
-                _func! = getfield(
-                    InfrastructureSystems,
-                    Symbol("set_" * string(field_name) * "!"),
-                )
-            else
-                func = getfield(PowerSystems, Symbol("get_" * string(field_name)))
-                _func! = getfield(PowerSystems, Symbol("set_" * string(field_name) * "!"))
-            end
-            val = func(obj)
-            @test val isa field_type
-            #Test set function for different cases
-            if typeof(val) == Float64 || typeof(val) == Int
-                if !isnan(val)
-                    aux = val + 1
-                    _func!(obj, aux)
-                    @test func(obj) == aux
-                end
-            elseif typeof(val) == String
-                aux = val * "1"
-                _func!(obj, aux)
-                @test func(obj) == aux
-            elseif typeof(val) == Bool
-                aux = !val
-                _func!(obj, aux)
-                @test func(obj) == aux
-            end
-        end
+        component = ps_type(nothing)
+        test_accessors(component)
     end
 end
 

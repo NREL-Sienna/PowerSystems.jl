@@ -129,6 +129,8 @@ end
     add_component!(sys, dynamic_branch)
     _, result = validate_serialization(sys)
     @test result
+
+    test_accessors(dynamic_branch)
 end
 
 @testset "Test JSON serialization of StaticGroupReserve" begin

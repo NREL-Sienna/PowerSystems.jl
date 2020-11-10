@@ -13,6 +13,7 @@
     @test Q_control isa PowerSystems.DeviceParameter
     outer_control = OuterControl(virtual_H, Q_control)
     @test outer_control isa PowerSystems.DynamicComponent
+    test_accessors(outer_control)
     vsc = CurrentControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
     @test vsc isa PowerSystems.DynamicComponent
     BESS_source = ZeroOrderBESS(
@@ -37,4 +38,5 @@ end
     @test length(inverters) == 1
     test_inverter = inverters[1]
     @test test_inverter isa PowerSystems.Component
+    test_accessors(test_inverter)
 end

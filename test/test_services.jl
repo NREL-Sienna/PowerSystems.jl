@@ -313,6 +313,8 @@ end
         contributing_devices[1],
         AGC_service,
     )
+
+    test_accessors(device_outside_area)
 end
 
 @testset "Test StaticReserveGroup" begin

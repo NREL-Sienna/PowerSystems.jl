@@ -79,6 +79,7 @@
 
     clear_time_series!(sys)
     @test length(collect(get_time_series_multiple(sys))) == 0
+    @test IS.get_internal(sys) isa IS.InfrastructureSystemsInternal
 end
 
 @testset "Test handling of bus_numbers" begin
@@ -124,6 +125,12 @@ end
 
     components = get_components(Component, sys)
     @test i == length(components)
+
+    # Test debugging functions.
+    component = first(components)
+    uuid = IS.get_uuid(component)
+    @test get_name(get_component(sys, uuid)) == get_name(component)
+    @test get_name(get_component(sys, string(uuid))) == get_name(component)
 end
 
 @testset "Test remove_component" begin
@@ -251,4 +258,11 @@ end
     @test Dates.Hour(get_forecast_total_period(sys)) ==
           Dates.Hour(second_time - initial_time) + Dates.Hour(resolution * horizon)
     @test get_forecast_initial_times(sys) == [initial_time, second_time]
+
+    remove_time_series!(sys, typeof(forecast), gen, get_name(forecast))
+    @test_throws ArgumentError get_time_series(typeof(forecast), gen, get_name(forecast))
+end
+
+@testset "Invalid constructor" begin
+    @test_throws IS.DataFormatError System("data.invalid")
 end
