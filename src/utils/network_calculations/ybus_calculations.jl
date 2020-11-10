@@ -117,11 +117,10 @@ function _buildybus(branches, nodes, fixed_admittances)
         if get_name(b) == "init"
             throw(DataFormatError("The data in Branch is invalid"))
         end
-
-        _ybus!(ybus, b, num_bus)
+       get_available(b) && _ybus!(ybus, b, num_bus)
     end
     for fa in fixed_admittances
-        _ybus!(ybus, fa, num_bus)
+        get_available(fa) && _ybus!(ybus, fa, num_bus)
     end
     return SparseArrays.dropzeros!(ybus)
 end
@@ -158,13 +157,12 @@ Builds a Ybus from a collection of buses and branches. The return is a Ybus Arra
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
-function Ybus(branches, nodes; check_connectivity::Bool = true)
-    #Get axis names
-    bus_ax = [get_number(bus) for bus in nodes]
-    sort!(bus_ax)
+function Ybus(branches, nodes, fixed_admitance=Vector{FixedAdmittance}(); check_connectivity::Bool = true)
+    nodes = sort!(collect(nodes), by = x -> get_number(x))
+    bus_ax = get_number.(nodes)
     axes = (bus_ax, bus_ax)
     look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
-    ybus = _buildybus(branches, nodes, Vector{FixedAdmittance}())
+    ybus = _buildybus(branches, nodes, fixed_admitance)
     if check_connectivity
         _goderya(ybus)
     end
@@ -177,18 +175,9 @@ Builds a Ybus from the system. The return is a Ybus Array indexed with the bus n
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
-
 function Ybus(sys::System; check_connectivity::Bool = true)
     branches = get_components(ACBranch, sys)
-    nodes = sort!(collect(get_components(Bus, sys)), by = x -> x.number)
+    nodes = get_components(Bus, sys)
     fixed_admittances = get_components(FixedAdmittance, sys)
-    # Get axis names
-    bus_ax = sort!([get_number(bus) for bus in nodes])
-    axes = (bus_ax, bus_ax)
-    look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
-    ybus = _buildybus(branches, nodes, fixed_admittances)
-    if check_connectivity
-        _goderya(ybus)
-    end
-    return Ybus(ybus, axes, look_up)
+    return Ybus(branches, nodes, fixed_admittances; check_connectivity=check_connectivity)
 end
