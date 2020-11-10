@@ -469,6 +469,7 @@ end
         Xl = 0.1,
         Se = (0.1, 0.5),
     )
+    test_accessors(GENROU)
 
     GENROE = RoundRotorExponential(
         R = 0.0,
@@ -484,6 +485,7 @@ end
         Xl = 0.1,
         Se = (0.1, 0.5),
     )
+    test_accessors(GENROE)
 
     GENSAL = SalientPoleQuadratic(
         R = 0.0,
@@ -497,6 +499,7 @@ end
         Xl = 0.1,
         Se = (0.1, 0.5),
     )
+    test_accessors(GENSAL)
 
     GENSAE = SalientPoleExponential(
         R = 0.0,
@@ -510,6 +513,7 @@ end
         Xl = 0.1,
         Se = (0.1, 0.5),
     )
+    test_accessors(GENSAE)
 
     #Test GENROU
     @test get_R(GENROU) == 0.0
