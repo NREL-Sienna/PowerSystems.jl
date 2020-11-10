@@ -207,7 +207,6 @@ function _write_results(sys::System, nl_result)
             Vm_vect[ix] = result[2 * ix - 1]
             θ_vect[ix] = result[2 * ix]
             for gen in sources
-
                 if gen.bus == bus
                     P_gen_vect[ix] += get_active_power(gen) * sys_basepower
                     Q_gen_vect[ix] += get_reactive_power(gen) * sys_basepower
@@ -457,7 +456,11 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
 
         if b.bustype == BusTypes.REF
-            injection_components = get_components(StaticInjection, system, d -> get_available(d) && get_bus(d) == b)
+            injection_components = get_components(
+                StaticInjection,
+                system,
+                d -> get_available(d) && get_bus(d) == b,
+            )
             isempty(injection_components) &&
                 throw(IS.ConflictingInputsError("The slack bus does not have any injection component. Power Flow can not proceed"))
             Vm[ix] = get_magnitude(b)::Float64

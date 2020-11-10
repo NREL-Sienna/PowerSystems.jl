@@ -117,7 +117,7 @@ function _buildybus(branches, nodes, fixed_admittances)
         if get_name(b) == "init"
             throw(DataFormatError("The data in Branch is invalid"))
         end
-       get_available(b) && _ybus!(ybus, b, num_bus)
+        get_available(b) && _ybus!(ybus, b, num_bus)
     end
     for fa in fixed_admittances
         get_available(fa) && _ybus!(ybus, fa, num_bus)
@@ -157,7 +157,12 @@ Builds a Ybus from a collection of buses and branches. The return is a Ybus Arra
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
-function Ybus(branches, nodes, fixed_admitance=Vector{FixedAdmittance}(); check_connectivity::Bool = true)
+function Ybus(
+    branches,
+    nodes,
+    fixed_admitance = Vector{FixedAdmittance}();
+    check_connectivity::Bool = true,
+)
     nodes = sort!(collect(nodes), by = x -> get_number(x))
     bus_ax = get_number.(nodes)
     axes = (bus_ax, bus_ax)
@@ -179,5 +184,5 @@ function Ybus(sys::System; check_connectivity::Bool = true)
     branches = get_components(ACBranch, sys)
     nodes = get_components(Bus, sys)
     fixed_admittances = get_components(FixedAdmittance, sys)
-    return Ybus(branches, nodes, fixed_admittances; check_connectivity=check_connectivity)
+    return Ybus(branches, nodes, fixed_admittances; check_connectivity = check_connectivity)
 end
