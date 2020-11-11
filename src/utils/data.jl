@@ -63,7 +63,6 @@ function Base.download(
     folder::AbstractString,
     force::Bool = false,
 )
-
     if Sys.iswindows()
         DATA_URL = "$repo/archive/$branch.zip"
     else
@@ -106,6 +105,5 @@ function unzip(::Type{Windows}, filename, directory)
     end
     @assert success(`$path_7z x $filename -y -o$directory`) "Unable to extract $filename to $directory"
 end
-
 
 end # module UtilsData
