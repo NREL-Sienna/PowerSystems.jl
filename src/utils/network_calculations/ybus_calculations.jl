@@ -160,14 +160,14 @@ Builds a Ybus from a collection of buses and branches. The return is a Ybus Arra
 function Ybus(
     branches,
     nodes,
-    fixed_admitances = Vector{FixedAdmittance}();
+    fixed_admittances = Vector{FixedAdmittance}();
     check_connectivity::Bool = true,
 )
     nodes = sort!(collect(nodes), by = x -> get_number(x))
     bus_ax = get_number.(nodes)
     axes = (bus_ax, bus_ax)
     look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
-    ybus = _buildybus(branches, nodes, fixed_admitances)
+    ybus = _buildybus(branches, nodes, fixed_admittances)
     if check_connectivity
         _goderya(ybus)
     end
