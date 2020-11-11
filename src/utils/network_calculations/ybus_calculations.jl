@@ -113,7 +113,7 @@ function _buildybus(branches, nodes, fixed_admittances)
         num_bus[get_number(b)] = ix
     end
     ybus = SparseArrays.spzeros(ComplexF64, buscount, buscount)
-    for b branches
+    for b in branches
         if get_name(b) == "init"
             throw(DataFormatError("The data in Branch is invalid"))
         end
