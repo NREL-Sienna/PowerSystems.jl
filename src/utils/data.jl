@@ -1,5 +1,3 @@
-# this file is included in the build.jl script
-
 module UtilsData
 
 __precompile__(true)
@@ -54,6 +52,37 @@ function Base.download(
     return data
 end
 
+"""
+Download Data from a "branch" into a "data" folder in given argument path.
+Skip the actual download if the folder already exists and force=false.
+Returns the downloaded folder name.
+"""
+function Base.download(
+    repo::AbstractString,
+    branch::AbstractString,
+    folder::AbstractString,
+    force::Bool = false,
+)
+
+    if Sys.iswindows()
+        DATA_URL = "$repo/archive/$branch.zip"
+    else
+        DATA_URL = "$repo/archive/$branch.tar.gz"
+    end
+    directory = abspath(normpath(folder))
+    reponame = splitpath(repo)[end]
+    data = joinpath(directory, "$reponame-$branch")
+    if !isdir(data) || force
+        @info "Downloading $DATA_URL"
+        tempfilename = Base.download(DATA_URL)
+        mkpath(directory)
+        @info "Extracting data to $data"
+        unzip(os, tempfilename, directory)
+    end
+
+    return data
+end
+
 function unzip(::Type{<:BSD}, filename, directory)
     @assert success(`tar -xvf $filename -C $directory`) "Unable to extract $filename to $directory"
 end
@@ -77,5 +106,6 @@ function unzip(::Type{Windows}, filename, directory)
     end
     @assert success(`$path_7z x $filename -y -o$directory`) "Unable to extract $filename to $directory"
 end
+
 
 end # module UtilsData
