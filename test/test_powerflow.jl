@@ -80,4 +80,19 @@ set_r!(br, 2.0)
     dyn_pf = solve_powerflow(sys)
     @test LinearAlgebra.norm(dyn_pf["bus_results"].Vm - res_jacobian["bus_results"].Vm) <=
           1e-6
+
+    sys = c_sys14()
+    line = get_component(Line, sys, "Line4")
+    set_available!(line, false)
+    solve_powerflow!(sys)
+    @test get_active_power_flow(line) == 0.0
+    test_bus = get_component(Bus, sys, "Bus 4")
+    @test isapprox(get_magnitude(test_bus), 1.002; atol = 1e-3)
+
+    sys = c_sys14()
+    line = get_component(Line, sys, "Line4")
+    set_available!(line, false)
+    res = solve_powerflow(sys)
+    @test res["flow_results"].P_from_to[4] == 0.0
+    @test res["flow_results"].P_to_from[4] == 0.0
 end

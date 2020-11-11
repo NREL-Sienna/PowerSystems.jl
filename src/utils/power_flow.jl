@@ -3,6 +3,7 @@ Calculates the From - To complex power flow (Flow injected at the bus) of branch
 TapTransformer
 """
 function flow_val(b::TapTransformer)
+    !get_available(b) && return 0.0
     Y_t = get_series_admittance(b)
     c = 1 / get_tap(b)
     arc = get_arc(b)
@@ -18,6 +19,7 @@ Calculates the From - To complex power flow (Flow injected at the bus) of branch
 Line
 """
 function flow_val(b::ACBranch)
+    !get_available(b) && return 0.0
     Y_t = get_series_admittance(b)
     arc = PowerSystems.get_arc(b)
     V_from = arc.from.magnitude * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
@@ -32,6 +34,7 @@ Calculates the From - To complex power flow (Flow injected at the bus) of branch
 Transformer2W
 """
 function flow_val(b::Transformer2W)
+    !get_available(b) && return 0.0
     Y_t = get_series_admittance(b)
     arc = get_arc(b)
     V_from = arc.from.magnitude * (cos(arc.from.angle) + sin(arc.from.angle) * 1im)
@@ -51,6 +54,7 @@ Calculates the From - To complex power flow using external data of voltages of b
 TapTransformer
 """
 function flow_func(b::TapTransformer, V_from::Complex{Float64}, V_to::Complex{Float64})
+    !get_available(b) && return (0.0, 0.0)
     Y_t = get_series_admittance(b)
     c = 1 / get_tap(b)
     I = (V_from * Y_t * c^2) - (V_to * Y_t * c)
@@ -63,6 +67,7 @@ Calculates the From - To complex power flow using external data of voltages of b
 Line
 """
 function flow_func(b::ACBranch, V_from::Complex{Float64}, V_to::Complex{Float64})
+    !get_available(b) && return (0.0, 0.0)
     Y_t = get_series_admittance(b)
     I = V_from * (Y_t + (1im * get_b(b).from)) - V_to * Y_t
     flow = V_from * conj(I)
@@ -74,6 +79,7 @@ Calculates the From - To complex power flow using external data of voltages of b
 Transformer2W
 """
 function flow_func(b::Transformer2W, V_from::Complex{Float64}, V_to::Complex{Float64})
+    !get_available(b) && return (0.0, 0.0)
     Y_t = get_series_admittance(b)
     I = V_from * (Y_t + (1im * get_primary_shunt(b))) - V_to * Y_t
     flow = V_from * conj(I)
@@ -94,7 +100,7 @@ Updates the flow on the branches
 """
 function _update_branch_flow!(sys::System)
     for b in get_components(ACBranch, sys)
-        S_flow = flow_val(b)
+        S_flow = get_available(b) ? flow_val(b) : 0.0 + 0.0im
         set_active_power_flow!(b, real(S_flow))
         set_reactive_power_flow!(b, imag(S_flow))
     end
@@ -107,6 +113,7 @@ function _get_load_data(sys::System, b::Bus)
     active_power = 0.0
     reactive_power = 0.0
     for l in get_components(ElectricLoad, sys)
+        !get_available(l) && continue
         if (l.bus == b)
             if isa(l, FixedAdmittance)
                 # Assume v rated = 1.0
@@ -133,7 +140,7 @@ function _write_pf_sol!(sys::System, nl_result)
         if bus.bustype == BusTypes.REF
             P_gen = result[2 * ix - 1]
             Q_gen = result[2 * ix]
-            injection = get_components(StaticInjection, sys)
+            injection = get_components(StaticInjection, sys, x -> get_available(x))
             devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
             generator = devices[1]
             gen_basepower = get_base_power(generator)
@@ -142,7 +149,7 @@ function _write_pf_sol!(sys::System, nl_result)
         elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
-            injection_components = get_components(Generator, sys)
+            injection_components = get_components(Generator, sys, x -> get_available(x))
             devices = [d for d in injection_components if d.bus == bus]
             if length(devices) == 1
                 generator = devices[1]
@@ -190,6 +197,7 @@ function _write_results(sys::System, nl_result)
             Vm_vect[ix] = get_magnitude(bus)
             θ_vect[ix] = result[2 * ix]
             for gen in sources
+                !get_available(gen) && continue
                 if gen.bus == bus
                     P_gen_vect[ix] += get_active_power(gen) * sys_basepower
                 end
@@ -214,6 +222,7 @@ function _write_results(sys::System, nl_result)
     P_to_from_vect = fill(0.0, N_BRANCH)
     Q_to_from_vect = fill(0.0, N_BRANCH)
     for (ix, b) in enumerate(branches)
+        !get_available(b) && continue
         bus_f_ix = bus_map[get_arc(b).from]
         bus_t_ix = bus_map[get_arc(b).to]
         V_from = Vm_vect[bus_f_ix] * (cos(θ_vect[bus_f_ix]) + sin(θ_vect[bus_f_ix]) * 1im)
@@ -343,9 +352,8 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     N_BUS = length(buses)
 
     # assumes the ordering in YBus is the same as in the buses.
-    tempYb = Ybus(get_components(ACBranch, system), buses)
+    Yb = Ybus(get_components(ACBranch, system), buses).data
     a = collect(1:N_BUS)
-    Yb = Ybus(tempYb.data, (a, a), (_make_ax_ref(a), _make_ax_ref(a))).data
     I, J, V = SparseArrays.findnz(Yb)
     neighbors = [Set{Int}([i]) for i in 1:N_BUS]
     for nz in eachindex(V)
@@ -438,6 +446,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         Q_GEN_BUS[ix] = 0.0
         get_ext(b)["neighbors"] = neighbors[ix]
         for gen in sources
+            !get_available(gen) && continue
             if gen.bus == b
                 P_GEN_BUS[ix] += get_active_power(gen)
                 Q_GEN_BUS[ix] += get_reactive_power(gen)
@@ -447,7 +456,11 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
 
         if b.bustype == BusTypes.REF
-            injection_components = get_components(StaticInjection, system, d -> d.bus == b)
+            injection_components = get_components(
+                StaticInjection,
+                system,
+                d -> get_available(d) && get_bus(d) == b,
+            )
             isempty(injection_components) &&
                 throw(IS.ConflictingInputsError("The slack bus does not have any injection component. Power Flow can not proceed"))
             Vm[ix] = get_magnitude(b)::Float64
