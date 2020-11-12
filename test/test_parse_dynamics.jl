@@ -91,7 +91,7 @@ end
     to_json(sys, path)
     parsed_sys = System(path)
     dyn_injectors = get_components(DynamicInjection, parsed_sys)
-    @test length(dyn_injectors) == 4
+    @test length(dyn_injectors) == 435
     for g in get_components(ThermalStandard, parsed_sys)
         @test !isnothing(get_dynamic_injector(g))
     end
