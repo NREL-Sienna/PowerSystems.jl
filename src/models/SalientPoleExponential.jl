@@ -64,8 +64,5 @@ set_saturation_coeffs!(value::SalientPoleExponential, val::Tuple{Float64, Float6
 
 function IS.deserialize_struct(::Type{SalientPoleExponential}, data::Dict)
     vals = IS.deserialize_to_dict(SalientPoleExponential, data)
-    return SalientPoleExponential(
-        vals[:base_machine],
-        (vals[:saturation_coeffs][1], vals[:saturation_coeffs][2]),
-    )
+    return SalientPoleExponential(vals[:base_machine], vals[:saturation_coeffs])
 end

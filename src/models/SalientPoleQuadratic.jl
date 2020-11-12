@@ -63,8 +63,5 @@ set_saturation_coeffs!(value::SalientPoleQuadratic, val::Tuple{Float64, Float64}
 
 function IS.deserialize_struct(::Type{SalientPoleQuadratic}, data::Dict)
     vals = IS.deserialize_to_dict(SalientPoleQuadratic, data)
-    return SalientPoleQuadratic(
-        vals[:base_machine],
-        (vals[:saturation_coeffs][1], vals[:saturation_coeffs][2]),
-    )
+    return SalientPoleQuadratic(vals[:base_machine], vals[:saturation_coeffs])
 end

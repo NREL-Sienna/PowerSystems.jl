@@ -107,8 +107,5 @@ set_saturation_coeffs!(value::RoundRotorExponential, val::Tuple{Float64, Float64
 
 function IS.deserialize_struct(::Type{RoundRotorExponential}, data::Dict)
     vals = IS.deserialize_to_dict(RoundRotorExponential, data)
-    return RoundRotorExponential(
-        vals[:base_machine],
-        (vals[:saturation_coeffs][1], vals[:saturation_coeffs][2]),
-    )
+    return RoundRotorExponential(vals[:base_machine], vals[:saturation_coeffs])
 end
