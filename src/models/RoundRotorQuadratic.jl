@@ -90,3 +90,11 @@ set_base_machine!(value::RoundRotorQuadratic, val::RoundRotorMachine) =
     value.base_machine = val
 set_saturation_coeffs!(value::RoundRotorQuadratic, val::Tuple{Float64, Float64}) =
     value.saturation_coeffs = val
+
+function IS.deserialize_struct(::Type{RoundRotorQuadratic}, data::Dict)
+    vals = IS.deserialize_to_dict(RoundRotorQuadratic, data)
+    return RoundRotorQuadratic(
+        vals[:base_machine],
+        (vals[:saturation_coeffs][1], vals[:saturation_coeffs][2]),
+    )
+end
