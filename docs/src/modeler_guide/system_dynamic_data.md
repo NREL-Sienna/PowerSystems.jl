@@ -9,14 +9,19 @@ const PSY = PowerSystems
 DATA_DIR = download(PowerSystems.UtilsData.TestData, folder = pwd())
 ```
 
-The following describes the system creation for the OMIB case.
+Although `PowerSystems.jl` is not constrained to only PSS/e files, commonly the data available
+comes in a pair of files: One for the static data power flow case and a second one with the
+dynamic components information. However, `PowerSystems.jl` is able to take any power flow case
+and specify dynamic components to it.
 
-## Static System creation
+The following describes the system creation for the one machine infinite bus case using custom
+component specifications.
 
-There are plenty of ways to define a static system (for Power Flow purposes), but the
-recommended option for users is to use a [PTI data format](https://labs.ece.uw.edu/pstca/formats/pti.txt) (`.raw` file)
-or a [Matpower data format](https://matpower.org/docs/manual.pdf) (`.m` file),
-since parsers are available. The following `OMIB.raw` file is used to create the OMIB system:
+## One Machine Infinite Bus Example
+
+First load data from any format (see [Constructing a System from RAW data](@ref parsing) for
+details. In this example we will load a [PTI power flow data format](https://labs.ece.uw.edu/pstca/formats/pti.txt)
+(`.raw` file) as follows:
 
 ```raw
 0, 100, 33, 0, 0, 60  / 24-Apr-2020 17:05:49 - MATPOWER 7.0.1-dev
@@ -53,29 +58,25 @@ Based on the description provided in PTI files, this is a two-bus system, on whi
 1.04 pu. There is one 100 MVA generator connected at bus 2, producing 50 MW. There is an
 equivalent line connecting buses 1 and 2 with a reactance of ``0.05`` pu.
 
+We can load this data file first
+
 ```@repl generated_system_dynamic_data
 using PowerSystems
 DATA_DIR = "../../../data" #hide
 omib_sys = System(joinpath(DATA_DIR, "PSSE_test/OMIB.raw"), runchecks = false)
 ```
 
-To explore the generators we can do:
-
-```@example generated_system_dynamic_data
-collect(get_components(Generator, omib_sys))
-```
-
-By exploring those it can be seen that the generators are named as: `generator-bus_number-id`.
-Then, the generator attached at bus 2 is simply named `generator-102-1`.
-
-### Dynamic Injections
+### Dynamic Generator
 
 We are now interested in attaching to the system the dynamic component that will be modeling
-our dynamic generator. Later versions will include a parser for `.dyr` files.
+our dynamic generator. The data can be added by directly passing a `.dyr` file, but in this
+example we want to add custom dynamic data.
 
 Dynamic generator devices are composed by 5 components, namely, `machine`, `shaft`, `avr`,
-`tg` and `pss`. So we will be adding functions to create all of its components and the
-generator itself:
+`tg` and `pss` (see [`DynamicGenerator`](@ref)). So we will be adding functions to create all
+of its components and the generator itself. The example code  creates all the components
+for a [`DynamicGenerator`](@ref) based on specific models for its components. This result
+will be a classic machine model without AVR, Turbine Governor and PSS.
 
 ```@example generated_system_dynamic_data
 #Machine
@@ -93,16 +94,17 @@ shaft_damping = SingleMass(
 
 #AVR
 avr_none = AVRFixed(Vf = 0.0)
-#TG
+
+#TurbineGovernor
 tg_none = TGFixed(efficiency = 1.0)
+
 #PSS
 pss_none = PSSFixed(V_pss = 0.0);
 ```
 
-These creates all the components for a `DynamicGenerator` based on specific models. This will be a classic
-machine model without AVR, Turbine Governor and PSS.
-
-Then we can simply create the dynamic generator as:
+Then we can collect all the dynamic components and create the dynamic generator and assign it
+to a static generator of choice. In this example we will add it to the generator "generator-102-1"
+as follows:
 
 ```@example generated_system_dynamic_data
 #Collect the static gen in the system
@@ -111,9 +113,9 @@ static_gen = get_component(Generator, omib_sys, "generator-102-1")
 dyn_gen = DynamicGenerator(
             name = get_name(static_gen),
             ω_ref = 1.0,
-            machine = machine_classic, 
-            shaft = shaft_damping, 
-            avr = avr_none, 
+            machine = machine_classic,
+            shaft = shaft_damping,
+            avr = avr_none,
             prime_mover = tg_none,
             pss = pss_none,
         )
@@ -121,16 +123,16 @@ dyn_gen = DynamicGenerator(
 add_component!(omib_sys, dyn_gen, static_gen)
 ```
 
-Then we can simply export our system data such that it can be later read as:
+Once the data is created, we can export our system data such that it can be reloaded later:
 
 ```julia
 to_json(omib_sys, "YOUR_DIR/omib_sys.json")
 ```
 
-## System with Dynamic Inverter: Data creation
+## Example with Dynamic Inverter
 
 We will now create a three bus system with one inverter and one generator. In order to do so,
-we will parse the following `ThreebusInverter.raw` network:
+we will parse the following file `ThreebusInverter.raw`:
 
 ```raw
 0, 100, 33, 0, 0, 60  / 24-Apr-2020 19:28:39 - MATPOWER 7.0.1-dev
@@ -178,13 +180,13 @@ DATA_DIR = "../../../data" #hide
 threebus_sys = System(joinpath(DATA_DIR, "PSSE_test/ThreeBusInverter.raw"), runchecks = false)
 ```
 
-We will connect a One-d-one-q machine at bus 102, and a Virtual Synchronous Generator Inverter
+We will connect a [`OneDOneQMachine`](@ref) machine at bus 102, and a Virtual Synchronous Generator Inverter
 at bus 103. An inverter is composed by a `converter`, `outer control`, `inner control`,
-`dc source`, `frequency estimator` and a `filter`.
+`dc source`, `frequency estimator` and a `filter` (see [`DynamicInverter`](@ref)).
 
 ### Dynamic Inverter definition
 
-We will create specific functions to create the components of the inverter as follows:
+We will create specific components of the inverter as follows:
 
 ```@example generated_inverter_dynamic_data
 #Define converter as an AverageConverter
@@ -224,10 +226,6 @@ pll = KauraPLL(
 filt = LCLFilter(lf = 0.08, rf = 0.003, cf = 0.074, lg = 0.2, rg = 0.01)
 ```
 
-The last function creates a LCL filter. You can see that it creates the structure and defines the states of the filter model, denoted as `[:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]`.
-
-### Dynamic Generator definition
-
 Similarly we will construct a dynamic generator as follows:
 
 ```@example generated_inverter_dynamic_data
@@ -236,7 +234,7 @@ machine_oneDoneQ = OneDOneQMachine(
     R = 0.0,
     Xd = 1.3125,
     Xq = 1.2578,
-    Xd_p = 0.1813, 
+    Xd_p = 0.1813,
     Xq_p = 0.25,
     Td0_p = 5.89,
     Tq0_p = 0.6,
@@ -244,9 +242,9 @@ machine_oneDoneQ = OneDOneQMachine(
 
 #Shaft
 shaft_no_damping = SingleMass(
-    H = 3.01, 
+    H = 3.01,
     D = 0.0,
-) 
+)
 
 #AVR: Type I: Resembles a DC1 AVR
 avr_type1 = AVRTypeI(
@@ -269,7 +267,7 @@ tg_none = TGFixed(efficiency = 1.0)
 pss_none = PSSFixed(V_pss = 0.0);
 ```
 
-### Add the components to the system
+### Add the components to the System
 
 ```@example generated_inverter_dynamic_data
 for g in get_components(Generator, threebus_sys)
@@ -279,10 +277,10 @@ for g in get_components(Generator, threebus_sys)
         case_gen = DynamicGenerator(
             name = get_name(g),
             ω_ref = 1.0,
-            machine = machine_oneDoneQ, 
+            machine = machine_oneDoneQ,
             shaft = shaft_no_damping,
             avr = avr_type1,
-            prime_mover = tg_none, 
+            prime_mover = tg_none,
             pss = pss_none,
         )
         #Attach the dynamic generator to the system
@@ -295,7 +293,7 @@ for g in get_components(Generator, threebus_sys)
             ω_ref = 1.0,
             converter = converter_high_power,
             outer_control = outer_cont,
-            inner_control = inner_cont, 
+            inner_control = inner_cont,
             dc_source = dc_source_lv,
             freq_estimator = pll,
             filter = filt,
@@ -306,7 +304,7 @@ for g in get_components(Generator, threebus_sys)
 end
 ```
 
-### Save the system in a JSON file
+Finally we can seraliaze the system data for later reloading
 
 ```julia
 to_json(threebus_sys, "YOUR_DIR/threebus_sys.json")

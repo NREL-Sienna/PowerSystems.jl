@@ -44,4 +44,3 @@ Each inverter is a data structure that is defined by the following components:
 ```@raw html
 <img src="../assets/inv_metamodel.png" width="75%"/>
 ``` ⠀
-
