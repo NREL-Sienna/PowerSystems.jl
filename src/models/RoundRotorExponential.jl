@@ -14,6 +14,7 @@ mutable struct RoundRotorExponential <: Machine
     base_machine::RoundRotorMachine
     saturation_coeffs::Tuple{Float64, Float64}
 end
+
 IS.@forward((RoundRotorExponential, :base_machine), RoundRotorMachine)
 
 function RoundRotorExponential(
@@ -103,3 +104,8 @@ set_base_machine!(value::RoundRotorExponential, val::RoundRotorMachine) =
     value.base_machine = val
 set_saturation_coeffs!(value::RoundRotorExponential, val::Tuple{Float64, Float64}) =
     value.saturation_coeffs = val
+
+function IS.deserialize_struct(::Type{RoundRotorExponential}, data::Dict)
+    vals = IS.deserialize_to_dict(RoundRotorExponential, data)
+    return RoundRotorExponential(vals[:base_machine], vals[:saturation_coeffs])
+end
