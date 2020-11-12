@@ -1,11 +1,21 @@
 
 @testset "2-area, 11-bus, 4-generator benchmark system Parsing " begin
+    test_dir = mktempdir()
     ger4_raw_file = joinpath(PSSE_RAW_DIR, "Benchmark_4ger_33_2015.RAW")
     ger4_dyr_file = joinpath(PSSE_DYR_DIR, "Benchmark_4ger_33_2015.dyr")
     sys = System(ger4_raw_file, ger4_dyr_file)
     @test_throws PSY.DataFormatError System(ger4_raw_file, ger4_raw_file)
     @test_throws PSY.DataFormatError System(ger4_dyr_file, ger4_raw_file)
     dyn_injectors = get_components(DynamicInjection, sys)
+    @test length(dyn_injectors) == 4
+    for g in dyn_injectors
+        m = PSY.get_machine(g)
+        @test typeof(m) <: RoundRotorExponential
+    end
+    path = joinpath(test_dir, "test_dyn_system_serialization.json")
+    to_json(sys, path)
+    parsed_sys = System(path)
+    dyn_injectors = get_components(DynamicInjection, parsed_sys)
     @test length(dyn_injectors) == 4
     for g in dyn_injectors
         m = PSY.get_machine(g)
@@ -70,10 +80,19 @@ end
 end
 
 @testset "2000-Bus Parsing" begin
+    test_dir = mktempdir()
     texas2000_raw_file = joinpath(TAMU_DIR, "ACTIVSg2000.RAW")
     texas2000_dyr_file = joinpath(PSSE_DYR_DIR, "ACTIVSg2000_dynamics.dyr")
     sys = System(texas2000_raw_file, texas2000_dyr_file)
     for g in get_components(ThermalStandard, sys)
+        @test !isnothing(get_dynamic_injector(g))
+    end
+    path = joinpath(test_dir, "test_dyn_system_serialization_2000.json")
+    to_json(sys, path)
+    parsed_sys = System(path)
+    dyn_injectors = get_components(DynamicInjection, parsed_sys)
+    @test length(dyn_injectors) == 435
+    for g in get_components(ThermalStandard, parsed_sys)
         @test !isnothing(get_dynamic_injector(g))
     end
 end
