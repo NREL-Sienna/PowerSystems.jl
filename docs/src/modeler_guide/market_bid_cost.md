@@ -12,9 +12,9 @@ When using MarketBidCost, the user can add the cost struct to the device, at thi
 cost bids aren't expected to be populated/passed. The code below shows how we can create a
 thermal device with MarketBidCost.
 
-```@example
+```julia
 using PowerSystems
-bus = Bus(1, "nodeE", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+bus = Bus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 
 generator = ThermalStandard(
         name = "Brighton",
@@ -52,7 +52,7 @@ data is a Tuple or `Array{Tuple}` then the model expects the tuples to be cost &
 pairs (cost in $/p.u-hr & power-point in p.u-hr), which is modeled same as TwoPartCost or
 ThreePartCost. Code below shows an example of how to build a TimeSeriesData.
 
-```@example
+```julia
 using PowerSystems, Dates
 data =
     Dict(Dates.DateTime("2020-01-01") => [
@@ -70,10 +70,10 @@ time_series_data = Deterministic(
 
 To add energy market bids time-series to the MarketBidCost, the use of `set_variable_cost!` is recommended.
 
-```@example
+```julia
 using PowerSystems, Dates
 
-bus = Bus(1, "nodeE", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+bus = Bus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 generator = ThermalStandard(
     name = "Brighton",
     available = true,
@@ -122,10 +122,10 @@ set_variable_cost!(sys, generator, time_series_data)
 Similar to adding energy market bids,  for adding bids for ancillary services the use of
 `set_service_bid!` is recommended.
 
-```@example
+```julia
 using PowerSystems, Dates
 
-bus = Bus(1, "nodeE", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+bus = Bus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 service = VariableReserve{ReserveUp}("test_reserve", true, 0.6, 2.0)
 generator = ThermalStandard(
     name = "Brighton",
