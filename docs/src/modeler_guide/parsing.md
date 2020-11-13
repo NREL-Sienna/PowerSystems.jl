@@ -152,43 +152,25 @@ The following code will create a System from a MATPOWER or PSS/e file:
 sys = System(joinpath(data_dir, "case5.m"))
 ```
 
-## PSS/e dyr parsing
+## PSS/e dynamic data parsing
 
 PSS/e's dynamic model library is extensive, we currently support parsing a limited amount
 of models out of the box.
 
-### Machine models
+| Machine models | AVR Models | Prime Movers | PSS models |
+|----------------|------------|--------------|------------|
+| GENSAE         | IEEET1     | HYGOV        | IEEEST     |
+| GENSAL         | ESDC1A     | IEEEG1       |            |
+| GENROE         | ESAC1A     | GGOV1        |            |
+| GENCLS         | ESST4B     |              |            |
+| GENROU         | EXAC2      |              |            |
+|                | EXPIC1     |              |            |
+|                | ESAC6A     |              |            |
+|                | EXAC1      |              |            |
+|                | SCRX       |              |            |
+|                | ESDC2A     |              |            |
 
-- "GENSAE"
-- "GENSAL"
-- "GENROE"
-- "GENCLS"
-- "GENROU"
-
-### AVR Models
-
-- "IEEET1"
-- "ESDC1A"
-- "ESAC1A"
-- "ESST4B"
-- "EXAC2"
-- "EXPIC1"
-- "ESAC6A"
-- "EXAC1"
-- "SCRX"
-- "ESDC2A"
-
-### Prime Movers
-
-- "HYGOV"
-- "IEEEG1"
-- "GGOV1"
-
-### PSS models
-
-- "IEEEST"
-
-## Creating a Dynamic System using .RAW and .DYR data
+### Creating a Dynamic System using .RAW and .DYR data
 
 A `PowerSystems.jl` system can be created using a .RAW and a .DYR file. In this example we will create the following three bus system using the following RAW file:
 
