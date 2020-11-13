@@ -158,6 +158,8 @@ function System(file_path::AbstractString; kwargs...)
         pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
         return System(PowerModelsData(file_path; pm_kwargs...); kwargs...)
     elseif lowercase(ext) == ".json"
+        unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
+        !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
         # File paths in the JSON are relative. Temporarily change to this directory in order
         # to find all dependent files.
         orig_dir = pwd()
@@ -173,7 +175,8 @@ function System(file_path::AbstractString; kwargs...)
                 basename(file_path);
                 time_series_read_only = time_series_read_only,
             )
-            check!(sys)
+            run_checks = get(kwargs, :run_checks, true)
+            run_checks && check!(sys)
             return sys
         finally
             cd(orig_dir)
@@ -1079,6 +1082,7 @@ function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
     time_series_read_only = false,
+    runchecks = true
 )
     raw = open(filename) do io
         JSON3.read(io, Dict)
@@ -1102,14 +1106,14 @@ function IS.deserialize(
     sys = System(data, units_settings; internal = internal)
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
-    deserialize_components!(sys, raw["data"]["components"])
+    deserialize_components!(sys, raw["data"]["components"], runchecks)
     pop!(ext, "deserialization_in_progress")
     isempty(ext) && clear_ext!(sys)
 
     return sys
 end
 
-function deserialize_components!(sys::System, raw)
+function deserialize_components!(sys::System, raw, runchecks)
     # Convert the array of components into type-specific arrays to allow addition by type.
     data = Dict{Any, Vector{Dict}}()
     for component in raw
@@ -1148,7 +1152,7 @@ function deserialize_components!(sys::System, raw)
             end
             for component in components
                 comp = deserialize(type, component, component_cache)
-                add_component!(sys, comp)
+                add_component!(sys, comp; skip_validation = runchecks)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
