@@ -1153,7 +1153,7 @@ function deserialize_components!(sys::System, raw)
             end
             for component in components
                 comp = deserialize(type, component, component_cache)
-                add_component!(sys, comp)
+                add_component!(sys, comp; skip_validation = !sys.runchecks)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
