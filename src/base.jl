@@ -170,13 +170,14 @@ function System(file_path::AbstractString; kwargs...)
         cd(new_dir)
         try
             time_series_read_only = get(kwargs, :time_series_read_only, false)
+            runchecks = get(kwargs, :runchecks, true)
             sys = deserialize(
                 System,
                 basename(file_path);
                 time_series_read_only = time_series_read_only,
+                runchecks = runchecks
             )
-            run_checks = get(kwargs, :run_checks, true)
-            run_checks && check!(sys)
+            runchecks && check!(sys)
             return sys
         finally
             cd(orig_dir)
@@ -1103,17 +1104,17 @@ function IS.deserialize(
         time_series_read_only = time_series_read_only,
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units_settings; internal = internal)
+    sys = System(data, units_settings; internal = internal, runchecks = runchecks)
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
-    deserialize_components!(sys, raw["data"]["components"], runchecks)
+    deserialize_components!(sys, raw["data"]["components"])
     pop!(ext, "deserialization_in_progress")
     isempty(ext) && clear_ext!(sys)
 
     return sys
 end
 
-function deserialize_components!(sys::System, raw, runchecks)
+function deserialize_components!(sys::System, raw)
     # Convert the array of components into type-specific arrays to allow addition by type.
     data = Dict{Any, Vector{Dict}}()
     for component in raw
@@ -1152,7 +1153,7 @@ function deserialize_components!(sys::System, raw, runchecks)
             end
             for component in components
                 comp = deserialize(type, component, component_cache)
-                add_component!(sys, comp; skip_validation = runchecks)
+                add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
