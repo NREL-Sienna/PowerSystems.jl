@@ -175,7 +175,7 @@ function System(file_path::AbstractString; kwargs...)
                 System,
                 basename(file_path);
                 time_series_read_only = time_series_read_only,
-                runchecks = runchecks
+                runchecks = runchecks,
             )
             runchecks && check!(sys)
             return sys
@@ -1083,7 +1083,7 @@ function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
     time_series_read_only = false,
-    runchecks = true
+    runchecks = true,
 )
     raw = open(filename) do io
         JSON3.read(io, Dict)
