@@ -344,6 +344,7 @@ function add_component!(sys::System, component::T; kwargs...) where {T <: Compon
         sys.data,
         component;
         deserialization_in_progress = deserialization_in_progress,
+        skip_validation = sys.runchecks || skip_validation,
         _kwargs...,
     )
 
@@ -1153,7 +1154,7 @@ function deserialize_components!(sys::System, raw)
             end
             for component in components
                 comp = deserialize(type, component, component_cache)
-                add_component!(sys, comp; skip_validation = !sys.runchecks)
+                add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
