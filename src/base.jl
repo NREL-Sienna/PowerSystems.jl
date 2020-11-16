@@ -160,6 +160,7 @@ function System(file_path::AbstractString; kwargs...)
     elseif lowercase(ext) == ".json"
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
+        runchecks = get(kwargs, :runchecks, true)
         # File paths in the JSON are relative. Temporarily change to this directory in order
         # to find all dependent files.
         orig_dir = pwd()
@@ -174,9 +175,9 @@ function System(file_path::AbstractString; kwargs...)
                 System,
                 basename(file_path);
                 time_series_read_only = time_series_read_only,
+                runchecks = runchecks,
             )
-            run_checks = get(kwargs, :run_checks, true)
-            run_checks && check!(sys)
+            runchecks && check!(sys)
             return sys
         finally
             cd(orig_dir)
@@ -321,7 +322,12 @@ generators = [gen1, gen2, gen3]
 foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
 """
-function add_component!(sys::System, component::T; kwargs...) where {T <: Component}
+function add_component!(
+    sys::System,
+    component::T;
+    skip_validation = false,
+    kwargs...,
+) where {T <: Component}
     set_unit_system!(component, sys.units_settings)
     @assert has_units_setting(component)
 
@@ -334,15 +340,13 @@ function add_component!(sys::System, component::T; kwargs...) where {T <: Compon
         check_for_services_on_addition(sys, component)
     end
 
-    if sys.runchecks && !validate_struct(sys, component)
-        throw(IS.InvalidValue("Invalid value for $(component)"))
-    end
-
+    skip_validation = _validate_or_skip(sys, component, skip_validation)
     _kwargs = Dict(k => v for (k, v) in kwargs if k !== :static_injector)
     IS.add_component!(
         sys.data,
         component;
         deserialization_in_progress = deserialization_in_progress,
+        skip_validation = skip_validation,
         _kwargs...,
     )
 
@@ -373,7 +377,14 @@ function add_component!(
     add_component!(sys, dyn_injector; static_injector = static_injector, kwargs...)
 end
 
-function _add_service!(sys::System, service::Service, contributing_devices; kwargs...)
+function _add_service!(
+    sys::System,
+    service::Service,
+    contributing_devices;
+    skip_validation = false,
+    kwargs...,
+)
+    skip_validation = _validate_or_skip(sys, service, skip_validation)
     for device in contributing_devices
         device_type = typeof(device)
         if !(device_type <: Device)
@@ -384,7 +395,7 @@ function _add_service!(sys::System, service::Service, contributing_devices; kwar
 
     set_unit_system!(service, sys.units_settings)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
-    IS.add_component!(sys.data, service; kwargs...)
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 
     for device in contributing_devices
         add_service_internal!(device, service)
@@ -400,9 +411,6 @@ Similar to [`add_component!`](@ref) but for services.
 - `contributing_devices`: Must be an iterable of type Device
 """
 function add_service!(sys::System, service::Service, contributing_devices; kwargs...)
-    if sys.runchecks && !validate_struct(sys, service)
-        throw(InvalidValue("Invalid value for $service"))
-    end
     _add_service!(sys, service, contributing_devices; kwargs...)
 end
 
@@ -415,9 +423,6 @@ Similar to [`add_component!`](@ref) but for services.
 - `contributing_device::Device`: Valid Device
 """
 function add_service!(sys::System, service::Service, contributing_device::Device; kwargs...)
-    if sys.runchecks && !validate_struct(sys, service)
-        throw(InvalidValue("Invalid value for $service"))
-    end
     _add_service!(sys, service, [contributing_device]; kwargs...)
 end
 
@@ -443,17 +448,20 @@ Similar to [`add_component!`](@ref) but for StaticReserveGroup.
 - `sys::System`: system
 - `service::StaticReserveGroup`: service to add
 """
-function add_service!(sys::System, service::StaticReserveGroup; kwargs...)
-    if sys.runchecks && !validate_struct(sys, service)
-        throw(InvalidValue("Invalid value for $service"))
-    end
+function add_service!(
+    sys::System,
+    service::StaticReserveGroup;
+    skip_validation = false,
+    kwargs...,
+)
+    skip_validation = _validate_or_skip(sys, service, skip_validation)
 
     for _service in get_contributing_services(service)
         throw_if_not_attached(_service, sys)
     end
 
     set_unit_system!(service, sys.units_settings)
-    IS.add_component!(sys.data, service; kwargs...)
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 end
 
 """Set StaticReserveGroup contributing_services with check"""
@@ -480,16 +488,14 @@ function add_service!(
     sys::System,
     service::StaticReserveGroup,
     contributing_services::Vector{<:Service};
+    skip_validation = false,
     kwargs...,
 )
-    if sys.runchecks && !validate_struct(sys, service)
-        throw(InvalidValue("Invalid value for $service"))
-    end
-
+    skip_validation = _validate_or_skip(sys, service, skip_validation)
     set_contributing_services!(sys, service, contributing_services)
 
     set_unit_system!(service, sys.units_settings)
-    IS.add_component!(sys.data, service; kwargs...)
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 end
 
 """
@@ -1082,7 +1088,7 @@ function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
     time_series_read_only = false,
-    runchecks = true
+    runchecks = true,
 )
     raw = open(filename) do io
         JSON3.read(io, Dict)
@@ -1103,17 +1109,17 @@ function IS.deserialize(
         time_series_read_only = time_series_read_only,
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units_settings; internal = internal)
+    sys = System(data, units_settings; internal = internal, runchecks = runchecks)
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
-    deserialize_components!(sys, raw["data"]["components"], runchecks)
+    deserialize_components!(sys, raw["data"]["components"])
     pop!(ext, "deserialization_in_progress")
     isempty(ext) && clear_ext!(sys)
 
     return sys
 end
 
-function deserialize_components!(sys::System, raw, runchecks)
+function deserialize_components!(sys::System, raw)
     # Convert the array of components into type-specific arrays to allow addition by type.
     data = Dict{Any, Vector{Dict}}()
     for component in raw
@@ -1152,7 +1158,7 @@ function deserialize_components!(sys::System, raw, runchecks)
             end
             for component in components
                 comp = deserialize(type, component, component_cache)
-                add_component!(sys, comp; skip_validation = runchecks)
+                add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
@@ -1576,4 +1582,17 @@ function convert_component!(
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     remove_component!(sys, line)
+end
+
+function _validate_or_skip(sys, component, skip_validation)
+    # Always skip if system checks are disabled.
+    if !skip_validation && !sys.runchecks
+        skip_validation = true
+    end
+
+    if !skip_validation && !validate_struct(sys, component)
+        throw(IS.InvalidValue("Invalid value for $component"))
+    end
+
+    return skip_validation
 end

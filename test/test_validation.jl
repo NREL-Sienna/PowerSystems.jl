@@ -222,3 +222,74 @@ end
         rm(path)
     end
 end
+
+function _make_bus()
+    return Bus(
+        number = 1,
+        name = "bus1",
+        bustype = BusTypes.REF,
+        angle = 0.0,
+        magnitude = 0.0,
+        voltage_limits = (min = 0.0, max = 0.0),
+        base_voltage = nothing,
+        area = nothing,
+        load_zone = nothing,
+    )
+end
+
+@testset "Test add_component with runchecks enabled" begin
+    sys = System(100.0, runchecks = true)
+    bus = _make_bus()
+    add_component!(sys, bus)
+    remove_component!(sys, bus)
+
+    # Make the bus invalid.
+    set_angle!(bus, 1000.0)
+    @test_logs(
+        (:error, r"Invalid range"),
+        match_mode = :any,
+        @test_throws IS.InvalidRange add_component!(sys, bus)
+    )
+
+    # Allowed with skip_validation.
+    add_component!(sys, bus, skip_validation = true)
+end
+
+@testset "Test add_component with runchecks disabled" begin
+    sys = System(100.0, runchecks = false)
+    bus = _make_bus()
+
+    # Make the bus invalid.
+    set_angle!(bus, 1000.0)
+    add_component!(sys, bus)
+end
+
+@testset "Test serialization and range checks" begin
+    sys = System(100.0, runchecks = false)
+    bus = _make_bus()
+
+    # Make the bus invalid.
+    set_angle!(bus, 1000.0)
+    add_component!(sys, bus)
+
+    # You can't enable range checks now because descriptors were not stored.
+    _, result = validate_serialization(sys, runchecks = true)
+    @test result
+end
+
+@testset "Test serialization and system checks" begin
+    # Serialize/deserialize an invalid system.
+    sys = System(100.0, runchecks = false)
+    bus = _make_bus()
+    set_bustype!(bus, BusTypes.PQ)
+    add_component!(sys, bus)
+
+    @test_logs(
+        (:error, r"Model doesn't contain a slack bus"),
+        match_mode = :any,
+        validate_serialization(sys, runchecks = true)
+    )
+
+    _, result = validate_serialization(sys, runchecks = false)
+    @test result
+end
