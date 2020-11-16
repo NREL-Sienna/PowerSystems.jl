@@ -626,14 +626,13 @@ function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwar
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_dict_name)
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["dcline"]
         d["name"] = get(d, "name", d_key)
-        name = _get_name(d)
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
-
+        name = _get_name(d, bus_f, bus_t)
         dcline = make_dcline(name, d, bus_f, bus_t)
         add_component!(sys, dcline, skip_validation = SKIP_PM_VALIDATION)
     end
