@@ -79,7 +79,6 @@ function _get_pm_branch_name(device_dict, bus_f, bus_t)
     return string("$(get_name(bus_f)) - $(get_name(bus_t)) - $index")
 end
 
-
 """
 Creates a PowerSystems.Bus from a PowerSystems bus dictionary
 """
