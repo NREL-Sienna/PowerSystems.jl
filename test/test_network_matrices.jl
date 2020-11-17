@@ -454,7 +454,7 @@ end
     @test maximum(L14.data - Lodf_14) <= 1e-3
 
     L5NS = PowerSystems.LODF(sys)
-    @test getindex(L5NS, "3 - 4 - 5", "2 - 3 - 4") - 0.0003413469090 <= 1e-4
+    @test getindex(L5NS, "3-4-i_5", "2-3-i_4") - 0.0003413469090 <= 1e-4
 
     L5NS = LODF([branches_5[b] for b in Br5NS_ids], [nodes_5[b] for b in Bu5NS_ids])
     for brf in Br5NS_ids, brt in Br5NS_ids

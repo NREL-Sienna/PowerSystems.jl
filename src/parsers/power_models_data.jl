@@ -76,7 +76,7 @@ Internal branch name retreval from pm2ps_dict
 """
 function _get_pm_branch_name(device_dict, bus_f, bus_t)
     index = get(device_dict, "name", device_dict["index"])
-    return string("$(get_name(bus_f)) - $(get_name(bus_t)) - $index")
+    return string("$(get_name(bus_f))-$(get_name(bus_t))-i_$index")
 end
 
 """
