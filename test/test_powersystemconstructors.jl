@@ -131,7 +131,12 @@ end
         get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
         sys,
     )
-    convert_component!(Line, get_component(MonitoredLine, sys, "bus2-bus3-i_4"), sys, force = true)
+    convert_component!(
+        Line,
+        get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
+        sys,
+        force = true,
+    )
     line = get_component(Line, sys, "bus2-bus3-i_4")
     @test !isnothing(mline)
     @test get_time_series(SingleTimeSeries, line, name) isa SingleTimeSeries
