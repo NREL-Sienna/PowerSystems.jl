@@ -72,6 +72,14 @@ function _get_pm_dict_name(device_dict)
 end
 
 """
+Internal branch name retreval from pm2ps_dict
+"""
+function _get_pm_branch_name(device_dict, bus_f, bus_t)
+    index = get(device_dict, "name", device_dict["index"])
+    return "$(get_name(bus_f))-$(get_name(bus_t))-i_$index"
+end
+
+"""
 Creates a PowerSystems.Bus from a PowerSystems bus dictionary
 """
 function make_bus(bus_dict::Dict{String, Any})
@@ -583,13 +591,13 @@ function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwar
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_dict_name)
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["branch"]
         d["name"] = get(d, "name", d_key)
-        name = _get_name(d)
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
+        name = _get_name(d, bus_f, bus_t)
         value = make_branch(name, d, bus_f, bus_t)
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
@@ -617,14 +625,13 @@ function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwar
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_dict_name)
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["dcline"]
         d["name"] = get(d, "name", d_key)
-        name = _get_name(d)
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
-
+        name = _get_name(d, bus_f, bus_t)
         dcline = make_dcline(name, d, bus_f, bus_t)
         add_component!(sys, dcline, skip_validation = SKIP_PM_VALIDATION)
     end
