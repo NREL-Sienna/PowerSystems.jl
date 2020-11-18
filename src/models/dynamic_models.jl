@@ -18,4 +18,5 @@ function get_dynamic_components(device::T) where {T <: DynamicInjection}
     )
 end
 
-supports_services(d::DynamicInjection) = false
+supports_services(::DynamicInjection) = false
+get_states(::DynamicInjection) = Vector{Symbol}()
