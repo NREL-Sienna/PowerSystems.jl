@@ -20,3 +20,6 @@ end
 
 supports_services(::DynamicInjection) = false
 get_states(::DynamicInjection) = Vector{Symbol}()
+function get_states_types(d::DynamicComponent)
+    return fill(StateTypes.Differential, get_n_states(d))
+end
