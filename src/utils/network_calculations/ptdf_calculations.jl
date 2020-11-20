@@ -121,6 +121,6 @@ Builds the PTDF matrix from a system. The return is a PTDF array indexed with th
 """
 function PTDF(sys::System, dist_slack::Vector{Float64} = [0.1])
     branches = get_components(ACBranch, sys)
-    nodes = get_components(Bus, sys)
+    nodes = sort!(collect(nodes), by = x -> get_number(x))
     return PTDF(branches, nodes, dist_slack)
 end
