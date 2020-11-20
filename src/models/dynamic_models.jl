@@ -18,4 +18,12 @@ function get_dynamic_components(device::T) where {T <: DynamicInjection}
     )
 end
 
-supports_services(d::DynamicInjection) = false
+supports_services(::DynamicInjection) = false
+get_states(::DynamicInjection) = Vector{Symbol}()
+"""
+    Default implementation of get_state_types for dynamic components. Assumes all states are
+    Differential
+"""
+function get_states_types(d::DynamicComponent)
+    return fill(StateTypes.Differential, get_n_states(d))
+end
