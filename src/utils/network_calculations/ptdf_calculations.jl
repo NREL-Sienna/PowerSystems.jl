@@ -120,7 +120,10 @@ Builds the PTDF matrix from a system. The return is a PTDF array indexed with th
     The distributed slack vector has to be the same length as the number of buses
 """
 function PTDF(sys::System, dist_slack::Vector{Float64} = [0.1])
-    branches = get_components(ACBranch, sys)
-    nodes = get_components(Bus, sys)
+    branches = sort!(
+        collect(get_components(ACBranch, sys)),
+        by = x -> (get_number(get_arc(x).from), get_number(get_arc(x).to)),
+    )
+    nodes = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
     return PTDF(branches, nodes, dist_slack)
 end

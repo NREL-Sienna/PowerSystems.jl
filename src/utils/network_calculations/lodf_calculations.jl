@@ -56,7 +56,10 @@ Builds the LODF matrix from a system. The return is a LOLDF array indexed with t
     The distributed slack vector has to be the same length as the number of buses
 """
 function LODF(sys::System, dist_slack::Vector{Float64} = [0.1])
-    branches = get_components(ACBranch, sys)
-    nodes = get_components(Bus, sys)
+    branches = sort!(
+        collect(get_components(ACBranch, sys)),
+        by = x -> (get_number(get_arc(x).from), get_number(get_arc(x).to)),
+    )
+    nodes = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
     return LODF(branches, nodes, dist_slack)
 end
