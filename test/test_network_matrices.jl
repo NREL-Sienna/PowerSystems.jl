@@ -5,7 +5,7 @@ include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
 include(joinpath(BASE_DIR, "test", "data_14bus_pu.jl"))
 
 # The 5-bus case from PowerModels data is modified to include 2 phase shifters
-sys = PowerSystems.System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5.m")))
+sys = System(joinpath(MATPOWER_DIR, "case5.m"))
 RTS = create_rts_system();
 
 # mixed up ids for data_5bus_pu
@@ -420,13 +420,13 @@ Ybus5_phaseshifter[5, 5] = 18.8039637297063 - 188.020637297063im;
 @testset "PTDF matrices" begin
     nodes_5 = nodes5()
     branches_5 = branches5(nodes_5)
-    P5 = PowerSystems.PTDF(branches_5, nodes_5)
+    P5 = PTDF(branches_5, nodes_5)
     @test maximum(P5.data - S5_slackB4) <= 1e-3
     @test P5[branches_5[1], nodes_5[1]] == 0.1939166051164976
 
     nodes_14 = nodes14()
     branches_14 = branches14(nodes_14)
-    P14 = PowerSystems.PTDF(branches_14, nodes_14)
+    P14 = PTDF(branches_14, nodes_14)
     @test maximum(P14.data - S14_slackB1) <= 1e-3
 
     P5NS = PTDF([branches_5[b] for b in Br5NS_ids], [nodes_5[b] for b in Bu5NS_ids])
@@ -435,7 +435,7 @@ Ybus5_phaseshifter[5, 5] = 18.8039637297063 - 188.020637297063im;
     end
 
     PRTS = PTDF(RTS)
-    bnums = sort([PowerSystems.get_number(b) for b in get_components(Bus, RTS)])
+    bnums = sort([get_number(b) for b in get_components(Bus, RTS)])
     for (ibr, br) in enumerate(RTS_branchnames), (ib, b) in enumerate(bnums)
         @test getindex(PRTS, br, b) - SRTS_GMLC[ibr, ib] <= 1e-3
     end
@@ -444,16 +444,16 @@ end
 @testset "LODF matrices" begin
     nodes_5 = nodes5()
     branches_5 = branches5(nodes_5)
-    L5 = PowerSystems.LODF(branches_5, nodes_5)
+    L5 = LODF(branches_5, nodes_5)
     @test maximum(L5.data - Lodf_5) <= 1e-3
     @test L5[branches_5[1], branches_5[2]] == 0.3447946513849091
 
     nodes_14 = nodes14()
     branches_14 = branches14(nodes_14)
-    L14 = PowerSystems.LODF(branches_14, nodes_14)
+    L14 = LODF(branches_14, nodes_14)
     @test maximum(L14.data - Lodf_14) <= 1e-3
 
-    L5NS = PowerSystems.LODF(sys)
+    L5NS = LODF(sys)
     @test getindex(L5NS, "3-4-i_5", "2-3-i_4") - 0.0003413469090 <= 1e-4
 
     L5NS = LODF([branches_5[b] for b in Br5NS_ids], [nodes_5[b] for b in Bu5NS_ids])
