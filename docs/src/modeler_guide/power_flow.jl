@@ -22,12 +22,7 @@ system_data = System(joinpath(DATA_DIR, "matpower/case14.m"))
 #    Takes the data in the buses, the `active_power` and `reactive_power` fields
 #    in the static injection devices. Returns a dictionary with results in a DataFrame that
 #    can be exported or manipulated as needed.
-
-# **Example**
-
-results = solve_powerflow(system_data)
-results["bus_results"]
-
+#
 # 2. Solves the power flow and updated the devices in the system to the operating condition.
 #    This model will update the values of magnitudes and angles in the system's buses. It
 #    also updates the active and reactive power flows in the branches and devices connected
@@ -52,6 +47,7 @@ solve_powerflow!(system_data; finite_diff = true, method = :newton)
 
 # After running the power flow command this are the values of the
 # voltages:
+
 for b in get_components(Bus, system_data)
     println("After")
     println("$(get_name(b)) - Magnitude $(get_magnitude(b)) - Angle (rad) $(get_angle(b))")
