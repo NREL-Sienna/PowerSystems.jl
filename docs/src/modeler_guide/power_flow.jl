@@ -23,7 +23,7 @@ system_data = System(joinpath(DATA_DIR, "matpower/case14.m"))
 #    in the static injection devices. Returns a dictionary with results in a DataFrame that
 #    can be exported or manipulated as needed.
 
-# example
+# **Example**
 
 results = solve_powerflow(system_data)
 results["bus_results"]
@@ -34,13 +34,24 @@ results["bus_results"]
 #    to PV buses. This utility is useful to initialize systems before serializing or checking
 #    the addition of new devices is still AC feasible.
 
+# Before running the power flow command this are the values of the
+# voltages:
+
 for b in get_components(Bus, system_data)
     println("Before")
     println("$(get_name(b)) - Magnitude $(get_magnitude(b)) - Angle (rad) $(get_angle(b))")
 end
 
-solve_powerflow!(system_data)
+# [`solve_powerflow!`](@ref) return true or false to signal the successful result of the power
+# flow. This enables the integration of a power flow check into functions. For instance,
+# initializing dynamic simulations. Also, because [`solve_powerflow!`](@ref) uses
+# [NLsolve.jl](https://github.com/JuliaNLSolvers/NLsolve.jl) all the parameters used for NLsolve
+# are also available for [`solve_powerflow!`](@ref)
 
+solve_powerflow!(system_data; finite_diff = true, method = :newton)
+
+# After running the power flow command this are the values of the
+# voltages:
 for b in get_components(Bus, system_data)
     println("After")
     println("$(get_name(b)) - Magnitude $(get_magnitude(b)) - Angle (rad) $(get_angle(b))")
