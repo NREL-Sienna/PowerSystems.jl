@@ -6,10 +6,11 @@
 # not check for reactive power limits or other limiting mechanisms in the grid.
 
 # The power flow solver uses [NLsolve.jl](https://github.com/JuliaNLSolvers/NLsolve.jl) under
-# the hood and takes any keyword argument accepted by NLsolve
+# the hood and takes any keyword argument accepted by NLsolve. The solver uses the current
+# operating point in the buses to provide the initial guess.
 
 # **Limitations**: The PowerFlow solver doesn't support systems with HVDC lines or
-# Phase Shifting transformers yet.
+# Phase Shifting transformers yet. The power flow solver can't handle systems with islands.
 
 # Check section [Power Flow](@ref pf) for detailed usage instructions
 
@@ -32,11 +33,17 @@ system_data = System(joinpath(DATA_DIR, "matpower/case14.m"))
 #    to PV buses. This utility is useful to initialize systems before serializing or checking
 #    the addition of new devices is still AC feasible.
 
+# Solving the powwer flow with mode 1:
+
+results = solve_powerflow(system_data)
+results["bus_results"]
+
+# Solving the powwer flow with mode 2:
+
 # Before running the power flow command this are the values of the
 # voltages:
 
 for b in get_components(Bus, system_data)
-    println("Before")
     println("$(get_name(b)) - Magnitude $(get_magnitude(b)) - Angle (rad) $(get_angle(b))")
 end
 
@@ -52,6 +59,5 @@ solve_powerflow!(system_data; finite_diff = true, method = :newton)
 # voltages:
 
 for b in get_components(Bus, system_data)
-    println("After")
     println("$(get_name(b)) - Magnitude $(get_magnitude(b)) - Angle (rad) $(get_angle(b))")
 end
