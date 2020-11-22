@@ -8,6 +8,9 @@
 # The power flow solver uses [NLsolve.jl](https://github.com/JuliaNLSolvers/NLsolve.jl) under
 # the hood and takes any keyword argument accepted by NLsolve
 
+# **Limitations**: The PowerFlow solver doesn't support systems with HVDC lines or
+# Phase Shifting transformers yet.
+
 # Check section [Power Flow](@ref pf) for detailed usage instructions
 
 using PowerSystems
