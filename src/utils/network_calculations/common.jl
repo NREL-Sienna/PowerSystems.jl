@@ -238,3 +238,12 @@ end
 Base.to_index(b::Bus) = get_number(b)
 Base.to_index(b::T) where {T <: ACBranch} = get_name(b)
 Base.to_index(ix::Component...) = to_index.(ix)
+
+"""returns the raw array data of the `PowerNetworkMatrix`"""
+get_data(mat::PowerNetworkMatrix) = mat.data
+
+"""
+    returns the lookup tuple of the `PowerNetworkMatrix`. The first entry corresponds
+    to the first dimension and the second entry corresponds to the second dimension
+"""
+get_lookup(mat::PowerNetworkMatrix) = mat.lookup

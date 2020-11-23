@@ -101,7 +101,8 @@ Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
 Modules = [PowerSystems]
 Pages   = ["utils/network_calculations/ybus_calculations.jl",
            "utils/network_calculations/ptdf_calculations.jl",
-           "utils/network_calculations/lodf_calculations.jl"]
+           "utils/network_calculations/lodf_calculations.jl",
+           "utils/network_calculations/common.jl"]
 Private = false
 Public = true
 ```
