@@ -244,6 +244,8 @@ get_data(mat::PowerNetworkMatrix) = mat.data
 
 """
     returns the lookup tuple of the `PowerNetworkMatrix`. The first entry corresponds
-    to the first dimension and the second entry corresponds to the second dimension
+    to the first dimension and the second entry corresponds to the second dimension. For
+    instance in Ybus the first dimension is buses and second dimension is buses too, and in
+    PTDF the first dimension is branches and the second dimension is buses
 """
 get_lookup(mat::PowerNetworkMatrix) = mat.lookup
