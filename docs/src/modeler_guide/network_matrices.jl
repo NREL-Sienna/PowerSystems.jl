@@ -8,7 +8,7 @@
 # ## Overview
 #
 # Network matrices are implemented in `PowerSystems.jl` as arrays that enable using Branch or Bus
-# names a indexes to facilitate exploration and analysis. Ybus is stored as an SparseMatrix
+# names as indexes to facilitate exploration and analysis. Ybus is stored as an SparseMatrix
 # and the PTDF and LODF are stored as dense matrices. **Note*** Ybus is converted to a dense
 # matrix for printing in the REPL,
 # The network matrices code implements the Goderya algorithm to find islands.

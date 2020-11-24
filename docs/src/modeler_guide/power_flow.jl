@@ -1,9 +1,13 @@
 # # Power Flow
 
 # `PowerSystems.jl` provides the capability to run a power flow with the intention of
-# providing a valid initial AC operating point to the system. It is not meant as an analytics
-# tool; the main issue is to determine if the system has feasible AC data. This solver does
-# not check for reactive power limits or other limiting mechanisms in the grid.
+# providing a valid initial AC operating point to the system.
+
+# The power flow tool is not meant for analytics where the principal goal is to determine
+# if the system has settings that produce a feasible AC solution. This power flow routine
+# does not check for reactive power limits or other limiting mechanisms in the grid, and can
+# therefore be used to check for solver convergence - making no guarantees
+# of the solution feasibility.
 
 # The power flow solver uses [NLsolve.jl](https://github.com/JuliaNLSolvers/NLsolve.jl) under
 # the hood and takes any keyword argument accepted by NLsolve. The solver uses the current
@@ -33,14 +37,14 @@ system_data = System(joinpath(DATA_DIR, "matpower/case14.m"))
 #    to PV buses. This utility is useful to initialize systems before serializing or checking
 #    the addition of new devices is still AC feasible.
 
-# Solving the powwer flow with mode 1:
+# Solving the power  flow with mode 1:
 
 results = solve_powerflow(system_data)
 results["bus_results"]
 
-# Solving the powwer flow with mode 2:
+# Solving the power  flow with mode 2:
 
-# Before running the power flow command this are the values of the
+# Before running the power flow command these are the values of the
 # voltages:
 
 for b in get_components(Bus, system_data)
@@ -48,8 +52,8 @@ for b in get_components(Bus, system_data)
 end
 
 # [`solve_powerflow!`](@ref) return true or false to signal the successful result of the power
-# flow. This enables the integration of a power flow check into functions. For instance,
-# initializing dynamic simulations. Also, because [`solve_powerflow!`](@ref) uses
+# flow. This enables the integration of a power flow into functions and use the return as check.
+# For instance, initializing dynamic simulations. Also, because [`solve_powerflow!`](@ref) uses
 # [NLsolve.jl](https://github.com/JuliaNLSolvers/NLsolve.jl) all the parameters used for NLsolve
 # are also available for [`solve_powerflow!`](@ref)
 
