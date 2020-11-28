@@ -70,12 +70,6 @@
       "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
       "fields": [
         {
-            "name": "variable",
-            "comment": "Variable Cost TimeSeriesKey",
-            "null_value": "nothing",
-            "data_type": "Union{Nothing, IS.TimeSeriesKey}"
-        },
-        {
           "name": "no_load",
           "comment": "no load cost",
           "null_value": "0.0",
@@ -97,6 +91,13 @@
             "max": null
           },
           "validation_action": "warn"
+        },
+        {
+          "name": "variable",
+          "comment": "Variable Cost TimeSeriesKey",
+          "null_value": "nothing",
+          "data_type": "Union{Nothing, IS.TimeSeriesKey}",
+          "default": "nothing"
         },
         {
           "name": "ancillary_services",
