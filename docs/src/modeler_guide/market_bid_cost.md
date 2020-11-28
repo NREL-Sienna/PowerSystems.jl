@@ -1,8 +1,8 @@
-# PowerSystems [`MarketBidCost`](@ref) example
+# PowerSystems [`MarketBidCost`](@ref)
 
-Is an [`OperationalCost`](@ref)  data structure that allows the user to run a production
+Is an [`OperationalCost`](@ref) data structure that allows the user to run a production
 cost model that is very similar to most US electricity market auctions with bids for energy
-and ancillary services jointly.
+and ancillary services jointly. This page showcases how to create data for this cost function.
 
 ## Adding Energy bids to MarketBidCost
 
@@ -10,6 +10,7 @@ and ancillary services jointly.
 
 When using [`MarketBidCost`](@ref), the user can add the cost struct to the device specifying
 only certain elements, at this point the actual energy cost bids don't need to be populated/passed.
+
 The code below shows an example how we can create a thermal device with MarketBidCost.
 
 ```@example market_bid_cost
@@ -39,9 +40,9 @@ generator = ThermalStandard(
     )
 ```
 
-### Step 2: Creating the TimeSeriesData
+### Step 2: Creating the `TimeSeriesData` for the Market Bid
 
-The user is expected to pass the TimeSeriesData that holds the energy bid data which can be
+The user is expected to pass the `TimeSeriesData` that holds the energy bid data which can be
 of any type (i.e. `SingleTimeSeries` or `Deterministic`) and data can be `Array{Float64}`,
 `Array{Tuple{Float64, Float64}}` or `Array{Array{Tuple{Float64,Float64}}`. If the data is
 just floats then the cost in the optimization is seen as a constant variable cost, but if
@@ -62,10 +63,24 @@ time_series_data = Deterministic(
 )
 ```
 
+**NOTE:** Due to [limitations in DataStructures.jl](https://github.com/JuliaCollections/DataStructures.jl/issues/239),
+in `PowerSystems.jl` when creating Forecasts or TimeSeries for your MarketBidCost, you need
+to define your data as in the example or with a very explicit container. Otherwise, it won't
+discern the types properly in the constructor and will return `SortedDict{Any,Any,Base.Order.ForwardOrdering}` which causes the constructor in `PowerSystems.jl` to fail. For instance, you need to define
+the `Dict` with the data as follows:
+
+```julia
+    # Very verbose dict definition
+    data = Dict{DateTime,Array{Array{Tuple{Float64,Float64},1},1}}()
+    for t in range(initial_time_sys; step = Hour(1), length = window_count)
+        data[t] = MY_BID_DATA
+    end
+```
+
 ### Step 3a: Adding Energy Bid TimeSeriesData to the device
 
-To add energy market bids time-series to the MarketBidCost, the use of `set_variable_cost!`
-is recommended. Arguments for `set_variable_cost!`
+To add energy market bids time-series to the `MarketBidCost`, the use of `set_variable_cost!`
+is recommended. The arguments for `set_variable_cost!` are:
 
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
@@ -78,12 +93,11 @@ set_variable_cost!(sys, generator, time_series_data)
 
 ### Step 3b: Adding Service Bid TimeSeriesData to the device
 
-Similar to adding energy market bids,  for adding bids for ancillary services the use of
+Similar to adding energy market bids, for adding bids for ancillary services the use of
 `set_service_bid!` is recommended.
 
 ```@example market_bid_cost
 service = VariableReserve{ReserveUp}("example_reserve", true, 0.6, 2.0)
-sys = System(100.0, [bus], [generator])
 add_service!(sys, service, get_component(ThermalStandard, sys, "Brighton"))
 data =
     Dict(Dates.DateTime("2020-01-01") => [650.3, 750.0])
