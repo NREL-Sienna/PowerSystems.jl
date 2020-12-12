@@ -435,8 +435,11 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         return nothing
     end
 
-    genmap_file = get(kwargs, :genmap_file, nothing)
-    genmap = get_generator_mapping(genmap_file)
+    generator_mapping = get(kwargs, :generator_mapping, nothing)
+    if generator_mapping isa AbstractString
+        generator_mapping = get_generator_mapping(generator_mapping)
+    end
+
     sys_mbase = data["baseMVA"]
 
     for (name, pm_gen) in data["gen"]
@@ -468,7 +471,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         pm_gen["type"] = get(pm_gen, "type", "OT")
         @debug "Found generator" gen_name bus pm_gen["fuel"] pm_gen["type"]
 
-        gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], genmap)
+        gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], generator_mapping)
         if gen_type == ThermalStandard
             generator = make_thermal_gen(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == HydroEnergyReservoir

@@ -7,7 +7,7 @@ const SYSTEM_KWARGS = Set((
     :config_path,
     :frequency,
     :gen_name_formatter,
-    :genmap_file,
+    :generator_mapping,
     :internal,
     :load_name_formatter,
     :load_zone_formatter,
