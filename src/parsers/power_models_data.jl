@@ -47,6 +47,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_branch!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
+    read_storage!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
         check!(sys)
     end
@@ -329,8 +330,24 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
     return generator
 end
 
-function make_generic_battery(gen_name, d, bus)
-    error("Not implemented yet.")
+function make_generic_battery(storage_name, d, bus)
+    storage = GenericBattery(;
+        name = storage_name,
+        available = Bool(d["status"]),
+        bus = bus,
+        prime_mover = PrimeMovers.BA,
+        initial_energy = d["energy"],
+        state_of_charge_limits = (min = 0.0, max = d["energy_rating"]),
+        rating = d["thermal_rating"],
+        active_power = d["ps"],
+        input_active_power_limits = (min = 0.0, max = d["charge_rating"]),
+        output_active_power_limits = (min = 0.0, max = d["discharge_rating"]),
+        efficiency = (in = d["charge_efficiency"], out = d["discharge_efficiency"]),
+        reactive_power = d["qs"],
+        reactive_power_limits = (min = d["qmin"], max = d["qmax"]),
+        base_power = d["thermal_rating"],
+    )
+    return storage
 end
 
 """
@@ -436,7 +453,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
     end
 
     generator_mapping = get(kwargs, :generator_mapping, nothing)
-    if generator_mapping isa AbstractString
+    if generator_mapping isa AbstractString || isnothing(generator_mapping)
         generator_mapping = get_generator_mapping(generator_mapping)
     end
 
@@ -665,5 +682,24 @@ function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         shunt = make_shunt(name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function read_storage!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+    @info "Reading storage data"
+    if !haskey(data, "storage")
+        @info "There is no storage data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :gen_name_formatter, _get_pm_dict_name)
+
+    for (d_key, d) in data["storage"]
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
+        bus = bus_number_to_bus[d["storage_bus"]]
+        storage = make_generic_battery(name, d, bus)
+
+        add_component!(sys, storage; skip_validation = SKIP_PM_VALIDATION)
     end
 end
