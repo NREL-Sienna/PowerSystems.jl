@@ -69,7 +69,14 @@ end
 Internal component name retreval from pm2ps_dict
 """
 function _get_pm_dict_name(device_dict)
-    return get(device_dict, "name", string(device_dict["index"]))
+    if haskey(device_dict, "name")
+        name = device_dict["name"]
+    elseif haskey(device_dict, "source_id")
+        name = strip(join(string.(device_dict["source_id"]), "-"))
+    else
+        name = string(device_dict["index"])
+    end
+    return name
 end
 
 """
@@ -263,7 +270,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
     curtailcost = TwoPartCost(0.0, 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
-    return HydroEnergyReservoir(
+    return HydroDispatch( # No way to define storage parameters for gens in PM so can only make HydroDispatch
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -283,9 +290,6 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
         time_limits = nothing,
         operation_cost = curtailcost,
         base_power = d["mbase"],
-        storage_capacity = 0.0, #TODO: Implement better Solution for this
-        inflow = 0.0,
-        initial_storage = 0.0,
     )
 end
 
@@ -459,28 +463,9 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
 
     sys_mbase = data["baseMVA"]
 
-    for (name, pm_gen) in data["gen"]
-        if haskey(kwargs, :gen_name_formatter)
-            _get_name = kwargs[:gen_name_formatter]
-        elseif haskey(pm_gen, "name")
-            _get_name = _get_pm_dict_name
-        elseif haskey(pm_gen, "source_id")
-            _get_name =
-                d -> begin
-                    if length(d["source_id"]) <= 2
-                        strip(string(d["source_id"][1]) * "-" * string(d["source_id"][2]))
-                    else
-                        strip(
-                            string(d["source_id"][1]) *
-                            "-" *
-                            string(d["source_id"][2]) *
-                            "-" *
-                            string(d["source_id"][3]),
-                        )
-                    end
-                end
-        end
+    _get_name = get(kwargs, :gen_name_formatter, _get_pm_dict_name)
 
+    for (name, pm_gen) in data["gen"]
         gen_name = _get_name(pm_gen)
 
         bus = bus_number_to_bus[pm_gen["gen_bus"]]
