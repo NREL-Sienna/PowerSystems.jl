@@ -1618,6 +1618,11 @@
           "name": "active_power_limits",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn",
           "needs_conversion": true
         },
         {
@@ -1771,6 +1776,11 @@
           "name": "active_power_limits",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn",
           "needs_conversion": true
         },
         {
@@ -2264,6 +2274,11 @@
           "name": "active_power_limits",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn",
           "needs_conversion": true
         },
         {

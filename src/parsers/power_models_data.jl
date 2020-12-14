@@ -483,10 +483,8 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         elseif gen_type == RenewableFix
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == GenericBattery
-            @warn "Skipping GenericBattery"
+            @error "GenericBattery should be defined a PowerModels storage"
             continue
-            # TODO
-            #generator = make_generic_battery(gen_name, pm_gen, bus)
         else
             @error "Skipping unsupported generator" gen_type
             continue
