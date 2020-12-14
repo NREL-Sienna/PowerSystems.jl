@@ -509,20 +509,36 @@ end
 Add generators to the System from the raw data.
 
 """
+struct _HeatRateColumns
+    columns::Base.Iterators.Zip{Tuple{Array{Symbol, 1}, Array{Symbol, 1}}}
+end
+struct _CostPointColumns
+    columns::Base.Iterators.Zip{Tuple{Array{Symbol, 1}, Array{Symbol, 1}}}
+end
+
 function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     output_point_fields = Vector{Symbol}()
     heat_rate_fields = Vector{Symbol}()
+    cost_point_fields = Vector{Symbol}()
     fields = get_user_fields(data, GENERATOR::InputCategory)
     for field in fields
         if occursin("output_point", field)
             push!(output_point_fields, Symbol(field))
         elseif occursin("heat_rate_", field)
             push!(heat_rate_fields, Symbol(field))
+        elseif occursin("cost_point_", field)
+            push!(cost_point_fields, Symbol(field))
         end
     end
 
     @assert length(output_point_fields) > 0
-    cost_colnames = zip(heat_rate_fields, output_point_fields)
+    if length(heat_rate_fields) > 0 && length(cost_point_fields) > 0
+        throw(IS.ConflictingInputsError("Heat rate and cost points are both defined"))
+    elseif length(heat_rate_fields) > 0
+        cost_colnames = _HeatRateColumns(zip(heat_rate_fields, output_point_fields))
+    elseif length(cost_point_fields) > 0
+        cost_colnames = _CostPointColumns(zip(cost_point_fields, output_point_fields))
+    end
 
     for gen in iterate_rows(data, GENERATOR::InputCategory)
         @debug "making generator:" gen.name
@@ -744,13 +760,19 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     return generator
 end
 
-function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames, base_power)
+function calculate_variable_cost(
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames::_HeatRateColumns,
+    base_power,
+)
     fuel_cost = gen.fuel_price / 1000.0
 
     vom = isnothing(gen.variable_cost) ? 0.0 : gen.variable_cost
 
     if fuel_cost > 0.0
-        var_cost = [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames]
+        var_cost =
+            [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames.columns]
         var_cost = unique([
             (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2])))
             for c in var_cost if !in(nothing, c)
@@ -787,6 +809,39 @@ function calculate_variable_cost(data::PowerSystemTableData, gen, cost_colnames,
         var_cost = var_cost[1][1] * fuel_cost + vom
         fixed = 0.0
     end
+    return var_cost, fixed, fuel_cost
+end
+
+function calculate_variable_cost(
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames::_CostPointColumns,
+    base_power,
+)
+    vom = isnothing(gen.variable_cost) ? 0.0 : gen.variable_cost
+
+    var_cost = [(getfield(gen, c), getfield(gen, mw)) for (c, mw) in cost_colnames.columns]
+    var_cost = unique([
+        (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2])))
+        for c in var_cost if !in(nothing, c)
+    ])
+
+    var_cost = [
+        ((var_cost[i][1] + vom) * var_cost[i][2], var_cost[i][2]) .*
+        gen.active_power_limits_max .* base_power for i in 1:length(var_cost)
+    ]
+
+    fixed = max(
+        0.0,
+        var_cost[1][1] -
+        (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
+    )
+
+    var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
+    for i in 2:length(var_cost)
+        var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
+    end
+
     return var_cost, fixed, fuel_cost
 end
 

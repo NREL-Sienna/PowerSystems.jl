@@ -432,6 +432,84 @@
             "default_value": null
         },
         {
+            "unit": "$/hr",
+            "name": "cost_point_0",
+            "description": "Operating cost at output_point_0",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_1",
+            "description": "Operating cost at output_point_1",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_2",
+            "description": "Operating cost at output_point_2",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_3",
+            "description": "Operating cost at output_point_3",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_4",
+            "description": "Operating cost at output_point_4",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_5",
+            "description": "Operating cost at output_point_5",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_6",
+            "description": "Operating cost at output_point_6",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_7",
+            "description": "Operating cost at output_point_7",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_8",
+            "description": "Operating cost at output_point_8",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_9",
+            "description": "Operating cost at output_point_9",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_10",
+            "description": "Operating cost at output_point_10",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_11",
+            "description": "Operating cost at output_point_11",
+            "default_value": null
+        },
+        {
+            "unit": "$/hr",
+            "name": "cost_point_12",
+            "description": "Operating cost at output_point_12",
+            "default_value": null
+        },
+        {
             "unit": "%",
             "name": "output_point_0",
             "description": "Output point 0 on heat rate curve as a percentage of PMax",
