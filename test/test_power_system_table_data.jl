@@ -131,3 +131,25 @@ end
         @test_throws PSY.DataFormatError PSY.get_reserve_direction(invalid)
     end
 end
+
+@testset "Test consistency between variable cost and heat rate parsing" begin
+    fivebus_dir = joinpath(DATA_DIR, "5-bus-hydro")
+    rawsys_hr = PowerSystemTableData(
+        fivebus_dir,
+        100.0,
+        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml"),
+        generator_mapping_file = joinpath(fivebus_dir, "generator_mapping.yaml"),
+    )
+    rawsys = PowerSystemTableData(
+        fivebus_dir,
+        100.0,
+        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml"),
+        generator_mapping_file = joinpath(fivebus_dir, "generator_mapping.yaml"),
+    )
+    sys_hr = System(rawsys_hr)
+    sys = System(rawsys)
+
+    g_hr = get_components(ThermalStandard, sys_hr)
+    g = get_components(ThermalStandard, sys)
+    @test get_variable.(get_operation_cost.(g)) == get_variable.(get_operation_cost.(g))
+end

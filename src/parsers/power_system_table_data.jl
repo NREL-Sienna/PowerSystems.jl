@@ -801,9 +801,11 @@ function calculate_variable_cost(
             (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
+
         for i in 2:length(var_cost)
             var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
         end
+
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = var_cost[1][1] * fuel_cost + vom
@@ -831,18 +833,19 @@ function calculate_variable_cost(
         gen.active_power_limits_max .* base_power for i in 1:length(var_cost)
     ]
 
-    fixed = max(
-        0.0,
-        var_cost[1][1] -
-        (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
-    )
-
-    var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
-    for i in 2:length(var_cost)
-        var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
+    if length(var_cost) > 1
+        fixed = max(
+            0.0,
+            var_cost[1][1] -
+            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
+        )
+        var_cost = [(var_cost[i][1] - fixed, var_cost[i][2]) for i in 1:length(var_cost)]
+    elseif length(var_cost) == 1
+        var_cost = var_cost[1][1] + vom
+        fixed = 0.0
     end
 
-    return var_cost, fixed, fuel_cost
+    return var_cost, fixed, 0.0
 end
 
 function calculate_uc_cost(data, gen, fuel_cost)
