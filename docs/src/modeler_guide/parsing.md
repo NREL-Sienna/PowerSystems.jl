@@ -19,6 +19,8 @@ following categories are currently supported:
 
 - branch.csv
 - bus.csv (required)
+  - columns specifying "area" and "zone" will create a corresponding set of `Area` and `LoadZone` objects.
+  - columns specifying "max_active_power" or "max_reactive_power" will create `PowerLoad` objects when nonzero values are encountered.
 - dc_branch.csv
 - gen.csv
 - load.csv
@@ -89,14 +91,27 @@ data in order to be able to automatically construct time_series from raw data
 files. The following fields are required for each time array:
 
 - simulation:  User description of simulation
-- category:  Type of component. Must map to PowerSystems abstract types (Bus,
-  ElectricLoad, Generator, LoadZone, Reserve)
+- resolution:  Resolution of time series in seconds
+- module:  Module that defines the abstract type of the component
+- category:  Type of component. Must map to abstract types defined by the "module"
+  entry (Bus, ElectricLoad, Generator, LoadZone, Reserve)
 - component_name:  Name of component
 - name:  User-defined name for the time series data.
 - normalization_factor:  Controls normalization of the data. Use 1.0 for
   pre-normalized data. Use 'Max' to divide the time series by the max value in the
   column. Use any float for a custom scaling factor.
+- scaling_factor_multiplier_module:  Module that defines the accessor function for the
+scaling factor
+- scaling_factor_multiplier:  Accessor function of the scaling factor
 - data_file:  Path to the time series data file
+
+Notes:
+
+- The "module", "category", and "component_name" entries must be valid arguments to retrieve
+a component using `get_component(${module}.${category}, sys, $name)`.
+- The "scaling_factor_multiplier_module" and the "scaling_factor_multiplier" entries must
+be sufficient to return the scaling factor data using
+`${scaling_factor_multiplier_module}.${scaling_factor_multiplier}(component)`.
 
 PowerSystems supports this metadata in either CSV or JSON formats. Refer to
 [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/timeseries_pointers.json)
