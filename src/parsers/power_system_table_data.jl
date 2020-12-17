@@ -1183,7 +1183,8 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
     end
 
     if length(head) != 1
-        throw(DataFormatError("storage generator must have exactly 1 head storage defined"))
+        @warn "storage generator should have exactly 1 head storage defined: this will throw an error in v1.1.x"
+        #throw(DataFormatError("storage generator must have exactly 1 head storage defined")) #TODO: uncomment this in next version
     elseif length(tail) > 1
         throw(DataFormatError("storage generator cannot have more than 1 tail storage defined"))
     end
