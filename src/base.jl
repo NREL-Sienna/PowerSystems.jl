@@ -550,8 +550,8 @@ function IS.add_time_series_from_file_metadata_internal!(
     end
 
     ts = IS.make_time_series!(cache, file_metadata)
-    if component isa AggregationTopology &&
-        file_metadata.scaling_factor_multiplier in ["get_max_active_power", "get_max_reactive_power"]
+    if component isa AggregationTopology && file_metadata.scaling_factor_multiplier in
+       ["get_max_active_power", "get_max_reactive_power"]
         uuids = Set{UUIDs.UUID}()
         for bus in _get_buses(data, component)
             push!(uuids, IS.get_uuid(bus))
@@ -563,7 +563,8 @@ function IS.add_time_series_from_file_metadata_internal!(
         )
             IS.add_time_series!(data, _component, ts; skip_if_present = true)
         end
-        file_metadata.scaling_factor_multiplier = replace(file_metadata.scaling_factor_multiplier, "max" => "peak")
+        file_metadata.scaling_factor_multiplier =
+            replace(file_metadata.scaling_factor_multiplier, "max" => "peak")
         area_ts = IS.make_time_series!(cache, file_metadata)
         IS.add_time_series!(data, component, area_ts; skip_if_present = true)
     else
