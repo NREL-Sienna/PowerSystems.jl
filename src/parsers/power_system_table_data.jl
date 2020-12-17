@@ -659,7 +659,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         device_subcategories =
             make_array(get(reserve, :eligible_device_subcategories, nothing))
         devices = make_array(get(reserve, :contributing_devices, nothing))
-        regions = make_array(reserve.eligible_regions)
+        regions = make_array(reserve.eligible_regions) #TODO: rename to "area"
         requirement = get(reserve, :requirement, nothing)
         contributing_devices = Vector{Device}()
 
@@ -752,7 +752,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
         generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type == GenericBattery
         storage = get_storage_by_generator(data, gen.name).head
-        generator = make_storage(data, gen, storage[1], bus)
+        generator = make_storage(data, gen, storage, bus)
     else
         @error "Skipping unsupported generator" gen.name gen_type
     end
