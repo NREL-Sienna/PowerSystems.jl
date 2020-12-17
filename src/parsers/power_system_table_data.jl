@@ -676,8 +676,8 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
                 name =
-                    gen_type <: Storage ? get_storage_by_generator(data, gen.name).name :
-                    gen.name
+                    gen_type <: Storage ?
+                    get_storage_by_generator(data, gen.name).head.name : gen.name
                 sys_gen = get_component(
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
                     sys,
@@ -751,8 +751,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type == GenericBattery
-        storage = get_storage_by_generator(data, gen.name)
-        generator = make_storage(data, gen, storage, bus)
+        storage = get_storage_by_generator(data, gen.name).head
+        generator = make_storage(data, gen, storage[1], bus)
     else
         @error "Skipping unsupported generator" gen.name gen_type
     end
@@ -878,15 +878,20 @@ function make_minmaxlimits(min::Union{Nothing, Float64}, max::Union{Nothing, Flo
     return minmax
 end
 
-function make_ramplimits(gen)
-    ramp = get(gen, :ramp_limits, nothing)
+function make_ramplimits(
+    gen;
+    ramplimcol = :ramp_limits,
+    rampupcol = :ramp_up,
+    rampdncol = :ramp_down,
+)
+    ramp = get(gen, ramplimcol, nothing)
     if !isnothing(ramp)
         up = ramp
         down = ramp
     else
-        up = get(gen, :ramp_up, ramp)
+        up = get(gen, rampupcol, ramp)
         up = typeof(up) == String ? tryparse(Float64, up) : up
-        down = get(gen, :ramp_down, ramp)
+        down = get(gen, rampdncol, ramp)
         down = typeof(down) == String ? tryparse(Float64, down) : down
     end
     ramplimits = isnothing(up) && isnothing(down) ? nothing : (up = up, down = down)
@@ -906,10 +911,15 @@ function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
     return timelimits
 end
 
-function make_reactive_params(gen)
-    reactive_power = get(gen, :reactive_power, 0.0)
-    reactive_power_limits_min = get(gen, :reactive_power_limits_min, nothing)
-    reactive_power_limits_max = get(gen, :reactive_power_limits_max, nothing)
+function make_reactive_params(
+    gen;
+    powerfield = :reactive_power,
+    minfield = :reactive_power_limits_min,
+    maxfield = :reactive_power_limits_max,
+)
+    reactive_power = get(gen, powerfield, 0.0)
+    reactive_power_limits_min = get(gen, minfield, nothing)
+    reactive_power_limits_max = get(gen, maxfield, nothing)
     if isnothing(reactive_power_limits_min) && isnothing(reactive_power_limits_max)
         reactive_power_limits = nothing
     elseif isnothing(reactive_power_limits_min)
@@ -1045,35 +1055,97 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
     time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
     base_power = gen.base_mva
 
-    if gen_type == HydroEnergyReservoir
+    if gen_type == HydroEnergyReservoir || gen_type == HydroPumpedStorage
         if !haskey(data.category_to_df, STORAGE)
             throw(DataFormatError("Storage information must defined in storage.csv"))
         end
-        @debug("Creating $(gen.name) as HydroEnergyReservoir")
+
         storage = get_storage_by_generator(data, gen.name)
 
         var_cost, fixed, fuel_cost =
             calculate_variable_cost(data, gen, cost_colnames, base_power)
         operation_cost = TwoPartCost(var_cost, fixed)
 
-        hydro_gen = HydroEnergyReservoir(
-            name = gen.name,
-            available = gen.available,
-            bus = bus,
-            active_power = gen.active_power,
-            reactive_power = reactive_power,
-            prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
-            rating = rating,
-            active_power_limits = active_power_limits,
-            reactive_power_limits = reactive_power_limits,
-            ramp_limits = ramp_limits,
-            time_limits = time_limits,
-            operation_cost = operation_cost,
-            base_power = base_power,
-            storage_capacity = storage.storage_capacity,
-            inflow = storage.input_active_power_limit_max,
-            initial_storage = storage.energy_level,
-        )
+        if gen_type == HydroEnergyReservoir
+            @debug("Creating $(gen.name) as HydroEnergyReservoir")
+
+            hydro_gen = HydroEnergyReservoir(
+                name = gen.name,
+                available = gen.available,
+                bus = bus,
+                active_power = gen.active_power,
+                reactive_power = reactive_power,
+                prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
+                rating = rating,
+                active_power_limits = active_power_limits,
+                reactive_power_limits = reactive_power_limits,
+                ramp_limits = ramp_limits,
+                time_limits = time_limits,
+                operation_cost = operation_cost,
+                base_power = base_power,
+                storage_capacity = storage.head.storage_capacity,
+                inflow = storage.head.input_active_power_limit_max,
+                initial_storage = storage.head.energy_level,
+            )
+
+        elseif gen_type == HydroPumpedStorage
+            @debug("Creating $(gen.name) as HydroPumpedStorage")
+
+            pump_active_power_limits = (
+                min = gen.pump_active_power_limits_min,
+                max = gen.pump_active_power_limits_max,
+            )
+            (pump_reactive_power, pump_reactive_power_limits) = make_reactive_params(
+                gen,
+                powerfield = :pump_reactive_power,
+                minfield = :pump_reactive_power_limits_min,
+                maxfield = :pump_reactive_power_limits_max,
+            )
+            pump_rating =
+                calculate_rating(pump_active_power_limits, pump_reactive_power_limits)
+            pump_ramp_limits = make_ramplimits(
+                gen;
+                ramplimcol = :pump_ramp_limits,
+                rampupcol = :pump_ramp_up,
+                rampdncol = :pump_ramp_down,
+            )
+            pump_time_limits = make_timelimits(gen, :pump_min_up_time, :pump_min_down_time)
+            hydro_gen = HydroPumpedStorage(
+                name = gen.name,
+                available = gen.available,
+                bus = bus,
+                active_power = gen.active_power,
+                reactive_power = reactive_power,
+                rating = rating,
+                base_power = base_power,
+                prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
+                active_power_limits = active_power_limits,
+                reactive_power_limits = reactive_power_limits,
+                ramp_limits = ramp_limits,
+                time_limits = time_limits,
+                rating_pump = pump_rating,
+                active_power_limits_pump = pump_active_power_limits,
+                reactive_power_limits_pump = pump_reactive_power_limits,
+                ramp_limits_pump = pump_ramp_limits,
+                time_limits_pump = pump_time_limits,
+                storage_capacity = (
+                    up = storage.head.storage_capacity,
+                    down = storage.head.storage_capacity,
+                ),
+                inflow = storage.head.input_active_power_limit_max,
+                outflow = storage.tail.input_active_power_limit_max,
+                initial_storage = (
+                    up = storage.head.energy_level,
+                    down = storage.tail.energy_level,
+                ),
+                storage_target = (
+                    up = storage.head.storage_target,
+                    down = storage.tail.storage_target,
+                ),
+                operation_cost = operation_cost,
+                pump_efficiency = storage.tail.efficiency,
+            )
+        end
     elseif gen_type == HydroDispatch
         @debug("Creating $(gen.name) as HydroDispatch")
         hydro_gen = HydroDispatch(
@@ -1097,13 +1169,27 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
 end
 
 function get_storage_by_generator(data::PowerSystemTableData, gen_name::AbstractString)
-    for storage in iterate_rows(data, STORAGE::InputCategory)
-        if storage.generator_name == gen_name # TODO: This only catches the first storage object associated with a gen
-            return storage
+    head = []
+    tail = []
+    for s in iterate_rows(data, STORAGE::InputCategory)
+        if s.generator_name == gen_name
+            position = get(s, :position, "head")
+            if position == "tail"
+                push!(tail, s)
+            else
+                push!(head, s)
+            end
         end
     end
 
-    throw(DataFormatError("no storage exists with generator $gen_name"))
+    if length(head) != 1
+        throw(DataFormatError("storage generator must have exactly 1 head storage defined"))
+    elseif length(tail) > 1
+        throw(DataFormatError("storage generator cannot have more than 1 tail storage defined"))
+    end
+    tail = length(tail) > 0 ? tail[1] : nothing
+
+    return (head = head[1], tail = tail)
 end
 
 function make_renewable_generator(

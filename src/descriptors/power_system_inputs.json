@@ -724,6 +724,82 @@
             "default_value": false
         },
         {
+            "unit": "MW",
+            "name": "pump_load",
+            "description": "PHES Pump Load",
+            "unit_system": "device_base",
+            "base_reference": "pump_rating",
+            "default_value": null
+        },
+        {
+            "unit": "MW",
+            "name": "pump_active_power_limits_max",
+            "description": "Maximum real power StaticInjection (Unit Capacity)",
+            "unit_system": "device_base",
+            "base_reference": "pump_rating",
+            "default_value": 1.0
+        },
+        {
+            "unit": "MW",
+            "name": "pump_active_power_limits_min",
+            "description": "Minimum real power StaticInjection (Unit minimum stable level)",
+            "unit_system": "device_base",
+            "base_reference": "pump_rating",
+            "default_value": 0.0
+        },
+        {
+            "unit": "MVAR",
+            "name": "pump_reactive_power_limits_max",
+            "description": "Maximum reactive power StaticInjection",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "MVAR",
+            "name": "pump_reactive_power_limits_min",
+            "description": "Minimum reactive power StaticInjection",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "hours",
+            "name": "pump_min_down_time",
+            "description": "Minimum off time required before unit restart",
+            "default_value": null
+        },
+        {
+            "unit": "hours",
+            "name": "pump_min_up_time",
+            "description": "Minimum on time required before unit shutdown",
+            "default_value": null
+        },
+        {
+            "unit": "MW(p.u.)/Min",
+            "name": "pump_ramp_limits",
+            "description": "Maximum ramp up and ramp down rate",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "MW/Min",
+            "name": "pump_ramp_up",
+            "description": "Maximum ramp up rate",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
+            "unit": "MW/Min",
+            "name": "pump_ramp_down",
+            "description": "Maximum ramp down rate",
+            "unit_system": "device_base",
+            "base_reference": "base_mva",
+            "default_value": null
+        },
+        {
             "name": "generator_category",
             "value_options": [
                 "HydroDispatch",
@@ -797,6 +873,11 @@
         {
             "name": "name",
             "description": "Storage object name"
+        },
+        {
+            "name": "position",
+            "description": "head or tail",
+            "default_value": "head"
         },
         {
             "name": "available",
@@ -915,6 +996,13 @@
             "unit": "MWh",
             "name": "min_storage_capacity",
             "description": "Storage Capacity minimum",
+            "unit_system": "device_base",
+            "default_value": 0.0
+        },
+        {
+            "unit": "MWh",
+            "name": "storage_target",
+            "description": "End period storage target level",
             "unit_system": "device_base",
             "default_value": 0.0
         }
