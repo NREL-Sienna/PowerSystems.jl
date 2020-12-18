@@ -19,10 +19,14 @@ function generate_input_config_table(filepath::AbstractString)
     header = "| " * join(columns, " | ") * " |\n" * repeat("|----", length(columns)) * "|\n"
 
     open(filepath, "w") do io
-        write(io, "# Data Requirements\n\n")
+        write(io, "# `PowerSystemTableData` Accepted CSV Columns \n\n")
         write(
             io,
-            "The following tables describe CSV column definitions accepted by the `PowerSystemeTableData` parser:\n\n",
+            "The following tables describe default CSV column definitions accepted by the ",
+        )
+        write(
+            io,
+            "`PowerSystemeTableData` parser defined by `src/descriptors/power_system_inputs.json`:\n\n"
         )
         for (cat, items) in descriptor
             csv = ""

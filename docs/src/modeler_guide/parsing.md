@@ -1,4 +1,4 @@
-# [Constructing a System from RAW data](@id parsing)
+# [Parsing Data](@id parsing)
 
 ## Supported Formats
 
@@ -20,7 +20,8 @@ following categories are currently supported:
 - branch.csv
 - bus.csv (required)
   - columns specifying "area" and "zone" will create a corresponding set of `Area` and `LoadZone` objects.
-  - columns specifying "max_active_power" or "max_reactive_power" will create `PowerLoad` objects when nonzero values are encountered.
+  - columns specifying "max_active_power" or "max_reactive_power" will create `PowerLoad` objects when nonzero values are encountered and will contribute to the `peak_active_power` and `peak_reactive_power` values for the
+  corresponding `LoadZone` object.
 - dc_branch.csv
 - gen.csv
 - load.csv
@@ -44,8 +45,9 @@ Note that the user-specific customizations are stored in YAML rather than JSON
 to allow for easier editing. The next few sections describe changes you can
 make to this YAML file.  Do not edit the default JSON file.
 
-A list of `PowerSystmTableData` accepted columns for each CSV is available
+A list of `PowerSystemTableData` accepted columns for each CSV is available
 [here](./generated_tabledata_config_table.md).
+
 ### Column names
 
 PowerSystems provides a mapping capability that allows you to keep your own
@@ -59,7 +61,8 @@ you can change the `custom_name` field under the `generator` category to
 #### Per-unit conversion
 
 PowerSystems defines whether it expects a column value to be per-unit system base,
-per-unit device base, or natural units in `power_system_inputs.json`. If it expects a
+per-unit device base, or natural units in `power_system_inputs.json`
+([see default values]((./generated_tabledata_config_table.md))). If it expects a
 per-unit convention that differs from your values then you can set the `unit_system` in
 `user_descriptors.yaml` and PowerSystems will automatically convert the values. For
 example, if you have a `max_active_power` value stored in natural units (MW), but
