@@ -60,9 +60,11 @@ you can change the `custom_name` field under the `generator` category to
 
 #### Per-unit conversion
 
+For more info on the per-unit conventions in `PowerSystems.jl`, refer to [this section.](@id per_unit)
+
 PowerSystems defines whether it expects a column value to be per-unit system base,
 per-unit device base, or natural units in `power_system_inputs.json`
-([see default values]((./generated_tabledata_config_table.md))). If it expects a
+([see default values](./generated_tabledata_config_table.md)). If it expects a
 per-unit convention that differs from your values then you can set the `unit_system` in
 `user_descriptors.yaml` and PowerSystems will automatically convert the values. For
 example, if you have a `max_active_power` value stored in natural units (MW), but
