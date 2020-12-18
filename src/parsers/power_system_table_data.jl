@@ -2,6 +2,15 @@
 const POWER_SYSTEM_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_inputs.json")
 
+const INPUT_CATEGORY_NAMES = [
+    ("branch", BRANCH::InputCategory),
+    ("bus", BUS::InputCategory),
+    ("dc_branch", DC_BRANCH::InputCategory),
+    ("gen", GENERATOR::InputCategory),
+    ("load", LOAD::InputCategory),
+    ("reserves", RESERVE::InputCategory),
+    ("storage", STORAGE::InputCategory),
+]
 struct PowerSystemTableData
     base_power::Float64
     category_to_df::Dict{InputCategory, DataFrames.DataFrame}
@@ -21,15 +30,6 @@ function PowerSystemTableData(
     timeseries_metadata_file = joinpath(directory, "timeseries_pointers"),
 )
     category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
-    categories = [
-        ("branch", BRANCH::InputCategory),
-        ("bus", BUS::InputCategory),
-        ("dc_branch", DC_BRANCH::InputCategory),
-        ("gen", GENERATOR::InputCategory),
-        ("load", LOAD::InputCategory),
-        ("reserves", RESERVE::InputCategory),
-        ("storage", STORAGE::InputCategory),
-    ]
 
     if !haskey(data, "bus")
         throw(DataFormatError("key 'bus' not found in input data"))
@@ -40,7 +40,7 @@ function PowerSystemTableData(
     end
     base_power = get(data, "base_power", DEFAULT_BASE_MVA)
 
-    for (name, category) in categories
+    for (name, category) in INPUT_CATEGORY_NAMES
         val = get(data, name, nothing)
         if isnothing(val)
             @debug "key '$name' not found in input data, set to nothing"

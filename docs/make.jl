@@ -9,6 +9,7 @@ download(TestData; branch = "master")
 # This is commented out because the output is not user-friendly. Deliberation on how to best
 # communicate this information to users is ongoing.
 #include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
+include(joinpath(@__DIR__, "src", "generate_input_config_table.jl"))
 include(joinpath(@__DIR__, "make_model_library.jl"))
 
 pages = OrderedDict(

@@ -44,6 +44,8 @@ Note that the user-specific customizations are stored in YAML rather than JSON
 to allow for easier editing. The next few sections describe changes you can
 make to this YAML file.  Do not edit the default JSON file.
 
+A list of `PowerSystmTableData` accepted columns for each CSV is available
+[here](./generated_tabledata_config_table.md).
 ### Column names
 
 PowerSystems provides a mapping capability that allows you to keep your own
