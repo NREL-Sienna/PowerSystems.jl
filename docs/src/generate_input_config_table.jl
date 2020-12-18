@@ -16,7 +16,7 @@ function generate_input_config_table(filepath::AbstractString)
         "value_options",
         "value_range",
     ]
-    header = "| " * join(columns, " | ") * " |\n" * repeat("|--", length(columns)) * "|\n"
+    header = "| " * join(columns, " | ") * " |\n" * repeat("|----", length(columns)) * "|\n"
 
     open(filepath, "w") do io
         write(io, "# Data Requirements\n\n")
@@ -56,7 +56,14 @@ function generate_input_config_table(filepath::AbstractString)
     end
 end
 
-generate_input_config_table(joinpath(
+fname = joinpath(
     dirname(pathof(PowerSystems)),
     "../docs/src/modeler_guide/generated_tabledata_config_table.md",
-))
+)
+
+generate_input_config_table(fname)
+
+txt = read(fname, String)
+open(fname, "w") do f
+      write(f, replace(txt, "_" => "\\_"))
+end
