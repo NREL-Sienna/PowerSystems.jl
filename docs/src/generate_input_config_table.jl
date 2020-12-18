@@ -37,6 +37,8 @@ function generate_input_config_table(filepath::AbstractString)
                 end
             end
 
+            csv == "" && continue
+
             write(io, "## $csv.csv:\n\n")
             write(io, header)
             for item in items
@@ -55,7 +57,7 @@ function generate_input_config_table(filepath::AbstractString)
                 end
                 write(io, "|" * join(row, "|") * "|\n")
             end
-            write(io, "\n\n")
+            write(io, "\n")
         end
     end
 end
@@ -69,5 +71,5 @@ generate_input_config_table(fname)
 
 txt = read(fname, String)
 open(fname, "w") do f
-      write(f, replace(txt, "_" => "\\_"))
+      write(f, replace(txt, r"[_$]" => s"\\\g<0>"))
 end
