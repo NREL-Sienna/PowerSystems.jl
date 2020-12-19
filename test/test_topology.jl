@@ -40,7 +40,7 @@ end
 
 @testset "Test topology mappings" begin
     sys = create_rts_system()
-    test_aggregation_topologies(sys, 3, 21)
+    test_aggregation_topologies(sys, 3, 3)
 end
 
 @testset "Test PM areas and load zones" begin

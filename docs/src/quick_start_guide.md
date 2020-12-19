@@ -20,7 +20,7 @@ DATA_DIR = download(PowerSystems.UtilsData.TestData, folder = pwd())
 Data can be loaded from several file formats and return a summary of the system's components and
 time-series.
 
-```@repl generated_quick_start_guide
+```@example generated_quick_start_guide
 using PowerSystems
 DATA_DIR = "../../data" #hide
 system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))

@@ -47,6 +47,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_branch!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
+    read_storage!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
         check!(sys)
     end
@@ -68,7 +69,14 @@ end
 Internal component name retreval from pm2ps_dict
 """
 function _get_pm_dict_name(device_dict)
-    return get(device_dict, "name", string(device_dict["index"]))
+    if haskey(device_dict, "name")
+        name = device_dict["name"]
+    elseif haskey(device_dict, "source_id")
+        name = strip(join(string.(device_dict["source_id"]), "-"))
+    else
+        name = string(device_dict["index"])
+    end
+    return name
 end
 
 """
@@ -262,7 +270,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
     curtailcost = TwoPartCost(0.0, 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
-    return HydroEnergyReservoir(
+    return HydroDispatch( # No way to define storage parameters for gens in PM so can only make HydroDispatch
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -282,9 +290,6 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
         time_limits = nothing,
         operation_cost = curtailcost,
         base_power = d["mbase"],
-        storage_capacity = 0.0, #TODO: Implement better Solution for this
-        inflow = 0.0,
-        initial_storage = 0.0,
     )
 end
 
@@ -329,8 +334,24 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
     return generator
 end
 
-function make_generic_battery(gen_name, d, bus)
-    error("Not implemented yet.")
+function make_generic_battery(storage_name, d, bus)
+    storage = GenericBattery(;
+        name = storage_name,
+        available = Bool(d["status"]),
+        bus = bus,
+        prime_mover = PrimeMovers.BA,
+        initial_energy = d["energy"],
+        state_of_charge_limits = (min = 0.0, max = d["energy_rating"]),
+        rating = d["thermal_rating"],
+        active_power = d["ps"],
+        input_active_power_limits = (min = 0.0, max = d["charge_rating"]),
+        output_active_power_limits = (min = 0.0, max = d["discharge_rating"]),
+        efficiency = (in = d["charge_efficiency"], out = d["discharge_efficiency"]),
+        reactive_power = d["qs"],
+        reactive_power_limits = (min = d["qmin"], max = d["qmax"]),
+        base_power = d["thermal_rating"],
+    )
+    return storage
 end
 
 """
@@ -435,32 +456,16 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         return nothing
     end
 
-    genmap_file = get(kwargs, :genmap_file, nothing)
-    genmap = get_generator_mapping(genmap_file)
+    generator_mapping = get(kwargs, :generator_mapping, nothing)
+    if generator_mapping isa AbstractString || isnothing(generator_mapping)
+        generator_mapping = get_generator_mapping(generator_mapping)
+    end
+
     sys_mbase = data["baseMVA"]
 
-    for (name, pm_gen) in data["gen"]
-        if haskey(kwargs, :gen_name_formatter)
-            _get_name = kwargs[:gen_name_formatter]
-        elseif haskey(pm_gen, "name")
-            _get_name = _get_pm_dict_name
-        elseif haskey(pm_gen, "source_id")
-            _get_name =
-                d -> begin
-                    if length(d["source_id"]) <= 2
-                        strip(string(d["source_id"][1]) * "-" * string(d["source_id"][2]))
-                    else
-                        strip(
-                            string(d["source_id"][1]) *
-                            "-" *
-                            string(d["source_id"][2]) *
-                            "-" *
-                            string(d["source_id"][3]),
-                        )
-                    end
-                end
-        end
+    _get_name = get(kwargs, :gen_name_formatter, _get_pm_dict_name)
 
+    for (name, pm_gen) in data["gen"]
         gen_name = _get_name(pm_gen)
 
         bus = bus_number_to_bus[pm_gen["gen_bus"]]
@@ -468,7 +473,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         pm_gen["type"] = get(pm_gen, "type", "OT")
         @debug "Found generator" gen_name bus pm_gen["fuel"] pm_gen["type"]
 
-        gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], genmap)
+        gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], generator_mapping)
         if gen_type == ThermalStandard
             generator = make_thermal_gen(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == HydroEnergyReservoir
@@ -478,10 +483,8 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         elseif gen_type == RenewableFix
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == GenericBattery
-            @warn "Skipping GenericBattery"
+            @warn "GenericBattery should be defined as a PowerModels storage... Skipping"
             continue
-            # TODO
-            #generator = make_generic_battery(gen_name, pm_gen, bus)
         else
             @error "Skipping unsupported generator" gen_type
             continue
@@ -662,5 +665,24 @@ function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         shunt = make_shunt(name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function read_storage!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+    @info "Reading storage data"
+    if !haskey(data, "storage")
+        @info "There is no storage data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :gen_name_formatter, _get_pm_dict_name)
+
+    for (d_key, d) in data["storage"]
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
+        bus = bus_number_to_bus[d["storage_bus"]]
+        storage = make_generic_battery(name, d, bus)
+
+        add_component!(sys, storage; skip_validation = SKIP_PM_VALIDATION)
     end
 end

@@ -23,7 +23,7 @@ pages = OrderedDict(
             "modeler_guide/example_dynamic_data.md",
             "modeler_guide/system_dynamic_data.md",
             "modeler_guide/market_bid_cost.md",
-            "modeler_guide/parsing.md"
+            #"modeler_guide/parsing.md"
             ],
         "Model Developer Guide" =>
             Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
@@ -63,6 +63,16 @@ pages["Model Library"] = make_model_library(
         )
 )
 
+# postprocess function to insert md
+function insert_md(content)
+    m = match(r"APPEND_MARKDOWN\(\"(.*)\"\)", content)
+    if !isnothing(m)
+        md_content = read(m.captures[1], String)
+        content = replace(content, r"APPEND_MARKDOWN\(\"(.*)\"\)" => md_content)
+    end
+    return content
+end
+
 # This code performs the automated addition of Literate - Generated Markdowns. The desired
 # section name should be the name of the file for instance network_matrices.jl -> Network Matrices
 julia_file_filter = x -> occursin(".jl", x)
@@ -78,12 +88,17 @@ for (section, folder) in folders
         section_folder_name = lowercase(replace(section, " " => "_"))
         outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
         inputfile = joinpath("$section_folder_name", "$file")
+        infile_path = joinpath(pwd(), "docs", "src", inputfile)
         outputfile = string("generated_", replace("$file", ".jl" => ""))
-        Literate.markdown(joinpath(pwd(), "docs", "src", inputfile),
+        execute = occursin("EXECUTE = TRUE", uppercase(readline(infile_path))) ? true : false
+        Literate.markdown(infile_path,
                           outputdir;
                           name = outputfile,
                           credit = false,
-                          documenter = true)
+                          documenter = true,
+                          postprocess = insert_md,
+                          codefence = "```@example"=>"```",
+                          execute = execute)
         subsection = titlecase(replace(split(file, ".")[1], "_" => " "))
         push!(pages[section], ("$subsection" =>  joinpath("$section_folder_name", "$(outputfile).md")))
     end

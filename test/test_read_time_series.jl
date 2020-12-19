@@ -105,7 +105,7 @@ end
 
     # Test with a filename.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    component = get_component(HydroEnergyReservoir, sys, component_name)
+    component = get_component(HydroDispatch, sys, component_name)
     ts = SingleTimeSeries(
         name,
         timeseries_file,
@@ -122,7 +122,7 @@ end
 
     # Test with TimeSeries.TimeArray.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    component = get_component(HydroEnergyReservoir, sys, component_name)
+    component = get_component(HydroDispatch, sys, component_name)
     ts = SingleTimeSeries(name, ta; normalization_factor = 1.0)
     add_time_series!(sys, component, ts)
     verify_time_series(sys, 1, 1, 24)
@@ -131,7 +131,7 @@ end
 
     # Test with DataFrames.DataFrame.
     sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    component = get_component(HydroEnergyReservoir, sys, component_name)
+    component = get_component(HydroDispatch, sys, component_name)
     df = DataFrames.DataFrame(ta)
     ts = SingleTimeSeries(name, df; normalization_factor = 1.0)
     add_time_series!(sys, component, ts)
