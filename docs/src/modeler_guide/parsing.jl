@@ -111,8 +111,8 @@
 #
 # - branch.csv
 # - bus.csv (required)
-#   - columns specifying "area" and "zone" will create a corresponding set of `Area` and `LoadZone` objects.
-#   - columns specifying "max_active_power" or "max_reactive_power" will create `PowerLoad` objects when nonzero values are encountered and will contribute to the `peak_active_power` and `peak_reactive_power` values for the
+#   - columns specifying `area` and `zone` will create a corresponding set of `Area` and `LoadZone` objects.
+#   - columns specifying `max_active_power` or `max_reactive_power` will create `PowerLoad` objects when nonzero values are encountered and will contribute to the `peak_active_power` and `peak_reactive_power` values for the
 #   corresponding `LoadZone` object.
 # - dc_branch.csv
 # - gen.csv

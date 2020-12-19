@@ -74,7 +74,7 @@ It is often useful to express power systems data in relative terms using per-uni
 
  1. Natural Units: The naturally defined units of each parameter (typically MW).
  2. System Base: Parameter values are divided by the system `base_power`
- 3. Device Base: Parameter values are divided by the component/device `base_mva`
+ 3. Device Base: Parameter values are divided by the device `base_mva`
 
 To see the unit system setting of a `System`:
 

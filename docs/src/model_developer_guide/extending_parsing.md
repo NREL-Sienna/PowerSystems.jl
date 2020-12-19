@@ -9,7 +9,7 @@ DataFrames. The parsing code includes mapping functionality that allows you to
 use PowerSystems-standard names while letting the users define their own custom
 names.
 
-*Note*:  This assumes that you are familiar with this [Constructing a System from RAW data](@ref).
+*Note*:  This assumes that you are familiar with the [PowerSystems Table Data Parser](@ref table_data).
 
 ### Procedure
 
