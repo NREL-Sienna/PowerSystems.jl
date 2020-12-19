@@ -1,5 +1,5 @@
 @info "Generating Input Configuration Descriptor Table"
-function generate_input_config_table(filepath::AbstractString)
+function create_md()
     descriptor = PowerSystems._read_config_file(joinpath(
         dirname(pathof(PowerSystems)),
         "descriptors",
@@ -18,58 +18,52 @@ function generate_input_config_table(filepath::AbstractString)
     ]
     header = "| " * join(columns, " | ") * " |\n" * repeat("|----", length(columns)) * "|\n"
 
-    open(filepath, "w") do io
-        write(io, "# `PowerSystemTableData` Accepted CSV Columns \n\n")
-        write(
-            io,
-            "The following tables describe default CSV column definitions accepted by the ",
-        )
-        write(
-            io,
-            "`PowerSystemeTableData` parser defined by `src/descriptors/power_system_inputs.json`:\n\n"
-        )
-        for (cat, items) in descriptor
-            csv = ""
-            for name in PowerSystems.INPUT_CATEGORY_NAMES
-                if name[2] == cat
-                    csv = name[1]
-                    break
-                end
+    s = "## [`PowerSystemTableData` Accepted CSV Columns](@id tabledata_input_config) \n\n"
+    s = string(
+        s,
+        "The following tables describe default CSV column definitions accepted by the ",
+    )
+    s = string(
+        s,
+        "`PowerSystemeTableData` parser defined by `src/descriptors/power_system_inputs.json`:\n\n"
+    )
+    for (cat, items) in descriptor
+        csv = ""
+        for name in PowerSystems.INPUT_CATEGORY_NAMES
+            if name[2] == cat
+                csv = name[1]
+                break
             end
-
-            csv == "" && continue
-
-            write(io, "## $csv.csv:\n\n")
-            write(io, header)
-            for item in items
-                extra_cols = setdiff(keys(item), columns)
-                if !isempty(extra_cols)
-                    # make sure that there arent unexpected entries
-                    throw(@error "config file fields not included in header" extra_cols)
-                end
-                row = []
-                for col in columns
-                    val = string(get(item, col, " "))
-                    if col == "default_value" && val == " "
-                        val = "*REQUIRED*"
-                    end
-                    push!(row, val)
-                end
-                write(io, "|" * join(row, "|") * "|\n")
-            end
-            write(io, "\n")
         end
+
+        csv == "" && continue
+
+        s = string(s, "### $csv.csv:\n\n")
+        s = string(s, header)
+        for item in items
+            extra_cols = setdiff(keys(item), columns)
+            if !isempty(extra_cols)
+                # make sure that there arent unexpected entries
+                throw(@error "config file fields not included in header" extra_cols)
+            end
+            row = []
+            for col in columns
+                val = string(get(item, col, " "))
+                if col == "default_value" && val == " "
+                    val = "*REQUIRED*"
+                end
+                push!(row, val)
+            end
+            s = string(s, "|" * join(row, "|") * "|\n")
+        end
+        s = string(s, "\n")
     end
+    s = replace(s, r"[_$]" => s"\\\g<0>")
+    return s
 end
 
-fname = joinpath(
-    dirname(pathof(PowerSystems)),
-    "../docs/src/modeler_guide/generated_tabledata_config_table.md",
-)
+txt = create_md()
 
-generate_input_config_table(fname)
-
-txt = read(fname, String)
-open(fname, "w") do f
-      write(f, replace(txt, r"[_$]" => s"\\\g<0>"))
+open("/Users/cbarrows/Documents/repos/PowerSystems.jl/docs/src/modeler_guide/markdown.txt", "w") do f
+      write(f, txt)
 end
