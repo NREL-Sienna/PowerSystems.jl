@@ -40,3 +40,72 @@ function Base.show(io::IO, ::MIME"text/plain", data::PowerSystemTableData)
         println(io, "$(summary(df))")
     end
 end
+
+function Base.show(io::IO, ist::Component)
+    print(io, string(nameof(typeof(ist))), "(")
+    is_first = true
+    for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
+        if field_type <: IS.TimeSeriesContainer || field_type <: InfrastructureSystemsInternal
+            continue
+        else
+            getter_func = getfield(PowerSystems, Symbol("get_$name"))
+            val = getter_func(ist)
+        end
+        if is_first
+            is_first = false
+        else
+            print(io, ", ")
+        end
+        print(io, val)
+    end
+    print(io, ")")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", ist::Component)
+    print(io, summary(ist), ":")
+    for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
+        obj = getfield(ist, name)
+        if obj isa InfrastructureSystemsInternal
+            print(io, "\n   ")
+            show(io, MIME"text/plain"(), obj.units_info)
+            continue
+        elseif obj isa IS.TimeSeriesContainer || obj isa InfrastructureSystemsType
+            val = summary(getfield(ist, name))
+        elseif obj isa Vector{<:InfrastructureSystemsComponent}
+            val = summary(getfield(ist, name))
+        else
+            getter_func = getfield(PowerSystems, Symbol("get_$name"))
+            val = getter_func(ist)
+        end
+        # Not allowed to print `nothing`
+        if isnothing(val)
+            val = "nothing"
+        end
+        print(io, "\n   ", name, ": ", val)
+    end
+end
+
+
+function Base.show(io::IO, ::MIME"text/html", ist::Component)
+    print(io, summary(ist), ":")
+    for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
+        obj = getfield(ist, name)
+        if obj isa InfrastructureSystemsInternal
+            print(io, "\n   ")
+            show(io, MIME"text/html"(), obj.units_info)
+            continue
+        elseif obj isa IS.TimeSeriesContainer || obj isa InfrastructureSystemsType
+            val = summary(getfield(ist, name))
+        elseif obj isa Vector{<:InfrastructureSystemsComponent}
+            val = summary(getfield(ist, name))
+        else
+            getter_func = getfield(PowerSystems, Symbol("get_$name"))
+            val = getter_func(ist)
+        end
+        # Not allowed to print `nothing`
+        if isnothing(val)
+            val = "nothing"
+        end
+        print(io, "\n   ", name, ": ", val)
+    end
+end
