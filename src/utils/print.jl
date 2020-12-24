@@ -66,8 +66,13 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
         obj = getfield(ist, name)
         if obj isa InfrastructureSystemsInternal
-            print(io, "\n   ")
-            show(io, MIME"text/plain"(), obj.units_info)
+            if isnothing(obj.units_info)
+                print(io, "\n",) 
+                @warn("SystemUnitSetting not defined, default to NATURAL_UNITS")
+            else
+                print(io, "\n   ")
+                show(io, MIME"text/plain"(), obj.units_info)
+            end
             continue
         elseif obj isa IS.TimeSeriesContainer || obj isa InfrastructureSystemsType
             val = summary(getfield(ist, name))
@@ -85,14 +90,17 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     end
 end
 
-
 function Base.show(io::IO, ::MIME"text/html", ist::Component)
     print(io, summary(ist), ":")
     for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
         obj = getfield(ist, name)
         if obj isa InfrastructureSystemsInternal
-            print(io, "\n   ")
-            show(io, MIME"text/html"(), obj.units_info)
+            if isnothing(obj.units_info)
+                print(io, "\n   SystemUnitSetting not defined, default to NATURAL_UNITS")
+            else
+                print(io, "\n   ")
+                show(io, MIME"text/html"(), obj.units_info)
+            end
             continue
         elseif obj isa IS.TimeSeriesContainer || obj isa InfrastructureSystemsType
             val = summary(getfield(ist, name))
