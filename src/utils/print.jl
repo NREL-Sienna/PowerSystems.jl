@@ -45,7 +45,8 @@ function Base.show(io::IO, ist::Component)
     print(io, string(nameof(typeof(ist))), "(")
     is_first = true
     for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
-        if field_type <: IS.TimeSeriesContainer || field_type <: InfrastructureSystemsInternal
+        if field_type <: IS.TimeSeriesContainer ||
+           field_type <: InfrastructureSystemsInternal
             continue
         else
             getter_func = getfield(PowerSystems, Symbol("get_$name"))
@@ -67,7 +68,7 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
         obj = getfield(ist, name)
         if obj isa InfrastructureSystemsInternal
             if isnothing(obj.units_info)
-                print(io, "\n",) 
+                print(io, "\n")
                 @warn("SystemUnitSetting not defined, default to NATURAL_UNITS")
             else
                 print(io, "\n   ")
