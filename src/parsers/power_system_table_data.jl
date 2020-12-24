@@ -1262,7 +1262,7 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
     battery = GenericBattery(
-        name = storage.name,
+        name = gen.name,
         available = storage.available,
         bus = bus,
         prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
