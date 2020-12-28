@@ -128,20 +128,20 @@
 # data in order to be able to automatically construct time_series from raw data
 # files. The following fields are required for each time array:
 #
-# - simulation:  User description of simulation
-# - resolution:  Resolution of time series in seconds
-# - module:  Module that defines the abstract type of the component
-# - category:  Type of component. Must map to abstract types defined by the "module"
+# - `simulation`:  User description of simulation
+# - `resolution`:  Resolution of time series in seconds
+# - `module`:  Module that defines the abstract type of the component
+# - `category`:  Type of component. Must map to abstract types defined by the "module"
 #   entry (Bus, ElectricLoad, Generator, LoadZone, Reserve)
-# - component_name:  Name of component
-# - name:  User-defined name for the time series data.
-# - normalization_factor:  Controls normalization of the data. Use 1.0 for
+# - `component_name`:  Name of component
+# - `name`:  User-defined name for the time series data.
+# - `normalization_factor`:  Controls normalization of the data. Use 1.0 for
 #   pre-normalized data. Use 'Max' to divide the time series by the max value in the
 #   column. Use any float for a custom scaling factor.
-# - scaling_factor_multiplier_module:  Module that defines the accessor function for the
+# - `scaling_factor_multiplier_module`:  Module that defines the accessor function for the
 # scaling factor
-# - scaling_factor_multiplier:  Accessor function of the scaling factor
-# - data_file:  Path to the time series data file
+# - `scaling_factor_multiplier`:  Accessor function of the scaling factor
+# - `data_file`:  Path to the time series data file
 #
 # Notes:
 #
