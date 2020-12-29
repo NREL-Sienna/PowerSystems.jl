@@ -278,7 +278,7 @@ end
 Sets the units base for the getter functions on the devices. It modifies the behavior of all getter functions
 """
 function set_units_base_system!(system::System, settings::String)
-    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING[settings]
+    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING[uppercase(settings)]
     @info "Unit System changed to $(UNIT_SYSTEM_MAPPING[settings])"
     return
 end
