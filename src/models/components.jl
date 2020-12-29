@@ -8,9 +8,7 @@ end
 function _get_multiplier(c::T) where {T <: Component}
     setting = get_internal(c).units_info
     if isnothing(setting)
-        # default units settings is NATURAL_UNITS
-        numerator = get_base_power(c)
-        denominator = 1.0
+        return 1.0
     elseif setting.unit_system == IS.DEVICE_BASE
         return 1.0
     elseif setting.unit_system == IS.SYSTEM_BASE

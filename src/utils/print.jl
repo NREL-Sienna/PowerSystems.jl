@@ -63,21 +63,24 @@ function Base.show(io::IO, ist::Component)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", ist::Component)
+    defualt_units = false
+    if isnothing(ist.internal.units_info)
+        print(io, "\n")
+        @warn("SystemUnitSetting not defined, using NATURAL_UNITS for dispalying device specification.")
+        ist.internal.units_info =
+            SystemUnitsSettings(100.0, UNIT_SYSTEM_MAPPING["NATURAL_UNITS"])
+        defualt_units = true
+    end
     print(io, summary(ist), ":")
     for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
         obj = getfield(ist, name)
-        if obj isa InfrastructureSystemsInternal
-            if isnothing(obj.units_info)
-                print(io, "\n")
-                @warn("SystemUnitSetting not defined, default to NATURAL_UNITS")
-            else
-                print(io, "\n   ")
-                show(io, MIME"text/plain"(), obj.units_info)
-            end
+        if (obj isa InfrastructureSystemsInternal) && !defualt_units
+            print(io, "\n   ")
+            show(io, MIME"text/plain"(), obj.units_info)
             continue
-        elseif obj isa IS.TimeSeriesContainer || obj isa InfrastructureSystemsType
-            val = summary(getfield(ist, name))
-        elseif obj isa Vector{<:InfrastructureSystemsComponent}
+        elseif obj isa IS.TimeSeriesContainer ||
+               obj isa InfrastructureSystemsType ||
+               obj isa Vector{<:InfrastructureSystemsComponent}
             val = summary(getfield(ist, name))
         else
             getter_func = getfield(PowerSystems, Symbol("get_$name"))
@@ -89,23 +92,30 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
         end
         print(io, "\n   ", name, ": ", val)
     end
+    if defualt_units
+        ist.internal.units_info = nothing
+    end
 end
 
 function Base.show(io::IO, ::MIME"text/html", ist::Component)
+    defualt_units = false
+    if isnothing(ist.internal.units_info)
+        print(io, "\n")
+        @warn("SystemUnitSetting not defined, using NATURAL_UNITS for dispalying device specification.")
+        ist.internal.units_info =
+            SystemUnitsSettings(100.0, UNIT_SYSTEM_MAPPING["NATURAL_UNITS"])
+        defualt_units = true
+    end
     print(io, summary(ist), ":")
     for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
         obj = getfield(ist, name)
-        if obj isa InfrastructureSystemsInternal
-            if isnothing(obj.units_info)
-                print(io, "\n   SystemUnitSetting not defined, default to NATURAL_UNITS")
-            else
-                print(io, "\n   ")
-                show(io, MIME"text/html"(), obj.units_info)
-            end
+        if obj isa InfrastructureSystemsInternal && !defualt_units
+            print(io, "\n   ")
+            show(io, MIME"text/html"(), obj.units_info)
             continue
-        elseif obj isa IS.TimeSeriesContainer || obj isa InfrastructureSystemsType
-            val = summary(getfield(ist, name))
-        elseif obj isa Vector{<:InfrastructureSystemsComponent}
+        elseif obj isa IS.TimeSeriesContainer ||
+               obj isa InfrastructureSystemsType ||
+               obj isa Vector{<:InfrastructureSystemsComponent}
             val = summary(getfield(ist, name))
         else
             getter_func = getfield(PowerSystems, Symbol("get_$name"))
@@ -116,5 +126,8 @@ function Base.show(io::IO, ::MIME"text/html", ist::Component)
             val = "nothing"
         end
         print(io, "\n   ", name, ": ", val)
+    end
+    if defualt_units
+        ist.internal.units_info = nothing
     end
 end
