@@ -675,13 +675,10 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 bus_ids = buses[!, bus_id_column]
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
-                name =
-                    gen_type <: Storage ?
-                    get_storage_by_generator(data, gen.name).head.name : gen.name
                 sys_gen = get_component(
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
                     sys,
-                    name,
+                    gen.name,
                 )
                 area = string(buses[
                     bus_ids .== get_number(get_bus(sys_gen)),
@@ -1262,7 +1259,7 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
     battery = GenericBattery(
-        name = storage.name,
+        name = gen.name,
         available = storage.available,
         bus = bus,
         prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
