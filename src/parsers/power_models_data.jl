@@ -106,17 +106,19 @@ function make_bus(bus_dict::Dict{String, Any})
 end
 
 function make_bus(bus_name, bus_number, d, bus_types, area)
-    bus = make_bus(Dict{String, Any}(
-        "name" => bus_name,
-        "number" => bus_number,
-        "bustype" => bus_types[d["bus_type"]],
-        "angle" => d["va"],
-        "voltage" => d["vm"],
-        "voltage_limits" => (min = d["vmin"], max = d["vmax"]),
-        "base_voltage" => d["base_kv"],
-        "area" => area,
-        "zone" => nothing,
-    ),)
+    bus = make_bus(
+        Dict{String, Any}(
+            "name" => bus_name,
+            "number" => bus_number,
+            "bustype" => bus_types[d["bus_type"]],
+            "angle" => d["va"],
+            "voltage" => d["vm"],
+            "voltage_limits" => (min = d["vmin"], max = d["vmax"]),
+            "base_voltage" => d["base_kv"],
+            "area" => area,
+            "zone" => nothing,
+        ),
+    )
     return bus
 end
 
@@ -238,8 +240,8 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; k
 
     for zone in zones
         buses = [
-            bus_number_to_bus[b["bus_i"]]
-            for (b_key, b) in data["bus"] if b["zone"] == zone
+            bus_number_to_bus[b["bus_i"]] for
+            (b_key, b) in data["bus"] if b["zone"] == zone
         ]
         bus_names = Set{String}()
         for bus in buses
@@ -387,7 +389,11 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
                 cost = (d["cost"][1], d["cost"][2])
                 fixed = d["cost"][3]
             else
-                throw(DataFormatError("invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree"))
+                throw(
+                    DataFormatError(
+                        "invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree",
+                    ),
+                )
             end
         end
         startup = d["startup"]

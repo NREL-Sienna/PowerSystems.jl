@@ -461,8 +461,11 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                 system,
                 d -> get_available(d) && get_bus(d) == b,
             )
-            isempty(injection_components) &&
-                throw(IS.ConflictingInputsError("The slack bus does not have any injection component. Power Flow can not proceed"))
+            isempty(injection_components) && throw(
+                IS.ConflictingInputsError(
+                    "The slack bus does not have any injection component. Power Flow can not proceed",
+                ),
+            )
             Vm[ix] = get_magnitude(b)::Float64
             θ[ix] = get_angle(b)::Float64
             x0[state_variable_count] = P_GEN_BUS[ix]

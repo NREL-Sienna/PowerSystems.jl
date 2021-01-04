@@ -12,7 +12,11 @@ function get_quadratic_saturation(Se::Tuple{Float64, Float64})
         return (0.0, 0.0)
     end
     if Se[2] <= Se[1]
-        throw(IS.ConflictingInputsError("Se(1.2) <= Se(1.0). Saturation data is inconsistent."))
+        throw(
+            IS.ConflictingInputsError(
+                "Se(1.2) <= Se(1.0). Saturation data is inconsistent.",
+            ),
+        )
     end
     E1 = 1.0
     E12 = 1.2
@@ -37,7 +41,11 @@ function get_exponential_saturation(Se::Tuple{Float64, Float64})
         return (0.0, 0.0)
     end
     if Se[2] <= Se[1]
-        throw(IS.ConflictingInputsError("Se(1.2) <= Se(1.0). Saturation data is inconsistent."))
+        throw(
+            IS.ConflictingInputsError(
+                "Se(1.2) <= Se(1.0). Saturation data is inconsistent.",
+            ),
+        )
     end
     B = Se[1]
     A = log(Se[2] / B) / log(1.2)

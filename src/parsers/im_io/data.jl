@@ -2,7 +2,9 @@
 function update_data!(data::Dict{String, <:Any}, new_data::Dict{String, <:Any})
     if haskey(data, "per_unit") && haskey(new_data, "per_unit")
         if data["per_unit"] != new_data["per_unit"]
-            error("update_data requires datasets in the same units, try make_per_unit and make_mixed_units")
+            error(
+                "update_data requires datasets in the same units, try make_per_unit and make_mixed_units",
+            )
         end
     else
         @warn "running update_data with data that does not include per_unit field, units may be incorrect"

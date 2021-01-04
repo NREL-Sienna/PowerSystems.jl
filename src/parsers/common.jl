@@ -136,7 +136,11 @@ function convert_units!(
     elseif unit_conversion.From == "kWh" && unit_conversion.To == "MWh"
         value /= 1000
     else
-        throw(DataFormatError("Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported"))
+        throw(
+            DataFormatError(
+                "Unit conversion from $(unit_conversion.From) to $(unit_conversion.To) not supported",
+            ),
+        )
     end
     return value
 end

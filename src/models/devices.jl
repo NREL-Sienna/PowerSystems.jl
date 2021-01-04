@@ -5,7 +5,11 @@ function add_service_internal!(device::Device, service::Service)
     services = get_services(device)
     for _service in services
         if IS.get_uuid(service) == IS.get_uuid(_service)
-            throw(ArgumentError("service $(get_name(service)) is already attached to $(get_name(device))"))
+            throw(
+                ArgumentError(
+                    "service $(get_name(service)) is already attached to $(get_name(device))",
+                ),
+            )
         end
     end
 
@@ -15,20 +19,32 @@ end
 
 function add_service_internal!(device::Device, service::AGC)
     if !isa(device, RegulationDevice)
-        throw(IS.ConflictingInputsError("AGC service can only accept contributing devices of type RegulationDevice"))
+        throw(
+            IS.ConflictingInputsError(
+                "AGC service can only accept contributing devices of type RegulationDevice",
+            ),
+        )
     end
 
     device_bus_area = get_area(get_bus(device))
     service_area = get_area(service)
     if isnothing(device_bus_area) ||
        !(IS.get_uuid(device_bus_area) == IS.get_uuid(service_area))
-        throw(IS.ConflictingInputsError("Device $(get_name(device)) is not located in the regulation control area"))
+        throw(
+            IS.ConflictingInputsError(
+                "Device $(get_name(device)) is not located in the regulation control area",
+            ),
+        )
     end
 
     services = get_services(device)
     for _service in services
         if IS.get_uuid(service) == IS.get_uuid(_service)
-            throw(ArgumentError("service $(get_name(service)) is already attached to $(get_name(device))"))
+            throw(
+                ArgumentError(
+                    "service $(get_name(service)) is already attached to $(get_name(device))",
+                ),
+            )
         end
     end
 
@@ -43,7 +59,11 @@ Throws ArgumentError if the service is not attached to the device.
 """
 function remove_service!(device::Device, service::Service)
     if !_remove_service!(device, service)
-        throw(ArgumentError("service $(get_name(service)) was not attached to $(get_name(device))"))
+        throw(
+            ArgumentError(
+                "service $(get_name(service)) was not attached to $(get_name(device))",
+            ),
+        )
     end
 end
 
