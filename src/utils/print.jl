@@ -64,11 +64,15 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     default_units = false
-    if isnothing(ist.internal.units_info)
+    if has_units_setting(ist)
         print(io, "\n")
-        @warn("SystemUnitSetting not defined, using NATURAL_UNITS for dispalying device specification.")
-        ist.internal.units_info =
-            SystemUnitsSettings(100.0, UNIT_SYSTEM_MAPPING["NATURAL_UNITS"])
+        @warn(
+            "SystemUnitSetting not defined, using NATURAL_UNITS for dispalying device specification."
+        )
+        set_units_setting!(
+            ist,
+            SystemUnitsSettings(100.0, UNIT_SYSTEM_MAPPING["NATURAL_UNITS"]),
+        )
         default_units = true
     end
     try
@@ -80,8 +84,8 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
                 show(io, MIME"text/plain"(), obj.units_info)
                 continue
             elseif obj isa IS.TimeSeriesContainer ||
-                obj isa InfrastructureSystemsType ||
-                obj isa Vector{<:InfrastructureSystemsComponent}
+                   obj isa InfrastructureSystemsType ||
+                   obj isa Vector{<:InfrastructureSystemsComponent}
                 val = summary(getfield(ist, name))
             else
                 getter_func = getfield(PowerSystems, Symbol("get_$name"))
@@ -95,18 +99,22 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
         end
     finally
         if default_units
-            ist.internal.units_info = nothing
+            set_units_setting!(ist, nothing)
         end
     end
 end
 
 function Base.show(io::IO, ::MIME"text/html", ist::Component)
     default_units = false
-    if isnothing(ist.internal.units_info)
+    if has_units_setting(ist)
         print(io, "\n")
-        @warn("SystemUnitSetting not defined, using NATURAL_UNITS for dispalying device specification.")
-        ist.internal.units_info =
-            SystemUnitsSettings(100.0, UNIT_SYSTEM_MAPPING["NATURAL_UNITS"])
+        @warn(
+            "SystemUnitSetting not defined, using NATURAL_UNITS for dispalying device specification."
+        )
+        set_units_setting!(
+            ist,
+            SystemUnitsSettings(100.0, UNIT_SYSTEM_MAPPING["NATURAL_UNITS"]),
+        )
         default_units = true
     end
     try
@@ -118,8 +126,8 @@ function Base.show(io::IO, ::MIME"text/html", ist::Component)
                 show(io, MIME"text/html"(), obj.units_info)
                 continue
             elseif obj isa IS.TimeSeriesContainer ||
-                obj isa InfrastructureSystemsType ||
-                obj isa Vector{<:InfrastructureSystemsComponent}
+                   obj isa InfrastructureSystemsType ||
+                   obj isa Vector{<:InfrastructureSystemsComponent}
                 val = summary(getfield(ist, name))
             else
                 getter_func = getfield(PowerSystems, Symbol("get_$name"))
@@ -131,9 +139,9 @@ function Base.show(io::IO, ::MIME"text/html", ist::Component)
             end
             print(io, "\n   ", name, ": ", val)
         end
-    finally 
+    finally
         if default_units
-            ist.internal.units_info = nothing
+            set_units_setting!(ist, nothing)
         end
     end
 end
