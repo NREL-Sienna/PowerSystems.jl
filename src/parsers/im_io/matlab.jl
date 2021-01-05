@@ -109,8 +109,8 @@ function _type_array(string_array::Vector{T}) where {T <: AbstractString}
     return if any(occursin("'", value_string) for value_string in string_array)
         [strip(value_string, '\'') for value_string in string_array]
     elseif any(
-        occursin(".", value_string) || occursin("e", value_string)
-        for value_string in string_array
+        occursin(".", value_string) || occursin("e", value_string) for
+        value_string in string_array
     )
         [check_type(Float64, value_string) for value_string in string_array]
     else # otherwise assume it is an int

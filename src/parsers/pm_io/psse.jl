@@ -521,11 +521,13 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 Zx_t = 1 / 2 * (br_x31 - br_x12 + br_x23)
 
                 # Build each of the three transformer branches
-                for (m, (bus_id, br_r, br_x)) in enumerate(zip(
-                    [bus_id1, bus_id2, bus_id3],
-                    [Zr_p, Zr_s, Zr_t],
-                    [Zx_p, Zx_s, Zx_t],
-                ))
+                for (m, (bus_id, br_r, br_x)) in enumerate(
+                    zip(
+                        [bus_id1, bus_id2, bus_id3],
+                        [Zr_p, Zr_s, Zr_t],
+                        [Zx_p, Zx_s, Zx_t],
+                    ),
+                )
                     sub_data = Dict{String, Any}()
 
                     sub_data["f_bus"] = bus_id
@@ -647,7 +649,9 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     if haskey(pti_data, "TWO-TERMINAL DC")
         for dcline in pti_data["TWO-TERMINAL DC"]
-            @info("Two-Terminal DC lines are supported via a simple *lossless* dc line model approximated by two generators.")
+            @info(
+                "Two-Terminal DC lines are supported via a simple *lossless* dc line model approximated by two generators."
+            )
             sub_data = Dict{String, Any}()
 
             # Unit conversions?
@@ -713,7 +717,9 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 
     if haskey(pti_data, "VOLTAGE SOURCE CONVERTER")
-        @info("VSC-HVDC lines are supported via a dc line model approximated by two generators and an associated loss.")
+        @info(
+            "VSC-HVDC lines are supported via a dc line model approximated by two generators and an associated loss."
+        )
         for dcline in pti_data["VOLTAGE SOURCE CONVERTER"]
             # Converter buses : is the distinction between ac and dc side meaningful?
             dcside, acside = dcline["CONVERTER BUSES"]
@@ -729,8 +735,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["br_status"] =
                 pop!(dcline, "MDC") == 0 ||
                 pop!(dcside, "TYPE") == 0 ||
-                pop!(acside, "TYPE") == 0 ?
-                0 : 1
+                pop!(acside, "TYPE") == 0 ? 0 : 1
 
             sub_data["pf"] = 0.0
             sub_data["pt"] = 0.0

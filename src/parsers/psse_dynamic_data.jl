@@ -149,7 +149,9 @@ function _parse_dyr_components(data::Dict)
                     #Construct Components
                     component_constructor =
                         (args...) ->
-                            InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(args...)
+                            InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(
+                                args...,
+                            )
                     struct_args = _populate_args(params_ix, componentValues)
                     if struct_as_str == "BaseMachine"
                         struct_args = [

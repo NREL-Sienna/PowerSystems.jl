@@ -565,7 +565,11 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
     for rawload in iterate_rows(data, LOAD::InputCategory)
         bus = get_bus(sys, rawload.bus_id)
         if isnothing(bus)
-            throw(DataFormatError("could not find bus_number=$(rawload.bus_id) for load=$(rawload.name)"))
+            throw(
+                DataFormatError(
+                    "could not find bus_number=$(rawload.bus_id) for load=$(rawload.name)",
+                ),
+            )
         end
 
         load = PowerLoad(
@@ -680,10 +684,9 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                     sys,
                     gen.name,
                 )
-                area = string(buses[
-                    bus_ids .== get_number(get_bus(sys_gen)),
-                    bus_area_column,
-                ][1])
+                area = string(
+                    buses[bus_ids .== get_number(get_bus(sys_gen)), bus_area_column][1],
+                )
                 if gen.category in device_subcategories && area in regions
                     _add_device!(contributing_devices, device_categories, gen.name)
                 end
@@ -697,12 +700,18 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 ],
             )
             for cat in unused_categories
-                @warn("Device category: $cat not found in generators data; adding contributing devices by category only supported for generator data")
+                @warn(
+                    "Device category: $cat not found in generators data; adding contributing devices by category only supported for generator data"
+                )
             end
         end
 
         if length(contributing_devices) == 0
-            throw(DataFormatError("did not find contributing devices for service $(reserve.name)"))
+            throw(
+                DataFormatError(
+                    "did not find contributing devices for service $(reserve.name)",
+                ),
+            )
         end
 
         direction = get_reserve_direction(reserve.direction)
@@ -771,8 +780,8 @@ function calculate_variable_cost(
         var_cost =
             [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames.columns]
         var_cost = unique([
-            (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2])))
-            for c in var_cost if !in(nothing, c)
+            (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for
+            c in var_cost if !in(nothing, c)
         ])
     else
         var_cost = [(0.0, 0.0)]
@@ -821,8 +830,8 @@ function calculate_variable_cost(
 
     var_cost = [(getfield(gen, c), getfield(gen, mw)) for (c, mw) in cost_colnames.columns]
     var_cost = unique([
-        (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2])))
-        for c in var_cost if !in(nothing, c)
+        (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for
+        c in var_cost if !in(nothing, c)
     ])
 
     var_cost = [
@@ -1183,7 +1192,11 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
         @warn "storage generator should have exactly 1 head storage defined: this will throw an error in v1.1.x"
         #throw(DataFormatError("storage generator must have exactly 1 head storage defined")) #TODO: uncomment this in next version
     elseif length(tail) > 1
-        throw(DataFormatError("storage generator cannot have more than 1 tail storage defined"))
+        throw(
+            DataFormatError(
+                "storage generator cannot have more than 1 tail storage defined",
+            ),
+        )
     end
     tail = length(tail) > 0 ? tail[1] : nothing
 
@@ -1435,18 +1448,28 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
                     x -> x.name == field_info.per_unit_conversion.Reference,
                     field_infos,
                 )
-                isnothing(reference_idx) &&
-                    throw(DataFormatError("$(field_info.per_unit_conversion.Reference) not found in table with $(field_info.custom_name)"))
+                isnothing(reference_idx) && throw(
+                    DataFormatError(
+                        "$(field_info.per_unit_conversion.Reference) not found in table with $(field_info.custom_name)",
+                    ),
+                )
                 reference_info = field_infos[reference_idx]
                 @debug "convert to $(field_info.per_unit_conversion.To) using $(reference_info.custom_name)" field_info.custom_name
                 reference_value =
                     get(row, reference_info.custom_name, reference_info.default_value)
-                reference_value == "required" &&
-                    throw(DataFormatError("$(reference_info.name) is required for p.u. conversion"))
+                reference_value == "required" && throw(
+                    DataFormatError(
+                        "$(reference_info.name) is required for p.u. conversion",
+                    ),
+                )
                 value = value isa String ? tryparse(Float64, value) : value
                 value = reference_value == 0.0 ? 0.0 : value / reference_value
             elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
-                throw(DataFormatError("conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)"))
+                throw(
+                    DataFormatError(
+                        "conversion not supported from $(field_info.per_unit_conversion.From) to $(field_info.per_unit_conversion.To) for $(field_info.custom_name)",
+                    ),
+                )
             end
         else
             @debug "$(field_info.custom_name) is nothing"
