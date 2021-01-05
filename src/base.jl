@@ -73,7 +73,9 @@ struct System <: IS.InfrastructureSystemsType
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
         if !isnothing(get(kwargs, :unit_system, nothing))
-            @warn("unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence")
+            @warn(
+                "unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence"
+            )
         end
         bus_numbers = Set{Int}()
         frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
@@ -557,8 +559,7 @@ function IS.add_time_series_from_file_metadata_internal!(
             push!(uuids, IS.get_uuid(bus))
         end
         for _component in (
-            load for
-            load in IS.get_components(ElectricLoad, data) if
+            load for load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
             IS.add_time_series!(data, _component, ts; skip_if_present = true)
@@ -633,7 +634,11 @@ function check_component_removal(sys::System, service::T) where {T <: Service}
     groupservices = get_components(StaticReserveGroup, sys)
     for groupservice in groupservices
         if service ∈ get_contributing_services(groupservice)
-            throw(ArgumentError("service $(get_name(service)) cannot be removed with an attached StaticReserveGroup"))
+            throw(
+                ArgumentError(
+                    "service $(get_name(service)) cannot be removed with an attached StaticReserveGroup",
+                ),
+            )
             return
         end
     end
@@ -1317,11 +1322,17 @@ function check_component_addition(sys::System, dyn_injector::DynamicInjection; k
 
     static_injector = get(kwargs, :static_injector, nothing)
     if static_injector === nothing
-        throw(ArgumentError("static_injector must be passed when adding a DynamicInjection"))
+        throw(
+            ArgumentError("static_injector must be passed when adding a DynamicInjection"),
+        )
     end
 
     if get_name(dyn_injector) != get_name(static_injector)
-        throw(ArgumentError("static_injector must have the same name as the DynamicInjection"))
+        throw(
+            ArgumentError(
+                "static_injector must have the same name as the DynamicInjection",
+            ),
+        )
     end
 
     throw_if_not_attached(static_injector, sys)
@@ -1564,7 +1575,9 @@ function convert_component!(
     if force
         @warn("Possible data loss converting from $(typeof(line)) to $linetype")
     else
-        error("Possible data loss converting from $(typeof(line)) to $linetype, add `force = true` to convert anyway.")
+        error(
+            "Possible data loss converting from $(typeof(line)) to $linetype, add `force = true` to convert anyway.",
+        )
     end
 
     new_line = linetype(

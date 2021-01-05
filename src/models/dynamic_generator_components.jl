@@ -15,7 +15,11 @@ function get_avr_saturation(E::Tuple{Float64, Float64}, Se::Tuple{Float64, Float
         return (0.0, 0.0)
     end
     if (E[2] <= E[1]) || (Se[2] <= Se[1])
-        throw(IS.ConflictingInputsError("E2 <= E1 or Se1 <= Se2. Saturation data is inconsistent."))
+        throw(
+            IS.ConflictingInputsError(
+                "E2 <= E1 or Se1 <= Se2. Saturation data is inconsistent.",
+            ),
+        )
     end
     A =
         (1.0 / (Se[2] * E[2] - Se[1] * E[1])) * (
