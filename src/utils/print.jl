@@ -67,7 +67,7 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     if !has_units_setting(ist)
         print(io, "\n")
         @warn(
-            "SystemUnitSetting not defined, using NATURAL_UNITS for dispalying device specification."
+            "SystemUnitSetting not defined, using NATURAL_UNITS for displaying device specification."
         )
         set_units_setting!(
             ist,
