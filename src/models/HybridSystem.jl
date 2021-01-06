@@ -120,7 +120,8 @@ end
 IS.get_name(value::HybridSystem) = value.name
 
 function get_component(value::HybridSystem)
-    components = [value.thermal_unit, value.electric_load, value.storage, value.renewable_unit]
+    components =
+        [value.thermal_unit, value.electric_load, value.storage, value.renewable_unit]
     filter!(x -> !isnothing(x), components)
     return components
 end
