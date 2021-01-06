@@ -271,8 +271,11 @@ Clear any value stored in ext.
 """
 clear_ext!(sys::System) = IS.clear_ext!(sys.internal)
 
-function set_unit_system!(component::Component, settings::SystemUnitsSettings)
-    component.internal.units_info = settings
+function set_units_setting!(
+    component::Component,
+    settings::Union{SystemUnitsSettings, Nothing},
+)
+    set_units_info!(get_internal(component), settings)
     return
 end
 
@@ -296,7 +299,7 @@ function get_units_base(system::System)
 end
 
 function get_units_setting(component::T) where {T <: Component}
-    return component.internal.units_info
+    return get_units_info(get_internal(component))
 end
 
 function has_units_setting(component::T) where {T <: Component}
@@ -330,7 +333,7 @@ function add_component!(
     skip_validation = false,
     kwargs...,
 ) where {T <: Component}
-    set_unit_system!(component, sys.units_settings)
+    set_units_setting!(component, sys.units_settings)
     @assert has_units_setting(component)
 
     check_attached_buses(sys, component)
@@ -395,7 +398,7 @@ function _add_service!(
         throw_if_not_attached(device, sys)
     end
 
-    set_unit_system!(service, sys.units_settings)
+    set_units_setting!(service, sys.units_settings)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 
@@ -462,7 +465,7 @@ function add_service!(
         throw_if_not_attached(_service, sys)
     end
 
-    set_unit_system!(service, sys.units_settings)
+    set_units_setting!(service, sys.units_settings)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 end
 
@@ -496,7 +499,7 @@ function add_service!(
     skip_validation = _validate_or_skip(sys, service, skip_validation)
     set_contributing_services!(sys, service, contributing_services)
 
-    set_unit_system!(service, sys.units_settings)
+    set_units_setting!(service, sys.units_settings)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 end
 
@@ -1367,7 +1370,7 @@ function handle_component_addition!(sys::System, component::RegulationDevice; kw
         # This will not be true during deserialization, and so won't run then.
         remove_component!(sys, component.device)
         # The line above removed the component setting so needs to be added back
-        set_unit_system!(component.device, component.internal.units_info)
+        set_units_setting!(component.device, component.internal.units_info)
     end
     return
 end
