@@ -118,7 +118,7 @@ function HybridSystem(::Nothing)
 end
 
 IS.get_name(value::HybridSystem) = value.name
-function set_unit_system!(value::HybridSystem, settings::SystemUnitsSettings)
+function set_units_setting!(value::HybridSystem, settings::SystemUnitsSettings)
     value.internal.units_info = settings
     value.thermal_unit.internal.units_info = settings
     value.electric_load.internal.units_info = settings
