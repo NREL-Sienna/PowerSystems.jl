@@ -118,12 +118,19 @@ function HybridSystem(::Nothing)
 end
 
 IS.get_name(value::HybridSystem) = value.name
+
+function _get_components(value::HybridSystem)
+    components =
+        [value.thermal_unit, value.electric_load, value.storage, value.renewable_unit]
+    filter!(x -> !isnothing(x), components)
+    return components
+end
+
 function set_units_setting!(value::HybridSystem, settings::SystemUnitsSettings)
-    value.internal.units_info = settings
-    value.thermal_unit.internal.units_info = settings
-    value.electric_load.internal.units_info = settings
-    value.storage.internal.units_info = settings
-    value.renewable_unit.internal.units_info = settings
+    set_units_info!(get_internal(value), settings)
+    for component in _get_components(value)
+        set_units_info!(get_internal(component), settings)
+    end
     return
 end
 
