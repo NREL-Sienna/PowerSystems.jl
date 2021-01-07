@@ -2700,6 +2700,20 @@
           "validation_action": "warn"
         },
         {
+            "name": "storage_target",
+            "comment": "Storage target at the end of simulation as ratio of storage capacity.",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "default": "1.0"
+        },
+        {
+            "name": "penalty_cost",
+            "comment": "Cost penalty for missing storage target at the end of simulation in $/MWh.",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "default": "0.0"
+        },
+        {
           "name": "services",
           "data_type": "Vector{Service}",
           "comment": "Services that this device contributes to",

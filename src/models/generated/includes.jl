@@ -334,6 +334,7 @@ export get_outflow
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
+export get_penalty_cost
 export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
@@ -654,6 +655,7 @@ export set_outflow!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
+export set_penalty_cost!
 export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!
