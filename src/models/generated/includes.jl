@@ -24,6 +24,7 @@ include("RenewableFix.jl")
 include("ThermalStandard.jl")
 include("ThermalMultiStart.jl")
 include("GenericBattery.jl")
+include("BatterywEMS.jl")
 include("StaticReserve.jl")
 include("StaticReserveNonSpinning.jl")
 include("StaticReserveGroup.jl")
@@ -279,6 +280,7 @@ export get_dc_link_capacitance
 export get_delta_t
 export get_dynamic_injector
 export get_efficiency
+export get_energy_value
 export get_eq_p
 export get_ext
 export get_fixed
@@ -600,6 +602,7 @@ export set_dc_link_capacitance!
 export set_delta_t!
 export set_dynamic_injector!
 export set_efficiency!
+export set_energy_value!
 export set_eq_p!
 export set_ext!
 export set_fixed!
