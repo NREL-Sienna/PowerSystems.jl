@@ -2862,18 +2862,18 @@
               "comment": "Storage target at the end of simulation as ratio of storage capacity.",
               "null_value": "0.0",
               "data_type": "Float64",
-              "default": "1.0"
+              "default": "0.0"
           },
           {
               "name": "penalty_cost",
-              "comment": "Cost penalty for missing storage target at the end of simulation in $/MWh.",
+              "comment": "Cost penalty for missing storage target at the end of simulation.",
               "null_value": "0.0",
               "data_type": "Float64",
               "default": "0.0"
           },
           {
             "name": "energy_value",
-            "comment": "Value provide by the stored energy at the end of simulation to the system in $/MWh.",
+            "comment": "Value provide by the stored energy at the end of simulation to the system.",
             "null_value": "0.0",
             "data_type": "Float64",
             "default": "0.0"

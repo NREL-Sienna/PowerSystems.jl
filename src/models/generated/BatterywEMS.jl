@@ -45,8 +45,8 @@ Data structure for a battery compatible with energy management formulations.
 - `reactive_power_limits::Union{Nothing, Min_Max}`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
-- `penalty_cost::Float64`: Cost penalty for missing storage target at the end of simulation in $/MWh.
-- `energy_value::Float64`: Value provide by the stored energy at the end of simulation to the system in $/MWh.
+- `penalty_cost::Float64`: Cost penalty for missing storage target at the end of simulation.
+- `energy_value::Float64`: Value provide by the stored energy at the end of simulation to the system.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -74,9 +74,9 @@ mutable struct BatterywEMS <: Storage
     base_power::Float64
     "Storage target at the end of simulation as ratio of storage capacity."
     storage_target::Float64
-    "Cost penalty for missing storage target at the end of simulation in $/MWh."
+    "Cost penalty for missing storage target at the end of simulation."
     penalty_cost::Float64
-    "Value provide by the stored energy at the end of simulation to the system in $/MWh."
+    "Value provide by the stored energy at the end of simulation to the system."
     energy_value::Float64
     "Services that this device contributes to"
     services::Vector{Service}
@@ -89,11 +89,11 @@ mutable struct BatterywEMS <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function BatterywEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target=1.0, penalty_cost=0.0, energy_value=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+function BatterywEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target=0.0, penalty_cost=0.0, energy_value=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
     BatterywEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target, penalty_cost, energy_value, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function BatterywEMS(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target=1.0, penalty_cost=0.0, energy_value=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+function BatterywEMS(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target=0.0, penalty_cost=0.0, energy_value=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
     BatterywEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target, penalty_cost, energy_value, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
