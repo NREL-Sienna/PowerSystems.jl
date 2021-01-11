@@ -372,6 +372,8 @@ import InfrastructureSystems:
     get_time_series_names,
     get_next_time_series_array!,
     get_next_time,
+    get_units_info,
+    set_units_info!,
     to_json,
     from_json,
     serialize,

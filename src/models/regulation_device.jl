@@ -115,7 +115,7 @@ set_inertia!(value::RegulationDevice, val::Float64) = value.inertia = val
 set_cost!(value::RegulationDevice, val::Float64) = value.cost = val
 IS.set_time_series_container!(value::RegulationDevice, val::IS.TimeSeriesContainer) =
     value.time_series_container = val
-function set_unit_system!(value::RegulationDevice, settings::SystemUnitsSettings)
+function set_units_setting!(value::RegulationDevice, settings::SystemUnitsSettings)
     value.internal.units_info = value.device.internal.units_info = settings
     return
 end
