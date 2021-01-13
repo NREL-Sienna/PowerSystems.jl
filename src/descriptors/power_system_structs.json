@@ -2739,7 +2739,7 @@
       "supertype": "Storage"
     },
     {
-        "struct_name": "BatterywEMS",
+        "struct_name": "BatteryEMS",
         "docstring": "Data structure for a battery compatible with energy management formulations.",
         "fields": [
           {
