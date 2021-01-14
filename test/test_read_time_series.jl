@@ -66,7 +66,7 @@ end
     )
 
     # Test code path where no normalization occurs.
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
     add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -74,7 +74,7 @@ end
 
     # Test code path where timeseries is normalized by dividing by the max value.
     file_metadata.normalization_factor = "Max"
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
     add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -83,7 +83,7 @@ end
     # Test code path where timeseries is normalized by dividing by a custom value.
     nf = 95.0
     file_metadata.normalization_factor = nf
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
     add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -104,7 +104,7 @@ end
     resolution = Dates.Hour(1)
 
     # Test with a filename.
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
     component = get_component(HydroDispatch, sys, component_name)
     ts = SingleTimeSeries(
         name,
@@ -121,7 +121,7 @@ end
     @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(ta)
 
     # Test with TimeSeries.TimeArray.
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
     component = get_component(HydroDispatch, sys, component_name)
     ts = SingleTimeSeries(name, ta; normalization_factor = 1.0)
     add_time_series!(sys, component, ts)
@@ -130,7 +130,7 @@ end
     @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(ta)
 
     # Test with DataFrames.DataFrame.
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
     component = get_component(HydroDispatch, sys, component_name)
     df = DataFrames.DataFrame(ta)
     ts = SingleTimeSeries(name, df; normalization_factor = 1.0)
@@ -140,7 +140,7 @@ end
 end
 
 @testset "TimeSeriesData data matpower" begin
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
     file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_da.json")
     add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 24)
@@ -156,7 +156,8 @@ end
 
     ## TODO: need a dataset with same resolution but different horizon.
 
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
+    # sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
     add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 288)
 end

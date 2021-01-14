@@ -24,9 +24,8 @@ end
 end
 
 @testset "consistency between PowerSystemTableData and standardfiles" begin
-    mpsys = System(PSY.PowerModelsData(joinpath(MATPOWER_DIR, "RTS_GMLC.m")))
-    cdmsys = create_rts_system()
-
+    mpsys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
+    cdmsys = PSB.build_system(PSB.PSITestSystems, "test_RTS_GMLC_sys")
     mp_iter = get_components(HydroGen, mpsys)
     mp_generators = LazyDictFromIterator(String, HydroGen, mp_iter, get_name)
     for cdmgen in get_components(HydroGen, cdmsys)

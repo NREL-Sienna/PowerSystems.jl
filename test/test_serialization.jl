@@ -1,6 +1,5 @@
 @testset "Test JSON serialization of RTS data with mutable time series" begin
-    sys = create_rts_system()
-
+    sys = PSB.build_system(PSYTestSystems, "test_RTS_GMLC_sys"; add_forecasts=false)
     # Add an AGC service to cover its special serialization.
     control_area = get_component(Area, sys, "1")
     AGC_service = PSY.AGC(
@@ -54,7 +53,7 @@
 end
 
 @testset "Test JSON serialization of RTS data with immutable time series" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     sys2, result = validate_serialization(sys; time_series_read_only = true)
     @test result
     @test_throws ErrorException clear_time_series!(sys2)
@@ -62,7 +61,7 @@ end
 end
 
 @testset "Test JSON serialization of matpower data" begin
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
 
     # Add a Probabilistic time_series to get coverage serializing it.
     bus = Bus(nothing)
@@ -80,14 +79,14 @@ end
 end
 
 @testset "Test JSON serialization of ACTIVSg2000 data" begin
-    path = joinpath(DATA_DIR, "ACTIVSg2000", "ACTIVSg2000.m")
-    sys = System(PowerSystems.PowerModelsData(path))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_ACTIVSg2000_sys")
     _, result = validate_serialization(sys)
     @test result
 end
 
 @testset "Test JSON serialization of dynamic inverter" begin
-    sys = create_system_with_dynamic_inverter()
+    sys = PSB.build_system(PSB.PSYTestSystems, "dynamic_inverter_sys")
+    
     # Add a dynamic branch to test that code.
     branch = collect(get_components(Branch, sys))[1]
     dynamic_branch = DynamicBranch(branch)
@@ -128,7 +127,7 @@ end
 end
 
 @testset "Test deepcopy of a system" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     sys2 = deepcopy(sys)
     clear_time_series!(sys2)
     @test !isempty(collect(get_time_series_multiple(sys)))

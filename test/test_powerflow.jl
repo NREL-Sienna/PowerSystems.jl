@@ -29,28 +29,8 @@ result = [
     -0.280381,
 ]
 
-include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
-include(joinpath(BASE_DIR, "test", "data_14bus_pu.jl"))
 
-nodes_5 = nodes5()
-nodes_14 = nodes14()
-c_sys14() = System(
-    100.0,
-    nodes_14,
-    thermal_generators14(nodes_14),
-    loads14(nodes_14),
-    branches14(nodes_14),
-);
-
-c_sys5_re() = System(
-    100.0,
-    nodes_5,
-    vcat(thermal_generators5(nodes_5), renewable_generators5(nodes_5)),
-    loads5(nodes_5),
-    branches5(nodes_5),
-)
-
-pf_sys5_re = c_sys5_re()
+pf_sys5_re = PSB.build_system(PSB.PSITestSystems, "c_sys5_re"; add_forecasts = false)
 remove_component!(Line, pf_sys5_re, "1")
 remove_component!(Line, pf_sys5_re, "2")
 br = get_component(Line, pf_sys5_re, "6")
@@ -65,14 +45,14 @@ set_r!(br, 2.0)
         @test !solve_powerflow!(pf_sys5_re, finite_diff = true)
     )
     #Compare results between finite diff methods and Jacobian method
-    res_finite_diff = solve_powerflow(c_sys14(), finite_diff = true)
-    res_jacobian = solve_powerflow(c_sys14())
+    res_finite_diff = solve_powerflow(PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false), finite_diff = true)
+    res_jacobian = solve_powerflow(PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false))
     @test LinearAlgebra.norm(
         res_finite_diff["bus_results"].Vm - res_jacobian["bus_results"].Vm,
     ) <= 1e-6
-    @test solve_powerflow!(c_sys14(), finite_diff = true, method = :newton)
+    @test solve_powerflow!(PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false), finite_diff = true, method = :newton)
 
-    sys = c_sys14()
+    sys = PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false)
     branch = first(get_components(Line, sys))
     dyn_branch = DynamicBranch(branch)
     add_component!(sys, dyn_branch)
@@ -81,7 +61,7 @@ set_r!(br, 2.0)
     @test LinearAlgebra.norm(dyn_pf["bus_results"].Vm - res_jacobian["bus_results"].Vm) <=
           1e-6
 
-    sys = c_sys14()
+    sys = PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false)
     line = get_component(Line, sys, "Line4")
     set_available!(line, false)
     solve_powerflow!(sys)
@@ -89,7 +69,7 @@ set_r!(br, 2.0)
     test_bus = get_component(Bus, sys, "Bus 4")
     @test isapprox(get_magnitude(test_bus), 1.002; atol = 1e-3)
 
-    sys = c_sys14()
+    sys = PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false)
     line = get_component(Line, sys, "Line4")
     set_available!(line, false)
     res = solve_powerflow(sys)

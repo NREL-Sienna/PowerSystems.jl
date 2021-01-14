@@ -1,6 +1,6 @@
 
 @testset "Test functionality of System" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts=false)
     summary(devnull, sys)
     @test get_frequency(sys) == PSY.DEFAULT_SYSTEM_FREQUENCY
 
@@ -84,6 +84,7 @@ end
 
 @testset "Test handling of bus_numbers" begin
     sys = create_rts_system()
+    # TODO: sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
 
     @test length(sys.bus_numbers) > 0
     buses = get_components(Bus, sys)
@@ -116,7 +117,7 @@ end
 end
 
 @testset "Test System iterators" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
 
     i = 0
     for component in iterate_components(sys)
@@ -134,7 +135,7 @@ end
 end
 
 @testset "Test remove_component" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = get_components(ThermalStandard, sys)
     initial_length = length(generators)
     @assert initial_length > 0
@@ -193,7 +194,7 @@ end
 end
 
 @testset "Test system units" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts=false)
     @test get_units_base(sys) == "DEVICE_BASE"
     set_units_base_system!(sys, "SYSTEM_BASE")
     @test get_units_base(sys) == "SYSTEM_BASE"
