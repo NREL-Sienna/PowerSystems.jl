@@ -84,8 +84,8 @@ function correct_network_data!(data::Dict{String, <:Any})
 end
 
 UNIT_SYSTEM_MAPPING = Dict(
-    "SYSTEM_BASE" => IS.SYSTEM_BASE,
-    "DEVICE_BASE" => IS.DEVICE_BASE,
-    "NATURAL_UNITS" => IS.NATURAL_UNITS,
+    "SYSTEM_BASE" => IS.UnitSystem.SYSTEM_BASE,
+    "DEVICE_BASE" => IS.UnitSystem.DEVICE_BASE,
+    "NATURAL_UNITS" => IS.UnitSystem.NATURAL_UNITS,
     "NA" => nothing,
 )

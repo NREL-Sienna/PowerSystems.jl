@@ -24,7 +24,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -59,7 +59,7 @@ IEEE Stabilizing Model PSS.
 	x_p6: T3/T4 lead-lag integrator, 
 	:x_p7 last integer,
 - `n_states::Int`: IEEEST has 7 states
-- `states_types::Vector{StateTypes.StateType}`: IEEEST has 7 differential states
+- `states_types::Vector{StateTypes}`: IEEEST has 7 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEEST <: PSS
@@ -112,7 +112,7 @@ mutable struct IEEEST <: PSS
     "IEEEST has 7 states"
     n_states::Int
     "IEEEST has 7 differential states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

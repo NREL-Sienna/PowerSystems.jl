@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -37,7 +37,7 @@ Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 	x_g2: Fuel flow,
 	x_g3: Exhaust temperature load
 - `n_states::Int`: GasTG has 3 states
-- `states_types::Vector{StateTypes.StateType}`: GAST has 3 differential states
+- `states_types::Vector{StateTypes}`: GAST has 3 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GasTG <: TurbineGov
@@ -68,7 +68,7 @@ mutable struct GasTG <: TurbineGov
     "GasTG has 3 states"
     n_states::Int
     "GAST has 3 differential states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

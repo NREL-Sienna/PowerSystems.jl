@@ -1,24 +1,25 @@
 
-@enum InputCategory begin
-    BRANCH
-    BUS
-    DC_BRANCH
-    GENERATOR
-    LOAD
-    RESERVE
-    SIMULATION_OBJECTS
-    STORAGE
-end
+IS.@scoped_enum(
+    InputCategory,
+    BRANCH = 1,
+    BUS = 2,
+    DC_BRANCH = 3,
+    GENERATOR = 4,
+    LOAD = 5,
+    RESERVE = 6,
+    SIMULATION_OBJECTS = 7,
+    STORAGE = 8,
+)
 
 const ENUMS = (
-    AngleUnits.AngleUnit,
-    BusTypes.BusType,
-    GeneratorCostModels.GeneratorCostModel,
+    AngleUnits,
+    BusTypes,
+    GeneratorCostModels,
     InputCategory,
-    LoadModels.LoadModel,
-    PrimeMovers.PrimeMover,
-    StateTypes.StateType,
-    ThermalFuels.ThermalFuel,
+    LoadModels,
+    PrimeMovers,
+    StateTypes,
+    ThermalFuels,
     UnitSystem,
 )
 
@@ -45,16 +46,11 @@ function get_enum_value(enum, value::String)
     return ENUM_MAPPINGS[enum][val]
 end
 
-Base.convert(::Type{AngleUnits.AngleUnit}, val::String) =
-    get_enum_value(AngleUnits.AngleUnit, val)
-Base.convert(::Type{BusTypes.BusType}, val::String) = get_enum_value(BusTypes.BusType, val)
-Base.convert(::Type{GeneratorCostModels.GeneratorCostModel}, val::String) =
-    get_enum_value(GeneratorCostModels.GeneratorCostModel, val)
-Base.convert(::Type{LoadModels.LoadModel}, val::String) =
-    get_enum_value(LoadModels.LoadModel, val)
-Base.convert(::Type{PrimeMovers.PrimeMover}, val::String) =
-    get_enum_value(PrimeMovers.PrimeMover, val)
-Base.convert(::Type{StateTypes.StateType}, val::String) =
-    get_enum_value(StateTypes.StateType, val)
-Base.convert(::Type{ThermalFuels.ThermalFuel}, val::String) =
-    get_enum_value(ThermalFuels.ThermalFuel, val)
+Base.convert(::Type{AngleUnits}, val::String) = get_enum_value(AngleUnits, val)
+Base.convert(::Type{BusTypes}, val::String) = get_enum_value(BusTypes, val)
+Base.convert(::Type{GeneratorCostModels}, val::String) =
+    get_enum_value(GeneratorCostModels, val)
+Base.convert(::Type{LoadModels}, val::String) = get_enum_value(LoadModels, val)
+Base.convert(::Type{PrimeMovers}, val::String) = get_enum_value(PrimeMovers, val)
+Base.convert(::Type{StateTypes}, val::String) = get_enum_value(StateTypes, val)
+Base.convert(::Type{ThermalFuels}, val::String) = get_enum_value(ThermalFuels, val)

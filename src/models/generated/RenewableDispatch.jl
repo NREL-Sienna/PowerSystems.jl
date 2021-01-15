@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         active_power::Float64
         reactive_power::Float64
         rating::Float64
-        prime_mover::PrimeMovers.PrimeMover
+        prime_mover::PrimeMovers
         reactive_power_limits::Union{Nothing, Min_Max}
         power_factor::Float64
         operation_cost::TwoPartCost
@@ -30,7 +30,7 @@ This file is auto-generated. Do not edit.
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
+- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
 - `reactive_power_limits::Union{Nothing, Min_Max}`
 - `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
 - `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
@@ -50,7 +50,7 @@ mutable struct RenewableDispatch <: RenewableGen
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers.PrimeMover
+    prime_mover::PrimeMovers
     reactive_power_limits::Union{Nothing, Min_Max}
     power_factor::Float64
     "Operation Cost of Generation [`TwoPartCost`](@ref)"

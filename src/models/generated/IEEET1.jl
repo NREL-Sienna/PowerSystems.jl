@@ -19,7 +19,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -46,7 +46,7 @@ This file is auto-generated. Do not edit.
 	Vf: Exciter Output, 
 	Vr3: Rate feedback integrator
 - `n_states::Int`: The IEEET1 has 4 states
-- `states_types::Vector{StateTypes.StateType}`: IEEET1 I has 4 differential states
+- `states_types::Vector{StateTypes}`: IEEET1 I has 4 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEET1 <: AVR
@@ -86,7 +86,7 @@ mutable struct IEEET1 <: AVR
     "The IEEET1 has 4 states"
     n_states::Int
     "IEEET1 I has 4 differential states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

@@ -257,7 +257,7 @@
           "name": "bustype",
           "comment": "bus type",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, BusTypes.BusType}"
+          "data_type": "Union{Nothing, BusTypes}"
         },
         {
           "name": "angle",
@@ -1126,7 +1126,7 @@
         {
           "name": "model",
           "null_value": "LoadModels.ConstantPower",
-          "data_type": "LoadModels.LoadModel"
+          "data_type": "LoadModels"
         },
         {
           "name": "active_power",
@@ -1287,7 +1287,7 @@
         {
           "name": "model",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, LoadModels.LoadModel}"
+          "data_type": "Union{Nothing, LoadModels}"
         },
         {
           "name": "active_power",
@@ -1412,7 +1412,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "active_power_limits",
@@ -1612,7 +1612,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "active_power_limits",
@@ -1770,7 +1770,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "active_power_limits",
@@ -2033,7 +2033,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "reactive_power_limits",
@@ -2155,7 +2155,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "power_factor",
@@ -2331,14 +2331,14 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover",
+          "data_type": "PrimeMovers",
           "default": "PrimeMovers.OT"
         },
         {
           "name": "fuel",
           "comment": "Prime mover fuel according to EIA 923",
           "null_value": "ThermalFuels.OTHER",
-          "data_type": "ThermalFuels.ThermalFuel",
+          "data_type": "ThermalFuels",
           "default": "ThermalFuels.OTHER"
         },
         {
@@ -2443,13 +2443,13 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "fuel",
           "comment": "Prime mover fuel according to EIA 923",
           "null_value": "ThermalFuels.OTHER",
-          "data_type": "ThermalFuels.ThermalFuel"
+          "data_type": "ThermalFuels"
         },
         {
           "name": "active_power_limits",
@@ -2604,7 +2604,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.BA",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "initial_energy",
@@ -3231,8 +3231,8 @@
         {
           "name": "states_types",
           "comment": "Fixed AVR has no states",
-          "internal_default": "Vector{StateTypes.StateType}()",
-          "data_type": "Vector{StateTypes.StateType}"
+          "internal_default": "Vector{StateTypes}()",
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3293,7 +3293,7 @@
           "name": "states_types",
           "comment": "Simple AVR has 1 differential states",
           "internal_default": "[StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3478,7 +3478,7 @@
           "name": "states_types",
           "comment": "ESDC1A has 5 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3664,7 +3664,7 @@
           "name": "states_types",
           "comment": "ESDC2A has 5 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3827,7 +3827,7 @@
           "name": "states_types",
           "comment": "IEEET1 I has 4 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3974,7 +3974,7 @@
           "name": "states_types",
           "comment": "AVR Type I has 4 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4121,7 +4121,7 @@
           "name": "states_types",
           "comment": "AVR Type II has 4 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4244,7 +4244,7 @@
           "name": "states_types",
           "comment": "SCRX has 2 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4446,7 +4446,7 @@
           "name": "states_types",
           "comment": "ESAC1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4647,7 +4647,7 @@
           "name": "states_types",
           "comment": "EXAC1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4842,7 +4842,7 @@
           "name": "states_types",
           "comment": "EXAC1 has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -5088,7 +5088,7 @@
           "name": "states_types",
           "comment": "EXAC2 has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -5333,7 +5333,7 @@
           "name": "states_types",
           "comment": "ESAC6A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -5554,7 +5554,7 @@
           "name": "states_types",
           "comment": "ST1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -5794,7 +5794,7 @@
           "name": "states_types",
           "comment": "EXPIC has 6 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -6007,7 +6007,7 @@
           "name": "states_types",
           "comment": "ST4B has 4 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -7780,7 +7780,7 @@
           "name": "states_types",
           "comment": "IEEEST has 7 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -8230,7 +8230,7 @@
           "name": "states_types",
           "comment": "GAST has 3 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -8618,7 +8618,7 @@
           "name": "states_types",
           "comment": "GGOV1 has 10 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -8763,7 +8763,7 @@
           "name": "states_types",
           "comment": "TGOV1 has 2 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -8930,7 +8930,7 @@
           "name": "states_types",
           "comment": "HYGOV has 4 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -9185,7 +9185,7 @@
           "name": "states_types",
           "comment": "IEEEG1 has 6 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",

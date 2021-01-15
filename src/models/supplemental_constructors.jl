@@ -14,7 +14,7 @@ function PowerLoadPF(
     name::String,
     available::Bool,
     bus::Bus,
-    model::Union{Nothing, LoadModels.LoadModel},
+    model::Union{Nothing, LoadModels},
     active_power::Float64,
     max_active_power::Float64,
     power_factor::Float64,
@@ -82,7 +82,7 @@ function Bus(
     return Bus(
         number,
         name,
-        get_enum_value(BusTypes.BusType, bustype),
+        get_enum_value(BusTypes, bustype),
         angle,
         voltage,
         voltage_limits,

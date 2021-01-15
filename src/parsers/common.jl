@@ -4,7 +4,7 @@ const GENERATOR_MAPPING_FILE =
 const PSSE_DYR_MAPPING_FILE =
     joinpath(dirname(pathof(PowerSystems)), "parsers", "psse_dynamic_mapping.yaml")
 
-const STRING2FUEL = Dict((string(e) => e) for e in instances(ThermalFuels.ThermalFuel))
+const STRING2FUEL = Dict((string(x) => x) for x in instances(ThermalFuels))
 merge!(
     STRING2FUEL,
     Dict(
@@ -17,7 +17,7 @@ merge!(
     ),
 )
 
-const STRING2PRIMEMOVER = Dict((string(e) => e) for e in instances(PrimeMovers.PrimeMover))
+const STRING2PRIMEMOVER = Dict((string(x) => x) for x in instances(PrimeMovers))
 merge!(
     STRING2PRIMEMOVER,
     Dict(
@@ -145,18 +145,18 @@ function convert_units!(
     return value
 end
 
-function parse_enum_mapping(::Type{ThermalFuels.ThermalFuel}, fuel::AbstractString)
+function parse_enum_mapping(::Type{ThermalFuels}, fuel::AbstractString)
     return STRING2FUEL[uppercase(fuel)]
 end
 
-function parse_enum_mapping(::Type{ThermalFuels.ThermalFuel}, fuel::Symbol)
-    return parse_enum_mapping(ThermalFuels.ThermalFuel, string(fuel))
+function parse_enum_mapping(::Type{ThermalFuels}, fuel::Symbol)
+    return parse_enum_mapping(ThermalFuels, string(fuel))
 end
 
-function parse_enum_mapping(::Type{PrimeMovers.PrimeMover}, prime_mover::AbstractString)
+function parse_enum_mapping(::Type{PrimeMovers}, prime_mover::AbstractString)
     return STRING2PRIMEMOVER[uppercase(prime_mover)]
 end
 
-function parse_enum_mapping(::Type{PrimeMovers.PrimeMover}, prime_mover::Symbol)
-    return parse_enum_mapping(PrimeMovers.PrimeMover, string(prime_mover))
+function parse_enum_mapping(::Type{PrimeMovers}, prime_mover::Symbol)
+    return parse_enum_mapping(PrimeMovers, string(prime_mover))
 end

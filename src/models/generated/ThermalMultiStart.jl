@@ -10,8 +10,8 @@ This file is auto-generated. Do not edit.
         active_power::Float64
         reactive_power::Float64
         rating::Float64
-        prime_mover::PrimeMovers.PrimeMover
-        fuel::ThermalFuels.ThermalFuel
+        prime_mover::PrimeMovers
+        fuel::ThermalFuels
         active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         reactive_power_limits::Union{Nothing, Min_Max}
         ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
@@ -40,8 +40,8 @@ Data Structure for thermal generation technologies.
 - `active_power::Float64`, validation range: `active_power_limits`, action if invalid: `warn`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
-- `fuel::ThermalFuels.ThermalFuel`: Prime mover fuel according to EIA 923
+- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `fuel::ThermalFuels`: Prime mover fuel according to EIA 923
 - `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`, validation range: `(0, nothing)`, action if invalid: `error`
@@ -69,9 +69,9 @@ mutable struct ThermalMultiStart <: ThermalGen
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers.PrimeMover
+    prime_mover::PrimeMovers
     "Prime mover fuel according to EIA 923"
-    fuel::ThermalFuels.ThermalFuel
+    fuel::ThermalFuels
     active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     reactive_power_limits::Union{Nothing, Min_Max}
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
