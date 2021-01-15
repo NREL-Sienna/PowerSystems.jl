@@ -39,7 +39,7 @@ function test_aggregation_topologies(sys::System, expected_areas, expected_zones
 end
 
 @testset "Test topology mappings" begin
-    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecast =false)
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecast = false)
     test_aggregation_topologies(sys, 3, 3)
 end
 

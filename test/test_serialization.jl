@@ -1,5 +1,5 @@
 @testset "Test JSON serialization of RTS data with mutable time series" begin
-    sys = PSB.build_system(PSYTestSystems, "test_RTS_GMLC_sys"; add_forecasts=false)
+    sys = PSB.build_system(PSYTestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     # Add an AGC service to cover its special serialization.
     control_area = get_component(Area, sys, "1")
     AGC_service = PSY.AGC(
@@ -86,7 +86,7 @@ end
 
 @testset "Test JSON serialization of dynamic inverter" begin
     sys = PSB.build_system(PSB.PSYTestSystems, "dynamic_inverter_sys")
-    
+
     # Add a dynamic branch to test that code.
     branch = collect(get_components(Branch, sys))[1]
     dynamic_branch = DynamicBranch(branch)

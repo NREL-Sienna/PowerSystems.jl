@@ -29,7 +29,6 @@ result = [
     -0.280381,
 ]
 
-
 pf_sys5_re = PSB.build_system(PSB.PSITestSystems, "c_sys5_re"; add_forecasts = false)
 remove_component!(Line, pf_sys5_re, "1")
 remove_component!(Line, pf_sys5_re, "2")
@@ -45,12 +44,21 @@ set_r!(br, 2.0)
         @test !solve_powerflow!(pf_sys5_re, finite_diff = true)
     )
     #Compare results between finite diff methods and Jacobian method
-    res_finite_diff = solve_powerflow(PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false), finite_diff = true)
-    res_jacobian = solve_powerflow(PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false))
+    res_finite_diff = solve_powerflow(
+        PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false),
+        finite_diff = true,
+    )
+    res_jacobian = solve_powerflow(
+        PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false),
+    )
     @test LinearAlgebra.norm(
         res_finite_diff["bus_results"].Vm - res_jacobian["bus_results"].Vm,
     ) <= 1e-6
-    @test solve_powerflow!(PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false), finite_diff = true, method = :newton)
+    @test solve_powerflow!(
+        PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false),
+        finite_diff = true,
+        method = :newton,
+    )
 
     sys = PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false)
     branch = first(get_components(Line, sys))

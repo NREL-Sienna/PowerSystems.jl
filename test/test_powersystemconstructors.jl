@@ -86,7 +86,8 @@ end
 
 @testset "Test System constructor from Matpower" begin
     # Include a System kwarg to make sure it doesn't get forwarded to PM functions.
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys"; runchecks = true)
+    sys =
+        PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys"; runchecks = true)
 end
 
 @testset "Test accessor functions of PowerSystems auto-generated types" begin

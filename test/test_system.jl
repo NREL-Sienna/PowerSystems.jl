@@ -1,6 +1,6 @@
 
 @testset "Test functionality of System" begin
-    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts=false)
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     summary(devnull, sys)
     @test get_frequency(sys) == PSY.DEFAULT_SYSTEM_FREQUENCY
 
@@ -194,7 +194,7 @@ end
 end
 
 @testset "Test system units" begin
-    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts=false)
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     @test get_units_base(sys) == "DEVICE_BASE"
     set_units_base_system!(sys, "SYSTEM_BASE")
     @test get_units_base(sys) == "SYSTEM_BASE"
