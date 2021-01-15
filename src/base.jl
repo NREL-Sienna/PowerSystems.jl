@@ -662,6 +662,17 @@ function remove_component!(
 end
 
 """
+Check to see if the component of type T with name exists. If T is an abstract
+type then the names of components across all subtypes of T must be unique.
+
+Throws ArgumentError if T is not a concrete type and there is more than one component with
+    requested name
+"""
+function has_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
+    return IS.has_component(T, sys.data.components, name)
+end
+
+"""
 Get the component of type T with name. Returns nothing if no component matches. If T is an abstract
 type then the names of components across all subtypes of T must be unique.
 
