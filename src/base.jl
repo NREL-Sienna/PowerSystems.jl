@@ -662,8 +662,7 @@ function remove_component!(
 end
 
 """
-Check to see if the component of type T with name exists. If T is an abstract
-type then the names of components across all subtypes of T must be unique.
+Check to see if the component of type T with name exists.
 """
 function has_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
     return IS.has_component(T, sys.data.components, name)
