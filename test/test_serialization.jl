@@ -1,5 +1,5 @@
 @testset "Test JSON serialization of RTS data with mutable time series" begin
-    sys = PSB.build_system(PSYTestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     # Add an AGC service to cover its special serialization.
     control_area = get_component(Area, sys, "1")
     AGC_service = PSY.AGC(
