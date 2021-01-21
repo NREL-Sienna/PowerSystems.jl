@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -22,7 +22,7 @@ i.e. an integrator controller on EMF
 - `states::Vector{Symbol}`: The states are:
 	Vf: field voltage
 - `n_states::Int`: Fixed AVR has 1 states
-- `states_types::Vector{StateTypes.StateType}`: Simple AVR has 1 differential states
+- `states_types::Vector{StateTypes}`: Simple AVR has 1 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AVRSimple <: AVR
@@ -37,7 +37,7 @@ mutable struct AVRSimple <: AVR
     "Fixed AVR has 1 states"
     n_states::Int
     "Simple AVR has 1 differential states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

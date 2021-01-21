@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -55,7 +55,7 @@ Parameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF
 	Ve: Integrator output state,
 	Vr3: Feedback output state
 - `n_states::Int`: EXAC1 has 5 states
-- `states_types::Vector{StateTypes.StateType}`: EXAC1 has 5 states
+- `states_types::Vector{StateTypes}`: EXAC1 has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct EXAC1 <: AVR
@@ -102,7 +102,7 @@ mutable struct EXAC1 <: AVR
     "EXAC1 has 5 states"
     n_states::Int
     "EXAC1 has 5 states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
