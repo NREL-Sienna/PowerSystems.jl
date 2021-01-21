@@ -2762,7 +2762,7 @@
             "name": "prime_mover",
             "comment": "Prime mover technology according to EIA 923",
             "null_value": "PrimeMovers.BA",
-            "data_type": "PrimeMovers.PrimeMover"
+            "data_type": "PrimeMovers"
           },
           {
             "name": "initial_energy",
