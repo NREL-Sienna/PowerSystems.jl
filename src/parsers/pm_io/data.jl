@@ -2261,7 +2261,7 @@ function _propagate_topology_status!(data::Dict{String, <:Any})
             end
         end
 
-        ccs = connected_components(data)
+        ccs = calc_connected_components(data)
 
         #println(ccs)
         #TODO set reference node for each cc

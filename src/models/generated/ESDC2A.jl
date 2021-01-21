@@ -21,7 +21,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -52,7 +52,7 @@ Parameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds
 	Vf: Exciter Output, 
 	Vr3: Rate feedback integrator
 - `n_states::Int`: The ESDC2A has 5 states
-- `states_types::Vector{StateTypes.StateType}`: ESDC2A has 5 differential states
+- `states_types::Vector{StateTypes}`: ESDC2A has 5 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ESDC2A <: AVR
@@ -97,7 +97,7 @@ mutable struct ESDC2A <: AVR
     "The ESDC2A has 5 states"
     n_states::Int
     "ESDC2A has 5 differential states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

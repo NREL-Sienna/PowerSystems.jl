@@ -3,7 +3,7 @@
     test_dir = mktempdir()
     ger4_raw_file = joinpath(PSSE_RAW_DIR, "Benchmark_4ger_33_2015.RAW")
     ger4_dyr_file = joinpath(PSSE_DYR_DIR, "Benchmark_4ger_33_2015.dyr")
-    sys = System(ger4_raw_file, ger4_dyr_file)
+    sys = PSB.build_system(PSB.PSSETestSystems, "psse_Benchmark_4ger_33_2015_sys")
     @test_throws PSY.DataFormatError System(ger4_raw_file, ger4_raw_file)
     @test_throws PSY.DataFormatError System(ger4_dyr_file, ger4_raw_file)
     dyn_injectors = get_components(DynamicInjection, sys)
@@ -27,8 +27,8 @@ end
     threebus_raw_file = joinpath(PSSE_TEST_DIR, "ThreeBusNetwork.raw")
     gencls_dyr_file = joinpath(PSSE_TEST_DIR, "TestGENCLS.dyr")
     nogencls_dyr_file = joinpath(PSSE_TEST_DIR, "Test-NoCLS.dyr")
-    sys_gencls = System(threebus_raw_file, gencls_dyr_file)
-    sys_nogencls = System(threebus_raw_file, nogencls_dyr_file)
+    sys_gencls = PSB.build_system(PSB.PSSETestSystems, "psse_3bus_gen_cls_sys")
+    sys_nogencls = PSB.build_system(PSB.PSSETestSystems, "psse_3bus_no_cls_sys")
 
     #Check that generator at bus 102 (H = 0) is a Source, and not ThermalStandard.
     @test isnothing(get_component(ThermalStandard, sys_gencls, "generator-102-1"))
@@ -83,7 +83,7 @@ end
     test_dir = mktempdir()
     texas2000_raw_file = joinpath(TAMU_DIR, "ACTIVSg2000.RAW")
     texas2000_dyr_file = joinpath(PSSE_DYR_DIR, "ACTIVSg2000_dynamics.dyr")
-    sys = System(texas2000_raw_file, texas2000_dyr_file)
+    sys = PSB.build_system(PSB.PSSETestSystems, "psse_ACTIVSg2000_sys")
     for g in get_components(ThermalStandard, sys)
         @test !isnothing(get_dynamic_injector(g))
     end

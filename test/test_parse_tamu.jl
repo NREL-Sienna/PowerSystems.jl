@@ -4,7 +4,7 @@
         error("No test files in the folder")
     end
 
-    sys = TamuSystem(TAMU_DIR)
+    sys = PSB.build_system(PSB.PSYTestSystems, "tamu_ACTIVSg2000_sys")
     @info "Successfully parsed $TAMU_DIR to System struct"
 
     # Test bad input

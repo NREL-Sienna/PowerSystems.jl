@@ -3,13 +3,13 @@ const POWER_SYSTEM_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_inputs.json")
 
 const INPUT_CATEGORY_NAMES = [
-    ("branch", BRANCH::InputCategory),
-    ("bus", BUS::InputCategory),
-    ("dc_branch", DC_BRANCH::InputCategory),
-    ("gen", GENERATOR::InputCategory),
-    ("load", LOAD::InputCategory),
-    ("reserves", RESERVE::InputCategory),
-    ("storage", STORAGE::InputCategory),
+    ("branch", InputCategory.BRANCH),
+    ("bus", InputCategory.BUS),
+    ("dc_branch", InputCategory.DC_BRANCH),
+    ("gen", InputCategory.GENERATOR),
+    ("load", InputCategory.LOAD),
+    ("reserves", InputCategory.RESERVE),
+    ("storage", InputCategory.STORAGE),
 ]
 struct PowerSystemTableData
     base_power::Float64
@@ -260,18 +260,18 @@ function System(
         runchecks = runchecks,
         kwargs...,
     )
-    set_units_base_system!(sys, IS.DEVICE_BASE)
+    set_units_base_system!(sys, IS.UnitSystem.DEVICE_BASE)
 
     loadzone_csv_parser!(sys, data)
     bus_csv_parser!(sys, data)
 
     # Services and time_series must be last.
     parsers = (
-        (get_dataframe(data, BRANCH::InputCategory), branch_csv_parser!),
-        (get_dataframe(data, DC_BRANCH::InputCategory), dc_branch_csv_parser!),
-        (get_dataframe(data, GENERATOR::InputCategory), gen_csv_parser!),
-        (get_dataframe(data, LOAD::InputCategory), load_csv_parser!),
-        (get_dataframe(data, RESERVE::InputCategory), services_csv_parser!),
+        (get_dataframe(data, InputCategory.BRANCH), branch_csv_parser!),
+        (get_dataframe(data, InputCategory.DC_BRANCH), dc_branch_csv_parser!),
+        (get_dataframe(data, InputCategory.GENERATOR), gen_csv_parser!),
+        (get_dataframe(data, InputCategory.LOAD), load_csv_parser!),
+        (get_dataframe(data, InputCategory.RESERVE), services_csv_parser!),
     )
 
     for (val, parser) in parsers
@@ -296,11 +296,10 @@ Add buses and areas to the System from the raw data.
 
 """
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
-    for bus in iterate_rows(data, BUS::InputCategory)
+    for bus in iterate_rows(data, InputCategory.BUS)
         name = bus.name
         bus_type =
-            isnothing(bus.bus_type) ? nothing :
-            get_enum_value(BusTypes.BusType, bus.bus_type)
+            isnothing(bus.bus_type) ? nothing : get_enum_value(BusTypes, bus.bus_type)
         voltage_limits = make_minmaxlimits(bus.voltage_limits_min, bus.voltage_limits_max)
 
         area_name = string(get(bus, :area, "area"))
@@ -349,7 +348,7 @@ Add branches to the System from the raw data.
 function branch_csv_parser!(sys::System, data::PowerSystemTableData)
     available = true
 
-    for branch in iterate_rows(data, BRANCH::InputCategory)
+    for branch in iterate_rows(data, InputCategory.BRANCH)
         bus_from = get_bus(sys, branch.connection_points_from)
         bus_to = get_bus(sys, branch.connection_points_to)
         name = get(branch, :name, get_name(bus_from) * "_" * get_name(bus_to))
@@ -428,7 +427,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
         return (min = min_lim, max = dc_branch[max])
     end
 
-    for dc_branch in iterate_rows(data, DC_BRANCH::InputCategory)
+    for dc_branch in iterate_rows(data, InputCategory.DC_BRANCH)
         available = true
         bus_from = get_bus(sys, dc_branch.connection_points_from)
         bus_to = get_bus(sys, dc_branch.connection_points_to)
@@ -520,7 +519,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     output_point_fields = Vector{Symbol}()
     heat_rate_fields = Vector{Symbol}()
     cost_point_fields = Vector{Symbol}()
-    fields = get_user_fields(data, GENERATOR::InputCategory)
+    fields = get_user_fields(data, InputCategory.GENERATOR)
     for field in fields
         if occursin("output_point", field)
             push!(output_point_fields, Symbol(field))
@@ -540,7 +539,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
         cost_colnames = _CostPointColumns(zip(cost_point_fields, output_point_fields))
     end
 
-    for gen in iterate_rows(data, GENERATOR::InputCategory)
+    for gen in iterate_rows(data, InputCategory.GENERATOR)
         @debug "making generator:" gen.name
         bus = get_bus(sys, gen.bus_id)
         if isnothing(bus)
@@ -562,7 +561,7 @@ Add loads to the System from the raw load data.
 
 """
 function load_csv_parser!(sys::System, data::PowerSystemTableData)
-    for rawload in iterate_rows(data, LOAD::InputCategory)
+    for rawload in iterate_rows(data, InputCategory.LOAD)
         bus = get_bus(sys, rawload.bus_id)
         if isnothing(bus)
             throw(
@@ -594,8 +593,8 @@ Add branches to the System from the raw data.
 
 """
 function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
-    buses = get_dataframe(data, BUS::InputCategory)
-    zone_column = get_user_field(data, BUS::InputCategory, "zone")
+    buses = get_dataframe(data, InputCategory.BUS)
+    zone_column = get_user_field(data, InputCategory.BUS, "zone")
     if !in(zone_column, names(buses))
         @warn "Missing Data : no 'zone' information for buses, cannot create loads based on zones"
         return
@@ -606,7 +605,7 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
         bus_numbers = Set{Int}()
         active_powers = Vector{Float64}()
         reactive_powers = Vector{Float64}()
-        for bus in iterate_rows(data, BUS::InputCategory)
+        for bus in iterate_rows(data, InputCategory.BUS)
             if bus.zone == zone
                 bus_number = bus.bus_id
                 push!(bus_numbers, bus_number)
@@ -629,8 +628,8 @@ end
 Add services to the System from the raw data.
 """
 function services_csv_parser!(sys::System, data::PowerSystemTableData)
-    bus_id_column = get_user_field(data, BUS::InputCategory, "bus_id")
-    bus_area_column = get_user_field(data, BUS::InputCategory, "area")
+    bus_id_column = get_user_field(data, InputCategory.BUS, "bus_id")
+    bus_area_column = get_user_field(data, InputCategory.BUS, "area")
 
     # Shortcut for data that looks like "(val1,val2,val3)"
     make_array(x) = isnothing(x) ? x : split(strip(x, ['(', ')']), ",")
@@ -658,7 +657,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         end
     end
 
-    for reserve in iterate_rows(data, RESERVE::InputCategory)
+    for reserve in iterate_rows(data, InputCategory.RESERVE)
         device_categories = make_array(reserve.eligible_device_categories)
         device_subcategories =
             make_array(get(reserve, :eligible_device_subcategories, nothing))
@@ -674,8 +673,8 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
             end
         else
             @info("Adding contributing generators for $(reserve.name) by category")
-            for gen in iterate_rows(data, GENERATOR::InputCategory)
-                buses = get_dataframe(data, BUS::InputCategory)
+            for gen in iterate_rows(data, InputCategory.GENERATOR)
+                buses = get_dataframe(data, InputCategory.BUS)
                 bus_ids = buses[!, bus_id_column]
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
@@ -694,9 +693,9 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
 
             unused_categories = setdiff(
                 device_subcategories,
-                get_dataframe(data, GENERATOR::InputCategory)[
+                get_dataframe(data, InputCategory.GENERATOR)[
                     !,
-                    get_user_field(data, GENERATOR::InputCategory, "category"),
+                    get_user_field(data, InputCategory.GENERATOR, "category"),
                 ],
             )
             for cat in unused_categories
@@ -945,8 +944,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     rating = calculate_rating(active_power_limits, reactive_power_limits)
     ramplimits = make_ramplimits(gen)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
-    primemover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type)
-    fuel = parse_enum_mapping(ThermalFuels.ThermalFuel, gen.fuel)
+    primemover = parse_enum_mapping(PrimeMovers, gen.unit_type)
+    fuel = parse_enum_mapping(ThermalFuels, gen.fuel)
 
     base_power = gen.base_mva
     var_cost, fixed, fuel_cost =
@@ -1062,7 +1061,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
     base_power = gen.base_mva
 
     if gen_type == HydroEnergyReservoir || gen_type == HydroPumpedStorage
-        if !haskey(data.category_to_df, STORAGE)
+        if !haskey(data.category_to_df, InputCategory.STORAGE)
             throw(DataFormatError("Storage information must defined in storage.csv"))
         end
 
@@ -1081,7 +1080,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
                 bus = bus,
                 active_power = gen.active_power,
                 reactive_power = reactive_power,
-                prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
+                prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
                 rating = rating,
                 active_power_limits = active_power_limits,
                 reactive_power_limits = reactive_power_limits,
@@ -1124,7 +1123,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
                 reactive_power = reactive_power,
                 rating = rating,
                 base_power = base_power,
-                prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
+                prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
                 active_power_limits = active_power_limits,
                 reactive_power_limits = reactive_power_limits,
                 ramp_limits = ramp_limits,
@@ -1161,7 +1160,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
             active_power_limits = active_power_limits,
             reactive_power_limits = reactive_power_limits,
             ramp_limits = ramp_limits,
@@ -1177,7 +1176,7 @@ end
 function get_storage_by_generator(data::PowerSystemTableData, gen_name::AbstractString)
     head = []
     tail = []
-    for s in iterate_rows(data, STORAGE::InputCategory)
+    for s in iterate_rows(data, InputCategory.STORAGE)
         if s.generator_name == gen_name
             position = get(s, :position, "head")
             if position == "tail"
@@ -1230,7 +1229,7 @@ function make_renewable_generator(
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
             reactive_power_limits = reactive_power_limits,
             power_factor = gen.power_factor,
             operation_cost = operation_cost,
@@ -1245,7 +1244,7 @@ function make_renewable_generator(
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
+            prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
             power_factor = gen.power_factor,
             base_power = base_power,
         )
@@ -1275,7 +1274,7 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
         name = gen.name,
         available = storage.available,
         bus = bus,
-        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, gen.unit_type),
+        prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
         initial_energy = storage.energy_level,
         state_of_charge_limits = state_of_charge_limits,
         rating = storage.rating,
@@ -1380,7 +1379,8 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
         if name in keys(custom_names)
             custom_name = custom_names[name]
 
-            if item_unit_system == IS.NATURAL_UNITS && per_unit[name] != IS.NATURAL_UNITS
+            if item_unit_system == IS.UnitSystem.NATURAL_UNITS &&
+               per_unit[name] != IS.UnitSystem.NATURAL_UNITS
                 throw(DataFormatError("$name cannot be defined as $(per_unit[name])"))
             end
 
@@ -1437,13 +1437,13 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
         end
 
         if !isnothing(value)
-            if field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
-               field_info.per_unit_conversion.To == IS.SYSTEM_BASE
+            if field_info.per_unit_conversion.From == IS.UnitSystem.NATURAL_UNITS &&
+               field_info.per_unit_conversion.To == IS.UnitSystem.SYSTEM_BASE
                 @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
                 value = value isa String ? tryparse(Float64, value) : value
                 value = data.base_power == 0.0 ? 0.0 : value / data.base_power
-            elseif field_info.per_unit_conversion.From == IS.NATURAL_UNITS &&
-                   field_info.per_unit_conversion.To == IS.DEVICE_BASE
+            elseif field_info.per_unit_conversion.From == IS.UnitSystem.NATURAL_UNITS &&
+                   field_info.per_unit_conversion.To == IS.UnitSystem.DEVICE_BASE
                 reference_idx = findfirst(
                     x -> x.name == field_info.per_unit_conversion.Reference,
                     field_infos,

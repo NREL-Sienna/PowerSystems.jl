@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -20,7 +20,7 @@ Parameters of a AVR that returns a fixed voltage to the rotor winding
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: Fixed AVR has no states
 - `n_states::Int`: Fixed AVR has no states
-- `states_types::Vector{StateTypes.StateType}`: Fixed AVR has no states
+- `states_types::Vector{StateTypes}`: Fixed AVR has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AVRFixed <: AVR
@@ -34,16 +34,16 @@ mutable struct AVRFixed <: AVR
     "Fixed AVR has no states"
     n_states::Int
     "Fixed AVR has no states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function AVRFixed(Vf, V_ref=1.0, ext=Dict{String, Any}(), )
-    AVRFixed(Vf, V_ref, ext, Vector{Symbol}(), 0, Vector{StateTypes.StateType}(), InfrastructureSystemsInternal(), )
+    AVRFixed(Vf, V_ref, ext, Vector{Symbol}(), 0, Vector{StateTypes}(), InfrastructureSystemsInternal(), )
 end
 
-function AVRFixed(; Vf, V_ref=1.0, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, states_types=Vector{StateTypes.StateType}(), internal=InfrastructureSystemsInternal(), )
+function AVRFixed(; Vf, V_ref=1.0, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, states_types=Vector{StateTypes}(), internal=InfrastructureSystemsInternal(), )
     AVRFixed(Vf, V_ref, ext, states, n_states, states_types, internal, )
 end
 

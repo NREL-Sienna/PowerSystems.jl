@@ -16,8 +16,8 @@ This file is auto-generated. Do not edit.
         operation_cost::OperationalCost
         base_power::Float64
         time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        prime_mover::PrimeMovers.PrimeMover
-        fuel::ThermalFuels.ThermalFuel
+        prime_mover::PrimeMovers
+        fuel::ThermalFuels
         services::Vector{Service}
         time_at_status::Float64
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -42,8 +42,8 @@ Data Structure for thermal generation technologies.
 - `operation_cost::OperationalCost`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
-- `fuel::ThermalFuels.ThermalFuel`: Prime mover fuel according to EIA 923
+- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `fuel::ThermalFuels`: Prime mover fuel according to EIA 923
 - `services::Vector{Service}`: Services that this device contributes to
 - `time_at_status::Float64`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
@@ -70,9 +70,9 @@ mutable struct ThermalStandard <: ThermalGen
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers.PrimeMover
+    prime_mover::PrimeMovers
     "Prime mover fuel according to EIA 923"
-    fuel::ThermalFuels.ThermalFuel
+    fuel::ThermalFuels
     "Services that this device contributes to"
     services::Vector{Service}
     time_at_status::Float64

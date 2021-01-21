@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
     mutable struct Bus <: Topology
         number::Int
         name::String
-        bustype::Union{Nothing, BusTypes.BusType}
+        bustype::Union{Nothing, BusTypes}
         angle::Union{Nothing, Float64}
         magnitude::Union{Nothing, Float64}
         voltage_limits::Union{Nothing, Min_Max}
@@ -21,7 +21,7 @@ A power-system bus.
 # Arguments
 - `number::Int`: number associated with the bus
 - `name::String`: the name of the bus
-- `bustype::Union{Nothing, BusTypes.BusType}`: bus type
+- `bustype::Union{Nothing, BusTypes}`: bus type
 - `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
 - `voltage_limits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
@@ -37,7 +37,7 @@ mutable struct Bus <: Topology
     "the name of the bus"
     name::String
     "bus type"
-    bustype::Union{Nothing, BusTypes.BusType}
+    bustype::Union{Nothing, BusTypes}
     "angle of the bus in radians"
     angle::Union{Nothing, Float64}
     "voltage as a multiple of basevoltage"

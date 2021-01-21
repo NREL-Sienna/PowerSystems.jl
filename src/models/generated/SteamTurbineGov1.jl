@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -38,7 +38,7 @@ Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.
 	x_g1: Valve Opening,
 	x_g2: Lead-lag state
 - `n_states::Int`: TGOV1 has 2 states
-- `states_types::Vector{StateTypes.StateType}`: TGOV1 has 2 differential states
+- `states_types::Vector{StateTypes}`: TGOV1 has 2 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SteamTurbineGov1 <: TurbineGov
@@ -70,7 +70,7 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     "TGOV1 has 2 states"
     n_states::Int
     "TGOV1 has 2 differential states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

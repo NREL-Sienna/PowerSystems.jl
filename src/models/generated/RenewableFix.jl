@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         active_power::Float64
         reactive_power::Float64
         rating::Float64
-        prime_mover::PrimeMovers.PrimeMover
+        prime_mover::PrimeMovers
         power_factor::Float64
         base_power::Float64
         services::Vector{Service}
@@ -28,7 +28,7 @@ Data Structure for fixed renewable generation technologies.
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
+- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
 - `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
@@ -46,7 +46,7 @@ mutable struct RenewableFix <: RenewableGen
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers.PrimeMover
+    prime_mover::PrimeMovers
     power_factor::Float64
     "Base power of the unit in MVA"
     base_power::Float64
