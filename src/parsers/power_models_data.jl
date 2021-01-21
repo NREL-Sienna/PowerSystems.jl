@@ -183,7 +183,11 @@ function read_bus!(sys::System, data; kwargs...)
         end
 
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
-        has_component(Bus, sys, bus_name) && throw(DataFormatError("Found duplicate bus names of $(get_name(bus)), consider formatting names with `bus_name_formatter` kwarg"))
+        has_component(Bus, sys, bus_name) && throw(
+            DataFormatError(
+                "Found duplicate bus names of $(get_name(bus)), consider formatting names with `bus_name_formatter` kwarg",
+            ),
+        )
 
         bus_number_to_bus[bus.number] = bus
 
@@ -220,11 +224,11 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         if d["pd"] != 0.0
             bus = bus_number_to_bus[d["load_bus"]]
             load = make_load(d, bus, sys_mbase; kwargs...)
-            has_component(PowerLoad, sys, get_name(load)) &&
-                throw(DataFormatError(
-                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg"
-                    )
-                )
+            has_component(PowerLoad, sys, get_name(load)) && throw(
+                DataFormatError(
+                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
             add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
         end
     end
@@ -503,8 +507,11 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
             continue
         end
 
-        has_component(typeof(generator), sys, get_name(generator)) &&
-            throw(DataFormatError("Found duplicate $(typeof(generator)) names of $(get_name(generator)), consider formatting names with `gen_name_formatter` kwarg"))
+        has_component(typeof(generator), sys, get_name(generator)) && throw(
+            DataFormatError(
+                "Found duplicate $(typeof(generator)) names of $(get_name(generator)), consider formatting names with `gen_name_formatter` kwarg",
+            ),
+        )
         add_component!(sys, generator; skip_validation = SKIP_PM_VALIDATION)
     end
 end
