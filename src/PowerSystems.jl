@@ -65,6 +65,7 @@ export InterruptibleLoad
 
 export Storage
 export GenericBattery
+export BatteryEMS
 
 export DynamicComponent
 export DynamicInjection
