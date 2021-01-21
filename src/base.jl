@@ -18,6 +18,7 @@ const SYSTEM_KWARGS = Set((
     :time_series_read_only,
     :timeseries_metadata_file,
     :unit_system,
+    :validate,
 ))
 
 # This will be used in the future to handle serialization changes.
