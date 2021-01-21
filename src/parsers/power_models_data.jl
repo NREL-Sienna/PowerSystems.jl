@@ -9,7 +9,6 @@ Constructs PowerModelsData from a raw file.
 Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 """
 function PowerModelsData(file::Union{String, IO}; kwargs...)
-
     validate = get(kwargs, :pm_data_corrections, true)
     import_all = get(kwargs, :import_all, false)
     pm_dict = parse_file(file; import_all = import_all, validate = validate)
