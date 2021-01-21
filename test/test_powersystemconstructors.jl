@@ -86,7 +86,8 @@ end
 
 @testset "Test System constructor from Matpower" begin
     # Include a System kwarg to make sure it doesn't get forwarded to PM functions.
-    sys = System(joinpath(MATPOWER_DIR, "case5_re.m"); runchecks = true)
+    sys =
+        PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys"; runchecks = true)
 end
 
 @testset "Test accessor functions of PowerSystems auto-generated types" begin
@@ -110,7 +111,7 @@ end
 end
 
 @testset "Test component conversion" begin
-    sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
+    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
     l = get_component(Line, sys, "bus2-bus3-i_4")
     initial_time = Dates.DateTime("2020-01-01T00:00:00")
     dates = collect(initial_time:Dates.Hour(1):Dates.DateTime("2020-01-01T23:00:00"))
