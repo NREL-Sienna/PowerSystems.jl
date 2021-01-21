@@ -26,7 +26,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -62,7 +62,7 @@ IEEE Type 1 Speed-Governing Model
 	x_g5: Third Turbine Integrator, 
 	x_g6: Fourth Turbine Integrator, 
 - `n_states::Int`: IEEEG1 has 6 states
-- `states_types::Vector{StateTypes.StateType}`: IEEEG1 has 6 differential states
+- `states_types::Vector{StateTypes}`: IEEEG1 has 6 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEETurbineGov1 <: TurbineGov
@@ -118,7 +118,7 @@ mutable struct IEEETurbineGov1 <: TurbineGov
     "IEEEG1 has 6 states"
     n_states::Int
     "IEEEG1 has 6 differential states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

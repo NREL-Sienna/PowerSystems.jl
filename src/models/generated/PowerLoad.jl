@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::Bus
-        model::Union{Nothing, LoadModels.LoadModel}
+        model::Union{Nothing, LoadModels}
         active_power::Float64
         reactive_power::Float64
         base_power::Float64
@@ -25,7 +25,7 @@ Data structure for a static power load.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `model::Union{Nothing, LoadModels.LoadModel}`
+- `model::Union{Nothing, LoadModels}`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -41,7 +41,7 @@ mutable struct PowerLoad <: StaticLoad
     name::String
     available::Bool
     bus::Bus
-    model::Union{Nothing, LoadModels.LoadModel}
+    model::Union{Nothing, LoadModels}
     active_power::Float64
     reactive_power::Float64
     "Base power of the unit in MVA"

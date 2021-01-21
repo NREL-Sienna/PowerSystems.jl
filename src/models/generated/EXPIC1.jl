@@ -27,7 +27,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -65,7 +65,7 @@ Generic Proportional/Integral Excitation System
 	Vr3: First feedback integrator,
 	Vr4: second feedback integrator
 - `n_states::Int`: EXPIC1 has 6 states
-- `states_types::Vector{StateTypes.StateType}`: EXPIC has 6 states
+- `states_types::Vector{StateTypes}`: EXPIC has 6 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct EXPIC1 <: AVR
@@ -124,7 +124,7 @@ mutable struct EXPIC1 <: AVR
     "EXPIC1 has 6 states"
     n_states::Int
     "EXPIC has 6 states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

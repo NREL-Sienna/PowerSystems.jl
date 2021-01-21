@@ -23,7 +23,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -57,7 +57,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds
 	Ve: Integrator output state,
 	Vr3: Feedback output state
 - `n_states::Int`: ESAC1A has 5 states
-- `states_types::Vector{StateTypes.StateType}`: ESAC1A has 5 states
+- `states_types::Vector{StateTypes}`: ESAC1A has 5 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ESAC1A <: AVR
@@ -106,7 +106,7 @@ mutable struct ESAC1A <: AVR
     "ESAC1A has 5 states"
     n_states::Int
     "ESAC1A has 5 states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
