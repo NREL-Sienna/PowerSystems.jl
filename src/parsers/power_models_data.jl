@@ -9,7 +9,10 @@ Constructs PowerModelsData from a raw file.
 Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 """
 function PowerModelsData(file::Union{String, IO}; kwargs...)
-    pm_dict = parse_file(file; kwargs...)
+
+    validate = get(kwargs, :pm_data_corrections, true)
+    import_all = get(kwargs, :import_all, false)
+    pm_dict = parse_file(file; import_all = import_all, validate = validate)
     pm_data = PowerModelsData(pm_dict)
     correct_pm_transformer_status!(pm_data)
     return pm_data
@@ -17,8 +20,19 @@ end
 
 """
 Constructs a System from PowerModelsData.
-Supports kwargs to supply formatters for different device types,
-such as `bus_name_formatter` or `gen_name_formatter`.
+
+# Arguments
+- `pm_data::Union{PowerModelsData, Union{String, IO}}`: PowerModels data object or supported
+load flow case (*.m, *.raw)
+
+# Keyword arguments
+- `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
+- `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
+  Throws InvalidRange if an error is found.
+- `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
+- `config_path::String`: specify path to validation config file
+- `pm_data_corrections::Bool=true` : Run the PowerModels data corrections (aka :validate in PowerModels)
+- `import_all:Bool=false` : Import all fields from PTI files
 
 # Examples
 ```julia
