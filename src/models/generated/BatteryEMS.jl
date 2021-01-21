@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::Bus
-        prime_mover::PrimeMovers.PrimeMover
+        prime_mover::PrimeMovers
         initial_energy::Float64
         state_of_charge_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         rating::Float64
@@ -33,7 +33,7 @@ Data structure for a battery compatible with energy management formulations.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `prime_mover::PrimeMovers.PrimeMover`: Prime mover technology according to EIA 923
+- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
 - `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `state_of_charge_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `rating::Float64`
@@ -58,7 +58,7 @@ mutable struct BatteryEMS <: Storage
     available::Bool
     bus::Bus
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers.PrimeMover
+    prime_mover::PrimeMovers
     "State of Charge of the Battery p.u.-hr"
     initial_energy::Float64
     "Maximum and Minimum storage capacity in p.u.-hr"
