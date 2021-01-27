@@ -1118,20 +1118,20 @@ function IS.deserialize(
 
     # Read any field that is defined in System but optional for the constructors and not
     # already handled here.
-    handled = ("data", "units_settings", "bus_numbers", "internal")
-    kwargs = Dict{String, Any}()
+    handled = ("data", "units_settings", "bus_numbers", "internal", "data_format_version")
+    kwargs = Dict{Symbol, Any}()
     for field in setdiff(keys(raw), handled)
-        kwargs[field] = raw[field]
+        kwargs[Symbol(field)] = raw[field]
     end
 
-    units_settings = IS.deserialize(SystemUnitsSettings, raw["units_settings"])
+    units = IS.deserialize(SystemUnitsSettings, raw["units_settings"])
     data = IS.deserialize(
         IS.SystemData,
         raw["data"];
         time_series_read_only = time_series_read_only,
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units_settings; internal = internal, runchecks = runchecks)
+    sys = System(data, units; internal = internal, runchecks = runchecks, kwargs...)
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
     deserialize_components!(sys, raw["data"]["components"])
