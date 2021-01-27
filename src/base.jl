@@ -363,7 +363,11 @@ function add_component!(
         # Doesn't run at deserialization time because the changes made by this function
         # occurred when the original addition ran and do not apply to that scenario.
         handle_component_addition!(sys, component; kwargs...)
+        # Special condition required to populate the bus numbers in the system after
+    elseif component isa Bus
+        handle_component_addition!(sys, component; kwargs...)
     end
+
     return
 end
 

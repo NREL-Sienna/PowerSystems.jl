@@ -290,6 +290,7 @@ function validate_serialization(
             time_series_read_only = time_series_read_only,
             runchecks = runchecks,
         )
+        isempty(get_bus_numbers(sys2)) && return false
         sys_ext2 = get_ext(sys2)
         sys_ext2["data"] != 5 && return false
         bus = PSY.get_component(PSY.Bus, sys2, ext_test_bus_name)
