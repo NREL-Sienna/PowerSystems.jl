@@ -1138,14 +1138,14 @@ function IS.deserialize(
     sys = System(data, units; internal = internal, runchecks = runchecks, kwargs...)
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
-    deserialize_components!(sys, raw["data"]["components"])
+    deserialize_components!(sys, raw["data"]["components"], skip_validation = !runchecks)
     pop!(ext, "deserialization_in_progress")
     isempty(ext) && clear_ext!(sys)
 
     return sys
 end
 
-function deserialize_components!(sys::System, raw)
+function deserialize_components!(sys::System, raw; skip_validation = false)
     # Convert the array of components into type-specific arrays to allow addition by type.
     data = Dict{Any, Vector{Dict}}()
     for component in raw
@@ -1184,7 +1184,7 @@ function deserialize_components!(sys::System, raw)
             end
             for component in components
                 comp = deserialize(type, component, component_cache)
-                add_component!(sys, comp)
+                add_component!(sys, comp; skip_validation = skip_validation)
                 component_cache[IS.get_uuid(comp)] = comp
                 if !isnothing(post_add_func)
                     post_add_func(comp)
