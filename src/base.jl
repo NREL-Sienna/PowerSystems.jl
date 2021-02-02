@@ -1681,11 +1681,9 @@ end
 
 function _validate_or_skip!(sys, component, skip_validation)
     if skip_validation && get_runchecks(sys)
-        Base.depwarn(
-            "skip_validation is deprecated; construct System with runchecks = true or call set_runchecks! instead",
-            :add_component!,
+        @warn(
+            "skip_validation is deprecated; construct System with runchecks = true or call set_runchecks!. Disabling System.runchecks"
         )
-        @warn "Disabling System.runchecks"
         set_runchecks!(sys, false)
     end
 
