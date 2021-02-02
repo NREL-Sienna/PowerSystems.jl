@@ -29,7 +29,7 @@ end
     nodes = nodes5()
     sys_no_runchecks =
         System(100.0, nodes, thermal_generators5(nodes), loads5(nodes); runchecks = false)
-    @test isempty(sys_no_runchecks.data.validation_descriptors)
+    @test !isempty(sys_no_runchecks.data.validation_descriptors)
 end
 
 @testset "Test extracting struct info from validation_descriptor vector" begin
@@ -239,6 +239,7 @@ end
 
 @testset "Test add_component with runchecks enabled" begin
     sys = System(100.0, runchecks = true)
+    @test get_runchecks(sys)
     bus = _make_bus()
     add_component!(sys, bus)
     remove_component!(sys, bus)
@@ -253,6 +254,7 @@ end
 
     # Allowed with skip_validation.
     add_component!(sys, bus, skip_validation = true)
+    @test !get_runchecks(sys)
 end
 
 @testset "Test add_component with runchecks disabled" begin
@@ -272,14 +274,17 @@ end
     set_angle!(bus, 1000.0)
     add_component!(sys, bus)
 
-    # You can't enable range checks now because descriptors were not stored.
-    _, result = validate_serialization(sys, runchecks = true)
-    @test result
+    @test_logs(
+        (:error, r"Invalid range"),
+        match_mode = :any,
+        @test_throws(IS.InvalidRange, validate_serialization(sys, runchecks = true)),
+    )
 end
 
 @testset "Test serialization and system checks" begin
     # Serialize/deserialize an invalid system.
     sys = System(100.0, runchecks = false)
+    @test !get_runchecks(sys)
     bus = _make_bus()
     set_bustype!(bus, BusTypes.PQ)
     add_component!(sys, bus)
@@ -290,6 +295,51 @@ end
         validate_serialization(sys, runchecks = true)
     )
 
-    _, result = validate_serialization(sys, runchecks = false)
+    sys, result = validate_serialization(sys, runchecks = false)
     @test result
+    @test !get_runchecks(sys)
+end
+
+@testset "Test runchecks" begin
+    sys = System(100.0)
+    @test get_runchecks(sys)
+    sys = System(100.0, runchecks = false)
+    @test !get_runchecks(sys)
+    set_runchecks!(sys, true)
+    @test get_runchecks(sys)
+    set_runchecks!(sys, false)
+    @test !get_runchecks(sys)
+end
+
+@testset "Test check_component" begin
+    sys = System(100.0, runchecks = false)
+    bus = _make_bus()
+
+    # Make the bus invalid.
+    set_angle!(bus, 1000.0)
+    add_component!(sys, bus)
+
+    @test_logs(
+        (:error, r"Invalid range"),
+        match_mode = :any,
+        @test_throws(IS.InvalidRange, check_component(sys, bus)),
+    )
+    @test_logs(
+        (:error, r"Invalid range"),
+        match_mode = :any,
+        @test_throws(IS.InvalidRange, check_components(sys)),
+    )
+end
+
+@testset "Test check at serialization" begin
+    nodes = nodes5()
+    bad_therm_gen_rating = thermal_generators5(nodes)
+    bad_therm_gen_rating[1].rating = -10
+    sys = System(100.0, nodes, bad_therm_gen_rating, loads5(nodes); runchecks = false)
+    @test_logs(
+        (:error, r"Invalid range"),
+        (:warn, r"exceeds total capacity capability"),
+        match_mode = :any,
+        @test_throws(IS.InvalidRange, to_json(sys, "sys.json", force = true, check = true)),
+    )
 end

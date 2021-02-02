@@ -56,7 +56,7 @@ struct System <: IS.InfrastructureSystemsType
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
-    runchecks::Bool
+    runchecks::Base.RefValue{Bool}
     units_settings::SystemUnitsSettings
     internal::IS.InfrastructureSystemsInternal
 
@@ -81,7 +81,7 @@ struct System <: IS.InfrastructureSystemsType
         end
         bus_numbers = Set{Int}()
         frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
-        runchecks = get(kwargs, :runchecks, true)
+        runchecks = Base.RefValue{Bool}(get(kwargs, :runchecks, true))
         sys = new(data, frequency, bus_numbers, runchecks, units_settings, internal)
         return sys
     end
@@ -227,8 +227,23 @@ end
 
 """
 Serializes a system to a JSON string.
+
+# Arguments
+- `sys::System`: system
+- `filename::AbstractString`: filename to write
+
+# Keyword arguments
+- `force::Bool = false`: whether to overwrite existing files
+- `check::Bool = false`: whether to run system validation checks
+
+Refer to [`check_component`](@ref) for exceptions thrown if `check = true`.
 """
-function IS.to_json(sys::System, filename::AbstractString; force = false)
+function IS.to_json(sys::System, filename::AbstractString; force = false, check = false)
+    if check
+        check!(sys)
+        check_components(sys)
+    end
+
     IS.prepare_for_serialization!(sys.data, filename; force = force)
     data = to_json(sys)
     open(filename, "w") do io
@@ -272,6 +287,20 @@ get_frequency(sys::System) = sys.frequency
 Clear any value stored in ext.
 """
 clear_ext!(sys::System) = IS.clear_ext!(sys.internal)
+
+"""
+Return true if checks are enabled on the system.
+"""
+get_runchecks(sys::System) = sys.runchecks[]
+
+"""
+Enable or disable system checks.
+Applies to component addition as well as overall system consistency.
+"""
+function set_runchecks!(sys::System, value::Bool)
+    sys.runchecks[] = value
+    @info "Set runchecks to $value"
+end
 
 function set_units_setting!(
     component::Component,
@@ -347,7 +376,7 @@ function add_component!(
         check_for_services_on_addition(sys, component)
     end
 
-    skip_validation = _validate_or_skip(sys, component, skip_validation)
+    skip_validation = _validate_or_skip!(sys, component, skip_validation)
     _kwargs = Dict(k => v for (k, v) in kwargs if k !== :static_injector)
     IS.add_component!(
         sys.data,
@@ -395,7 +424,7 @@ function _add_service!(
     skip_validation = false,
     kwargs...,
 )
-    skip_validation = _validate_or_skip(sys, service, skip_validation)
+    skip_validation = _validate_or_skip!(sys, service, skip_validation)
     for device in contributing_devices
         device_type = typeof(device)
         if !(device_type <: Device)
@@ -465,7 +494,7 @@ function add_service!(
     skip_validation = false,
     kwargs...,
 )
-    skip_validation = _validate_or_skip(sys, service, skip_validation)
+    skip_validation = _validate_or_skip!(sys, service, skip_validation)
 
     for _service in get_contributing_services(service)
         throw_if_not_attached(_service, sys)
@@ -502,7 +531,7 @@ function add_service!(
     skip_validation = false,
     kwargs...,
 )
-    skip_validation = _validate_or_skip(sys, service, skip_validation)
+    skip_validation = _validate_or_skip!(sys, service, skip_validation)
     set_contributing_services!(sys, service, contributing_services)
 
     set_units_setting!(service, sys.units_settings)
@@ -1089,12 +1118,38 @@ function validate_struct(sys::System, value::IS.InfrastructureSystemsType)
     return true
 end
 
+"""
+Check system consistency and validity.
+"""
 function check!(sys::System)
     buses = get_components(Bus, sys)
     slack_bus_check(buses)
     buscheck(buses)
     critical_components_check(sys)
     adequacy_check(sys)
+    return
+end
+
+"""
+Check the values of all components. See [`check_component`](@ref) for exceptions thrown.
+"""
+function check_components(sys::System)
+    for component in iterate_components(sys)
+        check_component(sys, component)
+    end
+end
+
+"""
+Check the values of a component.
+
+Throws InvalidRange if any of the component's field values are outside of defined valid
+range.
+
+Throws InvalidValue if the custom validate method for the type fails its check.
+"""
+function check_component(sys::System, component::Component)
+    validate_struct(sys, component)
+    IS.check_component(sys.data, component)
 end
 
 function IS.serialize(sys::T) where {T <: System}
@@ -1114,7 +1169,7 @@ function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
     time_series_read_only = false,
-    runchecks = true,
+    kwargs...,
 )
     raw = open(filename) do io
         JSON3.read(io, Dict)
@@ -1123,9 +1178,14 @@ function IS.deserialize(
     # Read any field that is defined in System but optional for the constructors and not
     # already handled here.
     handled = ("data", "units_settings", "bus_numbers", "internal", "data_format_version")
-    kwargs = Dict{Symbol, Any}()
+    parsed_kwargs = Dict{Symbol, Any}()
     for field in setdiff(keys(raw), handled)
-        kwargs[Symbol(field)] = raw[field]
+        parsed_kwargs[Symbol(field)] = raw[field]
+    end
+
+    # The user can override the serialized runchecks value by passing a kwarg here.
+    if haskey(kwargs, :runchecks)
+        parsed_kwargs[:runchecks] = kwargs[:runchecks]
     end
 
     units = IS.deserialize(SystemUnitsSettings, raw["units_settings"])
@@ -1135,12 +1195,16 @@ function IS.deserialize(
         time_series_read_only = time_series_read_only,
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units; internal = internal, runchecks = runchecks, kwargs...)
+    sys = System(data, units; internal = internal, kwargs...)
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
     deserialize_components!(sys, raw["data"]["components"])
     pop!(ext, "deserialization_in_progress")
     isempty(ext) && clear_ext!(sys)
+
+    if !get_runchecks(sys)
+        @warn "The System was deserialized with checks disabled, and so was not validated."
+    end
 
     return sys
 end
@@ -1529,13 +1593,10 @@ end
 
 function _create_system_data_from_kwargs(; kwargs...)
     validation_descriptor_file = nothing
-    runchecks = get(kwargs, :runchecks, true)
     time_series_in_memory = get(kwargs, :time_series_in_memory, false)
     time_series_directory = get(kwargs, :time_series_directory, nothing)
-    if runchecks
-        validation_descriptor_file =
-            get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
-    end
+    validation_descriptor_file =
+        get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
 
     return IS.SystemData(;
         validation_descriptor_file = validation_descriptor_file,
@@ -1618,9 +1679,18 @@ function convert_component!(
     remove_component!(sys, line)
 end
 
-function _validate_or_skip(sys, component, skip_validation)
+function _validate_or_skip!(sys, component, skip_validation)
+    if skip_validation && get_runchecks(sys)
+        Base.depwarn(
+            "skip_validation is deprecated; construct System with runchecks = true or call set_runchecks! instead",
+            :add_component!,
+        )
+        @warn "Disabling System.runchecks"
+        set_runchecks!(sys, false)
+    end
+
     # Always skip if system checks are disabled.
-    if !skip_validation && !sys.runchecks
+    if !skip_validation && !get_runchecks(sys)
         skip_validation = true
     end
 

@@ -308,11 +308,17 @@ export get_reserve_limit_dn
 export get_participation_factor
 export get_cost
 export get_units_base
+export get_runchecks
+export set_runchecks!
+export check!
+export check_component
+export check_components
 
 export configure_logging
 export open_file_logger
 export MultiLogger
 export LogEventTracker
+export UnitSystem
 
 #################################################################################
 # Imports
