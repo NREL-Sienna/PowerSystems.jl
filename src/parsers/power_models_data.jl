@@ -62,7 +62,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
-        check!(sys)
+        check(sys)
     end
     return sys
 end

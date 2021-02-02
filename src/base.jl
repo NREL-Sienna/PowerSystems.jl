@@ -120,7 +120,7 @@ function System(base_power::Float64, buses::Vector{Bus}, components...; kwargs..
     end
 
     if get(kwargs, :runchecks, true)
-        check!(sys)
+        check(sys)
     end
 
     return sys
@@ -181,7 +181,7 @@ function System(file_path::AbstractString; kwargs...)
                 time_series_read_only = time_series_read_only,
                 runchecks = runchecks,
             )
-            runchecks && check!(sys)
+            runchecks && check(sys)
             return sys
         finally
             cd(orig_dir)
@@ -238,9 +238,9 @@ Serializes a system to a JSON string.
 
 Refer to [`check_component`](@ref) for exceptions thrown if `check = true`.
 """
-function IS.to_json(sys::System, filename::AbstractString; force = false, check = false)
-    if check
-        check!(sys)
+function IS.to_json(sys::System, filename::AbstractString; force = false, runchecks = false)
+    if runchecks
+        check(sys)
         check_components(sys)
     end
 
@@ -1107,21 +1107,39 @@ function transform_single_time_series!(sys::System, horizon::Int, interval::Date
 end
 
 """
-Validate an instance of a InfrastructureSystemsType against System data.
-Returns true if the instance is valid.
-
-Users implementing this function for custom types should consider implementing
-InfrastructureSystems.validate_struct instead if the validation logic only requires data
-contained within the instance.
+Sanitize component values.
 """
-function validate_struct(sys::System, value::IS.InfrastructureSystemsType)
-    return true
-end
+correct_component!(component::Component, sys::System) = true
+
+"""
+Validate the component fields using only those fields. Refer to
+[`validate_component_with_system`](@ref) to use other System data for the
+validation.
+
+Return true if the instance is valid.
+"""
+validate_component(component::Component) = true
+
+"""
+Validate a component against System data. Return true if the instance is valid.
+
+Refer to [`validate_component`](@ref) if the validation logic only requires data contained
+within the instance.
+"""
+validate_component_with_system(component::Component, sys::System) = true
+
+Base.@deprecate validate_struct(sys::System, component::Component) validate_component_with_system(
+    component,
+    sys,
+) false
+
+# Keeps the code working with IS.
+IS.validate_struct(component::Component) = validate_component(component)
 
 """
 Check system consistency and validity.
 """
-function check!(sys::System)
+function check(sys::System)
     buses = get_components(Bus, sys)
     slack_bus_check(buses)
     buscheck(buses)
@@ -1148,7 +1166,9 @@ range.
 Throws InvalidValue if the custom validate method for the type fails its check.
 """
 function check_component(sys::System, component::Component)
-    validate_struct(sys, component)
+    if !validate_component_with_system(component, sys)
+        throw(IS.InvalidValue("Invalid value for $component"))
+    end
     IS.check_component(sys.data, component)
 end
 
@@ -1692,8 +1712,11 @@ function _validate_or_skip!(sys, component, skip_validation)
         skip_validation = true
     end
 
-    if !skip_validation && !validate_struct(sys, component)
-        throw(IS.InvalidValue("Invalid value for $component"))
+    if !skip_validation
+        correct_component!(component, sys)
+        if !validate_component_with_system(component, sys)
+            throw(IS.InvalidValue("Invalid value for $component"))
+        end
     end
 
     return skip_validation

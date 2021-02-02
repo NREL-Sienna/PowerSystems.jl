@@ -59,6 +59,15 @@ supertype of your type.
 Note that you can call the helper functions `is_attached(component, system)`
 and `throw_if_not_attached(component, system)`.
 
+### Custom Validation
+
+You can implement three methods to perform custom validation or correction for your type.
+PowerSystems calls all of these functions in `add_component!`.
+
+- `correct_compoment!(component::Component, sys::System)`
+- `validate_compoment(component::Component)`
+- `validate_component_with_system(component::Component, sys::System)`
+
 ### Struct Requirements for Serialization of custom components
 
 One key feature of `PowerSystems.jl` is the serialization capabilities. Supporting

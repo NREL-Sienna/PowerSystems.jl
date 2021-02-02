@@ -287,7 +287,7 @@ function System(
         add_time_series!(sys, timeseries_metadata_file; resolution = time_series_resolution)
     end
 
-    check!(sys)
+    check(sys)
     return sys
 end
 

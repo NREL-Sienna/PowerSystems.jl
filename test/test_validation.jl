@@ -340,6 +340,9 @@ end
         (:error, r"Invalid range"),
         (:warn, r"exceeds total capacity capability"),
         match_mode = :any,
-        @test_throws(IS.InvalidRange, to_json(sys, "sys.json", force = true, check = true)),
+        @test_throws(
+            IS.InvalidRange,
+            to_json(sys, "sys.json", force = true, runchecks = true)
+        ),
     )
 end
