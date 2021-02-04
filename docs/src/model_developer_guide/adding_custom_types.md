@@ -64,9 +64,9 @@ and `throw_if_not_attached(component, system)`.
 You can implement three methods to perform custom validation or correction for your type.
 PowerSystems calls all of these functions in `add_component!`.
 
-- `sanitize_compoment!(component::Component, sys::System)`
-- `validate_compoment(component::Component)`
-- `validate_component_with_system(component::Component, sys::System)`
+- `sanitize_component!(component::Component, sys::System)`: intended to make standard data corrections (e.g. voltage angle in degrees -> radians)
+- `validate_component(component::Component)`: intended to check component field values for internal consistency
+- `validate_component_with_system(component::Component, sys::System)`: intended to check component field values for consistency with system
 
 ### Struct Requirements for Serialization of custom components
 
