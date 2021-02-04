@@ -22,7 +22,9 @@ function parse_file(io::IO; import_all = false, validate = true, filetype = "jso
     if filetype == "m"
         pm_data = parse_matpower(io, validate = validate)
     elseif filetype == "raw"
-        @info("The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines")
+        @info(
+            "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines"
+        )
         pm_data = parse_psse(io; import_all = import_all, validate = validate)
     elseif filetype == "json"
         pm_data = parse_json(io; validate = validate)
@@ -54,8 +56,9 @@ function correct_network_data!(data::Dict{String, <:Any})
     make_per_unit!(data)
 
     mod_branch[:xfer_fix] = correct_transformer_parameters!(data)
-    # mod_branch[:vad_bounds] = correct_voltage_angle_differences!(data)
+    mod_branch[:vad_bounds] = correct_voltage_angle_differences!(data)
     mod_branch[:mva_zero] = correct_thermal_limits!(data)
+    #mod_branch[:ma_zero] = correct_current_limits!(data)
     mod_branch[:orientation] = correct_branch_directions!(data)
     check_branch_loops(data)
 
@@ -82,8 +85,8 @@ function correct_network_data!(data::Dict{String, <:Any})
 end
 
 UNIT_SYSTEM_MAPPING = Dict(
-    "SYSTEM_BASE" => IS.SYSTEM_BASE,
-    "DEVICE_BASE" => IS.DEVICE_BASE,
-    "NATURAL_UNITS" => IS.NATURAL_UNITS,
+    "SYSTEM_BASE" => IS.UnitSystem.SYSTEM_BASE,
+    "DEVICE_BASE" => IS.UnitSystem.DEVICE_BASE,
+    "NATURAL_UNITS" => IS.UnitSystem.NATURAL_UNITS,
     "NA" => nothing,
 )

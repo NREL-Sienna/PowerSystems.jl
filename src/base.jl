@@ -18,6 +18,8 @@ const SYSTEM_KWARGS = Set((
     :time_series_read_only,
     :timeseries_metadata_file,
     :unit_system,
+    :pm_data_corrections,
+    :import_all,
 ))
 
 # This will be used in the future to handle serialization changes.
@@ -73,7 +75,9 @@ struct System <: IS.InfrastructureSystemsType
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
         if !isnothing(get(kwargs, :unit_system, nothing))
-            @warn("unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence")
+            @warn(
+                "unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence"
+            )
         end
         bus_numbers = Set{Int}()
         frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
@@ -269,8 +273,11 @@ Clear any value stored in ext.
 """
 clear_ext!(sys::System) = IS.clear_ext!(sys.internal)
 
-function set_unit_system!(component::Component, settings::SystemUnitsSettings)
-    component.internal.units_info = settings
+function set_units_setting!(
+    component::Component,
+    settings::Union{SystemUnitsSettings, Nothing},
+)
+    set_units_info!(get_internal(component), settings)
     return
 end
 
@@ -278,7 +285,7 @@ end
 Sets the units base for the getter functions on the devices. It modifies the behavior of all getter functions
 """
 function set_units_base_system!(system::System, settings::String)
-    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING[settings]
+    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING[uppercase(settings)]
     @info "Unit System changed to $(UNIT_SYSTEM_MAPPING[settings])"
     return
 end
@@ -294,7 +301,7 @@ function get_units_base(system::System)
 end
 
 function get_units_setting(component::T) where {T <: Component}
-    return component.internal.units_info
+    return get_units_info(get_internal(component))
 end
 
 function has_units_setting(component::T) where {T <: Component}
@@ -328,7 +335,7 @@ function add_component!(
     skip_validation = false,
     kwargs...,
 ) where {T <: Component}
-    set_unit_system!(component, sys.units_settings)
+    set_units_setting!(component, sys.units_settings)
     @assert has_units_setting(component)
 
     check_attached_buses(sys, component)
@@ -356,7 +363,11 @@ function add_component!(
         # Doesn't run at deserialization time because the changes made by this function
         # occurred when the original addition ran and do not apply to that scenario.
         handle_component_addition!(sys, component; kwargs...)
+        # Special condition required to populate the bus numbers in the system after
+    elseif component isa Bus
+        handle_component_addition!(sys, component; kwargs...)
     end
+
     return
 end
 
@@ -393,7 +404,7 @@ function _add_service!(
         throw_if_not_attached(device, sys)
     end
 
-    set_unit_system!(service, sys.units_settings)
+    set_units_setting!(service, sys.units_settings)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 
@@ -460,7 +471,7 @@ function add_service!(
         throw_if_not_attached(_service, sys)
     end
 
-    set_unit_system!(service, sys.units_settings)
+    set_units_setting!(service, sys.units_settings)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 end
 
@@ -494,7 +505,7 @@ function add_service!(
     skip_validation = _validate_or_skip(sys, service, skip_validation)
     set_contributing_services!(sys, service, contributing_services)
 
-    set_unit_system!(service, sys.units_settings)
+    set_units_setting!(service, sys.units_settings)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
 end
 
@@ -557,8 +568,7 @@ function IS.add_time_series_from_file_metadata_internal!(
             push!(uuids, IS.get_uuid(bus))
         end
         for _component in (
-            load for
-            load in IS.get_components(ElectricLoad, data) if
+            load for load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
             IS.add_time_series!(data, _component, ts; skip_if_present = true)
@@ -633,7 +643,11 @@ function check_component_removal(sys::System, service::T) where {T <: Service}
     groupservices = get_components(StaticReserveGroup, sys)
     for groupservice in groupservices
         if service ∈ get_contributing_services(groupservice)
-            throw(ArgumentError("service $(get_name(service)) cannot be removed with an attached StaticReserveGroup"))
+            throw(
+                ArgumentError(
+                    "service $(get_name(service)) cannot be removed with an attached StaticReserveGroup",
+                ),
+            )
             return
         end
     end
@@ -651,6 +665,13 @@ function remove_component!(
 ) where {T <: Component}
     component = IS.remove_component!(T, sys.data, name)
     handle_component_removal!(sys, component)
+end
+
+"""
+Check to see if the component of type T with name exists.
+"""
+function has_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
+    return IS.has_component(T, sys.data.components, name)
 end
 
 """
@@ -1101,20 +1122,20 @@ function IS.deserialize(
 
     # Read any field that is defined in System but optional for the constructors and not
     # already handled here.
-    handled = ("data", "units_settings", "bus_numbers", "internal")
-    kwargs = Dict{String, Any}()
+    handled = ("data", "units_settings", "bus_numbers", "internal", "data_format_version")
+    kwargs = Dict{Symbol, Any}()
     for field in setdiff(keys(raw), handled)
-        kwargs[field] = raw[field]
+        kwargs[Symbol(field)] = raw[field]
     end
 
-    units_settings = IS.deserialize(SystemUnitsSettings, raw["units_settings"])
+    units = IS.deserialize(SystemUnitsSettings, raw["units_settings"])
     data = IS.deserialize(
         IS.SystemData,
         raw["data"];
         time_series_read_only = time_series_read_only,
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units_settings; internal = internal, runchecks = runchecks)
+    sys = System(data, units; internal = internal, runchecks = runchecks, kwargs...)
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
     deserialize_components!(sys, raw["data"]["components"])
@@ -1317,11 +1338,17 @@ function check_component_addition(sys::System, dyn_injector::DynamicInjection; k
 
     static_injector = get(kwargs, :static_injector, nothing)
     if static_injector === nothing
-        throw(ArgumentError("static_injector must be passed when adding a DynamicInjection"))
+        throw(
+            ArgumentError("static_injector must be passed when adding a DynamicInjection"),
+        )
     end
 
     if get_name(dyn_injector) != get_name(static_injector)
-        throw(ArgumentError("static_injector must have the same name as the DynamicInjection"))
+        throw(
+            ArgumentError(
+                "static_injector must have the same name as the DynamicInjection",
+            ),
+        )
     end
 
     throw_if_not_attached(static_injector, sys)
@@ -1356,7 +1383,7 @@ function handle_component_addition!(sys::System, component::RegulationDevice; kw
         # This will not be true during deserialization, and so won't run then.
         remove_component!(sys, component.device)
         # The line above removed the component setting so needs to be added back
-        set_unit_system!(component.device, component.internal.units_info)
+        set_units_setting!(component.device, component.internal.units_info)
     end
     return
 end
@@ -1564,7 +1591,9 @@ function convert_component!(
     if force
         @warn("Possible data loss converting from $(typeof(line)) to $linetype")
     else
-        error("Possible data loss converting from $(typeof(line)) to $linetype, add `force = true` to convert anyway.")
+        error(
+            "Possible data loss converting from $(typeof(line)) to $linetype, add `force = true` to convert anyway.",
+        )
     end
 
     new_line = linetype(

@@ -1,5 +1,5 @@
 @testset "Test special accessors" begin
-    cdmsys = create_rts_system()
+    cdmsys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     th = first(get_components(ThermalStandard, cdmsys))
     re = first(get_components(RenewableDispatch, cdmsys))
 

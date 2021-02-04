@@ -10,7 +10,11 @@ function set_dynamic_injector!(
 ) where {T <: StaticInjection, U <: Union{Nothing, DynamicInjection}}
     current_dynamic_injector = get_dynamic_injector(static_injector)
     if !isnothing(current_dynamic_injector) && !isnothing(dynamic_injector)
-        throw(ArgumentError("cannot assign a dynamic injector on a device that already has one"))
+        throw(
+            ArgumentError(
+                "cannot assign a dynamic injector on a device that already has one",
+            ),
+        )
     end
 
     # All of these types implement this field.

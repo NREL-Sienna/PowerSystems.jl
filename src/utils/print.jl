@@ -40,3 +40,66 @@ function Base.show(io::IO, ::MIME"text/plain", data::PowerSystemTableData)
         println(io, "$(summary(df))")
     end
 end
+
+function Base.show(io::IO, ist::Component)
+    print(io, string(nameof(typeof(ist))), "(")
+    is_first = true
+    for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
+        if field_type <: IS.TimeSeriesContainer ||
+           field_type <: InfrastructureSystemsInternal
+            continue
+        else
+            getter_func = getfield(PowerSystems, Symbol("get_$name"))
+            val = getter_func(ist)
+        end
+        if is_first
+            is_first = false
+        else
+            print(io, ", ")
+        end
+        print(io, val)
+    end
+    print(io, ")")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", ist::Component)
+    default_units = false
+    if !has_units_setting(ist)
+        print(io, "\n")
+        @warn(
+            "SystemUnitSetting not defined, using NATURAL_UNITS for displaying device specification."
+        )
+        set_units_setting!(
+            ist,
+            SystemUnitsSettings(100.0, UNIT_SYSTEM_MAPPING["NATURAL_UNITS"]),
+        )
+        default_units = true
+    end
+    try
+        print(io, summary(ist), ":")
+        for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
+            obj = getfield(ist, name)
+            if (obj isa InfrastructureSystemsInternal) && !default_units
+                print(io, "\n   ")
+                show(io, MIME"text/plain"(), obj.units_info)
+                continue
+            elseif obj isa IS.TimeSeriesContainer ||
+                   obj isa InfrastructureSystemsType ||
+                   obj isa Vector{<:InfrastructureSystemsComponent}
+                val = summary(getfield(ist, name))
+            else
+                getter_func = getfield(PowerSystems, Symbol("get_$name"))
+                val = getter_func(ist)
+            end
+            # Not allowed to print `nothing`
+            if isnothing(val)
+                val = "nothing"
+            end
+            print(io, "\n   ", name, ": ", val)
+        end
+    finally
+        if default_units
+            set_units_setting!(ist, nothing)
+        end
+    end
+end

@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::Bus
-        model::LoadModels.LoadModel
+        model::LoadModels
         active_power::Float64
         reactive_power::Float64
         max_active_power::Float64
@@ -26,7 +26,7 @@ This file is auto-generated. Do not edit.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `model::LoadModels.LoadModel`
+- `model::LoadModels`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `max_active_power::Float64`
@@ -43,7 +43,7 @@ mutable struct InterruptibleLoad <: ControllableLoad
     name::String
     available::Bool
     bus::Bus
-    model::LoadModels.LoadModel
+    model::LoadModels
     active_power::Float64
     reactive_power::Float64
     max_active_power::Float64

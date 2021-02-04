@@ -24,6 +24,7 @@ include("RenewableFix.jl")
 include("ThermalStandard.jl")
 include("ThermalMultiStart.jl")
 include("GenericBattery.jl")
+include("BatteryEMS.jl")
 include("StaticReserve.jl")
 include("StaticReserveNonSpinning.jl")
 include("StaticReserveGroup.jl")
@@ -279,6 +280,7 @@ export get_dc_link_capacitance
 export get_delta_t
 export get_dynamic_injector
 export get_efficiency
+export get_energy_value
 export get_eq_p
 export get_ext
 export get_fixed
@@ -334,6 +336,7 @@ export get_outflow
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
+export get_penalty_cost
 export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
@@ -599,6 +602,7 @@ export set_dc_link_capacitance!
 export set_delta_t!
 export set_dynamic_injector!
 export set_efficiency!
+export set_energy_value!
 export set_eq_p!
 export set_ext!
 export set_fixed!
@@ -654,6 +658,7 @@ export set_outflow!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
+export set_penalty_cost!
 export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!

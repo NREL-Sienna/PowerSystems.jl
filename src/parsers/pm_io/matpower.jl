@@ -175,7 +175,11 @@ function _parse_matpower_string(data_string::String)
     if func_name !== nothing
         case["name"] = func_name
     else
-        @info(string("no case name found in matpower file.  The file seems to be missing \"function mpc = ...\""))
+        @info(
+            string(
+                "no case name found in matpower file.  The file seems to be missing \"function mpc = ...\"",
+            )
+        )
         case["name"] = "no_name_found"
     end
 
@@ -183,14 +187,22 @@ function _parse_matpower_string(data_string::String)
     if haskey(matlab_data, "mpc.version")
         case["source_version"] = matlab_data["mpc.version"]
     else
-        @info(string("no case version found in matpower file.  The file seems to be missing \"mpc.version = ...\""))
+        @info(
+            string(
+                "no case version found in matpower file.  The file seems to be missing \"mpc.version = ...\"",
+            )
+        )
         case["source_version"] = "0.0.0+"
     end
 
     if haskey(matlab_data, "mpc.baseMVA")
         case["baseMVA"] = matlab_data["mpc.baseMVA"]
     else
-        @info(string("no baseMVA found in matpower file.  The file seems to be missing \"mpc.baseMVA = ...\""))
+        @info(
+            string(
+                "no baseMVA found in matpower file.  The file seems to be missing \"mpc.baseMVA = ...\"",
+            )
+        )
         case["baseMVA"] = 1.0
     end
 
@@ -204,7 +216,11 @@ function _parse_matpower_string(data_string::String)
         end
         case["bus"] = buses
     else
-        error(string("no bus table found in matpower file.  The file seems to be missing \"mpc.bus = [...];\""))
+        error(
+            string(
+                "no bus table found in matpower file.  The file seems to be missing \"mpc.bus = [...];\"",
+            ),
+        )
     end
 
     if haskey(matlab_data, "mpc.gen")
@@ -217,7 +233,11 @@ function _parse_matpower_string(data_string::String)
         end
         case["gen"] = gens
     else
-        error(string("no gen table found in matpower file.  The file seems to be missing \"mpc.gen = [...];\""))
+        error(
+            string(
+                "no gen table found in matpower file.  The file seems to be missing \"mpc.gen = [...];\"",
+            ),
+        )
     end
 
     if haskey(matlab_data, "mpc.branch")
@@ -230,7 +250,11 @@ function _parse_matpower_string(data_string::String)
         end
         case["branch"] = branches
     else
-        error(string("no branch table found in matpower file.  The file seems to be missing \"mpc.branch = [...];\""))
+        error(
+            string(
+                "no branch table found in matpower file.  The file seems to be missing \"mpc.branch = [...];\"",
+            ),
+        )
     end
 
     if haskey(matlab_data, "mpc.dcline")
@@ -277,7 +301,9 @@ function _parse_matpower_string(data_string::String)
         case["bus_name"] = bus_names
 
         if length(case["bus_name"]) != length(case["bus"])
-            error("incorrect Matpower file, the number of bus names ($(length(case["bus_name"]))) is inconsistent with the number of buses ($(length(case["bus"]))).\n")
+            error(
+                "incorrect Matpower file, the number of bus names ($(length(case["bus_name"]))) is inconsistent with the number of buses ($(length(case["bus"]))).\n",
+            )
         end
     end
 
@@ -293,7 +319,9 @@ function _parse_matpower_string(data_string::String)
 
         if length(case["gencost"]) != length(case["gen"]) &&
            length(case["gencost"]) != 2 * length(case["gen"])
-            error("incorrect Matpower file, the number of generator cost functions ($(length(case["gencost"]))) is inconsistent with the number of generators ($(length(case["gen"]))).\n")
+            error(
+                "incorrect Matpower file, the number of generator cost functions ($(length(case["gencost"]))) is inconsistent with the number of generators ($(length(case["gen"]))).\n",
+            )
         end
     end
 
@@ -308,7 +336,9 @@ function _parse_matpower_string(data_string::String)
         case["dclinecost"] = dclinecosts
 
         if length(case["dclinecost"]) != length(case["dcline"])
-            error("incorrect Matpower file, the number of dcline cost functions ($(length(case["dclinecost"]))) is inconsistent with the number of dclines ($(length(case["dcline"]))).\n")
+            error(
+                "incorrect Matpower file, the number of dcline cost functions ($(length(case["dclinecost"]))) is inconsistent with the number of dclines ($(length(case["dcline"]))).\n",
+            )
         end
     end
 
@@ -329,7 +359,9 @@ function _parse_matpower_string(data_string::String)
                     push!(tbl, row_data)
                 end
                 case[case_name] = tbl
-                @info("extending matpower format with data: $(case_name) $(length(tbl))x$(length(tbl[1])-1)")
+                @info(
+                    "extending matpower format with data: $(case_name) $(length(tbl))x$(length(tbl[1])-1)"
+                )
             else
                 case[case_name] = value
                 @info("extending matpower format with constant data: $(case_name)")
@@ -447,14 +479,16 @@ function _split_loads_shunts!(data::Dict{String, Any})
         if bus["pd"] != 0.0 || bus["qd"] != 0.0
             append!(
                 data["load"],
-                [Dict{String, Any}(
-                    "pd" => bus["pd"],
-                    "qd" => bus["qd"],
-                    "load_bus" => bus["bus_i"],
-                    "status" => convert(Int8, bus["bus_type"] != 4),
-                    "index" => load_num,
-                    "source_id" => ["bus", bus["bus_i"]],
-                )],
+                [
+                    Dict{String, Any}(
+                        "pd" => bus["pd"],
+                        "qd" => bus["qd"],
+                        "load_bus" => bus["bus_i"],
+                        "status" => convert(Int8, bus["bus_type"] != 4),
+                        "index" => load_num,
+                        "source_id" => ["bus", bus["bus_i"]],
+                    ),
+                ],
             )
             load_num += 1
         end
@@ -462,14 +496,16 @@ function _split_loads_shunts!(data::Dict{String, Any})
         if bus["gs"] != 0.0 || bus["bs"] != 0.0
             append!(
                 data["shunt"],
-                [Dict{String, Any}(
-                    "gs" => bus["gs"],
-                    "bs" => bus["bs"],
-                    "shunt_bus" => bus["bus_i"],
-                    "status" => convert(Int8, bus["bus_type"] != 4),
-                    "index" => shunt_num,
-                    "source_id" => ["bus", bus["bus_i"]],
-                )],
+                [
+                    Dict{String, Any}(
+                        "gs" => bus["gs"],
+                        "bs" => bus["bs"],
+                        "shunt_bus" => bus["bus_i"],
+                        "status" => convert(Int8, bus["bus_type"] != 4),
+                        "index" => shunt_num,
+                        "source_id" => ["bus", bus["bus_i"]],
+                    ),
+                ],
             )
             shunt_num += 1
         end
@@ -659,10 +695,14 @@ function _merge_generic_data!(data::Dict{String, Any})
                     push!(key_to_delete, k)
 
                     if length(mp_matrix) != length(v)
-                        error("failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they do not have the same number of rows, $(length(mp_matrix)) and $(length(v)) respectively.")
+                        error(
+                            "failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they do not have the same number of rows, $(length(mp_matrix)) and $(length(v)) respectively.",
+                        )
                     end
 
-                    @info("extending matpower format by appending matrix \"$(k)\" in to \"$(mp_name)\"")
+                    @info(
+                        "extending matpower format by appending matrix \"$(k)\" in to \"$(mp_name)\""
+                    )
 
                     for (i, row) in enumerate(mp_matrix)
                         merge_row = v[i]
@@ -671,7 +711,9 @@ function _merge_generic_data!(data::Dict{String, Any})
                         delete!(merge_row, "source_id")
                         for key in keys(merge_row)
                             if haskey(row, key)
-                                error("failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they both share \"$(key)\" as a column name.")
+                                error(
+                                    "failed to extend the matpower matrix \"$(mp_name)\" with the matrix \"$(k)\" because they both share \"$(key)\" as a column name.",
+                                )
                             end
                             row[key] = merge_row[key]
                         end
@@ -858,7 +900,9 @@ function export_matpower(io::IO, data::Dict{String, Any})
     i = 1
     for (idx, gen) in sort(generators)
         if idx != gen["index"]
-            @info("The index of the generator does not match the matpower assigned index. Any data that uses generator indexes for reference is corrupted.")
+            @info(
+                "The index of the generator does not match the matpower assigned index. Any data that uses generator indexes for reference is corrupted."
+            )
         end
         println(
             io,
@@ -929,7 +973,9 @@ function export_matpower(io::IO, data::Dict{String, Any})
         i = 1
         for (idx, strg) in sort(storage)
             if idx != strg["index"]
-                @info("The index of the storage does not match the matpower assigned index. Any data that uses storage indexes for reference is corrupted.")
+                @info(
+                    "The index of the storage does not match the matpower assigned index. Any data that uses storage indexes for reference is corrupted."
+                )
             end
             println(
                 io,
@@ -982,7 +1028,9 @@ function export_matpower(io::IO, data::Dict{String, Any})
     i = 1
     for (idx, branch) in sort(branches)
         if idx != branch["index"]
-            @info("The index of the branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted.")
+            @info(
+                "The index of the branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted."
+            )
         end
         println(
             io,
@@ -1121,7 +1169,9 @@ function export_matpower(io::IO, data::Dict{String, Any})
         i = 1
         for (idx, branch) in sort(ne_branches)
             if idx != branch["index"]
-                @info("The index of the ne_branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted.")
+                @info(
+                    "The index of the ne_branch does not match the matpower assigned index. Any data that uses branch indexes for reference is corrupted."
+                )
             end
             println(
                 io,
@@ -1489,7 +1539,9 @@ function _export_extra_data(
     i = 1
     for (idx, c) in sort(components)
         if idx != c["index"]
-            @info("The index of a component does not match the matpower assigned index. Any data that uses component indexes for reference is corrupted.")
+            @info(
+                "The index of a component does not match the matpower assigned index. Any data that uses component indexes for reference is corrupted."
+            )
         end
 
         for field in included_fields

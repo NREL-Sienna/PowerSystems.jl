@@ -1117,7 +1117,9 @@ function _parse_elements(
     data = Dict{String, Any}()
 
     if length(elements) > length(dtypes)
-        @warn("ignoring $(length(elements) - length(dtypes)) extra values in section $section, only $(length(dtypes)) items are defined")
+        @warn(
+            "ignoring $(length(elements) - length(dtypes)) extra values in section $section, only $(length(dtypes)) items are defined"
+        )
         elements = elements[1:length(dtypes)]
     end
 
@@ -1143,7 +1145,9 @@ function _parse_elements(
                     if isa(message, Meta.ParseError)
                         data[field] = element
                     else
-                        @error("value '$element' for $field in section $section is not of type $dtype.")
+                        @error(
+                            "value '$element' for $field in section $section is not of type $dtype."
+                        )
                     end
                 end
             end
@@ -1204,7 +1208,9 @@ function _parse_line_element!(data::Dict, elements::Array, section::AbstractStri
             if isa(message, Meta.ParseError)
                 data[field] = element
             else
-                error("value '$element' for $field in section $section is not of type $dtype.")
+                error(
+                    "value '$element' for $field in section $section is not of type $dtype.",
+                )
             end
         end
     end
@@ -1235,7 +1241,11 @@ are also extracted separately, and `Array{Array{String}, String}` is returned.
 """
 function _get_line_elements(line::AbstractString)
     if count(i -> (i == "'"), line) % 2 == 1
-        throw(DataFormatError("There are an uneven number of single-quotes in \"{line}\", the line cannot be parsed."))
+        throw(
+            DataFormatError(
+                "There are an uneven number of single-quotes in \"{line}\", the line cannot be parsed.",
+            ),
+        )
     end
 
     line_comment = split(line, _comment_split, limit = 2)
@@ -1278,7 +1288,9 @@ function _parse_pti_data(data_io::IO)
             end
 
             if length(elements) > 1
-                @info("At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end.")
+                @info(
+                    "At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end."
+                )
             elseif length(comment) > 0
                 @debug "At line $line_number, switched to $section"
             end
@@ -1315,7 +1327,11 @@ function _parse_pti_data(data_io::IO)
                 try
                     _parse_line_element!(section_data, elements, section)
                 catch message
-                    throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                    throw(
+                        @error(
+                            "Parsing failed at line $line_number: $(sprint(showerror, message))"
+                        )
+                    )
                 end
 
             elseif section == "CASE IDENTIFICATION"
@@ -1323,11 +1339,17 @@ function _parse_pti_data(data_io::IO)
                     try
                         _parse_line_element!(section_data, elements, section)
                     catch message
-                        throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                        throw(
+                            @error(
+                                "Parsing failed at line $line_number: $(sprint(showerror, message))"
+                            )
+                        )
                     end
 
                     if section_data["REV"] != "" && section_data["REV"] < 33
-                        @info("Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.")
+                        @info(
+                            "Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly."
+                        )
                     end
                 else
                     section_data["Comment_Line_$(line_number - 1)"] = line
@@ -1361,13 +1383,18 @@ function _parse_pti_data(data_io::IO)
                         if winding == "TWO-WINDING" && transformer_line == 4
                             break
                         else
-                            elements =
-                                _get_line_elements(data_lines[line_number + transformer_line])[1]
+                            elements = _get_line_elements(
+                                data_lines[line_number + transformer_line],
+                            )[1]
                             _parse_line_element!(section_data, elements, temp_section)
                         end
                     end
                 catch message
-                    throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                    throw(
+                        @error(
+                            "Parsing failed at line $line_number: $(sprint(showerror, message))"
+                        )
+                    )
                 end
 
             elseif section == "VOLTAGE SOURCE CONVERTER"
@@ -1376,7 +1403,11 @@ function _parse_pti_data(data_io::IO)
                     try
                         _parse_line_element!(section_data, elements, section)
                     catch message
-                        throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                        throw(
+                            @error(
+                                "Parsing failed at line $line_number: $(sprint(showerror, message))"
+                            )
+                        )
                     end
                     skip_sublines = 2
                     continue
@@ -1405,17 +1436,20 @@ function _parse_pti_data(data_io::IO)
             elseif section == "TWO-TERMINAL DC"
                 section_data = Dict{String, Any}()
                 if length(_get_line_elements(line)[1]) == 12
-                    (elements, comment) = _get_line_elements(join(
-                        data_lines[line_number:(line_number + 2)],
-                        ',',
-                    ))
+                    (elements, comment) = _get_line_elements(
+                        join(data_lines[line_number:(line_number + 2)], ','),
+                    )
                     skip_lines = 2
                 end
 
                 try
                     _parse_line_element!(section_data, elements, section)
                 catch message
-                    throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                    throw(
+                        @error(
+                            "Parsing failed at line $line_number: $(sprint(showerror, message))"
+                        )
+                    )
                 end
 
             elseif section == "MULTI-TERMINAL DC"
@@ -1424,7 +1458,11 @@ function _parse_pti_data(data_io::IO)
                     try
                         _parse_line_element!(section_data, elements, section)
                     catch message
-                        throw(@error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                        throw(
+                            @error(
+                                "Parsing failed at line $line_number: $(sprint(showerror, message))"
+                            )
+                        )
                     end
 
                     if section_data["NCONV"] > 0
@@ -1453,7 +1491,11 @@ function _parse_pti_data(data_io::IO)
                             "$section $subsection",
                         )
                     catch message
-                        throw(error("Parsing failed at line $line_number: $(sprint(showerror, message))"))
+                        throw(
+                            error(
+                                "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                            ),
+                        )
                     end
 
                     if haskey(section_data, "$(subsection[2:end])")
@@ -1563,7 +1605,9 @@ function _populate_defaults!(data::Dict)
                                             sub_component_defaults[sub_field]
                                     catch msg
                                         if isa(msg, KeyError)
-                                            @warn("'$sub_field' in '$field' in '$section' has no default value")
+                                            @warn(
+                                                "'$sub_field' in '$field' in '$section' has no default value"
+                                            )
                                         else
                                             rethrow(msg)
                                         end

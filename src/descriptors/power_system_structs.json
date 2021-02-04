@@ -257,7 +257,7 @@
           "name": "bustype",
           "comment": "bus type",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, BusTypes.BusType}"
+          "data_type": "Union{Nothing, BusTypes}"
         },
         {
           "name": "angle",
@@ -1126,7 +1126,7 @@
         {
           "name": "model",
           "null_value": "LoadModels.ConstantPower",
-          "data_type": "LoadModels.LoadModel"
+          "data_type": "LoadModels"
         },
         {
           "name": "active_power",
@@ -1287,7 +1287,7 @@
         {
           "name": "model",
           "null_value": "nothing",
-          "data_type": "Union{Nothing, LoadModels.LoadModel}"
+          "data_type": "Union{Nothing, LoadModels}"
         },
         {
           "name": "active_power",
@@ -1412,7 +1412,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "active_power_limits",
@@ -1612,7 +1612,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "active_power_limits",
@@ -1770,7 +1770,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.HY",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "active_power_limits",
@@ -2033,7 +2033,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "reactive_power_limits",
@@ -2155,7 +2155,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "power_factor",
@@ -2331,14 +2331,14 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover",
+          "data_type": "PrimeMovers",
           "default": "PrimeMovers.OT"
         },
         {
           "name": "fuel",
           "comment": "Prime mover fuel according to EIA 923",
           "null_value": "ThermalFuels.OTHER",
-          "data_type": "ThermalFuels.ThermalFuel",
+          "data_type": "ThermalFuels",
           "default": "ThermalFuels.OTHER"
         },
         {
@@ -2443,13 +2443,13 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.OT",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "fuel",
           "comment": "Prime mover fuel according to EIA 923",
           "null_value": "ThermalFuels.OTHER",
-          "data_type": "ThermalFuels.ThermalFuel"
+          "data_type": "ThermalFuels"
         },
         {
           "name": "active_power_limits",
@@ -2604,7 +2604,7 @@
           "name": "prime_mover",
           "comment": "Prime mover technology according to EIA 923",
           "null_value": "PrimeMovers.BA",
-          "data_type": "PrimeMovers.PrimeMover"
+          "data_type": "PrimeMovers"
         },
         {
           "name": "initial_energy",
@@ -2738,6 +2738,185 @@
       ],
       "supertype": "Storage"
     },
+    {
+        "struct_name": "BatteryEMS",
+        "docstring": "Data structure for a battery compatible with energy management formulations.",
+        "fields": [
+          {
+            "null_value": "init",
+            "name": "name",
+            "accessor_module": "InfrastructureSystems",
+            "data_type": "String"
+          },
+          {
+            "null_value": "false",
+            "name": "available",
+            "data_type": "Bool"
+          },
+          {
+            "name": "bus",
+            "null_value": "Bus(nothing)",
+            "data_type": "Bus"
+          },
+          {
+            "name": "prime_mover",
+            "comment": "Prime mover technology according to EIA 923",
+            "null_value": "PrimeMovers.BA",
+            "data_type": "PrimeMovers"
+          },
+          {
+            "name": "initial_energy",
+            "null_value": "0.0",
+            "comment": "State of Charge of the Battery p.u.-hr",
+            "data_type": "Float64",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "error",
+            "needs_conversion": true
+          },
+          {
+            "name": "state_of_charge_limits",
+            "null_value": "(min=0.0, max=0.0)",
+            "comment": "Maximum and Minimum storage capacity in p.u.-hr",
+            "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "error",
+            "needs_conversion": true
+          },
+          {
+            "name": "rating",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "needs_conversion": true
+          },
+          {
+            "name": "active_power",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "needs_conversion": true
+          },
+          {
+            "name": "input_active_power_limits",
+            "null_value": "(min=0.0, max=0.0)",
+            "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "error",
+            "needs_conversion": true
+          },
+          {
+            "name": "output_active_power_limits",
+            "null_value": "(min=0.0, max=0.0)",
+            "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "error",
+            "needs_conversion": true
+          },
+          {
+            "name": "efficiency",
+            "null_value": "(in=0.0, out=0.0)",
+            "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}",
+            "valid_range": {
+              "min": 0,
+              "max": 1
+            },
+            "validation_action": "warn"
+          },
+          {
+            "name": "reactive_power",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "valid_range": "reactive_power_limits",
+            "validation_action": "warn",
+            "needs_conversion": true
+          },
+          {
+            "name": "reactive_power_limits",
+            "null_value": "(min=0.0, max=0.0)",
+            "data_type": "Union{Nothing, Min_Max}",
+            "needs_conversion": true
+          },
+          {
+            "name": "base_power",
+            "comment": "Base power of the unit in MVA",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "warn"
+          },
+          {
+              "name": "storage_target",
+              "comment": "Storage target at the end of simulation as ratio of storage capacity.",
+              "null_value": "0.0",
+              "data_type": "Float64",
+              "default": "0.0"
+          },
+          {
+              "name": "penalty_cost",
+              "comment": "Cost penalty for missing storage target at the end of simulation.",
+              "null_value": "0.0",
+              "data_type": "Float64",
+              "default": "0.0"
+          },
+          {
+            "name": "energy_value",
+            "comment": "Value provide by the stored energy at the end of simulation to the system.",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "default": "0.0"
+        },
+          {
+            "name": "services",
+            "data_type": "Vector{Service}",
+            "comment": "Services that this device contributes to",
+            "null_value": "Device[]",
+            "default": "Device[]"
+          },
+          {
+            "name": "dynamic_injector",
+            "data_type": "Union{Nothing, DynamicInjection}",
+            "comment": "corresponding dynamic injection device",
+            "null_value": "nothing",
+            "exclude_setter": true,
+            "default": "nothing"
+          },
+          {
+            "name": "ext",
+            "data_type": "Dict{String, Any}",
+            "null_value": "Dict{String, Any}()",
+            "default": "Dict{String, Any}()"
+          },
+          {
+            "name": "time_series_container",
+            "accessor_module": "InfrastructureSystems",
+            "comment": "internal time_series storage",
+            "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+            "data_type": "InfrastructureSystems.TimeSeriesContainer",
+            "default": "InfrastructureSystems.TimeSeriesContainer()"
+          },
+          {
+            "name": "internal",
+            "comment": "power system internal reference, do not modify",
+            "data_type": "InfrastructureSystemsInternal",
+            "internal_default": "InfrastructureSystemsInternal()",
+            "exclude_setter": true
+          }
+        ],
+        "supertype": "Storage"
+      },
     {
       "struct_name": "StaticReserve",
       "docstring": "Data Structure for a proportional reserve product for system simulations.",
@@ -3231,8 +3410,8 @@
         {
           "name": "states_types",
           "comment": "Fixed AVR has no states",
-          "internal_default": "Vector{StateTypes.StateType}()",
-          "data_type": "Vector{StateTypes.StateType}"
+          "internal_default": "Vector{StateTypes}()",
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3293,7 +3472,7 @@
           "name": "states_types",
           "comment": "Simple AVR has 1 differential states",
           "internal_default": "[StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3478,7 +3657,7 @@
           "name": "states_types",
           "comment": "ESDC1A has 5 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3664,7 +3843,7 @@
           "name": "states_types",
           "comment": "ESDC2A has 5 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3827,7 +4006,7 @@
           "name": "states_types",
           "comment": "IEEET1 I has 4 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -3974,7 +4153,7 @@
           "name": "states_types",
           "comment": "AVR Type I has 4 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4121,7 +4300,7 @@
           "name": "states_types",
           "comment": "AVR Type II has 4 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4244,7 +4423,7 @@
           "name": "states_types",
           "comment": "SCRX has 2 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4446,7 +4625,7 @@
           "name": "states_types",
           "comment": "ESAC1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4647,7 +4826,7 @@
           "name": "states_types",
           "comment": "EXAC1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -4842,7 +5021,7 @@
           "name": "states_types",
           "comment": "EXAC1 has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -5088,7 +5267,7 @@
           "name": "states_types",
           "comment": "EXAC2 has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -5333,7 +5512,7 @@
           "name": "states_types",
           "comment": "ESAC6A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -5554,7 +5733,7 @@
           "name": "states_types",
           "comment": "ST1A has 5 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -5794,7 +5973,7 @@
           "name": "states_types",
           "comment": "EXPIC has 6 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -6007,7 +6186,7 @@
           "name": "states_types",
           "comment": "ST4B has 4 states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -7780,7 +7959,7 @@
           "name": "states_types",
           "comment": "IEEEST has 7 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -8230,7 +8409,7 @@
           "name": "states_types",
           "comment": "GAST has 3 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -8618,7 +8797,7 @@
           "name": "states_types",
           "comment": "GGOV1 has 10 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -8763,7 +8942,7 @@
           "name": "states_types",
           "comment": "TGOV1 has 2 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -8930,7 +9109,7 @@
           "name": "states_types",
           "comment": "HYGOV has 4 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",
@@ -9185,7 +9364,7 @@
           "name": "states_types",
           "comment": "IEEEG1 has 6 differential states",
           "internal_default": "[StateTypes.Differential, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
-          "data_type": "Vector{StateTypes.StateType}"
+          "data_type": "Vector{StateTypes}"
         },
         {
           "name": "internal",

@@ -39,7 +39,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        states_types::Vector{StateTypes.StateType}
+        states_types::Vector{StateTypes}
         internal::InfrastructureSystemsInternal
     end
 
@@ -92,7 +92,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 	x_g8: Acceleration Control, 
 	x_g9 Temperature Detection Lead - Lag:
 - `n_states::Int`: GeneralGovModel has 10 states
-- `states_types::Vector{StateTypes.StateType}`: GGOV1 has 10 differential states
+- `states_types::Vector{StateTypes}`: GGOV1 has 10 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GeneralGovModel <: TurbineGov
@@ -178,7 +178,7 @@ mutable struct GeneralGovModel <: TurbineGov
     "GeneralGovModel has 10 states"
     n_states::Int
     "GGOV1 has 10 differential states"
-    states_types::Vector{StateTypes.StateType}
+    states_types::Vector{StateTypes}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end

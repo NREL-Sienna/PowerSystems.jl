@@ -9,7 +9,9 @@ Constructs PowerModelsData from a raw file.
 Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 """
 function PowerModelsData(file::Union{String, IO}; kwargs...)
-    pm_dict = parse_file(file; kwargs...)
+    validate = get(kwargs, :pm_data_corrections, true)
+    import_all = get(kwargs, :import_all, false)
+    pm_dict = parse_file(file; import_all = import_all, validate = validate)
     pm_data = PowerModelsData(pm_dict)
     correct_pm_transformer_status!(pm_data)
     return pm_data
@@ -17,8 +19,19 @@ end
 
 """
 Constructs a System from PowerModelsData.
-Supports kwargs to supply formatters for different device types,
-such as `bus_name_formatter` or `gen_name_formatter`.
+
+# Arguments
+- `pm_data::Union{PowerModelsData, Union{String, IO}}`: PowerModels data object or supported
+load flow case (*.m, *.raw)
+
+# Keyword arguments
+- `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
+- `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
+  Throws InvalidRange if an error is found.
+- `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
+- `config_path::String`: specify path to validation config file
+- `pm_data_corrections::Bool=true` : Run the PowerModels data corrections (aka :validate in PowerModels)
+- `import_all:Bool=false` : Import all fields from PTI files
 
 # Examples
 ```julia
@@ -106,27 +119,30 @@ function make_bus(bus_dict::Dict{String, Any})
 end
 
 function make_bus(bus_name, bus_number, d, bus_types, area)
-    bus = make_bus(Dict{String, Any}(
-        "name" => bus_name,
-        "number" => bus_number,
-        "bustype" => bus_types[d["bus_type"]],
-        "angle" => d["va"],
-        "voltage" => d["vm"],
-        "voltage_limits" => (min = d["vmin"], max = d["vmax"]),
-        "base_voltage" => d["base_kv"],
-        "area" => area,
-        "zone" => nothing,
-    ),)
+    bus = make_bus(
+        Dict{String, Any}(
+            "name" => bus_name,
+            "number" => bus_number,
+            "bustype" => bus_types[d["bus_type"]],
+            "angle" => d["va"],
+            "voltage" => d["vm"],
+            "voltage_limits" => (min = d["vmin"], max = d["vmax"]),
+            "base_voltage" => d["base_kv"],
+            "area" => area,
+            "zone" => nothing,
+        ),
+    )
     return bus
 end
 
 # "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
-IS.@scoped_enum MatpowerBusType begin
-    MATPOWER_PQ = 1
-    MATPOWER_PV = 2
-    MATPOWER_REF = 3
-    MATPOWER_ISOLATED = 4
-end
+IS.@scoped_enum(
+    MatpowerBusTypes,
+    MATPOWER_PQ = 1,
+    MATPOWER_PV = 2,
+    MATPOWER_REF = 3,
+    MATPOWER_ISOLATED = 4,
+)
 
 const _BUS_TYPE_MAP = Dict(
     MatpowerBusTypes.MATPOWER_ISOLATED => BusTypes.ISOLATED,
@@ -135,7 +151,7 @@ const _BUS_TYPE_MAP = Dict(
     MatpowerBusTypes.MATPOWER_REF => BusTypes.REF,
 )
 
-function Base.convert(::Type{BusTypes.BusType}, x::MatpowerBusTypes.MatpowerBusType)
+function Base.convert(::Type{BusTypes}, x::MatpowerBusTypes)
     return _BUS_TYPE_MAP[x]
 end
 
@@ -157,7 +173,7 @@ function read_bus!(sys::System, data; kwargs...)
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
 
-    bus_types = instances(MatpowerBusTypes.MatpowerBusType)
+    bus_types = instances(MatpowerBusTypes)
     bus_data = sort!(collect(data["bus"]), by = x -> parse(Int, x[1]))
 
     if isempty(bus_data)
@@ -180,6 +196,12 @@ function read_bus!(sys::System, data; kwargs...)
         end
 
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
+        has_component(Bus, sys, bus_name) && throw(
+            DataFormatError(
+                "Found duplicate bus names of $(get_name(bus)), consider formatting names with `bus_name_formatter` kwarg",
+            ),
+        )
+
         bus_number_to_bus[bus.number] = bus
 
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
@@ -215,7 +237,11 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         if d["pd"] != 0.0
             bus = bus_number_to_bus[d["load_bus"]]
             load = make_load(d, bus, sys_mbase; kwargs...)
-
+            has_component(PowerLoad, sys, get_name(load)) && throw(
+                DataFormatError(
+                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
             add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
         end
     end
@@ -238,8 +264,8 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; k
 
     for zone in zones
         buses = [
-            bus_number_to_bus[b["bus_i"]]
-            for (b_key, b) in data["bus"] if b["zone"] == zone
+            bus_number_to_bus[b["bus_i"]] for
+            (b_key, b) in data["bus"] if b["zone"] == zone
         ]
         bus_names = Set{String}()
         for bus in buses
@@ -277,7 +303,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
         rating = calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
-        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = parse_enum_mapping(PrimeMovers, d["type"]),
         active_power_limits = (
             min = d["pmin"] * base_conversion,
             max = d["pmax"] * base_conversion,
@@ -304,7 +330,7 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
         rating = float(d["pmax"]) * base_conversion,
-        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = parse_enum_mapping(PrimeMovers, d["type"]),
         reactive_power_limits = (
             min = d["qmin"] * base_conversion,
             max = d["qmax"] * base_conversion,
@@ -326,7 +352,7 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
         rating = float(d["pmax"]) * base_conversion,
-        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, d["type"]),
+        prime_mover = parse_enum_mapping(PrimeMovers, d["type"]),
         power_factor = 1.0,
         base_power = d["mbase"],
     )
@@ -361,7 +387,7 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
 """
 function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase::Number)
     if haskey(d, "model")
-        model = GeneratorCostModels.GeneratorCostModel(d["model"])
+        model = GeneratorCostModels(d["model"])
         if model == GeneratorCostModels.PIECEWISE_LINEAR
             cost_component = d["cost"]
             power_p = [i for (ix, i) in enumerate(cost_component) if isodd(ix)]
@@ -387,7 +413,11 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
                 cost = (d["cost"][1], d["cost"][2])
                 fixed = d["cost"][3]
             else
-                throw(DataFormatError("invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree"))
+                throw(
+                    DataFormatError(
+                        "invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree",
+                    ),
+                )
             end
         end
         startup = d["startup"]
@@ -425,8 +455,8 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
         rating = sqrt(d["pmax"]^2 + d["qmax"]^2) * base_conversion,
-        prime_mover = parse_enum_mapping(PrimeMovers.PrimeMover, d["type"]),
-        fuel = parse_enum_mapping(ThermalFuels.ThermalFuel, d["fuel"]),
+        prime_mover = parse_enum_mapping(PrimeMovers, d["type"]),
+        fuel = parse_enum_mapping(ThermalFuels, d["fuel"]),
         active_power_limits = (
             min = d["pmin"] * base_conversion,
             max = d["pmax"] * base_conversion,
@@ -490,6 +520,11 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
             continue
         end
 
+        has_component(typeof(generator), sys, get_name(generator)) && throw(
+            DataFormatError(
+                "Found duplicate $(typeof(generator)) names of $(get_name(generator)), consider formatting names with `gen_name_formatter` kwarg",
+            ),
+        )
         add_component!(sys, generator; skip_validation = SKIP_PM_VALIDATION)
     end
 end

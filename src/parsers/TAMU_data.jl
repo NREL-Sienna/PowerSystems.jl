@@ -27,7 +27,7 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
     raw_file = joinpath(tamu_folder, TAMU_CASE * ".RAW")
     !isfile(raw_file) && throw(DataFormatError("Cannot find $raw_file"))
 
-    pm_data = PowerModelsData(raw_file)
+    pm_data = PowerModelsData(raw_file; kwargs...)
 
     bus_name_formatter =
         get(kwargs, :bus_name_formatter, x -> string(x["name"]) * "-" * string(x["index"]))

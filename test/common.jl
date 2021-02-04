@@ -116,18 +116,20 @@ function create_system_with_dynamic_inverter()
         100.0,
     ) #Rated MVA
 
-    branch_OMIB = [Line(
-        "Line1", #name
-        true, #available
-        0.0, #active power flow initial condition (from-to)
-        0.0, #reactive power flow initial condition (from-to)
-        Arc(from = nodes_OMIB[1], to = nodes_OMIB[2]), #Connection between buses
-        0.01, #resistance in pu
-        0.05, #reactance in pu
-        (from = 0.0, to = 0.0), #susceptance in pu
-        18.046, #rate in MW
-        1.04,
-    )]  #angle limits (-min and max)
+    branch_OMIB = [
+        Line(
+            "Line1", #name
+            true, #available
+            0.0, #active power flow initial condition (from-to)
+            0.0, #reactive power flow initial condition (from-to)
+            Arc(from = nodes_OMIB[1], to = nodes_OMIB[2]), #Connection between buses
+            0.01, #resistance in pu
+            0.05, #reactance in pu
+            (from = 0.0, to = 0.0), #susceptance in pu
+            18.046, #rate in MW
+            1.04,
+        ),
+    ]  #angle limits (-min and max)
 
     dc_source = FixedDCSource(1500.0) #Not in the original data, guessed.
 
@@ -288,6 +290,7 @@ function validate_serialization(
             time_series_read_only = time_series_read_only,
             runchecks = runchecks,
         )
+        isempty(get_bus_numbers(sys2)) && return false
         sys_ext2 = get_ext(sys2)
         sys_ext2["data"] != 5 && return false
         bus = PSY.get_component(PSY.Bus, sys2, ext_test_bus_name)

@@ -39,18 +39,17 @@ function test_aggregation_topologies(sys::System, expected_areas, expected_zones
 end
 
 @testset "Test topology mappings" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecast = false)
     test_aggregation_topologies(sys, 3, 3)
 end
 
 @testset "Test PM areas and load zones" begin
-    path = joinpath(DATA_DIR, "matpower", "RTS_GMLC.m")
-    sys = System(PowerSystems.PowerModelsData(path))
+    sys = PSB.build_system(MatPowerTestSystems, "matpower_RTS_GMLC_sys")
     test_aggregation_topologies(sys, 3, 21)
 end
 
 @testset "Test get_components_in_aggregation_topology" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecast = false)
     areas = collect(get_components(Area, sys))
     @test !isempty(areas)
     area = areas[1]

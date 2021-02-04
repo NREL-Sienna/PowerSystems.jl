@@ -48,7 +48,7 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
 end
 
 @testset "Test printing of system and components" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     @test are_type_and_fields_in_output(iterate(get_components(Bus, sys))[1])
     @test are_type_and_fields_in_output(iterate(get_components(Generator, sys))[1])
     @test are_type_and_fields_in_output(iterate(get_components(ThermalGen, sys))[1])
@@ -69,11 +69,13 @@ end
 
     @test !isempty(summary(sys))
 
-    @test isnothing(show(
-        IOBuffer(),
-        "text/plain",
-        PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS),
-    ))
+    @test isnothing(
+        show(
+            IOBuffer(),
+            "text/plain",
+            PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS),
+        ),
+    )
 
     @test isnothing(show(IOBuffer(), "text/plain", sys))
 end
