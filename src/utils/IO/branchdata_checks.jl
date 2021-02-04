@@ -1,6 +1,6 @@
 
-function correct_component!(line::Union{MonitoredLine, Line}, sys::System)
-    check_angle_limits!(line)
+function sanitize_component!(line::Union{MonitoredLine, Line}, sys::System)
+    sanitize_angle_limits!(line)
 end
 
 function validate_component_with_system(line::Union{MonitoredLine, Line}, sys::System)
@@ -13,7 +13,7 @@ function validate_component_with_system(line::Union{MonitoredLine, Line}, sys::S
     return is_valid
 end
 
-function check_angle_limits!(line)
+function sanitize_angle_limits!(line)
     max_limit = pi / 2
     min_limit = -pi / 2
 

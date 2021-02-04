@@ -64,7 +64,7 @@ and `throw_if_not_attached(component, system)`.
 You can implement three methods to perform custom validation or correction for your type.
 PowerSystems calls all of these functions in `add_component!`.
 
-- `correct_compoment!(component::Component, sys::System)`
+- `sanitize_compoment!(component::Component, sys::System)`
 - `validate_compoment(component::Component)`
 - `validate_component_with_system(component::Component, sys::System)`
 

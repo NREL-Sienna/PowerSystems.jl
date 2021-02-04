@@ -1109,7 +1109,7 @@ end
 """
 Sanitize component values.
 """
-correct_component!(component::Component, sys::System) = true
+sanitize_component!(component::Component, sys::System) = true
 
 """
 Validate the component fields using only those fields. Refer to
@@ -1713,7 +1713,7 @@ function _validate_or_skip!(sys, component, skip_validation)
     end
 
     if !skip_validation
-        correct_component!(component, sys)
+        sanitize_component!(component, sys)
         if !validate_component_with_system(component, sys)
             throw(IS.InvalidValue("Invalid value for $component"))
         end

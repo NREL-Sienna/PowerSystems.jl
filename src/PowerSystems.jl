@@ -261,7 +261,7 @@ export set_service_bid!
 export iterate_windows
 export get_window
 export transform_single_time_series!
-export correct_component!
+export sanitize_component!
 export validate_component
 export validate_component_with_system
 
