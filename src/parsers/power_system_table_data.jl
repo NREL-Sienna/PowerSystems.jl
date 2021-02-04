@@ -6,21 +6,22 @@ struct outage_info
     outage_probability::Float64
     recovery_probability::Float64
 
-    outage_info(outage_probability=0.0,recovery_probability=1.0) = new(outage_probability,recovery_probability)
+    outage_info(outage_probability = 0.0, recovery_probability = 1.0) =
+        new(outage_probability, recovery_probability)
 end
 
 # Converting FOR and MTTR to λ and μ
-function outage_to_rate(outage_data::Tuple{Float64,Int64})
-    for_gen = outage_data[1];
-    mttr = outage_data[2];
-    if (mttr !=0)
-        μ = 1/mttr;
+function outage_to_rate(outage_data::Tuple{Float64, Int64})
+    for_gen = outage_data[1]
+    mttr = outage_data[2]
+    if (mttr != 0)
+        μ = 1 / mttr
     else
-        μ = 0.0;
+        μ = 0.0
     end
-    λ = (μ*for_gen)/(1-for_gen)
-   
-   return(λ=λ, μ=μ)
+    λ = (μ * for_gen) / (1 - for_gen)
+
+    return (λ = λ, μ = μ)
 end
 # Outage Information Processing end
 
@@ -978,8 +979,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
-    outage_rates = outage_to_rate((gen.fotr, gen.mttr)); # Outage parsing
-    outage_probability = outage_info(outage_rates.λ,outage_rates.μ);  # Outage parsing
+    outage_rates = outage_to_rate((gen.fotr, gen.mttr)) # Outage parsing
+    outage_probability = outage_info(outage_rates.λ, outage_rates.μ)  # Outage parsing
 
     return ThermalStandard(
         name = gen.name,
@@ -997,8 +998,10 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         time_limits = timelimits,
         operation_cost = op_cost,
         base_power = base_power,
-        ext = Dict(fn=>getfield(outage_probability, Symbol.(fn)) for fn ∈ string.(fieldnames(outage_info))), # Outage parsing
-
+        ext = Dict(
+            fn => getfield(outage_probability, Symbol.(fn)) for
+            fn in string.(fieldnames(outage_info))
+        ),
     )
 end
 
@@ -1054,8 +1057,8 @@ function make_thermal_generator_multistart(
 
     op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
-    outage_rates = outage_to_rate((gen.fotr, gen.mttr)); # Outage parsing
-    outage_probability = outage_info(outage_rates.λ,outage_rates.μ);  # Outage parsing
+    outage_rates = outage_to_rate((gen.fotr, gen.mttr)) # Outage parsing
+    outage_probability = outage_info(outage_rates.λ, outage_rates.μ)  # Outage parsing
 
     return ThermalMultiStart(;
         name = get_name(thermal_gen),
@@ -1078,7 +1081,10 @@ function make_thermal_generator_multistart(
         base_power = get_base_power(thermal_gen),
         time_at_status = get_time_at_status(thermal_gen),
         must_run = gen.must_run,
-        ext = Dict(fn=>getfield(outage_probability, Symbol.(fn)) for fn ∈ string.(fieldnames(outage_info))), # Outage parsing
+        ext = Dict(
+            fn => getfield(outage_probability, Symbol.(fn)) for
+            fn in string.(fieldnames(outage_info))
+        ), # Outage parsing
     )
 end
 
@@ -1094,8 +1100,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
     time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
     base_power = gen.base_mva
 
-    outage_rates = outage_to_rate((gen.fotr, gen.mttr)); # Outage parsing
-    outage_probability = outage_info(outage_rates.λ,outage_rates.μ);  # Outage parsing
+    outage_rates = outage_to_rate((gen.fotr, gen.mttr)) # Outage parsing
+    outage_probability = outage_info(outage_rates.λ, outage_rates.μ)  # Outage parsing
 
     if gen_type == HydroEnergyReservoir || gen_type == HydroPumpedStorage
         if !haskey(data.category_to_df, InputCategory.STORAGE)
@@ -1128,7 +1134,10 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
                 storage_capacity = storage.head.storage_capacity,
                 inflow = storage.head.input_active_power_limit_max,
                 initial_storage = storage.head.energy_level,
-                ext = Dict(fn=>getfield(outage_probability, Symbol.(fn)) for fn ∈ string.(fieldnames(outage_info))), # Outage parsing
+                ext = Dict(
+                    fn => getfield(outage_probability, Symbol.(fn)) for
+                    fn in string.(fieldnames(outage_info))
+                ), # Outage parsing
             )
 
         elseif gen_type == HydroPumpedStorage
@@ -1187,7 +1196,10 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
                 ),
                 operation_cost = operation_cost,
                 pump_efficiency = storage.tail.efficiency,
-                ext = Dict(fn=>getfield(outage_probability, Symbol.(fn)) for fn ∈ string.(fieldnames(outage_info))), # Outage parsing
+                ext = Dict(
+                    fn => getfield(outage_probability, Symbol.(fn)) for
+                    fn in string.(fieldnames(outage_info))
+                ), # Outage parsing
             )
         end
     elseif gen_type == HydroDispatch
@@ -1205,7 +1217,10 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             ramp_limits = ramp_limits,
             time_limits = time_limits,
             base_power = base_power,
-            ext = Dict(fn=>getfield(outage_probability, Symbol.(fn)) for fn ∈ string.(fieldnames(outage_info))), # Outage parsing
+            ext = Dict(
+                fn => getfield(outage_probability, Symbol.(fn)) for
+                fn in string.(fieldnames(outage_info))
+            ), # Outage parsing
         )
     else
         error("Tabular data parser does not currently support $gen_type creation")
@@ -1260,8 +1275,8 @@ function make_renewable_generator(
         calculate_variable_cost(data, gen, cost_colnames, base_power)
     operation_cost = TwoPartCost(var_cost, fixed)
 
-    outage_rates = outage_to_rate((gen.fotr, gen.mttr)); # Outage parsing
-    outage_probability = outage_info(outage_rates.λ,outage_rates.μ);  # Outage parsing
+    outage_rates = outage_to_rate((gen.fotr, gen.mttr)) # Outage parsing
+    outage_probability = outage_info(outage_rates.λ, outage_rates.μ)  # Outage parsing
 
     if gen_type == RenewableDispatch
         @debug("Creating $(gen.name) as RenewableDispatch")
@@ -1277,7 +1292,10 @@ function make_renewable_generator(
             power_factor = gen.power_factor,
             operation_cost = operation_cost,
             base_power = base_power,
-            ext = Dict(fn=>getfield(outage_probability, Symbol.(fn)) for fn ∈ string.(fieldnames(outage_info))), # Outage parsing
+            ext = Dict(
+                fn => getfield(outage_probability, Symbol.(fn)) for
+                fn in string.(fieldnames(outage_info))
+            ), # Outage parsing
         )
     elseif gen_type == RenewableFix
         @debug("Creating $(gen.name) as RenewableFix")
@@ -1291,7 +1309,10 @@ function make_renewable_generator(
             prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
             power_factor = gen.power_factor,
             base_power = base_power,
-            ext = Dict(fn=>getfield(outage_probability, Symbol.(fn)) for fn ∈ string.(fieldnames(outage_info))), # Outage parsing
+            ext = Dict(
+                fn => getfield(outage_probability, Symbol.(fn)) for
+                fn in string.(fieldnames(outage_info))
+            ), # Outage parsing
         )
     else
         error("Unsupported type $gen_type")
@@ -1316,8 +1337,8 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
 
-    outage_rates = outage_to_rate((gen.fotr, gen.mttr)); # Outage parsing
-    outage_probability = outage_info(outage_rates.λ,outage_rates.μ);  # Outage parsing
+    outage_rates = outage_to_rate((gen.fotr, gen.mttr)) # Outage parsing
+    outage_probability = outage_info(outage_rates.λ, outage_rates.μ)  # Outage parsing
 
     battery = GenericBattery(
         name = gen.name,
@@ -1334,7 +1355,10 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
         reactive_power = reactive_power,
         reactive_power_limits = reactive_power_limits,
         base_power = storage.base_power,
-        ext = Dict(fn=>getfield(outage_probability, Symbol.(fn)) for fn ∈ string.(fieldnames(outage_info))), # Outage parsing
+        ext = Dict(
+            fn => getfield(outage_probability, Symbol.(fn)) for
+            fn in string.(fieldnames(outage_info))
+        ), # Outage parsing
     )
 
     return battery
