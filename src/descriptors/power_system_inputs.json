@@ -260,6 +260,18 @@
     ],
     "generator": [
         {
+            "unit": "%",
+            "name": "fotr",
+            "description": "Forced Outage Rate",
+            "default_value": 0.0
+        },
+        {
+            "unit": "hours",
+            "name": "mttr",
+            "description": "Mean Time to Recover (in Hours)",
+            "default_value": 100
+        },
+        {
             "name": "name",
             "description": "Unique generator ID: Concatenated from Bus ID_Unit Type_Gen ID"
         },
