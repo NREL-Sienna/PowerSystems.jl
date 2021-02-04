@@ -1094,6 +1094,9 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
     time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
     base_power = gen.base_mva
 
+    outage_rates = outage_to_rate((gen.fotr, gen.mttr)); # Outage parsing
+    outage_probability = outage_info(outage_rates.λ,outage_rates.μ);  # Outage parsing
+
     if gen_type == HydroEnergyReservoir || gen_type == HydroPumpedStorage
         if !haskey(data.category_to_df, InputCategory.STORAGE)
             throw(DataFormatError("Storage information must defined in storage.csv"))
@@ -1104,9 +1107,6 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
         var_cost, fixed, fuel_cost =
             calculate_variable_cost(data, gen, cost_colnames, base_power)
         operation_cost = TwoPartCost(var_cost, fixed)
-
-        outage_rates = outage_to_rate((gen.fotr, gen.mttr)); # Outage parsing
-        outage_probability = outage_info(outage_rates.λ,outage_rates.μ);  # Outage parsing
 
         if gen_type == HydroEnergyReservoir
             @debug("Creating $(gen.name) as HydroEnergyReservoir")
