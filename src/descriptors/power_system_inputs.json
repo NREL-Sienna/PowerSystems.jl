@@ -263,13 +263,13 @@
             "unit": "%",
             "name": "fotr",
             "description": "Forced Outage Rate",
-            "default_value": 0.0
+            "default_value": null
         },
         {
             "unit": "hours",
             "name": "mttr",
             "description": "Mean Time to Recover (in Hours)",
-            "default_value": 100
+            "default_value": null
         },
         {
             "name": "name",
