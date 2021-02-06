@@ -146,7 +146,7 @@ end
         ),
     ]
 
-    foreach(x -> PowerSystems.check_angle_limits!(x), branches_test)
+    foreach(x -> PowerSystems.sanitize_angle_limits!(x), branches_test)
 
     @test branches_test[1].angle_limits == (min = -pi / 2, max = pi / 2)
     @test branches_test[2].angle_limits == (min = -pi / 2, max = 75.0 * (π / 180))
@@ -170,6 +170,6 @@ end
 
     @test_throws(
         PowerSystems.DataFormatError,
-        PowerSystems.check_angle_limits!(bad_angle_limits)
+        PowerSystems.sanitize_angle_limits!(bad_angle_limits)
     )
 end

@@ -188,7 +188,7 @@ end
 
 @testset "Test system checks" begin
     sys = System(100)
-    @test_logs (:warn, r"There are no .* Components in the System") match_mode = :any PSY.check!(
+    @test_logs (:warn, r"There are no .* Components in the System") match_mode = :any check(
         sys,
     )
 end

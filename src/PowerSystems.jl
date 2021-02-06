@@ -261,6 +261,9 @@ export set_service_bid!
 export iterate_windows
 export get_window
 export transform_single_time_series!
+export sanitize_component!
+export validate_component
+export validate_component_with_system
 
 #export make_time_series
 export get_bus_numbers
@@ -308,11 +311,17 @@ export get_reserve_limit_dn
 export get_participation_factor
 export get_cost
 export get_units_base
+export get_runchecks
+export set_runchecks!
+export check
+export check_component
+export check_components
 
 export configure_logging
 export open_file_logger
 export MultiLogger
 export LogEventTracker
+export UnitSystem
 
 #################################################################################
 # Imports
@@ -384,6 +393,7 @@ import InfrastructureSystems:
     UnitSystem,
     SystemUnitsSettings,
     open_file_logger,
+    validate_struct,
     MultiLogger,
     LogEventTracker
 

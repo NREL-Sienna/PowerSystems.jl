@@ -1,18 +1,19 @@
 
-function validate_struct(sys::System, ps_struct::Union{MonitoredLine, Line})
+function sanitize_component!(line::Union{MonitoredLine, Line}, sys::System)
+    sanitize_angle_limits!(line)
+end
+
+function validate_component_with_system(line::Union{MonitoredLine, Line}, sys::System)
     is_valid = true
-    if !check_endpoint_voltages(ps_struct)
+    if !check_endpoint_voltages(line)
         is_valid = false
-    else
-        check_angle_limits!(ps_struct)
-        if !calculate_thermal_limits!(ps_struct, get_base_power(sys))
-            is_valid = false
-        end
+    elseif !calculate_thermal_limits!(line, get_base_power(sys))
+        is_valid = false
     end
     return is_valid
 end
 
-function check_angle_limits!(line)
+function sanitize_angle_limits!(line)
     max_limit = pi / 2
     min_limit = -pi / 2
 
