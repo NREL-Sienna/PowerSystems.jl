@@ -2763,6 +2763,12 @@
           "validation_action": "warn"
         },
         {
+          "name": "operation_cost",
+          "null_value": "nothing",
+          "default": "nothing",
+          "data_type": "Union{Nothing, OperationalCost}"
+        },
+        {
           "name": "services",
           "data_type": "Vector{Service}",
           "comment": "Services that this device contributes to",
@@ -2919,6 +2925,12 @@
               "max": null
             },
             "validation_action": "warn"
+          },
+          {
+            "name": "operation_cost",
+            "null_value": "nothing",
+            "default": "nothing",
+            "data_type": "Union{Nothing, OperationalCost}"
           },
           {
               "name": "storage_target",
