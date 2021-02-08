@@ -962,11 +962,10 @@ function add_outage_info!(component::StaticInjection, gen)
     outage_rates = outage_to_rate((gen.fotr, gen.mttr))
     outage_probability = outage_info(outage_rates.λ, outage_rates.μ)
 
-    component.ext = Dict(
-        fn => getfield(outage_probability, Symbol.(fn)) for
-        fn in string.(fieldnames(outage_info))
-    )
-    return component
+    ext = get_ext(component)
+    for fn in fieldnames(outage_info)
+        ext[string(fn)] = getfield(outage_probability, fn)
+    end
 end
 
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
