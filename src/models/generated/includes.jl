@@ -1,6 +1,6 @@
 include("TwoPartCost.jl")
 include("ThreePartCost.jl")
-include("EnergyTargetCost.jl")
+include("StorageManagementCost.jl")
 include("MarketBidCost.jl")
 include("MultiStartCost.jl")
 include("Area.jl")

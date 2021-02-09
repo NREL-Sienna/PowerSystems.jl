@@ -66,8 +66,8 @@
       "supertype": "OperationalCost"
     },
     {
-        "struct_name": "EnergyTargetCost",
-        "docstring": "Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.",
+        "struct_name": "StorageManagementCost",
+        "docstring": "Data Structure for Operational Cost Data like variable cost and start - stop costs and energy storage cost.",
         "fields": [
           {
             "name": "variable",
