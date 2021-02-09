@@ -37,6 +37,18 @@ function get_value(c::Component, value::Up_Down)
     return (up = value.up * m, down = value.down * m)
 end
 
+function get_value(
+    c::Component,
+    value::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}},
+)
+    m = _get_multiplier(c)
+    return (from_to = value.from_to * m, to_from = value.to_from * m)
+end
+
+function get_value(c::Component, value::Nothing)
+    return value
+end
+
 function get_value(c::T, value::V) where {T <: Component, V}
     @warn("conversion not implemented for $(V) in component $(T)")
     return value::V
