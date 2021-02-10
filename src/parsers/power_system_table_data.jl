@@ -1188,7 +1188,8 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
     end
 
     if length(head) != 1
-        @warn "storage generator should have exactly 1 head storage defined: this will throw an error in v1.1.x"
+        @warn "storage generator should have exactly 1 head storage defined: this will throw an error in v1.3.x" maxlog =
+            1
         #throw(DataFormatError("storage generator must have exactly 1 head storage defined")) #TODO: uncomment this in next version
     elseif length(tail) > 1
         throw(
