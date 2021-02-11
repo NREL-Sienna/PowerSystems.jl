@@ -175,11 +175,13 @@ function System(file_path::AbstractString; kwargs...)
         cd(new_dir)
         try
             time_series_read_only = get(kwargs, :time_series_read_only, false)
+            time_series_directory = get(kwargs, :time_series_directory, nothing)
             sys = deserialize(
                 System,
                 basename(file_path);
                 time_series_read_only = time_series_read_only,
                 runchecks = runchecks,
+                time_series_directory = time_series_directory,
             )
             runchecks && check(sys)
             return sys
@@ -1189,6 +1191,7 @@ function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
     time_series_read_only = false,
+    time_series_directory = nothing,
     kwargs...,
 )
     raw = open(filename) do io
@@ -1213,6 +1216,7 @@ function IS.deserialize(
         IS.SystemData,
         raw["data"];
         time_series_read_only = time_series_read_only,
+        time_series_directory = time_series_directory,
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
     sys = System(data, units; internal = internal, kwargs...)
