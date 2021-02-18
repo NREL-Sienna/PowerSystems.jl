@@ -506,6 +506,9 @@ include("utils/print.jl")
 
 include("models/serialization.jl")
 
+#Deprecated
+include("deprecated.jl")
+
 # Download test data
 include("utils/data.jl")
 import .UtilsData: TestData
