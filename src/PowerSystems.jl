@@ -38,6 +38,7 @@ export TwoPartCost
 export VariableCost
 export MultiStartCost
 export MarketBidCost
+export StorageManagementCost
 export get_slopes
 export get_breakpoint_upperbounds
 
