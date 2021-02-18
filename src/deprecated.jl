@@ -16,4 +16,9 @@
     v,
 )
 
+export get_energy_value
+export get_penalty_cost
+export set_energy_value!
+export set_penalty_cost!
+
 # END 1.2.1 deprecations
