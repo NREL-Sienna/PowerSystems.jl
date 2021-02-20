@@ -1428,7 +1428,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
         else
             value = field_info.default_value
             value == "required" && throw(DataFormatError("$(field_info.name) is required"))
-            @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)"
+            @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)" maxlog = 1
         end
         if ismissing(value)
             throw(DataFormatError("$(field_info.custom_name) value missing"))
@@ -1455,7 +1455,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
                     ),
                 )
                 reference_info = field_infos[reference_idx]
-                @debug "convert to $(field_info.per_unit_conversion.To) using $(reference_info.custom_name)" field_info.custom_name
+                @debug "convert to $(field_info.per_unit_conversion.To) using $(reference_info.custom_name)" field_info.custom_name maxlog = 1
                 reference_value =
                     get(row, reference_info.custom_name, reference_info.default_value)
                 reference_value == "required" && throw(
@@ -1473,12 +1473,12 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
                 )
             end
         else
-            @debug "$(field_info.custom_name) is nothing"
+            @debug "$(field_info.custom_name) is nothing" maxlog = 1
         end
 
         # TODO: need special handling for units
         if !isnothing(field_info.unit_conversion)
-            @debug "convert units" field_info.custom_name
+            @debug "convert units" field_info.custom_name maxlog = 1
             value = convert_units!(value, field_info.unit_conversion)
         end
         # TODO: validate ranges and option lists

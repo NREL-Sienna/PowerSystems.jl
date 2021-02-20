@@ -192,7 +192,9 @@ function Adj(branches, nodes; check_connectivity::Bool = true)
         to_b = bus_lookup[get_number(get_to(get_arc(b)))]
         a[fr_b, to_b] = 1
         a[to_b, fr_b] = -1
-    end
+        a[fr_b, fr_b] = 1
+        a[to_b, to_b] = 1
+     end
     if check_connectivity
         connected = is_connected(a, nodes, bus_lookup)
         !connected && throw(DataFormatError("Network not connected"))
@@ -227,7 +229,7 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC)
             temp = T_ * T
             I_temp, _, _ = SparseArrays.findnz(temp)
             if all(I_temp == I)
-                @error DataFormatError("The system contains islands") maxlog = 1
+                @warn "The system contains islands" maxlog = 1
             end
             T_ = temp
         else
@@ -235,7 +237,7 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC)
         end
         #@assert n < node_count - 1
     end
-    return Set(I)
+    return I
 end
 
 function is_connected(sys::System)
@@ -245,8 +247,17 @@ end
 
 function is_connected(M, nodes, bus_lookup)
     I = _goderya(M)
-    if length(I) == length(nodes)
+
+    node_count = length(nodes)
+    connections = Dict([i => count(x->x==i, I) for i in Set(I)])
+
+    if length(Set(I)) == node_count
         connected = true
+        if any(values(connections) .!= node_count)
+            cc = Set(values(connections))
+            @warn "Network has at least $(length(cc)) connected components with $cc nodes"
+            connected = false
+        end
     else
         disconnected_nodes = get_name.(nodes[setdiff(values(bus_lookup), I)])
         @warn "Principal connected component does not contain:" disconnected_nodes
