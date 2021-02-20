@@ -194,7 +194,7 @@ function Adj(branches, nodes; check_connectivity::Bool = true)
         a[to_b, fr_b] = -1
         a[fr_b, fr_b] = 1
         a[to_b, to_b] = 1
-     end
+    end
     if check_connectivity
         connected = is_connected(a, nodes, bus_lookup)
         !connected && throw(DataFormatError("Network not connected"))
@@ -249,7 +249,7 @@ function is_connected(M, nodes, bus_lookup)
     I = _goderya(M)
 
     node_count = length(nodes)
-    connections = Dict([i => count(x->x==i, I) for i in Set(I)])
+    connections = Dict([i => count(x -> x == i, I) for i in Set(I)])
 
     if length(Set(I)) == node_count
         connected = true
