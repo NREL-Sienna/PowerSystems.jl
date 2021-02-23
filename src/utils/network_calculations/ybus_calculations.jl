@@ -164,23 +164,23 @@ function Ybus(sys::System; check_connectivity::Bool = true)
 end
 
 """
-Nodal incidence matrix (Adj) is an N x N matrix describing a power system with N buses. It represents the directed connectivity of the buses in a power system.
+Nodal incidence matrix (Adjacency) is an N x N matrix describing a power system with N buses. It represents the directed connectivity of the buses in a power system.
 
-The Adj Struct is indexed using the Bus Numbers, no need for them to be sequential
+The Adjacency Struct is indexed using the Bus Numbers, no need for them to be sequential
 """
-struct Adj{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Int}
+struct Adjacency{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Int}
     data::SparseArrays.SparseMatrixCSC{Int, Int}
     axes::Ax
     lookup::L
 end
 
 """
-Builds a Adj from a collection of buses and branches. The return is a Adj Array indexed with the bus numbers and the branch names.
+Builds a Adjacency from a collection of buses and branches. The return is an N x N Adjacency Array indexed with the bus numbers.
 
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
-function Adj(branches, nodes; check_connectivity::Bool = true)
+function Adjacency(branches, nodes; check_connectivity::Bool = true)
     buscount = length(nodes)
     bus_ax = get_number.(nodes)
     axes = (bus_ax, bus_ax)
@@ -199,19 +199,19 @@ function Adj(branches, nodes; check_connectivity::Bool = true)
         connected = is_connected(a, nodes, bus_lookup)
         !connected && throw(DataFormatError("Network not connected"))
     end
-    return Adj(a, axes, look_up)
+    return Adjacency(a, axes, look_up)
 end
 
 """
-Builds a Adj from the system. The return is a Adj Array indexed with the bus numbers and the branch names.
+Builds a Adjacency from the system. The return is an N x N Adjacency Array indexed with the bus numbers.
 
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
-function Adj(sys::System; check_connectivity::Bool = true)
+function Adjacency(sys::System; check_connectivity::Bool = true)
     nodes = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
     branches = get_components(Branch, sys, get_available)
-    return Adj(branches, nodes; check_connectivity = check_connectivity)
+    return Adjacency(branches, nodes; check_connectivity = check_connectivity)
 end
 
 function _goderya(ybus::SparseArrays.SparseMatrixCSC)
@@ -241,7 +241,7 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC)
 end
 
 function is_connected(sys::System)
-    a = Adj(sys; check_connectivity = false)
+    a = Adjacency(sys; check_connectivity = false)
     return is_connected(a.data, collect(get_components(Bus, sys)), a.lookup[1])
 end
 

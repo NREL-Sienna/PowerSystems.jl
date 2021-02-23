@@ -180,7 +180,7 @@ export VariableReserveNonSpinning
 export PTDF
 export Ybus
 export LODF
-export Adj
+export Adjacency
 export GeneratorCostModels
 export AngleUnits
 export BusTypes
