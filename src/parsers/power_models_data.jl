@@ -407,10 +407,10 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
                 cost = (0.0, 0.0)
                 fixed = d["cost"][1]
             elseif d["ncost"] == 2
-                cost = (0.0, d["cost"][1])
+                cost = (0.0, d["cost"][1]) ./ sys_mbase
                 fixed = d["cost"][2]
             elseif d["ncost"] == 3
-                cost = (d["cost"][1], d["cost"][2])
+                cost = (d["cost"][1], d["cost"][2]) ./ sys_mbase
                 fixed = d["cost"][3]
             else
                 throw(

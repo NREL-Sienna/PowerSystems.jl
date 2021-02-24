@@ -22,7 +22,6 @@ function binfo_check(binfo::Int)
     return
 end
 
-
 function _buildptdf(branches, nodes, dist_slack::Vector{Float64})
     buscount = length(nodes)
     linecount = length(branches)
