@@ -144,7 +144,7 @@ function Ybus(
     look_up = (bus_lookup, bus_lookup)
     ybus = _buildybus(branches, nodes, fixed_admittances)
     if check_connectivity
-        connected = is_connected(ybus, nodes, bus_lookup)
+        connected = validate_connectivity(ybus, nodes, bus_lookup)
         !connected && throw(DataFormatError("Network not connected"))
     end
     return Ybus(ybus, axes, look_up)
@@ -198,7 +198,7 @@ function Adjacency(branches, nodes; check_connectivity::Bool = true)
     end
 
     if check_connectivity
-        connected = is_connected(a, nodes, bus_lookup)
+        connected = validate_connectivity(a, nodes, bus_lookup)
         !connected && throw(DataFormatError("Network not connected"))
     end
 
@@ -243,12 +243,12 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC)
     return I
 end
 
-function is_connected(sys::System)
+function validate_connectivity(sys::System)
     a = Adjacency(sys; check_connectivity = false)
-    return is_connected(a.data, collect(get_components(Bus, sys)), a.lookup[1])
+    return validate_connectivity(a.data, collect(get_components(Bus, sys)), a.lookup[1])
 end
 
-function is_connected(M, nodes, bus_lookup)
+function validate_connectivity(M, nodes, bus_lookup)
     I = _goderya(M)
 
     node_count = length(nodes)
