@@ -186,19 +186,22 @@ function Adjacency(branches, nodes; check_connectivity::Bool = true)
     axes = (bus_ax, bus_ax)
     bus_lookup = _make_ax_ref(bus_ax)
     look_up = (bus_lookup, bus_lookup)
+
     a = SparseArrays.spzeros(Int, buscount, buscount)
+
     for b in branches
-        fr_b = bus_lookup[get_number(get_from(get_arc(b)))]
-        to_b = bus_lookup[get_number(get_to(get_arc(b)))]
+        (fr_b, to_b) = get_bus_indices(b, bus_lookup)
         a[fr_b, to_b] = 1
         a[to_b, fr_b] = -1
         a[fr_b, fr_b] = 1
         a[to_b, to_b] = 1
     end
+
     if check_connectivity
         connected = is_connected(a, nodes, bus_lookup)
         !connected && throw(DataFormatError("Network not connected"))
     end
+
     return Adjacency(a, axes, look_up)
 end
 

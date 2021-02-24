@@ -8,6 +8,16 @@ abstract type PowerNetworkMatrix{T} <: AbstractArray{T, 2} end
 #  This Source Code Form is subject to the terms of the Mozilla Public
 #  License, v. 2.0.
 
+function get_bus_indices(branch, bus_lookup)
+    fr_b = bus_lookup[get_number(get_from(get_arc(branch)))]
+    to_b = bus_lookup[get_number(get_to(get_arc(branch)))]
+    return fr_b, to_b
+end
+
+function _make_ax_ref(buses::Vector{Bus})
+    return _make_ax_ref(get_number.(buses))
+end
+
 function _make_ax_ref(ax::Vector)
     ref = Dict{eltype(ax), Int}()
     for (ix, el) in enumerate(ax)

@@ -22,35 +22,31 @@ function binfo_check(binfo::Int)
     return
 end
 
+
 function _buildptdf(branches, nodes, dist_slack::Vector{Float64})
     buscount = length(nodes)
     linecount = length(branches)
-    num_bus = Dict{Int32, Int32}()
 
-    for (ix, b) in enumerate(nodes)
-        num_bus[get_number(b)] = ix
-    end
+    bus_lookup = _make_ax_ref(nodes)
 
     A = zeros(Float64, buscount, linecount)
     inv_X = zeros(Float64, linecount, linecount)
 
     #build incidence matrix
-    #incidence_matrix = A
-
     for (ix, b) in enumerate(branches)
         if isa(b, DCBranch)
             @warn("PTDF construction ignores DC-Lines")
             continue
         end
 
-        A[num_bus[get_number(get_from(get_arc(b)))], ix] = 1
-
-        A[num_bus[get_number(get_to(get_arc(b)))], ix] = -1
+        (fr_b, to_b) = get_bus_indices(b, bus_lookup)
+        A[fr_b, ix] = 1
+        A[to_b, ix] = -1
 
         inv_X[ix, ix] = get_series_susceptance(b)
     end
 
-    slacks = [num_bus[get_number(n)] for n in nodes if get_bustype(n) == BusTypes.REF]
+    slacks = [bus_lookup[get_number(n)] for n in nodes if get_bustype(n) == BusTypes.REF]
     slack_position = slacks[1]
     B = gemm(
         'N',
