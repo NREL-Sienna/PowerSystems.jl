@@ -180,6 +180,7 @@ export VariableReserveNonSpinning
 export PTDF
 export Ybus
 export LODF
+export Adjacency
 export GeneratorCostModels
 export AngleUnits
 export BusTypes
@@ -206,6 +207,7 @@ export get_dynamic_components
 
 export solve_powerflow!
 export solve_powerflow
+export validate_connectivity
 
 export parse_file
 export add_time_series!

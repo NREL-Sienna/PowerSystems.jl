@@ -125,32 +125,6 @@ function _buildybus(branches, nodes, fixed_admittances)
     return SparseArrays.dropzeros!(ybus)
 end
 
-function _goderya(ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int})
-    node_count = size(ybus)[1]
-    max_I = node_count^2
-    I, J, val = SparseArrays.findnz(ybus)
-    T = SparseArrays.sparse(I, J, ones(length(val)))
-    T_ = T * T
-    for n in 1:(node_count - 1)
-        I, _, _ = SparseArrays.findnz(T_)
-        if length(I) == max_I
-            @info "The System has no islands"
-            break
-        elseif length(I) < max_I
-            temp = T_ * T
-            I_temp, _, _ = SparseArrays.findnz(temp)
-            if all(I_temp == I)
-                throw(DataFormatError("The system contains islands"))
-            end
-            T_ = temp
-        else
-            @assert false
-        end
-        @assert n < node_count - 1
-    end
-    return
-end
-
 """
 Builds a Ybus from a collection of buses and branches. The return is a Ybus Array indexed with the bus numbers and the branch names.
 
@@ -166,10 +140,12 @@ function Ybus(
     nodes = sort!(collect(nodes), by = x -> get_number(x))
     bus_ax = get_number.(nodes)
     axes = (bus_ax, bus_ax)
-    look_up = (_make_ax_ref(bus_ax), _make_ax_ref(bus_ax))
+    bus_lookup = _make_ax_ref(bus_ax)
+    look_up = (bus_lookup, bus_lookup)
     ybus = _buildybus(branches, nodes, fixed_admittances)
     if check_connectivity
-        _goderya(ybus)
+        connected = validate_connectivity(ybus, nodes, bus_lookup)
+        !connected && throw(DataFormatError("Network not connected"))
     end
     return Ybus(ybus, axes, look_up)
 end
@@ -185,4 +161,110 @@ function Ybus(sys::System; check_connectivity::Bool = true)
     nodes = get_components(Bus, sys)
     fixed_admittances = get_components(FixedAdmittance, sys)
     return Ybus(branches, nodes, fixed_admittances; check_connectivity = check_connectivity)
+end
+
+"""
+Nodal incidence matrix (Adjacency) is an N x N matrix describing a power system with N buses. It represents the directed connectivity of the buses in a power system.
+
+The Adjacency Struct is indexed using the Bus Numbers, no need for them to be sequential
+"""
+struct Adjacency{Ax, L <: NTuple{2, Dict}} <: PowerNetworkMatrix{Int}
+    data::SparseArrays.SparseMatrixCSC{Int, Int}
+    axes::Ax
+    lookup::L
+end
+
+"""
+Builds a Adjacency from a collection of buses and branches. The return is an N x N Adjacency Array indexed with the bus numbers.
+
+# Keyword arguments
+- `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
+"""
+function Adjacency(branches, nodes; check_connectivity::Bool = true)
+    buscount = length(nodes)
+    bus_ax = get_number.(nodes)
+    axes = (bus_ax, bus_ax)
+    bus_lookup = _make_ax_ref(bus_ax)
+    look_up = (bus_lookup, bus_lookup)
+
+    a = SparseArrays.spzeros(Int, buscount, buscount)
+
+    for b in branches
+        (fr_b, to_b) = get_bus_indices(b, bus_lookup)
+        a[fr_b, to_b] = 1
+        a[to_b, fr_b] = -1
+        a[fr_b, fr_b] = 1
+        a[to_b, to_b] = 1
+    end
+
+    if check_connectivity
+        connected = validate_connectivity(a, nodes, bus_lookup)
+        !connected && throw(DataFormatError("Network not connected"))
+    end
+
+    return Adjacency(a, axes, look_up)
+end
+
+"""
+Builds a Adjacency from the system. The return is an N x N Adjacency Array indexed with the bus numbers.
+
+# Keyword arguments
+- `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
+"""
+function Adjacency(sys::System; check_connectivity::Bool = true)
+    nodes = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
+    branches = get_components(Branch, sys, get_available)
+    return Adjacency(branches, nodes; check_connectivity = check_connectivity)
+end
+
+function _goderya(ybus::SparseArrays.SparseMatrixCSC)
+    node_count = size(ybus)[1]
+    max_I = node_count^2
+    I, J, val = SparseArrays.findnz(ybus)
+    T = SparseArrays.sparse(I, J, ones(Int, length(val)))
+    T_ = T * T
+    for n in 1:(node_count - 1)
+        I, _, _ = SparseArrays.findnz(T_)
+        if length(I) == max_I
+            @info "The System has no islands"
+            break
+        elseif length(I) < max_I
+            temp = T_ * T
+            I_temp, _, _ = SparseArrays.findnz(temp)
+            if all(I_temp == I)
+                @warn "The system contains islands" maxlog = 1
+            end
+            T_ = temp
+        else
+            @assert false
+        end
+        #@assert n < node_count - 1
+    end
+    return I
+end
+
+function validate_connectivity(sys::System)
+    a = Adjacency(sys; check_connectivity = false)
+    return validate_connectivity(a.data, collect(get_components(Bus, sys)), a.lookup[1])
+end
+
+function validate_connectivity(M, nodes, bus_lookup)
+    I = _goderya(M)
+
+    node_count = length(nodes)
+    connections = Dict([i => count(x -> x == i, I) for i in Set(I)])
+
+    if length(Set(I)) == node_count
+        connected = true
+        if any(values(connections) .!= node_count)
+            cc = Set(values(connections))
+            @warn "Network has at least $(length(cc)) connected components with $cc nodes"
+            connected = false
+        end
+    else
+        disconnected_nodes = get_name.(nodes[setdiff(values(bus_lookup), I)])
+        @warn "Principal connected component does not contain:" disconnected_nodes
+        connected = false
+    end
+    return connected
 end
