@@ -55,7 +55,8 @@ function get_value(c::T, value::V) where {T <: Component, V}
 end
 
 function get_value(::Nothing, _)
-return
+    return
+end
 
 function has_time_series(d::Component)
     return IS.has_time_series(d)
