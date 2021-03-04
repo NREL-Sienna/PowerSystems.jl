@@ -142,10 +142,10 @@ function check_SIL(line, basemva::Float64)
     closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
 
     # Assuming that the rate is in pu
-    if !(rate >= closestSIL.max / basemva)
+    if (rate >= closestSIL.max / basemva)
         # rate outside of expected SIL range
         sil = calculate_sil(line, basemva)
-        @warn "Rate provided for $(line.name) is larger than the SIL $(sil) in the range of $(closestSIL)." maxlog =
+        @warn "Rate $(round(rate*basemva; digits=2)) MW for $(line.name) is larger than the max expected in the range of $(closestSIL)." maxlog =
             PS_MAX_LOG
     end
     return
