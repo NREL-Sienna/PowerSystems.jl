@@ -23,7 +23,7 @@ const SYSTEM_KWARGS = Set((
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "1.0.0"
+const DATA_FORMAT_VERSION = "1.0.1"
 
 """
 System
@@ -1220,6 +1220,11 @@ function IS.deserialize(
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
     sys = System(data, units; internal = internal, kwargs...)
+
+    if raw["data_format_version"] != DATA_FORMAT_VERSION
+        pre_deserialize_conversion!(raw, sys)
+    end
+
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
     deserialize_components!(sys, raw["data"]["components"])
@@ -1228,6 +1233,10 @@ function IS.deserialize(
 
     if !get_runchecks(sys)
         @warn "The System was deserialized with checks disabled, and so was not validated."
+    end
+
+    if raw["data_format_version"] != DATA_FORMAT_VERSION
+        post_deserialize_conversion!(sys, raw)
     end
 
     return sys

@@ -473,6 +473,7 @@ include("models/supplemental_accessors.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+include("data_format_conversions.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")
