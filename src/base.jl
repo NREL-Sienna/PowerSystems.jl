@@ -1085,7 +1085,7 @@ function clear_time_series!(sys::System)
 end
 
 """
-Remove the time series data for a component.
+Remove the time series data for a component and time series type.
 """
 function remove_time_series!(
     sys::System,
@@ -1094,6 +1094,16 @@ function remove_time_series!(
     name::String,
 ) where {T <: TimeSeriesData}
     return IS.remove_time_series!(sys.data, T, component, name)
+end
+
+"""
+Remove all the time series data for a time series type.
+"""
+function remove_time_series!(
+    sys::System,
+    ::Type{T}
+) where {T <: TimeSeriesData}
+    return IS.remove_time_series!(sys.data, T)
 end
 
 """
