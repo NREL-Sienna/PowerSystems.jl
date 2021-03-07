@@ -1099,10 +1099,7 @@ end
 """
 Remove all the time series data for a time series type.
 """
-function remove_time_series!(
-    sys::System,
-    ::Type{T}
-) where {T <: TimeSeriesData}
+function remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData}
     return IS.remove_time_series!(sys.data, T)
 end
 
