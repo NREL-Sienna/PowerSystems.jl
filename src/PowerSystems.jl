@@ -38,6 +38,7 @@ export TwoPartCost
 export VariableCost
 export MultiStartCost
 export MarketBidCost
+export StorageManagementCost
 export get_slopes
 export get_breakpoint_upperbounds
 
@@ -508,6 +509,9 @@ include("parsers/TAMU_data.jl")
 include("utils/print.jl")
 
 include("models/serialization.jl")
+
+#Deprecated
+include("deprecated.jl")
 
 # Download test data
 include("utils/data.jl")

@@ -66,6 +66,69 @@
       "supertype": "OperationalCost"
     },
     {
+        "struct_name": "StorageManagementCost",
+        "docstring": "Data Structure for Operational Cost Data like variable cost and start - stop costs and energy storage cost.",
+        "fields": [
+          {
+            "name": "variable",
+            "comment": "variable cost",
+            "null_value": "VariableCost((0.0, 0.0))",
+            "data_type": "VariableCost"
+          },
+          {
+            "name": "fixed",
+            "comment": "fixed cost",
+            "null_value": "0.0",
+            "data_type": "Float64"
+          },
+          {
+            "name": "start_up",
+            "comment": "start-up cost",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "warn"
+          },
+          {
+            "name": "shut_down",
+            "comment": "shut-down cost",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "warn"
+          },
+          {
+            "name": "energy_shortage_cost",
+            "comment": "Cost incurred by the model for being short of the energy target.",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "warn"
+          },
+          {
+            "name": "energy_surplus_cost",
+            "comment": "Cost incurred by the model for surplus energy stored.",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "valid_range": {
+              "min": 0,
+              "max": null
+            },
+            "validation_action": "warn"
+          }
+        ],
+        "supertype": "OperationalCost"
+      },
+    {
       "struct_name": "MarketBidCost",
       "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
       "fields": [
@@ -2700,6 +2763,12 @@
           "validation_action": "warn"
         },
         {
+          "name": "operation_cost",
+          "null_value": "nothing",
+          "default": "nothing",
+          "data_type": "Union{Nothing, OperationalCost}"
+        },
+        {
           "name": "services",
           "data_type": "Vector{Service}",
           "comment": "Services that this device contributes to",
@@ -2858,26 +2927,18 @@
             "validation_action": "warn"
           },
           {
+            "name": "operation_cost",
+            "null_value": "nothing",
+            "default": "nothing",
+            "data_type": "Union{Nothing, OperationalCost}"
+          },
+          {
               "name": "storage_target",
               "comment": "Storage target at the end of simulation as ratio of storage capacity.",
               "null_value": "0.0",
               "data_type": "Float64",
               "default": "0.0"
           },
-          {
-              "name": "penalty_cost",
-              "comment": "Cost penalty for missing storage target at the end of simulation.",
-              "null_value": "0.0",
-              "data_type": "Float64",
-              "default": "0.0"
-          },
-          {
-            "name": "energy_value",
-            "comment": "Value provide by the stored energy at the end of simulation to the system.",
-            "null_value": "0.0",
-            "data_type": "Float64",
-            "default": "0.0"
-        },
           {
             "name": "services",
             "data_type": "Vector{Service}",

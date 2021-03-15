@@ -1271,7 +1271,7 @@ function make_storage(data::PowerSystemTableData, gen, storage, bus)
     )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
-    battery = GenericBattery(
+    battery = GenericBattery(;
         name = gen.name,
         available = storage.available,
         bus = bus,

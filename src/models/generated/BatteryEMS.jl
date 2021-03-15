@@ -17,9 +17,8 @@ This file is auto-generated. Do not edit.
         reactive_power::Float64
         reactive_power_limits::Union{Nothing, Min_Max}
         base_power::Float64
+        operation_cost::Union{Nothing, OperationalCost}
         storage_target::Float64
-        penalty_cost::Float64
-        energy_value::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -44,9 +43,8 @@ Data structure for a battery compatible with energy management formulations.
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `operation_cost::Union{Nothing, OperationalCost}`
 - `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
-- `penalty_cost::Float64`: Cost penalty for missing storage target at the end of simulation.
-- `energy_value::Float64`: Value provide by the stored energy at the end of simulation to the system.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -72,12 +70,9 @@ mutable struct BatteryEMS <: Storage
     reactive_power_limits::Union{Nothing, Min_Max}
     "Base power of the unit in MVA"
     base_power::Float64
+    operation_cost::Union{Nothing, OperationalCost}
     "Storage target at the end of simulation as ratio of storage capacity."
     storage_target::Float64
-    "Cost penalty for missing storage target at the end of simulation."
-    penalty_cost::Float64
-    "Value provide by the stored energy at the end of simulation to the system."
-    energy_value::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -89,12 +84,12 @@ mutable struct BatteryEMS <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target=0.0, penalty_cost=0.0, energy_value=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target, penalty_cost, energy_value, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=nothing, storage_target=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, storage_target, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function BatteryEMS(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target=0.0, penalty_cost=0.0, energy_value=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, storage_target, penalty_cost, energy_value, services, dynamic_injector, ext, time_series_container, internal, )
+function BatteryEMS(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=nothing, storage_target=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, storage_target, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -114,9 +109,8 @@ function BatteryEMS(::Nothing)
         reactive_power=0.0,
         reactive_power_limits=(min=0.0, max=0.0),
         base_power=0.0,
+        operation_cost=nothing,
         storage_target=0.0,
-        penalty_cost=0.0,
-        energy_value=0.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -152,12 +146,10 @@ get_reactive_power(value::BatteryEMS) = get_value(value, value.reactive_power)
 get_reactive_power_limits(value::BatteryEMS) = get_value(value, value.reactive_power_limits)
 """Get [`BatteryEMS`](@ref) `base_power`."""
 get_base_power(value::BatteryEMS) = value.base_power
+"""Get [`BatteryEMS`](@ref) `operation_cost`."""
+get_operation_cost(value::BatteryEMS) = value.operation_cost
 """Get [`BatteryEMS`](@ref) `storage_target`."""
 get_storage_target(value::BatteryEMS) = value.storage_target
-"""Get [`BatteryEMS`](@ref) `penalty_cost`."""
-get_penalty_cost(value::BatteryEMS) = value.penalty_cost
-"""Get [`BatteryEMS`](@ref) `energy_value`."""
-get_energy_value(value::BatteryEMS) = value.energy_value
 """Get [`BatteryEMS`](@ref) `services`."""
 get_services(value::BatteryEMS) = value.services
 """Get [`BatteryEMS`](@ref) `dynamic_injector`."""
@@ -197,12 +189,10 @@ set_reactive_power!(value::BatteryEMS, val) = value.reactive_power = val
 set_reactive_power_limits!(value::BatteryEMS, val) = value.reactive_power_limits = val
 """Set [`BatteryEMS`](@ref) `base_power`."""
 set_base_power!(value::BatteryEMS, val) = value.base_power = val
+"""Set [`BatteryEMS`](@ref) `operation_cost`."""
+set_operation_cost!(value::BatteryEMS, val) = value.operation_cost = val
 """Set [`BatteryEMS`](@ref) `storage_target`."""
 set_storage_target!(value::BatteryEMS, val) = value.storage_target = val
-"""Set [`BatteryEMS`](@ref) `penalty_cost`."""
-set_penalty_cost!(value::BatteryEMS, val) = value.penalty_cost = val
-"""Set [`BatteryEMS`](@ref) `energy_value`."""
-set_energy_value!(value::BatteryEMS, val) = value.energy_value = val
 """Set [`BatteryEMS`](@ref) `services`."""
 set_services!(value::BatteryEMS, val) = value.services = val
 """Set [`BatteryEMS`](@ref) `ext`."""
