@@ -4,15 +4,14 @@ on:
   push:
     branches:
       - master
-    schedule:
-      - cron: 0 * * * *
+      
 jobs:
   test:
     name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        julia-version: ['1.4', '1', 'nightly']
+        julia-version: ['1', 'nightly']
         julia-arch: [x64]
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
