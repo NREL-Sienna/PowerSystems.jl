@@ -10,7 +10,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 
 ## Version Advisory
 
-- The latest tagged version in PowerSystems will work with Julia v1.2+.
+- The latest tagged version in PowerSystems will work with Julia v1.5+.
 
 ## Device data enabled in PowerSystems
 
