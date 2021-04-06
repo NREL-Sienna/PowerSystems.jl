@@ -12,6 +12,6 @@ TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [compat]
 CSV = "~0.8"
-Documenter = "0.25"
+Documenter = "0.26"
 InfrastructureSystems = "1"
 julia = "^1.2"
