@@ -121,7 +121,7 @@ The serialization process stores 3 files
 
 By default `PowerSystems.jl` outputs to the REPL all Logging values, this can be overwhelming
 in some cases. Use [`configure_logging`](@ref) to create a logger with your preferences
-(console and/or file, levels, etc.). For more detail refer to [Logging`(@ref logging).
+(console and/or file, levels, etc.). For more detail refer to [Logging](@ref logging).
 
 **Example**: Set log output to only error messages
 
