@@ -262,7 +262,7 @@ function Base.deepcopy(sys::System)
     path = mktempdir()
     filename = joinpath(path, "sys.json")
     to_json(sys, filename)
-    return System(filename)
+    return System(filename, runchecks = get_runchecks(sys))
 end
 
 """

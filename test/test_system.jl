@@ -267,3 +267,19 @@ end
 @testset "Invalid constructor" begin
     @test_throws IS.DataFormatError System("data.invalid")
 end
+
+@testset "Test deepcopy with runchecks" begin
+    sys = System(100.0)
+    @test get_runchecks(sys)
+    @test_logs (:error, r"Model doesn't contain a slack bus") match_mode = :any @test get_runchecks(
+        deepcopy(sys),
+    )
+end
+
+@testset "Test deepcopy with runchecks disabled" begin
+    sys = System(100.0, runchecks = false)
+    @test !get_runchecks(sys)
+    sys2 = deepcopy(sys)
+    @test sys2 isa System
+    @test !get_runchecks(sys)
+end
