@@ -1,6 +1,6 @@
 # PowerSystems.jl
 
-![Master - CI](https://github.com/NREL-SIIP/PowerSystems.jl/workflows/Master%20-%20CI/badge.svg)
+[![Master - CI](https://github.com/NREL-SIIP/PowerSystems.jl/workflows/Master%20-%20CI/badge.svg)](https://github.com/NREL-SIIP/PowerSystems.jl/actions/workflows/master-tests.yml)
 [![codecov](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/NREL-SIIP/PowerSystems.jl)
 [![Documentation Build](https://github.com/NREL-SIIP/PowerSystems.jl/workflows/Documentation/badge.svg?)](https://nrel-siip.github.io/PowerSystems.jl/stable)
 [![DOI](https://zenodo.org/badge/114039584.svg)](https://zenodo.org/badge/latestdoi/114039584)
