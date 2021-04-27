@@ -191,3 +191,9 @@ end
     _, result = validate_serialization(sys)
     @test result
 end
+
+@testset "Test JSON serialization of HybridSystem" begin
+    sys = create_rts_system_with_hybrid_system(add_forecasts = true)
+    sys2, result = validate_serialization(sys)
+    @test result
+end

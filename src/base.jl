@@ -942,6 +942,17 @@ function add_time_series!(sys::System, components, time_series::TimeSeriesData)
     return IS.add_time_series!(sys.data, components, time_series)
 end
 
+function add_time_series!(
+    sys::System,
+    subsystem::StaticInjectionSubystem,
+    subcomponent::Component,
+    time_series::TimeSeriesData,
+)
+    name = make_unique_time_series_name(subsystem, subcomponent, time_series)
+    set_name!(time_series, name)
+    add_time_series!(sys, subsystem, time_series)
+end
+
 """
 Efficiently add all time series data in one component to another by copying the underlying
 references.
@@ -1487,7 +1498,7 @@ function handle_component_addition!(sys::System, component::RegulationDevice; kw
         # This will not be true during deserialization, and so won't run then.
         remove_component!(sys, component.device)
         # The line above removed the component setting so needs to be added back
-        set_units_setting!(component.device, component.internal.units_info)
+        set_units_setting!(component.device, get_units_info(get_internal(component)))
     end
     return
 end
@@ -1506,6 +1517,29 @@ function handle_component_addition!(sys::System, dyn_injector::DynamicInjection;
     static_base_power = get_base_power(static_injector)
     set_base_power!(dyn_injector, static_base_power)
     set_dynamic_injector!(static_injector, dyn_injector)
+end
+
+function handle_component_addition!(
+    sys::System,
+    subsystem::StaticInjectionSubystem;
+    kwargs...,
+)
+    for subcomponent in get_subcomponents(subsystem)
+        if is_attached(subcomponent, sys)
+            name_mapping = Dict{String, String}()
+            for key in IS.get_time_series_keys(subcomponent)
+                name_mapping[key.name] =
+                    make_unique_time_series_name(subsystem, subcomponent, key.name)
+            end
+
+            if !isempty(name_mapping)
+                copy_time_series!(subsystem, subcomponent, name_mapping = name_mapping)
+            end
+            remove_component!(sys, subcomponent)
+            # The line above removed the component setting so needs to be added back
+            set_units_setting!(subcomponent, get_units_info(get_internal(subsystem)))
+        end
+    end
 end
 
 function handle_component_addition_common!(sys::System, component::Branch)

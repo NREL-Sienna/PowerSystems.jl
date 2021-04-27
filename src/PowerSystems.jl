@@ -74,6 +74,7 @@ export DynamicGenerator
 export DynamicInverter
 export DynamicBranch
 export HybridSystem
+export StaticInjectionSubystem
 export RegulationDevice
 
 #AVR Exports
@@ -237,6 +238,7 @@ export get_component
 export get_components
 export get_components_by_name
 export get_available_components
+export get_subcomponents
 export get_forecast_horizon
 export get_forecast_initial_timestamp
 export get_forecast_interval
@@ -429,6 +431,7 @@ include("definitions.jl")
 include("models/static_models.jl")
 include("models/dynamic_models.jl")
 include("models/injection.jl")
+include("models/static_injection_subsystem.jl")
 
 # Include utilities
 include("utils/logging.jl")

@@ -9,7 +9,7 @@ Each generator is a data structure that is defined by the following components:
 - [Storage](@ref PowerSystems.Storage)
 - [RenewableGen](@ref PowerSystems.RenewableGen)
 """
-mutable struct HybridSystem <: StaticInjection
+mutable struct HybridSystem <: StaticInjectionSubystem
     name::String
     available::Bool
     status::Bool
@@ -226,10 +226,42 @@ set_ext!(value::HybridSystem, val) = value.ext = val
 InfrastructureSystems.set_time_series_container!(value::HybridSystem, val) =
     value.time_series_container = val
 
-function IS.deserialize(::Type{HybridSystem}, data::Dict, component_cache::Dict)
-    error("Deserialization of HybridSystem is not currently supported")
+"""
+Return an iterator over the subcomponents in the HybridSystem.
+Call collect on the result if an array is desired.
+
+# Examples
+```julia
+for subcomponent in get_subcomponents(hybrid_sys)
+    @show subcomponent
 end
 
-function IS.serialize(component::HybridSystem)
-    error("Serialization of HybridSystem is not currently supported")
+subcomponents = collect(get_subcomponents(hybrid_sys))
+```
+"""
+function get_subcomponents(hybrid::HybridSystem)
+    Channel() do channel
+        for field in (:thermal_unit, :electric_load, :storage, :renewable_unit)
+            subcomponent = getfield(hybrid, field)
+            if subcomponent !== nothing
+                put!(channel, subcomponent)
+            end
+        end
+    end
+end
+
+function make_unique_time_series_name(
+    hybrid::HybridSystem,
+    subcomponent::Component,
+    time_series::TimeSeriesData,
+)
+    return make_unique_time_series_name(hybrid, subcomponent, get_name(time_series))
+end
+
+function make_unique_time_series_name(
+    hybrid::HybridSystem,
+    subcomponent::Component,
+    name::AbstractString,
+)
+    return join((string(typeof(subcomponent)), name), "__")
 end
