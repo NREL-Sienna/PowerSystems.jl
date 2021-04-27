@@ -62,6 +62,10 @@ end
     ) isa DeterministicSingleTimeSeries
     @test get_time_series(AbstractDeterministic, h_sys, "PowerLoad__max_active_power") isa
           DeterministicSingleTimeSeries
+
+    remove_time_series!(sys, SingleTimeSeries, h_sys, electric_load, "max_active_power")
+    sts = collect(get_time_series_multiple(h_sys, type = SingleTimeSeries))
+    @test length(sts) == 1
 end
 
 @testset "Hybrid System from unattached subcomponents" begin

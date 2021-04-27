@@ -1114,6 +1114,21 @@ function remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData}
     return IS.remove_time_series!(sys.data, T)
 end
 
+function remove_time_series!(
+    sys::System,
+    ::Type{T},
+    subsystem::StaticInjectionSubystem,
+    subcomponent::Component,
+    name::String,
+) where {T <: TimeSeriesData}
+    return IS.remove_time_series!(
+        sys.data,
+        T,
+        subsystem,
+        make_unique_time_series_name(subsystem, subcomponent, name),
+    )
+end
+
 """
 Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
 """
