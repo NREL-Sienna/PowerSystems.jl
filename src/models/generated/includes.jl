@@ -79,6 +79,7 @@ include("ZeroOrderBESS.jl")
 include("LCLFilter.jl")
 include("LCFilter.jl")
 include("KauraPLL.jl")
+include("FixedPLL.jl")
 include("VirtualInertia.jl")
 include("ActivePowerDroop.jl")
 include("ReactivePowerDroop.jl")
@@ -406,6 +407,7 @@ export get_θp
 export get_θp_rad
 export get_τ_limits
 export get_ω_lp
+export get_ω_pll_ref
 export get_ωad
 export get_ωf
 export get_ωz
@@ -730,6 +732,7 @@ export set_θp!
 export set_θp_rad!
 export set_τ_limits!
 export set_ω_lp!
+export set_ω_pll_ref!
 export set_ωad!
 export set_ωf!
 export set_ωz!
