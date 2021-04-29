@@ -251,6 +251,7 @@ export get_time_series_values
 export get_time_series_names
 export get_next_time_series_array!
 export get_next_time
+export get_initial_timestamp
 export get_horizon
 export get_forecast_initial_times
 export get_forecast_total_period
@@ -380,12 +381,14 @@ import InfrastructureSystems:
     set_name!,
     iterate_windows,
     get_time_series,
+    has_time_series,
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
     get_time_series_names,
     get_next_time_series_array!,
     get_next_time,
+    get_initial_timestamp,
     get_units_info,
     set_units_info!,
     to_json,

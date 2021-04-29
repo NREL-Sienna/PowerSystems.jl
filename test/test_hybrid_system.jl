@@ -36,14 +36,19 @@ end
     h_sys = hybrids[1]
 
     electric_load = nothing
+    thermal_unit = nothing
     subcomponents = collect(get_subcomponents(h_sys))
     @test length(subcomponents) == 4
     for subcomponent in subcomponents
         @test !PSY.is_attached(subcomponent, sys)
         if subcomponent isa PowerLoad
             electric_load = subcomponent
+        elseif subcomponent isa ThermalStandard
+            thermal_unit = subcomponent
         end
     end
+    @test electric_load !== nothing
+    @test thermal_unit !== nothing
 
     sts = collect(get_time_series_multiple(h_sys, type = SingleTimeSeries))
     @test length(sts) == 2
@@ -63,9 +68,22 @@ end
     @test get_time_series(AbstractDeterministic, h_sys, "PowerLoad__max_active_power") isa
           DeterministicSingleTimeSeries
 
+    @test !has_time_series(h_sys, thermal_unit)
+    @test has_time_series(h_sys, electric_load)
+    remove_time_series!(
+        sys,
+        AbstractDeterministic,
+        h_sys,
+        electric_load,
+        "max_active_power",
+    )
+    forecasts = collect(get_time_series_multiple(h_sys, type = AbstractDeterministic))
+    @test length(forecasts) == 1
+    @test has_time_series(h_sys, electric_load)
     remove_time_series!(sys, SingleTimeSeries, h_sys, electric_load, "max_active_power")
     sts = collect(get_time_series_multiple(h_sys, type = SingleTimeSeries))
     @test length(sts) == 1
+    @test !has_time_series(h_sys, electric_load)
 end
 
 @testset "Hybrid System from unattached subcomponents" begin
@@ -101,11 +119,43 @@ end
     initial_time = Dates.DateTime("2020-09-01")
     resolution = Dates.Hour(1)
     other_time = initial_time + resolution
-    name = "test"
+    name1 = "test1"
+    name2 = "test2"
     horizon = 24
-    data = Dict(initial_time => ones(horizon), other_time => 5.0 * ones(horizon))
-    forecast = Deterministic(name, data, resolution)
+    data = Dict(initial_time => rand(horizon), other_time => 5.0 * rand(horizon))
+
+    expected_timestamps = collect(range(initial_time, step = resolution, length = horizon))
+    expected_data = data[initial_time]
+    expected_ta = TimeSeries.TimeArray(expected_timestamps, expected_data)
+
+    # No scaling factor
+    forecast = Deterministic(name1, data, resolution)
     add_time_series!(sys, h_sys, thermal_unit, forecast)
-    @test get_time_series(Deterministic, h_sys, thermal_unit, "test") isa Deterministic
-    @test get_time_series(Deterministic, h_sys, "ThermalStandard__test") isa Deterministic
+
+    @test get_time_series(Deterministic, h_sys, thermal_unit, name1) isa Deterministic
+    @test get_time_series(Deterministic, h_sys, "ThermalStandard__test1") isa Deterministic
+
+    @test get_time_series_values(Deterministic, h_sys, thermal_unit, name1) == expected_data
+    @test get_time_series_timestamps(Deterministic, h_sys, thermal_unit, name1) ==
+          expected_timestamps
+    @test get_time_series_array(Deterministic, h_sys, thermal_unit, name1) == expected_ta
+
+    # With scaling factor
+    expected_data = data[initial_time] * get_max_active_power(thermal_unit)
+    expected_ta = TimeSeries.TimeArray(expected_timestamps, expected_data)
+    forecast = Deterministic(
+        name2,
+        data,
+        resolution,
+        scaling_factor_multiplier = get_max_active_power,
+    )
+    add_time_series!(sys, h_sys, thermal_unit, forecast)
+
+    @test get_time_series(Deterministic, h_sys, thermal_unit, name2) isa Deterministic
+    @test get_time_series(Deterministic, h_sys, "ThermalStandard__test2") isa Deterministic
+
+    @test get_time_series_values(Deterministic, h_sys, thermal_unit, name2) == expected_data
+    @test get_time_series_timestamps(Deterministic, h_sys, thermal_unit, name2) ==
+          expected_timestamps
+    @test get_time_series_array(Deterministic, h_sys, thermal_unit, name2) == expected_ta
 end

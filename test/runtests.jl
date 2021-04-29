@@ -1,5 +1,6 @@
 using Test
 using Logging
+using Random
 using DataStructures
 using Dates
 using LinearAlgebra

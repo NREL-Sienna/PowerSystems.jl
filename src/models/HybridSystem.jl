@@ -258,10 +258,23 @@ function make_unique_time_series_name(
     return make_unique_time_series_name(hybrid, subcomponent, get_name(time_series))
 end
 
+const _HYBRID_SYS_NAME_DELIMITER = "__"
+
 function make_unique_time_series_name(
     hybrid::HybridSystem,
     subcomponent::Component,
     name::AbstractString,
 )
-    return join((string(typeof(subcomponent)), name), "__")
+    return join((string(typeof(subcomponent)), name), _HYBRID_SYS_NAME_DELIMITER)
+end
+
+function does_time_series_name_match_subcomponent(hybrid::HybridSystem, subcomponent, name)
+    fields = split(name, _HYBRID_SYS_NAME_DELIMITER)
+    if length(fields) != 2
+        throw(
+            ArgumentError("$name is not valid for a HybridSystem subcomponent time series"),
+        )
+    end
+
+    return fields[1] == string(typeof(subcomponent))
 end
