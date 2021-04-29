@@ -10060,6 +10060,40 @@
       "supertype": "FrequencyEstimator"
     },
     {
+      "struct_name": "FixedPLL",
+      "docstring": "Parameters of a Fixed PLL (or no PLL).",
+      "fields": [
+        {
+          "name": "ω_pll_ref",
+          "comment": "Reference used",
+          "null_value": 0,
+          "data_type": "Float64",
+          "default": "1.0"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "FixedPLL has no states",
+          "internal_default": "Vector{Symbol}()",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "FixedPLL has no states",
+          "internal_default": 0,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "FrequencyEstimator"
+    },
+    {
       "struct_name": "VirtualInertia",
       "docstring": "Parameters of a Virtual Inertia with SRF using VSM for active power controller",
       "fields": [
