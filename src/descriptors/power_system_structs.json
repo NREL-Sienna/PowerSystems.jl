@@ -10128,6 +10128,64 @@
       "supertype": "ActivePowerControl"
     },
     {
+      "struct_name": "ActivePowerDroop",
+      "docstring": "Parameters of an Active Power droop controller",
+      "fields": [
+        {
+          "name": "Rp",
+          "comment": "Droop Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ωz",
+          "comment": "filter frequency cutoff",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the ActivePowerDroop model are:\n\tθ_oc: Phase angle displacement of the inverter model,\n\tp_oc: Measured active power of the inverter model",
+          "internal_default": "[:θ_oc, :p_oc]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "ActivePowerDroop has two states",
+          "internal_default": 2,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "ActivePowerControl"
+    },
+    {
       "struct_name": "ReactivePowerDroop",
       "docstring": "Parameters of a Reactive Power droop controller",
       "fields": [
