@@ -80,6 +80,7 @@ include("LCLFilter.jl")
 include("LCFilter.jl")
 include("KauraPLL.jl")
 include("VirtualInertia.jl")
+include("ActivePowerDroop.jl")
 include("ReactivePowerDroop.jl")
 include("CurrentControl.jl")
 include("Source.jl")
@@ -181,6 +182,7 @@ export get_R_f
 export get_R_lim
 export get_R_open
 export get_R_th
+export get_Rp
 export get_Rselect
 export get_Se
 export get_T1
@@ -406,6 +408,7 @@ export get_τ_limits
 export get_ω_lp
 export get_ωad
 export get_ωf
+export get_ωz
 export set_A1!
 export set_A2!
 export set_A3!
@@ -503,6 +506,7 @@ export set_R_f!
 export set_R_lim!
 export set_R_open!
 export set_R_th!
+export set_Rp!
 export set_Rselect!
 export set_Se!
 export set_T1!
@@ -728,3 +732,4 @@ export set_τ_limits!
 export set_ω_lp!
 export set_ωad!
 export set_ωf!
+export set_ωz!
