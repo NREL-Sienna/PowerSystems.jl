@@ -25,6 +25,37 @@ function create_rts_multistart_system(time_series_resolution = Dates.Hour(1))
     return System(data; time_series_resolution = time_series_resolution)
 end
 
+function create_rts_system_with_hybrid_system(; add_forecasts = true)
+    sys = PSB.build_system(
+        PSB.PSITestSystems,
+        "test_RTS_GMLC_sys",
+        add_forecasts = add_forecasts,
+    )
+    thermal_unit = first(get_components(ThermalStandard, sys))
+    bus = get_bus(thermal_unit)
+    electric_load = first(get_components(PowerLoad, sys))
+    storage = first(get_components(GenericBattery, sys))
+    renewable_unit = first(get_components(RenewableDispatch, sys))
+
+    name = "Test H"
+    h_sys = HybridSystem(
+        name = name,
+        available = true,
+        status = true,
+        bus = bus,
+        active_power = 1.0,
+        reactive_power = 1.0,
+        thermal_unit = thermal_unit,
+        electric_load = electric_load,
+        storage = storage,
+        renewable_unit = renewable_unit,
+        base_power = 100.0,
+        operation_cost = TwoPartCost(nothing),
+    )
+    add_component!(sys, h_sys)
+    return sys
+end
+
 """Allows comparison of structs that were created from different parsers which causes them
 to have different UUIDs."""
 function compare_values_without_uuids(x::T, y::T) where {T <: IS.InfrastructureSystemsType}
