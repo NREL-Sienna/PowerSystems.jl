@@ -216,6 +216,7 @@ export remove_time_series!
 export clear_time_series!
 export copy_time_series!
 export add_component!
+export add_components!
 export remove_component!
 export remove_components!
 export clear_components!
