@@ -195,14 +195,6 @@ set_interconnection_rating!(value::HybridSystem, val) = value.interconnection_ra
 set_active_power!(value::HybridSystem, val) = value.active_power = val
 """Set [`HybridSystem`](@ref) `reactive_power`."""
 set_reactive_power!(value::HybridSystem, val) = value.reactive_power = val
-"""Get [`HybridSystem`](@ref) thermal unit"""
-set_thermal_unit!(value::HybridSystem, val::ThermalGen) = value.thermal_unit = val
-"""Get [`HybridSystem`](@ref) load"""
-set_electric_load!(value::HybridSystem, val::ElectricLoad) = value.electric_load = val
-"""Get [`HybridSystem`](@ref) storage unit"""
-set_storage!(value::HybridSystem, val::Storage) = value.storage = val
-"""Get [`HybridSystem`](@ref) renewable unit"""
-set_renewable_unit!(value::HybridSystem, val::RenewableGen) = value.renewable_unit = val
 """set [`HybridSystem`](@ref) interconnection impedance"""
 set_interconnection_impedance!(value::HybridSystem, val) =
     value.interconnection_impedance = val
@@ -245,5 +237,39 @@ function get_subcomponents(hybrid::HybridSystem)
                 put!(channel, subcomponent)
             end
         end
+    end
+end
+
+"""Set [`HybridSystem`](@ref) thermal unit"""
+function set_thermal_unit!(hybrid::HybridSystem, val::ThermalGen)
+    _raise_if_attached_to_system(hybrid)
+    hybrid.thermal_unit = val
+end
+
+"""Set [`HybridSystem`](@ref) load"""
+function set_electric_load!(hybrid::HybridSystem, val::ElectricLoad)
+    _raise_if_attached_to_system(hybrid)
+    value.electric_load = val
+end
+
+"""Set [`HybridSystem`](@ref) storage unit"""
+function set_storage!(hybrid::HybridSystem, val::Storage)
+    _raise_if_attached_to_system(hybrid)
+    value.storage = val
+end
+
+"""Set [`HybridSystem`](@ref) renewable unit"""
+function set_renewable_unit!(hybrid::HybridSystem, val::RenewableGen)
+    _raise_if_attached_to_system(hybrid)
+    value.renewable_unit = val
+end
+
+function _raise_if_attached_to_system(hybrid::HybridSystem)
+    if hybrid.time_series_container.time_series_storage !== nothing
+        throw(
+            ArgumentError(
+                "Operation not allowed because the HybridSystem is attached to a system",
+            ),
+        )
     end
 end

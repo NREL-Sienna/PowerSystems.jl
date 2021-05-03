@@ -64,6 +64,9 @@ end
     remove_time_series!(sys, AbstractDeterministic, electric_load, "max_active_power")
     remove_time_series!(sys, SingleTimeSeries, electric_load, "max_active_power")
     @test !has_time_series(electric_load)
+
+    # Can't set the units when the HybridSystem is attached to system.
+    @test_throws ArgumentError PSY.set_thermal_unit!(h_sys, thermal_unit)
 end
 
 @testset "Hybrid System from unattached subcomponents" begin
