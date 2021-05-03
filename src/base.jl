@@ -383,7 +383,7 @@ function add_component!(
     IS.add_component!(
         sys.data,
         component;
-        deserialization_in_progress = deserialization_in_progress,
+        allow_existing_time_series = deserialization_in_progress,
         skip_validation = skip_validation,
         _kwargs...,
     )
