@@ -212,7 +212,10 @@ Builds a Adjacency from the system. The return is an N x N Adjacency Array index
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
 function Adjacency(sys::System; check_connectivity::Bool = true)
-    nodes = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
+    nodes = sort(
+        collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)),
+        by = x -> get_number(x),
+    )
     branches = get_components(Branch, sys, get_available)
     return Adjacency(branches, nodes; check_connectivity = check_connectivity)
 end
@@ -243,9 +246,37 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC)
     return I
 end
 
-function validate_connectivity(sys::System)
-    a = Adjacency(sys; check_connectivity = false)
-    return validate_connectivity(a.data, collect(get_components(Bus, sys)), a.lookup[1])
+function validate_connectivity(sys::System; method::Union{Nothing, Function} = nothing)
+    buses = sort(
+        collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)),
+        by = b -> get_number(b),
+    )
+    branches = get_components(Branch, sys, get_available)
+
+    preferred_method = length(buses) > 2000 ? find_connected_components : _goderya
+
+    if method === nothing
+        method = preferred_method
+    end
+
+    if method == _goderya
+        @info "Validating connectivity with Goderya algorithm"
+        length(buses) > 2000 &&
+            @warn "The Goderya algorithm is memory intensive on large networks and may not scale well"
+        a = Adjacency(branches, buses; check_connectivity = false)
+        connected = validate_connectivity(a.data, buses, a.lookup[1])
+    elseif method == find_connected_components
+        @info "Validating connectivity with network traversal"
+        cc = find_connected_components(branches, buses)
+        if length(cc) != 1
+            @warn "Network has at least $(length(cc)) connected components with $(length.(cc)) nodes"
+            connected = false
+        else
+            connected = true
+        end
+    end
+
+    return connected
 end
 
 function validate_connectivity(M, nodes, bus_lookup)
@@ -267,4 +298,38 @@ function validate_connectivity(M, nodes, bus_lookup)
         connected = false
     end
     return connected
+end
+
+"""
+Computes the connected components of the network graph using network traversal.
+Returns a set of sets of buses, each set is a connected component
+"""
+# this function borrows heavily from "calc_connected_compoents" in PowerModels.jl
+function find_connected_components(sys::System)
+    buses = get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)
+    branches = get_components(Branch, sys, get_available)
+
+    return find_connected_components(branches, buses)
+end
+
+function find_connected_components(branches, buses)
+    neighbors = Dict(i => [] for i in buses)
+    for line in branches
+        arc = get_arc(line)
+        if get_from(arc) ∈ buses && get_to(arc) ∈ buses
+            push!(neighbors[get_from(arc)], get_to(arc))
+            push!(neighbors[get_to(arc)], get_from(arc))
+        end
+    end
+
+    component_lookup = Dict(i => Set{Bus}([i]) for i in buses)
+    touched = Set{Bus}()
+
+    for i in buses
+        if !(i in touched)
+            PowerSystems._dfs(i, neighbors, component_lookup, touched)
+        end
+    end
+
+    return (Set(values(component_lookup)))
 end

@@ -209,6 +209,7 @@ export get_dynamic_components
 export solve_powerflow!
 export solve_powerflow
 export validate_connectivity
+export find_connected_components
 
 export parse_file
 export add_time_series!
