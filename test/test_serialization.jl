@@ -191,3 +191,18 @@ end
     _, result = validate_serialization(sys)
     @test result
 end
+
+@testset "Test JSON serialization of HybridSystem" begin
+    sys = create_rts_system_with_hybrid_system(add_forecasts = true)
+    h_sys = first(get_components(HybridSystem, sys))
+    subcomponents = collect(get_subcomponents(h_sys))
+    @test length(subcomponents) == 4
+    sys2, result = validate_serialization(sys)
+    @test result
+    subcomponent = subcomponents[1]
+    @test IS.get_masked_component(
+        typeof(subcomponent),
+        sys2.data,
+        get_name(subcomponent),
+    ) !== nothing
+end

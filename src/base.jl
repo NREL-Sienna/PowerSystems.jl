@@ -383,7 +383,7 @@ function add_component!(
     IS.add_component!(
         sys.data,
         component;
-        deserialization_in_progress = deserialization_in_progress,
+        allow_existing_time_series = deserialization_in_progress,
         skip_validation = skip_validation,
         _kwargs...,
     )
@@ -1234,7 +1234,7 @@ function IS.deserialize(
 
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
-    deserialize_components!(sys, raw["data"]["components"])
+    deserialize_components!(sys, raw["data"])
     pop!(ext, "deserialization_in_progress")
     isempty(ext) && clear_ext!(sys)
 
@@ -1252,7 +1252,7 @@ end
 function deserialize_components!(sys::System, raw)
     # Convert the array of components into type-specific arrays to allow addition by type.
     data = Dict{Any, Vector{Dict}}()
-    for component in raw
+    for component in Iterators.Flatten((raw["components"], raw["masked_components"]))
         type = IS.get_type_from_serialization_data(component)
         components = get(data, type, nothing)
         if components === nothing
@@ -1310,7 +1310,17 @@ function deserialize_components!(sys::System, raw)
     deserialize_and_add!(; include_types = [DynamicBranch])
     # Static injection devices can contain dynamic injection devices.
     deserialize_and_add!(; include_types = [StaticReserveGroup, DynamicInjection])
+    # StaticInjectionSubsystem instances have StaticInjection subcomponents.
+    deserialize_and_add!(; skip_types = [StaticInjectionSubsystem])
     deserialize_and_add!()
+
+    for subsystem in get_components(StaticInjectionSubsystem, sys)
+        # This normally happens when the subsytem is added to the system.
+        # Workaround for deserialization.
+        for subcomponent in get_subcomponents(subsystem)
+            IS.mask_component!(sys.data, subcomponent)
+        end
+    end
 end
 
 """
@@ -1506,6 +1516,20 @@ function handle_component_addition!(sys::System, dyn_injector::DynamicInjection;
     static_base_power = get_base_power(static_injector)
     set_base_power!(dyn_injector, static_base_power)
     set_dynamic_injector!(static_injector, dyn_injector)
+end
+
+function handle_component_addition!(
+    sys::System,
+    subsystem::StaticInjectionSubsystem;
+    kwargs...,
+)
+    for subcomponent in get_subcomponents(subsystem)
+        if is_attached(subcomponent, sys)
+            IS.mask_component!(sys.data, subcomponent)
+        else
+            IS.add_masked_component!(sys.data, subcomponent)
+        end
+    end
 end
 
 function handle_component_addition_common!(sys::System, component::Branch)
