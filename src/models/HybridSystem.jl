@@ -9,7 +9,7 @@ Each generator is a data structure that is defined by the following components:
 - [Storage](@ref PowerSystems.Storage)
 - [RenewableGen](@ref PowerSystems.RenewableGen)
 """
-mutable struct HybridSystem <: StaticInjection
+mutable struct HybridSystem <: StaticInjectionSubsystem
     name::String
     available::Bool
     status::Bool
@@ -195,14 +195,6 @@ set_interconnection_rating!(value::HybridSystem, val) = value.interconnection_ra
 set_active_power!(value::HybridSystem, val) = value.active_power = val
 """Set [`HybridSystem`](@ref) `reactive_power`."""
 set_reactive_power!(value::HybridSystem, val) = value.reactive_power = val
-"""Get [`HybridSystem`](@ref) thermal unit"""
-set_thermal_unit!(value::HybridSystem, val::ThermalGen) = value.thermal_unit = val
-"""Get [`HybridSystem`](@ref) load"""
-set_electric_load!(value::HybridSystem, val::ElectricLoad) = value.electric_load = val
-"""Get [`HybridSystem`](@ref) storage unit"""
-set_storage!(value::HybridSystem, val::Storage) = value.storage = val
-"""Get [`HybridSystem`](@ref) renewable unit"""
-set_renewable_unit!(value::HybridSystem, val::RenewableGen) = value.renewable_unit = val
 """set [`HybridSystem`](@ref) interconnection impedance"""
 set_interconnection_impedance!(value::HybridSystem, val) =
     value.interconnection_impedance = val
@@ -226,10 +218,58 @@ set_ext!(value::HybridSystem, val) = value.ext = val
 InfrastructureSystems.set_time_series_container!(value::HybridSystem, val) =
     value.time_series_container = val
 
-function IS.deserialize(::Type{HybridSystem}, data::Dict, component_cache::Dict)
-    error("Deserialization of HybridSystem is not currently supported")
+"""
+Return an iterator over the subcomponents in the HybridSystem.
+
+# Examples
+```julia
+for subcomponent in get_subcomponents(hybrid_sys)
+    @show subcomponent
+end
+subcomponents = collect(get_subcomponents(hybrid_sys))
+```
+"""
+function get_subcomponents(hybrid::HybridSystem)
+    Channel() do channel
+        for field in (:thermal_unit, :electric_load, :storage, :renewable_unit)
+            subcomponent = getfield(hybrid, field)
+            if subcomponent !== nothing
+                put!(channel, subcomponent)
+            end
+        end
+    end
 end
 
-function IS.serialize(component::HybridSystem)
-    error("Serialization of HybridSystem is not currently supported")
+"""Set [`HybridSystem`](@ref) thermal unit"""
+function set_thermal_unit!(hybrid::HybridSystem, val::ThermalGen)
+    _raise_if_attached_to_system(hybrid)
+    hybrid.thermal_unit = val
+end
+
+"""Set [`HybridSystem`](@ref) load"""
+function set_electric_load!(hybrid::HybridSystem, val::ElectricLoad)
+    _raise_if_attached_to_system(hybrid)
+    value.electric_load = val
+end
+
+"""Set [`HybridSystem`](@ref) storage unit"""
+function set_storage!(hybrid::HybridSystem, val::Storage)
+    _raise_if_attached_to_system(hybrid)
+    value.storage = val
+end
+
+"""Set [`HybridSystem`](@ref) renewable unit"""
+function set_renewable_unit!(hybrid::HybridSystem, val::RenewableGen)
+    _raise_if_attached_to_system(hybrid)
+    value.renewable_unit = val
+end
+
+function _raise_if_attached_to_system(hybrid::HybridSystem)
+    if hybrid.time_series_container.time_series_storage !== nothing
+        throw(
+            ArgumentError(
+                "Operation not allowed because the HybridSystem is attached to a system",
+            ),
+        )
+    end
 end

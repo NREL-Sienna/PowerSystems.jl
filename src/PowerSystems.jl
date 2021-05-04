@@ -23,6 +23,7 @@ export get_max_active_power
 export get_max_reactive_power
 export Branch
 export StaticInjection
+export StaticInjectionSubsystem
 export ACBranch
 export Line
 export MonitoredLine
@@ -237,6 +238,7 @@ export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
 export get_component
 export get_components
+export get_subcomponents
 export get_components_by_name
 export get_available_components
 export get_forecast_horizon
@@ -431,6 +433,7 @@ include("definitions.jl")
 include("models/static_models.jl")
 include("models/dynamic_models.jl")
 include("models/injection.jl")
+include("models/static_injection_subsystem.jl")
 
 # Include utilities
 include("utils/logging.jl")
