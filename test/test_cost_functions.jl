@@ -66,8 +66,8 @@ end
 end
 
 @testset "Test MarketBidCost with single `start_up::Number` value" begin
-    expected = (hot=1.0, warm=0.0, cold=0.0)  # should only be used for the `hot` value.
-    cost = MarketBidCost(; start_up=1, no_load=rand(), shut_down=rand())
+    expected = (hot = 1.0, warm = 0.0, cold = 0.0)  # should only be used for the `hot` value.
+    cost = MarketBidCost(; start_up = 1, no_load = rand(), shut_down = rand())
     @test cost.start_up == expected
 end
 
