@@ -79,7 +79,7 @@ include("ZeroOrderBESS.jl")
 include("LCLFilter.jl")
 include("LCFilter.jl")
 include("KauraPLL.jl")
-include("FixedPLL.jl")
+include("FixedFrequency.jl")
 include("VirtualInertia.jl")
 include("ActivePowerDroop.jl")
 include("ReactivePowerDroop.jl")
@@ -290,6 +290,7 @@ export get_eq_p
 export get_ext
 export get_fixed
 export get_flow_limits
+export get_frequency
 export get_from
 export get_fs
 export get_fuel
@@ -407,7 +408,6 @@ export get_θp
 export get_θp_rad
 export get_τ_limits
 export get_ω_lp
-export get_ω_pll_ref
 export get_ωad
 export get_ωf
 export get_ωz
@@ -615,6 +615,7 @@ export set_eq_p!
 export set_ext!
 export set_fixed!
 export set_flow_limits!
+export set_frequency!
 export set_from!
 export set_fs!
 export set_fuel!
@@ -732,7 +733,6 @@ export set_θp!
 export set_θp_rad!
 export set_τ_limits!
 export set_ω_lp!
-export set_ω_pll_ref!
 export set_ωad!
 export set_ωf!
 export set_ωz!

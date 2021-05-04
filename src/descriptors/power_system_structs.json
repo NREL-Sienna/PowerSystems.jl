@@ -10060,11 +10060,11 @@
       "supertype": "FrequencyEstimator"
     },
     {
-      "struct_name": "FixedPLL",
-      "docstring": "Parameters of a Fixed PLL (or no PLL).",
+      "struct_name": "FixedFrequency",
+      "docstring": "Parameters of a Fixed Frequency Estimator (i.e. no PLL).",
       "fields": [
         {
-          "name": "ω_pll_ref",
+          "name": "frequency",
           "comment": "Reference used",
           "null_value": 0,
           "data_type": "Float64",
@@ -10079,14 +10079,14 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "FixedPLL has no states",
+          "comment": "FixedFrequency has no states",
           "internal_default": "Vector{Symbol}()",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "FixedPLL has no states",
+          "comment": "FixedFrequency has no states",
           "internal_default": 0,
           "data_type": "Int"
         }
