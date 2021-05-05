@@ -212,7 +212,7 @@ Builds a Adjacency from the system. The return is an N x N Adjacency Array index
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
 function Adjacency(sys::System; check_connectivity::Bool = true)
-    nodes = sort(
+    nodes = sort!(
         collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)),
         by = x -> get_number(x),
     )
@@ -247,7 +247,7 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC)
 end
 
 function validate_connectivity(sys::System; method::Union{Nothing, Function} = nothing)
-    buses = sort(
+    buses = sort!(
         collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)),
         by = b -> get_number(b),
     )
@@ -304,32 +304,19 @@ end
 Computes the connected components of the network graph using network traversal.
 Returns a set of sets of buses, each set is a connected component
 """
-# this function borrows heavily from "calc_connected_compoents" in PowerModels.jl
-function find_connected_components(sys::System)
+# this function extends the PowerModels.jl implementation to accept a System
+function calc_connected_components(sys::System; edges = ["branch", "dcline"])
     buses = get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)
     branches = get_components(Branch, sys, get_available)
 
-    return find_connected_components(branches, buses)
-end
-
-function find_connected_components(branches, buses)
-    neighbors = Dict(i => [] for i in buses)
-    for line in branches
-        arc = get_arc(line)
-        if get_from(arc) ∈ buses && get_to(arc) ∈ buses
-            push!(neighbors[get_from(arc)], get_to(arc))
-            push!(neighbors[get_to(arc)], get_from(arc))
-        end
+    pm_buses = Dict([get_number(b) => Dict("bus_type" => 1, "bus_i" => get_name(b)) for b in buses])
+    for b in buses
+        pm_buses[get_number(b)] = Dict("bus_type" => 1, "bus_i" => get_name(b))
     end
 
-    component_lookup = Dict(i => Set{Bus}([i]) for i in buses)
-    touched = Set{Bus}()
 
-    for i in buses
-        if !(i in touched)
-            PowerSystems._dfs(i, neighbors, component_lookup, touched)
-        end
-    end
 
-    return (Set(values(component_lookup)))
+    return calc_connected_components(data; edges = edges) #method borrowed from PowerModels.jl
 end
+
+

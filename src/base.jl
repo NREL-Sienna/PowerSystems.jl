@@ -673,7 +673,7 @@ function remove_components!(
     sys::System,
     filter_func::Function,
 ) where {T <: Component}
-    for component in get_components(T, sys, filter_func)
+    for component in collect(get_components(T, sys, filter_func))
         remove_component!(sys, component)
     end
 end
