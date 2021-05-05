@@ -15,6 +15,7 @@ jobs:
         julia-version: [1]
         os: [ubuntu-latest]
         package_name: [PowerSimulations, PowerSimulationsDynamics]
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
@@ -26,7 +27,21 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: NREL-SIIP/${{matrix.package_name}}.jl
-          path: "${{matrix.package_name}}.jl"
+          path: downstream
       - name: Run the tests
-        run: julia --project="${{matrix.package_name}}.jl" -e "using Pkg; Pkg.develop(PackageSpec(path=\"./\")); Pkg.update(); Pkg.test()"
-        shell: bash
+        shell: julia --project=downstream {0}
+        run: |
+          using Pkg
+          try
+            # Force it to use this PR's version of the package
+            Pkg.develop(PackageSpec(path="."))  # resolver may fail with main deps
+            Pkg.update()
+            Pkg.test()  # resolver may fail with test time deps
+          catch err
+            err isa Pkg.Resolve.ResolverError || rethrow()
+            # If we can't resolve that means this is incompatible by SemVer, and this is fine.
+            # It means we marked this as a breaking change, so we don't need to worry about
+            # mistakenly introducing a breaking change as we have intentionally made one.
+            @info "Not compatible with this release. No problem." exception=err
+            exit(0)  # Exit immediately, as a success
+          end

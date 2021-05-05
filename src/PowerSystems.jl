@@ -152,11 +152,13 @@ export LCFilter
 # FrequencyEstimator Exports
 export FrequencyEstimator
 export KauraPLL
+export FixedFrequency
 
 # Outer Control Exports
 export OuterControl
 export VirtualInertia
 export ReactivePowerDroop
+export ActivePowerDroop
 
 # InnerControl Export
 export InnerControl
