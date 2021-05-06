@@ -16,9 +16,7 @@ const PSY = PowerSystems
 const PSB = PowerSystemCaseBuilder
 
 import Aqua
-Aqua.test_unbound_args(PowerSystems)
-Aqua.test_undefined_exports(PowerSystems)
-Aqua.test_ambiguities(PowerSystems)
+Aqua.test_all(PowerSystems)
 
 include(joinpath(@__DIR__, "../src/utils/data.jl"))
 import .UtilsData: TestData
