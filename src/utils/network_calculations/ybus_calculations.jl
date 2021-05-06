@@ -253,21 +253,29 @@ function validate_connectivity(sys::System; method::Union{Nothing, Function} = n
     )
     branches = get_components(Branch, sys, get_available)
 
-    preferred_method = length(buses) > 2000 ? find_connected_components : _goderya
+    a = Adjacency(branches, buses; check_connectivity = false)
+
+    return validate_connectivity(a.data, buses, a.lookup[1]; method = method)
+end
+
+function validate_connectivity(
+    M,
+    nodes,
+    bus_lookup;
+    method::Union{Nothing, Function} = nothing,
+)
+    preferred_method =
+        Base.summarysize(M) > 200_000 ? calc_connected_components : goderya_connectivity
 
     if method === nothing
         method = preferred_method
     end
 
-    if method == _goderya
-        @info "Validating connectivity with Goderya algorithm"
-        length(buses) > 2000 &&
-            @warn "The Goderya algorithm is memory intensive on large networks and may not scale well"
-        a = Adjacency(branches, buses; check_connectivity = false)
-        connected = validate_connectivity(a.data, buses, a.lookup[1])
-    elseif method == find_connected_components
+    if method == goderya_connectivity
+        connected = goderya_connectivity(M, nodes, bus_lookup)
+    elseif method == calc_connected_components
         @info "Validating connectivity with network traversal"
-        cc = find_connected_components(branches, buses)
+        cc = calc_connected_components(M, bus_lookup)
         if length(cc) != 1
             @warn "Network has at least $(length(cc)) connected components with $(length.(cc)) nodes"
             connected = false
@@ -279,7 +287,11 @@ function validate_connectivity(sys::System; method::Union{Nothing, Function} = n
     return connected
 end
 
-function validate_connectivity(M, nodes, bus_lookup)
+function goderya_connectivity(M, nodes, bus_lookup)
+    @info "Validating connectivity with Goderya algorithm"
+    Base.summarysize(M) > 200_000 &&
+        @warn "The Goderya algorithm is memory intensive on large networks and may not scale well"
+
     I = _goderya(M)
 
     node_count = length(nodes)
@@ -300,23 +312,26 @@ function validate_connectivity(M, nodes, bus_lookup)
     return connected
 end
 
-"""
-Computes the connected components of the network graph using network traversal.
-Returns a set of sets of buses, each set is a connected component
-"""
 # this function extends the PowerModels.jl implementation to accept a System
-function calc_connected_components(sys::System; edges = ["branch", "dcline"])
-    buses = get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)
-    branches = get_components(Branch, sys, get_available)
-
-    pm_buses = Dict([get_number(b) => Dict("bus_type" => 1, "bus_i" => get_name(b)) for b in buses])
-    for b in buses
-        pm_buses[get_number(b)] = Dict("bus_type" => 1, "bus_i" => get_name(b))
-    end
-
-
-
-    return calc_connected_components(data; edges = edges) #method borrowed from PowerModels.jl
+function calc_connected_components(sys::System)
+    a = Adjacency(sys; check_connectivity = false)
+    return calc_connected_components(a.data, a.lookup[1])
 end
 
+# this function extends the PowerModels.jl implementation to accept an adjacency matrix and bus lookup
+function calc_connected_components(
+    M::SparseArrays.SparseMatrixCSC{Int64, Int64},
+    bus_lookup::Dict{Int64, Int64};
+    edges = ["branch", "dcline"],
+)
+    pm_buses = Dict([b => Dict("bus_type" => 1, "bus_i" => b) for (i, b) in bus_lookup])
 
+    arcs = findall((LinearAlgebra.UpperTriangular(M) - LinearAlgebra.I) .!= 0)
+    pm_branches = Dict(
+        [i => Dict("f_bus" => a[1], "t_bus" => a[2], "br_status" => 1) for
+         (i, a) in enumerate(arcs)],
+    )
+
+    data = Dict("bus" => pm_buses, "branch" => pm_branches)
+    return calc_connected_components(data)
+end
