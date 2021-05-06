@@ -3546,6 +3546,92 @@
       "supertype": "AVR"
     },
     {
+      "struct_name": "SEXS",
+      "docstring": "Parameters of Simplified Excitation System Model - SEXS in PSSE",
+      "fields": [
+        {
+          "name": "Ta_Tb",
+          "comment": "Ratio of lead and lag time constants",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "TB",
+          "comment": "Lag time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          }
+        },
+        {
+          "name": "K",
+          "comment": "Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Te",
+          "comment": "Field circuit time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_lim",
+          "comment": "Field voltage limits",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tVf: Voltage field,\n\tVr: Lead-lag state",
+          "internal_default": "[:Vf, :Vr]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "SEXS has 2 states",
+          "internal_default": 2,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "SEXS has 2 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
       "struct_name": "ESDC1A",
       "docstring": "Self-excited shunt fields with the voltage regulator operating in a mode commonly termed buck-boost. \nParameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds to ESDC1A in PSSE and PSLF",
       "fields": [
