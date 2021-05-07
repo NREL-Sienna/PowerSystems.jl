@@ -3604,7 +3604,7 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states are:\n\tVf: Voltage field,\n\tVr: Lead-lag state",
+          "comment": "The states are:\tVf: Voltage field,\tVr: Lead-lag state",
           "internal_default": "[:Vf, :Vr]",
           "data_type": "Vector{Symbol}"
         },
