@@ -167,12 +167,12 @@ function set_service_bid!(
     service::Service,
     time_series_data::IS.TimeSeriesData,
 )
-    if get_name(time_series_data) != get_name(service)
-        error(
-            "Name provided in the TimeSeries Data $(get_name(time_series_data)), doesn't match the Service $(get_name(service)).",
-        )
-    end
-    verify_device_eligibility(sys, component, service)
+#     if get_name(time_series_data) != get_name(service)
+#         error(
+#             "Name provided in the TimeSeries Data $(get_name(time_series_data)), doesn't match the Service $(get_name(service)).",
+#         )
+#     end
+#     verify_device_eligibility(sys, component, service)
     add_time_series!(sys, component, time_series_data)
     ancillary_services = get_ancillary_services(get_operation_cost(component))
     push!(ancillary_services, service)
