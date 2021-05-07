@@ -24,9 +24,7 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 - `Te::Float64`: Field circuit time constant in s, validation range: `(0, nothing)`
 - `V_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Field voltage limits
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
-	Vf: Voltage field,
-	Vr: Lead-lag state
+- `states::Vector{Symbol}`: The states are:	Vf: Voltage field,	Vr: Lead-lag state
 - `n_states::Int`: SEXS has 2 states
 - `states_types::Vector{StateTypes}`: SEXS has 2 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -43,9 +41,7 @@ mutable struct SEXS <: AVR
     "Field voltage limits"
     V_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     ext::Dict{String, Any}
-    "The states are:
-	Vf: Voltage field,
-	Vr: Lead-lag state"
+    "The states are:	Vf: Voltage field,	Vr: Lead-lag state"
     states::Vector{Symbol}
     "SEXS has 2 states"
     n_states::Int
