@@ -348,13 +348,14 @@ function solve_powerflow(system::System; finite_diff = false, kwargs...)
 end
 
 function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
+    ybus_kw = [:check_connectivity, :connectivity_method]
+    ybus_kwargs = (k for k in kwargs if first(k) ∈ ybus_kw)
+    kwargs = (k for k in kwargs if first(k) ∉ ybus_kw)
+
     buses = sort!(collect(get_components(Bus, system)), by = x -> get_number(x))
     N_BUS = length(buses)
 
     # assumes the ordering in YBus is the same as in the buses.
-    ybus_kwargs =
-        (k for k in kwargs if first(k) ∈ [:check_connectivity, :connectivity_method])
-    kwargs = (k for k in kwargs if first(k) ∉ [:check_connectivity, :connectivity_method])
     Yb = Ybus(get_components(ACBranch, system), buses; ybus_kwargs...).data
     a = collect(1:N_BUS)
     I, J, V = SparseArrays.findnz(Yb)
