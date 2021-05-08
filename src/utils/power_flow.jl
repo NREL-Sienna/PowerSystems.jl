@@ -352,7 +352,10 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     N_BUS = length(buses)
 
     # assumes the ordering in YBus is the same as in the buses.
-    Yb = Ybus(get_components(ACBranch, system), buses).data
+    ybus_kwargs =
+        (k for k in kwargs if first(k) ∈ [:check_connectivity, :connectivity_method])
+    kwargs = (k for k in kwargs if first(k) ∉ [:check_connectivity, :connectivity_method])
+    Yb = Ybus(get_components(ACBranch, system), buses; ybus_kwargs...).data
     a = collect(1:N_BUS)
     I, J, V = SparseArrays.findnz(Yb)
     neighbors = [Set{Int}([i]) for i in 1:N_BUS]
