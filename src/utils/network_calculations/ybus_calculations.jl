@@ -328,7 +328,7 @@ end
 
 # this function extends the PowerModels.jl implementation to accept an adjacency matrix and bus lookup
 function find_connected_components(M, bus_lookup::Dict{Int64, Int64})
-    pm_buses = Dict([b => Dict("bus_type" => 1, "bus_i" => b) for (i, b) in bus_lookup])
+    pm_buses = Dict([i => Dict("bus_type" => 1, "bus_i" => b) for (i, b) in bus_lookup])
 
     arcs = findall((LinearAlgebra.UpperTriangular(M) - LinearAlgebra.I) .!= 0)
     pm_branches = Dict(
@@ -337,7 +337,13 @@ function find_connected_components(M, bus_lookup::Dict{Int64, Int64})
     )
 
     data = Dict("bus" => pm_buses, "branch" => pm_branches)
-    return calc_connected_components(data)
+    cc = calc_connected_components(data)
+    bus_decode = Dict(value => key for (key, value) in bus_lookup)
+    connected_components = Vector{Set{Int64}}()
+    for c in cc
+        push!(connected_components, Set([bus_decode[b] for b in c]))
+    end
+    return Set(connected_components)
 end
 
 function dfs_connectivity(M, _::Vector{Bus}, bus_lookup::Dict{Int64, Int64})
