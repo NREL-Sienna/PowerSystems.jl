@@ -663,9 +663,11 @@ Remove all components of type T from the system.
 Throws ArgumentError if the type is not stored.
 """
 function remove_components!(::Type{T}, sys::System) where {T <: Component}
-    for component in IS.remove_components!(T, sys.data)
+    components = IS.remove_components!(T, sys.data)
+    for component in components
         handle_component_removal!(sys, component)
     end
+    return components
 end
 
 function remove_components!(
@@ -673,9 +675,11 @@ function remove_components!(
     sys::System,
     filter_func::Function,
 ) where {T <: Component}
-    for component in collect(get_components(T, sys, filter_func))
+    components = collect(get_components(T, sys, filter_func))
+    for component in components
         remove_component!(sys, component)
     end
+    return components
 end
 
 function clear_units!(component::Component)
