@@ -350,6 +350,14 @@ end
 
     proportional_avr = AVRSimple(Kv = 5000.0)
 
+    sexs_avr = SEXS(
+        Ta_Tb = 0.1,
+        Tb = 10.0,
+        K = 100.0,
+        Te = 0.1,
+        V_lim = (-4.0, 5.0),
+    )
+
     fixed_tg = TGFixed(efficiency = 1.0)
 
     no_pss = PSSFixed(V_pss = 0.0)
@@ -407,6 +415,17 @@ end
     )
     @test Gen2AVR isa PowerSystems.Component
 
+    Gen3AVR = DynamicGenerator(
+        name = get_name(static_gen),
+        ω_ref = 1.0,
+        machine = oneDoneQ,
+        shaft = BaseShaft,
+        avr = sexs_avr,
+        prime_mover = fixed_tg,
+        pss = no_pss,
+    )
+    @test Gen3AVR isa PowerSystems.Component
+
     sys = System(100)
     for bus in nodes_OMIB
         add_component!(sys, bus)
@@ -454,6 +473,20 @@ end
     @test_throws IS.ConflictingInputsError PSY.get_avr_saturation((0.2, 0.1), (0.1, 0.1))
 
     @test length(collect(get_dynamic_components(Gen2AVR))) == 5
+
+    remove_component!(sys, Gen2AVR)
+    @test isnothing(get_dynamic_injector(static_gen))
+    add_component!(sys, Gen3AVR, static_gen)
+
+    retrieved_gen = collect(get_components(DynamicGenerator,sys))
+    orig_dir = pwd()
+    temp_dir = mktempdir()
+    cd(temp_dir)
+    to_json(sys, "sys.json")
+    sys2 = System("sys.json")
+    serialized_gen =  collect(get_components(DynamicGenerator,sys2))
+    @test get_name(retrieved_gen[1]) == get_name(serialized_gen[1])
+    cd(orig_dir)
 end
 
 @testset "Forward functions" begin

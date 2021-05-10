@@ -4,7 +4,7 @@ This file is auto-generated. Do not edit.
 """
     mutable struct SEXS <: AVR
         Ta_Tb::Float64
-        TB::Float64
+        Tb::Float64
         K::Float64
         Te::Float64
         V_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
@@ -19,7 +19,7 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 
 # Arguments
 - `Ta_Tb::Float64`: Ratio of lead and lag time constants, validation range: `(0, nothing)`
-- `TB::Float64`: Lag time constant, validation range: `(eps(), nothing)`
+- `Tb::Float64`: Lag time constant, validation range: `(eps(), nothing)`
 - `K::Float64`: Gain, validation range: `(0, nothing)`
 - `Te::Float64`: Field circuit time constant in s, validation range: `(0, nothing)`
 - `V_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Field voltage limits
@@ -33,7 +33,7 @@ mutable struct SEXS <: AVR
     "Ratio of lead and lag time constants"
     Ta_Tb::Float64
     "Lag time constant"
-    TB::Float64
+    Tb::Float64
     "Gain"
     K::Float64
     "Field circuit time constant in s"
@@ -51,19 +51,19 @@ mutable struct SEXS <: AVR
     internal::InfrastructureSystemsInternal
 end
 
-function SEXS(Ta_Tb, TB, K, Te, V_lim, ext=Dict{String, Any}(), )
-    SEXS(Ta_Tb, TB, K, Te, V_lim, ext, [:Vf, :Vr], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function SEXS(Ta_Tb, Tb, K, Te, V_lim, ext=Dict{String, Any}(), )
+    SEXS(Ta_Tb, Tb, K, Te, V_lim, ext, [:Vf, :Vr], 2, [StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function SEXS(; Ta_Tb, TB, K, Te, V_lim, ext=Dict{String, Any}(), states=[:Vf, :Vr], n_states=2, states_types=[StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
-    SEXS(Ta_Tb, TB, K, Te, V_lim, ext, states, n_states, states_types, internal, )
+function SEXS(; Ta_Tb, Tb, K, Te, V_lim, ext=Dict{String, Any}(), states=[:Vf, :Vr], n_states=2, states_types=[StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
+    SEXS(Ta_Tb, Tb, K, Te, V_lim, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
 function SEXS(::Nothing)
     SEXS(;
         Ta_Tb=0,
-        TB=0,
+        Tb=0,
         K=0,
         Te=0,
         V_lim=(min=0.0, max=0.0),
@@ -73,8 +73,8 @@ end
 
 """Get [`SEXS`](@ref) `Ta_Tb`."""
 get_Ta_Tb(value::SEXS) = value.Ta_Tb
-"""Get [`SEXS`](@ref) `TB`."""
-get_TB(value::SEXS) = value.TB
+"""Get [`SEXS`](@ref) `Tb`."""
+get_Tb(value::SEXS) = value.Tb
 """Get [`SEXS`](@ref) `K`."""
 get_K(value::SEXS) = value.K
 """Get [`SEXS`](@ref) `Te`."""
@@ -94,8 +94,8 @@ get_internal(value::SEXS) = value.internal
 
 """Set [`SEXS`](@ref) `Ta_Tb`."""
 set_Ta_Tb!(value::SEXS, val) = value.Ta_Tb = val
-"""Set [`SEXS`](@ref) `TB`."""
-set_TB!(value::SEXS, val) = value.TB = val
+"""Set [`SEXS`](@ref) `Tb`."""
+set_Tb!(value::SEXS, val) = value.Tb = val
 """Set [`SEXS`](@ref) `K`."""
 set_K!(value::SEXS, val) = value.K = val
 """Set [`SEXS`](@ref) `Te`."""

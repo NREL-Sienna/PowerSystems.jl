@@ -3560,7 +3560,7 @@
           }
         },
         {
-          "name": "TB",
+          "name": "Tb",
           "comment": "Lag time constant",
           "null_value": 0,
           "data_type": "Float64",

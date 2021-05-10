@@ -194,7 +194,6 @@ export get_T4
 export get_T5
 export get_T6
 export get_T7
-export get_TB
 export get_T_AA
 export get_T_act
 export get_T_eng
@@ -520,7 +519,6 @@ export set_T4!
 export set_T5!
 export set_T6!
 export set_T7!
-export set_TB!
 export set_T_AA!
 export set_T_act!
 export set_T_eng!
