@@ -20,6 +20,8 @@ const SYSTEM_KWARGS = Set((
     :unit_system,
     :pm_data_corrections,
     :import_all,
+    :enable_compression,
+    :compression,
 ))
 
 # This will be used in the future to handle serialization changes.
@@ -50,6 +52,8 @@ System(; kwargs...)
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidRange if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
+- `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
+- `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
 - `config_path::String`: specify path to validation config file
 """
 struct System <: IS.InfrastructureSystemsType
@@ -1055,6 +1059,11 @@ end
 =#
 
 """
+Return the compression settings used for system data such as time series arrays.
+"""
+get_compression_settings(sys::System) = IS.get_compression_settings(sys.data)
+
+"""
 Return the initial times for all forecasts.
 """
 get_forecast_initial_times(sys::System) = IS.get_forecast_initial_times(sys.data)
@@ -1703,6 +1712,11 @@ function _create_system_data_from_kwargs(; kwargs...)
     validation_descriptor_file = nothing
     time_series_in_memory = get(kwargs, :time_series_in_memory, false)
     time_series_directory = get(kwargs, :time_series_directory, nothing)
+    compression = get(kwargs, :compression, nothing)
+    if compression === nothing
+        enabled = get(kwargs, :enable_compression, false)
+        compression = IS.CompressionSettings(enabled = enabled)
+    end
     validation_descriptor_file =
         get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
 
@@ -1710,6 +1724,7 @@ function _create_system_data_from_kwargs(; kwargs...)
         validation_descriptor_file = validation_descriptor_file,
         time_series_in_memory = time_series_in_memory,
         time_series_directory = time_series_directory,
+        compression = compression,
     )
 end
 

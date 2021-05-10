@@ -274,6 +274,9 @@ export transform_single_time_series!
 export sanitize_component!
 export validate_component
 export validate_component_with_system
+export get_compression_settings
+export CompressionSettings
+export CompressionTypes
 
 #export make_time_series
 export get_bus_numbers
@@ -398,6 +401,8 @@ import InfrastructureSystems:
     serialize,
     deserialize,
     get_time_series_multiple,
+    CompressionSettings,
+    CompressionTypes,
     NormalizationFactor,
     NormalizationTypes,
     UnitSystem,

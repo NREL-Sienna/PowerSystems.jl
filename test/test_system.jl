@@ -287,3 +287,12 @@ end
     @test sys2 isa System
     @test !get_runchecks(sys)
 end
+
+@testset "Test with compression enabled" begin
+    @test get_compression_settings(System(100.0)) == CompressionSettings(enabled = false)
+
+    settings = CompressionSettings(enabled = true, type = CompressionTypes.BLOSC)
+    @test get_compression_settings(System(100.0, compression = settings)) == settings
+    @test get_compression_settings(System(100.0, enable_compression = true)) ==
+          CompressionSettings(enabled = true)
+end
