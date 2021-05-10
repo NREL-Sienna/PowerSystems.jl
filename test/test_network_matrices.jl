@@ -539,7 +539,7 @@ end
 end
 
 @testset "Test disconnected networks" begin
-    remove_components!(Line, sys)
+    remove_components!(sys, Line)
     @test (@test_logs (:warn, "Principal connected component does not contain:") match_mode =
         :any validate_connectivity(sys)) == false
     @test validate_connectivity(sys, connectivity_method = PowerSystems.dfs_connectivity) ==

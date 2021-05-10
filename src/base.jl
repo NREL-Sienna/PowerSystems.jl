@@ -662,6 +662,7 @@ Remove all components of type T from the system.
 
 Throws ArgumentError if the type is not stored.
 """
+# the argument order in this function is un-julian and should be deprecated in 2.0
 function remove_components!(::Type{T}, sys::System) where {T <: Component}
     components = IS.remove_components!(T, sys.data)
     for component in components
@@ -670,10 +671,18 @@ function remove_components!(::Type{T}, sys::System) where {T <: Component}
     return components
 end
 
+function remove_components!(sys::System, ::Type{T}) where {T <: Component}
+    components = IS.remove_components!(T, sys.data)
+    for component in components
+        handle_component_removal!(sys, component)
+    end
+    return components
+end
+
 function remove_components!(
-    ::Type{T},
-    sys::System,
     filter_func::Function,
+    sys::System,
+    ::Type{T},
 ) where {T <: Component}
     components = collect(get_components(T, sys, filter_func))
     for component in components
