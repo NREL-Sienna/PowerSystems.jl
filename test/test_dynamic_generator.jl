@@ -350,13 +350,7 @@ end
 
     proportional_avr = AVRSimple(Kv = 5000.0)
 
-    sexs_avr = SEXS(
-        Ta_Tb = 0.1,
-        Tb = 10.0,
-        K = 100.0,
-        Te = 0.1,
-        V_lim = (-4.0, 5.0),
-    )
+    sexs_avr = SEXS(Ta_Tb = 0.1, Tb = 10.0, K = 100.0, Te = 0.1, V_lim = (-4.0, 5.0))
 
     fixed_tg = TGFixed(efficiency = 1.0)
 
@@ -478,13 +472,13 @@ end
     @test isnothing(get_dynamic_injector(static_gen))
     add_component!(sys, Gen3AVR, static_gen)
 
-    retrieved_gen = collect(get_components(DynamicGenerator,sys))
+    retrieved_gen = collect(get_components(DynamicGenerator, sys))
     orig_dir = pwd()
     temp_dir = mktempdir()
     cd(temp_dir)
     to_json(sys, "sys.json")
     sys2 = System("sys.json")
-    serialized_gen =  collect(get_components(DynamicGenerator,sys2))
+    serialized_gen = collect(get_components(DynamicGenerator, sys2))
     @test get_name(retrieved_gen[1]) == get_name(serialized_gen[1])
     cd(orig_dir)
 end
