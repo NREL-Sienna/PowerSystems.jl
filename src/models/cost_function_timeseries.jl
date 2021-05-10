@@ -192,8 +192,7 @@ function verify_device_eligibility(
     component::StaticInjection,
     service::Service,
 )
-    contributing_devices = get_contributing_devices(sys, service)
-    if !in(component, contributing_devices)
+    if !has_service(component, service)
         error(
             "Device $(get_name(component)) isn't eligible to contribute to service $(get_name(service)).",
         )
