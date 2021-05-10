@@ -27,9 +27,6 @@ mutable struct FixedFrequency <: FrequencyEstimator
     n_states::Int
 end
 
-function FixedFrequency(frequency=1.0, ext=Dict{String, Any}(), )
-    FixedFrequency(frequency, ext, Vector{Symbol}(), 0, )
-end
 
 function FixedFrequency(; frequency=1.0, ext=Dict{String, Any}(), states=Vector{Symbol}(), n_states=0, )
     FixedFrequency(frequency, ext, states, n_states, )
