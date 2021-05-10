@@ -95,6 +95,7 @@ export EXPIC1
 export ESST1A
 export ESST4B
 export SCRX
+export SEXS
 
 #Machine Exports
 export Machine
