@@ -6,7 +6,7 @@ The bulk of the data in many power system models is time series data, in order t
 organize the data the potential inherent complexity, `PowerSystems.jl` has a set of definitions
 to enable consistent modeling.
 
-- **Resolution**: The period of time between each discrete value in the data, all  resolutions
+- **Resolution**: The period of time between each discrete value in the data, all resolutions
   are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
   has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`
 
@@ -95,6 +95,31 @@ it in memory. Here is an example of how to do this:
 ```julia
 sys = System(100.0; time_series_in_memory = true)
 ```
+
+### Compression
+
+PowerSystems does not enable HDF5 compression by default. You can enable it to
+get significant storage savings at the cost of CPU time.
+
+```julia
+# Take defaults.
+sys = System(100.0; enable_compression = true)
+```
+
+```julia
+# Customize.
+settings = CompressionSettings(
+    enabled = true,
+    type = CompressionTypes.DEFLATE,  # BLOSC is also supported
+    level = 3,
+    shuffle = true,
+)
+sys = System(100.0; compression = settings)
+```
+
+Refer to the [HDF5.jl](https://github.com/JuliaIO/HDF5.jl) and
+[HDF5](https://support.hdfgroup.org/HDF5/) documentation for more details on the
+options.
 
 ## Creating Time Series Data
 
@@ -384,3 +409,9 @@ PowerSystems applies validation rules whenever users add time series to a
    interval, look-ahead window count.
 
 Static time series instances may have different start times and lengths.
+
+## Data Format
+
+Refer to this
+[page](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/time_series/#Data-Format)
+for details on how the time series data is stored in HDF5 files.
