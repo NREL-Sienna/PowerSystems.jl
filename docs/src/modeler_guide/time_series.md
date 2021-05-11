@@ -409,3 +409,9 @@ PowerSystems applies validation rules whenever users add time series to a
    interval, look-ahead window count.
 
 Static time series instances may have different start times and lengths.
+
+## Data Format
+
+Refer to this
+[page](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/time_series/#Data-Format)
+for details on how the time series data is stored in HDF5 files.
