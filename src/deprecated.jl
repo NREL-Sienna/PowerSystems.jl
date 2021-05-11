@@ -1,5 +1,5 @@
 
-# BEGIN 1.2.1  deprecations 
+# BEGIN 1.2.1  deprecations
 @deprecate get_energy_value(val::BatteryEMS) get_energy_surplus_cost(
     get_operation_cost(val),
 )
@@ -22,3 +22,7 @@ export set_energy_value!
 export set_penalty_cost!
 
 # END 1.2.1 deprecations
+
+# BEGIN 2.0 deprecations
+@deprecate remove_components!(t, sys::System) remove_components!(sys, t)
+# BEGIN 2.0 deprecations

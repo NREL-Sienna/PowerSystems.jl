@@ -130,12 +130,14 @@ Builds a Ybus from a collection of buses and branches. The return is a Ybus Arra
 
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
+- `connectivity_method::Function = goderya_connectivity`: method (`goderya_connectivity` or `dfs_connectivity`) for connectivity validation
 """
 function Ybus(
     branches,
     nodes,
     fixed_admittances = Vector{FixedAdmittance}();
     check_connectivity::Bool = true,
+    kwargs...,
 )
     nodes = sort!(collect(nodes), by = x -> get_number(x))
     bus_ax = get_number.(nodes)
@@ -144,7 +146,7 @@ function Ybus(
     look_up = (bus_lookup, bus_lookup)
     ybus = _buildybus(branches, nodes, fixed_admittances)
     if check_connectivity
-        connected = validate_connectivity(ybus, nodes, bus_lookup)
+        connected = validate_connectivity(ybus, nodes, bus_lookup; kwargs...)
         !connected && throw(DataFormatError("Network not connected"))
     end
     return Ybus(ybus, axes, look_up)
@@ -155,12 +157,19 @@ Builds a Ybus from the system. The return is a Ybus Array indexed with the bus n
 
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
+- `connectivity_method::Function = goderya_connectivity`: method (`goderya_connectivity` or `dfs_connectivity`) for connectivity validation
 """
-function Ybus(sys::System; check_connectivity::Bool = true)
+function Ybus(sys::System; check_connectivity::Bool = true, kwargs...)
     branches = get_components(ACBranch, sys)
     nodes = get_components(Bus, sys)
     fixed_admittances = get_components(FixedAdmittance, sys)
-    return Ybus(branches, nodes, fixed_admittances; check_connectivity = check_connectivity)
+    return Ybus(
+        branches,
+        nodes,
+        fixed_admittances;
+        check_connectivity = check_connectivity,
+        kwargs...,
+    )
 end
 
 """
@@ -180,7 +189,7 @@ Builds a Adjacency from a collection of buses and branches. The return is an N x
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
 """
-function Adjacency(branches, nodes; check_connectivity::Bool = true)
+function Adjacency(branches, nodes; check_connectivity::Bool = true, kwargs...)
     buscount = length(nodes)
     bus_ax = get_number.(nodes)
     axes = (bus_ax, bus_ax)
@@ -198,7 +207,7 @@ function Adjacency(branches, nodes; check_connectivity::Bool = true)
     end
 
     if check_connectivity
-        connected = validate_connectivity(a, nodes, bus_lookup)
+        connected = validate_connectivity(a, nodes, bus_lookup; kwargs...)
         !connected && throw(DataFormatError("Network not connected"))
     end
 
@@ -210,11 +219,15 @@ Builds a Adjacency from the system. The return is an N x N Adjacency Array index
 
 # Keyword arguments
 - `check_connectivity::Bool`: Checks connectivity of the network using Goderya's algorithm
+- `connectivity_method::Function = goderya_connectivity`: method (`goderya_connectivity` or `dfs_connectivity`) for connectivity validation
 """
-function Adjacency(sys::System; check_connectivity::Bool = true)
-    nodes = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
+function Adjacency(sys::System; check_connectivity::Bool = true, kwargs...)
+    nodes = sort!(
+        collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)),
+        by = x -> get_number(x),
+    )
     branches = get_components(Branch, sys, get_available)
-    return Adjacency(branches, nodes; check_connectivity = check_connectivity)
+    return Adjacency(branches, nodes; check_connectivity = check_connectivity, kwargs...)
 end
 
 function _goderya(ybus::SparseArrays.SparseMatrixCSC)
@@ -243,12 +256,47 @@ function _goderya(ybus::SparseArrays.SparseMatrixCSC)
     return I
 end
 
-function validate_connectivity(sys::System)
-    a = Adjacency(sys; check_connectivity = false)
-    return validate_connectivity(a.data, collect(get_components(Bus, sys)), a.lookup[1])
+"""
+Checks the network connectivity of the system.
+
+# Keyword arguments
+- `connectivity_method::Function = goderya_connectivity`: Specifies the method used as Goderya's algorithm (`goderya_connectivity`) or depth first search/network traversal (`dfs_connectivity`)
+* Note that the default Goderya method is more efficient, but is resource intensive and may not scale well on large networks.
+"""
+function validate_connectivity(
+    sys::System;
+    connectivity_method::Function = goderya_connectivity,
+)
+    nodes = sort!(
+        collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)),
+        by = x -> get_number(x),
+    )
+    branches = get_components(Branch, sys, get_available)
+    a = Adjacency(branches, nodes; check_connectivity = false)
+
+    return validate_connectivity(
+        a.data,
+        nodes,
+        a.lookup[1];
+        connectivity_method = connectivity_method,
+    )
 end
 
-function validate_connectivity(M, nodes, bus_lookup)
+function validate_connectivity(
+    M,
+    nodes::Vector{Bus},
+    bus_lookup::Dict{Int64, Int64};
+    connectivity_method::Function = goderya_connectivity,
+)
+    connected = connectivity_method(M, nodes, bus_lookup)
+    return connected
+end
+
+function goderya_connectivity(M, nodes::Vector{Bus}, bus_lookup::Dict{Int64, Int64})
+    @info "Validating connectivity with Goderya algorithm"
+    length(nodes) > 15_000 &&
+        @warn "The Goderya algorithm is memory intensive on large networks and may not scale well, try `connectivity_method = PowerSystems.dfs_connectivity"
+
     I = _goderya(M)
 
     node_count = length(nodes)
@@ -265,6 +313,47 @@ function validate_connectivity(M, nodes, bus_lookup)
         disconnected_nodes = get_name.(nodes[setdiff(values(bus_lookup), I)])
         @warn "Principal connected component does not contain:" disconnected_nodes
         connected = false
+    end
+    return connected
+end
+
+"""
+Finds the set of bus numbers that belong to each connnected component in the System
+"""
+# this function extends the PowerModels.jl implementation to accept a System
+function find_connected_components(sys::System)
+    a = Adjacency(sys; check_connectivity = false)
+    return find_connected_components(a.data, a.lookup[1])
+end
+
+# this function extends the PowerModels.jl implementation to accept an adjacency matrix and bus lookup
+function find_connected_components(M, bus_lookup::Dict{Int64, Int64})
+    pm_buses = Dict([i => Dict("bus_type" => 1, "bus_i" => b) for (i, b) in bus_lookup])
+
+    arcs = findall((LinearAlgebra.UpperTriangular(M) - LinearAlgebra.I) .!= 0)
+    pm_branches = Dict(
+        [i => Dict("f_bus" => a[1], "t_bus" => a[2], "br_status" => 1) for
+         (i, a) in enumerate(arcs)],
+    )
+
+    data = Dict("bus" => pm_buses, "branch" => pm_branches)
+    cc = calc_connected_components(data)
+    bus_decode = Dict(value => key for (key, value) in bus_lookup)
+    connected_components = Vector{Set{Int64}}()
+    for c in cc
+        push!(connected_components, Set([bus_decode[b] for b in c]))
+    end
+    return Set(connected_components)
+end
+
+function dfs_connectivity(M, _::Vector{Bus}, bus_lookup::Dict{Int64, Int64})
+    @info "Validating connectivity with depth first search (network traversal)"
+    cc = find_connected_components(M, bus_lookup)
+    if length(cc) != 1
+        @warn "Network has at least $(length(cc)) connected components with $(length.(cc)) nodes"
+        connected = false
+    else
+        connected = true
     end
     return connected
 end

@@ -516,3 +516,32 @@ end
     remove_component!(Line, t2_sys5_re, "5")
     @test isa(Ybus(t2_sys5_re), Ybus)
 end
+
+@testset "Test connected networks" begin
+    @test validate_connectivity(sys)
+    @test(
+        @test_logs (
+            :info,
+            "Validating connectivity with depth first search (network traversal)",
+        ) match_mode = :any validate_connectivity(
+            sys,
+            connectivity_method = PowerSystems.dfs_connectivity,
+        )
+    )
+    @test length(collect(find_connected_components(sys))[1]) == 5
+    @test_logs (
+        :info,
+        "Validating connectivity with depth first search (network traversal)",
+    ) match_mode = :any solve_powerflow(
+        RTS,
+        connectivity_method = PowerSystems.dfs_connectivity,
+    )
+end
+
+@testset "Test disconnected networks" begin
+    remove_components!(sys, Line)
+    @test (@test_logs (:warn, "Principal connected component does not contain:") match_mode =
+        :any validate_connectivity(sys)) == false
+    @test validate_connectivity(sys, connectivity_method = PowerSystems.dfs_connectivity) ==
+          false
+end

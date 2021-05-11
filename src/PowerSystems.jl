@@ -213,6 +213,7 @@ export get_dynamic_components
 export solve_powerflow!
 export solve_powerflow
 export validate_connectivity
+export find_connected_components
 
 export parse_file
 export add_time_series!
@@ -220,6 +221,7 @@ export remove_time_series!
 export clear_time_series!
 export copy_time_series!
 export add_component!
+export add_components!
 export remove_component!
 export remove_components!
 export clear_components!

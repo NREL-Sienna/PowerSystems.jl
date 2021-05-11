@@ -91,8 +91,12 @@ end
     bus_numbers = sort!([get_number(bus) for bus in buses])
     @test bus_numbers == get_bus_numbers(sys)
 
+    # Remove some components
+    remove_components!(x -> get_number(x) ∈ [101, 201], sys, Bus)
+    @test length(sys.bus_numbers) == length(bus_numbers) - 2
+
     # Remove entire type
-    remove_components!(Bus, sys)
+    remove_components!(sys, Bus)
     @test length(sys.bus_numbers) == 0
 
     # Remove individually.
@@ -154,10 +158,10 @@ end
     @test isnothing(get_component(typeof(gen), sys, get_name(gen)))
 
     @assert length(get_components(typeof(gen), sys)) > 0
-    remove_components!(typeof(gen), sys)
-    @test_throws(IS.ArgumentError, remove_components!(typeof(gen), sys))
+    remove_components!(sys, typeof(gen))
+    @test_throws(IS.ArgumentError, remove_components!(sys, typeof(gen)))
 
-    remove_components!(Area, sys)
+    remove_components!(sys, Area)
     @test isempty(get_components(Area, sys))
     @test isnothing(get_area(collect(get_components(Bus, sys))[1]))
 end

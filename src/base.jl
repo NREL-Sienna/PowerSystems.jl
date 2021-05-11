@@ -403,6 +403,27 @@ function add_component!(
 end
 
 """
+Add many components to the system at once.
+
+Throws ArgumentError if the component's name is already stored for its concrete type.
+Throws ArgumentError if any Component-specific rule is violated.
+Throws InvalidRange if any of the component's field values are outside of defined valid
+range.
+
+# Examples
+```julia
+sys = System(100.0)
+
+buses = [bus1, bus2, bus3]
+generators = [gen1, gen2, gen3]
+foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
+```
+"""
+function add_components!(sys::System, components)
+    foreach(x -> add_component!(sys, x), components)
+end
+
+"""
 Add a dynamic injector to the system.
 
 Throws ArgumentError if the name does not match the static_injector name.
@@ -641,10 +662,33 @@ Remove all components of type T from the system.
 
 Throws ArgumentError if the type is not stored.
 """
+# the argument order in this function is un-julian and should be deprecated in 2.0
 function remove_components!(::Type{T}, sys::System) where {T <: Component}
-    for component in IS.remove_components!(T, sys.data)
+    components = IS.remove_components!(T, sys.data)
+    for component in components
         handle_component_removal!(sys, component)
     end
+    return components
+end
+
+function remove_components!(sys::System, ::Type{T}) where {T <: Component}
+    components = IS.remove_components!(T, sys.data)
+    for component in components
+        handle_component_removal!(sys, component)
+    end
+    return components
+end
+
+function remove_components!(
+    filter_func::Function,
+    sys::System,
+    ::Type{T},
+) where {T <: Component}
+    components = collect(get_components(T, sys, filter_func))
+    for component in components
+        remove_component!(sys, component)
+    end
+    return components
 end
 
 function clear_units!(component::Component)
