@@ -1305,7 +1305,9 @@ end
 function deserialize_components!(sys::System, raw)
     # Convert the array of components into type-specific arrays to allow addition by type.
     data = Dict{Any, Vector{Dict}}()
-    for component in Iterators.Flatten((raw["components"], raw["masked_components"]))
+    # This field was not present in older versions.
+    masked_components = get(raw, "masked_components", [])
+    for component in Iterators.Flatten((raw["components"], masked_components))
         type = IS.get_type_from_serialization_data(component)
         components = get(data, type, nothing)
         if components === nothing
