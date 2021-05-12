@@ -766,8 +766,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 (
                     pop!(dcside, "ALOSS") +
                     pop!(acside, "ALOSS") +
-                    pop!(dcside, "MINLOSS") +
-                    pop!(acside, "MINLOSS")
+                    pop!(dcside, "MINLOSS") + pop!(acside, "MINLOSS")
                 ) * 1e-3
             sub_data["loss1"] = (pop!(dcside, "BLOSS") + pop!(acside, "BLOSS")) * 1e-3 # how to include resistance?
 
