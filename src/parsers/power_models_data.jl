@@ -501,7 +501,7 @@ function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs.
         bus = bus_number_to_bus[pm_gen["gen_bus"]]
         pm_gen["fuel"] = get(pm_gen, "fuel", "OTHER")
         pm_gen["type"] = get(pm_gen, "type", "OT")
-        @debug "Found generator" gen_name bus pm_gen["fuel"] pm_gen["type"]
+        @debug "Found generator" _group = IS.LOG_GROUP_PARSING gen_name bus pm_gen["fuel"] pm_gen["type"]
 
         gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], generator_mapping)
         if gen_type == ThermalStandard

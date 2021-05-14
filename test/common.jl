@@ -232,7 +232,6 @@ end
 
 function test_accessors(component)
     ps_type = typeof(component)
-    @debug "test_accessors" ps_type
 
     for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
         if field_name === :name || field_name === :time_series_container

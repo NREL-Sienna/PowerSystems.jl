@@ -134,15 +134,9 @@ configure_logging(console_level = Logging.Error)
 **Note:** log messages are not automatically flushed to files. Call
 `flush(logger)` to make this happen.
 
-**Example**: Global logger configuration
-
-```julia
-logger = configure_logging(filename = "log.txt")
-@info "hello world"
-flush(logger)
-@error "some error"
-close(logger)
-```
+Refer to this
+[page](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/logging/#Use-Cases)
+for more logging configuration options.
 
 ## Viewing PowerSystems Data in JSON Format
 

@@ -14,7 +14,7 @@ function add_service_internal!(device::Device, service::Service)
     end
 
     push!(services, service)
-    @debug "Add $service to $(get_name(device))"
+    @debug "Add $service to $(get_name(device))" _group = IS.LOG_GROUP_SYSTEM
 end
 
 function add_service_internal!(device::Device, service::AGC)
@@ -49,7 +49,7 @@ function add_service_internal!(device::Device, service::AGC)
     end
 
     push!(services, service)
-    @debug "Add $service to $(get_name(device))"
+    @debug "Add $service to $(get_name(device))" _group = IS.LOG_GROUP_SYSTEM
 end
 
 """
@@ -106,7 +106,8 @@ function _remove_service!(device::Device, service::Service)
         if IS.get_uuid(_service) == IS.get_uuid(service)
             deleteat!(services, i)
             removed = true
-            @debug "Removed service $(get_name(service)) from $(get_name(device))"
+            @debug "Removed service $(get_name(service)) from $(get_name(device))" _group =
+                IS.LOG_GROUP_SYSTEM
             break
         end
     end

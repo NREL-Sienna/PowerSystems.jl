@@ -86,18 +86,19 @@ function total_load_rating(sys::System)
     cl =
         isempty(controllable_loads) ? 0.0 :
         sum(get_max_active_power.(controllable_loads)) * base_power
-    @debug "System has $cl MW of ControllableLoad"
+    @debug "System has $cl MW of ControllableLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     static_loads = get_components(StaticLoad, sys)
     sl = isempty(static_loads) ? 0.0 : sum(get_max_active_power.(static_loads)) * base_power
-    @debug "System has $sl MW of StaticLoad"
+    @debug "System has $sl MW of StaticLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     # Total load calculation assumes  P = Real(V^2/Y) assuming V=1.0
     fa_loads = get_components(FixedAdmittance, sys)
     fa =
         isempty(fa_loads) ? 0.0 :
         sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
-    @debug "System has $fa MW of FixedAdmittance assuming admittancce values are in P.U."
+    @debug "System has $fa MW of FixedAdmittance assuming admittance values are in P.U." _group =
+        IS.LOG_GROUP_SYSTEM_CHECKS
     total_load = cl + sl + fa
-    @debug "Total System Load: $total_load"
+    @debug "Total System Load: $total_load" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     return total_load
 end
 
@@ -115,11 +116,12 @@ function total_capacity_rating(sys::System)
         components = get_components(Generator, sys)
         if !isempty(components)
             component_total = sum(get_rating.(components)) * get_base_power(sys)
-            @debug "total rating for $component_type = $component_total"
+            @debug "total rating for $component_type = $component_total" _group =
+                IS.LOG_GROUP_SYSTEM_CHECKS
             total += component_total
         end
     end
 
-    @debug "Total System capacity: $total"
+    @debug "Total System capacity: $total" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     return total
 end
