@@ -43,7 +43,8 @@ function PowerSystemTableData(
     for (name, category) in INPUT_CATEGORY_NAMES
         val = get(data, name, nothing)
         if isnothing(val)
-            @debug "key '$name' not found in input data, set to nothing"
+            @debug "key '$name' not found in input data, set to nothing" _group =
+                IS.LOG_GROUP_PARSING
         else
             category_to_df[category] = val
         end
@@ -540,14 +541,14 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     end
 
     for gen in iterate_rows(data, InputCategory.GENERATOR)
-        @debug "making generator:" gen.name
+        @debug "making generator:" _group = IS.LOG_GROUP_PARSING gen.name
         bus = get_bus(sys, gen.bus_id)
         if isnothing(bus)
             throw(DataFormatError("could not find $(gen.bus_id)"))
         end
 
         generator = make_generator(data, gen, cost_colnames, bus)
-        @debug "adding gen:" generator
+        @debug "adding gen:" _group = IS.LOG_GROUP_PARSING generator
         if !isnothing(generator)
             add_component!(sys, generator)
         end
@@ -937,7 +938,7 @@ function make_reactive_params(
 end
 
 function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
-    @debug "Making ThermaStandard" gen.name
+    @debug "Making ThermaStandard" _group = IS.LOG_GROUP_PARSING gen.name
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
@@ -980,7 +981,7 @@ function make_thermal_generator_multistart(
 )
     thermal_gen = make_thermal_generator(data, gen, cost_colnames, bus)
 
-    @debug "Making ThermalMultiStart" gen.name
+    @debug "Making ThermalMultiStart" _group = IS.LOG_GROUP_PARSING gen.name
     base_power = get_base_power(thermal_gen)
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
@@ -1049,7 +1050,7 @@ function make_thermal_generator_multistart(
 end
 
 function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus)
-    @debug "Making HydroGen" gen.name
+    @debug "Making HydroGen" _group = IS.LOG_GROUP_PARSING gen.name
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
@@ -1072,7 +1073,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
         operation_cost = TwoPartCost(var_cost, fixed)
 
         if gen_type == HydroEnergyReservoir
-            @debug("Creating $(gen.name) as HydroEnergyReservoir")
+            @debug "Creating $(gen.name) as HydroEnergyReservoir" _group =
+                IS.LOG_GROUP_PARSING
 
             hydro_gen = HydroEnergyReservoir(
                 name = gen.name,
@@ -1094,7 +1096,8 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             )
 
         elseif gen_type == HydroPumpedStorage
-            @debug("Creating $(gen.name) as HydroPumpedStorage")
+            @debug "Creating $(gen.name) as HydroPumpedStorage" _group =
+                IS.LOG_GROUP_PARSING
 
             pump_active_power_limits = (
                 min = gen.pump_active_power_limits_min,
@@ -1152,7 +1155,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             )
         end
     elseif gen_type == HydroDispatch
-        @debug("Creating $(gen.name) as HydroDispatch")
+        @debug "Creating $(gen.name) as HydroDispatch" _group = IS.LOG_GROUP_PARSING
         hydro_gen = HydroDispatch(
             name = gen.name,
             available = gen.available,
@@ -1210,7 +1213,7 @@ function make_renewable_generator(
     cost_colnames,
     bus,
 )
-    @debug "Making RenewableGen" gen.name
+    @debug "Making RenewableGen" _group = IS.LOG_GROUP_PARSING gen.name
     generator = nothing
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
@@ -1222,7 +1225,7 @@ function make_renewable_generator(
     operation_cost = TwoPartCost(var_cost, fixed)
 
     if gen_type == RenewableDispatch
-        @debug("Creating $(gen.name) as RenewableDispatch")
+        @debug "Creating $(gen.name) as RenewableDispatch" _group = IS.LOG_GROUP_PARSING
         generator = RenewableDispatch(
             name = gen.name,
             available = gen.available,
@@ -1237,7 +1240,7 @@ function make_renewable_generator(
             base_power = base_power,
         )
     elseif gen_type == RenewableFix
-        @debug("Creating $(gen.name) as RenewableFix")
+        @debug "Creating $(gen.name) as RenewableFix" _group = IS.LOG_GROUP_PARSING
         generator = RenewableFix(
             name = gen.name,
             available = gen.available,
@@ -1257,7 +1260,7 @@ function make_renewable_generator(
 end
 
 function make_storage(data::PowerSystemTableData, gen, storage, bus)
-    @debug "Making Storge" storage.name
+    @debug "Making Storge" _group = IS.LOG_GROUP_PARSING storage.name
     state_of_charge_limits =
         (min = storage.min_storage_capacity, max = storage.storage_capacity)
     input_active_power_limits = (
@@ -1428,8 +1431,8 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
         else
             value = field_info.default_value
             value == "required" && throw(DataFormatError("$(field_info.name) is required"))
-            @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)" maxlog =
-                1
+            @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)" _group =
+                IS.LOG_GROUP_PARSING maxlog = 1
         end
         if ismissing(value)
             throw(DataFormatError("$(field_info.custom_name) value missing"))
@@ -1441,7 +1444,8 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
         if !isnothing(value)
             if field_info.per_unit_conversion.From == IS.UnitSystem.NATURAL_UNITS &&
                field_info.per_unit_conversion.To == IS.UnitSystem.SYSTEM_BASE
-                @debug "convert to $(field_info.per_unit_conversion.To)" field_info.custom_name
+                @debug "convert to $(field_info.per_unit_conversion.To)" _group =
+                    IS.LOG_GROUP_PARSING field_info.custom_name
                 value = value isa String ? tryparse(Float64, value) : value
                 value = data.base_power == 0.0 ? 0.0 : value / data.base_power
             elseif field_info.per_unit_conversion.From == IS.UnitSystem.NATURAL_UNITS &&
@@ -1456,8 +1460,8 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
                     ),
                 )
                 reference_info = field_infos[reference_idx]
-                @debug "convert to $(field_info.per_unit_conversion.To) using $(reference_info.custom_name)" field_info.custom_name maxlog =
-                    1
+                @debug "convert to $(field_info.per_unit_conversion.To) using $(reference_info.custom_name)" _group =
+                    IS.LOG_GROUP_PARSING field_info.custom_name maxlog = 1
                 reference_value =
                     get(row, reference_info.custom_name, reference_info.default_value)
                 reference_value == "required" && throw(
@@ -1475,12 +1479,14 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
                 )
             end
         else
-            @debug "$(field_info.custom_name) is nothing" maxlog = 1
+            @debug "$(field_info.custom_name) is nothing" _group = IS.LOG_GROUP_PARSING maxlog =
+                1
         end
 
         # TODO: need special handling for units
         if !isnothing(field_info.unit_conversion)
-            @debug "convert units" field_info.custom_name maxlog = 1
+            @debug "convert units" _group = IS.LOG_GROUP_PARSING field_info.custom_name maxlog =
+                1
             value = convert_units!(value, field_info.unit_conversion)
         end
         # TODO: validate ranges and option lists

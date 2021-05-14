@@ -14,7 +14,7 @@ should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID_B)
 should_encode_as_uuid(::Type{T}) where {T} = any(x -> T <: x, _ENCODE_AS_UUID_A)
 
 function IS.serialize(component::T) where {T <: Component}
-    @debug "serialize" component T
+    @debug "serialize" _group = IS.LOG_GROUP_SERIALIZATION component T
     data = Dict{String, Any}()
     for name in fieldnames(T)
         data[string(name)] = serialize_uuid_handling(getfield(component, name))
@@ -50,7 +50,7 @@ function serialize_uuid_handling(val)
 end
 
 function IS.deserialize(::Type{T}, data::Dict, component_cache::Dict) where {T <: Component}
-    @debug "deserialize Component" T data
+    @debug "deserialize Component" _group = IS.LOG_GROUP_SERIALIZATION T data
     vals = Dict{Symbol, Any}()
     for (name, type) in zip(fieldnames(T), fieldtypes(T))
         val = data[string(name)]
@@ -77,7 +77,7 @@ end
 Deserialize the value, converting UUIDs to components where necessary.
 """
 function deserialize_uuid_handling(field_type, val, component_cache)
-    @debug "deserialize_uuid_handling" field_type val
+    @debug "deserialize_uuid_handling" _group = IS.LOG_GROUP_SERIALIZATION field_type val
     if val === nothing
         value = val
     elseif should_encode_as_uuid(field_type)

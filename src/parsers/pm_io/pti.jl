@@ -1187,7 +1187,8 @@ function _parse_line_element!(data::Dict, elements::Array, section::AbstractStri
     missing_fields = []
     for (i, (field, dtype)) in enumerate(_pti_dtypes[section])
         if i > length(elements)
-            @debug "Have run out of elements in $section at $field"
+            @debug "Have run out of elements in $section at $field" _group =
+                IS.LOG_GROUP_PARSING
             push!(missing_fields, field)
             continue
         else
@@ -1292,7 +1293,8 @@ function _parse_pti_data(data_io::IO)
                     "At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end."
                 )
             elseif length(comment) > 0
-                @debug "At line $line_number, switched to $section"
+                @debug "At line $line_number, switched to $section" _group =
+                    IS.LOG_GROUP_PARSING
             end
 
             if !isempty(sections)
@@ -1311,7 +1313,7 @@ function _parse_pti_data(data_io::IO)
                 continue
             end
 
-            @debug join(["Section:", section], " ")
+            @debug join(["Section:", section], " ") _group = IS.LOG_GROUP_PARSING
             if !(
                 section in [
                     "CASE IDENTIFICATION",
@@ -1534,7 +1536,7 @@ function _parse_pti_data(data_io::IO)
             end
         end
         if subsection != ""
-            @debug "appending data"
+            @debug "appending data" _group = IS.LOG_GROUP_PARSING
         end
 
         if haskey(pti_data, section)

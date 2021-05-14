@@ -134,15 +134,10 @@ configure_logging(console_level = Logging.Error)
 **Note:** log messages are not automatically flushed to files. Call
 `flush(logger)` to make this happen.
 
-**Example**: Global logger configuration
-
-```julia
-logger = configure_logging(filename = "log.txt")
-@info "hello world"
-flush(logger)
-@error "some error"
-close(logger)
-```
+Refer to this
+[page](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/logging/#Use-Cases)
+for more logging configuration options. Note that it describes how to enable
+debug logging for some log messages but not others.
 
 ## Viewing PowerSystems Data in JSON Format
 
@@ -171,53 +166,36 @@ jq . system.json
 - View the PowerSystems component types
 
 ```zsh
-jq '.data.components | keys' system.json
+jq '.data.components | .[] | .__metadata__ | .type' system.json | sort | uniq
 ```
 
 - View specific components
 
 ```zsh
-jq '.data.components.ThermalStandard' system.json
+jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard")' system.json
 ```
 
 - Get the count of a component type
 
 ```zsh
-jq '.data.components.Bus  | length' system.json
-```
-
-- View specific component by index
-
-```zsh
-jq '.data.components.ThermalStandard | .[0]' system.json
+# There is almost certainly a better way.
+jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard")' system.json | grep -c ThermalStandard
 ```
 
 - View specific component by name
 
 ```zsh
-jq '.data.components.ThermalStandard | .[] | select(.name == "107_CC_1")' system.json
-```
-
-- View the field names for a component
-
-```zsh
-jq '.data.components.ThermalStandard | .[0] | keys' system.json
+jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard" and .name == "107_CC_1")' system.json
 ```
 
 - Filter on a field value
 
 ```zsh
-jq '.data.components.ThermalStandard | .[] | select(.active_power > 2.3)' system.json
+jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard" and .active_power > 2.3)' system.json
 ```
 
-- Output a table with select fields
+- View the time series metadata for a component.
 
 ```zsh
-jq -r '["name", "econ.capacity"], (.data.components.ThermalStandard | .[] | [.name, .active_power]) | @tsv' system.json
-```
-
-- View the time_series information for a component
-
-```zsh
-jq '.data.components.ThermalStandard | .[0] | .time_series' system.json
+jq '.data.components | .[] | select(.__metadata__.type == "RenewableDispatch") | .time_series_container' system.json
 ```

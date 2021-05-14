@@ -332,6 +332,7 @@ export check_components
 
 export configure_logging
 export open_file_logger
+export make_logging_config_file
 export MultiLogger
 export LogEventTracker
 export UnitSystem
@@ -408,6 +409,7 @@ import InfrastructureSystems:
     UnitSystem,
     SystemUnitsSettings,
     open_file_logger,
+    make_logging_config_file,
     validate_struct,
     MultiLogger,
     LogEventTracker
@@ -437,15 +439,15 @@ abstract type Component <: IS.InfrastructureSystemsComponent end
 """ Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end
 
+# Include utilities
+include("utils/logging.jl")
+include("utils/IO/base_checks.jl")
+
 include("definitions.jl")
 include("models/static_models.jl")
 include("models/dynamic_models.jl")
 include("models/injection.jl")
 include("models/static_injection_subsystem.jl")
-
-# Include utilities
-include("utils/logging.jl")
-include("utils/IO/base_checks.jl")
 
 # PowerSystems models
 include("models/topological_elements.jl")

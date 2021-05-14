@@ -1655,17 +1655,19 @@ function IS.compare_values(x::System, y::System)
     match = true
 
     if x.units_settings.unit_system != x.units_settings.unit_system
-        @debug "unit system does not match" x.units_settings.unit_system y.units_settings.unit_system
+        @debug "unit system does not match" _group = IS.LOG_GROUP_SERIALIZATION x.units_settings.unit_system y.units_settings.unit_system
         match = false
     end
 
     if get_base_power(x) != get_base_power(y)
-        @debug "base_power does not match" get_base_power(x) get_base_power(y)
+        @debug "base_power does not match" _group = IS.LOG_GROUP_SERIALIZATION get_base_power(
+            x,
+        ) get_base_power(y)
         match = false
     end
 
     if !IS.compare_values(x.data, y.data)
-        @debug "SystemData values do not match"
+        @debug "SystemData values do not match" _group = IS.LOG_GROUP_SERIALIZATION
         match = false
     end
 
@@ -1684,13 +1686,13 @@ function IS.compare_values(x::T, y::T) where {T <: Union{StaticInjection, Dynami
             uuid1 = IS.get_uuid(val1)
             uuid2 = IS.get_uuid(val2)
             if uuid1 != uuid2
-                @debug "values do not match" T fieldname uuid1 uuid2
+                @debug "values do not match" _group = IS.LOG_GROUP_SERIALIZATION T fieldname uuid1 uuid2
                 match = false
                 break
             end
         elseif !isempty(fieldnames(typeof(val1)))
             if !IS.compare_values(val1, val2)
-                @debug "values do not match" T fieldname val1 val2
+                @debug "values do not match" _group = IS.LOG_GROUP_SERIALIZATION T fieldname val1 val2
                 match = false
                 break
             end
@@ -1700,7 +1702,7 @@ function IS.compare_values(x::T, y::T) where {T <: Union{StaticInjection, Dynami
             end
         else
             if val1 != val2
-                @debug "values do not match" T fieldname val1 val2
+                @debug "values do not match" _group = IS.LOG_GROUP_SERIALIZATION T fieldname val1 val2
                 match = false
                 break
             end
