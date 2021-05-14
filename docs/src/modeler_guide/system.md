@@ -136,7 +136,8 @@ configure_logging(console_level = Logging.Error)
 
 Refer to this
 [page](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/logging/#Use-Cases)
-for more logging configuration options.
+for more logging configuration options. Note that it describes how to enable
+debug logging for some log messages but not others.
 
 ## Viewing PowerSystems Data in JSON Format
 
