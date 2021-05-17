@@ -2,6 +2,8 @@ module UtilsData
 
 __precompile__(true)
 
+import Downloads
+
 export TestData
 
 abstract type AbstractOS end
