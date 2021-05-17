@@ -8,7 +8,6 @@ export download
 
 export TestData
 
-
 abstract type AbstractOS end
 abstract type Unix <: AbstractOS end
 abstract type BSD <: Unix end
