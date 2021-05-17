@@ -31,7 +31,7 @@ Defaults to the root of the PowerSystems package.
 
 Returns the downloaded folder name.
 """
-function Base.download(
+function Downloads.download(
     ::Type{TestData};
     folder::AbstractString = abspath(joinpath(@__DIR__, "../..")),
     branch::String = "master",
@@ -45,7 +45,7 @@ function Base.download(
     directory = abspath(normpath(folder))
     data = joinpath(directory, "data")
     if !isdir(data) || force
-        tempfilename = Base.download(POWERSYSTEMSTESTDATA_URL)
+        tempfilename = Downloads.download(POWERSYSTEMSTESTDATA_URL)
         mkpath(directory)
         unzip(os, tempfilename, directory)
         mv(joinpath(directory, "PowerSystemsTestData-$branch"), data, force = true)
@@ -59,7 +59,7 @@ Download Data from a "branch" into a "data" folder in given argument path.
 Skip the actual download if the folder already exists and force=false.
 Returns the downloaded folder name.
 """
-function Base.download(
+function Downloads.download(
     repo::AbstractString,
     branch::AbstractString,
     folder::AbstractString,
@@ -75,7 +75,7 @@ function Base.download(
     data = joinpath(directory, "$reponame-$branch")
     if !isdir(data) || force
         @info "Downloading $DATA_URL"
-        tempfilename = Base.download(DATA_URL)
+        tempfilename = Downloads.download(DATA_URL)
         mkpath(directory)
         @info "Extracting data to $data"
         unzip(os, tempfilename, directory)
