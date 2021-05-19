@@ -32,15 +32,17 @@ function get_value(c::Component, value::Min_Max)
     return (min = value.min * m, max = value.max * m)
 end
 
+function get_value(c::Component, value::StartUp_ShutDown)
+    m = _get_multiplier(c)
+    return (up = value.startup * m, down = value.shutdown * m)
+end
+
 function get_value(c::Component, value::Up_Down)
     m = _get_multiplier(c)
     return (up = value.up * m, down = value.down * m)
 end
 
-function get_value(
-    c::Component,
-    value::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}},
-)
+function get_value(c::Component, value::FromTo_ToFrom_Float)
     m = _get_multiplier(c)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end
