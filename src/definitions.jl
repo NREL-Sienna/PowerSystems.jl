@@ -1,5 +1,6 @@
 const Min_Max = NamedTuple{(:min, :max), Tuple{Float64, Float64}}
 const Up_Down = NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+const StartUp_ShutDown = NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}
 const From_To_Float = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
 const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
 
@@ -77,5 +78,5 @@ const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
 
 const DEFAULT_SYSTEM_FREQUENCY = 60.0
 
-const INFINITE_TIME = 1e6
+const INFINITE_TIME = 1e4
 const START_COST = 1e8

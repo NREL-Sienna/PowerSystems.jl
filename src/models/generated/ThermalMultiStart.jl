@@ -162,7 +162,7 @@ get_reactive_power_limits(value::ThermalMultiStart) = get_value(value, value.rea
 """Get [`ThermalMultiStart`](@ref) `ramp_limits`."""
 get_ramp_limits(value::ThermalMultiStart) = get_value(value, value.ramp_limits)
 """Get [`ThermalMultiStart`](@ref) `power_trajectory`."""
-get_power_trajectory(value::ThermalMultiStart) = value.power_trajectory
+get_power_trajectory(value::ThermalMultiStart) = get_value(value, value.power_trajectory)
 """Get [`ThermalMultiStart`](@ref) `time_limits`."""
 get_time_limits(value::ThermalMultiStart) = value.time_limits
 """Get [`ThermalMultiStart`](@ref) `start_time_limits`."""
