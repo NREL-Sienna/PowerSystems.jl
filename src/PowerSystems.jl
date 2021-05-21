@@ -254,6 +254,8 @@ export get_time_series_resolution
 export get_time_series_timestamps
 export get_time_series_values
 export get_time_series_names
+export get_scenario_count
+export get_percentiles
 export get_next_time_series_array!
 export get_next_time
 export get_horizon
@@ -393,6 +395,8 @@ import InfrastructureSystems:
     get_time_series_timestamps,
     get_time_series_values,
     get_time_series_names,
+    get_scenario_count, # Scenario Forecast Exports
+    get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
     get_next_time,
     get_units_info,
