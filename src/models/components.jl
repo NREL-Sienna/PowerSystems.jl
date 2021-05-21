@@ -34,7 +34,7 @@ end
 
 function get_value(c::Component, value::StartUp_ShutDown)
     m = _get_multiplier(c)
-    return (up = value.startup * m, down = value.shutdown * m)
+    return (startup = value.startup * m, shutdown = value.shutdown * m)
 end
 
 function get_value(c::Component, value::Up_Down)
