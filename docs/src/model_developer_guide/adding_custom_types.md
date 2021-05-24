@@ -8,6 +8,10 @@ supertype for your new struct.
 
 ## Interfaces
 
+Refer to the
+[managing components guide](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/components_and_container/)
+for component requirements.
+
 Some abstract types define required interface functions in docstring. Be sure
 to implement each of them for your new type.
 

@@ -45,12 +45,15 @@ function Base.show(io::IO, ist::Component)
     print(io, string(nameof(typeof(ist))), "(")
     is_first = true
     for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
+        getter_name = Symbol("get_$name")
         if field_type <: IS.TimeSeriesContainer ||
            field_type <: InfrastructureSystemsInternal
             continue
-        else
-            getter_func = getfield(PowerSystems, Symbol("get_$name"))
+        elseif hasproperty(PowerSystems, getter_name)
+            getter_func = getproperty(PowerSystems, getter_name)
             val = getter_func(ist)
+        else
+            val = getproperty(ist, name)
         end
         if is_first
             is_first = false
@@ -78,7 +81,8 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     try
         print(io, summary(ist), ":")
         for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
-            obj = getfield(ist, name)
+            obj = getproperty(ist, name)
+            getter_name = Symbol("get_$name")
             if (obj isa InfrastructureSystemsInternal) && !default_units
                 print(io, "\n   ")
                 show(io, MIME"text/plain"(), obj.units_info)
@@ -86,10 +90,12 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
             elseif obj isa IS.TimeSeriesContainer ||
                    obj isa InfrastructureSystemsType ||
                    obj isa Vector{<:InfrastructureSystemsComponent}
-                val = summary(getfield(ist, name))
-            else
-                getter_func = getfield(PowerSystems, Symbol("get_$name"))
+                val = summary(getproperty(ist, name))
+            elseif hasproperty(PowerSystems, getter_name)
+                getter_func = getproperty(PowerSystems, getter_name)
                 val = getter_func(ist)
+            else
+                val = getproperty(ist, name)
             end
             # Not allowed to print `nothing`
             if isnothing(val)
