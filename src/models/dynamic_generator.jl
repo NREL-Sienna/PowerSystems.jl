@@ -136,7 +136,9 @@ get_P_ref(value::DynamicGenerator) = get_P_ref(get_prime_mover(value))
 set_base_power!(value::DynamicGenerator, val) = value.base_power = val
 
 function _calc_n_states(machine, shaft, avr, prime_mover, pss)
-    return get_n_states(machine) + get_n_states(shaft) + get_n_states(avr) +
+    return get_n_states(machine) +
+           get_n_states(shaft) +
+           get_n_states(avr) +
            get_n_states(prime_mover) +
            get_n_states(pss)
 end

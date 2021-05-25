@@ -197,9 +197,12 @@ function _calc_n_states(
     freq_estimator,
     filter,
 )
-    return converter.n_states + outer_control.n_states + inner_control.n_states +
+    return converter.n_states +
+           outer_control.n_states +
+           inner_control.n_states +
            dc_source.n_states +
-           freq_estimator.n_states + filter.n_states
+           freq_estimator.n_states +
+           filter.n_states
 end
 
 function _calc_states(
