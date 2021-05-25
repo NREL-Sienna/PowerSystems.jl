@@ -87,8 +87,8 @@ function TapTransformer(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::TapTransformer) = value.name
+"""Get [`TapTransformer`](@ref) `name`."""
+get_name(value::TapTransformer) = value.name
 """Get [`TapTransformer`](@ref) `available`."""
 get_available(value::TapTransformer) = value.available
 """Get [`TapTransformer`](@ref) `active_power_flow`."""
@@ -111,13 +111,13 @@ get_rate(value::TapTransformer) = get_value(value, value.rate)
 get_services(value::TapTransformer) = value.services
 """Get [`TapTransformer`](@ref) `ext`."""
 get_ext(value::TapTransformer) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::TapTransformer) = value.time_series_container
+"""Get [`TapTransformer`](@ref) `time_series_container`."""
+get_time_series_container(value::TapTransformer) = value.time_series_container
 """Get [`TapTransformer`](@ref) `internal`."""
 get_internal(value::TapTransformer) = value.internal
 
-
-InfrastructureSystems.set_name!(value::TapTransformer, val) = value.name = val
+"""Set [`TapTransformer`](@ref) `name`."""
+set_name!(value::TapTransformer, val) = value.name = val
 """Set [`TapTransformer`](@ref) `available`."""
 set_available!(value::TapTransformer, val) = value.available = val
 """Set [`TapTransformer`](@ref) `active_power_flow`."""
@@ -140,6 +140,6 @@ set_rate!(value::TapTransformer, val) = value.rate = val
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""
 set_ext!(value::TapTransformer, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::TapTransformer, val) = value.time_series_container = val
+"""Set [`TapTransformer`](@ref) `time_series_container`."""
+set_time_series_container!(value::TapTransformer, val) = value.time_series_container = val
 

@@ -61,8 +61,8 @@ function FixedAdmittance(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::FixedAdmittance) = value.name
+"""Get [`FixedAdmittance`](@ref) `name`."""
+get_name(value::FixedAdmittance) = value.name
 """Get [`FixedAdmittance`](@ref) `available`."""
 get_available(value::FixedAdmittance) = value.available
 """Get [`FixedAdmittance`](@ref) `bus`."""
@@ -73,13 +73,13 @@ get_Y(value::FixedAdmittance) = value.Y
 get_services(value::FixedAdmittance) = value.services
 """Get [`FixedAdmittance`](@ref) `ext`."""
 get_ext(value::FixedAdmittance) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::FixedAdmittance) = value.time_series_container
+"""Get [`FixedAdmittance`](@ref) `time_series_container`."""
+get_time_series_container(value::FixedAdmittance) = value.time_series_container
 """Get [`FixedAdmittance`](@ref) `internal`."""
 get_internal(value::FixedAdmittance) = value.internal
 
-
-InfrastructureSystems.set_name!(value::FixedAdmittance, val) = value.name = val
+"""Set [`FixedAdmittance`](@ref) `name`."""
+set_name!(value::FixedAdmittance, val) = value.name = val
 """Set [`FixedAdmittance`](@ref) `available`."""
 set_available!(value::FixedAdmittance, val) = value.available = val
 """Set [`FixedAdmittance`](@ref) `bus`."""
@@ -90,6 +90,6 @@ set_Y!(value::FixedAdmittance, val) = value.Y = val
 set_services!(value::FixedAdmittance, val) = value.services = val
 """Set [`FixedAdmittance`](@ref) `ext`."""
 set_ext!(value::FixedAdmittance, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::FixedAdmittance, val) = value.time_series_container = val
+"""Set [`FixedAdmittance`](@ref) `time_series_container`."""
+set_time_series_container!(value::FixedAdmittance, val) = value.time_series_container = val
 

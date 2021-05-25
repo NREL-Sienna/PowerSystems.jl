@@ -119,8 +119,8 @@ function ThermalStandard(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::ThermalStandard) = value.name
+"""Get [`ThermalStandard`](@ref) `name`."""
+get_name(value::ThermalStandard) = value.name
 """Get [`ThermalStandard`](@ref) `available`."""
 get_available(value::ThermalStandard) = value.available
 """Get [`ThermalStandard`](@ref) `status`."""
@@ -157,13 +157,13 @@ get_time_at_status(value::ThermalStandard) = value.time_at_status
 get_dynamic_injector(value::ThermalStandard) = value.dynamic_injector
 """Get [`ThermalStandard`](@ref) `ext`."""
 get_ext(value::ThermalStandard) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::ThermalStandard) = value.time_series_container
+"""Get [`ThermalStandard`](@ref) `time_series_container`."""
+get_time_series_container(value::ThermalStandard) = value.time_series_container
 """Get [`ThermalStandard`](@ref) `internal`."""
 get_internal(value::ThermalStandard) = value.internal
 
-
-InfrastructureSystems.set_name!(value::ThermalStandard, val) = value.name = val
+"""Set [`ThermalStandard`](@ref) `name`."""
+set_name!(value::ThermalStandard, val) = value.name = val
 """Set [`ThermalStandard`](@ref) `available`."""
 set_available!(value::ThermalStandard, val) = value.available = val
 """Set [`ThermalStandard`](@ref) `status`."""
@@ -198,6 +198,6 @@ set_services!(value::ThermalStandard, val) = value.services = val
 set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 """Set [`ThermalStandard`](@ref) `ext`."""
 set_ext!(value::ThermalStandard, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::ThermalStandard, val) = value.time_series_container = val
+"""Set [`ThermalStandard`](@ref) `time_series_container`."""
+set_time_series_container!(value::ThermalStandard, val) = value.time_series_container = val
 

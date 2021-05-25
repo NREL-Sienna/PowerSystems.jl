@@ -57,8 +57,8 @@ function VariableReserve{T}(::Nothing) where T <: ReserveDirection
     )
 end
 
-
-InfrastructureSystems.get_name(value::VariableReserve) = value.name
+"""Get [`VariableReserve`](@ref) `name`."""
+get_name(value::VariableReserve) = value.name
 """Get [`VariableReserve`](@ref) `available`."""
 get_available(value::VariableReserve) = value.available
 """Get [`VariableReserve`](@ref) `time_frame`."""
@@ -67,13 +67,13 @@ get_time_frame(value::VariableReserve) = value.time_frame
 get_requirement(value::VariableReserve) = value.requirement
 """Get [`VariableReserve`](@ref) `ext`."""
 get_ext(value::VariableReserve) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::VariableReserve) = value.time_series_container
+"""Get [`VariableReserve`](@ref) `time_series_container`."""
+get_time_series_container(value::VariableReserve) = value.time_series_container
 """Get [`VariableReserve`](@ref) `internal`."""
 get_internal(value::VariableReserve) = value.internal
 
-
-InfrastructureSystems.set_name!(value::VariableReserve, val) = value.name = val
+"""Set [`VariableReserve`](@ref) `name`."""
+set_name!(value::VariableReserve, val) = value.name = val
 """Set [`VariableReserve`](@ref) `available`."""
 set_available!(value::VariableReserve, val) = value.available = val
 """Set [`VariableReserve`](@ref) `time_frame`."""
@@ -82,6 +82,6 @@ set_time_frame!(value::VariableReserve, val) = value.time_frame = val
 set_requirement!(value::VariableReserve, val) = value.requirement = val
 """Set [`VariableReserve`](@ref) `ext`."""
 set_ext!(value::VariableReserve, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::VariableReserve, val) = value.time_series_container = val
+"""Set [`VariableReserve`](@ref) `time_series_container`."""
+set_time_series_container!(value::VariableReserve, val) = value.time_series_container = val
 

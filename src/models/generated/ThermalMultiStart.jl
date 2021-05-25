@@ -137,8 +137,8 @@ function ThermalMultiStart(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::ThermalMultiStart) = value.name
+"""Get [`ThermalMultiStart`](@ref) `name`."""
+get_name(value::ThermalMultiStart) = value.name
 """Get [`ThermalMultiStart`](@ref) `available`."""
 get_available(value::ThermalMultiStart) = value.available
 """Get [`ThermalMultiStart`](@ref) `status`."""
@@ -183,13 +183,13 @@ get_must_run(value::ThermalMultiStart) = value.must_run
 get_dynamic_injector(value::ThermalMultiStart) = value.dynamic_injector
 """Get [`ThermalMultiStart`](@ref) `ext`."""
 get_ext(value::ThermalMultiStart) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::ThermalMultiStart) = value.time_series_container
+"""Get [`ThermalMultiStart`](@ref) `time_series_container`."""
+get_time_series_container(value::ThermalMultiStart) = value.time_series_container
 """Get [`ThermalMultiStart`](@ref) `internal`."""
 get_internal(value::ThermalMultiStart) = value.internal
 
-
-InfrastructureSystems.set_name!(value::ThermalMultiStart, val) = value.name = val
+"""Set [`ThermalMultiStart`](@ref) `name`."""
+set_name!(value::ThermalMultiStart, val) = value.name = val
 """Set [`ThermalMultiStart`](@ref) `available`."""
 set_available!(value::ThermalMultiStart, val) = value.available = val
 """Set [`ThermalMultiStart`](@ref) `status`."""
@@ -232,6 +232,6 @@ set_time_at_status!(value::ThermalMultiStart, val) = value.time_at_status = val
 set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
 """Set [`ThermalMultiStart`](@ref) `ext`."""
 set_ext!(value::ThermalMultiStart, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::ThermalMultiStart, val) = value.time_series_container = val
+"""Set [`ThermalMultiStart`](@ref) `time_series_container`."""
+set_time_series_container!(value::ThermalMultiStart, val) = value.time_series_container = val
 

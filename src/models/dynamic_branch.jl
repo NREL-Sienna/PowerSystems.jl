@@ -50,7 +50,7 @@ get_states(value::DynamicBranch) = value.states
 """Get DynamicBranch internal."""
 get_internal(value::DynamicBranch) = value.internal
 
-IS.get_name(value::DynamicBranch) = IS.get_name(value.branch)
+get_name(value::DynamicBranch) = IS.get_name(value.branch)
 """Get DynamicBranch available."""
 get_available(value::DynamicBranch) = get_available(value.branch)
 """Get DynamicBranch active_power_flow."""
@@ -74,7 +74,7 @@ get_services(value::DynamicBranch) = get_services(value.branch)
 """Get DynamicBranch ext."""
 get_ext(value::DynamicBranch) = get_ext(value.branch)
 
-IS.set_name!(value::DynamicBranch, val::String) = IS.set_name!(value.branch, val)
+set_name!(value::DynamicBranch, val::String) = set_name!(value.branch, val)
 """Set DynamicBranch available."""
 set_available!(value::DynamicBranch, val::Bool) = set_available!(value.branch, val)
 """Set DynamicBranch active_power_flow."""

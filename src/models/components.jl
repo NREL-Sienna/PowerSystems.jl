@@ -59,7 +59,3 @@ end
 function get_value(::Nothing, _)
     return
 end
-
-function has_time_series(d::Component)
-    return IS.has_time_series(d)
-end

@@ -91,8 +91,8 @@ function InterruptibleLoad(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::InterruptibleLoad) = value.name
+"""Get [`InterruptibleLoad`](@ref) `name`."""
+get_name(value::InterruptibleLoad) = value.name
 """Get [`InterruptibleLoad`](@ref) `available`."""
 get_available(value::InterruptibleLoad) = value.available
 """Get [`InterruptibleLoad`](@ref) `bus`."""
@@ -117,13 +117,13 @@ get_services(value::InterruptibleLoad) = value.services
 get_dynamic_injector(value::InterruptibleLoad) = value.dynamic_injector
 """Get [`InterruptibleLoad`](@ref) `ext`."""
 get_ext(value::InterruptibleLoad) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::InterruptibleLoad) = value.time_series_container
+"""Get [`InterruptibleLoad`](@ref) `time_series_container`."""
+get_time_series_container(value::InterruptibleLoad) = value.time_series_container
 """Get [`InterruptibleLoad`](@ref) `internal`."""
 get_internal(value::InterruptibleLoad) = value.internal
 
-
-InfrastructureSystems.set_name!(value::InterruptibleLoad, val) = value.name = val
+"""Set [`InterruptibleLoad`](@ref) `name`."""
+set_name!(value::InterruptibleLoad, val) = value.name = val
 """Set [`InterruptibleLoad`](@ref) `available`."""
 set_available!(value::InterruptibleLoad, val) = value.available = val
 """Set [`InterruptibleLoad`](@ref) `bus`."""
@@ -146,6 +146,6 @@ set_operation_cost!(value::InterruptibleLoad, val) = value.operation_cost = val
 set_services!(value::InterruptibleLoad, val) = value.services = val
 """Set [`InterruptibleLoad`](@ref) `ext`."""
 set_ext!(value::InterruptibleLoad, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::InterruptibleLoad, val) = value.time_series_container = val
+"""Set [`InterruptibleLoad`](@ref) `time_series_container`."""
+set_time_series_container!(value::InterruptibleLoad, val) = value.time_series_container = val
 

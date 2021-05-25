@@ -118,7 +118,7 @@ function DynamicGenerator(;
     )
 end
 
-IS.get_name(device::DynamicGenerator) = device.name
+get_name(device::DynamicGenerator) = device.name
 get_states(device::DynamicGenerator) = device.states
 get_n_states(device::DynamicGenerator) = device.n_states
 get_ω_ref(device::DynamicGenerator) = device.ω_ref

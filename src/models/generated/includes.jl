@@ -336,6 +336,7 @@ export get_max_reactive_power
 export get_model
 export get_must_run
 export get_n_states
+export get_name
 export get_no_load
 export get_number
 export get_operation_cost
@@ -391,6 +392,7 @@ export get_time_at_status
 export get_time_frame
 export get_time_limits
 export get_time_limits_pump
+export get_time_series_container
 export get_to
 export get_valve_position_limits
 export get_variable
@@ -661,6 +663,7 @@ export set_max_reactive_power!
 export set_model!
 export set_must_run!
 export set_n_states!
+export set_name!
 export set_no_load!
 export set_number!
 export set_operation_cost!
@@ -716,6 +719,7 @@ export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
 export set_time_limits_pump!
+export set_time_series_container!
 export set_to!
 export set_valve_position_limits!
 export set_variable!

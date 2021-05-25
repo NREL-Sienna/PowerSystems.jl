@@ -47,23 +47,23 @@ function LoadZone(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::LoadZone) = value.name
+"""Get [`LoadZone`](@ref) `name`."""
+get_name(value::LoadZone) = value.name
 """Get [`LoadZone`](@ref) `peak_active_power`."""
 get_peak_active_power(value::LoadZone) = value.peak_active_power
 """Get [`LoadZone`](@ref) `peak_reactive_power`."""
 get_peak_reactive_power(value::LoadZone) = value.peak_reactive_power
-
-InfrastructureSystems.get_time_series_container(value::LoadZone) = value.time_series_container
+"""Get [`LoadZone`](@ref) `time_series_container`."""
+get_time_series_container(value::LoadZone) = value.time_series_container
 """Get [`LoadZone`](@ref) `internal`."""
 get_internal(value::LoadZone) = value.internal
 
-
-InfrastructureSystems.set_name!(value::LoadZone, val) = value.name = val
+"""Set [`LoadZone`](@ref) `name`."""
+set_name!(value::LoadZone, val) = value.name = val
 """Set [`LoadZone`](@ref) `peak_active_power`."""
 set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = val
 """Set [`LoadZone`](@ref) `peak_reactive_power`."""
 set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = val
-
-InfrastructureSystems.set_time_series_container!(value::LoadZone, val) = value.time_series_container = val
+"""Set [`LoadZone`](@ref) `time_series_container`."""
+set_time_series_container!(value::LoadZone, val) = value.time_series_container = val
 

@@ -76,8 +76,8 @@ function AGC(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::AGC) = value.name
+"""Get [`AGC`](@ref) `name`."""
+get_name(value::AGC) = value.name
 """Get [`AGC`](@ref) `available`."""
 get_available(value::AGC) = value.available
 """Get [`AGC`](@ref) `bias`."""
@@ -99,8 +99,8 @@ get_ext(value::AGC) = value.ext
 """Get [`AGC`](@ref) `internal`."""
 get_internal(value::AGC) = value.internal
 
-
-InfrastructureSystems.set_name!(value::AGC, val) = value.name = val
+"""Set [`AGC`](@ref) `name`."""
+set_name!(value::AGC, val) = value.name = val
 """Set [`AGC`](@ref) `available`."""
 set_available!(value::AGC, val) = value.available = val
 """Set [`AGC`](@ref) `bias`."""

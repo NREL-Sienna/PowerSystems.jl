@@ -169,8 +169,8 @@ function HydroPumpedStorage(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::HydroPumpedStorage) = value.name
+"""Get [`HydroPumpedStorage`](@ref) `name`."""
+get_name(value::HydroPumpedStorage) = value.name
 """Get [`HydroPumpedStorage`](@ref) `available`."""
 get_available(value::HydroPumpedStorage) = value.available
 """Get [`HydroPumpedStorage`](@ref) `bus`."""
@@ -227,13 +227,13 @@ get_services(value::HydroPumpedStorage) = value.services
 get_dynamic_injector(value::HydroPumpedStorage) = value.dynamic_injector
 """Get [`HydroPumpedStorage`](@ref) `ext`."""
 get_ext(value::HydroPumpedStorage) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::HydroPumpedStorage) = value.time_series_container
+"""Get [`HydroPumpedStorage`](@ref) `time_series_container`."""
+get_time_series_container(value::HydroPumpedStorage) = value.time_series_container
 """Get [`HydroPumpedStorage`](@ref) `internal`."""
 get_internal(value::HydroPumpedStorage) = value.internal
 
-
-InfrastructureSystems.set_name!(value::HydroPumpedStorage, val) = value.name = val
+"""Set [`HydroPumpedStorage`](@ref) `name`."""
+set_name!(value::HydroPumpedStorage, val) = value.name = val
 """Set [`HydroPumpedStorage`](@ref) `available`."""
 set_available!(value::HydroPumpedStorage, val) = value.available = val
 """Set [`HydroPumpedStorage`](@ref) `bus`."""
@@ -288,6 +288,6 @@ set_time_at_status!(value::HydroPumpedStorage, val) = value.time_at_status = val
 set_services!(value::HydroPumpedStorage, val) = value.services = val
 """Set [`HydroPumpedStorage`](@ref) `ext`."""
 set_ext!(value::HydroPumpedStorage, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::HydroPumpedStorage, val) = value.time_series_container = val
+"""Set [`HydroPumpedStorage`](@ref) `time_series_container`."""
+set_time_series_container!(value::HydroPumpedStorage, val) = value.time_series_container = val
 

@@ -98,8 +98,8 @@ end
 
 """Get [`Bus`](@ref) `number`."""
 get_number(value::Bus) = value.number
-
-InfrastructureSystems.get_name(value::Bus) = value.name
+"""Get [`Bus`](@ref) `name`."""
+get_name(value::Bus) = value.name
 """Get [`Bus`](@ref) `bustype`."""
 get_bustype(value::Bus) = value.bustype
 """Get [`Bus`](@ref) `angle`."""
@@ -121,8 +121,8 @@ get_internal(value::Bus) = value.internal
 
 """Set [`Bus`](@ref) `number`."""
 set_number!(value::Bus, val) = value.number = val
-
-InfrastructureSystems.set_name!(value::Bus, val) = value.name = val
+"""Set [`Bus`](@ref) `name`."""
+set_name!(value::Bus, val) = value.name = val
 """Set [`Bus`](@ref) `bustype`."""
 set_bustype!(value::Bus, val) = value.bustype = val
 """Set [`Bus`](@ref) `angle`."""

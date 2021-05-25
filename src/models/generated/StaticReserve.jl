@@ -52,8 +52,8 @@ function StaticReserve{T}(::Nothing) where T <: ReserveDirection
     )
 end
 
-
-InfrastructureSystems.get_name(value::StaticReserve) = value.name
+"""Get [`StaticReserve`](@ref) `name`."""
+get_name(value::StaticReserve) = value.name
 """Get [`StaticReserve`](@ref) `available`."""
 get_available(value::StaticReserve) = value.available
 """Get [`StaticReserve`](@ref) `time_frame`."""
@@ -65,8 +65,8 @@ get_ext(value::StaticReserve) = value.ext
 """Get [`StaticReserve`](@ref) `internal`."""
 get_internal(value::StaticReserve) = value.internal
 
-
-InfrastructureSystems.set_name!(value::StaticReserve, val) = value.name = val
+"""Set [`StaticReserve`](@ref) `name`."""
+set_name!(value::StaticReserve, val) = value.name = val
 """Set [`StaticReserve`](@ref) `available`."""
 set_available!(value::StaticReserve, val) = value.available = val
 """Set [`StaticReserve`](@ref) `time_frame`."""
