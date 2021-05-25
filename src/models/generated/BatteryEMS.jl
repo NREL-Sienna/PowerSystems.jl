@@ -118,8 +118,8 @@ function BatteryEMS(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::BatteryEMS) = value.name
+"""Get [`BatteryEMS`](@ref) `name`."""
+get_name(value::BatteryEMS) = value.name
 """Get [`BatteryEMS`](@ref) `available`."""
 get_available(value::BatteryEMS) = value.available
 """Get [`BatteryEMS`](@ref) `bus`."""
@@ -156,13 +156,13 @@ get_services(value::BatteryEMS) = value.services
 get_dynamic_injector(value::BatteryEMS) = value.dynamic_injector
 """Get [`BatteryEMS`](@ref) `ext`."""
 get_ext(value::BatteryEMS) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::BatteryEMS) = value.time_series_container
+"""Get [`BatteryEMS`](@ref) `time_series_container`."""
+get_time_series_container(value::BatteryEMS) = value.time_series_container
 """Get [`BatteryEMS`](@ref) `internal`."""
 get_internal(value::BatteryEMS) = value.internal
 
-
-InfrastructureSystems.set_name!(value::BatteryEMS, val) = value.name = val
+"""Set [`BatteryEMS`](@ref) `name`."""
+set_name!(value::BatteryEMS, val) = value.name = val
 """Set [`BatteryEMS`](@ref) `available`."""
 set_available!(value::BatteryEMS, val) = value.available = val
 """Set [`BatteryEMS`](@ref) `bus`."""
@@ -197,6 +197,6 @@ set_storage_target!(value::BatteryEMS, val) = value.storage_target = val
 set_services!(value::BatteryEMS, val) = value.services = val
 """Set [`BatteryEMS`](@ref) `ext`."""
 set_ext!(value::BatteryEMS, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::BatteryEMS, val) = value.time_series_container = val
+"""Set [`BatteryEMS`](@ref) `time_series_container`."""
+set_time_series_container!(value::BatteryEMS, val) = value.time_series_container = val
 

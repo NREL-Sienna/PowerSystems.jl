@@ -107,8 +107,8 @@ function HydroDispatch(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::HydroDispatch) = value.name
+"""Get [`HydroDispatch`](@ref) `name`."""
+get_name(value::HydroDispatch) = value.name
 """Get [`HydroDispatch`](@ref) `available`."""
 get_available(value::HydroDispatch) = value.available
 """Get [`HydroDispatch`](@ref) `bus`."""
@@ -139,13 +139,13 @@ get_services(value::HydroDispatch) = value.services
 get_dynamic_injector(value::HydroDispatch) = value.dynamic_injector
 """Get [`HydroDispatch`](@ref) `ext`."""
 get_ext(value::HydroDispatch) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::HydroDispatch) = value.time_series_container
+"""Get [`HydroDispatch`](@ref) `time_series_container`."""
+get_time_series_container(value::HydroDispatch) = value.time_series_container
 """Get [`HydroDispatch`](@ref) `internal`."""
 get_internal(value::HydroDispatch) = value.internal
 
-
-InfrastructureSystems.set_name!(value::HydroDispatch, val) = value.name = val
+"""Set [`HydroDispatch`](@ref) `name`."""
+set_name!(value::HydroDispatch, val) = value.name = val
 """Set [`HydroDispatch`](@ref) `available`."""
 set_available!(value::HydroDispatch, val) = value.available = val
 """Set [`HydroDispatch`](@ref) `bus`."""
@@ -174,6 +174,6 @@ set_operation_cost!(value::HydroDispatch, val) = value.operation_cost = val
 set_services!(value::HydroDispatch, val) = value.services = val
 """Set [`HydroDispatch`](@ref) `ext`."""
 set_ext!(value::HydroDispatch, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::HydroDispatch, val) = value.time_series_container = val
+"""Set [`HydroDispatch`](@ref) `time_series_container`."""
+set_time_series_container!(value::HydroDispatch, val) = value.time_series_container = val
 

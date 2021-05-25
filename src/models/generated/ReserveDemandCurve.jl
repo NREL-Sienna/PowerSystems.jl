@@ -59,29 +59,29 @@ end
 
 """Get [`ReserveDemandCurve`](@ref) `variable`."""
 get_variable(value::ReserveDemandCurve) = value.variable
-
-InfrastructureSystems.get_name(value::ReserveDemandCurve) = value.name
+"""Get [`ReserveDemandCurve`](@ref) `name`."""
+get_name(value::ReserveDemandCurve) = value.name
 """Get [`ReserveDemandCurve`](@ref) `available`."""
 get_available(value::ReserveDemandCurve) = value.available
 """Get [`ReserveDemandCurve`](@ref) `time_frame`."""
 get_time_frame(value::ReserveDemandCurve) = value.time_frame
 """Get [`ReserveDemandCurve`](@ref) `ext`."""
 get_ext(value::ReserveDemandCurve) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::ReserveDemandCurve) = value.time_series_container
+"""Get [`ReserveDemandCurve`](@ref) `time_series_container`."""
+get_time_series_container(value::ReserveDemandCurve) = value.time_series_container
 """Get [`ReserveDemandCurve`](@ref) `internal`."""
 get_internal(value::ReserveDemandCurve) = value.internal
 
 """Set [`ReserveDemandCurve`](@ref) `variable`."""
 set_variable!(value::ReserveDemandCurve, val) = value.variable = val
-
-InfrastructureSystems.set_name!(value::ReserveDemandCurve, val) = value.name = val
+"""Set [`ReserveDemandCurve`](@ref) `name`."""
+set_name!(value::ReserveDemandCurve, val) = value.name = val
 """Set [`ReserveDemandCurve`](@ref) `available`."""
 set_available!(value::ReserveDemandCurve, val) = value.available = val
 """Set [`ReserveDemandCurve`](@ref) `time_frame`."""
 set_time_frame!(value::ReserveDemandCurve, val) = value.time_frame = val
 """Set [`ReserveDemandCurve`](@ref) `ext`."""
 set_ext!(value::ReserveDemandCurve, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::ReserveDemandCurve, val) = value.time_series_container = val
+"""Set [`ReserveDemandCurve`](@ref) `time_series_container`."""
+set_time_series_container!(value::ReserveDemandCurve, val) = value.time_series_container = val
 

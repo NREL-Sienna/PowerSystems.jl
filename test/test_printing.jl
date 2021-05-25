@@ -79,3 +79,17 @@ end
 
     @test isnothing(show(IOBuffer(), "text/plain", sys))
 end
+
+@testset "Test printing of non-PowerSystems struct" begin
+    struct MyComponent <: Component
+        name::String
+        internal::IS.InfrastructureSystemsInternal
+    end
+
+    PSY.get_internal(x::MyComponent) = x.internal
+    PSY.get_name(x::MyComponent) = string(x.name)
+
+    component = MyComponent("component1", IS.InfrastructureSystemsInternal())
+    @test isnothing(show(IOBuffer(), component))
+    @test isnothing(show(IOBuffer(), "text/plain", component))
+end

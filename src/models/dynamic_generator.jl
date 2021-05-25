@@ -118,7 +118,7 @@ function DynamicGenerator(;
     )
 end
 
-IS.get_name(device::DynamicGenerator) = device.name
+get_name(device::DynamicGenerator) = device.name
 get_states(device::DynamicGenerator) = device.states
 get_n_states(device::DynamicGenerator) = device.n_states
 get_ω_ref(device::DynamicGenerator) = device.ω_ref
@@ -136,7 +136,9 @@ get_P_ref(value::DynamicGenerator) = get_P_ref(get_prime_mover(value))
 set_base_power!(value::DynamicGenerator, val) = value.base_power = val
 
 function _calc_n_states(machine, shaft, avr, prime_mover, pss)
-    return get_n_states(machine) + get_n_states(shaft) + get_n_states(avr) +
+    return get_n_states(machine) +
+           get_n_states(shaft) +
+           get_n_states(avr) +
            get_n_states(prime_mover) +
            get_n_states(pss)
 end

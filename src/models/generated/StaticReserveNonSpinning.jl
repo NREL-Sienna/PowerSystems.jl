@@ -52,8 +52,8 @@ function StaticReserveNonSpinning(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::StaticReserveNonSpinning) = value.name
+"""Get [`StaticReserveNonSpinning`](@ref) `name`."""
+get_name(value::StaticReserveNonSpinning) = value.name
 """Get [`StaticReserveNonSpinning`](@ref) `available`."""
 get_available(value::StaticReserveNonSpinning) = value.available
 """Get [`StaticReserveNonSpinning`](@ref) `time_frame`."""
@@ -65,8 +65,8 @@ get_ext(value::StaticReserveNonSpinning) = value.ext
 """Get [`StaticReserveNonSpinning`](@ref) `internal`."""
 get_internal(value::StaticReserveNonSpinning) = value.internal
 
-
-InfrastructureSystems.set_name!(value::StaticReserveNonSpinning, val) = value.name = val
+"""Set [`StaticReserveNonSpinning`](@ref) `name`."""
+set_name!(value::StaticReserveNonSpinning, val) = value.name = val
 """Set [`StaticReserveNonSpinning`](@ref) `available`."""
 set_available!(value::StaticReserveNonSpinning, val) = value.available = val
 """Set [`StaticReserveNonSpinning`](@ref) `time_frame`."""

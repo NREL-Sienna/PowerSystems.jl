@@ -83,8 +83,8 @@ function Transformer2W(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::Transformer2W) = value.name
+"""Get [`Transformer2W`](@ref) `name`."""
+get_name(value::Transformer2W) = value.name
 """Get [`Transformer2W`](@ref) `available`."""
 get_available(value::Transformer2W) = value.available
 """Get [`Transformer2W`](@ref) `active_power_flow`."""
@@ -105,13 +105,13 @@ get_rate(value::Transformer2W) = get_value(value, value.rate)
 get_services(value::Transformer2W) = value.services
 """Get [`Transformer2W`](@ref) `ext`."""
 get_ext(value::Transformer2W) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::Transformer2W) = value.time_series_container
+"""Get [`Transformer2W`](@ref) `time_series_container`."""
+get_time_series_container(value::Transformer2W) = value.time_series_container
 """Get [`Transformer2W`](@ref) `internal`."""
 get_internal(value::Transformer2W) = value.internal
 
-
-InfrastructureSystems.set_name!(value::Transformer2W, val) = value.name = val
+"""Set [`Transformer2W`](@ref) `name`."""
+set_name!(value::Transformer2W, val) = value.name = val
 """Set [`Transformer2W`](@ref) `available`."""
 set_available!(value::Transformer2W, val) = value.available = val
 """Set [`Transformer2W`](@ref) `active_power_flow`."""
@@ -132,6 +132,6 @@ set_rate!(value::Transformer2W, val) = value.rate = val
 set_services!(value::Transformer2W, val) = value.services = val
 """Set [`Transformer2W`](@ref) `ext`."""
 set_ext!(value::Transformer2W, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::Transformer2W, val) = value.time_series_container = val
+"""Set [`Transformer2W`](@ref) `time_series_container`."""
+set_time_series_container!(value::Transformer2W, val) = value.time_series_container = val
 

@@ -52,4 +52,4 @@ set_from!(value::Arc, val) = value.from = val
 """Set [`Arc`](@ref) `to`."""
 set_to!(value::Arc, val) = value.to = val
 
-IS.get_name(arc::Arc) = (get_name ∘ get_from)(arc) * " -> " * (get_name ∘ get_to)(arc)
+get_name(arc::Arc) = (get_name ∘ get_from)(arc) * " -> " * (get_name ∘ get_to)(arc)

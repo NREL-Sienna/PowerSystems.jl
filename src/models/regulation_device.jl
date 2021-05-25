@@ -93,8 +93,8 @@ function RegulationDevice(;
     )
 end
 
-IS.get_time_series_container(value::RegulationDevice) = value.time_series_container
-IS.get_name(value::RegulationDevice) = IS.get_name(value.device)
+get_time_series_container(value::RegulationDevice) = value.time_series_container
+get_name(value::RegulationDevice) = IS.get_name(value.device)
 get_internal(value::RegulationDevice) = value.internal
 get_droop(value::RegulationDevice) = value.droop
 get_participation_factor(value::RegulationDevice) = value.participation_factor

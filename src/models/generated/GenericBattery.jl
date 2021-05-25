@@ -113,8 +113,8 @@ function GenericBattery(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::GenericBattery) = value.name
+"""Get [`GenericBattery`](@ref) `name`."""
+get_name(value::GenericBattery) = value.name
 """Get [`GenericBattery`](@ref) `available`."""
 get_available(value::GenericBattery) = value.available
 """Get [`GenericBattery`](@ref) `bus`."""
@@ -149,13 +149,13 @@ get_services(value::GenericBattery) = value.services
 get_dynamic_injector(value::GenericBattery) = value.dynamic_injector
 """Get [`GenericBattery`](@ref) `ext`."""
 get_ext(value::GenericBattery) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::GenericBattery) = value.time_series_container
+"""Get [`GenericBattery`](@ref) `time_series_container`."""
+get_time_series_container(value::GenericBattery) = value.time_series_container
 """Get [`GenericBattery`](@ref) `internal`."""
 get_internal(value::GenericBattery) = value.internal
 
-
-InfrastructureSystems.set_name!(value::GenericBattery, val) = value.name = val
+"""Set [`GenericBattery`](@ref) `name`."""
+set_name!(value::GenericBattery, val) = value.name = val
 """Set [`GenericBattery`](@ref) `available`."""
 set_available!(value::GenericBattery, val) = value.available = val
 """Set [`GenericBattery`](@ref) `bus`."""
@@ -188,6 +188,6 @@ set_operation_cost!(value::GenericBattery, val) = value.operation_cost = val
 set_services!(value::GenericBattery, val) = value.services = val
 """Set [`GenericBattery`](@ref) `ext`."""
 set_ext!(value::GenericBattery, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::GenericBattery, val) = value.time_series_container = val
+"""Set [`GenericBattery`](@ref) `time_series_container`."""
+set_time_series_container!(value::GenericBattery, val) = value.time_series_container = val
 

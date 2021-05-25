@@ -87,8 +87,8 @@ function Line(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::Line) = value.name
+"""Get [`Line`](@ref) `name`."""
+get_name(value::Line) = value.name
 """Get [`Line`](@ref) `available`."""
 get_available(value::Line) = value.available
 """Get [`Line`](@ref) `active_power_flow`."""
@@ -111,13 +111,13 @@ get_angle_limits(value::Line) = value.angle_limits
 get_services(value::Line) = value.services
 """Get [`Line`](@ref) `ext`."""
 get_ext(value::Line) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::Line) = value.time_series_container
+"""Get [`Line`](@ref) `time_series_container`."""
+get_time_series_container(value::Line) = value.time_series_container
 """Get [`Line`](@ref) `internal`."""
 get_internal(value::Line) = value.internal
 
-
-InfrastructureSystems.set_name!(value::Line, val) = value.name = val
+"""Set [`Line`](@ref) `name`."""
+set_name!(value::Line, val) = value.name = val
 """Set [`Line`](@ref) `available`."""
 set_available!(value::Line, val) = value.available = val
 """Set [`Line`](@ref) `active_power_flow`."""
@@ -140,6 +140,6 @@ set_angle_limits!(value::Line, val) = value.angle_limits = val
 set_services!(value::Line, val) = value.services = val
 """Set [`Line`](@ref) `ext`."""
 set_ext!(value::Line, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::Line, val) = value.time_series_container = val
+"""Set [`Line`](@ref) `time_series_container`."""
+set_time_series_container!(value::Line, val) = value.time_series_container = val
 

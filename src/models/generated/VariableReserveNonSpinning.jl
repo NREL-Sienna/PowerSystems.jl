@@ -57,8 +57,8 @@ function VariableReserveNonSpinning(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::VariableReserveNonSpinning) = value.name
+"""Get [`VariableReserveNonSpinning`](@ref) `name`."""
+get_name(value::VariableReserveNonSpinning) = value.name
 """Get [`VariableReserveNonSpinning`](@ref) `available`."""
 get_available(value::VariableReserveNonSpinning) = value.available
 """Get [`VariableReserveNonSpinning`](@ref) `time_frame`."""
@@ -67,13 +67,13 @@ get_time_frame(value::VariableReserveNonSpinning) = value.time_frame
 get_requirement(value::VariableReserveNonSpinning) = value.requirement
 """Get [`VariableReserveNonSpinning`](@ref) `ext`."""
 get_ext(value::VariableReserveNonSpinning) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::VariableReserveNonSpinning) = value.time_series_container
+"""Get [`VariableReserveNonSpinning`](@ref) `time_series_container`."""
+get_time_series_container(value::VariableReserveNonSpinning) = value.time_series_container
 """Get [`VariableReserveNonSpinning`](@ref) `internal`."""
 get_internal(value::VariableReserveNonSpinning) = value.internal
 
-
-InfrastructureSystems.set_name!(value::VariableReserveNonSpinning, val) = value.name = val
+"""Set [`VariableReserveNonSpinning`](@ref) `name`."""
+set_name!(value::VariableReserveNonSpinning, val) = value.name = val
 """Set [`VariableReserveNonSpinning`](@ref) `available`."""
 set_available!(value::VariableReserveNonSpinning, val) = value.available = val
 """Set [`VariableReserveNonSpinning`](@ref) `time_frame`."""
@@ -82,6 +82,6 @@ set_time_frame!(value::VariableReserveNonSpinning, val) = value.time_frame = val
 set_requirement!(value::VariableReserveNonSpinning, val) = value.requirement = val
 """Set [`VariableReserveNonSpinning`](@ref) `ext`."""
 set_ext!(value::VariableReserveNonSpinning, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::VariableReserveNonSpinning, val) = value.time_series_container = val
+"""Set [`VariableReserveNonSpinning`](@ref) `time_series_container`."""
+set_time_series_container!(value::VariableReserveNonSpinning, val) = value.time_series_container = val
 

@@ -171,7 +171,7 @@ function DynamicInverter(;
     )
 end
 
-IS.get_name(device::DynamicInverter) = device.name
+get_name(device::DynamicInverter) = device.name
 get_ω_ref(device::DynamicInverter) = device.ω_ref
 get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states
@@ -197,9 +197,12 @@ function _calc_n_states(
     freq_estimator,
     filter,
 )
-    return converter.n_states + outer_control.n_states + inner_control.n_states +
+    return converter.n_states +
+           outer_control.n_states +
+           inner_control.n_states +
            dc_source.n_states +
-           freq_estimator.n_states + filter.n_states
+           freq_estimator.n_states +
+           filter.n_states
 end
 
 function _calc_states(

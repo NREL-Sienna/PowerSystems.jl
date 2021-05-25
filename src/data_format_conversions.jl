@@ -33,7 +33,7 @@ function post_deserialize_conversion!(sys::System, raw)
     old = raw["data_format_version"]
     if old == "1.0.0"
         for component in IS.iterate_components_with_time_series(sys.data.components)
-            ts_container = IS.get_time_series_container(component)
+            ts_container = get_time_series_container(component)
             for key in keys(ts_container.data)
                 if key.time_series_type == IS.DeterministicMetadata
                     ts_metadata = ts_container.data[key]

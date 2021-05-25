@@ -979,7 +979,8 @@ function _calc_power_balance(data::Dict{String, <:Any})
             p_delta =
                 bvals["p"] + bvals["p_dc"] + bvals["psw"] - bvals["pg"] +
                 bvals["ps"] +
-                bvals["pd"] + bvals["gs"] * (bvals["vm"]^2)
+                bvals["pd"] +
+                bvals["gs"] * (bvals["vm"]^2)
             q_delta =
                 bvals["q"] + bvals["q_dc"] + bvals["qsw"] - bvals["qg"] +
                 bvals["qs"] +

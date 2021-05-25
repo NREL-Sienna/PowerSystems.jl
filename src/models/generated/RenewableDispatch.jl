@@ -97,8 +97,8 @@ function RenewableDispatch(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::RenewableDispatch) = value.name
+"""Get [`RenewableDispatch`](@ref) `name`."""
+get_name(value::RenewableDispatch) = value.name
 """Get [`RenewableDispatch`](@ref) `available`."""
 get_available(value::RenewableDispatch) = value.available
 """Get [`RenewableDispatch`](@ref) `bus`."""
@@ -125,13 +125,13 @@ get_services(value::RenewableDispatch) = value.services
 get_dynamic_injector(value::RenewableDispatch) = value.dynamic_injector
 """Get [`RenewableDispatch`](@ref) `ext`."""
 get_ext(value::RenewableDispatch) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::RenewableDispatch) = value.time_series_container
+"""Get [`RenewableDispatch`](@ref) `time_series_container`."""
+get_time_series_container(value::RenewableDispatch) = value.time_series_container
 """Get [`RenewableDispatch`](@ref) `internal`."""
 get_internal(value::RenewableDispatch) = value.internal
 
-
-InfrastructureSystems.set_name!(value::RenewableDispatch, val) = value.name = val
+"""Set [`RenewableDispatch`](@ref) `name`."""
+set_name!(value::RenewableDispatch, val) = value.name = val
 """Set [`RenewableDispatch`](@ref) `available`."""
 set_available!(value::RenewableDispatch, val) = value.available = val
 """Set [`RenewableDispatch`](@ref) `bus`."""
@@ -156,6 +156,6 @@ set_base_power!(value::RenewableDispatch, val) = value.base_power = val
 set_services!(value::RenewableDispatch, val) = value.services = val
 """Set [`RenewableDispatch`](@ref) `ext`."""
 set_ext!(value::RenewableDispatch, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::RenewableDispatch, val) = value.time_series_container = val
+"""Set [`RenewableDispatch`](@ref) `time_series_container`."""
+set_time_series_container!(value::RenewableDispatch, val) = value.time_series_container = val
 

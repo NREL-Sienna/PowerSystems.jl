@@ -88,8 +88,8 @@ function RenewableFix(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::RenewableFix) = value.name
+"""Get [`RenewableFix`](@ref) `name`."""
+get_name(value::RenewableFix) = value.name
 """Get [`RenewableFix`](@ref) `available`."""
 get_available(value::RenewableFix) = value.available
 """Get [`RenewableFix`](@ref) `bus`."""
@@ -112,13 +112,13 @@ get_services(value::RenewableFix) = value.services
 get_dynamic_injector(value::RenewableFix) = value.dynamic_injector
 """Get [`RenewableFix`](@ref) `ext`."""
 get_ext(value::RenewableFix) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::RenewableFix) = value.time_series_container
+"""Get [`RenewableFix`](@ref) `time_series_container`."""
+get_time_series_container(value::RenewableFix) = value.time_series_container
 """Get [`RenewableFix`](@ref) `internal`."""
 get_internal(value::RenewableFix) = value.internal
 
-
-InfrastructureSystems.set_name!(value::RenewableFix, val) = value.name = val
+"""Set [`RenewableFix`](@ref) `name`."""
+set_name!(value::RenewableFix, val) = value.name = val
 """Set [`RenewableFix`](@ref) `available`."""
 set_available!(value::RenewableFix, val) = value.available = val
 """Set [`RenewableFix`](@ref) `bus`."""
@@ -139,6 +139,6 @@ set_base_power!(value::RenewableFix, val) = value.base_power = val
 set_services!(value::RenewableFix, val) = value.services = val
 """Set [`RenewableFix`](@ref) `ext`."""
 set_ext!(value::RenewableFix, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::RenewableFix, val) = value.time_series_container = val
+"""Set [`RenewableFix`](@ref) `time_series_container`."""
+set_time_series_container!(value::RenewableFix, val) = value.time_series_container = val
 

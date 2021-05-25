@@ -93,8 +93,8 @@ function MonitoredLine(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::MonitoredLine) = value.name
+"""Get [`MonitoredLine`](@ref) `name`."""
+get_name(value::MonitoredLine) = value.name
 """Get [`MonitoredLine`](@ref) `available`."""
 get_available(value::MonitoredLine) = value.available
 """Get [`MonitoredLine`](@ref) `active_power_flow`."""
@@ -119,13 +119,13 @@ get_angle_limits(value::MonitoredLine) = value.angle_limits
 get_services(value::MonitoredLine) = value.services
 """Get [`MonitoredLine`](@ref) `ext`."""
 get_ext(value::MonitoredLine) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::MonitoredLine) = value.time_series_container
+"""Get [`MonitoredLine`](@ref) `time_series_container`."""
+get_time_series_container(value::MonitoredLine) = value.time_series_container
 """Get [`MonitoredLine`](@ref) `internal`."""
 get_internal(value::MonitoredLine) = value.internal
 
-
-InfrastructureSystems.set_name!(value::MonitoredLine, val) = value.name = val
+"""Set [`MonitoredLine`](@ref) `name`."""
+set_name!(value::MonitoredLine, val) = value.name = val
 """Set [`MonitoredLine`](@ref) `available`."""
 set_available!(value::MonitoredLine, val) = value.available = val
 """Set [`MonitoredLine`](@ref) `active_power_flow`."""
@@ -150,6 +150,6 @@ set_angle_limits!(value::MonitoredLine, val) = value.angle_limits = val
 set_services!(value::MonitoredLine, val) = value.services = val
 """Set [`MonitoredLine`](@ref) `ext`."""
 set_ext!(value::MonitoredLine, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::MonitoredLine, val) = value.time_series_container = val
+"""Set [`MonitoredLine`](@ref) `time_series_container`."""
+set_time_series_container!(value::MonitoredLine, val) = value.time_series_container = val
 

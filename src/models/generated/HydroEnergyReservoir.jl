@@ -136,8 +136,8 @@ function HydroEnergyReservoir(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::HydroEnergyReservoir) = value.name
+"""Get [`HydroEnergyReservoir`](@ref) `name`."""
+get_name(value::HydroEnergyReservoir) = value.name
 """Get [`HydroEnergyReservoir`](@ref) `available`."""
 get_available(value::HydroEnergyReservoir) = value.available
 """Get [`HydroEnergyReservoir`](@ref) `bus`."""
@@ -180,13 +180,13 @@ get_services(value::HydroEnergyReservoir) = value.services
 get_dynamic_injector(value::HydroEnergyReservoir) = value.dynamic_injector
 """Get [`HydroEnergyReservoir`](@ref) `ext`."""
 get_ext(value::HydroEnergyReservoir) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::HydroEnergyReservoir) = value.time_series_container
+"""Get [`HydroEnergyReservoir`](@ref) `time_series_container`."""
+get_time_series_container(value::HydroEnergyReservoir) = value.time_series_container
 """Get [`HydroEnergyReservoir`](@ref) `internal`."""
 get_internal(value::HydroEnergyReservoir) = value.internal
 
-
-InfrastructureSystems.set_name!(value::HydroEnergyReservoir, val) = value.name = val
+"""Set [`HydroEnergyReservoir`](@ref) `name`."""
+set_name!(value::HydroEnergyReservoir, val) = value.name = val
 """Set [`HydroEnergyReservoir`](@ref) `available`."""
 set_available!(value::HydroEnergyReservoir, val) = value.available = val
 """Set [`HydroEnergyReservoir`](@ref) `bus`."""
@@ -227,6 +227,6 @@ set_time_at_status!(value::HydroEnergyReservoir, val) = value.time_at_status = v
 set_services!(value::HydroEnergyReservoir, val) = value.services = val
 """Set [`HydroEnergyReservoir`](@ref) `ext`."""
 set_ext!(value::HydroEnergyReservoir, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::HydroEnergyReservoir, val) = value.time_series_container = val
+"""Set [`HydroEnergyReservoir`](@ref) `time_series_container`."""
+set_time_series_container!(value::HydroEnergyReservoir, val) = value.time_series_container = val
 

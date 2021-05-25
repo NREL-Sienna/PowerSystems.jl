@@ -79,8 +79,8 @@ function Source(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::Source) = value.name
+"""Get [`Source`](@ref) `name`."""
+get_name(value::Source) = value.name
 """Get [`Source`](@ref) `available`."""
 get_available(value::Source) = value.available
 """Get [`Source`](@ref) `bus`."""
@@ -104,8 +104,8 @@ get_ext(value::Source) = value.ext
 """Get [`Source`](@ref) `internal`."""
 get_internal(value::Source) = value.internal
 
-
-InfrastructureSystems.set_name!(value::Source, val) = value.name = val
+"""Set [`Source`](@ref) `name`."""
+set_name!(value::Source, val) = value.name = val
 """Set [`Source`](@ref) `available`."""
 set_available!(value::Source, val) = value.available = val
 """Set [`Source`](@ref) `bus`."""

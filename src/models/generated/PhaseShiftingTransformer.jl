@@ -90,8 +90,8 @@ function PhaseShiftingTransformer(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::PhaseShiftingTransformer) = value.name
+"""Get [`PhaseShiftingTransformer`](@ref) `name`."""
+get_name(value::PhaseShiftingTransformer) = value.name
 """Get [`PhaseShiftingTransformer`](@ref) `available`."""
 get_available(value::PhaseShiftingTransformer) = value.available
 """Get [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
@@ -116,13 +116,13 @@ get_rate(value::PhaseShiftingTransformer) = get_value(value, value.rate)
 get_services(value::PhaseShiftingTransformer) = value.services
 """Get [`PhaseShiftingTransformer`](@ref) `ext`."""
 get_ext(value::PhaseShiftingTransformer) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::PhaseShiftingTransformer) = value.time_series_container
+"""Get [`PhaseShiftingTransformer`](@ref) `time_series_container`."""
+get_time_series_container(value::PhaseShiftingTransformer) = value.time_series_container
 """Get [`PhaseShiftingTransformer`](@ref) `internal`."""
 get_internal(value::PhaseShiftingTransformer) = value.internal
 
-
-InfrastructureSystems.set_name!(value::PhaseShiftingTransformer, val) = value.name = val
+"""Set [`PhaseShiftingTransformer`](@ref) `name`."""
+set_name!(value::PhaseShiftingTransformer, val) = value.name = val
 """Set [`PhaseShiftingTransformer`](@ref) `available`."""
 set_available!(value::PhaseShiftingTransformer, val) = value.available = val
 """Set [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
@@ -147,6 +147,6 @@ set_rate!(value::PhaseShiftingTransformer, val) = value.rate = val
 set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 """Set [`PhaseShiftingTransformer`](@ref) `ext`."""
 set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::PhaseShiftingTransformer, val) = value.time_series_container = val
+"""Set [`PhaseShiftingTransformer`](@ref) `time_series_container`."""
+set_time_series_container!(value::PhaseShiftingTransformer, val) = value.time_series_container = val
 

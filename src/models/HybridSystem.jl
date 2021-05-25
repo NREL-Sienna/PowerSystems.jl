@@ -117,7 +117,7 @@ function HybridSystem(::Nothing)
     )
 end
 
-IS.get_name(value::HybridSystem) = value.name
+get_name(value::HybridSystem) = value.name
 
 function _get_components(value::HybridSystem)
     components =

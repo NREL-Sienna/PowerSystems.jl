@@ -52,8 +52,8 @@ function StaticReserveGroup{T}(::Nothing) where T <: ReserveDirection
     )
 end
 
-
-InfrastructureSystems.get_name(value::StaticReserveGroup) = value.name
+"""Get [`StaticReserveGroup`](@ref) `name`."""
+get_name(value::StaticReserveGroup) = value.name
 """Get [`StaticReserveGroup`](@ref) `available`."""
 get_available(value::StaticReserveGroup) = value.available
 """Get [`StaticReserveGroup`](@ref) `requirement`."""
@@ -65,8 +65,8 @@ get_contributing_services(value::StaticReserveGroup) = value.contributing_servic
 """Get [`StaticReserveGroup`](@ref) `internal`."""
 get_internal(value::StaticReserveGroup) = value.internal
 
-
-InfrastructureSystems.set_name!(value::StaticReserveGroup, val) = value.name = val
+"""Set [`StaticReserveGroup`](@ref) `name`."""
+set_name!(value::StaticReserveGroup, val) = value.name = val
 """Set [`StaticReserveGroup`](@ref) `available`."""
 set_available!(value::StaticReserveGroup, val) = value.available = val
 """Set [`StaticReserveGroup`](@ref) `requirement`."""

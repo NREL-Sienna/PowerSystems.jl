@@ -86,8 +86,8 @@ function PowerLoad(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::PowerLoad) = value.name
+"""Get [`PowerLoad`](@ref) `name`."""
+get_name(value::PowerLoad) = value.name
 """Get [`PowerLoad`](@ref) `available`."""
 get_available(value::PowerLoad) = value.available
 """Get [`PowerLoad`](@ref) `bus`."""
@@ -110,13 +110,13 @@ get_services(value::PowerLoad) = value.services
 get_dynamic_injector(value::PowerLoad) = value.dynamic_injector
 """Get [`PowerLoad`](@ref) `ext`."""
 get_ext(value::PowerLoad) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::PowerLoad) = value.time_series_container
+"""Get [`PowerLoad`](@ref) `time_series_container`."""
+get_time_series_container(value::PowerLoad) = value.time_series_container
 """Get [`PowerLoad`](@ref) `internal`."""
 get_internal(value::PowerLoad) = value.internal
 
-
-InfrastructureSystems.set_name!(value::PowerLoad, val) = value.name = val
+"""Set [`PowerLoad`](@ref) `name`."""
+set_name!(value::PowerLoad, val) = value.name = val
 """Set [`PowerLoad`](@ref) `available`."""
 set_available!(value::PowerLoad, val) = value.available = val
 """Set [`PowerLoad`](@ref) `bus`."""
@@ -137,6 +137,6 @@ set_max_reactive_power!(value::PowerLoad, val) = value.max_reactive_power = val
 set_services!(value::PowerLoad, val) = value.services = val
 """Set [`PowerLoad`](@ref) `ext`."""
 set_ext!(value::PowerLoad, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::PowerLoad, val) = value.time_series_container = val
+"""Set [`PowerLoad`](@ref) `time_series_container`."""
+set_time_series_container!(value::PowerLoad, val) = value.time_series_container = val
 

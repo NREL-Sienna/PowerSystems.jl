@@ -84,8 +84,8 @@ function VSCDCLine(::Nothing)
     )
 end
 
-
-InfrastructureSystems.get_name(value::VSCDCLine) = value.name
+"""Get [`VSCDCLine`](@ref) `name`."""
+get_name(value::VSCDCLine) = value.name
 """Get [`VSCDCLine`](@ref) `available`."""
 get_available(value::VSCDCLine) = value.available
 """Get [`VSCDCLine`](@ref) `active_power_flow`."""
@@ -108,13 +108,13 @@ get_inverter_firing_angle(value::VSCDCLine) = value.inverter_firing_angle
 get_services(value::VSCDCLine) = value.services
 """Get [`VSCDCLine`](@ref) `ext`."""
 get_ext(value::VSCDCLine) = value.ext
-
-InfrastructureSystems.get_time_series_container(value::VSCDCLine) = value.time_series_container
+"""Get [`VSCDCLine`](@ref) `time_series_container`."""
+get_time_series_container(value::VSCDCLine) = value.time_series_container
 """Get [`VSCDCLine`](@ref) `internal`."""
 get_internal(value::VSCDCLine) = value.internal
 
-
-InfrastructureSystems.set_name!(value::VSCDCLine, val) = value.name = val
+"""Set [`VSCDCLine`](@ref) `name`."""
+set_name!(value::VSCDCLine, val) = value.name = val
 """Set [`VSCDCLine`](@ref) `available`."""
 set_available!(value::VSCDCLine, val) = value.available = val
 """Set [`VSCDCLine`](@ref) `active_power_flow`."""
@@ -137,6 +137,6 @@ set_inverter_firing_angle!(value::VSCDCLine, val) = value.inverter_firing_angle 
 set_services!(value::VSCDCLine, val) = value.services = val
 """Set [`VSCDCLine`](@ref) `ext`."""
 set_ext!(value::VSCDCLine, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::VSCDCLine, val) = value.time_series_container = val
+"""Set [`VSCDCLine`](@ref) `time_series_container`."""
+set_time_series_container!(value::VSCDCLine, val) = value.time_series_container = val
 
