@@ -26,6 +26,11 @@ jobs:
         run: |
           julia  -e 'using Pkg; Pkg.add(PackageSpec(name="JuliaFormatter", version="0.14.1"))'
           julia  -e 'using JuliaFormatter; include(".github/workflows/formatter_code.jl")'
+      - uses: reviewdog/action-suggester@v1
+        if: github.event_name == 'pull_request'
+        with:
+          tool_name: JuliaFormatter
+          fail_on_error: true
       - name: Format check
         run: |
           julia -e '
