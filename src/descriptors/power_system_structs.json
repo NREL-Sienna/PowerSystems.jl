@@ -10092,6 +10092,63 @@
       "supertype": "FrequencyEstimator"
     },
     {
+      "struct_name": "SimplifiedPLL",
+      "docstring": "Parameters of a Phase-Locked Loop (PLL) based on Purba, Dhople, Jafarpour, Bullo and Johnson.\n\"Reduced-order Structure-preserving Model for Parallel-connected Three-phase Grid-tied Inverters.\"\n2017 IEEE 18th Workshop on Control and Modeling for Power Electronics (COMPEL): 1-7.",
+      "fields": [
+        {
+          "name": "ω_lp",
+          "comment": "PLL low-pass filter frequency (rad/sec)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kp_pll",
+          "comment": "PLL proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ki_pll",
+          "comment": "PLL integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the SimplifiedPLL model are:\n\tvq_pll: q-axis of the measured voltage in the PLL synchronous reference frame (SRF),\n\tε_pll: Integrator state of the PI controller,\n\tθ_pll: Phase angle displacement in the PLL SRF",
+          "internal_default": "[:vq_pll, :ε_pll, :θ_pll]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "SimplifiedPLL has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "FrequencyEstimator"
+    },
+    {
       "struct_name": "FixedFrequency",
       "docstring": "Parameters of a Fixed Frequency Estimator (i.e. no PLL).",
       "fields": [
@@ -10252,6 +10309,74 @@
       "supertype": "ActivePowerControl"
     },
     {
+      "struct_name": "PI_ActivePowerReference",
+      "docstring": "Parameters of a Proportional-Integral Active Power controller for a specified power reference",
+      "fields": [
+        {
+          "name": "Kp_p",
+          "comment": "Proportional Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ki_p",
+          "comment": "Integral Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ωz",
+          "comment": "filter frequency cutoff",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the PI_ActivePowerReference model are:\n\tσp_oc: Integrator state of the PI Controller,\n\tp_oc: Measured active power of the inverter model",
+          "internal_default": "[:σp_oc, :p_oc]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "PI_ActivePowerReference has two states",
+          "internal_default": 2,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "ActivePowerControl"
+    },
+    {
       "struct_name": "ReactivePowerDroop",
       "docstring": "Parameters of a Reactive Power droop controller",
       "fields": [
@@ -10304,6 +10429,85 @@
           "exclude_setter": true,
           "comment": "ReactivePowerDroop has 1 state",
           "internal_default": 1,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "ReactivePowerControl"
+    },
+    {
+      "struct_name": "PI_ReactivePowerReference",
+      "docstring": "Parameters of a Proportional-Integral Reactive Power controller for a specified power reference",
+      "fields": [
+        {
+          "name": "Kp_q",
+          "comment": "Proportional Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Ki_q",
+          "comment": "Integral Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ωf",
+          "comment": "filter frequency cutoff",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_ref",
+          "comment": "Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Reactive Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the PI_ReactivePowerReference model are:\n\tσq_oc: Integrator state of the PI Controller,\n\tq_oc: Measured reactive power of the inverter model",
+          "internal_default": "[:σq_oc, :q_oc]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "PI_ReactivePowerReference has two states",
+          "internal_default": 2,
           "data_type": "Int"
         }
       ],
