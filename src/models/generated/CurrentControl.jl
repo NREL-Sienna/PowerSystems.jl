@@ -34,7 +34,7 @@ Electric Power Systems Research 122 (2015) 180–197.
 - `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: `(0, nothing)`
 - `kad::Float64`: active damping gain, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the VirtualInertia model are:
+- `states::Vector{Symbol}`: The states of the CurrentControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
 	ξq_ic: q-axis integrator state of the PI voltage controller,
 	γd_ic: d-axis integrator state of the PI current controller,
@@ -65,7 +65,7 @@ mutable struct CurrentControl <: InnerControl
     "active damping gain"
     kad::Float64
     ext::Dict{String, Any}
-    "The states of the VirtualInertia model are:
+    "The states of the CurrentControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
 	ξq_ic: q-axis integrator state of the PI voltage controller,
 	γd_ic: d-axis integrator state of the PI current controller,
