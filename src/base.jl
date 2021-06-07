@@ -695,6 +695,12 @@ function remove_components!(
     return components
 end
 
+"""
+Set the name for a component that is attached to the system.
+"""
+set_name!(sys::System, component::Component, name::AbstractString) =
+    set_name!(sys.data, component, name)
+
 function clear_units!(component::Component)
     get_internal(component).units_info = nothing
     return
