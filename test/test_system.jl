@@ -235,6 +235,15 @@ end
     end
 end
 
+@testset "Test set_name! of system component" begin
+    sys = System(100.0)
+    bus = Bus(nothing)
+    bus.bustype = BusTypes.REF
+    add_component!(sys, bus)
+    set_name!(sys, bus, "new_name")
+    @test get_component(Bus, sys, "new_name") === bus
+end
+
 @testset "Test forecast parameters" begin
     sys = System(100.0)
     bus = Bus(nothing)
