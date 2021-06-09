@@ -80,11 +80,16 @@ include("ZeroOrderBESS.jl")
 include("LCLFilter.jl")
 include("LCFilter.jl")
 include("KauraPLL.jl")
+include("ReducedOrderPLL.jl")
 include("FixedFrequency.jl")
 include("VirtualInertia.jl")
 include("ActivePowerDroop.jl")
+include("ActivePowerPI.jl")
 include("ReactivePowerDroop.jl")
+include("ReactivePowerPI.jl")
 include("CurrentControl.jl")
+include("VoltageModeControl.jl")
+include("CurrentModeControl.jl")
 include("Source.jl")
 
 export get_A1
@@ -157,10 +162,14 @@ export get_Ki
 export get_Ki_gov
 export get_Ki_load
 export get_Ki_mw
+export get_Ki_p
+export get_Ki_q
 export get_Kl
 export get_Kp
 export get_Kp_gov
 export get_Kp_load
+export get_Kp_p
+export get_Kp_q
 export get_Ks
 export get_Kt
 export get_Kv
@@ -176,6 +185,7 @@ export get_Ld_ref
 export get_Ls_lim
 export get_PSS_flags
 export get_P_ref
+export get_Q_ref
 export get_R
 export get_R_1d
 export get_R_1q
@@ -484,10 +494,14 @@ export set_Ki!
 export set_Ki_gov!
 export set_Ki_load!
 export set_Ki_mw!
+export set_Ki_p!
+export set_Ki_q!
 export set_Kl!
 export set_Kp!
 export set_Kp_gov!
 export set_Kp_load!
+export set_Kp_p!
+export set_Kp_q!
 export set_Ks!
 export set_Kt!
 export set_Kv!
@@ -503,6 +517,7 @@ export set_Ld_ref!
 export set_Ls_lim!
 export set_PSS_flags!
 export set_P_ref!
+export set_Q_ref!
 export set_R!
 export set_R_1d!
 export set_R_1q!

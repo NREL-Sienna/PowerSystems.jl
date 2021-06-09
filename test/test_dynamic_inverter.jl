@@ -7,15 +7,33 @@
     @test filter isa PowerSystems.DynamicComponent
     pll = KauraPLL(500.0, 0.084, 4.69)
     @test pll isa PowerSystems.DynamicComponent
+    reduced_pll = ReducedOrderPLL(500.0, 0.084, 4.69)
+    @test reduced_pll isa PowerSystems.DynamicComponent
     virtual_H = VirtualInertia(2.0, 400.0, 20.0, 2 * pi * 50.0)
     @test virtual_H isa PowerSystems.DeviceParameter
+    P_control = ActivePowerDroop(0.2, 1000.0)
+    @test P_control isa PowerSystems.DeviceParameter
+    P_control_PI = ActivePowerPI(2.0, 20.0, 50.0)
+    @test P_control_PI isa PowerSystems.DeviceParameter
     Q_control = ReactivePowerDroop(0.2, 1000.0)
     @test Q_control isa PowerSystems.DeviceParameter
+    Q_control_PI = ReactivePowerPI(2.0, 20.0, 50.0)
+    @test Q_control_PI isa PowerSystems.DeviceParameter
     outer_control = OuterControl(virtual_H, Q_control)
     @test outer_control isa PowerSystems.DynamicComponent
     test_accessors(outer_control)
+    outer_control_droop = OuterControl(P_control, Q_control)
+    @test outer_control_droop isa PowerSystems.DynamicComponent
+    test_accessors(outer_control_droop)
+    outer_control_PI = OuterControl(P_control_PI, Q_control_PI)
+    @test outer_control_PI isa PowerSystems.DynamicComponent
+    test_accessors(outer_control_PI)
     vsc = CurrentControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
     @test vsc isa PowerSystems.DynamicComponent
+    vsc2 = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
+    @test vsc2 isa PowerSystems.DynamicComponent
+    vsc3 = CurrentModeControl(1.27, 14.3, 0.0)
+    @test vsc3 isa PowerSystems.DynamicComponent
     BESS_source = ZeroOrderBESS(
         (sqrt(8) / sqrt(3)) * 690.0,
         (sqrt(3) / sqrt(8)) * 2750000.0,
