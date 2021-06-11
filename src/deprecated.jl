@@ -23,6 +23,7 @@ export set_penalty_cost!
 
 # END 1.2.1 deprecations
 
-# BEGIN 2.0 deprecations
 @deprecate remove_components!(t, sys::System) remove_components!(sys, t)
-# BEGIN 2.0 deprecations
+
+@deprecate CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad,) VoltageModeControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad,)
+@deprecate CurrentControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad,) VoltageModeControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad,)

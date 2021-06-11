@@ -199,7 +199,7 @@ outer_cont = OuterControl(
 )
 
 #Define an Inner Control as a Voltage+Current Controler with Virtual Impedance:
-inner_cont = CurrentControl(
+inner_cont = VoltageModeControl(
     kpv = 0.59,     #Voltage controller proportional gain
     kiv = 736.0,    #Voltage controller integral gain
     kffv = 0.0,     #Binary variable enabling the voltage feed-forward in output of current controllers
