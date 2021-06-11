@@ -25,5 +25,27 @@ export set_penalty_cost!
 
 @deprecate remove_components!(t, sys::System) remove_components!(sys, t)
 
-@deprecate CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad,) VoltageModeControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad,)
-@deprecate CurrentControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad,) VoltageModeControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad,)
+@deprecate CurrentControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad) VoltageModeControl(
+    kpv,
+    kiv,
+    kffv,
+    rv,
+    lv,
+    kpc,
+    kic,
+    kffi,
+    ωad,
+    kad,
+)
+@deprecate CurrentControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad) VoltageModeControl(;
+    kpv,
+    kiv,
+    kffv,
+    rv,
+    lv,
+    kpc,
+    kic,
+    kffi,
+    ωad,
+    kad,
+)
