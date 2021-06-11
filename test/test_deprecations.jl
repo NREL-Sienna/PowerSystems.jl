@@ -36,3 +36,18 @@
     @test @test_deprecated(get_penalty_cost(batt)) ==
           get_energy_shortage_cost(get_operation_cost(batt))
 end
+
+@testset "Test deprecated CurrentControl" begin
+    @test_deprecated(CurrentControl(
+        0.59, #kpv:: Voltage controller proportional gain
+        736.0, #kiv:: Voltage controller integral gain
+        0.0, #kffv:: Binary variable enabling the voltage feed-forward in output of current controllers
+        0.0, #rv:: Virtual resistance in pu
+        0.2, #lv: Virtual inductance in pu
+        1.27, #kpc:: Current controller proportional gain
+        14.3, #kiv:: Current controller integral gain
+        0.0, #kffi:: Binary variable enabling the current feed-forward in output of current controllers
+        50.0, #ωad:: Active damping low pass filter cut-off frequency
+        0.2, #kad:: Active damping gain
+    ))
+end

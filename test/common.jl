@@ -192,7 +192,7 @@ function create_system_with_dynamic_inverter()
 
     outer_control = OuterControl(virtual_H, Q_control)
 
-    vsc = CurrentControl(
+    vsc = VoltageModeControl(
         0.59, #kpv:: Voltage controller proportional gain
         736.0, #kiv:: Voltage controller integral gain
         0.0, #kffv:: Binary variable enabling the voltage feed-forward in output of current controllers
