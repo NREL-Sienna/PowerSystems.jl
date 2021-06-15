@@ -321,15 +321,21 @@ end
 
 function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
     cost = TwoPartCost(0.0, 0.0)
-
     base_conversion = sys_mbase / d["mbase"]
+
+    rating = calculate_rating(d["pmax"], d["qmax"]),
+    if rating > d["mbase"]
+        @warn "rating is larger than base power for $gen_name, setting to $(d["mbase"])"
+        rating = d["mbase"]
+    end
+
     generator = RenewableDispatch(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
-        rating = float(d["pmax"]) * base_conversion,
+        rating = rating * base_conversion,
         prime_mover = parse_enum_mapping(PrimeMovers, d["type"]),
         reactive_power_limits = (
             min = d["qmin"] * base_conversion,
