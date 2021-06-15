@@ -460,7 +460,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
         bus = bus,
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
-        rating = sqrt(d["pmax"]^2 + d["qmax"]^2) * base_conversion,
+        rating =  calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
         prime_mover = parse_enum_mapping(PrimeMovers, d["type"]),
         fuel = parse_enum_mapping(ThermalFuels, d["fuel"]),
         active_power_limits = (
