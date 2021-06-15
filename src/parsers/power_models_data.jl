@@ -323,7 +323,7 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
     cost = TwoPartCost(0.0, 0.0)
     base_conversion = sys_mbase / d["mbase"]
 
-    rating = calculate_rating(d["pmax"], d["qmax"]),
+    rating = calculate_rating(d["pmax"], d["qmax"])
     if rating > d["mbase"]
         @warn "rating is larger than base power for $gen_name, setting to $(d["mbase"])"
         rating = d["mbase"]
