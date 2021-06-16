@@ -115,9 +115,9 @@ set_name!(value::Transformer2W, val) = value.name = val
 """Set [`Transformer2W`](@ref) `available`."""
 set_available!(value::Transformer2W, val) = value.available = val
 """Set [`Transformer2W`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::Transformer2W, val) = value.active_power_flow = val
+set_active_power_flow!(value::Transformer2W, val) = value.active_power_flow = set_value(value, val)
 """Set [`Transformer2W`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::Transformer2W, val) = value.reactive_power_flow = val
+set_reactive_power_flow!(value::Transformer2W, val) = value.reactive_power_flow = set_value(value, val)
 """Set [`Transformer2W`](@ref) `arc`."""
 set_arc!(value::Transformer2W, val) = value.arc = val
 """Set [`Transformer2W`](@ref) `r`."""
@@ -127,7 +127,7 @@ set_x!(value::Transformer2W, val) = value.x = val
 """Set [`Transformer2W`](@ref) `primary_shunt`."""
 set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = val
 """Set [`Transformer2W`](@ref) `rate`."""
-set_rate!(value::Transformer2W, val) = value.rate = val
+set_rate!(value::Transformer2W, val) = value.rate = set_value(value, val)
 """Set [`Transformer2W`](@ref) `services`."""
 set_services!(value::Transformer2W, val) = value.services = val
 """Set [`Transformer2W`](@ref) `ext`."""

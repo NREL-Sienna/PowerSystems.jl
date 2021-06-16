@@ -112,17 +112,17 @@ set_name!(value::HVDCLine, val) = value.name = val
 """Set [`HVDCLine`](@ref) `available`."""
 set_available!(value::HVDCLine, val) = value.available = val
 """Set [`HVDCLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::HVDCLine, val) = value.active_power_flow = val
+set_active_power_flow!(value::HVDCLine, val) = value.active_power_flow = set_value(value, val)
 """Set [`HVDCLine`](@ref) `arc`."""
 set_arc!(value::HVDCLine, val) = value.arc = val
 """Set [`HVDCLine`](@ref) `active_power_limits_from`."""
-set_active_power_limits_from!(value::HVDCLine, val) = value.active_power_limits_from = val
+set_active_power_limits_from!(value::HVDCLine, val) = value.active_power_limits_from = set_value(value, val)
 """Set [`HVDCLine`](@ref) `active_power_limits_to`."""
-set_active_power_limits_to!(value::HVDCLine, val) = value.active_power_limits_to = val
+set_active_power_limits_to!(value::HVDCLine, val) = value.active_power_limits_to = set_value(value, val)
 """Set [`HVDCLine`](@ref) `reactive_power_limits_from`."""
-set_reactive_power_limits_from!(value::HVDCLine, val) = value.reactive_power_limits_from = val
+set_reactive_power_limits_from!(value::HVDCLine, val) = value.reactive_power_limits_from = set_value(value, val)
 """Set [`HVDCLine`](@ref) `reactive_power_limits_to`."""
-set_reactive_power_limits_to!(value::HVDCLine, val) = value.reactive_power_limits_to = val
+set_reactive_power_limits_to!(value::HVDCLine, val) = value.reactive_power_limits_to = set_value(value, val)
 """Set [`HVDCLine`](@ref) `loss`."""
 set_loss!(value::HVDCLine, val) = value.loss = val
 """Set [`HVDCLine`](@ref) `services`."""

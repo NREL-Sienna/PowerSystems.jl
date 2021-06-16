@@ -197,23 +197,23 @@ set_status!(value::ThermalMultiStart, val) = value.status = val
 """Set [`ThermalMultiStart`](@ref) `bus`."""
 set_bus!(value::ThermalMultiStart, val) = value.bus = val
 """Set [`ThermalMultiStart`](@ref) `active_power`."""
-set_active_power!(value::ThermalMultiStart, val) = value.active_power = val
+set_active_power!(value::ThermalMultiStart, val) = value.active_power = set_value(value, val)
 """Set [`ThermalMultiStart`](@ref) `reactive_power`."""
-set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = val
+set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = set_value(value, val)
 """Set [`ThermalMultiStart`](@ref) `rating`."""
-set_rating!(value::ThermalMultiStart, val) = value.rating = val
+set_rating!(value::ThermalMultiStart, val) = value.rating = set_value(value, val)
 """Set [`ThermalMultiStart`](@ref) `prime_mover`."""
 set_prime_mover!(value::ThermalMultiStart, val) = value.prime_mover = val
 """Set [`ThermalMultiStart`](@ref) `fuel`."""
 set_fuel!(value::ThermalMultiStart, val) = value.fuel = val
 """Set [`ThermalMultiStart`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::ThermalMultiStart, val) = value.active_power_limits = val
+set_active_power_limits!(value::ThermalMultiStart, val) = value.active_power_limits = set_value(value, val)
 """Set [`ThermalMultiStart`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::ThermalMultiStart, val) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::ThermalMultiStart, val) = value.reactive_power_limits = set_value(value, val)
 """Set [`ThermalMultiStart`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::ThermalMultiStart, val) = value.ramp_limits = val
+set_ramp_limits!(value::ThermalMultiStart, val) = value.ramp_limits = set_value(value, val)
 """Set [`ThermalMultiStart`](@ref) `power_trajectory`."""
-set_power_trajectory!(value::ThermalMultiStart, val) = value.power_trajectory = val
+set_power_trajectory!(value::ThermalMultiStart, val) = value.power_trajectory = set_value(value, val)
 """Set [`ThermalMultiStart`](@ref) `time_limits`."""
 set_time_limits!(value::ThermalMultiStart, val) = value.time_limits = val
 """Set [`ThermalMultiStart`](@ref) `start_time_limits`."""

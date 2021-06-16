@@ -129,9 +129,9 @@ set_name!(value::MonitoredLine, val) = value.name = val
 """Set [`MonitoredLine`](@ref) `available`."""
 set_available!(value::MonitoredLine, val) = value.available = val
 """Set [`MonitoredLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = val
+set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, val)
 """Set [`MonitoredLine`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = val
+set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, val)
 """Set [`MonitoredLine`](@ref) `arc`."""
 set_arc!(value::MonitoredLine, val) = value.arc = val
 """Set [`MonitoredLine`](@ref) `r`."""
@@ -141,9 +141,9 @@ set_x!(value::MonitoredLine, val) = value.x = val
 """Set [`MonitoredLine`](@ref) `b`."""
 set_b!(value::MonitoredLine, val) = value.b = val
 """Set [`MonitoredLine`](@ref) `flow_limits`."""
-set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = val
+set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, val)
 """Set [`MonitoredLine`](@ref) `rate`."""
-set_rate!(value::MonitoredLine, val) = value.rate = val
+set_rate!(value::MonitoredLine, val) = value.rate = set_value(value, val)
 """Set [`MonitoredLine`](@ref) `angle_limits`."""
 set_angle_limits!(value::MonitoredLine, val) = value.angle_limits = val
 """Set [`MonitoredLine`](@ref) `services`."""

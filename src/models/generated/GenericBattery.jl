@@ -163,23 +163,23 @@ set_bus!(value::GenericBattery, val) = value.bus = val
 """Set [`GenericBattery`](@ref) `prime_mover`."""
 set_prime_mover!(value::GenericBattery, val) = value.prime_mover = val
 """Set [`GenericBattery`](@ref) `initial_energy`."""
-set_initial_energy!(value::GenericBattery, val) = value.initial_energy = val
+set_initial_energy!(value::GenericBattery, val) = value.initial_energy = set_value(value, val)
 """Set [`GenericBattery`](@ref) `state_of_charge_limits`."""
-set_state_of_charge_limits!(value::GenericBattery, val) = value.state_of_charge_limits = val
+set_state_of_charge_limits!(value::GenericBattery, val) = value.state_of_charge_limits = set_value(value, val)
 """Set [`GenericBattery`](@ref) `rating`."""
-set_rating!(value::GenericBattery, val) = value.rating = val
+set_rating!(value::GenericBattery, val) = value.rating = set_value(value, val)
 """Set [`GenericBattery`](@ref) `active_power`."""
-set_active_power!(value::GenericBattery, val) = value.active_power = val
+set_active_power!(value::GenericBattery, val) = value.active_power = set_value(value, val)
 """Set [`GenericBattery`](@ref) `input_active_power_limits`."""
-set_input_active_power_limits!(value::GenericBattery, val) = value.input_active_power_limits = val
+set_input_active_power_limits!(value::GenericBattery, val) = value.input_active_power_limits = set_value(value, val)
 """Set [`GenericBattery`](@ref) `output_active_power_limits`."""
-set_output_active_power_limits!(value::GenericBattery, val) = value.output_active_power_limits = val
+set_output_active_power_limits!(value::GenericBattery, val) = value.output_active_power_limits = set_value(value, val)
 """Set [`GenericBattery`](@ref) `efficiency`."""
 set_efficiency!(value::GenericBattery, val) = value.efficiency = val
 """Set [`GenericBattery`](@ref) `reactive_power`."""
-set_reactive_power!(value::GenericBattery, val) = value.reactive_power = val
+set_reactive_power!(value::GenericBattery, val) = value.reactive_power = set_value(value, val)
 """Set [`GenericBattery`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::GenericBattery, val) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::GenericBattery, val) = value.reactive_power_limits = set_value(value, val)
 """Set [`GenericBattery`](@ref) `base_power`."""
 set_base_power!(value::GenericBattery, val) = value.base_power = val
 """Set [`GenericBattery`](@ref) `operation_cost`."""

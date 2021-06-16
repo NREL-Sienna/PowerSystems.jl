@@ -126,9 +126,9 @@ set_name!(value::PhaseShiftingTransformer, val) = value.name = val
 """Set [`PhaseShiftingTransformer`](@ref) `available`."""
 set_available!(value::PhaseShiftingTransformer, val) = value.available = val
 """Set [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::PhaseShiftingTransformer, val) = value.active_power_flow = val
+set_active_power_flow!(value::PhaseShiftingTransformer, val) = value.active_power_flow = set_value(value, val)
 """Set [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::PhaseShiftingTransformer, val) = value.reactive_power_flow = val
+set_reactive_power_flow!(value::PhaseShiftingTransformer, val) = value.reactive_power_flow = set_value(value, val)
 """Set [`PhaseShiftingTransformer`](@ref) `arc`."""
 set_arc!(value::PhaseShiftingTransformer, val) = value.arc = val
 """Set [`PhaseShiftingTransformer`](@ref) `r`."""
@@ -142,7 +142,7 @@ set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 """Set [`PhaseShiftingTransformer`](@ref) `α`."""
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
 """Set [`PhaseShiftingTransformer`](@ref) `rate`."""
-set_rate!(value::PhaseShiftingTransformer, val) = value.rate = val
+set_rate!(value::PhaseShiftingTransformer, val) = value.rate = set_value(value, val)
 """Set [`PhaseShiftingTransformer`](@ref) `services`."""
 set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 """Set [`PhaseShiftingTransformer`](@ref) `ext`."""

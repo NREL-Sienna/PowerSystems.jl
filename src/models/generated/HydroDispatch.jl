@@ -151,19 +151,19 @@ set_available!(value::HydroDispatch, val) = value.available = val
 """Set [`HydroDispatch`](@ref) `bus`."""
 set_bus!(value::HydroDispatch, val) = value.bus = val
 """Set [`HydroDispatch`](@ref) `active_power`."""
-set_active_power!(value::HydroDispatch, val) = value.active_power = val
+set_active_power!(value::HydroDispatch, val) = value.active_power = set_value(value, val)
 """Set [`HydroDispatch`](@ref) `reactive_power`."""
-set_reactive_power!(value::HydroDispatch, val) = value.reactive_power = val
+set_reactive_power!(value::HydroDispatch, val) = value.reactive_power = set_value(value, val)
 """Set [`HydroDispatch`](@ref) `rating`."""
-set_rating!(value::HydroDispatch, val) = value.rating = val
+set_rating!(value::HydroDispatch, val) = value.rating = set_value(value, val)
 """Set [`HydroDispatch`](@ref) `prime_mover`."""
 set_prime_mover!(value::HydroDispatch, val) = value.prime_mover = val
 """Set [`HydroDispatch`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::HydroDispatch, val) = value.active_power_limits = val
+set_active_power_limits!(value::HydroDispatch, val) = value.active_power_limits = set_value(value, val)
 """Set [`HydroDispatch`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::HydroDispatch, val) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::HydroDispatch, val) = value.reactive_power_limits = set_value(value, val)
 """Set [`HydroDispatch`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::HydroDispatch, val) = value.ramp_limits = val
+set_ramp_limits!(value::HydroDispatch, val) = value.ramp_limits = set_value(value, val)
 """Set [`HydroDispatch`](@ref) `time_limits`."""
 set_time_limits!(value::HydroDispatch, val) = value.time_limits = val
 """Set [`HydroDispatch`](@ref) `base_power`."""

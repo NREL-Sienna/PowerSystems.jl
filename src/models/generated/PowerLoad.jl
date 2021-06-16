@@ -124,15 +124,15 @@ set_bus!(value::PowerLoad, val) = value.bus = val
 """Set [`PowerLoad`](@ref) `model`."""
 set_model!(value::PowerLoad, val) = value.model = val
 """Set [`PowerLoad`](@ref) `active_power`."""
-set_active_power!(value::PowerLoad, val) = value.active_power = val
+set_active_power!(value::PowerLoad, val) = value.active_power = set_value(value, val)
 """Set [`PowerLoad`](@ref) `reactive_power`."""
-set_reactive_power!(value::PowerLoad, val) = value.reactive_power = val
+set_reactive_power!(value::PowerLoad, val) = value.reactive_power = set_value(value, val)
 """Set [`PowerLoad`](@ref) `base_power`."""
 set_base_power!(value::PowerLoad, val) = value.base_power = val
 """Set [`PowerLoad`](@ref) `max_active_power`."""
-set_max_active_power!(value::PowerLoad, val) = value.max_active_power = val
+set_max_active_power!(value::PowerLoad, val) = value.max_active_power = set_value(value, val)
 """Set [`PowerLoad`](@ref) `max_reactive_power`."""
-set_max_reactive_power!(value::PowerLoad, val) = value.max_reactive_power = val
+set_max_reactive_power!(value::PowerLoad, val) = value.max_reactive_power = set_value(value, val)
 """Set [`PowerLoad`](@ref) `services`."""
 set_services!(value::PowerLoad, val) = value.services = val
 """Set [`PowerLoad`](@ref) `ext`."""
