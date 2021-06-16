@@ -124,11 +124,11 @@ set_available!(value::RenewableFix, val) = value.available = val
 """Set [`RenewableFix`](@ref) `bus`."""
 set_bus!(value::RenewableFix, val) = value.bus = val
 """Set [`RenewableFix`](@ref) `active_power`."""
-set_active_power!(value::RenewableFix, val) = value.active_power = val
+set_active_power!(value::RenewableFix, val) = value.active_power = set_value(value, val)
 """Set [`RenewableFix`](@ref) `reactive_power`."""
-set_reactive_power!(value::RenewableFix, val) = value.reactive_power = val
+set_reactive_power!(value::RenewableFix, val) = value.reactive_power = set_value(value, val)
 """Set [`RenewableFix`](@ref) `rating`."""
-set_rating!(value::RenewableFix, val) = value.rating = val
+set_rating!(value::RenewableFix, val) = value.rating = set_value(value, val)
 """Set [`RenewableFix`](@ref) `prime_mover`."""
 set_prime_mover!(value::RenewableFix, val) = value.prime_mover = val
 """Set [`RenewableFix`](@ref) `power_factor`."""

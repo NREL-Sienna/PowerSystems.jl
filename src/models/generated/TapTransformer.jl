@@ -121,9 +121,9 @@ set_name!(value::TapTransformer, val) = value.name = val
 """Set [`TapTransformer`](@ref) `available`."""
 set_available!(value::TapTransformer, val) = value.available = val
 """Set [`TapTransformer`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::TapTransformer, val) = value.active_power_flow = val
+set_active_power_flow!(value::TapTransformer, val) = value.active_power_flow = set_value(value, val)
 """Set [`TapTransformer`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow = val
+set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow = set_value(value, val)
 """Set [`TapTransformer`](@ref) `arc`."""
 set_arc!(value::TapTransformer, val) = value.arc = val
 """Set [`TapTransformer`](@ref) `r`."""
@@ -135,7 +135,7 @@ set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = val
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
 """Set [`TapTransformer`](@ref) `rate`."""
-set_rate!(value::TapTransformer, val) = value.rate = val
+set_rate!(value::TapTransformer, val) = value.rate = set_value(value, val)
 """Set [`TapTransformer`](@ref) `services`."""
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""

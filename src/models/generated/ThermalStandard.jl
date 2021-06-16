@@ -171,17 +171,17 @@ set_status!(value::ThermalStandard, val) = value.status = val
 """Set [`ThermalStandard`](@ref) `bus`."""
 set_bus!(value::ThermalStandard, val) = value.bus = val
 """Set [`ThermalStandard`](@ref) `active_power`."""
-set_active_power!(value::ThermalStandard, val) = value.active_power = val
+set_active_power!(value::ThermalStandard, val) = value.active_power = set_value(value, val)
 """Set [`ThermalStandard`](@ref) `reactive_power`."""
-set_reactive_power!(value::ThermalStandard, val) = value.reactive_power = val
+set_reactive_power!(value::ThermalStandard, val) = value.reactive_power = set_value(value, val)
 """Set [`ThermalStandard`](@ref) `rating`."""
-set_rating!(value::ThermalStandard, val) = value.rating = val
+set_rating!(value::ThermalStandard, val) = value.rating = set_value(value, val)
 """Set [`ThermalStandard`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::ThermalStandard, val) = value.active_power_limits = val
+set_active_power_limits!(value::ThermalStandard, val) = value.active_power_limits = set_value(value, val)
 """Set [`ThermalStandard`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_limits = set_value(value, val)
 """Set [`ThermalStandard`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = val
+set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = set_value(value, val)
 """Set [`ThermalStandard`](@ref) `operation_cost`."""
 set_operation_cost!(value::ThermalStandard, val) = value.operation_cost = val
 """Set [`ThermalStandard`](@ref) `base_power`."""

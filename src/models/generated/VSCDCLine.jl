@@ -118,7 +118,7 @@ set_name!(value::VSCDCLine, val) = value.name = val
 """Set [`VSCDCLine`](@ref) `available`."""
 set_available!(value::VSCDCLine, val) = value.available = val
 """Set [`VSCDCLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::VSCDCLine, val) = value.active_power_flow = val
+set_active_power_flow!(value::VSCDCLine, val) = value.active_power_flow = set_value(value, val)
 """Set [`VSCDCLine`](@ref) `arc`."""
 set_arc!(value::VSCDCLine, val) = value.arc = val
 """Set [`VSCDCLine`](@ref) `rectifier_tap_limits`."""

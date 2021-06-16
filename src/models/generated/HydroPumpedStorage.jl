@@ -239,41 +239,41 @@ set_available!(value::HydroPumpedStorage, val) = value.available = val
 """Set [`HydroPumpedStorage`](@ref) `bus`."""
 set_bus!(value::HydroPumpedStorage, val) = value.bus = val
 """Set [`HydroPumpedStorage`](@ref) `active_power`."""
-set_active_power!(value::HydroPumpedStorage, val) = value.active_power = val
+set_active_power!(value::HydroPumpedStorage, val) = value.active_power = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `reactive_power`."""
-set_reactive_power!(value::HydroPumpedStorage, val) = value.reactive_power = val
+set_reactive_power!(value::HydroPumpedStorage, val) = value.reactive_power = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `rating`."""
-set_rating!(value::HydroPumpedStorage, val) = value.rating = val
+set_rating!(value::HydroPumpedStorage, val) = value.rating = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `base_power`."""
 set_base_power!(value::HydroPumpedStorage, val) = value.base_power = val
 """Set [`HydroPumpedStorage`](@ref) `prime_mover`."""
 set_prime_mover!(value::HydroPumpedStorage, val) = value.prime_mover = val
 """Set [`HydroPumpedStorage`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::HydroPumpedStorage, val) = value.active_power_limits = val
+set_active_power_limits!(value::HydroPumpedStorage, val) = value.active_power_limits = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::HydroPumpedStorage, val) = value.reactive_power_limits = val
+set_reactive_power_limits!(value::HydroPumpedStorage, val) = value.reactive_power_limits = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::HydroPumpedStorage, val) = value.ramp_limits = val
+set_ramp_limits!(value::HydroPumpedStorage, val) = value.ramp_limits = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `time_limits`."""
 set_time_limits!(value::HydroPumpedStorage, val) = value.time_limits = val
 """Set [`HydroPumpedStorage`](@ref) `rating_pump`."""
-set_rating_pump!(value::HydroPumpedStorage, val) = value.rating_pump = val
+set_rating_pump!(value::HydroPumpedStorage, val) = value.rating_pump = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `active_power_limits_pump`."""
-set_active_power_limits_pump!(value::HydroPumpedStorage, val) = value.active_power_limits_pump = val
+set_active_power_limits_pump!(value::HydroPumpedStorage, val) = value.active_power_limits_pump = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `reactive_power_limits_pump`."""
-set_reactive_power_limits_pump!(value::HydroPumpedStorage, val) = value.reactive_power_limits_pump = val
+set_reactive_power_limits_pump!(value::HydroPumpedStorage, val) = value.reactive_power_limits_pump = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `ramp_limits_pump`."""
-set_ramp_limits_pump!(value::HydroPumpedStorage, val) = value.ramp_limits_pump = val
+set_ramp_limits_pump!(value::HydroPumpedStorage, val) = value.ramp_limits_pump = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `time_limits_pump`."""
 set_time_limits_pump!(value::HydroPumpedStorage, val) = value.time_limits_pump = val
 """Set [`HydroPumpedStorage`](@ref) `storage_capacity`."""
-set_storage_capacity!(value::HydroPumpedStorage, val) = value.storage_capacity = val
+set_storage_capacity!(value::HydroPumpedStorage, val) = value.storage_capacity = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `inflow`."""
-set_inflow!(value::HydroPumpedStorage, val) = value.inflow = val
+set_inflow!(value::HydroPumpedStorage, val) = value.inflow = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `outflow`."""
 set_outflow!(value::HydroPumpedStorage, val) = value.outflow = val
 """Set [`HydroPumpedStorage`](@ref) `initial_storage`."""
-set_initial_storage!(value::HydroPumpedStorage, val) = value.initial_storage = val
+set_initial_storage!(value::HydroPumpedStorage, val) = value.initial_storage = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `storage_target`."""
 set_storage_target!(value::HydroPumpedStorage, val) = value.storage_target = val
 """Set [`HydroPumpedStorage`](@ref) `operation_cost`."""

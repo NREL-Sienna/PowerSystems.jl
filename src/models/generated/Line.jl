@@ -121,9 +121,9 @@ set_name!(value::Line, val) = value.name = val
 """Set [`Line`](@ref) `available`."""
 set_available!(value::Line, val) = value.available = val
 """Set [`Line`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::Line, val) = value.active_power_flow = val
+set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, val)
 """Set [`Line`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = val
+set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, val)
 """Set [`Line`](@ref) `arc`."""
 set_arc!(value::Line, val) = value.arc = val
 """Set [`Line`](@ref) `r`."""
@@ -133,7 +133,7 @@ set_x!(value::Line, val) = value.x = val
 """Set [`Line`](@ref) `b`."""
 set_b!(value::Line, val) = value.b = val
 """Set [`Line`](@ref) `rate`."""
-set_rate!(value::Line, val) = value.rate = val
+set_rate!(value::Line, val) = value.rate = set_value(value, val)
 """Set [`Line`](@ref) `angle_limits`."""
 set_angle_limits!(value::Line, val) = value.angle_limits = val
 """Set [`Line`](@ref) `services`."""
