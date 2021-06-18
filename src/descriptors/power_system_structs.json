@@ -9720,6 +9720,193 @@
       "supertype": "Converter"
     },
     {
+      "struct_name": "REGCA1",
+      "docstring": "Parameters of a renewable energy generator/converter model, this model corresponds to REGCA1 in PSSE",
+      "fields": [
+        {
+          "name": "Tg",
+          "comment": "Converter time constant (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Rrpwr",
+          "comment": "Low Voltage Power Logic (LVPL) ramp rate limit (pu/s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Brkpt",
+          "comment": "LVPL characteristic voltage 2 (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Zerox",
+          "comment": "LVPL characteristic voltage 1 (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Lvpl1",
+          "comment": "LVPL gain (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Volim",
+          "comment": "Voltage limit for high voltage reactive current management (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Lvpnt1",
+          "comment": "High voltage point for low voltage active current management (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Lvpnt0",
+          "comment": "Low voltage point for low voltage active current management (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iolim",
+          "comment": "Current limit (pu) for high voltage reactive current management (specified as a negative value)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": null,
+            "max": 0
+          }
+        },
+        {
+          "name": "Tfltr",
+          "comment": "Voltage filter time constant for low voltage active current management (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Khv",
+          "comment": "Overvoltage compensation gain used in the high voltage reactive current management",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iqrmax",
+          "comment": "Upper limit on rate of change for reactive current (pu/s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iqrmin",
+          "comment": "Lower limit on rate of change for reactive current (pu/s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Accel",
+          "comment": "Acceleration factor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Qref",
+          "comment": "Initial machine reactive power from power flow",
+          "internal_default": 1.0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Lvplsw",
+          "comment": "Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\tIp: Converter lag for Ipcmd,\tIq: Converter lag for Iqcmd,\tVmeas: Voltage filter for low voltage active current management",
+          "internal_default": "[:Ip, :Iq, :Vmeas]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "REGCA1 has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "Converter"
+    },
+    {
       "struct_name": "FixedDCSource",
       "docstring": "Parameters of a Fixed DC Source that returns a fixed DC voltage",
       "fields": [
