@@ -27,8 +27,10 @@ end
     threebus_raw_file = joinpath(PSSE_TEST_DIR, "ThreeBusNetwork.raw")
     gencls_dyr_file = joinpath(PSSE_TEST_DIR, "TestGENCLS.dyr")
     nogencls_dyr_file = joinpath(PSSE_TEST_DIR, "Test-NoCLS.dyr")
+    sexs_dyr_file = joinpath(PSSE_TEST_DIR, "Test_SEXS.dyr")
     sys_gencls = PSB.build_system(PSB.PSSETestSystems, "psse_3bus_gen_cls_sys")
     sys_nogencls = PSB.build_system(PSB.PSSETestSystems, "psse_3bus_no_cls_sys")
+    sys_sexs = PSB.build_system(PSB.PSSETestSystems, "psse_3bus_SEXS_sys")
 
     #Check that generator at bus 102 (H = 0) is a Source, and not ThermalStandard.
     @test isnothing(get_component(ThermalStandard, sys_gencls, "generator-102-1"))
@@ -77,6 +79,18 @@ end
     @test get_Xd_p(m) == 0.2
     @test get_H(s) == 3.1
     @test get_D(s) == 2.0
+
+    #Check Parameters of SEXS file
+    genroe_sexs = get_component(DynamicInjection, sys_sexs, "generator-101-1")
+    a = PSY.get_avr(genroe_sexs)
+    @test typeof(a) <: AVR
+    @test get_Ta_Tb(a) == 0.4
+    @test get_Tb(a) == 5.0
+    @test get_K(a) == 20.0
+    @test get_Te(a) == 1.0
+    E_min, E_max = get_V_lim(a)
+    @test E_min == -50.0
+    @test E_max == 50.0
 end
 
 @testset "2000-Bus Parsing" begin
