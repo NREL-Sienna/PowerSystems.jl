@@ -144,8 +144,8 @@ function _write_pf_sol!(sys::System, nl_result)
             devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
             generator = devices[1]
             gen_basepower = get_base_power(generator)
-            set_active_power!(generator, P_gen * sys_basepower / gen_basepower)
-            set_reactive_power!(generator, Q_gen * sys_basepower / gen_basepower)
+            set_active_power!(generator, P_gen)
+            set_reactive_power!(generator, Q_gen)
         elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
@@ -154,7 +154,7 @@ function _write_pf_sol!(sys::System, nl_result)
             if length(devices) == 1
                 generator = devices[1]
                 gen_basepower = get_base_power(generator)
-                set_reactive_power!(generator, Q_gen * sys_basepower / gen_basepower)
+                set_reactive_power!(generator, Q_gen)
             end
             bus.angle = θ
         elseif bus.bustype == BusTypes.PQ
