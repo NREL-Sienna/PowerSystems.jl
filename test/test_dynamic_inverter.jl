@@ -1,6 +1,8 @@
 @testset "Inverter Components" begin
     converter = AverageConverter(690.0, 2750000.0) #S_rated goes in Watts
     @test converter isa PowerSystems.DynamicComponent
+    converter_regca1 = REGCA1(0.02, 10.0, 0.9, 0.4, 1.22, 1.2, 0.9, 0.5, -1.3, 0.2, 0.0, 100.0, -100.0, 0.7, 1)
+    @test converter_regca1 isa PowerSystems.DynamicComponent
     dc_source = FixedDCSource(600.0) #Not in the original data, guessed.
     @test dc_source isa PowerSystems.DynamicComponent
     filter = LCLFilter(0.08, 0.003, 0.074, 0.2, 0.01)
