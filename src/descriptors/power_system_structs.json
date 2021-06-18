@@ -9876,7 +9876,8 @@
         {
           "name": "Qref",
           "comment": "Initial machine reactive power from power flow",
-          "internal_default": 1.0,
+          "null_value": 0,
+          "default": "1.0",
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
