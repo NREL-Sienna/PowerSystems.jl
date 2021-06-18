@@ -54,9 +54,9 @@ end
 """Get [`Area`](@ref) `name`."""
 get_name(value::Area) = value.name
 """Get [`Area`](@ref) `peak_active_power`."""
-get_peak_active_power(value::Area) = value.peak_active_power
+get_peak_active_power(value::Area) = get_value(value, value.peak_active_power)
 """Get [`Area`](@ref) `peak_reactive_power`."""
-get_peak_reactive_power(value::Area) = value.peak_reactive_power
+get_peak_reactive_power(value::Area) = get_value(value, value.peak_reactive_power)
 """Get [`Area`](@ref) `load_response`."""
 get_load_response(value::Area) = value.load_response
 """Get [`Area`](@ref) `time_series_container`."""
@@ -67,9 +67,9 @@ get_internal(value::Area) = value.internal
 """Set [`Area`](@ref) `name`."""
 set_name!(value::Area, val) = value.name = val
 """Set [`Area`](@ref) `peak_active_power`."""
-set_peak_active_power!(value::Area, val) = value.peak_active_power = val
+set_peak_active_power!(value::Area, val) = value.peak_active_power = set_value(value, val)
 """Set [`Area`](@ref) `peak_reactive_power`."""
-set_peak_reactive_power!(value::Area, val) = value.peak_reactive_power = val
+set_peak_reactive_power!(value::Area, val) = value.peak_reactive_power = set_value(value, val)
 """Set [`Area`](@ref) `load_response`."""
 set_load_response!(value::Area, val) = value.load_response = val
 """Set [`Area`](@ref) `time_series_container`."""
