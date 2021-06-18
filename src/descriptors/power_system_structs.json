@@ -272,12 +272,14 @@
         {
           "name": "peak_active_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "name": "peak_reactive_power",
           "null_value": "0.0",
-          "data_type": "Float64"
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "name": "time_series_container",
