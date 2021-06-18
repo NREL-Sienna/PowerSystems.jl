@@ -9864,16 +9864,6 @@
           }
         },
         {
-          "name": "Qref",
-          "comment": "Initial machine reactive power from power flow",
-          "internal_default": 1.0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
           "name": "Lvplsw",
           "comment": "Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present)",
           "null_value": 0,
@@ -9881,6 +9871,16 @@
           "valid_range": {
             "min": 0,
             "max": 1
+          }
+        },
+        {
+          "name": "Qref",
+          "comment": "Initial machine reactive power from power flow",
+          "internal_default": 1.0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
           }
         },
         {
