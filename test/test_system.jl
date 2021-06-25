@@ -328,3 +328,28 @@ end
     @test get_compression_settings(System(100.0, enable_compression = true)) ==
           CompressionSettings(enabled = true)
 end
+
+@testset "Test compare_values" begin
+    sys1 = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    sys2 = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    gen1 = first(get_components(ThermalStandard, sys1))
+    gen2 = first(get_components(ThermalStandard, sys2))
+    @test IS.compare_values(gen1, gen2)
+    @test IS.compare_values(sys1, sys2)
+
+    set_active_power!(gen1, get_active_power(gen1) + 0.1)
+    @test(
+        @test_logs(
+            (:error, r"not match"),
+            match_mode = :any,
+            !IS.compare_values(gen1, gen2),
+        )
+    )
+    @test(
+        @test_logs(
+            (:error, r"not match"),
+            match_mode = :any,
+            !IS.compare_values(sys1, sys2)
+        )
+    )
+end
