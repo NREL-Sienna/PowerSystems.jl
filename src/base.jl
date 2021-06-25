@@ -159,8 +159,12 @@ function System(
     return System(base_power, buses, generators, loads, _services; kwargs...)
 end
 
-"""Constructs a System from a file path ending with .m, .RAW, or .json"""
-function System(file_path::AbstractString; kwargs...)
+"""Constructs a System from a file path ending with .m, .RAW, or .json
+
+If the file is JSON then assign_new_uuids = true will generate new UUIDs for the system
+and all components.
+"""
+function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
     ext = splitext(file_path)[2]
     if lowercase(ext) in [".m", ".raw"]
         pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
@@ -188,6 +192,18 @@ function System(file_path::AbstractString; kwargs...)
                 time_series_directory = time_series_directory,
             )
             runchecks && check(sys)
+            if assign_new_uuids
+                IS.assign_new_uuid!(sys)
+                for component in get_components(Component, sys)
+                    IS.assign_new_uuid!(component)
+                end
+                for component in
+                    IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
+                    IS.assign_new_uuid!(component)
+                end
+                # Note: this does not change UUIDs for time series data because they are
+                # shared with components.
+            end
             return sys
         finally
             cd(orig_dir)
