@@ -233,3 +233,24 @@ function get_innerREECB_states(Q_Flag::Int)
         error("Unsupported value of Q_Flag")
     end
 end
+
+function get_reactiveRESimple_states(Ref_Flag::Int, PF_Flag::Int, V_Flag::Int)
+    if (Ref_Flag == 0) && ((PF_Flag == 1) && (V_Flag == 1))
+        return [:q_flt, :ξq_oc, :q_LL, :pr_flt, :ξ_Q], 5
+    elseif (Ref_Flag == 0) && ((PF_Flag == 1) && (V_Flag == 0))
+        return [:q_flt, :ξq_oc, :q_LL, :pr_flt], 4
+    elseif (Ref_Flag == 0) && ((PF_Flag == 0) && (V_Flag == 1))
+        return [:q_flt, :ξq_oc, :q_LL, :ξ_Q], 4
+    elseif (Ref_Flag == 0) && ((PF_Flag == 0) && (V_Flag == 0))
+        return [:q_flt, :ξq_oc, :q_LL], 3    
+    elseif (Ref_Flag == 1) && ((PF_Flag == 1) && (V_Flag == 1))
+        return [:V_cflt, :ξq_oc, :q_LL, :pr_flt, :ξ_Q], 5
+    elseif (Ref_Flag == 1) && ((PF_Flag == 1) && (V_Flag == 0))
+        return [:V_cflt, :ξq_oc, :q_LL, :pr_flt], 4
+    elseif (Ref_Flag == 1) && ((PF_Flag == 0) && (V_Flag == 1))
+        return [:V_cflt, :ξq_oc, :q_LL, :ξ_Q], 4
+    elseif (Ref_Flag == 1) && ((PF_Flag == 0) && (V_Flag == 0))
+        return [:V_cflt, :ξq_oc, :q_LL], 3
+    else error("Unsupported value of Ref_Flag, PF_Flag or V_Flag")
+    end
+end

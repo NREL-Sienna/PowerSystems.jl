@@ -10392,6 +10392,268 @@
       "supertype": "ActivePowerControl"
     },
     {
+      "struct_name": "ReactiveRenewableSimple",
+      "docstring": "Parameters of Reactive Power Controller including REPCA1 and REECB1",
+      "fields": [
+        {
+          "name": "bus_control",
+          "comment": "Bus Number for voltage control; ",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "from_branch_control",
+          "comment": "Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "to_branch_control",
+          "comment": "Monitored branch TO bus number for line drop compensation (if 0 generator power will be used)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "branch_id_control",
+          "comment": "Branch circuit id for line drop compensation (as a string). If 0 generator power will be used",
+          "null_value": 0,
+          "data_type": "String"
+        },
+        {
+          "name": "VC_Flag",
+          "comment": "Voltage Compensator Flag for REPCA1",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Ref_Flag",
+          "comment": "Flag for Reactive Power Control for REPCA1. 0: Q-control, 1: V-control",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "PF_Flag",
+          "comment": "Flag for Power Factor Control for Outer Control of REECB1. 0: Q-control, 1: Power Factor Control",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "V_Flag",
+          "comment": "Flag for Voltage Control for Outer Control of REECB1. 0: Voltage Control, 1: Q-Control",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "T_fltr",
+          "comment": "Voltage or Q-power of REPCA Filter Time Constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_p",
+          "comment": "Reactive power PI control proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_i",
+          "comment": "Reactive power PI control integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_ft",
+          "comment": "Reactive power lead time constant (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_fv",
+          "comment": "Reactive power lag time constant (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_frz",
+          "comment": "Voltage below which state ξq_oc (integrator state) is freeze",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "R_c",
+          "comment": "Line drop compensation resistance (used when VC_Flag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "X_c",
+          "comment": "Line drop compensation reactance (used when VC_Flag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "e_lim",
+          "comment": "Upper/Lower limit on Voltage or Q-power deadband output `(e_min, e_max)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "dbd1",
+          "comment": "Voltage or Q-power error dead band lower threshold",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": null,
+            "max": 0
+          }
+        },
+        {
+          "name": "dbd2",
+          "comment": "Voltage or Q-power dead band upper threshold",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_p",
+          "comment": "Active power lag time constant in REECB (s). Used only when PF_Flag = 1",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Q_lim",
+          "comment": "Upper/Lower limit on reactive power input in REECB `(Q_min, Q_max)`. Only used when V_Flag = 1",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "V_lim",
+          "comment": "Upper/Lower limit on reactive power PI controller in REECB `(V_min, V_max)`. Only used when V_Flag = 1",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "K_qp",
+          "comment": "Reactive power regulator proportional gain (used when V_Flag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_qi",
+          "comment": "Reactive power regulator integral gain (used when V_Flag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the ReactiveRenewableSimple model depends on the Flag",
+          "internal_default": "PowerSystems.get_reactiveRESimple_states(Ref_Flag, PF_Flag, V_Flag)[1]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "VirtualInertia has two states",
+          "internal_default": "PowerSystems.get_reactiveRESimple_states(Ref_Flag, PF_Flag, V_Flag)[2]",
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "ActivePowerControl"
+    },
+    {
       "struct_name": "ReactivePowerDroop",
       "docstring": "Parameters of a Reactive Power droop controller",
       "fields": [

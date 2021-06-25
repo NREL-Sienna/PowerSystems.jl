@@ -85,6 +85,7 @@ include("FixedFrequency.jl")
 include("VirtualInertia.jl")
 include("ActivePowerDroop.jl")
 include("ActivePowerPI.jl")
+include("ReactiveRenewableSimple.jl")
 include("ReactivePowerDroop.jl")
 include("ReactivePowerPI.jl")
 include("VoltageModeControl.jl")
@@ -149,6 +150,8 @@ export get_K_lr
 export get_K_p
 export get_K_pm
 export get_K_pr
+export get_K_qi
+export get_K_qp
 export get_K_qv
 export get_K_turb
 export get_K_vi
@@ -188,19 +191,23 @@ export get_L_ff
 export get_L_q
 export get_Ld_ref
 export get_Ls_lim
+export get_PF_Flag
 export get_PQ_Flag
 export get_PSS_flags
 export get_P_ref
 export get_Q_Flag
+export get_Q_lim
 export get_Q_ref
 export get_R
 export get_R_1d
 export get_R_1q
+export get_R_c
 export get_R_close
 export get_R_f
 export get_R_lim
 export get_R_open
 export get_R_th
+export get_Ref_Flag
 export get_Rp
 export get_Rselect
 export get_Se
@@ -214,7 +221,11 @@ export get_T7
 export get_T_AA
 export get_T_act
 export get_T_eng
+export get_T_fltr
+export get_T_ft
+export get_T_fv
 export get_T_iq
+export get_T_p
 export get_T_rate
 export get_T_rv
 export get_Ta
@@ -250,9 +261,12 @@ export get_U0
 export get_UEL_flags
 export get_U_c
 export get_VB_max
+export get_VC_Flag
 export get_VELM
 export get_VFE_lim
 export get_VH_max
+export get_V_Flag
+export get_V_frz
 export get_V_lim
 export get_V_lr
 export get_V_pss
@@ -268,6 +282,7 @@ export get_Vi_lim
 export get_Vm_lim
 export get_Vr_lim
 export get_Wf_nl
+export get_X_c
 export get_X_th
 export get_Xd
 export get_Xd_p
@@ -295,7 +310,9 @@ export get_base_voltage
 export get_battery_resistance
 export get_battery_voltage
 export get_bias
+export get_branch_id_control
 export get_bus
+export get_bus_control
 export get_bustype
 export get_cf
 export get_contributing_services
@@ -307,6 +324,7 @@ export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_delta_t
 export get_dynamic_injector
+export get_e_lim
 export get_efficiency
 export get_energy_shortage_cost
 export get_energy_surplus_cost
@@ -316,6 +334,7 @@ export get_fixed
 export get_flow_limits
 export get_frequency
 export get_from
+export get_from_branch_control
 export get_fs
 export get_fuel
 export get_fuel_flag
@@ -417,6 +436,7 @@ export get_time_limits
 export get_time_limits_pump
 export get_time_series_container
 export get_to
+export get_to_branch_control
 export get_valve_position_limits
 export get_variable
 export get_voltage
@@ -494,6 +514,8 @@ export set_K_lr!
 export set_K_p!
 export set_K_pm!
 export set_K_pr!
+export set_K_qi!
+export set_K_qp!
 export set_K_qv!
 export set_K_turb!
 export set_K_vi!
@@ -533,19 +555,23 @@ export set_L_ff!
 export set_L_q!
 export set_Ld_ref!
 export set_Ls_lim!
+export set_PF_Flag!
 export set_PQ_Flag!
 export set_PSS_flags!
 export set_P_ref!
 export set_Q_Flag!
+export set_Q_lim!
 export set_Q_ref!
 export set_R!
 export set_R_1d!
 export set_R_1q!
+export set_R_c!
 export set_R_close!
 export set_R_f!
 export set_R_lim!
 export set_R_open!
 export set_R_th!
+export set_Ref_Flag!
 export set_Rp!
 export set_Rselect!
 export set_Se!
@@ -559,7 +585,11 @@ export set_T7!
 export set_T_AA!
 export set_T_act!
 export set_T_eng!
+export set_T_fltr!
+export set_T_ft!
+export set_T_fv!
 export set_T_iq!
+export set_T_p!
 export set_T_rate!
 export set_T_rv!
 export set_Ta!
@@ -595,9 +625,12 @@ export set_U0!
 export set_UEL_flags!
 export set_U_c!
 export set_VB_max!
+export set_VC_Flag!
 export set_VELM!
 export set_VFE_lim!
 export set_VH_max!
+export set_V_Flag!
+export set_V_frz!
 export set_V_lim!
 export set_V_lr!
 export set_V_pss!
@@ -613,6 +646,7 @@ export set_Vi_lim!
 export set_Vm_lim!
 export set_Vr_lim!
 export set_Wf_nl!
+export set_X_c!
 export set_X_th!
 export set_Xd!
 export set_Xd_p!
@@ -640,7 +674,9 @@ export set_base_voltage!
 export set_battery_resistance!
 export set_battery_voltage!
 export set_bias!
+export set_branch_id_control!
 export set_bus!
+export set_bus_control!
 export set_bustype!
 export set_cf!
 export set_contributing_services!
@@ -652,6 +688,7 @@ export set_dc_dc_inductor!
 export set_dc_link_capacitance!
 export set_delta_t!
 export set_dynamic_injector!
+export set_e_lim!
 export set_efficiency!
 export set_energy_shortage_cost!
 export set_energy_surplus_cost!
@@ -661,6 +698,7 @@ export set_fixed!
 export set_flow_limits!
 export set_frequency!
 export set_from!
+export set_from_branch_control!
 export set_fs!
 export set_fuel!
 export set_fuel_flag!
@@ -762,6 +800,7 @@ export set_time_limits!
 export set_time_limits_pump!
 export set_time_series_container!
 export set_to!
+export set_to_branch_control!
 export set_valve_position_limits!
 export set_variable!
 export set_voltage!
