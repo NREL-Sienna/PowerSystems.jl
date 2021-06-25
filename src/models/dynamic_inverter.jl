@@ -222,3 +222,14 @@ function _calc_states(
         filter.states,
     )
 end
+
+
+function get_innerREECB_states(Q_Flag::Int)
+    if Q_Flag == 0
+        return [:Vt_filt, :I_icv]
+    elseif Q_Flag == 1
+        return [:Vt_filt, :ξ_icv]
+    else
+        error("Unsupported value of Q_Flag")
+    end
+end
