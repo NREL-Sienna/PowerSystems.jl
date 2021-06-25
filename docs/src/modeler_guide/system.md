@@ -117,6 +117,21 @@ The serialization process stores 3 files
 2. Validation data file (`*.json` file)
 3. Time Series data file (`*.h5` file)
 
+To deserialize:
+
+```julia
+system2 = System("system.json")
+```
+
+PowerSystems generates UUIDs for the System and all components in order to have
+a way to uniquely identify objects. During deserialization it restores the same
+UUIDs.  If you will modify the System or components after deserialization then
+it is recommended that you set this flag to generate new UUIDs.
+
+```julia
+system2 = System("system.json", assign_new_uuids = true)
+```
+
 ## Reducing REPL printing
 
 By default `PowerSystems.jl` outputs to the REPL all Logging values, this can be overwhelming

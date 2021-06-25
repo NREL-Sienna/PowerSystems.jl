@@ -159,8 +159,12 @@ function System(
     return System(base_power, buses, generators, loads, _services; kwargs...)
 end
 
-"""Constructs a System from a file path ending with .m, .RAW, or .json"""
-function System(file_path::AbstractString; kwargs...)
+"""Constructs a System from a file path ending with .m, .RAW, or .json
+
+If the file is JSON then assign_new_uuids = true will generate new UUIDs for the system
+and all components.
+"""
+function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
     ext = splitext(file_path)[2]
     if lowercase(ext) in [".m", ".raw"]
         pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
@@ -188,6 +192,18 @@ function System(file_path::AbstractString; kwargs...)
                 time_series_directory = time_series_directory,
             )
             runchecks && check(sys)
+            if assign_new_uuids
+                IS.assign_new_uuid!(sys)
+                for component in get_components(Component, sys)
+                    IS.assign_new_uuid!(component)
+                end
+                for component in
+                    IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
+                    IS.assign_new_uuid!(component)
+                end
+                # Note: this does not change UUIDs for time series data because they are
+                # shared with components.
+            end
             return sys
         finally
             cd(orig_dir)
@@ -1656,60 +1672,47 @@ function get_bus_numbers(sys::System)
     return sort(collect(sys.bus_numbers))
 end
 
-function IS.compare_values(x::System, y::System)
-    match = true
-
-    if x.units_settings.unit_system != x.units_settings.unit_system
-        @debug "unit system does not match" _group = IS.LOG_GROUP_SERIALIZATION x.units_settings.unit_system y.units_settings.unit_system
-        match = false
-    end
-
-    if get_base_power(x) != get_base_power(y)
-        @debug "base_power does not match" _group = IS.LOG_GROUP_SERIALIZATION get_base_power(
-            x,
-        ) get_base_power(y)
-        match = false
-    end
-
-    if !IS.compare_values(x.data, y.data)
-        @debug "SystemData values do not match" _group = IS.LOG_GROUP_SERIALIZATION
-        match = false
-    end
-
-    return match
-end
-
-function IS.compare_values(x::T, y::T) where {T <: Union{StaticInjection, DynamicInjection}}
+function IS.compare_values(
+    x::T,
+    y::T;
+    compare_uuids = false,
+) where {T <: Union{StaticInjection, DynamicInjection}}
     # Must implement this method because a device of one of these subtypes might have a
     # reference to its counterpart, and vice versa, and so infinite recursion will occur
     # in the default function.
     match = true
-    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
-        val1 = getfield(x, fieldname)
-        val2 = getfield(y, fieldname)
+    for name in fieldnames(T)
+        val1 = getfield(x, name)
+        val2 = getfield(y, name)
         if val1 isa StaticInjection || val2 isa DynamicInjection
-            uuid1 = IS.get_uuid(val1)
-            uuid2 = IS.get_uuid(val2)
-            if uuid1 != uuid2
-                @debug "values do not match" _group = IS.LOG_GROUP_SERIALIZATION T fieldname uuid1 uuid2
-                match = false
-                break
+            if !compare_uuids
+                name1 = get_name(val1)
+                name2 = get_name(val2)
+                if name1 != name2
+                    @error "values do not match" T name name1 name2
+                    match = false
+                end
+            else
+                uuid1 = IS.get_uuid(val1)
+                uuid2 = IS.get_uuid(val2)
+                if uuid1 != uuid2
+                    @error "values do not match" T name uuid1 uuid2
+                    match = false
+                end
             end
         elseif !isempty(fieldnames(typeof(val1)))
-            if !IS.compare_values(val1, val2)
-                @debug "values do not match" _group = IS.LOG_GROUP_SERIALIZATION T fieldname val1 val2
+            if !IS.compare_values(val1, val2, compare_uuids = compare_uuids)
+                @error "values do not match" T name val1 val2
                 match = false
-                break
             end
         elseif val1 isa AbstractArray
-            if !IS.compare_values(val1, val2)
+            if !IS.compare_values(val1, val2, compare_uuids = compare_uuids)
                 match = false
             end
         else
             if val1 != val2
-                @debug "values do not match" _group = IS.LOG_GROUP_SERIALIZATION T fieldname val1 val2
+                @error "values do not match" T name val1 val2
                 match = false
-                break
             end
         end
     end
