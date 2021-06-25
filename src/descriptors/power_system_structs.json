@@ -10848,7 +10848,7 @@
           "name": "states",
           "exclude_setter": true,
           "comment": "The states of the InnerREECB depends on the Flags",
-          "internal_default": "PowerSystems.get_InnerREECB_states(Q_Flag)[1]",
+          "internal_default": "PowerSystems.get_innerREECB_states(Q_Flag)",
           "data_type": "Vector{Symbol}"
         },
         {

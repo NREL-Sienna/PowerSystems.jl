@@ -89,6 +89,7 @@ include("ReactivePowerDroop.jl")
 include("ReactivePowerPI.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
+include("InnerREECB.jl")
 include("Source.jl")
 
 export get_A1
@@ -124,6 +125,8 @@ export get_H_hp
 export get_H_ip
 export get_H_lp
 export get_I_lr
+export get_I_max
+export get_Iqinj_lim
 export get_K
 export get_K0
 export get_K1
@@ -146,7 +149,10 @@ export get_K_lr
 export get_K_p
 export get_K_pm
 export get_K_pr
+export get_K_qv
 export get_K_turb
+export get_K_vi
+export get_K_vp
 export get_K_ω
 export get_Ka
 export get_Kb
@@ -182,8 +188,10 @@ export get_L_ff
 export get_L_q
 export get_Ld_ref
 export get_Ls_lim
+export get_PQ_Flag
 export get_PSS_flags
 export get_P_ref
+export get_Q_Flag
 export get_Q_ref
 export get_R
 export get_R_1d
@@ -206,7 +214,9 @@ export get_T7
 export get_T_AA
 export get_T_act
 export get_T_eng
+export get_T_iq
 export get_T_rate
+export get_T_rv
 export get_Ta
 export get_Ta_2
 export get_Ta_3
@@ -247,10 +257,12 @@ export get_V_lim
 export get_V_lr
 export get_V_pss
 export get_V_ref
+export get_V_ref0
 export get_Va_lim
 export get_Vcl
 export get_Vcu
 export get_Vdc_ref
+export get_Vdip_lim
 export get_Vf
 export get_Vi_lim
 export get_Vm_lim
@@ -289,6 +301,8 @@ export get_cf
 export get_contributing_services
 export get_conversion_factor
 export get_db
+export get_dbd1
+export get_dbd2
 export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_delta_t
@@ -456,6 +470,8 @@ export set_H_hp!
 export set_H_ip!
 export set_H_lp!
 export set_I_lr!
+export set_I_max!
+export set_Iqinj_lim!
 export set_K!
 export set_K0!
 export set_K1!
@@ -478,7 +494,10 @@ export set_K_lr!
 export set_K_p!
 export set_K_pm!
 export set_K_pr!
+export set_K_qv!
 export set_K_turb!
+export set_K_vi!
+export set_K_vp!
 export set_K_ω!
 export set_Ka!
 export set_Kb!
@@ -514,8 +533,10 @@ export set_L_ff!
 export set_L_q!
 export set_Ld_ref!
 export set_Ls_lim!
+export set_PQ_Flag!
 export set_PSS_flags!
 export set_P_ref!
+export set_Q_Flag!
 export set_Q_ref!
 export set_R!
 export set_R_1d!
@@ -538,7 +559,9 @@ export set_T7!
 export set_T_AA!
 export set_T_act!
 export set_T_eng!
+export set_T_iq!
 export set_T_rate!
+export set_T_rv!
 export set_Ta!
 export set_Ta_2!
 export set_Ta_3!
@@ -579,10 +602,12 @@ export set_V_lim!
 export set_V_lr!
 export set_V_pss!
 export set_V_ref!
+export set_V_ref0!
 export set_Va_lim!
 export set_Vcl!
 export set_Vcu!
 export set_Vdc_ref!
+export set_Vdip_lim!
 export set_Vf!
 export set_Vi_lim!
 export set_Vm_lim!
@@ -621,6 +646,8 @@ export set_cf!
 export set_contributing_services!
 export set_conversion_factor!
 export set_db!
+export set_dbd1!
+export set_dbd2!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
 export set_delta_t!
