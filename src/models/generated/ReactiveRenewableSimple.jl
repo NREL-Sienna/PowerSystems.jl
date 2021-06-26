@@ -2,7 +2,7 @@
 This file is auto-generated. Do not edit.
 =#
 """
-    mutable struct ReactiveRenewableSimple <: ActivePowerControl
+    mutable struct ReactiveRenewableSimple <: ReactivePowerControl
         bus_control::Int
         from_branch_control::Int
         to_branch_control::Int
@@ -63,9 +63,9 @@ Parameters of Reactive Power Controller including REPCA1 and REECB1
 - `Q_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the ReactiveRenewableSimple model depends on the Flag
-- `n_states::Int`: VirtualInertia has two states
+- `n_states::Int`: The states of the ReactiveRenewableSimple model depends on the Flag
 """
-mutable struct ReactiveRenewableSimple <: ActivePowerControl
+mutable struct ReactiveRenewableSimple <: ReactivePowerControl
     "Bus Number for voltage control; "
     bus_control::Int
     "Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used)"
@@ -119,7 +119,7 @@ mutable struct ReactiveRenewableSimple <: ActivePowerControl
     ext::Dict{String, Any}
     "The states of the ReactiveRenewableSimple model depends on the Flag"
     states::Vector{Symbol}
-    "VirtualInertia has two states"
+    "The states of the ReactiveRenewableSimple model depends on the Flag"
     n_states::Int
 end
 
