@@ -85,6 +85,7 @@ include("FixedFrequency.jl")
 include("VirtualInertia.jl")
 include("ActivePowerDroop.jl")
 include("ActivePowerPI.jl")
+include("ActiveRenewableSimple.jl")
 include("ReactiveRenewableSimple.jl")
 include("ReactivePowerDroop.jl")
 include("ReactivePowerPI.jl")
@@ -112,14 +113,17 @@ export get_D_23
 export get_D_34
 export get_D_45
 export get_D_T
+export get_D_dn
 export get_D_ex
 export get_D_hp
 export get_D_ip
 export get_D_lp
 export get_D_turb
+export get_D_up
 export get_Dm
 export get_E_sat
 export get_Efd_lim
+export get_Freq_Flag
 export get_H
 export get_H_ex
 export get_H_hp
@@ -148,6 +152,8 @@ export get_K_ir
 export get_K_lp
 export get_K_lr
 export get_K_p
+export get_K_pg
+export get_K_pi
 export get_K_pm
 export get_K_pr
 export get_K_qi
@@ -194,6 +200,7 @@ export get_Ls_lim
 export get_PF_Flag
 export get_PQ_Flag
 export get_PSS_flags
+export get_P_lim
 export get_P_ref
 export get_Q_Flag
 export get_Q_lim
@@ -224,6 +231,7 @@ export get_T_eng
 export get_T_fltr
 export get_T_ft
 export get_T_fv
+export get_T_g
 export get_T_iq
 export get_T_p
 export get_T_rate
@@ -330,6 +338,9 @@ export get_energy_shortage_cost
 export get_energy_surplus_cost
 export get_eq_p
 export get_ext
+export get_fdbd1
+export get_fdbd2
+export get_fe_lim
 export get_fixed
 export get_flow_limits
 export get_frequency
@@ -476,14 +487,17 @@ export set_D_23!
 export set_D_34!
 export set_D_45!
 export set_D_T!
+export set_D_dn!
 export set_D_ex!
 export set_D_hp!
 export set_D_ip!
 export set_D_lp!
 export set_D_turb!
+export set_D_up!
 export set_Dm!
 export set_E_sat!
 export set_Efd_lim!
+export set_Freq_Flag!
 export set_H!
 export set_H_ex!
 export set_H_hp!
@@ -512,6 +526,8 @@ export set_K_ir!
 export set_K_lp!
 export set_K_lr!
 export set_K_p!
+export set_K_pg!
+export set_K_pi!
 export set_K_pm!
 export set_K_pr!
 export set_K_qi!
@@ -558,6 +574,7 @@ export set_Ls_lim!
 export set_PF_Flag!
 export set_PQ_Flag!
 export set_PSS_flags!
+export set_P_lim!
 export set_P_ref!
 export set_Q_Flag!
 export set_Q_lim!
@@ -588,6 +605,7 @@ export set_T_eng!
 export set_T_fltr!
 export set_T_ft!
 export set_T_fv!
+export set_T_g!
 export set_T_iq!
 export set_T_p!
 export set_T_rate!
@@ -694,6 +712,9 @@ export set_energy_shortage_cost!
 export set_energy_surplus_cost!
 export set_eq_p!
 export set_ext!
+export set_fdbd1!
+export set_fdbd2!
+export set_fe_lim!
 export set_fixed!
 export set_flow_limits!
 export set_frequency!
