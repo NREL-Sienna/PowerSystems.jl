@@ -75,6 +75,7 @@ include("IEEETurbineGov1.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
 include("AverageConverter.jl")
+include("REGCA1.jl")
 include("FixedDCSource.jl")
 include("ZeroOrderBESS.jl")
 include("LCLFilter.jl")
@@ -99,9 +100,11 @@ export get_A5
 export get_A6
 export get_AT
 export get_A_set
+export get_Accel
 export get_Ae
 export get_At
 export get_Be
+export get_Brkpt
 export get_D
 export get_DB_h
 export get_DB_l
@@ -124,6 +127,9 @@ export get_H_hp
 export get_H_ip
 export get_H_lp
 export get_I_lr
+export get_Iolim
+export get_Iqrmax
+export get_Iqrmin
 export get_K
 export get_K0
 export get_K1
@@ -157,6 +163,7 @@ export get_Ke
 export get_Kf
 export get_Kg
 export get_Kh
+export get_Khv
 export get_Ki
 export get_Ki_gov
 export get_Ki_load
@@ -182,9 +189,14 @@ export get_L_ff
 export get_L_q
 export get_Ld_ref
 export get_Ls_lim
+export get_Lvpl1
+export get_Lvplsw
+export get_Lvpnt0
+export get_Lvpnt1
 export get_PSS_flags
 export get_P_ref
 export get_Q_ref
+export get_Qref
 export get_R
 export get_R_1d
 export get_R_1q
@@ -194,6 +206,7 @@ export get_R_lim
 export get_R_open
 export get_R_th
 export get_Rp
+export get_Rrpwr
 export get_Rselect
 export get_Se
 export get_T1
@@ -224,6 +237,7 @@ export get_Tf
 export get_Tf_1
 export get_Tf_2
 export get_Tf_load
+export get_Tfltr
 export get_Tg
 export get_Th
 export get_Tj
@@ -254,6 +268,7 @@ export get_Vdc_ref
 export get_Vf
 export get_Vi_lim
 export get_Vm_lim
+export get_Volim
 export get_Vr_lim
 export get_Wf_nl
 export get_X_th
@@ -265,6 +280,7 @@ export get_Xq
 export get_Xq_p
 export get_Xq_pp
 export get_Y
+export get_Zerox
 export get_active_power
 export get_active_power_flow
 export get_active_power_limits
@@ -431,9 +447,11 @@ export set_A5!
 export set_A6!
 export set_AT!
 export set_A_set!
+export set_Accel!
 export set_Ae!
 export set_At!
 export set_Be!
+export set_Brkpt!
 export set_D!
 export set_DB_h!
 export set_DB_l!
@@ -456,6 +474,9 @@ export set_H_hp!
 export set_H_ip!
 export set_H_lp!
 export set_I_lr!
+export set_Iolim!
+export set_Iqrmax!
+export set_Iqrmin!
 export set_K!
 export set_K0!
 export set_K1!
@@ -489,6 +510,7 @@ export set_Ke!
 export set_Kf!
 export set_Kg!
 export set_Kh!
+export set_Khv!
 export set_Ki!
 export set_Ki_gov!
 export set_Ki_load!
@@ -514,9 +536,14 @@ export set_L_ff!
 export set_L_q!
 export set_Ld_ref!
 export set_Ls_lim!
+export set_Lvpl1!
+export set_Lvplsw!
+export set_Lvpnt0!
+export set_Lvpnt1!
 export set_PSS_flags!
 export set_P_ref!
 export set_Q_ref!
+export set_Qref!
 export set_R!
 export set_R_1d!
 export set_R_1q!
@@ -526,6 +553,7 @@ export set_R_lim!
 export set_R_open!
 export set_R_th!
 export set_Rp!
+export set_Rrpwr!
 export set_Rselect!
 export set_Se!
 export set_T1!
@@ -556,6 +584,7 @@ export set_Tf!
 export set_Tf_1!
 export set_Tf_2!
 export set_Tf_load!
+export set_Tfltr!
 export set_Tg!
 export set_Th!
 export set_Tj!
@@ -586,6 +615,7 @@ export set_Vdc_ref!
 export set_Vf!
 export set_Vi_lim!
 export set_Vm_lim!
+export set_Volim!
 export set_Vr_lim!
 export set_Wf_nl!
 export set_X_th!
@@ -597,6 +627,7 @@ export set_Xq!
 export set_Xq_p!
 export set_Xq_pp!
 export set_Y!
+export set_Zerox!
 export set_active_power!
 export set_active_power_flow!
 export set_active_power_limits!
