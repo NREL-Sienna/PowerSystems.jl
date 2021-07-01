@@ -39,6 +39,24 @@ Contributions to the development and enahancement of PowerSystems is welcome. Pl
 [CONTRIBUTING.md](https://github.com/NREL/PowerSystems.jl/blob/master/CONTRIBUTING.md) for
 code contribution guidelines.
 
+## Citing PowerSystems.jl
+
+[Paper describing `PowerSystems.jl`](https://www.sciencedirect.com/science/article/pii/S2352711021000765)
+
+```bibtex
+@article{LARA2021100747,
+title = {PowerSystems.jl — A power system data management package for large scale modeling},
+journal = {SoftwareX},
+volume = {15},
+pages = {100747},
+year = {2021},
+issn = {2352-7110},
+doi = {https://doi.org/10.1016/j.softx.2021.100747},
+url = {https://www.sciencedirect.com/science/article/pii/S2352711021000765},
+author = {José Daniel Lara and Clayton Barrows and Daniel Thom and Dheepak Krishnamurthy and Duncan Callaway},
+keywords = {Power Systems, Julia, Energy},
+```
+
 ## License
 
 PowerSystems is released under a BSD [license](https://github.com/NREL/PowerSystems.jl/blob/master/LICENSE).
