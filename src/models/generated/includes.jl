@@ -133,7 +133,9 @@ export get_H_hp
 export get_H_ip
 export get_H_lp
 export get_I_lr
+export get_I_max
 export get_Iolim
+export get_Iqinj_lim
 export get_Iqrmax
 export get_Iqrmin
 export get_K
@@ -206,6 +208,8 @@ export get_Lvpl1
 export get_Lvplsw
 export get_Lvpnt0
 export get_Lvpnt1
+export get_PF_Flag
+export get_PQ_Flag
 export get_PSS_flags
 export get_P_lim
 export get_P_ref
@@ -518,7 +522,9 @@ export set_H_hp!
 export set_H_ip!
 export set_H_lp!
 export set_I_lr!
+export set_I_max!
 export set_Iolim!
+export set_Iqinj_lim!
 export set_Iqrmax!
 export set_Iqrmin!
 export set_K!
@@ -591,6 +597,8 @@ export set_Lvpl1!
 export set_Lvplsw!
 export set_Lvpnt0!
 export set_Lvpnt1!
+export set_PF_Flag!
+export set_PQ_Flag!
 export set_PSS_flags!
 export set_P_lim!
 export set_P_ref!
