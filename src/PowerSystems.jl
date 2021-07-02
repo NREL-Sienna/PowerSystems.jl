@@ -139,6 +139,7 @@ export SteamTurbineGov1
 # Converter Exports
 export Converter
 export AverageConverter
+export REGCA1
 
 # DC Source Exports
 export DCSource
