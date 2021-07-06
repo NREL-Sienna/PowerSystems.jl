@@ -10238,6 +10238,33 @@
       "supertype": "Filter"
     },
     {
+      "struct_name": "DirectInjection",
+      "docstring": "Parameters of a Direct Injection Filter",
+      "fields": [
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "DirectInjection has zero states",
+          "internal_default": "Vector{Symbol}()",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "DirectInjection has zero states",
+          "internal_default": 0,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "Filter"
+    },
+    {
       "struct_name": "KauraPLL",
       "docstring": "Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko.\n\"Operation of a phase locked loop system under distorted utility conditions.\"\nIEEE Transactions on Industry applications 33.1 (1997): 58-63.",
       "fields": [
