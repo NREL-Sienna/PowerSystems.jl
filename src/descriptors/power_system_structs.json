@@ -10607,7 +10607,7 @@
       "supertype": "ActivePowerControl"
     },
     {
-      "struct_name": "ActiveRenewableSimple",
+      "struct_name": "ActiveRenewableTypeAB",
       "docstring": "Parameters of Active Power Controller including REPCA1 and REECB1",
       "fields": [
         {
@@ -10768,22 +10768,22 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states of the ActiveRenewableSimple model depends on the Flag",
-          "internal_default": "PowerSystems.get_activeRESimple_states(Freq_Flag)[1]",
+          "comment": "The states of the ActiveRenewableTypeAB model depends on the Flag",
+          "internal_default": "PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "The states of the ActiveRenewableSimple model depends on the Flag",
-          "internal_default": "PowerSystems.get_activeRESimple_states(Freq_Flag)[2]",
+          "comment": "The states of the ActiveRenewableTypeAB model depends on the Flag",
+          "internal_default": "PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2]",
           "data_type": "Int"
         }
       ],
       "supertype": "ActivePowerControl"
     },
     {
-      "struct_name": "ReactiveRenewableSimple",
+      "struct_name": "ReactiveRenewableTypeAB",
       "docstring": "Parameters of Reactive Power Controller including REPCA1 and REECB1",
       "fields": [
         {
@@ -11030,15 +11030,15 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states of the ReactiveRenewableSimple model depends on the Flag",
-          "internal_default": "PowerSystems.get_reactiveRESimple_states(Ref_Flag, PF_Flag, V_Flag)[1]",
+          "comment": "The states of the ReactiveRenewableTypeAB model depends on the Flag",
+          "internal_default": "PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "The states of the ReactiveRenewableSimple model depends on the Flag",
-          "internal_default": "PowerSystems.get_reactiveRESimple_states(Ref_Flag, PF_Flag, V_Flag)[2]",
+          "comment": "The states of the ReactiveRenewableTypeAB model depends on the Flag",
+          "internal_default": "PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2]",
           "data_type": "Int"
         }
       ],

@@ -165,12 +165,15 @@ export ReactivePowerDroop
 export ActivePowerDroop
 export ActivePowerPI
 export ReactivePowerPI
+export ActivePowerTypeAB
+export ReactivePowerTypeAB
 
 # InnerControl Export
 export InnerControl
 export CurrentControl
 export VoltageModeControl
 export CurrentModeControl
+export InnerREECB
 
 export Source
 
