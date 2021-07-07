@@ -171,6 +171,7 @@ export VoltageModeControl
 export CurrentModeControl
 
 export Source
+export PeriodicVariableSource
 
 export Service
 export Reserve
