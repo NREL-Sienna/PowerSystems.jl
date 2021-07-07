@@ -68,10 +68,10 @@ mutable struct PeriodicVariableSource <: DynamicInjection
 end
 
 function PeriodicVariableSource(name, available, bus, R_th, X_th, internal_voltage_bias=0.0, internal_voltage_frequencies=[0.0], internal_voltage_coefficients=[(0.0, 0.0)], internal_angle_bias=0.0, internal_angle_frequencies=[0.0], internal_angle_coefficients=[(0.0, 0.0)], ext=Dict{String, Any}(), )
-    PeriodicVariableSource(name, available, bus, R_th, X_th, internal_voltage_bias, internal_voltage_frequencies, internal_voltage_coefficients, internal_angle_bias, internal_angle_frequencies, internal_angle_coefficients, ext, [:δt, :Vt, :θt], 3, InfrastructureSystemsInternal(), )
+    PeriodicVariableSource(name, available, bus, R_th, X_th, internal_voltage_bias, internal_voltage_frequencies, internal_voltage_coefficients, internal_angle_bias, internal_angle_frequencies, internal_angle_coefficients, ext, [:Vt, :θt], 2, InfrastructureSystemsInternal(), )
 end
 
-function PeriodicVariableSource(; name, available, bus, R_th, X_th, internal_voltage_bias=0.0, internal_voltage_frequencies=[0.0], internal_voltage_coefficients=[(0.0, 0.0)], internal_angle_bias=0.0, internal_angle_frequencies=[0.0], internal_angle_coefficients=[(0.0, 0.0)], states=[:δt, :Vt, :θt], n_states=3, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function PeriodicVariableSource(; name, available, bus, R_th, X_th, internal_voltage_bias=0.0, internal_voltage_frequencies=[0.0], internal_voltage_coefficients=[(0.0, 0.0)], internal_angle_bias=0.0, internal_angle_frequencies=[0.0], internal_angle_coefficients=[(0.0, 0.0)], states=[:Vt, :θt], n_states=2, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     PeriodicVariableSource(name, available, bus, R_th, X_th, internal_voltage_bias, internal_voltage_frequencies, internal_voltage_coefficients, internal_angle_bias, internal_angle_frequencies, internal_angle_coefficients, states, n_states, ext, internal, )
 end
 
