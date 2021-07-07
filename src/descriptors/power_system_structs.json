@@ -10780,6 +10780,14 @@
           "default": "0.0"
         },
         {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection device",
+          "null_value": "nothing",
+          "exclude_setter": true,
+          "default": "nothing"
+        },
+        {
           "name": "services",
           "data_type": "Vector{Service}",
           "comment": "Services that this device contributes to",
@@ -10891,14 +10899,14 @@
           "name": "states",
           "exclude_setter": true,
           "comment": "State for time, voltage and angle",
-          "internal_default": "[:δt, :Vt, :θt]",
+          "internal_default": "[:Vt, :θt]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "null_value": 3,
-          "internal_default": 3,
+          "null_value": 2,
+          "internal_default": 2,
           "data_type": "Int"
         },
         {
