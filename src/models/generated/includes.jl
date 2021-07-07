@@ -90,6 +90,7 @@ include("ReactivePowerPI.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
 include("Source.jl")
+include("PeriodicVariableSource.jl")
 
 export get_A1
 export get_A2
@@ -313,7 +314,13 @@ export get_initial_storage
 export get_input_active_power_limits
 export get_input_code
 export get_internal_angle
+export get_internal_angle_bias
+export get_internal_angle_coefficients
+export get_internal_angle_frequencies
 export get_internal_voltage
+export get_internal_voltage_bias
+export get_internal_voltage_coefficients
+export get_internal_voltage_frequencies
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
 export get_inverter_firing_angle
@@ -645,7 +652,13 @@ export set_initial_storage!
 export set_input_active_power_limits!
 export set_input_code!
 export set_internal_angle!
+export set_internal_angle_bias!
+export set_internal_angle_coefficients!
+export set_internal_angle_frequencies!
 export set_internal_voltage!
+export set_internal_voltage_bias!
+export set_internal_voltage_coefficients!
+export set_internal_voltage_frequencies!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
 export set_inverter_firing_angle!

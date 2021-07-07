@@ -10780,6 +10780,14 @@
           "default": "0.0"
         },
         {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection device",
+          "null_value": "nothing",
+          "exclude_setter": true,
+          "default": "nothing"
+        },
+        {
           "name": "services",
           "data_type": "Vector{Service}",
           "comment": "Services that this device contributes to",
@@ -10801,6 +10809,121 @@
         }
       ],
       "supertype": "StaticInjection"
+    },
+    {
+      "struct_name": "PeriodicVariableSource",
+      "docstring": "This struct acts as an infinity bus with time varying phasor values magnitude and angle V(t) \theta(t). Time varying functions are represented using fourier series",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "name": "bus",
+          "null_value": "Bus(nothing)",
+          "data_type": "Bus"
+        },
+        {
+          "name": "R_th",
+          "comment": "Source Thevenin resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "X_th",
+          "comment": "Source Thevenin reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "internal_voltage_bias",
+          "comment": "a0 term of the Fourier Series for the voltage",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "default": "0.0"
+        },
+        {
+          "name": "internal_voltage_frequencies",
+          "comment": "Frequencies in radians/s",
+          "null_value": [
+            0.0
+          ],
+          "data_type": "Vector{Float64}",
+          "default": "[0.0]"
+        },
+        {
+          "name": "internal_voltage_coefficients",
+          "comment": "Coefficients for terms n > 1. First component corresponds to sin and second component to cos",
+          "null_value": "[(0.0, 0.0)]",
+          "data_type": "Vector{Tuple{Float64,Float64}}",
+          "default": "[(0.0, 0.0)]"
+        },
+        {
+          "name": "internal_angle_bias",
+          "comment": "a0 term of the Fourier Series for the angle",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "default": "0.0"
+        },
+        {
+          "name": "internal_angle_frequencies",
+          "comment": "Frequencies in radians/s",
+          "null_value": [
+            0.0
+          ],
+          "data_type": "Vector{Float64}",
+          "default": "[0.0]"
+        },
+        {
+          "name": "internal_angle_coefficients",
+          "comment": "Coefficients for terms n > 1. First component corresponds to sin and second component to cos",
+          "null_value": "[(0.0, 0.0)]",
+          "data_type": "Vector{Tuple{Float64,Float64}}",
+          "default":"[(0.0, 0.0)]"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "State for time, voltage and angle",
+          "internal_default": "[:Vt, :θt]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "null_value": 2,
+          "internal_default": 2,
+          "data_type": "Int"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "DynamicInjection"
     }
   ],
   "struct_validation_descriptors": [
