@@ -9728,7 +9728,7 @@
       "docstring": "Parameters of a renewable energy generator/converter model, this model corresponds to REGCA1 in PSSE",
       "fields": [
         {
-          "name": "Tg",
+          "name": "T_g",
           "comment": "Converter time constant (s)",
           "null_value": 0,
           "data_type": "Float64",
@@ -9778,7 +9778,7 @@
           }
         },
         {
-          "name": "Volim",
+          "name": "Vo_lim",
           "comment": "Voltage limit for high voltage reactive current management (pu)",
           "null_value": 0,
           "data_type": "Float64",
@@ -9788,27 +9788,13 @@
           }
         },
         {
-          "name": "Lvpnt1",
-          "comment": "High voltage point for low voltage active current management (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "Lv_pnts",
+          "comment": "Voltage points for low voltage active current management (pu) (Lvpnt0, Lvpnt1)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
-          "name": "Lvpnt0",
-          "comment": "Low voltage point for low voltage active current management (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Iolim",
+          "name": "Io_lim",
           "comment": "Current limit (pu) for high voltage reactive current management (specified as a negative value)",
           "null_value": 0,
           "data_type": "Float64",
@@ -9818,7 +9804,7 @@
           }
         },
         {
-          "name": "Tfltr",
+          "name": "T_fltr",
           "comment": "Voltage filter time constant for low voltage active current management (s)",
           "null_value": 0,
           "data_type": "Float64",
@@ -9828,7 +9814,7 @@
           }
         },
         {
-          "name": "Khv",
+          "name": "K_hv",
           "comment": "Overvoltage compensation gain used in the high voltage reactive current management",
           "null_value": 0,
           "data_type": "Float64",
@@ -9838,24 +9824,10 @@
           }
         },
         {
-          "name": "Iqrmax",
-          "comment": "Upper limit on rate of change for reactive current (pu/s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Iqrmin",
-          "comment": "Lower limit on rate of change for reactive current (pu/s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "Iqr_lims",
+          "comment": "Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Accel",
@@ -9868,7 +9840,7 @@
           }
         },
         {
-          "name": "Lvplsw",
+          "name": "Lvpl_sw",
           "comment": "Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present)",
           "null_value": 0,
           "data_type": "Int",
@@ -9878,7 +9850,7 @@
           }
         },
         {
-          "name": "Qref",
+          "name": "Q_ref",
           "comment": "Initial machine reactive power from power flow",
           "null_value": 0,
           "default": "1.0",

@@ -135,10 +135,9 @@ export get_H_ip
 export get_H_lp
 export get_I_lr
 export get_I_max
-export get_Iolim
+export get_Io_lim
 export get_Iqinj_lim
-export get_Iqrmax
-export get_Iqrmin
+export get_Iqr_lims
 export get_K
 export get_K0
 export get_K1
@@ -152,6 +151,7 @@ export get_K8
 export get_K_d
 export get_K_ex
 export get_K_hp
+export get_K_hv
 export get_K_i
 export get_K_im
 export get_K_ip
@@ -179,7 +179,6 @@ export get_Ke
 export get_Kf
 export get_Kg
 export get_Kh
-export get_Khv
 export get_Ki
 export get_Ki_gov
 export get_Ki_load
@@ -205,10 +204,9 @@ export get_L_ff
 export get_L_q
 export get_Ld_ref
 export get_Ls_lim
+export get_Lv_pnts
 export get_Lvpl1
-export get_Lvplsw
-export get_Lvpnt0
-export get_Lvpnt1
+export get_Lvpl_sw
 export get_PF_Flag
 export get_PQ_Flag
 export get_PSS_flags
@@ -217,7 +215,6 @@ export get_P_ref
 export get_Q_Flag
 export get_Q_lim
 export get_Q_ref
-export get_Qref
 export get_R
 export get_R_1d
 export get_R_1q
@@ -267,7 +264,6 @@ export get_Tf
 export get_Tf_1
 export get_Tf_2
 export get_Tf_load
-export get_Tfltr
 export get_Tg
 export get_Th
 export get_Tj
@@ -303,7 +299,7 @@ export get_Vdip_lim
 export get_Vf
 export get_Vi_lim
 export get_Vm_lim
-export get_Volim
+export get_Vo_lim
 export get_Vr_lim
 export get_Wf_nl
 export get_X_c
@@ -524,10 +520,9 @@ export set_H_ip!
 export set_H_lp!
 export set_I_lr!
 export set_I_max!
-export set_Iolim!
+export set_Io_lim!
 export set_Iqinj_lim!
-export set_Iqrmax!
-export set_Iqrmin!
+export set_Iqr_lims!
 export set_K!
 export set_K0!
 export set_K1!
@@ -541,6 +536,7 @@ export set_K8!
 export set_K_d!
 export set_K_ex!
 export set_K_hp!
+export set_K_hv!
 export set_K_i!
 export set_K_im!
 export set_K_ip!
@@ -568,7 +564,6 @@ export set_Ke!
 export set_Kf!
 export set_Kg!
 export set_Kh!
-export set_Khv!
 export set_Ki!
 export set_Ki_gov!
 export set_Ki_load!
@@ -594,10 +589,9 @@ export set_L_ff!
 export set_L_q!
 export set_Ld_ref!
 export set_Ls_lim!
+export set_Lv_pnts!
 export set_Lvpl1!
-export set_Lvplsw!
-export set_Lvpnt0!
-export set_Lvpnt1!
+export set_Lvpl_sw!
 export set_PF_Flag!
 export set_PQ_Flag!
 export set_PSS_flags!
@@ -606,7 +600,6 @@ export set_P_ref!
 export set_Q_Flag!
 export set_Q_lim!
 export set_Q_ref!
-export set_Qref!
 export set_R!
 export set_R_1d!
 export set_R_1q!
@@ -656,7 +649,6 @@ export set_Tf!
 export set_Tf_1!
 export set_Tf_2!
 export set_Tf_load!
-export set_Tfltr!
 export set_Tg!
 export set_Th!
 export set_Tj!
@@ -692,7 +684,7 @@ export set_Vdip_lim!
 export set_Vf!
 export set_Vi_lim!
 export set_Vm_lim!
-export set_Volim!
+export set_Vo_lim!
 export set_Vr_lim!
 export set_Wf_nl!
 export set_X_c!
