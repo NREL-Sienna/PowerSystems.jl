@@ -10822,16 +10822,6 @@
           "data_type": "Bus"
         },
         {
-          "name": "initial_active_power",
-          "null_value": "0.0",
-          "data_type": "Float64"
-        },
-        {
-          "name": "initial_reactive_power",
-          "null_value": "0.0",
-          "data_type": "Float64"
-        },
-        {
           "name": "R_th",
           "comment": "Source Thevenin resistance",
           "null_value": 0,
@@ -10898,11 +10888,18 @@
           "default":"[(0.0, 0.0)]"
         },
         {
-          "name": "services",
-          "data_type": "Vector{Service}",
-          "comment": "Services that this device contributes to",
-          "null_value": "Device[]",
-          "default": "Device[]"
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "State for time, voltage and angle",
+          "internal_default": "[:δt, :Vt, :θt]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "null_value": 3,
+          "internal_default": 3,
+          "data_type": "Int"
         },
         {
           "name": "ext",
@@ -10918,7 +10915,7 @@
           "exclude_setter": true
         }
       ],
-      "supertype": "StaticInjection"
+      "supertype": "DynamicInjection"
     }
   ],
   "struct_validation_descriptors": [

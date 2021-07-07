@@ -309,9 +309,7 @@ export get_fuel_flag
 export get_gate_position_limits
 export get_inflow
 export get_initial_ace
-export get_initial_active_power
 export get_initial_energy
-export get_initial_reactive_power
 export get_initial_storage
 export get_input_active_power_limits
 export get_input_code
@@ -649,9 +647,7 @@ export set_fuel_flag!
 export set_gate_position_limits!
 export set_inflow!
 export set_initial_ace!
-export set_initial_active_power!
 export set_initial_energy!
-export set_initial_reactive_power!
 export set_initial_storage!
 export set_input_active_power_limits!
 export set_input_code!
