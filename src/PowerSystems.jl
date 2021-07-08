@@ -165,8 +165,8 @@ export ReactivePowerDroop
 export ActivePowerDroop
 export ActivePowerPI
 export ReactivePowerPI
-export ActivePowerTypeAB
-export ReactivePowerTypeAB
+export ActiveRenewableTypeAB
+export ReactiveRenewableTypeAB
 
 # InnerControl Export
 export InnerControl
