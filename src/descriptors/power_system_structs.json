@@ -10721,6 +10721,28 @@
           }
         },
         {
+          "name": "dP_lim",
+          "comment": "Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "P_lim_inner",
+          "comment": "Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T_pord",
+          "comment": "Power filter time constant REECB time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "P_ref",
           "comment": "Reference Power Set-point",
           "null_value": 0,
@@ -10941,6 +10963,12 @@
           }
         },
         {
+          "name": "Q_lim",
+          "comment": "Upper/Lower limit on reactive power V/Q control in REPCA `(Q_min, Q_max)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
           "name": "T_p",
           "comment": "Active power lag time constant in REECB (s). Used only when PF_Flag = 1",
           "null_value": 0,
@@ -10951,8 +10979,8 @@
           }
         },
         {
-          "name": "Q_lim",
-          "comment": "Upper/Lower limit on reactive power input in REECB `(Q_min, Q_max)`. Only used when V_Flag = 1",
+          "name": "Q_lim_inner",
+          "comment": "Upper/Lower limit on reactive power input in REECB `(Q_min_inner, Q_max_inner)`. Only used when V_Flag = 1",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },

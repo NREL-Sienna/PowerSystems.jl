@@ -18,6 +18,9 @@ This file is auto-generated. Do not edit.
         T_g::Float64
         D_dn::Float64
         D_up::Float64
+        dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        P_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        T_pord::Float64
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
@@ -42,6 +45,9 @@ Parameters of Active Power Controller including REPCA1 and REECB1
 - `T_g::Float64`: Power Controller lag time constant, validation range: `(0, nothing)`
 - `D_dn::Float64`: Droop for over-frequency conditions, validation range: `(nothing, 0)`
 - `D_up::Float64`: Droop for under-frequency conditions, validation range: `(0, nothing)`
+- `dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`
+- `P_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`
+- `T_pord::Float64`: Power filter time constant REECB time constant, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the ActiveRenewableTypeAB model depends on the Flag
@@ -78,6 +84,12 @@ mutable struct ActiveRenewableTypeAB <: ActivePowerControl
     D_dn::Float64
     "Droop for under-frequency conditions"
     D_up::Float64
+    "Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`"
+    dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    "Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`"
+    P_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    "Power filter time constant REECB time constant"
+    T_pord::Float64
     "Reference Power Set-point"
     P_ref::Float64
     ext::Dict{String, Any}
@@ -87,12 +99,12 @@ mutable struct ActiveRenewableTypeAB <: ActivePowerControl
     n_states::Int
 end
 
-function ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, P_ref=1.0, ext=Dict{String, Any}(), )
-    ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, P_ref, ext, PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1], PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2], )
+function ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref=1.0, ext=Dict{String, Any}(), )
+    ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref, ext, PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1], PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2], )
 end
 
-function ActiveRenewableTypeAB(; bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, P_ref=1.0, ext=Dict{String, Any}(), states=PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1], n_states=PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2], )
-    ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, P_ref, ext, states, n_states, )
+function ActiveRenewableTypeAB(; bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref=1.0, ext=Dict{String, Any}(), states=PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1], n_states=PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2], )
+    ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -113,6 +125,9 @@ function ActiveRenewableTypeAB(::Nothing)
         T_g=0,
         D_dn=0,
         D_up=0,
+        dP_lim=(min=0.0, max=0.0),
+        P_lim_inner=(min=0.0, max=0.0),
+        T_pord=0,
         P_ref=0,
         ext=Dict{String, Any}(),
     )
@@ -148,6 +163,12 @@ get_T_g(value::ActiveRenewableTypeAB) = value.T_g
 get_D_dn(value::ActiveRenewableTypeAB) = value.D_dn
 """Get [`ActiveRenewableTypeAB`](@ref) `D_up`."""
 get_D_up(value::ActiveRenewableTypeAB) = value.D_up
+"""Get [`ActiveRenewableTypeAB`](@ref) `dP_lim`."""
+get_dP_lim(value::ActiveRenewableTypeAB) = value.dP_lim
+"""Get [`ActiveRenewableTypeAB`](@ref) `P_lim_inner`."""
+get_P_lim_inner(value::ActiveRenewableTypeAB) = value.P_lim_inner
+"""Get [`ActiveRenewableTypeAB`](@ref) `T_pord`."""
+get_T_pord(value::ActiveRenewableTypeAB) = value.T_pord
 """Get [`ActiveRenewableTypeAB`](@ref) `P_ref`."""
 get_P_ref(value::ActiveRenewableTypeAB) = value.P_ref
 """Get [`ActiveRenewableTypeAB`](@ref) `ext`."""
@@ -187,6 +208,12 @@ set_T_g!(value::ActiveRenewableTypeAB, val) = value.T_g = val
 set_D_dn!(value::ActiveRenewableTypeAB, val) = value.D_dn = val
 """Set [`ActiveRenewableTypeAB`](@ref) `D_up`."""
 set_D_up!(value::ActiveRenewableTypeAB, val) = value.D_up = val
+"""Set [`ActiveRenewableTypeAB`](@ref) `dP_lim`."""
+set_dP_lim!(value::ActiveRenewableTypeAB, val) = value.dP_lim = val
+"""Set [`ActiveRenewableTypeAB`](@ref) `P_lim_inner`."""
+set_P_lim_inner!(value::ActiveRenewableTypeAB, val) = value.P_lim_inner = val
+"""Set [`ActiveRenewableTypeAB`](@ref) `T_pord`."""
+set_T_pord!(value::ActiveRenewableTypeAB, val) = value.T_pord = val
 """Set [`ActiveRenewableTypeAB`](@ref) `P_ref`."""
 set_P_ref!(value::ActiveRenewableTypeAB, val) = value.P_ref = val
 """Set [`ActiveRenewableTypeAB`](@ref) `ext`."""

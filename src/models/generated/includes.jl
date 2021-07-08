@@ -211,9 +211,11 @@ export get_PF_Flag
 export get_PQ_Flag
 export get_PSS_flags
 export get_P_lim
+export get_P_lim_inner
 export get_P_ref
 export get_Q_Flag
 export get_Q_lim
+export get_Q_lim_inner
 export get_Q_ref
 export get_R
 export get_R_1d
@@ -245,6 +247,7 @@ export get_T_fv
 export get_T_g
 export get_T_iq
 export get_T_p
+export get_T_pord
 export get_T_rate
 export get_T_rv
 export get_Ta
@@ -338,6 +341,7 @@ export get_bustype
 export get_cf
 export get_contributing_services
 export get_conversion_factor
+export get_dP_lim
 export get_db
 export get_dbd1
 export get_dbd2
@@ -596,9 +600,11 @@ export set_PF_Flag!
 export set_PQ_Flag!
 export set_PSS_flags!
 export set_P_lim!
+export set_P_lim_inner!
 export set_P_ref!
 export set_Q_Flag!
 export set_Q_lim!
+export set_Q_lim_inner!
 export set_Q_ref!
 export set_R!
 export set_R_1d!
@@ -630,6 +636,7 @@ export set_T_fv!
 export set_T_g!
 export set_T_iq!
 export set_T_p!
+export set_T_pord!
 export set_T_rate!
 export set_T_rv!
 export set_Ta!
@@ -723,6 +730,7 @@ export set_bustype!
 export set_cf!
 export set_contributing_services!
 export set_conversion_factor!
+export set_dP_lim!
 export set_db!
 export set_dbd1!
 export set_dbd2!
