@@ -154,6 +154,7 @@ export get_K_ex
 export get_K_hp
 export get_K_hv
 export get_K_i
+export get_K_ig
 export get_K_im
 export get_K_ip
 export get_K_ir
@@ -161,7 +162,6 @@ export get_K_lp
 export get_K_lr
 export get_K_p
 export get_K_pg
-export get_K_pi
 export get_K_pm
 export get_K_pr
 export get_K_qi
@@ -544,6 +544,7 @@ export set_K_ex!
 export set_K_hp!
 export set_K_hv!
 export set_K_i!
+export set_K_ig!
 export set_K_im!
 export set_K_ip!
 export set_K_ir!
@@ -551,7 +552,6 @@ export set_K_lp!
 export set_K_lr!
 export set_K_p!
 export set_K_pg!
-export set_K_pi!
 export set_K_pm!
 export set_K_pr!
 export set_K_qi!

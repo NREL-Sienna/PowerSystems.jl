@@ -10639,7 +10639,7 @@
           }
         },
         {
-          "name": "K_pi",
+          "name": "K_ig",
           "comment": "Active power PI control integral gain",
           "null_value": 0,
           "data_type": "Float64",

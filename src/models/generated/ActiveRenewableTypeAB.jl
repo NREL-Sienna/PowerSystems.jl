@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         branch_id_control::String
         Freq_Flag::Int
         K_pg::Float64
-        K_pi::Float64
+        K_ig::Float64
         T_p::Float64
         fdbd1::Float64
         fdbd2::Float64
@@ -36,7 +36,7 @@ Parameters of Active Power Controller including REPCA1 and REECB1
 - `branch_id_control::String`: Branch circuit id for line drop compensation (as a string). If 0 generator power will be used
 - `Freq_Flag::Int`: Frequency Flag for REPCA1: 0: disable, 1:enable, validation range: `(0, 1)`
 - `K_pg::Float64`: Active power PI control proportional gain, validation range: `(0, nothing)`
-- `K_pi::Float64`: Active power PI control integral gain, validation range: `(0, nothing)`
+- `K_ig::Float64`: Active power PI control integral gain, validation range: `(0, nothing)`
 - `T_p::Float64`: Real power measurement filter time constant (s), validation range: `(0, nothing)`
 - `fdbd1::Float64`: Frequency error dead band lower threshold, validation range: `(nothing, 0)`
 - `fdbd2::Float64`: Frequency error dead band upper threshold, validation range: `(0, nothing)`
@@ -67,7 +67,7 @@ mutable struct ActiveRenewableTypeAB <: ActivePowerControl
     "Active power PI control proportional gain"
     K_pg::Float64
     "Active power PI control integral gain"
-    K_pi::Float64
+    K_ig::Float64
     "Real power measurement filter time constant (s)"
     T_p::Float64
     "Frequency error dead band lower threshold"
@@ -99,12 +99,12 @@ mutable struct ActiveRenewableTypeAB <: ActivePowerControl
     n_states::Int
 end
 
-function ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref=1.0, ext=Dict{String, Any}(), )
-    ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref, ext, PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1], PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2], )
+function ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_ig, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref=1.0, ext=Dict{String, Any}(), )
+    ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_ig, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref, ext, PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1], PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2], )
 end
 
-function ActiveRenewableTypeAB(; bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref=1.0, ext=Dict{String, Any}(), states=PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1], n_states=PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2], )
-    ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_pi, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref, ext, states, n_states, )
+function ActiveRenewableTypeAB(; bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_ig, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref=1.0, ext=Dict{String, Any}(), states=PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1], n_states=PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2], )
+    ActiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, Freq_Flag, K_pg, K_ig, T_p, fdbd1, fdbd2, fe_lim, P_lim, T_g, D_dn, D_up, dP_lim, P_lim_inner, T_pord, P_ref, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -116,7 +116,7 @@ function ActiveRenewableTypeAB(::Nothing)
         branch_id_control="0",
         Freq_Flag=0,
         K_pg=0,
-        K_pi=0,
+        K_ig=0,
         T_p=0,
         fdbd1=0,
         fdbd2=0,
@@ -145,8 +145,8 @@ get_branch_id_control(value::ActiveRenewableTypeAB) = value.branch_id_control
 get_Freq_Flag(value::ActiveRenewableTypeAB) = value.Freq_Flag
 """Get [`ActiveRenewableTypeAB`](@ref) `K_pg`."""
 get_K_pg(value::ActiveRenewableTypeAB) = value.K_pg
-"""Get [`ActiveRenewableTypeAB`](@ref) `K_pi`."""
-get_K_pi(value::ActiveRenewableTypeAB) = value.K_pi
+"""Get [`ActiveRenewableTypeAB`](@ref) `K_ig`."""
+get_K_ig(value::ActiveRenewableTypeAB) = value.K_ig
 """Get [`ActiveRenewableTypeAB`](@ref) `T_p`."""
 get_T_p(value::ActiveRenewableTypeAB) = value.T_p
 """Get [`ActiveRenewableTypeAB`](@ref) `fdbd1`."""
@@ -190,8 +190,8 @@ set_branch_id_control!(value::ActiveRenewableTypeAB, val) = value.branch_id_cont
 set_Freq_Flag!(value::ActiveRenewableTypeAB, val) = value.Freq_Flag = val
 """Set [`ActiveRenewableTypeAB`](@ref) `K_pg`."""
 set_K_pg!(value::ActiveRenewableTypeAB, val) = value.K_pg = val
-"""Set [`ActiveRenewableTypeAB`](@ref) `K_pi`."""
-set_K_pi!(value::ActiveRenewableTypeAB, val) = value.K_pi = val
+"""Set [`ActiveRenewableTypeAB`](@ref) `K_ig`."""
+set_K_ig!(value::ActiveRenewableTypeAB, val) = value.K_ig = val
 """Set [`ActiveRenewableTypeAB`](@ref) `T_p`."""
 set_T_p!(value::ActiveRenewableTypeAB, val) = value.T_p = val
 """Set [`ActiveRenewableTypeAB`](@ref) `fdbd1`."""
