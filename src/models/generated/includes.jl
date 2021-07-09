@@ -148,6 +148,7 @@ export get_K5
 export get_K6
 export get_K7
 export get_K8
+export get_K_c
 export get_K_d
 export get_K_ex
 export get_K_hp
@@ -537,6 +538,7 @@ export set_K5!
 export set_K6!
 export set_K7!
 export set_K8!
+export set_K_c!
 export set_K_d!
 export set_K_ex!
 export set_K_hp!

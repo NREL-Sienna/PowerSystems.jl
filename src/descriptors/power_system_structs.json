@@ -10937,6 +10937,16 @@
           }
         },
         {
+          "name": "K_c",
+          "comment": "Reactive current compensation gain (pu) (used when VC_Flag = 0)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "e_lim",
           "comment": "Upper/Lower limit on Voltage or Q-power deadband output `(e_min, e_max)`",
           "null_value": "(min=0.0, max=0.0)",

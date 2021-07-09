@@ -19,6 +19,7 @@ This file is auto-generated. Do not edit.
         V_frz::Float64
         R_c::Float64
         X_c::Float64
+        K_c::Float64
         e_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         dbd1::Float64
         dbd2::Float64
@@ -53,6 +54,7 @@ Parameters of Reactive Power Controller including REPCA1 and REECB1
 - `V_frz::Float64`: Voltage below which state ξq_oc (integrator state) is freeze, validation range: `(0, nothing)`
 - `R_c::Float64`: Line drop compensation resistance (used when VC_Flag = 1), validation range: `(0, nothing)`
 - `X_c::Float64`: Line drop compensation reactance (used when VC_Flag = 1), validation range: `(0, nothing)`
+- `K_c::Float64`: Reactive current compensation gain (pu) (used when VC_Flag = 0), validation range: `(0, nothing)`
 - `e_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on Voltage or Q-power deadband output `(e_min, e_max)`
 - `dbd1::Float64`: Voltage or Q-power error dead band lower threshold, validation range: `(nothing, 0)`
 - `dbd2::Float64`: Voltage or Q-power dead band upper threshold, validation range: `(0, nothing)`
@@ -100,6 +102,8 @@ mutable struct ReactiveRenewableTypeAB <: ReactivePowerControl
     R_c::Float64
     "Line drop compensation reactance (used when VC_Flag = 1)"
     X_c::Float64
+    "Reactive current compensation gain (pu) (used when VC_Flag = 0)"
+    K_c::Float64
     "Upper/Lower limit on Voltage or Q-power deadband output `(e_min, e_max)`"
     e_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Voltage or Q-power error dead band lower threshold"
@@ -127,12 +131,12 @@ mutable struct ReactiveRenewableTypeAB <: ReactivePowerControl
     n_states::Int
 end
 
-function ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref=1.0, ext=Dict{String, Any}(), )
-    ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref, ext, PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1], PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2], )
+function ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref=1.0, ext=Dict{String, Any}(), )
+    ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref, ext, PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1], PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2], )
 end
 
-function ReactiveRenewableTypeAB(; bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref=1.0, ext=Dict{String, Any}(), states=PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1], n_states=PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2], )
-    ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref, ext, states, n_states, )
+function ReactiveRenewableTypeAB(; bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref=1.0, ext=Dict{String, Any}(), states=PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1], n_states=PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2], )
+    ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -154,6 +158,7 @@ function ReactiveRenewableTypeAB(::Nothing)
         V_frz=0,
         R_c=0,
         X_c=0,
+        K_c=0,
         e_lim=(min=0.0, max=0.0),
         dbd1=0,
         dbd2=0,
@@ -200,6 +205,8 @@ get_V_frz(value::ReactiveRenewableTypeAB) = value.V_frz
 get_R_c(value::ReactiveRenewableTypeAB) = value.R_c
 """Get [`ReactiveRenewableTypeAB`](@ref) `X_c`."""
 get_X_c(value::ReactiveRenewableTypeAB) = value.X_c
+"""Get [`ReactiveRenewableTypeAB`](@ref) `K_c`."""
+get_K_c(value::ReactiveRenewableTypeAB) = value.K_c
 """Get [`ReactiveRenewableTypeAB`](@ref) `e_lim`."""
 get_e_lim(value::ReactiveRenewableTypeAB) = value.e_lim
 """Get [`ReactiveRenewableTypeAB`](@ref) `dbd1`."""
@@ -259,6 +266,8 @@ set_V_frz!(value::ReactiveRenewableTypeAB, val) = value.V_frz = val
 set_R_c!(value::ReactiveRenewableTypeAB, val) = value.R_c = val
 """Set [`ReactiveRenewableTypeAB`](@ref) `X_c`."""
 set_X_c!(value::ReactiveRenewableTypeAB, val) = value.X_c = val
+"""Set [`ReactiveRenewableTypeAB`](@ref) `K_c`."""
+set_K_c!(value::ReactiveRenewableTypeAB, val) = value.K_c = val
 """Set [`ReactiveRenewableTypeAB`](@ref) `e_lim`."""
 set_e_lim!(value::ReactiveRenewableTypeAB, val) = value.e_lim = val
 """Set [`ReactiveRenewableTypeAB`](@ref) `dbd1`."""
