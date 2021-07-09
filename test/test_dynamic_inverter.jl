@@ -2,21 +2,19 @@
     converter = AverageConverter(690.0, 2750000.0) #S_rated goes in Watts
     @test converter isa PowerSystems.DynamicComponent
     converter_regca1 = REGCA1(
-        0.02,
-        10.0,
-        0.9,
-        0.4,
-        1.22,
-        1.2,
-        0.9,
-        0.5,
-        -1.3,
-        0.2,
-        0.0,
-        100.0,
-        -100.0,
-        0.7,
-        1,
+        T_g = 0.02,
+        Rrpwr = 10.0,
+        Brkpt = 0.9,
+        Zerox = 0.4,
+        Lvpl1 = 1.22,
+        Vo_lim = 1.2,
+        Lv_pnts = (0.5, 0.9),
+        Io_lim = -1.3,
+        T_fltr = 0.2,
+        K_hv = 0.0,
+        Iqr_lims = (-100.0, 100.0),
+        Accel = 0.7,
+        Lvpl_sw = 1,
     )
     @test converter_regca1 isa PowerSystems.DynamicComponent
     dc_source = FixedDCSource(600.0) #Not in the original data, guessed.
