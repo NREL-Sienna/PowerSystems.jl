@@ -11033,7 +11033,7 @@
         },
         {
           "name": "V_ref",
-          "comment": "Reference Power Set-point",
+          "comment": "Reference Voltage Set-point",
           "null_value": 0,
           "default": "1.0",
           "data_type": "Float64",
