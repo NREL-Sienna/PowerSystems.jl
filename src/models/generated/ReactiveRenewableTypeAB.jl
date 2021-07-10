@@ -30,6 +30,7 @@ This file is auto-generated. Do not edit.
         K_qp::Float64
         K_qi::Float64
         Q_ref::Float64
+        V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
@@ -65,6 +66,7 @@ Parameters of Reactive Power Controller including REPCA1 and REECB1
 - `K_qp::Float64`: Reactive power regulator proportional gain (used when V_Flag = 1), validation range: `(0, nothing)`
 - `K_qi::Float64`: Reactive power regulator integral gain (used when V_Flag = 1), validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the ReactiveRenewableTypeAB model depends on the Flag
 - `n_states::Int`: The states of the ReactiveRenewableTypeAB model depends on the Flag
@@ -124,6 +126,8 @@ mutable struct ReactiveRenewableTypeAB <: ReactivePowerControl
     K_qi::Float64
     "Reference Power Set-point"
     Q_ref::Float64
+    "Reference Power Set-point"
+    V_ref::Float64
     ext::Dict{String, Any}
     "The states of the ReactiveRenewableTypeAB model depends on the Flag"
     states::Vector{Symbol}
@@ -131,12 +135,12 @@ mutable struct ReactiveRenewableTypeAB <: ReactivePowerControl
     n_states::Int
 end
 
-function ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref=1.0, ext=Dict{String, Any}(), )
-    ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref, ext, PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1], PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2], )
+function ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref=1.0, V_ref=1.0, ext=Dict{String, Any}(), )
+    ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref, V_ref, ext, PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1], PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2], )
 end
 
-function ReactiveRenewableTypeAB(; bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref=1.0, ext=Dict{String, Any}(), states=PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1], n_states=PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2], )
-    ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref, ext, states, n_states, )
+function ReactiveRenewableTypeAB(; bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref=1.0, V_ref=1.0, ext=Dict{String, Any}(), states=PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1], n_states=PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2], )
+    ReactiveRenewableTypeAB(bus_control, from_branch_control, to_branch_control, branch_id_control, VC_Flag, Ref_Flag, PF_Flag, V_Flag, T_fltr, K_p, K_i, T_ft, T_fv, V_frz, R_c, X_c, K_c, e_lim, dbd1, dbd2, Q_lim, T_p, Q_lim_inner, V_lim, K_qp, K_qi, Q_ref, V_ref, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -169,6 +173,7 @@ function ReactiveRenewableTypeAB(::Nothing)
         K_qp=0,
         K_qi=0,
         Q_ref=0,
+        V_ref=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -227,6 +232,8 @@ get_K_qp(value::ReactiveRenewableTypeAB) = value.K_qp
 get_K_qi(value::ReactiveRenewableTypeAB) = value.K_qi
 """Get [`ReactiveRenewableTypeAB`](@ref) `Q_ref`."""
 get_Q_ref(value::ReactiveRenewableTypeAB) = value.Q_ref
+"""Get [`ReactiveRenewableTypeAB`](@ref) `V_ref`."""
+get_V_ref(value::ReactiveRenewableTypeAB) = value.V_ref
 """Get [`ReactiveRenewableTypeAB`](@ref) `ext`."""
 get_ext(value::ReactiveRenewableTypeAB) = value.ext
 """Get [`ReactiveRenewableTypeAB`](@ref) `states`."""
@@ -288,6 +295,8 @@ set_K_qp!(value::ReactiveRenewableTypeAB, val) = value.K_qp = val
 set_K_qi!(value::ReactiveRenewableTypeAB, val) = value.K_qi = val
 """Set [`ReactiveRenewableTypeAB`](@ref) `Q_ref`."""
 set_Q_ref!(value::ReactiveRenewableTypeAB, val) = value.Q_ref = val
+"""Set [`ReactiveRenewableTypeAB`](@ref) `V_ref`."""
+set_V_ref!(value::ReactiveRenewableTypeAB, val) = value.V_ref = val
 """Set [`ReactiveRenewableTypeAB`](@ref) `ext`."""
 set_ext!(value::ReactiveRenewableTypeAB, val) = value.ext = val
 
