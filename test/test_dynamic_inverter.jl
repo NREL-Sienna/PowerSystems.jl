@@ -95,7 +95,7 @@ end
     )
     @test inner_ctrl_typeB isa PowerSystems.DynamicComponent
     # Creates 2^5 = 32 combinations of flags for an outer control
-    for (F_flag, VC_flag, R_flag, PF_flag, V_flag) = 
+    for (F_flag, VC_flag, R_flag, PF_flag, V_flag) in
         reverse.(Iterators.product(fill(0:1, 5)...))[:]
         P_control_typeAB = ActiveRenewableTypeAB(
             bus_control = 0,
