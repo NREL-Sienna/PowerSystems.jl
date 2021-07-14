@@ -1,22 +1,6 @@
 @testset "Inverter Components" begin
     converter = AverageConverter(690.0, 2750000.0) #S_rated goes in Watts
     @test converter isa PowerSystems.DynamicComponent
-    converter_regca1 = REGCA1(
-        T_g = 0.02,
-        Rrpwr = 10.0,
-        Brkpt = 0.9,
-        Zerox = 0.4,
-        Lvpl1 = 1.22,
-        Vo_lim = 1.2,
-        Lv_pnts = (0.5, 0.9),
-        Io_lim = -1.3,
-        T_fltr = 0.2,
-        K_hv = 0.0,
-        Iqr_lims = (-100.0, 100.0),
-        Accel = 0.7,
-        Lvpl_sw = 1,
-    )
-    @test converter_regca1 isa PowerSystems.DynamicComponent
     dc_source = FixedDCSource(600.0) #Not in the original data, guessed.
     @test dc_source isa PowerSystems.DynamicComponent
     filter = LCLFilter(0.08, 0.003, 0.074, 0.2, 0.01)
@@ -73,4 +57,98 @@ end
     test_inverter = inverters[1]
     @test test_inverter isa PowerSystems.Component
     test_accessors(test_inverter)
+end
+
+@testset "Generic Renewable Models" begin
+    converter_regca1 = REGCA1(
+        T_g = 0.02,
+        Rrpwr = 10.0,
+        Brkpt = 0.9,
+        Zerox = 0.4,
+        Lvpl1 = 1.22,
+        Vo_lim = 1.2,
+        Lv_pnts = (0.5, 0.9),
+        Io_lim = -1.3,
+        T_fltr = 0.2,
+        K_hv = 0.0,
+        Iqr_lims = (-100.0, 100.0),
+        Accel = 0.7,
+        Lvpl_sw = 0,
+    )
+    @test converter_regca1 isa PowerSystems.DynamicComponent
+    filt_current = DirectInjection()
+    @test filt_current isa PowerSystems.DynamicComponent
+    inner_ctrl_typeB = InnerREECB(
+        Q_Flag = 0,
+        PQ_Flag = 0,
+        Vdip_lim = (-99.0, 99.0),
+        T_rv = 0.02,
+        dbd1 = -1.0,
+        dbd2 = 1.0,
+        K_qv = 0.0,
+        Iqinj_lim = (-1.1, 1.1),
+        V_ref0 = 0.0,
+        K_vp = 10.0,
+        K_vi = 60.0,
+        T_iq = 0.02,
+        I_max = 1.11,
+    )
+    @test inner_ctrl_typeB isa PowerSystems.DynamicComponent
+    # Creates 2^5 = 32 combinations of flags for an outer control
+    for (F_flag, VC_flag, R_flag, PF_flag, V_flag) = 
+        reverse.(Iterators.product(fill(0:1, 5)...))[:]
+        P_control_typeAB = ActiveRenewableTypeAB(
+            bus_control = 0,
+            from_branch_control = 0,
+            to_branch_control = 0,
+            branch_id_control = "0",
+            Freq_Flag = F_flag,
+            K_pg = 1.0,
+            K_ig = 0.05,
+            T_p = 0.25,
+            fdbd1 = -1.0,
+            fdbd2 = 1.0,
+            fe_lim = (-99.0, 99.0),
+            P_lim = (0.0, 1.2),
+            T_g = 0.1,
+            D_dn = 0.0,
+            D_up = 0.0,
+            dP_lim = (-99.0, 99.0),
+            P_lim_inner = (0.0, 1.2),
+            T_pord = 0.02,
+        )
+        Q_control_typeAB = ReactiveRenewableTypeAB(
+            bus_control = 0,
+            from_branch_control = 0,
+            to_branch_control = 0,
+            branch_id_control = "0",
+            VC_Flag = VC_flag,
+            Ref_Flag = R_flag,
+            PF_Flag = PF_flag,
+            V_Flag = V_flag,
+            T_fltr = 0.02,
+            K_p = 18.0,
+            K_i = 5.0,
+            T_ft = 0.0,
+            T_fv = 0.05,
+            V_frz = 0.0,
+            R_c = 0.0,
+            X_c = 0.0,
+            K_c = 0.0,
+            e_lim = (-0.1, 0.1),
+            dbd1 = -1.0,
+            dbd2 = 1.0,
+            Q_lim = (-0.43, 0.43),
+            T_p = 0.0,
+            Q_lim_inner = (-0.44, 0.44),
+            V_lim = (0.9, 1.05),
+            K_qp = 0.0,
+            K_qi = 0.01,
+        )
+        @test P_control_typeAB isa PowerSystems.DeviceParameter
+        @test Q_control_typeAB isa PowerSystems.DeviceParameter
+        outer_control_typeAB = OuterControl(P_control_typeAB, Q_control_typeAB)
+        @test outer_control_typeAB isa PowerSystems.DynamicComponent
+        test_accessors(outer_control_typeAB)
+    end
 end
