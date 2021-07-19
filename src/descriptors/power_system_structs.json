@@ -9861,6 +9861,28 @@
           }
         },
         {
+          "name": "R_source",
+          "comment": "Output resistor used for the Thevenin Equivalent",
+          "null_value": 0,
+          "default": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "X_source",
+          "comment": "Output resistor used for the Thevenin Equivalent",
+          "null_value": 0,
+          "default": "1.0e5",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
@@ -10210,9 +10232,29 @@
       "supertype": "Filter"
     },
     {
-      "struct_name": "DirectInjection",
-      "docstring": "Parameters of a Direct Injection Filter",
+      "struct_name": "RLFilter",
+      "docstring": "Parameters of RL series filter in algebraic representation",
       "fields": [
+        {
+          "name": "rf",
+          "comment": "Series resistance in p.u. of converter filter to the grid",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "lg",
+          "comment": "Series inductance in p.u. of converter filter to the grid",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
         {
           "name": "ext",
           "data_type": "Dict{String, Any}",
@@ -10222,14 +10264,14 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "DirectInjection has zero states",
+          "comment": "RLFilter has zero states",
           "internal_default": "Vector{Symbol}()",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "DirectInjection has zero states",
+          "comment": "RLFilter has zero states",
           "internal_default": 0,
           "data_type": "Int"
         }
@@ -10659,24 +10701,10 @@
           }
         },
         {
-          "name": "fdbd1",
-          "comment": "Frequency error dead band lower threshold",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": null,
-            "max": 0
-          }
-        },
-        {
-          "name": "fdbd2",
-          "comment": "Frequency error dead band upper threshold",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "fdbd_pnts",
+          "comment": "Frequency error dead band thresholds `(fdbd1, fdbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
         },
         {
           "name": "fe_lim",
@@ -10953,24 +10981,10 @@
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
-          "name": "dbd1",
-          "comment": "Voltage or Q-power error dead band lower threshold",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": null,
-            "max": 0
-          }
-        },
-        {
-          "name": "dbd2",
-          "comment": "Voltage or Q-power dead band upper threshold",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "dbd_pnts",
+          "comment": "Voltage or Q-power error dead band thresholds `(dbd1, dbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
         },
         {
           "name": "Q_lim",
@@ -11427,24 +11441,10 @@
           }
         },
         {
-          "name": "dbd1",
-          "comment": "Voltage error dead band lower threshold",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": null,
-            "max": 0
-          }
-        },
-        {
-          "name": "dbd2",
-          "comment": "Voltage error dead band upper threshold",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "dbd_pnts",
+          "comment": "Voltage error deadband thresholds `(dbd1, dbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
         },
         {
           "name": "K_qv",
