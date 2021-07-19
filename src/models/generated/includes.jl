@@ -80,7 +80,7 @@ include("FixedDCSource.jl")
 include("ZeroOrderBESS.jl")
 include("LCLFilter.jl")
 include("LCFilter.jl")
-include("DirectInjection.jl")
+include("RLFilter.jl")
 include("KauraPLL.jl")
 include("ReducedOrderPLL.jl")
 include("FixedFrequency.jl")
@@ -226,6 +226,7 @@ export get_R_close
 export get_R_f
 export get_R_lim
 export get_R_open
+export get_R_source
 export get_R_th
 export get_Ref_Flag
 export get_Rp
@@ -307,6 +308,7 @@ export get_Vo_lim
 export get_Vr_lim
 export get_Wf_nl
 export get_X_c
+export get_X_source
 export get_X_th
 export get_Xd
 export get_Xd_p
@@ -344,8 +346,7 @@ export get_contributing_services
 export get_conversion_factor
 export get_dP_lim
 export get_db
-export get_dbd1
-export get_dbd2
+export get_dbd_pnts
 export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_delta_t
@@ -356,8 +357,7 @@ export get_energy_shortage_cost
 export get_energy_surplus_cost
 export get_eq_p
 export get_ext
-export get_fdbd1
-export get_fdbd2
+export get_fdbd_pnts
 export get_fe_lim
 export get_fixed
 export get_flow_limits
@@ -616,6 +616,7 @@ export set_R_close!
 export set_R_f!
 export set_R_lim!
 export set_R_open!
+export set_R_source!
 export set_R_th!
 export set_Ref_Flag!
 export set_Rp!
@@ -697,6 +698,7 @@ export set_Vo_lim!
 export set_Vr_lim!
 export set_Wf_nl!
 export set_X_c!
+export set_X_source!
 export set_X_th!
 export set_Xd!
 export set_Xd_p!
@@ -734,8 +736,7 @@ export set_contributing_services!
 export set_conversion_factor!
 export set_dP_lim!
 export set_db!
-export set_dbd1!
-export set_dbd2!
+export set_dbd_pnts!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
 export set_delta_t!
@@ -746,8 +747,7 @@ export set_energy_shortage_cost!
 export set_energy_surplus_cost!
 export set_eq_p!
 export set_ext!
-export set_fdbd1!
-export set_fdbd2!
+export set_fdbd_pnts!
 export set_fe_lim!
 export set_fixed!
 export set_flow_limits!
