@@ -97,7 +97,6 @@ for (section, folder) in folders
                           credit = false,
                           documenter = true,
                           postprocess = insert_md,
-                          codefence = "```@example"=>"```",
                           execute = execute)
         subsection = titlecase(replace(split(file, ".")[1], "_" => " "))
         push!(pages[section], ("$subsection" =>  joinpath("$section_folder_name", "$(outputfile).md")))

@@ -34,8 +34,12 @@ system_data = System(joinpath(DATA_DIR, "matpower/case14.m"))
 # 2. Solves the power flow and updated the devices in the system to the operating condition.
 #    This model will update the values of magnitudes and angles in the system's buses. It
 #    also updates the active and reactive power flows in the branches and devices connected
-#    to PV buses. This utility is useful to initialize systems before serializing or checking
-#    the addition of new devices is still AC feasible.
+#    to PV buses. It also updates the active and reactive power of the injection devices
+#    connected to the Slack bus, and updates only the reactive power of the injection devices
+#    connected to PV buses. If multiple devices are connected to the same bus, the power is 
+#    divided proportional to the base power.
+#    This utility is useful to initialize systems before serializing or checking the
+#    addition of new devices is still AC feasible.
 
 # Solving the power  flow with mode 1:
 
