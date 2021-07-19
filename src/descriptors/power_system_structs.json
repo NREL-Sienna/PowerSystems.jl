@@ -10246,7 +10246,7 @@
           }
         },
         {
-          "name": "lg",
+          "name": "lf",
           "comment": "Series inductance in p.u. of converter filter to the grid",
           "null_value": 0,
           "data_type": "Float64",
