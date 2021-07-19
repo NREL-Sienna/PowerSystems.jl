@@ -11,7 +11,6 @@
     @test get_components(PeriodicVariableSource, sys) !== nothing
 end
 
-
 @testset "Test Dynamic Source" begin
     sys = System(100)
     bus = Bus(nothing)
@@ -27,7 +26,7 @@ end
     temp_dir = mktempdir()
     orig_dir = mktempdir()
     cd(temp_dir)
-    to_json(sys,"test.json")
+    to_json(sys, "test.json")
     sys2 = System("test.json")
     serialized_pvs = collect(get_components(PeriodicVariableSource, sys2))
     @test get_name(retrieved_pvs[1]) == get_name(serialized_pvs[1])
