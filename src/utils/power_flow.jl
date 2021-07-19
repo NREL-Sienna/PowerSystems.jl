@@ -142,19 +142,20 @@ function _write_pf_sol!(sys::System, nl_result)
             Q_gen = result[2 * ix]
             injection = get_components(StaticInjection, sys, x -> get_available(x))
             devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
-            generator = devices[1]
-            gen_basepower = get_base_power(generator)
-            set_active_power!(generator, P_gen)
-            set_reactive_power!(generator, Q_gen)
+            sum_basepower = sum(get_base_power.(devices))
+            for d in devices
+                part_factor = get_base_power(d) / sum_basepower
+                set_active_power!(d, P_gen * part_factor)
+                set_reactive_power!(d, Q_gen * part_factor)
+            end
         elseif bus.bustype == BusTypes.PV
             Q_gen = result[2 * ix - 1]
             θ = result[2 * ix]
-            injection_components = get_components(Generator, sys, x -> get_available(x))
-            devices = [d for d in injection_components if d.bus == bus]
-            if length(devices) == 1
-                generator = devices[1]
-                gen_basepower = get_base_power(generator)
-                set_reactive_power!(generator, Q_gen)
+            injection = get_components(StaticInjection, sys, x -> get_available(x))
+            devices = [d for d in injection if d.bus == bus && !isa(d, ElectricLoad)]
+            sum_basepower = sum(get_base_power.(devices))
+            for d in devices
+                set_reactive_power!(d, Q_gen * get_base_power(d) / sum_basepower)
             end
             bus.angle = θ
         elseif bus.bustype == BusTypes.PQ
