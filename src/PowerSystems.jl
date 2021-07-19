@@ -150,7 +150,7 @@ export ZeroOrderBESS
 export Filter
 export LCLFilter
 export LCFilter
-export DirectInjection
+export RLFilter
 
 # FrequencyEstimator Exports
 export FrequencyEstimator
