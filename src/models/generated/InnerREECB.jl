@@ -7,8 +7,7 @@ This file is auto-generated. Do not edit.
         PQ_Flag::Int
         Vdip_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         T_rv::Float64
-        dbd1::Float64
-        dbd2::Float64
+        dbd_pnts::Tuple{Float64, Float64}
         K_qv::Float64
         Iqinj_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         V_ref0::Float64
@@ -28,8 +27,7 @@ Parameters of the Inner Control part of the REECB model
 - `PQ_Flag::Int`: PQ Flag used for the Current Limit Logic, validation range: `(0, 1)`
 - `Vdip_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for Voltage Dip Logic `(Vdip, Vup)`
 - `T_rv::Float64`: Voltage Filter Time Constant, validation range: `(0, nothing)`
-- `dbd1::Float64`: Voltage error dead band lower threshold, validation range: `(nothing, 0)`
-- `dbd2::Float64`: Voltage error dead band upper threshold, validation range: `(0, nothing)`
+- `dbd_pnts::Tuple{Float64, Float64}`: Voltage error deadband thresholds `(dbd1, dbd2)`
 - `K_qv::Float64`: Reactive current injection gain during over and undervoltage conditions, validation range: `(0, nothing)`
 - `Iqinj_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for Iqinj `(I_qh1, I_ql1)`
 - `V_ref0::Float64`: User defined reference. If 0, PSID initializes to initial terminal voltage, validation range: `(0, nothing)`
@@ -50,10 +48,8 @@ mutable struct InnerREECB <: InnerControl
     Vdip_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
     "Voltage Filter Time Constant"
     T_rv::Float64
-    "Voltage error dead band lower threshold"
-    dbd1::Float64
-    "Voltage error dead band upper threshold"
-    dbd2::Float64
+    "Voltage error deadband thresholds `(dbd1, dbd2)`"
+    dbd_pnts::Tuple{Float64, Float64}
     "Reactive current injection gain during over and undervoltage conditions"
     K_qv::Float64
     "Limits for Iqinj `(I_qh1, I_ql1)`"
@@ -75,12 +71,12 @@ mutable struct InnerREECB <: InnerControl
     n_states::Int
 end
 
-function InnerREECB(Q_Flag, PQ_Flag, Vdip_lim, T_rv, dbd1, dbd2, K_qv, Iqinj_lim, V_ref0, K_vp, K_vi, T_iq, I_max, ext=Dict{String, Any}(), )
-    InnerREECB(Q_Flag, PQ_Flag, Vdip_lim, T_rv, dbd1, dbd2, K_qv, Iqinj_lim, V_ref0, K_vp, K_vi, T_iq, I_max, ext, PowerSystems.get_innerREECB_states(Q_Flag), 2, )
+function InnerREECB(Q_Flag, PQ_Flag, Vdip_lim, T_rv, dbd_pnts, K_qv, Iqinj_lim, V_ref0, K_vp, K_vi, T_iq, I_max, ext=Dict{String, Any}(), )
+    InnerREECB(Q_Flag, PQ_Flag, Vdip_lim, T_rv, dbd_pnts, K_qv, Iqinj_lim, V_ref0, K_vp, K_vi, T_iq, I_max, ext, PowerSystems.get_innerREECB_states(Q_Flag), 2, )
 end
 
-function InnerREECB(; Q_Flag, PQ_Flag, Vdip_lim, T_rv, dbd1, dbd2, K_qv, Iqinj_lim, V_ref0, K_vp, K_vi, T_iq, I_max, ext=Dict{String, Any}(), states=PowerSystems.get_innerREECB_states(Q_Flag), n_states=2, )
-    InnerREECB(Q_Flag, PQ_Flag, Vdip_lim, T_rv, dbd1, dbd2, K_qv, Iqinj_lim, V_ref0, K_vp, K_vi, T_iq, I_max, ext, states, n_states, )
+function InnerREECB(; Q_Flag, PQ_Flag, Vdip_lim, T_rv, dbd_pnts, K_qv, Iqinj_lim, V_ref0, K_vp, K_vi, T_iq, I_max, ext=Dict{String, Any}(), states=PowerSystems.get_innerREECB_states(Q_Flag), n_states=2, )
+    InnerREECB(Q_Flag, PQ_Flag, Vdip_lim, T_rv, dbd_pnts, K_qv, Iqinj_lim, V_ref0, K_vp, K_vi, T_iq, I_max, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -90,8 +86,7 @@ function InnerREECB(::Nothing)
         PQ_Flag=0,
         Vdip_lim=(min=0.0, max=0.0),
         T_rv=0,
-        dbd1=0,
-        dbd2=0,
+        dbd_pnts=(0.0, 0.0),
         K_qv=0,
         Iqinj_lim=(min=0.0, max=0.0),
         V_ref0=0,
@@ -111,10 +106,8 @@ get_PQ_Flag(value::InnerREECB) = value.PQ_Flag
 get_Vdip_lim(value::InnerREECB) = value.Vdip_lim
 """Get [`InnerREECB`](@ref) `T_rv`."""
 get_T_rv(value::InnerREECB) = value.T_rv
-"""Get [`InnerREECB`](@ref) `dbd1`."""
-get_dbd1(value::InnerREECB) = value.dbd1
-"""Get [`InnerREECB`](@ref) `dbd2`."""
-get_dbd2(value::InnerREECB) = value.dbd2
+"""Get [`InnerREECB`](@ref) `dbd_pnts`."""
+get_dbd_pnts(value::InnerREECB) = value.dbd_pnts
 """Get [`InnerREECB`](@ref) `K_qv`."""
 get_K_qv(value::InnerREECB) = value.K_qv
 """Get [`InnerREECB`](@ref) `Iqinj_lim`."""
@@ -144,10 +137,8 @@ set_PQ_Flag!(value::InnerREECB, val) = value.PQ_Flag = val
 set_Vdip_lim!(value::InnerREECB, val) = value.Vdip_lim = val
 """Set [`InnerREECB`](@ref) `T_rv`."""
 set_T_rv!(value::InnerREECB, val) = value.T_rv = val
-"""Set [`InnerREECB`](@ref) `dbd1`."""
-set_dbd1!(value::InnerREECB, val) = value.dbd1 = val
-"""Set [`InnerREECB`](@ref) `dbd2`."""
-set_dbd2!(value::InnerREECB, val) = value.dbd2 = val
+"""Set [`InnerREECB`](@ref) `dbd_pnts`."""
+set_dbd_pnts!(value::InnerREECB, val) = value.dbd_pnts = val
 """Set [`InnerREECB`](@ref) `K_qv`."""
 set_K_qv!(value::InnerREECB, val) = value.K_qv = val
 """Set [`InnerREECB`](@ref) `Iqinj_lim`."""
