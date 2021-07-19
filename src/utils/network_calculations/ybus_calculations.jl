@@ -331,10 +331,10 @@ function find_connected_components(M, bus_lookup::Dict{Int64, Int64})
     pm_buses = Dict([i => Dict("bus_type" => 1, "bus_i" => b) for (i, b) in bus_lookup])
 
     arcs = findall((LinearAlgebra.UpperTriangular(M) - LinearAlgebra.I) .!= 0)
-    pm_branches = Dict(
-        [i => Dict("f_bus" => a[1], "t_bus" => a[2], "br_status" => 1) for
-         (i, a) in enumerate(arcs)],
-    )
+    pm_branches = Dict([
+        i => Dict("f_bus" => a[1], "t_bus" => a[2], "br_status" => 1) for
+        (i, a) in enumerate(arcs)
+    ],)
 
     data = Dict("bus" => pm_buses, "branch" => pm_branches)
     cc = calc_connected_components(data)
