@@ -22,6 +22,6 @@ end
     set_bus!(pvs, bus)
     add_component!(sys, pvs, source)
     @test get_components(PeriodicVariableSource, sys) !== nothing
-    sys2, result = validate_serialization(sys; time_series_read_only = false)
+    sys2, result = validate_serialization(sys)
     @test result
 end
