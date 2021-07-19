@@ -7,6 +7,6 @@
     add_component!(sys, source)
     pvs = PeriodicVariableSource(nothing)
     set_bus!(pvs, bus)
-    set_dynamic_injector!(source, pvs)
-    @test get_dynamic_injector(source) !== nothing
+    add_component!(sys, pvs, source)
+    @test get_components(PeriodicVariableSource, sys) !== nothing
 end

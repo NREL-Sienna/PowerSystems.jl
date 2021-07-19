@@ -10896,6 +10896,13 @@
           "default":"[(0.0, 0.0)]"
         },
         {
+          "name": "base_power",
+          "comment": "Base power",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "default": "100.0"
+        },
+        {
           "name": "states",
           "exclude_setter": true,
           "comment": "State for time, voltage and angle",
