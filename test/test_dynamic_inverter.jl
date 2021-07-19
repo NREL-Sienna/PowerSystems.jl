@@ -76,15 +76,14 @@ end
         Lvpl_sw = 0,
     )
     @test converter_regca1 isa PowerSystems.DynamicComponent
-    filt_current = DirectInjection()
+    filt_current = RLFilter(rf = 0.0, lf = 0.1)
     @test filt_current isa PowerSystems.DynamicComponent
     inner_ctrl_typeB = InnerREECB(
         Q_Flag = 0,
         PQ_Flag = 0,
         Vdip_lim = (-99.0, 99.0),
         T_rv = 0.02,
-        dbd1 = -1.0,
-        dbd2 = 1.0,
+        dbd_pnts = (-1.0, 1.0),
         K_qv = 0.0,
         Iqinj_lim = (-1.1, 1.1),
         V_ref0 = 0.0,
@@ -106,8 +105,7 @@ end
             K_pg = 1.0,
             K_ig = 0.05,
             T_p = 0.25,
-            fdbd1 = -1.0,
-            fdbd2 = 1.0,
+            fdbd_pnts = (-1.0, 1.0),
             fe_lim = (-99.0, 99.0),
             P_lim = (0.0, 1.2),
             T_g = 0.1,
@@ -136,8 +134,7 @@ end
             X_c = 0.0,
             K_c = 0.0,
             e_lim = (-0.1, 0.1),
-            dbd1 = -1.0,
-            dbd2 = 1.0,
+            dbd_pnts = (-1.0, 1.0),
             Q_lim = (-0.43, 0.43),
             T_p = 0.0,
             Q_lim_inner = (-0.44, 0.44),
