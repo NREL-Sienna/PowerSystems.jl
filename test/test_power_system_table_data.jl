@@ -88,7 +88,7 @@ end
                     atol = 0.1,
                 ) for i in 1:4
             ] == [true, true, true, true]
-            #@test compare_values_without_uuids(cdmgen.operation_cost, mpgen.operation_cost)
+            #@test PSY.compare_values(cdmgen.operation_cost, mpgen.operation_cost, compare_uuids = false)
         end
     end
 

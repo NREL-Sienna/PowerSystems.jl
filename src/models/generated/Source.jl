@@ -12,6 +12,7 @@ This file is auto-generated. Do not edit.
         X_th::Float64
         internal_voltage::Float64
         internal_angle::Float64
+        dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -29,6 +30,7 @@ This struct acts as an infinity bus.
 - `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`
 - `internal_voltage::Float64`: Internal Voltage, validation range: `(0, nothing)`
 - `internal_angle::Float64`: Internal Angle
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -47,6 +49,8 @@ mutable struct Source <: StaticInjection
     internal_voltage::Float64
     "Internal Angle"
     internal_angle::Float64
+    "corresponding dynamic injection device"
+    dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
@@ -54,12 +58,12 @@ mutable struct Source <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, services=Device[], ext=Dict{String, Any}(), )
-    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, services, ext, InfrastructureSystemsInternal(), )
+function Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Source(; name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, services, ext, internal, )
+function Source(; name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -74,6 +78,7 @@ function Source(::Nothing)
         X_th=0,
         internal_voltage=0,
         internal_angle=0,
+        dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -97,6 +102,8 @@ get_X_th(value::Source) = value.X_th
 get_internal_voltage(value::Source) = value.internal_voltage
 """Get [`Source`](@ref) `internal_angle`."""
 get_internal_angle(value::Source) = value.internal_angle
+"""Get [`Source`](@ref) `dynamic_injector`."""
+get_dynamic_injector(value::Source) = value.dynamic_injector
 """Get [`Source`](@ref) `services`."""
 get_services(value::Source) = value.services
 """Get [`Source`](@ref) `ext`."""

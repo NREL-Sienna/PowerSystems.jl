@@ -176,6 +176,7 @@ export CurrentModeControl
 export RECurrentControlB
 
 export Source
+export PeriodicVariableSource
 
 export Service
 export Reserve
@@ -420,6 +421,7 @@ import InfrastructureSystems:
     serialize,
     deserialize,
     get_time_series_multiple,
+    compare_values,
     CompressionSettings,
     CompressionTypes,
     NormalizationFactor,

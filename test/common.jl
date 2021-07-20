@@ -56,36 +56,6 @@ function create_rts_system_with_hybrid_system(; add_forecasts = true)
     return sys
 end
 
-"""Allows comparison of structs that were created from different parsers which causes them
-to have different UUIDs."""
-function compare_values_without_uuids(x::T, y::T) where {T <: IS.InfrastructureSystemsType}
-    match = true
-
-    for (fieldname, fieldtype) in zip(fieldnames(T), fieldtypes(T))
-        if fieldname === :internal
-            continue
-        end
-
-        val1 = getfield(x, fieldname)
-        val2 = getfield(y, fieldname)
-
-        # Recurse if this is an InfrastructureSystemsType
-        if val1 isa IS.InfrastructureSystemsType
-            if !compare_values_without_uuids(val1, val2)
-                match = false
-            end
-            continue
-        end
-
-        if val1 != val2
-            @error "values do not match" fieldname repr(val1) repr(val2)
-            match = false
-        end
-    end
-
-    return match
-end
-
 """Return the first component of type component_type that matches the name of other."""
 function get_component_by_name(sys::System, component_type, other::Component)
     for component in get_components(component_type, sys)
@@ -291,8 +261,12 @@ end
 function validate_serialization(
     sys::System;
     time_series_read_only = false,
-    runchecks = false,
+    runchecks = nothing,
+    assign_new_uuids = false,
 )
+    if runchecks === nothing
+        runchecks = PSY.get_runchecks(sys)
+    end
     test_dir = mktempdir()
     orig_dir = pwd()
     cd(test_dir)
@@ -319,6 +293,7 @@ function validate_serialization(
             path;
             time_series_read_only = time_series_read_only,
             runchecks = runchecks,
+            assign_new_uuids = assign_new_uuids,
         )
         isempty(get_bus_numbers(sys2)) && return false
         sys_ext2 = get_ext(sys2)
@@ -326,7 +301,7 @@ function validate_serialization(
         bus = PSY.get_component(PSY.Bus, sys2, ext_test_bus_name)
         ext = PSY.get_ext(bus)
         ext["test_field"] != 1 && return false
-        return sys2, IS.compare_values(sys, sys2)
+        return sys2, PSY.compare_values(sys, sys2, compare_uuids = !assign_new_uuids)
     finally
         cd(orig_dir)
     end
