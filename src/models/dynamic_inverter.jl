@@ -223,7 +223,7 @@ function _calc_states(
     )
 end
 
-function get_innerREECB_states(Q_Flag::Int)
+function get_REControlB_states(Q_Flag::Int)
     if Q_Flag == 0
         return [:Vt_filt, :I_icv]
     elseif Q_Flag == 1

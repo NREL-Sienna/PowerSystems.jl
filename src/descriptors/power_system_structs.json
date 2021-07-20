@@ -9724,7 +9724,7 @@
       "supertype": "Converter"
     },
     {
-      "struct_name": "REGCA1",
+      "struct_name": "RenewableEnergyConverterTypeA",
       "docstring": "Parameters of a renewable energy generator/converter model, this model corresponds to REGCA1 in PSSE",
       "fields": [
         {
@@ -9898,7 +9898,7 @@
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "REGCA1 has 3 states",
+          "comment": "RenewableEnergyConverterTypeA has 3 states",
           "internal_default": 3,
           "data_type": "Int"
         }
@@ -10621,7 +10621,7 @@
       "supertype": "ActivePowerControl"
     },
     {
-      "struct_name": "ActiveRenewableTypeAB",
+      "struct_name": "ActiveRenewableControllerAB",
       "docstring": "Parameters of Active Power Controller including REPCA1 and REECB1",
       "fields": [
         {
@@ -10790,14 +10790,14 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states of the ActiveRenewableTypeAB model depends on the Flag",
+          "comment": "The states of the ActiveRenewableControllerAB model depends on the Flag",
           "internal_default": "PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "The states of the ActiveRenewableTypeAB model depends on the Flag",
+          "comment": "The states of the ActiveRenewableControllerAB model depends on the Flag",
           "internal_default": "PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2]",
           "data_type": "Int"
         }
@@ -10805,7 +10805,7 @@
       "supertype": "ActivePowerControl"
     },
     {
-      "struct_name": "ReactiveRenewableTypeAB",
+      "struct_name": "ReactiveRenewableControllerAB",
       "docstring": "Parameters of Reactive Power Controller including REPCA1 and REECB1",
       "fields": [
         {
@@ -11065,14 +11065,14 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states of the ReactiveRenewableTypeAB model depends on the Flag",
+          "comment": "The states of the ReactiveRenewableControllerAB model depends on the Flag",
           "internal_default": "PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "The states of the ReactiveRenewableTypeAB model depends on the Flag",
+          "comment": "The states of the ReactiveRenewableControllerAB model depends on the Flag",
           "internal_default": "PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2]",
           "data_type": "Int"
         }
@@ -11401,8 +11401,8 @@
       "supertype": "InnerControl"
     },
     {
-      "struct_name": "InnerREECB",
-      "docstring": "Parameters of the Inner Control part of the REECB model",
+      "struct_name": "RECurrentControlB",
+      "docstring": "Parameters of the Inner Control part of the REECB model in PSS/E",
       "fields": [
         {
           "name": "Q_Flag",
@@ -11521,14 +11521,14 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states of the InnerREECB depends on the Flags",
-          "internal_default": "PowerSystems.get_innerREECB_states(Q_Flag)",
+          "comment": "The states of the RECurrentControlB depends on the Flags",
+          "internal_default": "PowerSystems.get_REControlB_states(Q_Flag)",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "The states of the InnerREECB depends on the Flags",
+          "comment": "The states of the RECurrentControlB depends on the Flags",
           "internal_default": "2",
           "data_type": "Int"
         }
