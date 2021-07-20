@@ -10825,11 +10825,6 @@
           "data_type": "Bool"
         },
         {
-          "name": "bus",
-          "null_value": "Bus(nothing)",
-          "data_type": "Bus"
-        },
-        {
           "name": "R_th",
           "comment": "Source Thevenin resistance",
           "null_value": 0,
