@@ -55,6 +55,24 @@ For the current development version, "checkout" this package with
 ] add PowerSystems#master
 ```
 
+## Citing PowerSystems.jl
+
+[Paper describing `PowerSystems.jl`](https://www.sciencedirect.com/science/article/pii/S2352711021000765)
+
+```bibtex
+@article{LARA2021100747,
+title = {PowerSystems.jl — A power system data management package for large scale modeling},
+journal = {SoftwareX},
+volume = {15},
+pages = {100747},
+year = {2021},
+issn = {2352-7110},
+doi = {https://doi.org/10.1016/j.softx.2021.100747},
+url = {https://www.sciencedirect.com/science/article/pii/S2352711021000765},
+author = {José Daniel Lara and Clayton Barrows and Daniel Thom and Dheepak Krishnamurthy and Duncan Callaway},
+keywords = {Power Systems, Julia, Energy},
+```
+
 ------------
 PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning
 (SIIP) initiative at the U.S. Department of Energy's National Renewable Energy
