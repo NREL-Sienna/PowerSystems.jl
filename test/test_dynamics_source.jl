@@ -1,3 +1,5 @@
+# Non functional system data. This code is just for testing.
+# Do not copy paste this code.
 @testset "Test Dynamic Source" begin
     sys = System(100)
     bus = Bus(nothing)
