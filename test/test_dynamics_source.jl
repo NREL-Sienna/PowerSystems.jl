@@ -1,7 +1,7 @@
 @testset "Test Dynamic Source" begin
     sys = System(100)
     bus = Bus(nothing)
-    set_bustype!(bus. BusTypes.SLACK)
+    set_bustype!(bus, BusTypes.SLACK)
     add_component!(sys, bus)
     source = Source(nothing)
     set_bus!(source, bus)
@@ -14,7 +14,7 @@ end
 @testset "Test Dynamic Source" begin
     sys = System(100)
     bus = Bus(nothing)
-    set_bustype!(bus. BusTypes.SLACK)
+    set_bustype!(bus, BusTypes.SLACK)
     add_component!(sys, bus)
     source = Source(nothing)
     set_bus!(source, bus)
