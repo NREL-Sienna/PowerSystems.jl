@@ -139,7 +139,7 @@ export SteamTurbineGov1
 # Converter Exports
 export Converter
 export AverageConverter
-export REGCA1
+export RenewableEnergyConverterTypeA
 
 # DC Source Exports
 export DCSource
@@ -165,15 +165,15 @@ export ReactivePowerDroop
 export ActivePowerDroop
 export ActivePowerPI
 export ReactivePowerPI
-export ActiveRenewableTypeAB
-export ReactiveRenewableTypeAB
+export ActiveRenewableControllerAB
+export ReactiveRenewableControllerAB
 
 # InnerControl Export
 export InnerControl
 export CurrentControl
 export VoltageModeControl
 export CurrentModeControl
-export InnerREECB
+export RECurrentControlB
 
 export Source
 
