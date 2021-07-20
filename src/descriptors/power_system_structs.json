@@ -9724,6 +9724,188 @@
       "supertype": "Converter"
     },
     {
+      "struct_name": "RenewableEnergyConverterTypeA",
+      "docstring": "Parameters of a renewable energy generator/converter model, this model corresponds to REGCA1 in PSSE",
+      "fields": [
+        {
+          "name": "T_g",
+          "comment": "Converter time constant (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Rrpwr",
+          "comment": "Low Voltage Power Logic (LVPL) ramp rate limit (pu/s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Brkpt",
+          "comment": "LVPL characteristic voltage 2 (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Zerox",
+          "comment": "LVPL characteristic voltage 1 (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Lvpl1",
+          "comment": "LVPL gain (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vo_lim",
+          "comment": "Voltage limit for high voltage reactive current management (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Lv_pnts",
+          "comment": "Voltage points for low voltage active current management (pu) (Lvpnt0, Lvpnt1)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Io_lim",
+          "comment": "Current limit (pu) for high voltage reactive current management (specified as a negative value)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": null,
+            "max": 0
+          }
+        },
+        {
+          "name": "T_fltr",
+          "comment": "Voltage filter time constant for low voltage active current management (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_hv",
+          "comment": "Overvoltage compensation gain used in the high voltage reactive current management",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iqr_lims",
+          "comment": "Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Accel",
+          "comment": "Acceleration factor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Lvpl_sw",
+          "comment": "Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Initial machine reactive power from power flow",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "R_source",
+          "comment": "Output resistor used for the Thevenin Equivalent",
+          "null_value": 0,
+          "default": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "X_source",
+          "comment": "Output resistor used for the Thevenin Equivalent",
+          "null_value": 0,
+          "default": "1.0e5",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\tIp: Converter lag for Ipcmd,\tIq: Converter lag for Iqcmd,\tVmeas: Voltage filter for low voltage active current management",
+          "internal_default": "[:Ip, :Iq, :Vmeas]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "RenewableEnergyConverterTypeA has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "Converter"
+    },
+    {
       "struct_name": "FixedDCSource",
       "docstring": "Parameters of a Fixed DC Source that returns a fixed DC voltage",
       "fields": [
@@ -10044,6 +10226,53 @@
           "exclude_setter": true,
           "comment": "LCFilter has two states",
           "internal_default": 2,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "Filter"
+    },
+    {
+      "struct_name": "RLFilter",
+      "docstring": "Parameters of RL series filter in algebraic representation",
+      "fields": [
+        {
+          "name": "rf",
+          "comment": "Series resistance in p.u. of converter filter to the grid",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "lf",
+          "comment": "Series inductance in p.u. of converter filter to the grid",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "RLFilter has zero states",
+          "internal_default": "Vector{Symbol}()",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "RLFilter has zero states",
+          "internal_default": 0,
           "data_type": "Int"
         }
       ],
@@ -10392,6 +10621,465 @@
       "supertype": "ActivePowerControl"
     },
     {
+      "struct_name": "ActiveRenewableControllerAB",
+      "docstring": "Parameters of Active Power Controller including REPCA1 and REECB1",
+      "fields": [
+        {
+          "name": "bus_control",
+          "comment": "Bus Number for voltage control; ",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "from_branch_control",
+          "comment": "Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "to_branch_control",
+          "comment": "Monitored branch TO bus number for line drop compensation (if 0 generator power will be used)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "branch_id_control",
+          "comment": "Branch circuit id for line drop compensation (as a string). If 0 generator power will be used",
+          "null_value": 0,
+          "data_type": "String"
+        },
+        {
+          "name": "Freq_Flag",
+          "comment": "Frequency Flag for REPCA1: 0: disable, 1:enable",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "K_pg",
+          "comment": "Active power PI control proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_ig",
+          "comment": "Active power PI control integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_p",
+          "comment": "Real power measurement filter time constant (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "fdbd_pnts",
+          "comment": "Frequency error dead band thresholds `(fdbd1, fdbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "fe_lim",
+          "comment": "Upper/Lower limit on frequency error `(fe_min, fe_max)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "P_lim",
+          "comment": "Upper/Lower limit on power reference `(P_min, P_max)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T_g",
+          "comment": "Power Controller lag time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "D_dn",
+          "comment": "Droop for over-frequency conditions",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": null,
+            "max": 0
+          }
+        },
+        {
+          "name": "D_up",
+          "comment": "Droop for under-frequency conditions",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "dP_lim",
+          "comment": "Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "P_lim_inner",
+          "comment": "Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T_pord",
+          "comment": "Power filter time constant REECB time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the ActiveRenewableControllerAB model depends on the Flag",
+          "internal_default": "PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "The states of the ActiveRenewableControllerAB model depends on the Flag",
+          "internal_default": "PowerSystems.get_activeRETypeAB_states(Freq_Flag)[2]",
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "ActivePowerControl"
+    },
+    {
+      "struct_name": "ReactiveRenewableControllerAB",
+      "docstring": "Parameters of Reactive Power Controller including REPCA1 and REECB1",
+      "fields": [
+        {
+          "name": "bus_control",
+          "comment": "Bus Number for voltage control; ",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "from_branch_control",
+          "comment": "Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "to_branch_control",
+          "comment": "Monitored branch TO bus number for line drop compensation (if 0 generator power will be used)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "branch_id_control",
+          "comment": "Branch circuit id for line drop compensation (as a string). If 0 generator power will be used",
+          "null_value": 0,
+          "data_type": "String"
+        },
+        {
+          "name": "VC_Flag",
+          "comment": "Voltage Compensator Flag for REPCA1",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Ref_Flag",
+          "comment": "Flag for Reactive Power Control for REPCA1. 0: Q-control, 1: V-control",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "PF_Flag",
+          "comment": "Flag for Power Factor Control for Outer Control of REECB1. 0: Q-control, 1: Power Factor Control",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "V_Flag",
+          "comment": "Flag for Voltage Control for Outer Control of REECB1. 0: Voltage Control, 1: Q-Control",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "T_fltr",
+          "comment": "Voltage or Q-power of REPCA Filter Time Constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_p",
+          "comment": "Reactive power PI control proportional gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_i",
+          "comment": "Reactive power PI control integral gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_ft",
+          "comment": "Reactive power lead time constant (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_fv",
+          "comment": "Reactive power lag time constant (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_frz",
+          "comment": "Voltage below which state ξq_oc (integrator state) is freeze",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "R_c",
+          "comment": "Line drop compensation resistance (used when VC_Flag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "X_c",
+          "comment": "Line drop compensation reactance (used when VC_Flag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_c",
+          "comment": "Reactive current compensation gain (pu) (used when VC_Flag = 0)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "e_lim",
+          "comment": "Upper/Lower limit on Voltage or Q-power deadband output `(e_min, e_max)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "dbd_pnts",
+          "comment": "Voltage or Q-power error dead band thresholds `(dbd1, dbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Q_lim",
+          "comment": "Upper/Lower limit on reactive power V/Q control in REPCA `(Q_min, Q_max)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T_p",
+          "comment": "Active power lag time constant in REECB (s). Used only when PF_Flag = 1",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Q_lim_inner",
+          "comment": "Upper/Lower limit on reactive power input in REECB `(Q_min_inner, Q_max_inner)`. Only used when V_Flag = 1",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "V_lim",
+          "comment": "Upper/Lower limit on reactive power PI controller in REECB `(V_min, V_max)`. Only used when V_Flag = 1",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "K_qp",
+          "comment": "Reactive power regulator proportional gain (used when V_Flag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_qi",
+          "comment": "Reactive power regulator integral gain (used when V_Flag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Reference Power Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the ReactiveRenewableControllerAB model depends on the Flag",
+          "internal_default": "PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "The states of the ReactiveRenewableControllerAB model depends on the Flag",
+          "internal_default": "PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[2]",
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "ReactivePowerControl"
+    },
+    {
       "struct_name": "ReactivePowerDroop",
       "docstring": "Parameters of a Reactive Power droop controller",
       "fields": [
@@ -10707,6 +11395,141 @@
           "exclude_setter": true,
           "comment": "CurrentControl has 2 states",
           "internal_default": 2,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "InnerControl"
+    },
+    {
+      "struct_name": "RECurrentControlB",
+      "docstring": "Parameters of the Inner Control part of the REECB model in PSS/E",
+      "fields": [
+        {
+          "name": "Q_Flag",
+          "comment": "Q Flag used for I_qinj",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "PQ_Flag",
+          "comment": "PQ Flag used for the Current Limit Logic",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Vdip_lim",
+          "comment": "Limits for Voltage Dip Logic `(Vdip, Vup)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T_rv",
+          "comment": "Voltage Filter Time Constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "dbd_pnts",
+          "comment": "Voltage error deadband thresholds `(dbd1, dbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "K_qv",
+          "comment": "Reactive current injection gain during over and undervoltage conditions",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iqinj_lim",
+          "comment": "Limits for Iqinj `(I_qh1, I_ql1)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "V_ref0",
+          "comment": "User defined reference. If 0, PSID initializes to initial terminal voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_vp",
+          "comment": "Voltage regulator proportional gain (used when QFlag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_vi",
+          "comment": "Voltage regulator integral gain (used when QFlag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_iq",
+          "comment": "Time constant for low-pass filter for state q_V when QFlag = 0",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "I_max",
+          "comment": "Maximum limit on total converter current",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the RECurrentControlB depends on the Flags",
+          "internal_default": "PowerSystems.get_REControlB_states(Q_Flag)",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "The states of the RECurrentControlB depends on the Flags",
+          "internal_default": "2",
           "data_type": "Int"
         }
       ],
