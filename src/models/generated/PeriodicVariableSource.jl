@@ -4,7 +4,6 @@ This file is auto-generated. Do not edit.
 """
     mutable struct PeriodicVariableSource <: DynamicInjection
         name::String
-        available::Bool
         R_th::Float64
         X_th::Float64
         internal_voltage_bias::Float64
@@ -24,7 +23,6 @@ This struct acts as an infinity bus with time varying phasor values magnitude an
 
 # Arguments
 - `name::String`
-- `available::Bool`
 - `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
 - `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`
 - `internal_voltage_bias::Float64`: a0 term of the Fourier Series for the voltage
@@ -41,7 +39,6 @@ This struct acts as an infinity bus with time varying phasor values magnitude an
 """
 mutable struct PeriodicVariableSource <: DynamicInjection
     name::String
-    available::Bool
     "Source Thevenin resistance"
     R_th::Float64
     "Source Thevenin reactance"
@@ -68,19 +65,18 @@ mutable struct PeriodicVariableSource <: DynamicInjection
     internal::InfrastructureSystemsInternal
 end
 
-function PeriodicVariableSource(name, available, R_th, X_th, internal_voltage_bias=0.0, internal_voltage_frequencies=[0.0], internal_voltage_coefficients=[(0.0, 0.0)], internal_angle_bias=0.0, internal_angle_frequencies=[0.0], internal_angle_coefficients=[(0.0, 0.0)], base_power=100.0, ext=Dict{String, Any}(), )
-    PeriodicVariableSource(name, available, R_th, X_th, internal_voltage_bias, internal_voltage_frequencies, internal_voltage_coefficients, internal_angle_bias, internal_angle_frequencies, internal_angle_coefficients, base_power, ext, [:Vt, :θt], 2, InfrastructureSystemsInternal(), )
+function PeriodicVariableSource(name, R_th, X_th, internal_voltage_bias=0.0, internal_voltage_frequencies=[0.0], internal_voltage_coefficients=[(0.0, 0.0)], internal_angle_bias=0.0, internal_angle_frequencies=[0.0], internal_angle_coefficients=[(0.0, 0.0)], base_power=100.0, ext=Dict{String, Any}(), )
+    PeriodicVariableSource(name, R_th, X_th, internal_voltage_bias, internal_voltage_frequencies, internal_voltage_coefficients, internal_angle_bias, internal_angle_frequencies, internal_angle_coefficients, base_power, ext, [:Vt, :θt], 2, InfrastructureSystemsInternal(), )
 end
 
-function PeriodicVariableSource(; name, available, R_th, X_th, internal_voltage_bias=0.0, internal_voltage_frequencies=[0.0], internal_voltage_coefficients=[(0.0, 0.0)], internal_angle_bias=0.0, internal_angle_frequencies=[0.0], internal_angle_coefficients=[(0.0, 0.0)], base_power=100.0, states=[:Vt, :θt], n_states=2, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PeriodicVariableSource(name, available, R_th, X_th, internal_voltage_bias, internal_voltage_frequencies, internal_voltage_coefficients, internal_angle_bias, internal_angle_frequencies, internal_angle_coefficients, base_power, states, n_states, ext, internal, )
+function PeriodicVariableSource(; name, R_th, X_th, internal_voltage_bias=0.0, internal_voltage_frequencies=[0.0], internal_voltage_coefficients=[(0.0, 0.0)], internal_angle_bias=0.0, internal_angle_frequencies=[0.0], internal_angle_coefficients=[(0.0, 0.0)], base_power=100.0, states=[:Vt, :θt], n_states=2, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PeriodicVariableSource(name, R_th, X_th, internal_voltage_bias, internal_voltage_frequencies, internal_voltage_coefficients, internal_angle_bias, internal_angle_frequencies, internal_angle_coefficients, base_power, states, n_states, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
 function PeriodicVariableSource(::Nothing)
     PeriodicVariableSource(;
         name="init",
-        available=false,
         R_th=0,
         X_th=0,
         internal_voltage_bias=0,
@@ -96,8 +92,6 @@ end
 
 """Get [`PeriodicVariableSource`](@ref) `name`."""
 get_name(value::PeriodicVariableSource) = value.name
-"""Get [`PeriodicVariableSource`](@ref) `available`."""
-get_available(value::PeriodicVariableSource) = value.available
 """Get [`PeriodicVariableSource`](@ref) `R_th`."""
 get_R_th(value::PeriodicVariableSource) = value.R_th
 """Get [`PeriodicVariableSource`](@ref) `X_th`."""
@@ -127,8 +121,6 @@ get_internal(value::PeriodicVariableSource) = value.internal
 
 """Set [`PeriodicVariableSource`](@ref) `name`."""
 set_name!(value::PeriodicVariableSource, val) = value.name = val
-"""Set [`PeriodicVariableSource`](@ref) `available`."""
-set_available!(value::PeriodicVariableSource, val) = value.available = val
 """Set [`PeriodicVariableSource`](@ref) `R_th`."""
 set_R_th!(value::PeriodicVariableSource, val) = value.R_th = val
 """Set [`PeriodicVariableSource`](@ref) `X_th`."""
