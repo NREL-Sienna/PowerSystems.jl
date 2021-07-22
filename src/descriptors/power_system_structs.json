@@ -11643,11 +11643,6 @@
           "data_type": "String"
         },
         {
-          "null_value": "false",
-          "name": "available",
-          "data_type": "Bool"
-        },
-        {
           "name": "R_th",
           "comment": "Source Thevenin resistance",
           "null_value": 0,
