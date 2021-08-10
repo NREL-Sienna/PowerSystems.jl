@@ -1,135 +1,149 @@
-######################################
-######### Dynamic Generator ##########
-######################################
-
-generator_mapping:
-- {
 #############################
 ######### Machines ##########
 #############################
 
 GENROU:
-{
+- {
   Machine: RoundRotorQuadratic,
   Shaft: RoundRotorShaft
-},
+}
+
 GENSAL:
-{
+- {
   Machine: SalientPoleQuadratic,
   Shaft: SalientPoleShaft
-},
+}
+
 GENROE:
-{
+- {
   Machine: RoundRotorExponential,
   Shaft: RoundRotorShaft
-},
+}
+
 GENSAE:
-{
+- {
   Machine: SalientPoleExponential,
   Shaft: SalientPoleShaft
-},
+}
+
 GENCLS:
-{
+- {
   Machine: BaseMachine,
   Shaft: ClsShaft
-},
+}
 
 #############################
 #### Excitation Systems #####
 #############################
 
 IEEET1:
-{
+- {
   AVR: IEEET1
-},
+}
+
 ESDC1A:
-{
+- {
   AVR: ESDC1A
-},
+}
+
 ESDC2A:
-{
+- {
   AVR: ESDC2A
-},
+}
+
 ESAC1A:
-{
+- {
   AVR: ESAC1A
-},
+}
+
 ESAC6A:
-{
+- {
   AVR: ESAC6A
-},
+}
+
 EXAC1:
-{
+- {
   AVR: EXAC1
-},
+}
+
 EXAC1A:
-{
+- {
   AVR: EXAC1A
-},
+}
+
 EXAC2:
-{
+- {
   AVR: EXAC2
-},
+}
+
 EXPIC1:
-{
+- {
   AVR: EXPIC1
-},
+}
+
 ESST1A:
-{
+- {
   AVR: ESST1A
-},
+}
+
 ESST4B:
-{
+- {
   AVR: ESST4B
-},
+}
+
 SCRX:
-{
+- {
   AVR: SCRX
-},
+}
+
 SEXS:
-{
+- {
   AVR: SEXS
-},
+}
+
 
 #############################
 #### Turbine Governors ######
 #############################
 
 GAST:
-{
+- {
   TurbineGov: GasTG
-},
+}
+
 GGOV1:
-{
+- {
   TurbineGov: GeneralGovModel
-},
+}
+
 HYGOV:
-{
+- {
   TurbineGov: HydroTurbineGov
-},
+}
+
 IEEEG1:
-{
+- {
   TurbineGov: IEEETurbineGov1
-},
+}
+
 TGOV1:
-{
+- {
   TurbineGov: SteamTurbineGov1
-},
+}
+
 TGOV1DU:
-{
+- {
   TurbineGov: TGOV1DU
-},
+}
+
 ######################################
 ###### Power System Stabilizers ######
 ######################################
 
 IEEEST:
-{
+- {
   PSS: IEEEST
 }
-}
-
-
 
 
 ###################

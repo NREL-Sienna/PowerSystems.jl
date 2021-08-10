@@ -124,9 +124,16 @@ function _parse_dyr_components(data::Dict)
     end
     #param_map contains the mapping between struct params and dyr file.
     param_map = yaml_mapping["parameter_mapping"][1]
+    #gen_map contains all the supported structs for generators
+    gen_map = yaml_mapping["generator_mapping"][1]
     #dic will contain the dictionary index by bus.
     #Each entry will be a dictionary, with id as keys, that contains the vector of components
     dic = Dict{Int, Any}()
+    _parse_dyr_generator_components!(dic, data, gen_map, param_map)
+    return dic
+end
+
+function _parse_dyr_generator_components!(dic::Dict, data::Dict, gen_map::Dict, param_map::Dict)
     component_table =
         Dict("Machine" => 1, "Shaft" => 2, "AVR" => 3, "TurbineGov" => 4, "PSS" => 5)
     for (bus_num, bus_data) in data
@@ -135,9 +142,9 @@ function _parse_dyr_components(data::Dict)
             #Fill array of 5 components per generator
             temp = get!(bus_dict, componentID[2], Vector{Any}(undef, 5))
             #Only create if name is in the supported keys in the mapping
-            if componentID[1] in keys(yaml_mapping)
+            if componentID[1] in keys(gen_map)
                 #Get the component dictionary
-                components_dict = yaml_mapping[componentID[1]][1]
+                components_dict = gen_map[componentID[1]]
                 for (gen_field, struct_as_str) in components_dict
                     #Get the parameter indices w/r to componentValues
                     params_ix = param_map[struct_as_str]
@@ -171,7 +178,6 @@ function _parse_dyr_components(data::Dict)
         #Store dictionary of components in a dictionary indexed by bus
         dic[bus_num] = bus_dict
     end
-    return dic
 end
 
 """
