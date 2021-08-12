@@ -242,6 +242,7 @@ function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, p
                 for (inv_field, struct_as_str) in components_dict
                     param_vec = get!(temp, (inv_field, struct_as_str), _get_proper_vector(struct_as_str, param_map))
                     params_ix = param_map[struct_as_str]
+                    #TODO: Dispatch based on type Vector or Dict
                     if isa(params_ix, Vector)
                         _populate_args!(param_vec, params_ix, componentValues)
                     else #is a Dict
