@@ -96,6 +96,12 @@ it in memory. Here is an example of how to do this:
 sys = System(100.0; time_series_in_memory = true)
 ```
 
+PowerSystems stores the HDF5 file in the tmp filesystem by default. You can
+change this by passing `time_series_directory = X` when you create the System.
+This is required if the time series data is larger than the amount of tmp space
+available. You can also override the location by setting the environment
+variable SIIP_TIME_SERIES_DIRECTORY to another directory.
+
 ### Compression
 
 PowerSystems does not enable HDF5 compression by default. You can enable it to
