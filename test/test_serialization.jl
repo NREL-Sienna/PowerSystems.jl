@@ -209,8 +209,7 @@ end
 
 @testset "Test deserialization with new UUIDs" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-    sys2, result =
-        validate_serialization(sys; time_series_read_only = true, assign_new_uuids = true)
+    sys2, result = validate_serialization(sys; assign_new_uuids = true)
     @test result
     @test IS.get_uuid(sys) != IS.get_uuid(sys2)
     for component1 in get_components(Component, sys)
