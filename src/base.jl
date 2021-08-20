@@ -1765,7 +1765,7 @@ function convert_component!(
         line.services,
         line.ext,
         InfrastructureSystems.TimeSeriesContainer(),
-        line.internal,
+        deepcopy(line.internal),
     )
     IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
@@ -1806,7 +1806,7 @@ function convert_component!(
         line.services,
         line.ext,
         InfrastructureSystems.TimeSeriesContainer(),
-        line.internal,
+        deepcopy(line.internal),
     )
     IS.assign_new_uuid!(line)
     add_component!(sys, new_line)
