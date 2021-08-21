@@ -44,12 +44,14 @@ function _populate_args(param_map, val)
         elseif isa(_v, Int)
             struct_args[ix] = val[_v]
             #If the parameter is a tuple (as a string), then construct the tuple directly.
-        else
-            if _v != "NaN"
-                _t = strip(_v, ['(', ')'])
+        elseif _v != "NaN" #is a tuple string 
+            _t = strip(_v, ['(', ')'])
                 _t2int = parse.(Int, split(_t, ','))
                 struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
-            end
+        elseif _v == "NaN"
+            # skip and do nothing
+        else
+            error("invalid input value $val")
         end
     end
     return struct_args
@@ -100,32 +102,30 @@ end
 
 function _assign_missing_components!(bus_dict, component_table, ::Type{T}) where T <: DynamicGenerator
     for va in values(bus_dict)
-        if !isassigned(va, component_table["AVR"])
+        if ismissing(va[component_table["AVR"]])
             va[component_table["AVR"]] = AVRFixed(1.0)
         end
-        if !isassigned(va, component_table["TurbineGov"])
+        if ismissing(va[component_table["TurbineGov"]])
             va[component_table["TurbineGov"]] = TGFixed(1.0)
         end
-        if !isassigned(va, component_table["PSS"])
+        if ismissing(va[component_table["PSS"]])
             va[component_table["PSS"]] = PSSFixed(0.0)
         end
     end
 end
 
-function _assign_missing_components!(bus_dict, component_table, ::Type{T}) where T <: DynamicInverter
-    for va in values(bus_dict)
-        if !isassigned(va, component_table["Converter"])
-            va[component_table["Converter"]] = AverageConverter(750.0, 2.75)
-        end
-        if !isassigned(va, component_table["Filter"])
-            va[component_table["Filter"]] = RLFilter(0.0, 0.0)
-        end
-        if !isassigned(va, component_table["FrequencyEstimator"])
-            va[component_table["FrequencyEstimator"]] = FixedFrequency()
-        end
-        if !isassigned(va, component_table["DCSource"])
-            va[component_table["DCSource"]] = FixedDCSource(750.0)
-        end
+function _assign_missing_components!(va, component_table, ::Type{T}) where T <: DynamicInverter
+    if ismissing(va[component_table["Converter"]])
+        va[component_table["Converter"]] = AverageConverter(750.0, 2.75)
+    end
+    if ismissing(va[component_table["Filter"]])
+        va[component_table["Filter"]] = RLFilter(0.0, 0.0)
+    end
+    if ismissing(va[component_table["FrequencyEstimator"]])
+        va[component_table["FrequencyEstimator"]] = FixedFrequency()
+    end
+    if ismissing(va[component_table["DCSource"]])
+        va[component_table["DCSource"]] = FixedDCSource(750.0)
     end
 end
 
@@ -181,7 +181,7 @@ function _parse_dyr_generator_components!(dic::Dict, data::Dict, gen_map::Dict, 
         bus_dict = Dict{Int, Any}()
         for (componentID, componentValues) in bus_data
             #Fill array of 5 components per generator
-            temp = get!(bus_dict, componentID[2], Vector{Any}(undef, 5))
+            temp = get!(bus_dict, componentID[2], fill!(Vector{Any}(undef, 5), missing))
             #Only create if name is in the supported keys in the mapping
             if componentID[1] in keys(gen_map)
                 #Get the component dictionary
@@ -240,7 +240,7 @@ function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, p
                 temp = get!(bus_dict_values, componentID[2], Dict{Any, Vector{Any}}())
                 components_dict = inv_map[componentID[1]]
                 for (inv_field, struct_as_str) in components_dict
-                    param_vec = get!(temp, (inv_field, struct_as_str), _get_proper_vector(struct_as_str, param_map))
+                    param_vec = get!(temp, (inv_field, struct_as_str), _instantiate_param_vector_size(struct_as_str, param_map))
                     params_ix = param_map[struct_as_str]
                     #TODO: Dispatch based on type Vector or Dict
                     if isa(params_ix, Vector)
@@ -250,31 +250,60 @@ function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, p
                         _populate_args!(param_vec, params_ix[componentID[1]], componentValues)
                     end
                 end
-            else
-                #@warn "$(componentID[1]) at bus $bus_num, id $(componentID[2]), not supported in PowerSystems.jl. Skipping data."
             end
         end
-        #TODO: Construct Structs and assign missing components based on bus_dict_values
-        #Assign generic components if there were not provided in Dynamic Data
-        #_assign_missing_components!(bus_dict_values, component_table, DynamicInverter)
-        #Store dictionary of components in a dictionary indexed by bus
-        for (device_id, device_values) in bus_dict_values
-            dic[bus_num][device_id] = device_values
+        #Store vector of components in a dictionary indexed by bus
+        for (device_id, device_info) in bus_dict_values
+            temp_vec = fill!(Vector{Any}(undef, 7), missing)
+            for (k, struct_args) in device_info
+                component_type, struct_as_str = k
+                _convert_argument_types!(struct_as_str, struct_args)
+                component_constructor =
+                        (args...) ->
+                            InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(
+                                args...,
+                            )
+                temp_vec[component_table[component_type]] = component_constructor(struct_args...)
+            end
+            _assign_missing_components!(temp_vec, component_table, DynamicInverter)
+            #To do: Add a constructor that receives Active and Reactive Controller to replace these lines
+            inverter_vec = Vector{Any}(undef, 6)
+            ixs_inv = [1,3,4,5,6]
+            ixs_temp = [1,4,5,6,7]
+            inverter_vec[ixs_inv] = temp_vec[ixs_temp]
+            inverter_vec[2] = OuterControl(temp_vec[2], temp_vec[3])
+            dic[bus_num][device_id] = inverter_vec
         end
     end
 end
 
-function _get_proper_vector(str::AbstractString, param_map::Dict)
+function _instantiate_param_vector_size(str::AbstractString, param_map::Dict)
     if str == "ActiveRenewableControllerAB"
-        return Vector{Any}(undef, 17)
+        return fill!(Vector{Any}(undef, 17), missing)
     elseif str == "ReactiveRenewableControllerAB"
-        return Vector{Any}(undef, 25)
+        return fill!(Vector{Any}(undef, 25), missing)
     elseif str == "RECurrentControlB"
-        return Vector{Any}(undef, 12)
+        return fill!(Vector{Any}(undef, 12), missing)
     elseif str in keys(param_map)
-        return Vector{Any}(undef, length(param_map[str]))
+        return fill!(Vector{Any}(undef, length(param_map[str])), missing)
     else
         error("String $(str) not supported in the parser")
+    end
+end
+
+function _convert_argument_types!(str::AbstractString, struct_args::Vector)
+    if str == "ActiveRenewableControllerAB"
+        struct_args[1:5] .= Int.(struct_args[1:5])
+        struct_args[4] = string(struct_args[4])
+    elseif str == "ReactiveRenewableControllerAB"
+        struct_args[1:8] .= Int.(struct_args[1:8])
+        struct_args[4] = string(struct_args[4])
+    elseif str == "RECurrentControlB"
+        struct_args[1:2] .= Int.(struct_args[1:2])
+    elseif str == "RenewableEnergyConverterTypeA"
+        #No changes to struct_args
+    else 
+        error("$str not defined for dynamic component arguments")
     end
 end
 
@@ -311,7 +340,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
             s = _make_source(g, r, x)
             remove_component!(typeof(g), sys, _name)
             add_component!(sys, s)
-        else
+        elseif length(temp_dict[_id]) == 5 #Generator has 5 components
             #Obtain Machine from Dictionary
             machine = temp_dict[_id][1]
             #Update R,X from RSORCE and XSORCE from RAW file
@@ -337,6 +366,12 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
             #Add Dynamic Generator
             dyn_gen = DynamicGenerator(get_name(g), 1.0, temp_dict[_id]...)
             add_component!(sys, dyn_gen, g)
+        elseif length(temp_dict[_id]) == 6 #Inverter has 6 components
+            #To do: Check X_Source and R_Source data if we want
+            dyn_inv = DynamicInverter(get_name(g), 1.0, temp_dict[_id]...)
+            add_component!(sys, dyn_inv, g)
+        else
+            error("Generator at bus $(_num), id $(_id), not supported")
         end
     end
 end
