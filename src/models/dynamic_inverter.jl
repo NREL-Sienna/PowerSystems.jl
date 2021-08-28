@@ -181,8 +181,6 @@ function DynamicInverter(
     dc_source::DC,
     freq_estimator::P,
     filter::F,
-    base_power::Float64 = 100.0,
-    ext::Dict{String, Any} = Dict{String, Any}(),
 ) where {
     C <: Converter,
     AC <: ActivePowerControl,
@@ -193,25 +191,7 @@ function DynamicInverter(
     F <: Filter,
 }
     outer_control = OuterControl(active_power_control, reactive_power_control)
-    O = typeof(outer_control)
-    n_states = _calc_n_states(
-        converter,
-        outer_control,
-        inner_control,
-        dc_source,
-        freq_estimator,
-        filter,
-    )
-    states = _calc_states(
-        converter,
-        outer_control,
-        inner_control,
-        dc_source,
-        freq_estimator,
-        filter,
-    )
-
-    return DynamicInverter{C, O, IC, DC, P, F}(
+    return DynamicInverter(
         name,
         ω_ref,
         converter,
@@ -220,11 +200,6 @@ function DynamicInverter(
         dc_source,
         freq_estimator,
         filter,
-        base_power,
-        n_states,
-        states,
-        ext,
-        InfrastructureSystemsInternal(),
     )
 end
 
