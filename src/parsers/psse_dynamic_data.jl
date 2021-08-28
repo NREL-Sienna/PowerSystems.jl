@@ -57,7 +57,28 @@ function _populate_args(param_map, val)
     return struct_args
 end
 
-function _populate_args!(struct_args, param_map, val)
+function _populate_args!(struct_args, param_map::Vector, val, id)
+    for (ix, _v) in enumerate(param_map)
+        #If the parameter is a Float64, then use the value directly as the argument.
+        #Typically uses for the resistance that is not available in .dyr files.
+        if isa(_v, Float64)
+            struct_args[ix] = _v
+            #If the parameter is an Int, then use the integer as the key of the value in the dictionary.
+        elseif isa(_v, Int)
+            struct_args[ix] = val[_v]
+            #If the parameter is a tuple (as a string), then construct the tuple directly.
+        else
+            if occursin(r"^\(\d+\s*,\s*\d+\)", _v) #!= "NaN"
+                _t = strip(_v, ['(', ')'])
+                _t2int = parse.(Int, split(_t, ','))
+                struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
+            end
+        end
+    end
+end
+
+function _populate_args!(struct_args, param_dic::Dict, val, id)
+    param_map = param_dic[id]
     for (ix, _v) in enumerate(param_map)
         #If the parameter is a Float64, then use the value directly as the argument.
         #Typically uses for the resistance that is not available in .dyr files.
@@ -146,14 +167,23 @@ end
 """
 Parse dictionary of dictionaries of data (from `_parse_dyr_file`) into a dictionary of struct components.
 The function receives the parsed dictionary and constructs a dictionary indexed by bus, that contains a
-dictionary with each dynamic generator components (indexed via its id).
+dictionary with each dynamic generator and dynamic inverter components (indexed via its id).
 
-Each dictionary indexed by id contains a vector with 5 of its components:
+For Generators, each dictionary indexed by id contains a vector with 5 of its components:
 * Machine
 * Shaft
 * AVR
 * TurbineGov
 * PSS
+
+For Inverters, each dictionary indexed by id contains a vector with 7 of its components:
+* Converter
+* ActivePowerControl
+* ReactivePowerControl
+* InnerControl
+* DCSource
+* FrequencyEstimator
+* Filter
 
 """
 function _parse_dyr_components(data::Dict)
@@ -165,6 +195,7 @@ function _parse_dyr_components(data::Dict)
     param_map = yaml_mapping["parameter_mapping"][1]
     #gen_map contains all the supported structs for generators
     gen_map = yaml_mapping["generator_mapping"][1]
+    #inv_map contains al the supported structs for inverters
     inv_map = yaml_mapping["inverter_mapping"][1]
     #dic will contain the dictionary index by bus.
     #Each entry will be a dictionary, with id as keys, that contains the vector of components
@@ -174,6 +205,12 @@ function _parse_dyr_components(data::Dict)
     return dic
 end
 
+"""
+Parse dictionary of data (from `_parse_dyr_file`) into a dictionary of struct components.
+The function receives the parsed dictionary and constructs a dictionary indexed by bus, that contains a
+dictionary with each dynamic generator indexed by its id.
+
+"""
 function _parse_dyr_generator_components!(dic::Dict, data::Dict, gen_map::Dict, param_map::Dict)
     component_table =
         Dict("Machine" => 1, "Shaft" => 2, "AVR" => 3, "TurbineGov" => 4, "PSS" => 5)
@@ -221,6 +258,12 @@ function _parse_dyr_generator_components!(dic::Dict, data::Dict, gen_map::Dict, 
     end
 end
 
+"""
+Parse dictionary of data (from `_parse_dyr_file`) into a dictionary of struct components.
+The function receives the parsed dictionary and constructs a dictionary indexed by bus, that contains a
+dictionary with each dynamic inverter indexed by its id.
+
+"""
 function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, param_map::Dict)
     component_table =
         Dict("Converter" => 1, "ActivePowerControl" => 2, "ReactivePowerControl" => 3, "InnerControl" => 4, "DCSource" => 5, "FrequencyEstimator" => 6, "Filter" => 7)
@@ -242,13 +285,7 @@ function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, p
                 for (inv_field, struct_as_str) in components_dict
                     param_vec = get!(temp, (inv_field, struct_as_str), _instantiate_param_vector_size(struct_as_str, param_map))
                     params_ix = param_map[struct_as_str]
-                    #TODO: Dispatch based on type Vector or Dict
-                    if isa(params_ix, Vector)
-                        _populate_args!(param_vec, params_ix, componentValues)
-                    else #is a Dict
-                        #Add values based on the PSSE name that is being read
-                        _populate_args!(param_vec, params_ix[componentID[1]], componentValues)
-                    end
+                    _populate_args!(param_vec, params_ix, componentValues, componentID[1])
                 end
             end
         end
@@ -266,17 +303,16 @@ function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, p
                 temp_vec[component_table[component_type]] = component_constructor(struct_args...)
             end
             _assign_missing_components!(temp_vec, component_table, DynamicInverter)
-            #To do: Add a constructor that receives Active and Reactive Controller to replace these lines
-            inverter_vec = Vector{Any}(undef, 6)
-            ixs_inv = [1,3,4,5,6]
-            ixs_temp = [1,4,5,6,7]
-            inverter_vec[ixs_inv] = temp_vec[ixs_temp]
-            inverter_vec[2] = OuterControl(temp_vec[2], temp_vec[3])
-            dic[bus_num][device_id] = inverter_vec
+            dic[bus_num][device_id] = temp_vec
         end
     end
 end
 
+"""
+Construct appropiate vector size for components that collect parameters from
+more than 2 PSS/E components
+
+"""
 function _instantiate_param_vector_size(str::AbstractString, param_map::Dict)
     if str == "ActiveRenewableControllerAB"
         return fill!(Vector{Any}(undef, 17), missing)
@@ -291,6 +327,11 @@ function _instantiate_param_vector_size(str::AbstractString, param_map::Dict)
     end
 end
 
+"""
+Convert specific parameters to types that are not Float64 for
+specific inverter components
+
+"""
 function _convert_argument_types!(str::AbstractString, struct_args::Vector)
     if str == "ActiveRenewableControllerAB"
         struct_args[1:5] .= Int.(struct_args[1:5])
@@ -366,7 +407,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
             #Add Dynamic Generator
             dyn_gen = DynamicGenerator(get_name(g), 1.0, temp_dict[_id]...)
             add_component!(sys, dyn_gen, g)
-        elseif length(temp_dict[_id]) == 6 #Inverter has 6 components
+        elseif length(temp_dict[_id]) == 7 #Inverter has 7 components (6 if Outer is put together)
             #To do: Check X_Source and R_Source data if we want
             dyn_inv = DynamicInverter(get_name(g), 1.0, temp_dict[_id]...)
             add_component!(sys, dyn_inv, g)
