@@ -44,10 +44,10 @@ function _populate_args(param_map, val)
         elseif isa(_v, Int)
             struct_args[ix] = val[_v]
             #If the parameter is a tuple (as a string), then construct the tuple directly.
-        elseif _v != "NaN" #is a tuple string 
+        elseif occursin(r"^\(\d+\s*,\s*\d+\)", _v) #is a tuple string 
             _t = strip(_v, ['(', ')'])
-                _t2int = parse.(Int, split(_t, ','))
-                struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
+            _t2int = parse.(Int, split(_t, ','))
+            struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
         elseif _v == "NaN"
             # skip and do nothing
         else
@@ -67,35 +67,21 @@ function _populate_args!(struct_args, param_map::Vector, val, id)
         elseif isa(_v, Int)
             struct_args[ix] = val[_v]
             #If the parameter is a tuple (as a string), then construct the tuple directly.
+        elseif occursin(r"^\(\d+\s*,\s*\d+\)", _v) #is a tuple string
+            _t = strip(_v, ['(', ')'])
+            _t2int = parse.(Int, split(_t, ','))
+            struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
+        elseif _v == "NaN"
+            # skip and do nothing
         else
-            if occursin(r"^\(\d+\s*,\s*\d+\)", _v) #!= "NaN"
-                _t = strip(_v, ['(', ')'])
-                _t2int = parse.(Int, split(_t, ','))
-                struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
-            end
+            error("invalid input value $val")
         end
     end
 end
 
 function _populate_args!(struct_args, param_dic::Dict, val, id)
     param_map = param_dic[id]
-    for (ix, _v) in enumerate(param_map)
-        #If the parameter is a Float64, then use the value directly as the argument.
-        #Typically uses for the resistance that is not available in .dyr files.
-        if isa(_v, Float64)
-            struct_args[ix] = _v
-            #If the parameter is an Int, then use the integer as the key of the value in the dictionary.
-        elseif isa(_v, Int)
-            struct_args[ix] = val[_v]
-            #If the parameter is a tuple (as a string), then construct the tuple directly.
-        else
-            if _v != "NaN"
-                _t = strip(_v, ['(', ')'])
-                _t2int = parse.(Int, split(_t, ','))
-                struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
-            end
-        end
-    end
+    _populate_args!(struct_args, param_map, val, id)
 end
 
 """
@@ -121,7 +107,11 @@ function _make_source(g::StaticInjection, r::Float64, x::Float64)
     )
 end
 
-function _assign_missing_components!(bus_dict, component_table, ::Type{T}) where T <: DynamicGenerator
+function _assign_missing_components!(
+    bus_dict,
+    component_table,
+    ::Type{T},
+) where {T <: DynamicGenerator}
     for va in values(bus_dict)
         if ismissing(va[component_table["AVR"]])
             va[component_table["AVR"]] = AVRFixed(1.0)
@@ -135,7 +125,11 @@ function _assign_missing_components!(bus_dict, component_table, ::Type{T}) where
     end
 end
 
-function _assign_missing_components!(va, component_table, ::Type{T}) where T <: DynamicInverter
+function _assign_missing_components!(
+    va,
+    component_table,
+    ::Type{T},
+) where {T <: DynamicInverter}
     if ismissing(va[component_table["Converter"]])
         va[component_table["Converter"]] = AverageConverter(750.0, 2.75)
     end
@@ -211,7 +205,12 @@ The function receives the parsed dictionary and constructs a dictionary indexed 
 dictionary with each dynamic generator indexed by its id.
 
 """
-function _parse_dyr_generator_components!(dic::Dict, data::Dict, gen_map::Dict, param_map::Dict)
+function _parse_dyr_generator_components!(
+    dic::Dict,
+    data::Dict,
+    gen_map::Dict,
+    param_map::Dict,
+)
     component_table =
         Dict("Machine" => 1, "Shaft" => 2, "AVR" => 3, "TurbineGov" => 4, "PSS" => 5)
     for (bus_num, bus_data) in data #bus_data is a dictionary with values per component (key)
@@ -264,9 +263,21 @@ The function receives the parsed dictionary and constructs a dictionary indexed 
 dictionary with each dynamic inverter indexed by its id.
 
 """
-function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, param_map::Dict)
-    component_table =
-        Dict("Converter" => 1, "ActivePowerControl" => 2, "ReactivePowerControl" => 3, "InnerControl" => 4, "DCSource" => 5, "FrequencyEstimator" => 6, "Filter" => 7)
+function _parse_dyr_inverter_components!(
+    dic::Dict,
+    data::Dict,
+    inv_map::Dict,
+    param_map::Dict,
+)
+    component_table = Dict(
+        "Converter" => 1,
+        "ActivePowerControl" => 2,
+        "ReactivePowerControl" => 3,
+        "InnerControl" => 4,
+        "DCSource" => 5,
+        "FrequencyEstimator" => 6,
+        "Filter" => 7,
+    )
     for (bus_num, bus_data) in data #bus_data is a dictionary with values per component (key is a tuple of PSSE name and number ID)
         #bus_dict will add a vector of components structs for each generator ID on the bus_num key of the master dictionary 'dic' 
         #bus_dict_values will only contain the vector of parameters that will be used to construct the structs
@@ -274,8 +285,8 @@ function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, p
         bus_dict_values = Dict{Int, Any}()
         for (componentID, componentValues) in bus_data
             #ComponentID is a tuple: 
-                #ComponentID[1] is the PSSE name
-                #ComponentID[2] is the number ID of the generator/inverter
+            #ComponentID[1] is the PSSE name
+            #ComponentID[2] is the number ID of the generator/inverter
             #Fill array of 7 components per inverter
             #Only create if name is in the supported keys in the mapping
             if componentID[1] in keys(inv_map)
@@ -283,7 +294,11 @@ function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, p
                 temp = get!(bus_dict_values, componentID[2], Dict{Any, Vector{Any}}())
                 components_dict = inv_map[componentID[1]]
                 for (inv_field, struct_as_str) in components_dict
-                    param_vec = get!(temp, (inv_field, struct_as_str), _instantiate_param_vector_size(struct_as_str, param_map))
+                    param_vec = get!(
+                        temp,
+                        (inv_field, struct_as_str),
+                        _instantiate_param_vector_size(struct_as_str, param_map),
+                    )
                     params_ix = param_map[struct_as_str]
                     _populate_args!(param_vec, params_ix, componentValues, componentID[1])
                 end
@@ -296,11 +311,12 @@ function _parse_dyr_inverter_components!(dic::Dict, data::Dict, inv_map::Dict, p
                 component_type, struct_as_str = k
                 _convert_argument_types!(struct_as_str, struct_args)
                 component_constructor =
-                        (args...) ->
-                            InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(
-                                args...,
-                            )
-                temp_vec[component_table[component_type]] = component_constructor(struct_args...)
+                    (args...) ->
+                        InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(
+                            args...,
+                        )
+                temp_vec[component_table[component_type]] =
+                    component_constructor(struct_args...)
             end
             _assign_missing_components!(temp_vec, component_table, DynamicInverter)
             dic[bus_num][device_id] = temp_vec
@@ -343,7 +359,7 @@ function _convert_argument_types!(str::AbstractString, struct_args::Vector)
         struct_args[1:2] .= Int.(struct_args[1:2])
     elseif str == "RenewableEnergyConverterTypeA"
         #No changes to struct_args
-    else 
+    else
         error("$str not defined for dynamic component arguments")
     end
 end
