@@ -180,7 +180,7 @@ function DynamicInverter(
     inner_control::IC,
     dc_source::DC,
     freq_estimator::P,
-    filter::F,
+    ac_filter::F,
 ) where {
     C <: Converter,
     AC <: ActivePowerControl,
@@ -199,7 +199,7 @@ function DynamicInverter(
         inner_control,
         dc_source,
         freq_estimator,
-        filter,
+        ac_filter,
     )
 end
 
