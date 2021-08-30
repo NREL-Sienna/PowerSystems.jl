@@ -223,7 +223,7 @@ function show_components(
     additional_columns::Union{Dict, Vector} = Dict();
     kwargs...,
 )
-    show_components(stdout, sys, component_type, additional_columns, kwargs...)
+    show_components(stdout, sys, component_type, additional_columns; kwargs...)
 end
 
 function show_components(
@@ -237,7 +237,7 @@ function show_components(
         io,
         sys.data.components,
         component_type,
-        additional_columns,
+        additional_columns;
         kwargs...,
     )
 end
