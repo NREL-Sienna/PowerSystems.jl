@@ -252,6 +252,7 @@ export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
 export get_component
 export get_components
+export show_components
 export get_subcomponents
 export get_components_by_name
 export get_available_components
@@ -369,6 +370,7 @@ import UUIDs
 import Base.to_index
 import NLsolve
 import InteractiveUtils
+import PrettyTables
 
 import InfrastructureSystems
 import InfrastructureSystems:

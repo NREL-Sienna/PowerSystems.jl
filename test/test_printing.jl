@@ -78,6 +78,17 @@ end
     )
 
     @test isnothing(show(IOBuffer(), "text/plain", sys))
+    @test isnothing(show(IOBuffer(), "text/html", sys))
+    @test isnothing(show_components(IOBuffer(), sys, RenewableFix))
+    @test isnothing(show_components(IOBuffer(), sys, RenewableFix, [:rating]))
+    @test isnothing(
+        show_components(
+            IOBuffer(),
+            sys,
+            RenewableFix,
+            Dict("ts" => x -> has_time_series(x)),
+        ),
+    )
 end
 
 @testset "Test printing of non-PowerSystems struct" begin
