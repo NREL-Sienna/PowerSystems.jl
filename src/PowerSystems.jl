@@ -229,6 +229,7 @@ export find_connected_components
 export parse_file
 export add_time_series!
 export remove_time_series!
+export check_time_series_consistency
 export clear_time_series!
 export copy_time_series!
 export add_component!
@@ -266,6 +267,7 @@ export get_time_series_resolution
 export get_time_series_timestamps
 export get_time_series_values
 export get_time_series_names
+export get_time_series_counts
 export get_scenario_count
 export get_percentiles
 export get_next_time_series_array!

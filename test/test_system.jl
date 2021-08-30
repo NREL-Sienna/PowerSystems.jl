@@ -52,6 +52,10 @@
     ts = get_time_series(SingleTimeSeries, component, "max_active_power")
     @test ts isa SingleTimeSeries
 
+    returned_it, returned_len = check_time_series_consistency(sys, SingleTimeSeries)
+    @test returned_it == first(TimeSeries.timestamp(get_data(ts)))
+    @test returned_len == length(get_data(ts))
+
     # Test all versions of get_time_series_[array|timestamps|values]
     values1 = get_time_series_array(component, ts)
     values2 = get_time_series_array(SingleTimeSeries, component, "max_active_power")
