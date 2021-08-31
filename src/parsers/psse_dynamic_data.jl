@@ -5,6 +5,8 @@ const TGOV1DU = SteamTurbineGov1
 Parse .dyr file into a dictionary indexed by bus number.
 Each bus number key has a dictionary indexed by component type and id.
 
+Comments in .dyr files are not supported (beginning of lines with //).
+
 """
 function _parse_dyr_file(file::AbstractString)
     dyr_text = read(file, String)
@@ -16,13 +18,17 @@ function _parse_dyr_file(file::AbstractString)
         if isnothing(val)
             break
         end
-        line = replace(dyr_text[start:(val - 1)], "\'" => "")
-        val_array = strip.(split(line))
-        bus = parse(Int, val_array[1])
-        model = string(val_array[2])
-        id = parse(Int, val_array[3])
-        component_dict = get!(parsed_values, bus, Dict{Tuple{String, Int}, Array}())
-        component_dict[(model, id)] = parse.(Float64, val_array[4:end])
+        text = strip(dyr_text[start:(val - 1)])
+        if !isempty(text)
+            line = replace(text, "\'" => "")
+            line = replace(line, "," => " ")
+            val_array = strip.(split(line))
+            bus = parse(Int, val_array[1])
+            model = string(val_array[2])
+            id = string(val_array[3])
+            component_dict = get!(parsed_values, bus, Dict{Tuple{String, String}, Array}())
+            component_dict[(model, id)] = parse.(Float64, val_array[4:end])
+        end
         start = val + 1
     end
     return parsed_values
@@ -67,12 +73,16 @@ function _populate_args!(struct_args, param_map::Vector, val, id)
         elseif isa(_v, Int)
             struct_args[ix] = val[_v]
             #If the parameter is a tuple (as a string), then construct the tuple directly.
-        elseif occursin(r"^\(\d+\s*,\s*\d+\)", _v) #is a tuple string
-            _t = strip(_v, ['(', ')'])
-            _t2int = parse.(Int, split(_t, ','))
-            struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
         elseif _v == "NaN"
             # skip and do nothing
+        elseif isa(_v, String)
+            m = match(r"^\((\d+)\s*,\s*(\d+)\)$", _v)
+            if m !== nothing
+                _tuple_ix = parse.(Int, m.captures)
+                struct_args[ix] = Tuple(val[_tuple_ix])
+            else
+                error("String $(_v) not recognized for parsing")
+            end
         else
             error("invalid input value $val")
         end
@@ -123,6 +133,7 @@ function _assign_missing_components!(
             va[component_table["PSS"]] = PSSFixed(0.0)
         end
     end
+    return
 end
 
 function _assign_missing_components!(
@@ -142,6 +153,7 @@ function _assign_missing_components!(
     if ismissing(va[component_table["DCSource"]])
         va[component_table["DCSource"]] = FixedDCSource(750.0)
     end
+    return
 end
 
 """
@@ -214,7 +226,7 @@ function _parse_dyr_generator_components!(
     component_table =
         Dict("Machine" => 1, "Shaft" => 2, "AVR" => 3, "TurbineGov" => 4, "PSS" => 5)
     for (bus_num, bus_data) in data #bus_data is a dictionary with values per component (key)
-        bus_dict = Dict{Int, Any}()
+        bus_dict = Dict{String, Any}()
         for (componentID, componentValues) in bus_data
             #Fill array of 5 components per generator
             temp = get!(bus_dict, componentID[2], fill!(Vector{Any}(undef, 5), missing))
@@ -281,8 +293,7 @@ function _parse_dyr_inverter_components!(
     for (bus_num, bus_data) in data #bus_data is a dictionary with values per component (key is a tuple of PSSE name and number ID)
         #bus_dict will add a vector of components structs for each generator ID on the bus_num key of the master dictionary 'dic' 
         #bus_dict_values will only contain the vector of parameters that will be used to construct the structs
-        bus_dict = Dict{Int, Any}()
-        bus_dict_values = Dict{Int, Any}()
+        bus_dict_values = Dict{String, Any}()
         for (componentID, componentValues) in bus_data
             #ComponentID is a tuple: 
             #ComponentID[1] is the PSSE name
@@ -385,9 +396,9 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
     for g in collect(get_components(ThermalStandard, sys))
         _num = get_number(get_bus(g))
         _name = get_name(g)
-        _id = parse(Int, split(_name, "-")[end])
+        _id = split(_name, "-")[end]
         temp_dict = get(bus_dict_gen, _num, nothing)
-        if isnothing(temp_dict)
+        if temp_dict === nothing
             @warn "Generator at bus $(_num), id $(_id), not found in Dynamic Data.\nVoltage Source will be used to model it."
             r, x = get_ext(g)["z_source"]
             if x == 0.0
@@ -397,38 +408,42 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
             s = _make_source(g, r, x)
             remove_component!(typeof(g), sys, _name)
             add_component!(sys, s)
-        elseif length(temp_dict[_id]) == 5 #Generator has 5 components
-            #Obtain Machine from Dictionary
-            machine = temp_dict[_id][1]
-            #Update R,X from RSORCE and XSORCE from RAW file
-            r, x = get_ext(g)["z_source"]
-            set_R!(machine, r)
-            #Obtain Shaft from dictionary
-            shaft = temp_dict[_id][2]
-            if typeof(machine) == BaseMachine
-                if x == 0.0
-                    @warn "No series reactance found. Setting it to 1e-6"
-                    x = 1e-6
+        elseif all(.!ismissing.(temp_dict[_id]))
+            if length(temp_dict[_id]) == 5 #Generator has 5 components
+                #Obtain Machine from Dictionary
+                machine = temp_dict[_id][1]
+                #Update R,X from RSORCE and XSORCE from RAW file
+                r, x = get_ext(g)["z_source"]
+                set_R!(machine, r)
+                #Obtain Shaft from dictionary
+                shaft = temp_dict[_id][2]
+                if typeof(machine) == BaseMachine
+                    if x == 0.0
+                        @warn "No series reactance found. Setting it to 1e-6"
+                        x = 1e-6
+                    end
+                    set_Xd_p!(machine, x)
+                    if get_H(shaft) == 0.0
+                        @info "Machine at bus $(_num), id $(_id) has zero inertia. Modeling it as Voltage Source"
+                        s = _make_source(g, r, x)
+                        remove_component!(typeof(g), sys, _name)
+                        add_component!(sys, s)
+                        #Don't add DynamicComponent in case of adding Source
+                        continue
+                    end
                 end
-                set_Xd_p!(machine, x)
-                if get_H(shaft) == 0.0
-                    @info "Machine at bus $(_num), id $(_id) has zero inertia. Modeling it as Voltage Source"
-                    s = _make_source(g, r, x)
-                    remove_component!(typeof(g), sys, _name)
-                    add_component!(sys, s)
-                    #Don't add DynamicComponent in case of adding Source
-                    continue
-                end
+                #Add Dynamic Generator
+                dyn_gen = DynamicGenerator(get_name(g), 1.0, temp_dict[_id]...)
+                add_component!(sys, dyn_gen, g)
+            elseif length(temp_dict[_id]) == 7 #Inverter has 7 components (6 if Outer is put together)
+                #To do: Check X_Source and R_Source data if we want
+                dyn_inv = DynamicInverter(get_name(g), 1.0, temp_dict[_id]...)
+                add_component!(sys, dyn_inv, g)
+            else
+                @assert false
             end
-            #Add Dynamic Generator
-            dyn_gen = DynamicGenerator(get_name(g), 1.0, temp_dict[_id]...)
-            add_component!(sys, dyn_gen, g)
-        elseif length(temp_dict[_id]) == 7 #Inverter has 7 components (6 if Outer is put together)
-            #To do: Check X_Source and R_Source data if we want
-            dyn_inv = DynamicInverter(get_name(g), 1.0, temp_dict[_id]...)
-            add_component!(sys, dyn_inv, g)
         else
-            error("Generator at bus $(_num), id $(_id), not supported")
+            error("Generator at bus $(_num), id $(_id), name $(_name), not supported")
         end
     end
 end
