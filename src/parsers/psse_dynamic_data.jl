@@ -430,7 +430,6 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
                 dyn_gen = DynamicGenerator(get_name(g), 1.0, temp_dict[_id]...)
                 add_component!(sys, dyn_gen, g)
             elseif length(temp_dict[_id]) == 7 #Inverter has 7 components (6 if Outer is put together)
-                #To do: Check X_Source and R_Source data if we want
                 dyn_inv = DynamicInverter(get_name(g), 1.0, temp_dict[_id]...)
                 add_component!(sys, dyn_inv, g)
             else
