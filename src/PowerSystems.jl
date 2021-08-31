@@ -229,6 +229,7 @@ export find_connected_components
 export parse_file
 export add_time_series!
 export remove_time_series!
+export check_time_series_consistency
 export clear_time_series!
 export copy_time_series!
 export add_component!
@@ -252,6 +253,7 @@ export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
 export get_component
 export get_components
+export show_components
 export get_subcomponents
 export get_components_by_name
 export get_available_components
@@ -265,6 +267,7 @@ export get_time_series_resolution
 export get_time_series_timestamps
 export get_time_series_values
 export get_time_series_names
+export get_time_series_counts
 export get_scenario_count
 export get_percentiles
 export get_next_time_series_array!
@@ -369,6 +372,7 @@ import UUIDs
 import Base.to_index
 import NLsolve
 import InteractiveUtils
+import PrettyTables
 
 import InfrastructureSystems
 import InfrastructureSystems:
