@@ -67,6 +67,18 @@ my_thermal_gen = get_component(ThermalStandard, system, "323_CC_1") #hide
 get_active_power_limits(my_thermal_gen)
 ```
 
+You can also view data from all instances of a concrete type in one table with the function `show_components`. It provides a few options:
+
+ 1. View the standard fields by accepting the defaults.
+ 2. Pass a dictionary where the keys are column names and the values are functions that accept a component as a single argument.
+ 3. Pass a vector of symbols that are field names of the type.
+
+```@example show_components
+show_components(system, ThermalStandard)
+show_components(system, ThermalStandard, Dict("has_time_series" => x -> has_time_series(x)))
+show_components(system, ThermalStandard, [:active_power, :reactive_power])
+```
+
 ## [Per-unit conventions and data conversions](@id per_unit)
 
 It is often useful to express power systems data in relative terms using per-unit conventions.
