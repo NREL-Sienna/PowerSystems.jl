@@ -34,62 +34,56 @@ function _parse_dyr_file(file::AbstractString)
     return parsed_values
 end
 
+function _parse_input_types(_v, val)
+    #If the parameter is a Float64, then use the value directly as the argument.
+    #Typically uses for the resistance that is not available in .dyr files.
+    if isa(_v, Float64)
+        if isnan(_v)
+            error("nan for $(_v)")
+        end
+        return _v
+        #If the parameter is an Int, then use the integer as the key of the value in the dictionary.
+    elseif isa(_v, Int)
+        return val[_v]
+    elseif _v == "NaN"
+        return NaN
+        #If the parameter is a tuple (as a string), then construct the tuple directly.
+    elseif isa(_v, String)
+        m = match(r"^\((\d+)\s*,\s*(\d+)\)$", _v)
+        if m !== nothing
+            _tuple_ix = parse.(Int, m.captures)
+            return Tuple(val[_tuple_ix])
+        else
+            error("String $(_v) not recognized for parsing")
+        end
+    else
+        error("invalid input value $val")
+    end
+    return
+end
+
 """
 Populate arguments in a vector for each dynamic component (except Shafts).
 Returns a vector with the parameter values of the argument of each component.
 
 """
-function _populate_args(param_map, val)
+function _populate_args(param_map::Vector, val)
     struct_args = Vector{Any}(undef, length(param_map))
-    for (ix, _v) in enumerate(param_map)
-        #If the parameter is a Float64, then use the value directly as the argument.
-        #Typically uses for the resistance that is not available in .dyr files.
-        if isa(_v, Float64)
-            struct_args[ix] = _v
-            #If the parameter is an Int, then use the integer as the key of the value in the dictionary.
-        elseif isa(_v, Int)
-            struct_args[ix] = val[_v]
-            #If the parameter is a tuple (as a string), then construct the tuple directly.
-        elseif occursin(r"^\(\d+\s*,\s*\d+\)", _v) #is a tuple string 
-            _t = strip(_v, ['(', ')'])
-            _t2int = parse.(Int, split(_t, ','))
-            struct_args[ix] = (val[_t2int[1]], val[_t2int[2]])
-        elseif _v == "NaN"
-            # skip and do nothing
-        else
-            error("invalid input value $val")
-        end
-    end
+    _populate_args!(struct_args, param_map, val, "")
     return struct_args
 end
 
-function _populate_args!(struct_args, param_map::Vector, val, id)
+function _populate_args!(struct_args, param_map::Vector, val, ::String)
     for (ix, _v) in enumerate(param_map)
-        #If the parameter is a Float64, then use the value directly as the argument.
-        #Typically uses for the resistance that is not available in .dyr files.
-        if isa(_v, Float64)
-            struct_args[ix] = _v
-            #If the parameter is an Int, then use the integer as the key of the value in the dictionary.
-        elseif isa(_v, Int)
-            struct_args[ix] = val[_v]
-            #If the parameter is a tuple (as a string), then construct the tuple directly.
-        elseif _v == "NaN"
-            # skip and do nothing
-        elseif isa(_v, String)
-            m = match(r"^\((\d+)\s*,\s*(\d+)\)$", _v)
-            if m !== nothing
-                _tuple_ix = parse.(Int, m.captures)
-                struct_args[ix] = Tuple(val[_tuple_ix])
-            else
-                error("String $(_v) not recognized for parsing")
-            end
-        else
-            error("invalid input value $val")
+        parameter_value = _parse_input_types(_v, val)
+        if !all(isnan.(parameter_value))
+            struct_args[ix] = parameter_value
         end
     end
+    return
 end
 
-function _populate_args!(struct_args, param_dic::Dict, val, id)
+function _populate_args!(struct_args, param_dic::Dict, val, id::String)
     param_map = param_dic[id]
     _populate_args!(struct_args, param_map, val, id)
 end
