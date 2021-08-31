@@ -25,7 +25,7 @@ end
 
 @testset "2-area, 11-bus, 4-generator with renewables benchmark system Parsing " begin
     test_dir = mktempdir()
-    sys = PSB.build_system(PSB.PSYTestSystems, "psse_renewable_parsing_1")
+    sys = PSB.build_system(PSB.PSSETestSystems, "psse_renewable_parsing_1")
     dyn_injectors = get_components(DynamicInjection, sys)
     @test length(dyn_injectors) == 5
     for g in dyn_injectors
@@ -59,13 +59,13 @@ end
 
 @testset "240 Bus WECC system Parsing " begin
     test_dir = mktempdir()
-    sys = PSB.build_system(PSB.PSYTestSystems, "psse_240_case_renewable_sys")
+    sys = PSB.build_system(PSB.PSSETestSystems, "psse_240_case_renewable_sys")
     dyn_injectors = get_components(DynamicInjection, sys)
     @test length(dyn_injectors) == 146
     for g in dyn_injectors
         if isa(g, DynamicGenerator)
             m = PSY.get_machine(g)
-            @test typeof(m) <: RoundRotorExponential
+            @test typeof(m) <: RoundRotorQuadratic
         elseif isa(g, DynamicInverter)
             ic = PSY.get_inner_control(g)
             @test typeof(ic) <: RECurrentControlB
@@ -81,7 +81,7 @@ end
     for g in dyn_injectors
         if isa(g, DynamicGenerator)
             m = PSY.get_machine(g)
-            @test typeof(m) <: RoundRotorExponential
+            @test typeof(m) <: RoundRotorQuadratic
         elseif isa(g, DynamicInverter)
             ic = PSY.get_inner_control(g)
             @test typeof(ic) <: RECurrentControlB
