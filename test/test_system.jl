@@ -299,7 +299,7 @@ end
     @test !get_runchecks(sys)
 end
 
-@test "Test time series counts" begin
+@testset "Test time series counts" begin
     c_sys5 = PSB.build_system(
         PSITestSystems,
         "c_sys5_uc";
