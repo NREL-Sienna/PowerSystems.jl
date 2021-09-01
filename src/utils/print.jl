@@ -216,6 +216,13 @@ Show all components of the given type in a table.
   The Vector option is an array of field names for the `component_type`.
 
 Extra keyword arguments are forwarded to PrettyTables.pretty_table.
+
+# Examples
+```julia
+show_components(sys, ThermalStandard)
+show_components(sys, ThermalStandard, Dict("has_time_series" => x -> has_time_series(x)))
+show_components(sys, ThermalStandard, [:active_power, :reactive_power])
+```
 """
 function show_components(
     sys::System,
