@@ -1840,7 +1840,7 @@ end
 """
 Return a tuple of counts of components with time series and total time series and forecasts.
 """
-get_time_series_counts(sys::System) = get_time_series_counts(sys.data)
+get_time_series_counts(sys::System) = IS.get_time_series_counts(sys.data)
 
 """
 Checks time series in the system for inconsistencies.
