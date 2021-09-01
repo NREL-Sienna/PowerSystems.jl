@@ -4,24 +4,118 @@ function Base.summary(sys::System)
     return "System (base power $(get_base_power(sys)))"
 end
 
-function Base.show(io::IO, sys::System)
-    println(io, "base_power=$(get_base_power(sys))")
-    show(io, sys.data)
-end
-
 function Base.show(io::IO, ::MIME"text/plain", sys::System)
-    println(io, "System")
-    println(io, "======")
-    println(io, "System Units Base: $(get_units_base(sys))")
-    println(io, "Base Power: $(get_base_power(sys))")
-    println(io, "Base Frequency: $(get_frequency(sys))\n")
-    show(io, MIME"text/plain"(), sys.data)
+    show_system_table(io, sys, backend = :auto)
+
+    if IS.get_num_components(sys.data.components) > 0
+        show_components_table(io, sys, backend = :auto)
+    end
+
+    println(io)
+    IS.show_time_series_data(io, sys.data, backend = :auto)
 end
 
 function Base.show(io::IO, ::MIME"text/html", sys::System)
-    println(io, "<h1>System</h1>")
-    println(io, "<p><b>Base Power</b>: $(get_base_power(sys))</p>")
-    show(io, MIME"text/html"(), sys.data)
+    show_system_table(io, sys, backend = :html)
+
+    if IS.get_num_components(sys.data.components) > 0
+        show_components_table(io, sys, backend = :html)
+    end
+
+    println(io)
+    IS.show_time_series_data(io, sys.data, backend = :html)
+end
+
+function show_system_table(io::IO, sys::System; kwargs...)
+    header = ["Property", "Value"]
+    num_components = IS.get_num_components(sys.data.components)
+    table = [
+        "System Units Base" string(get_units_base(sys))
+        "Base Power" string(get_base_power(sys))
+        "Base Frequency" string(get_frequency(sys))
+        "Num Components" string(num_components)
+    ]
+    PrettyTables.pretty_table(
+        io,
+        table,
+        header;
+        title = "System",
+        alignment = :l,
+        kwargs...,
+    )
+end
+
+function show_components_table(io::IO, sys::System; kwargs...)
+    static_header = ["Type", "Count", "Has Static Time Series", "Has Forecasts"]
+    dynamic_header = ["Type", "Count"]
+    components = sys.data.components
+
+    static_types = Vector{DataType}()
+    dynamic_types = Vector{DataType}()
+    for component_type in keys(components.data)
+        if component_type <: DynamicInjection
+            push!(dynamic_types, component_type)
+        else
+            push!(static_types, component_type)
+        end
+    end
+    static_data = Array{Any, 2}(undef, length(static_types), length(static_header))
+    dynamic_data = Array{Any, 2}(undef, length(dynamic_types), length(dynamic_header))
+
+    static_type_names = [(IS.strip_module_name(string(x)), x) for x in static_types]
+    sort!(static_type_names, by = x -> x[1])
+    for (i, (type_name, type)) in enumerate(static_type_names)
+        vals = components.data[type]
+        has_sts = false
+        has_forecasts = false
+        for val in values(vals)
+            if has_time_series(val, StaticTimeSeries)
+                has_sts = true
+            end
+            if has_time_series(val, Forecast)
+                has_forecasts = true
+            end
+            if has_sts && has_forecasts
+                break
+            end
+        end
+        static_data[i, 1] = type_name
+        static_data[i, 2] = length(vals)
+        static_data[i, 3] = has_sts
+        static_data[i, 4] = has_forecasts
+    end
+
+    if !isempty(static_types)
+        println(io)
+        PrettyTables.pretty_table(
+            io,
+            static_data,
+            static_header,
+            title = "Static Components",
+            alignment = :l;
+            kwargs...,
+        )
+    end
+
+    dynamic_type_names = [(IS.strip_module_name(string(x)), x) for x in dynamic_types]
+    sort!(dynamic_type_names, by = x -> x[1])
+    for (i, (type_name, type)) in enumerate(dynamic_type_names)
+        vals = components.data[type]
+        dynamic_data[i, 1] = type_name
+        dynamic_data[i, 2] = length(vals)
+    end
+
+    if !isempty(dynamic_types)
+        println(io)
+        PrettyTables.pretty_table(
+            io,
+            dynamic_data,
+            dynamic_header,
+            title = "Dynamic Components",
+            alignment = :l;
+            kwargs...,
+        )
+    end
 end
 
 function Base.summary(tech::DeviceParameter)
@@ -108,4 +202,49 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
             set_units_setting!(ist, nothing)
         end
     end
+end
+
+"""
+Show all components of the given type in a table.
+
+# Arguments
+- `sys::System`: System containing the components.
+- `component_type::Type{<:Component}`: Type to display. Must be a concrete type.
+- `additional_columns::Union{Dict, Vector}`: Additional columns to display.
+  The Dict option is a mapping of column name to function. The function must accept
+  a component.
+  The Vector option is an array of field names for the `component_type`.
+
+Extra keyword arguments are forwarded to PrettyTables.pretty_table.
+
+# Examples
+```julia
+show_components(sys, ThermalStandard)
+show_components(sys, ThermalStandard, Dict("has_time_series" => x -> has_time_series(x)))
+show_components(sys, ThermalStandard, [:active_power, :reactive_power])
+```
+"""
+function show_components(
+    sys::System,
+    component_type::Type{<:Component},
+    additional_columns::Union{Dict, Vector} = Dict();
+    kwargs...,
+)
+    show_components(stdout, sys, component_type, additional_columns; kwargs...)
+end
+
+function show_components(
+    io::IO,
+    sys::System,
+    component_type::Type{<:Component},
+    additional_columns::Union{Dict, Vector} = Dict();
+    kwargs...,
+)
+    IS.show_components(
+        io,
+        sys.data.components,
+        component_type,
+        additional_columns;
+        kwargs...,
+    )
 end

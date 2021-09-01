@@ -1836,3 +1836,22 @@ function _validate_or_skip!(sys, component, skip_validation)
 
     return skip_validation
 end
+
+"""
+Return a tuple of counts of components with time series and total time series and forecasts.
+"""
+get_time_series_counts(sys::System) = get_time_series_counts(sys.data)
+
+"""
+Checks time series in the system for inconsistencies.
+
+For SingleTimeSeries, returns a Tuple of initial_timestamp and length.
+
+This is a no-op for subtypes of Forecast because those are already guaranteed to be
+consistent.
+
+Throws InfrastructureSystems.InvalidValue if any time series is inconsistent.
+"""
+function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeSeriesData}
+    return IS.check_time_series_consistency(sys.data, T)
+end
