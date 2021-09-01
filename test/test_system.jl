@@ -306,7 +306,7 @@ end
         add_single_time_series = true,
         force_build = true,
     )
-    _, ts_count, forecast_count = get_time_eries_counts(c_sys)
+    _, ts_count, forecast_count = get_time_series_counts(c_sys)
     @test ts_count == 3
     @test forecast_count == 0
 end
