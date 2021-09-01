@@ -303,12 +303,12 @@ end
     c_sys5 = PSB.build_system(
         PSITestSystems,
         "c_sys5_uc";
-        add_single_time_series = true,
+        add_forecasts = true,
         force_build = true,
     )
-    _, ts_count, forecast_count = get_time_series_counts(c_sys)
-    @test ts_count == 3
-    @test forecast_count == 0
+    _, ts_count, forecast_count = get_time_series_counts(c_sys5)
+    @test ts_count == 0
+    @test forecast_count == 3
 end
 
 @testset "Test deepcopy with time series options" begin
