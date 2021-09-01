@@ -253,7 +253,7 @@ function _parse_dyr_generator_components!(
                     temp[component_table[gen_field]] = component_constructor(struct_args...)
                 end
             else
-                #@warn "$(componentID[1]) at bus $bus_num, id $(componentID[2]), not supported in PowerSystems.jl. Skipping data."
+                @warn "$(componentID[1]) at bus $bus_num, id $(componentID[2]), not supported in PowerSystems.jl. Skipping data."
             end
         end
         #Assign generic components if there were not provided in Dynamic Data
