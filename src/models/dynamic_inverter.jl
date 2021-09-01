@@ -171,6 +171,38 @@ function DynamicInverter(;
     )
 end
 
+function DynamicInverter(
+    name::String,
+    ω_ref::Float64,
+    converter::C,
+    active_power_control::AC,
+    reactive_power_control::RC,
+    inner_control::IC,
+    dc_source::DC,
+    freq_estimator::P,
+    ac_filter::F,
+) where {
+    C <: Converter,
+    AC <: ActivePowerControl,
+    RC <: ReactivePowerControl,
+    IC <: InnerControl,
+    DC <: DCSource,
+    P <: FrequencyEstimator,
+    F <: Filter,
+}
+    outer_control = OuterControl(active_power_control, reactive_power_control)
+    return DynamicInverter(
+        name,
+        ω_ref,
+        converter,
+        outer_control,
+        inner_control,
+        dc_source,
+        freq_estimator,
+        ac_filter,
+    )
+end
+
 get_name(device::DynamicInverter) = device.name
 get_ω_ref(device::DynamicInverter) = device.ω_ref
 get_ext(device::DynamicInverter) = device.ext

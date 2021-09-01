@@ -23,6 +23,74 @@
     end
 end
 
+@testset "2-area, 11-bus, 4-generator with renewables benchmark system Parsing " begin
+    test_dir = mktempdir()
+    sys = PSB.build_system(PSB.PSSETestSystems, "psse_renewable_parsing_1")
+    dyn_injectors = get_components(DynamicInjection, sys)
+    @test length(dyn_injectors) == 5
+    for g in dyn_injectors
+        if isa(g, DynamicGenerator)
+            m = PSY.get_machine(g)
+            @test typeof(m) <: RoundRotorExponential
+        elseif isa(g, DynamicInverter)
+            ic = PSY.get_inner_control(g)
+            @test typeof(ic) <: RECurrentControlB
+        else
+            @error("Generator $g not supported")
+        end
+    end
+    path = joinpath(test_dir, "test_dyn_system_serialization.json")
+    to_json(sys, path)
+    parsed_sys = System(path)
+    dyn_injectors = get_components(DynamicInjection, parsed_sys)
+    @test length(dyn_injectors) == 5
+    for g in dyn_injectors
+        if isa(g, DynamicGenerator)
+            m = PSY.get_machine(g)
+            @test typeof(m) <: RoundRotorExponential
+        elseif isa(g, DynamicInverter)
+            ic = PSY.get_inner_control(g)
+            @test typeof(ic) <: RECurrentControlB
+        else
+            @error("Generator $g not supported")
+        end
+    end
+end
+
+@testset "240 Bus WECC system Parsing " begin
+    test_dir = mktempdir()
+    sys = PSB.build_system(PSB.PSSETestSystems, "psse_240_case_renewable_sys")
+    dyn_injectors = get_components(DynamicInjection, sys)
+    @test length(dyn_injectors) == 146
+    for g in dyn_injectors
+        if isa(g, DynamicGenerator)
+            m = PSY.get_machine(g)
+            @test typeof(m) <: RoundRotorQuadratic
+        elseif isa(g, DynamicInverter)
+            ic = PSY.get_inner_control(g)
+            @test typeof(ic) <: RECurrentControlB
+        else
+            @error("Generator $g not supported")
+        end
+    end
+    path = joinpath(test_dir, "test_dyn_system_serialization.json")
+    to_json(sys, path)
+    parsed_sys = System(path)
+    dyn_injectors = get_components(DynamicInjection, parsed_sys)
+    @test length(dyn_injectors) == 146
+    for g in dyn_injectors
+        if isa(g, DynamicGenerator)
+            m = PSY.get_machine(g)
+            @test typeof(m) <: RoundRotorQuadratic
+        elseif isa(g, DynamicInverter)
+            ic = PSY.get_inner_control(g)
+            @test typeof(ic) <: RECurrentControlB
+        else
+            @error("Generator $g not supported")
+        end
+    end
+end
+
 @testset "GENCLS dyr parsing" begin
     threebus_raw_file = joinpath(PSSE_TEST_DIR, "ThreeBusNetwork.raw")
     gencls_dyr_file = joinpath(PSSE_TEST_DIR, "TestGENCLS.dyr")
