@@ -300,7 +300,7 @@ end
 end
 
 @test "Test time series counts" begin
-c_sys5 = PSB.build_system(
+    c_sys5 = PSB.build_system(
         PSITestSystems,
         "c_sys5_uc";
         add_single_time_series = true,
