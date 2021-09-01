@@ -299,6 +299,18 @@ end
     @test !get_runchecks(sys)
 end
 
+@testset "Test time series counts" begin
+    c_sys5 = PSB.build_system(
+        PSITestSystems,
+        "c_sys5_uc";
+        add_forecasts = true,
+        force_build = true,
+    )
+    _, ts_count, forecast_count = get_time_series_counts(c_sys5)
+    @test ts_count == 0
+    @test forecast_count == 3
+end
+
 @testset "Test deepcopy with time series options" begin
     sys = PSB.build_system(
         PSITestSystems,
