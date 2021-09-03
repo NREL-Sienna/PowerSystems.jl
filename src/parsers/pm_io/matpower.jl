@@ -757,3 +757,12 @@ function _merge_generic_data!(data::Dict{String, Any})
         delete!(data, key)
     end
 end
+
+""
+function _check_keys(data, keys)
+    for key in keys
+        if haskey(data, key)
+            error("attempting to overwrite value of $(key) in PowerModels data,\n$(data)")
+        end
+    end
+end
