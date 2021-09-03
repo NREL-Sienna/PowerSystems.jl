@@ -1564,13 +1564,7 @@ function check_storage_parameters(data::Dict{String, Any})
                 ),
             )
         end
-        if strg["standby_loss"] < 0.0
-            throw(
-                DataFormatError(
-                    "storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])",
-                ),
-            )
-        end
+
         if strg["r"] < 0.0
             throw(
                 DataFormatError(
@@ -1618,7 +1612,6 @@ function check_storage_parameters(data::Dict{String, Any})
             @info "storage unit $(strg["index"]) charge efficiency of $(strg["charge_efficiency"]) is out of the valid range (0.0. 1.0]" maxlog =
                 PS_MAX_LOG
         end
-
         if strg["discharge_efficiency"] < 0.0
             throw(
                 DataFormatError(
@@ -1631,8 +1624,12 @@ function check_storage_parameters(data::Dict{String, Any})
                 PS_MAX_LOG
         end
 
-        if strg["standby_loss"] > 0.0 && strg["energy"] <= 0.0
-            @info "storage unit $(strg["index"]) has standby losses but zero initial energy.  This can lead to model infeasiblity." maxlog =
+        if strg["p_loss"] > 0.0 && strg["energy"] <= 0.0
+            @info "storage unit $(strg["index"]) has positive active power losses but zero initial energy.  This can lead to model infeasiblity." maxlog =
+                PS_MAX_LOG
+        end
+        if strg["q_loss"] > 0.0 && strg["energy"] <= 0.0
+            @info "storage unit $(strg["index"]) has positive reactive power losses but zero initial energy.  This can lead to model infeasiblity." maxlog =
                 PS_MAX_LOG
         end
     end
@@ -2889,4 +2886,31 @@ function _resolve_swithces!(data::Dict{String, <:Any})
 
     @info "removed $(length(data["switch"])) switch components"
     data["switch"] = Dict{String, Any}()
+end
+
+"""
+Move gentype and genfuel fields to be subfields of gen
+"""
+function move_genfuel_and_gentype!(data::Dict{String, Any}) # added by PSY
+    ngen = length(data["gen"])
+
+    toplevkeys = ("genfuel", "gentype")
+    sublevkeys = ("fuel", "type")
+    for i in range(1, stop = length(toplevkeys))
+        if haskey(data, toplevkeys[i])
+            # check that lengths of category and generators match
+            if length(data[toplevkeys[i]]) != ngen
+                str = toplevkeys[i]
+                throw(
+                    DataFormatError(
+                        "length of $str does not equal the number of generators",
+                    ),
+                )
+            end
+            for (key, val) in data[toplevkeys[i]]
+                data["gen"][key][sublevkeys[i]] = val["col_1"]
+            end
+            delete!(data, toplevkeys[i])
+        end
+    end
 end
