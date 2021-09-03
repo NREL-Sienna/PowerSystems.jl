@@ -455,6 +455,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         get_ext(b)["neighbors"] = neighbors[ix]
         for gen in sources
             !get_available(gen) && continue
+            @show get_name(gen)
             if gen.bus == b
                 P_GEN_BUS[ix] += get_active_power(gen)
                 Q_GEN_BUS[ix] += get_reactive_power(gen)
