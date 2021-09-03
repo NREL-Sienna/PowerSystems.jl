@@ -31,22 +31,22 @@ const _pti_sections = [
 ]
 
 const _transaction_dtypes = [
-    ("IC", Int),
+    ("IC", Int64),
     ("SBASE", Float64),
-    ("REV", Int),
+    ("REV", Int64),
     ("XFRRAT", Float64),
     ("NXFRAT", Float64),
     ("BASFRQ", Float64),
 ]
 
 const _bus_dtypes = [
-    ("I", Int),
+    ("I", Int64),
     ("NAME", String),
     ("BASKV", Float64),
-    ("IDE", Int),
-    ("AREA", Int),
-    ("ZONE", Int),
-    ("OWNER", Int),
+    ("IDE", Int64),
+    ("AREA", Int64),
+    ("ZONE", Int64),
+    ("OWNER", Int64),
     ("VM", Float64),
     ("VA", Float64),
     ("NVHI", Float64),
@@ -56,59 +56,59 @@ const _bus_dtypes = [
 ]
 
 const _load_dtypes = [
-    ("I", Int),
+    ("I", Int64),
     ("ID", String),
-    ("STATUS", Int),
-    ("AREA", Int),
-    ("ZONE", Int),
+    ("STATUS", Int64),
+    ("AREA", Int64),
+    ("ZONE", Int64),
     ("PL", Float64),
     ("QL", Float64),
     ("IP", Float64),
     ("IQ", Float64),
     ("YP", Float64),
     ("YQ", Float64),
-    ("OWNER", Int),
-    ("SCALE", Int),
-    ("INTRPT", Int),
+    ("OWNER", Int64),
+    ("SCALE", Int64),
+    ("INTRPT", Int64),
 ]
 
 const _fixed_shunt_dtypes =
-    [("I", Int), ("ID", String), ("STATUS", Int), ("GL", Float64), ("BL", Float64)]
+    [("I", Int64), ("ID", String), ("STATUS", Int64), ("GL", Float64), ("BL", Float64)]
 
 const _generator_dtypes = [
-    ("I", Int),
+    ("I", Int64),
     ("ID", String),
     ("PG", Float64),
     ("QG", Float64),
     ("QT", Float64),
     ("QB", Float64),
     ("VS", Float64),
-    ("IREG", Int),
+    ("IREG", Int64),
     ("MBASE", Float64),
     ("ZR", Float64),
     ("ZX", Float64),
     ("RT", Float64),
     ("XT", Float64),
     ("GTAP", Float64),
-    ("STAT", Int),
+    ("STAT", Int64),
     ("RMPCT", Float64),
     ("PT", Float64),
     ("PB", Float64),
-    ("O1", Int),
+    ("O1", Int64),
     ("F1", Float64),
-    ("O2", Int),
+    ("O2", Int64),
     ("F2", Float64),
-    ("O3", Int),
+    ("O3", Int64),
     ("F3", Float64),
-    ("O4", Int),
+    ("O4", Int64),
     ("F4", Float64),
-    ("WMOD", Int),
+    ("WMOD", Int64),
     ("WPF", Float64),
 ]
 
 const _branch_dtypes = [
-    ("I", Int),
-    ("J", Int),
+    ("I", Int64),
+    ("J", Int64),
     ("CKT", String),
     ("R", Float64),
     ("X", Float64),
@@ -120,39 +120,39 @@ const _branch_dtypes = [
     ("BI", Float64),
     ("GJ", Float64),
     ("BJ", Float64),
-    ("ST", Int),
-    ("MET", Int),
+    ("ST", Int64),
+    ("MET", Int64),
     ("LEN", Float64),
-    ("O1", Int),
+    ("O1", Int64),
     ("F1", Float64),
-    ("O2", Int),
+    ("O2", Int64),
     ("F2", Float64),
-    ("O3", Int),
+    ("O3", Int64),
     ("F3", Float64),
-    ("O4", Int),
+    ("O4", Int64),
     ("F4", Float64),
 ]
 
 const _transformer_dtypes = [
-    ("I", Int),
-    ("J", Int),
-    ("K", Int),
+    ("I", Int64),
+    ("J", Int64),
+    ("K", Int64),
     ("CKT", String),
-    ("CW", Int),
-    ("CZ", Int),
-    ("CM", Int),
+    ("CW", Int64),
+    ("CZ", Int64),
+    ("CM", Int64),
     ("MAG1", Float64),
     ("MAG2", Float64),
-    ("NMETR", Int),
+    ("NMETR", Int64),
     ("NAME", String),
-    ("STAT", Int),
-    ("O1", Int),
+    ("STAT", Int64),
+    ("O1", Int64),
     ("F1", Float64),
-    ("O2", Int),
+    ("O2", Int64),
     ("F2", Float64),
-    ("O3", Int),
+    ("O3", Int64),
     ("F3", Float64),
-    ("O4", Int),
+    ("O4", Int64),
     ("F4", Float64),
     ("VECGRP", String),
 ]
@@ -178,14 +178,14 @@ const _transformer_3_2_dtypes = [
     ("RATA1", Float64),
     ("RATB1", Float64),
     ("RATC1", Float64),
-    ("COD1", Int),
-    ("CONT1", Int),
+    ("COD1", Int64),
+    ("CONT1", Int64),
     ("RMA1", Float64),
     ("RMI1", Float64),
     ("VMA1", Float64),
     ("VMI1", Float64),
     ("NTP1", Float64),
-    ("TAB1", Int),
+    ("TAB1", Int64),
     ("CR1", Float64),
     ("CX1", Float64),
     ("CNXA1", Float64),
@@ -198,14 +198,14 @@ const _transformer_3_3_dtypes = [
     ("RATA2", Float64),
     ("RATB2", Float64),
     ("RATC2", Float64),
-    ("COD2", Int),
-    ("CONT2", Int),
+    ("COD2", Int64),
+    ("CONT2", Int64),
     ("RMA2", Float64),
     ("RMI2", Float64),
     ("VMA2", Float64),
     ("VMI2", Float64),
     ("NTP2", Float64),
-    ("TAB2", Int),
+    ("TAB2", Int64),
     ("CR2", Float64),
     ("CX2", Float64),
     ("CNXA2", Float64),
@@ -218,14 +218,14 @@ const _transformer_3_4_dtypes = [
     ("RATA3", Float64),
     ("RATB3", Float64),
     ("RATC3", Float64),
-    ("COD3", Int),
-    ("CONT3", Int),
+    ("COD3", Int64),
+    ("CONT3", Int64),
     ("RMA3", Float64),
     ("RMI3", Float64),
     ("VMA3", Float64),
     ("VMI3", Float64),
     ("NTP3", Float64),
-    ("TAB3", Int),
+    ("TAB3", Int64),
     ("CR3", Float64),
     ("CX3", Float64),
     ("CNXA3", Float64),
@@ -241,14 +241,14 @@ const _transformer_2_2_dtypes = [
     ("RATA1", Float64),
     ("RATB1", Float64),
     ("RATC1", Float64),
-    ("COD1", Int),
-    ("CONT1", Int),
+    ("COD1", Int64),
+    ("CONT1", Int64),
     ("RMA1", Float64),
     ("RMI1", Float64),
     ("VMA1", Float64),
     ("VMI1", Float64),
     ("NTP1", Float64),
-    ("TAB1", Int),
+    ("TAB1", Int64),
     ("CR1", Float64),
     ("CX1", Float64),
     ("CNXA1", Float64),
@@ -257,11 +257,11 @@ const _transformer_2_2_dtypes = [
 const _transformer_2_3_dtypes = [("WINDV2", Float64), ("NOMV2", Float64)]
 
 const _area_interchange_dtypes =
-    [("I", Int), ("ISW", Int), ("PDES", Float64), ("PTOL", Float64), ("ARNAME", String)]
+    [("I", Int64), ("ISW", Int64), ("PDES", Float64), ("PTOL", Float64), ("ARNAME", String)]
 
 const _two_terminal_line_dtypes = [
     ("NAME", String),
-    ("MDC", Int),
+    ("MDC", Int64),
     ("RDC", Float64),
     ("SETVL", Float64),
     ("VSCHD", Float64),
@@ -270,10 +270,10 @@ const _two_terminal_line_dtypes = [
     ("DELTI", Float64),
     ("METER", String),
     ("DCVMIN", Float64),
-    ("CCCITMX", Int),
+    ("CCCITMX", Int64),
     ("CCCACC", Float64),
-    ("IPR", Int),
-    ("NBR", Int),
+    ("IPR", Int64),
+    ("NBR", Int64),
     ("ANMXR", Float64),
     ("ANMNR", Float64),
     ("RCR", Float64),
@@ -284,13 +284,13 @@ const _two_terminal_line_dtypes = [
     ("TMXR", Float64),
     ("TMNR", Float64),
     ("STPR", Float64),
-    ("ICR", Int),
-    ("IFR", Int),
-    ("ITR", Int),
+    ("ICR", Int64),
+    ("IFR", Int64),
+    ("ITR", Int64),
     ("IDR", String),
     ("XCAPR", Float64),
-    ("IPI", Int),
-    ("NBI", Int),
+    ("IPI", Int64),
+    ("NBI", Int64),
     ("ANMXI", Float64),
     ("ANMNI", Float64),
     ("RCI", Float64),
@@ -301,31 +301,31 @@ const _two_terminal_line_dtypes = [
     ("TMXI", Float64),
     ("TMNI", Float64),
     ("STPI", Float64),
-    ("ICI", Int),
-    ("IFI", Int),
-    ("ITI", Int),
+    ("ICI", Int64),
+    ("IFI", Int64),
+    ("ITI", Int64),
     ("IDI", String),
     ("XCAPI", Float64),
 ]
 
 const _vsc_line_dtypes = [
     ("NAME", String),
-    ("MDC", Int),
+    ("MDC", Int64),
     ("RDC", Float64),
-    ("O1", Int),
+    ("O1", Int64),
     ("F1", Float64),
-    ("O2", Int),
+    ("O2", Int64),
     ("F2", Float64),
-    ("O3", Int),
+    ("O3", Int64),
     ("F3", Float64),
-    ("O4", Int),
+    ("O4", Int64),
     ("F4", Float64),
 ]
 
 const _vsc_subline_dtypes = [
-    ("IBUS", Int),
-    ("TYPE", Int),
-    ("MODE", Int),
+    ("IBUS", Int64),
+    ("TYPE", Int64),
+    ("MODE", Int64),
     ("DCSET", Float64),
     ("ACSET", Float64),
     ("ALOSS", Float64),
@@ -336,12 +336,12 @@ const _vsc_subline_dtypes = [
     ("PWF", Float64),
     ("MAXQ", Float64),
     ("MINQ", Float64),
-    ("REMOT", Int),
+    ("REMOT", Int64),
     ("RMPCT", Float64),
 ]
 
 const _impedance_correction_dtypes = [
-    ("I", Int),
+    ("I", Int64),
     ("T1", Float64),
     ("F1", Float64),
     ("T2", Float64),
@@ -368,18 +368,18 @@ const _impedance_correction_dtypes = [
 
 const _multi_term_main_dtypes = [
     ("NAME", String),
-    ("NCONV", Int),
-    ("NDCBS", Int),
-    ("NDCLN", Int),
-    ("MDC", Int),
-    ("VCONV", Int),
+    ("NCONV", Int64),
+    ("NDCBS", Int64),
+    ("NDCLN", Int64),
+    ("MDC", Int64),
+    ("VCONV", Int64),
     ("VCMOD", Float64),
     ("VCONVN", Float64),
 ]
 
 const _multi_term_nconv_dtypes = [
-    ("IB", Int),
-    ("N", Int),
+    ("IB", Int64),
+    ("N", Int64),
     ("ANGMX", Float64),
     ("ANGMN", Float64),
     ("RC", Float64),
@@ -393,57 +393,57 @@ const _multi_term_nconv_dtypes = [
     ("SETVL", Float64),
     ("DCPF", Float64),
     ("MARG", Float64),
-    ("CNVCOD", Int),
+    ("CNVCOD", Int64),
 ]
 
 const _multi_term_ndcbs_dtypes = [
-    ("IDC", Int),
-    ("IB", Int),
-    ("AREA", Int),
-    ("ZONE", Int),
+    ("IDC", Int64),
+    ("IB", Int64),
+    ("AREA", Int64),
+    ("ZONE", Int64),
     ("DCNAME", String),
-    ("IDC2", Int),
+    ("IDC2", Int64),
     ("RGRND", Float64),
-    ("OWNER", Int),
+    ("OWNER", Int64),
 ]
 
 const _multi_term_ndcln_dtypes = [
-    ("IDC", Int),
-    ("JDC", Int),
+    ("IDC", Int64),
+    ("JDC", Int64),
     ("DCCKT", String),
-    ("MET", Int),
+    ("MET", Int64),
     ("RDC", Float64),
     ("LDC", Float64),
 ]
 
 const _multi_section_dtypes = [
-    ("I", Int),
-    ("J", Int),
+    ("I", Int64),
+    ("J", Int64),
     ("ID", String),
-    ("MET", Int),
-    ("DUM1", Int),
-    ("DUM2", Int),
-    ("DUM3", Int),
-    ("DUM4", Int),
-    ("DUM5", Int),
-    ("DUM6", Int),
-    ("DUM7", Int),
-    ("DUM8", Int),
-    ("DUM9", Int),
+    ("MET", Int64),
+    ("DUM1", Int64),
+    ("DUM2", Int64),
+    ("DUM3", Int64),
+    ("DUM4", Int64),
+    ("DUM5", Int64),
+    ("DUM6", Int64),
+    ("DUM7", Int64),
+    ("DUM8", Int64),
+    ("DUM9", Int64),
 ]
 
-const _zone_dtypes = [("I", Int), ("ZONAME", String)]
+const _zone_dtypes = [("I", Int64), ("ZONAME", String)]
 
 const _interarea_dtypes =
-    [("ARFROM", Int), ("ARTO", Int), ("TRID", String), ("PTRAN", Float64)]
+    [("ARFROM", Int64), ("ARTO", Int64), ("TRID", String), ("PTRAN", Float64)]
 
-const _owner_dtypes = [("I", Int), ("OWNAME", String)]
+const _owner_dtypes = [("I", Int64), ("OWNAME", String)]
 
 const _FACTS_dtypes = [
     ("NAME", String),
-    ("I", Int),
-    ("J", Int),
-    ("MODE", Int),
+    ("I", Int64),
+    ("J", Int64),
+    ("MODE", Int64),
     ("PDES", Float64),
     ("QDES", Float64),
     ("VSET", Float64),
@@ -455,40 +455,40 @@ const _FACTS_dtypes = [
     ("IMX", Float64),
     ("LINX", Float64),
     ("RMPCT", Float64),
-    ("OWNER", Int),
+    ("OWNER", Int64),
     ("SET1", Float64),
     ("SET2", Float64),
-    ("VSREF", Int),
-    ("REMOT", Int),
+    ("VSREF", Int64),
+    ("REMOT", Int64),
     ("MNAME", String),
 ]
 
 const _switched_shunt_dtypes = [
-    ("I", Int),
-    ("MODSW", Int),
-    ("ADJM", Int),
-    ("STAT", Int),
+    ("I", Int64),
+    ("MODSW", Int64),
+    ("ADJM", Int64),
+    ("STAT", Int64),
     ("VSWHI", Float64),
     ("VSWLO", Float64),
-    ("SWREM", Int),
+    ("SWREM", Int64),
     ("RMPCT", Float64),
     ("RMIDNT", String),
     ("BINIT", Float64),
-    ("N1", Int),
+    ("N1", Int64),
     ("B1", Float64),
-    ("N2", Int),
+    ("N2", Int64),
     ("B2", Float64),
-    ("N3", Int),
+    ("N3", Int64),
     ("B3", Float64),
-    ("N4", Int),
+    ("N4", Int64),
     ("B4", Float64),
-    ("N5", Int),
+    ("N5", Int64),
     ("B5", Float64),
-    ("N6", Int),
+    ("N6", Int64),
     ("B6", Float64),
-    ("N7", Int),
+    ("N7", Int64),
     ("B7", Float64),
-    ("N8", Int),
+    ("N8", Int64),
     ("B8", Float64),
 ]
 
@@ -496,33 +496,33 @@ const _switched_shunt_dtypes = [
 const _gne_device_dtypes = [
     ("NAME", String),
     ("MODEL", String),
-    ("NTERM", Int),
-    ("BUSi", Int),
-    ("NREAL", Int),
-    ("NINTG", Int),
-    ("NCHAR", Int),
-    ("STATUS", Int),
-    ("OWNER", Int),
-    ("NMETR", Int),
+    ("NTERM", Int64),
+    ("BUSi", Int64),
+    ("NREAL", Int64),
+    ("NINTG", Int64),
+    ("NCHAR", Int64),
+    ("STATUS", Int64),
+    ("OWNER", Int64),
+    ("NMETR", Int64),
     ("REALi", Float64),
-    ("INTGi", Int),
+    ("INTGi", Int64),
     ("CHARi", String),
 ]
 
 const _induction_machine_dtypes = [
-    ("I", Int),
+    ("I", Int64),
     ("ID", String),
-    ("STAT", Int),
-    ("SCODE", Int),
-    ("DCODE", Int),
-    ("AREA", Int),
-    ("ZONE", Int),
-    ("OWNER", Int),
-    ("TCODE", Int),
-    ("BCODE", Int),
+    ("STAT", Int64),
+    ("SCODE", Int64),
+    ("DCODE", Int64),
+    ("AREA", Int64),
+    ("ZONE", Int64),
+    ("OWNER", Int64),
+    ("TCODE", Int64),
+    ("BCODE", Int64),
     ("MBASE", Float64),
     ("RATEKV", Float64),
-    ("PCODE", Int),
+    ("PCODE", Int64),
     ("PSET", Float64),
     ("H", Float64),
     ("A", Float64),
@@ -548,7 +548,7 @@ const _induction_machine_dtypes = [
 
 """
 lookup array of data types for PTI file sections given by
-`field_name`, as enumerated by PSS/e Program Operation Manual.
+`field_name`, as enumerated by PSS/E Program Operation Manual.
 """
 const _pti_dtypes = Dict{String, Array}(
     "BUS" => _bus_dtypes,
@@ -609,7 +609,7 @@ const _default_bus = Dict(
 )
 
 const _default_load = Dict(
-    "ID" => 1,
+    "ID" => "1",
     "STATUS" => 1,
     "PL" => 0.0,
     "QL" => 0.0,
@@ -624,10 +624,10 @@ const _default_load = Dict(
     "OWNER" => nothing,
 )
 
-const _default_fixed_shunt = Dict("ID" => 1, "STATUS" => 1, "GL" => 0.0, "BL" => 0.0)
+const _default_fixed_shunt = Dict("ID" => "1", "STATUS" => 1, "GL" => 0.0, "BL" => 0.0)
 
 const _default_generator = Dict(
-    "ID" => 1,
+    "ID" => "1",
     "PG" => 0.0,
     "QG" => 0.0,
     "QT" => 9999.0,
@@ -657,7 +657,7 @@ const _default_generator = Dict(
 )
 
 const _default_branch = Dict(
-    "CKT" => 1,
+    "CKT" => "1",
     "B" => 0.0,
     "RATEA" => 0.0,
     "RATEB" => 0.0,
@@ -681,7 +681,7 @@ const _default_branch = Dict(
 
 const _default_transformer = Dict(
     "K" => 0,
-    "CKT" => 1,
+    "CKT" => "1",
     "CW" => 1,
     "CZ" => 1,
     "CM" => 1,
@@ -911,14 +911,14 @@ const _default_switched_shunt = Dict(
     "RMPCT" => 100.0,
     "RMIDNT" => "",
     "BINIT" => 0.0,
-    "N1" => 0.0,
-    "N2" => 0.0,
-    "N3" => 0.0,
-    "N4" => 0.0,
-    "N5" => 0.0,
-    "N6" => 0.0,
-    "N7" => 0.0,
-    "N8" => 0.0,
+    "N1" => 0,
+    "N2" => 0,
+    "N3" => 0,
+    "N4" => 0,
+    "N5" => 0,
+    "N6" => 0,
+    "N7" => 0,
+    "N8" => 0,
     "B1" => 0.0,
     "B2" => 0.0,
     "B3" => 0.0,
@@ -1011,13 +1011,13 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "LOAD")
         for load in data["LOAD"]
             load_bus = bus_lookup[load["I"]]
-            if load["AREA"] === nothing
+            if load["AREA"] == nothing
                 load["AREA"] = load_bus["AREA"]
             end
-            if load["ZONE"] === nothing
+            if load["ZONE"] == nothing
                 load["ZONE"] = load_bus["ZONE"]
             end
-            if load["OWNER"] === nothing
+            if load["OWNER"] == nothing
                 load["OWNER"] = load_bus["OWNER"]
             end
         end
@@ -1026,10 +1026,10 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "GENERATOR")
         for gen in data["GENERATOR"]
             gen_bus = bus_lookup[gen["I"]]
-            if haskey(gen, "OWNER") && gen["OWNER"] === nothing
+            if haskey(gen, "OWNER") && gen["OWNER"] == nothing
                 gen["OWNER"] = gen_bus["OWNER"]
             end
-            if gen["MBASE"] === nothing
+            if gen["MBASE"] == nothing
                 gen["MBASE"] = sbase
             end
         end
@@ -1038,7 +1038,7 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "BRANCH")
         for branch in data["BRANCH"]
             branch_bus = bus_lookup[branch["I"]]
-            if haskey(branch, "OWNER") && branch["OWNER"] === nothing
+            if haskey(branch, "OWNER") && branch["OWNER"] == nothing
                 branch["OWNER"] = branch_bus["OWNER"]
             end
         end
@@ -1048,12 +1048,12 @@ function _correct_nothing_values!(data::Dict)
         for transformer in data["TRANSFORMER"]
             transformer_bus = bus_lookup[transformer["I"]]
             for base_id in ["SBASE1-2", "SBASE2-3", "SBASE3-1"]
-                if haskey(transformer, base_id) && transformer[base_id] === nothing
+                if haskey(transformer, base_id) && transformer[base_id] == nothing
                     transformer[base_id] = sbase
                 end
             end
             for winding_id in ["WINDV1", "WINDV2", "WINDV3"]
-                if haskey(transformer, winding_id) && transformer[winding_id] === nothing
+                if haskey(transformer, winding_id) && transformer[winding_id] == nothing
                     if transformer["CW"] == 2
                         transformer[winding_id] = transformer_bus["BASKV"]
                     else
@@ -1076,10 +1076,10 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "GNE DEVICE")
         for gne in data["GNE DEVICE"]
             gne_bus = bus_lookup[gne["I"]]
-            if haskey(gne, "OWNER") && gne["OWNER"] === nothing
+            if haskey(gne, "OWNER") && gne["OWNER"] == nothing
                 gne["OWNER"] = gne_bus["OWNER"]
             end
-            if haskey(gne, "NMETR") && gne["NMETR"] === nothing
+            if haskey(gne, "NMETR") && gne["NMETR"] == nothing
                 gne["NMETR"] = gne_bus["NTERM"]
             end
         end
@@ -1088,16 +1088,16 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "INDUCTION MACHINE")
         for indm in data["INDUCTION MACHINE"]
             indm_bus = bus_lookup[indm["I"]]
-            if indm["AREA"] === nothing
+            if indm["AREA"] == nothing
                 indm["AREA"] = indm_bus["AREA"]
             end
-            if indm["ZONE"] === nothing
+            if indm["ZONE"] == nothing
                 indm["ZONE"] = indm_bus["ZONE"]
             end
-            if indm["OWNER"] === nothing
+            if indm["OWNER"] == nothing
                 indm["OWNER"] = indm_bus["OWNER"]
             end
-            if indm["MBASE"] === nothing
+            if indm["MBASE"] == nothing
                 indm["MBASE"] = sbase
             end
         end
@@ -1290,7 +1290,7 @@ function _parse_pti_data(data_io::IO)
 
             if length(elements) > 1
                 @info(
-                    "At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end."
+                    "At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end.",
                 )
             elseif length(comment) > 0
                 @debug "At line $line_number, switched to $section" _group =
@@ -1343,14 +1343,14 @@ function _parse_pti_data(data_io::IO)
                     catch message
                         throw(
                             @error(
-                                "Parsing failed at line $line_number: $(sprint(showerror, message))"
-                            )
+                                "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                            ),
                         )
                     end
 
                     if section_data["REV"] != "" && section_data["REV"] < 33
                         @info(
-                            "Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly."
+                            "Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.",
                         )
                     end
                 else
@@ -1363,10 +1363,10 @@ function _parse_pti_data(data_io::IO)
 
             elseif section == "TRANSFORMER"
                 section_data = Dict{String, Any}()
-                if parse(Int, _get_line_elements(line)[1][3]) == 0 # two winding transformer
+                if parse(Int64, _get_line_elements(line)[1][3]) == 0 # two winding transformer
                     winding = "TWO-WINDING"
                     skip_lines = 3
-                elseif parse(Int, _get_line_elements(line)[1][3]) != 0 # three winding transformer
+                elseif parse(Int64, _get_line_elements(line)[1][3]) != 0 # three winding transformer
                     winding = "THREE-WINDING"
                     skip_lines = 4
                 else
@@ -1394,8 +1394,8 @@ function _parse_pti_data(data_io::IO)
                 catch message
                     throw(
                         @error(
-                            "Parsing failed at line $line_number: $(sprint(showerror, message))"
-                        )
+                            "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                        ),
                     )
                 end
 
@@ -1407,8 +1407,8 @@ function _parse_pti_data(data_io::IO)
                     catch message
                         throw(
                             @error(
-                                "Parsing failed at line $line_number: $(sprint(showerror, message))"
-                            )
+                                "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                            ),
                         )
                     end
                     skip_sublines = 2
@@ -1449,8 +1449,8 @@ function _parse_pti_data(data_io::IO)
                 catch message
                     throw(
                         @error(
-                            "Parsing failed at line $line_number: $(sprint(showerror, message))"
-                        )
+                            "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                        ),
                     )
                 end
 
@@ -1462,8 +1462,8 @@ function _parse_pti_data(data_io::IO)
                     catch message
                         throw(
                             @error(
-                                "Parsing failed at line $line_number: $(sprint(showerror, message))"
-                            )
+                                "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                            ),
                         )
                     end
 
@@ -1608,7 +1608,7 @@ function _populate_defaults!(data::Dict)
                                     catch msg
                                         if isa(msg, KeyError)
                                             @warn(
-                                                "'$sub_field' in '$field' in '$section' has no default value"
+                                                "'$sub_field' in '$field' in '$section' has no default value",
                                             )
                                         else
                                             rethrow(msg)
@@ -1624,7 +1624,7 @@ function _populate_defaults!(data::Dict)
                             component[field] = component_defaults[field]
                         catch msg
                             if isa(msg, KeyError)
-                                @warn("'$field' in '$section' has no default value")
+                                @warn("'$field' in '$section' has no default value",)
                             else
                                 rethrow(msg)
                             end
