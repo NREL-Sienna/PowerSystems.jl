@@ -52,6 +52,10 @@
     ts = get_time_series(SingleTimeSeries, component, "max_active_power")
     @test ts isa SingleTimeSeries
 
+    returned_it, returned_len = check_time_series_consistency(sys, SingleTimeSeries)
+    @test returned_it == first(TimeSeries.timestamp(get_data(ts)))
+    @test returned_len == length(get_data(ts))
+
     # Test all versions of get_time_series_[array|timestamps|values]
     values1 = get_time_series_array(component, ts)
     values2 = get_time_series_array(SingleTimeSeries, component, "max_active_power")
@@ -293,6 +297,18 @@ end
     sys2 = deepcopy(sys)
     @test sys2 isa System
     @test !get_runchecks(sys)
+end
+
+@testset "Test time series counts" begin
+    c_sys5 = PSB.build_system(
+        PSITestSystems,
+        "c_sys5_uc";
+        add_forecasts = true,
+        force_build = true,
+    )
+    _, ts_count, forecast_count = get_time_series_counts(c_sys5)
+    @test ts_count == 0
+    @test forecast_count == 3
 end
 
 @testset "Test deepcopy with time series options" begin
