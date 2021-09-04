@@ -204,8 +204,14 @@ function _parse_matlab_data(lines, index, start_char, end_char)
         if length(matrix[1]) != length(column_names)
             @error "column name parsing error, data rows $(length(matrix[1])), column names $(length(column_names)) \n$(column_names)"
         end
-        if any([column_name == "index" for column_name in column_names])
-            @error "column name parsing error, \"index\" is a reserved column name \n$(column_names)"
+        for (c, column_name) in enumerate(column_names)
+            if column_name == "index"
+                @error "column name parsing error, \"index\" is a reserved column name \n$(column_names)"
+
+                if !(typeof(typed_columns[c][1]) <: Int)
+                    @error "the type of a column named \"index\" must be Int, but given $(typeof(typed_columns[c][1]))"
+                end
+            end
         end
         matrix_dict["column_names"] = column_names
     end
@@ -213,49 +219,77 @@ function _parse_matlab_data(lines, index, start_char, end_char)
     return matrix_dict
 end
 
-const single_quote_expr = r"\'((\\.|[^\'])*?)\'"
-
 ""
 function split_line(mp_line::AbstractString)
-    if occursin(single_quote_expr, mp_line)
-        # splits a string on white space while escaping text quoted with "'"
-        # note that quotes will be stripped later, when data typing occurs
+    tokens = []
+    curr_token = ""
+    is_curr_token_quote = false
 
-        #println(mp_line)
-        tokens = []
-        while length(mp_line) > 0 && occursin(single_quote_expr, mp_line)
-            #println(mp_line)
-            m = match(single_quote_expr, mp_line)
+    isquote(c) = (c == '\'' || c == '"')
 
-            if m.offset > 1
-                push!(tokens, mp_line[1:(m.offset - 1)])
-            end
-            push!(tokens, replace(m.match, "\\'" => "'")) # replace escaped quotes
-
-            mp_line = mp_line[(m.offset + length(m.match)):end]
+    function _push_curr_token()
+        if curr_pos <= length(mp_line)
+            curr_token *= mp_line[curr_pos]
         end
-        if length(mp_line) > 0
-            push!(tokens, mp_line)
+        curr_token = strip(curr_token)
+        if length(curr_token) > 0
+            push!(tokens, curr_token)
         end
-        #println(tokens)
-
-        items = []
-        for token in tokens
-            if occursin("'", token)
-                push!(items, strip(token))
-            else
-                for parts in split(token)
-                    push!(items, strip(parts))
-                end
-            end
-        end
-        #println(items)
-
-        #return [strip(mp_line, '\'')]
-        return items
-    else
-        return split(mp_line)
+        curr_token = ""
+        curr_pos += 1
+        is_curr_token_quote = false
     end
+
+    function _push_curr_char()
+        curr_token *= mp_line[curr_pos]
+        curr_pos += 1
+    end
+
+    curr_pos = 1
+    while curr_pos <= length(mp_line)
+        if is_curr_token_quote
+            if mp_line[curr_pos] == curr_token[1]
+                if mp_line[curr_pos - 1] == '\\'
+                    # If we are inside a quote and we see slash-quote, we should
+                    # treat the quote character as a regular character.
+                    _push_curr_char()
+                elseif curr_pos < length(mp_line) && mp_line[curr_pos + 1] == curr_token[1]
+                    # If we are inside a quote, and we see two quotes in a row,
+                    # we should append one of the quotes to the current
+                    # token, then skip the other one.
+                    curr_token *= mp_line[curr_pos]
+                    curr_pos += 2
+                else
+                    # If we are inside a quote, and we see an unescaped quote char,
+                    # then the quote is ending. We should push the current token.
+                    _push_curr_token()
+                end
+            else
+                # If we are inside a quote and we see a non-quote character,
+                # we should append that character to the current token.
+                _push_curr_char()
+            end
+        else
+            if isspace(mp_line[curr_pos]) && !isspace(mp_line[curr_pos + 1])
+                # If we are not inside a quote and we see a transition from
+                # space to non-space character, then the current token is done.
+                _push_curr_token()
+            elseif isquote(mp_line[curr_pos])
+                # If we are not inside a quote and we see a quote character,
+                # then a new quote is starting. We should append the quote
+                # character to the current token and switch to quote mode.
+                curr_token = strip(curr_token * mp_line[curr_pos])
+                is_curr_token_quote = true
+                curr_pos += 1
+            else
+                # If we are not inside a quote and we see a regular character,
+                # we should append that character to the current token.
+                _push_curr_char()
+            end
+        end
+    end
+    _push_curr_token()
+    return tokens
 end
 
 ""

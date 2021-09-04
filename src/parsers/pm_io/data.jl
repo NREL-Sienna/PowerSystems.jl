@@ -222,7 +222,8 @@ const _pm_component_parameter_order = Dict(
     "qmax" => 77.10,
     "r" => 77.11,
     "x" => 77.12,
-    "standby_loss" => 77.13,
+    "p_loss" => 77.13,
+    "q_loss" => 77.14,
     "status" => 80.0,
     "gen_status" => 81.0,
     "br_status" => 82.0,
@@ -334,6 +335,11 @@ function _make_per_unit!(data::Dict{String, <:Any}, mva_base::Real)
             _apply_func!(gen, "qmax", rescale)
             _apply_func!(gen, "qmin", rescale)
 
+            _apply_func!(gen, "ramp_agc", rescale)
+            _apply_func!(gen, "ramp_10", rescale)
+            _apply_func!(gen, "ramp_30", rescale)
+            _apply_func!(gen, "ramp_q", rescale)
+
             _rescale_cost_model!(gen, mva_base)
         end
     end
@@ -348,7 +354,8 @@ function _make_per_unit!(data::Dict{String, <:Any}, mva_base::Real)
             _apply_func!(strg, "current_rating", rescale)
             _apply_func!(strg, "qmin", rescale)
             _apply_func!(strg, "qmax", rescale)
-            _apply_func!(strg, "standby_loss", rescale)
+            _apply_func!(strg, "p_loss", rescale)
+            _apply_func!(strg, "q_loss", rescale)
         end
     end
 
@@ -390,6 +397,9 @@ function _make_per_unit!(data::Dict{String, <:Any}, mva_base::Real)
 
         _apply_func!(branch, "mu_sm_fr", rescale_dual)
         _apply_func!(branch, "mu_sm_to", rescale_dual)
+
+        _apply_func!(branch, "ta_max", deg2rad)
+        _apply_func!(branch, "ta_min", deg2rad)
     end
 
     if haskey(data, "dcline")
@@ -429,7 +439,9 @@ function make_mixed_units!(data::Dict{String, <:Any})
 end
 
 ""
-function _make_mixed_units!(data::Dict{String, <:Any}, mva_base::Real)
+function _make_mixed_units!(data::Dict{String, <:Any})
+    mva_base = data["baseMVA"]
+
     # to be consistent with matpower's opf.flow_lim= 'I' with current magnitude
     # limit defined in MVA at 1 p.u. voltage
     ka_base = mva_base
@@ -472,6 +484,11 @@ function _make_mixed_units!(data::Dict{String, <:Any}, mva_base::Real)
             _apply_func!(gen, "qmax", rescale)
             _apply_func!(gen, "qmin", rescale)
 
+            _apply_func!(gen, "ramp_agc", rescale)
+            _apply_func!(gen, "ramp_10", rescale)
+            _apply_func!(gen, "ramp_30", rescale)
+            _apply_func!(gen, "ramp_q", rescale)
+
             _rescale_cost_model!(gen, 1.0 / mva_base)
         end
     end
@@ -486,7 +503,8 @@ function _make_mixed_units!(data::Dict{String, <:Any}, mva_base::Real)
             _apply_func!(strg, "current_rating", rescale)
             _apply_func!(strg, "qmin", rescale)
             _apply_func!(strg, "qmax", rescale)
-            _apply_func!(strg, "standby_loss", rescale)
+            _apply_func!(strg, "p_loss", rescale)
+            _apply_func!(strg, "q_loss", rescale)
         end
     end
 
@@ -528,6 +546,8 @@ function _make_mixed_units!(data::Dict{String, <:Any}, mva_base::Real)
 
         _apply_func!(branch, "mu_sm_fr", rescale_dual)
         _apply_func!(branch, "mu_sm_to", rescale_dual)
+
+        _apply_func!(branch, "ta", rad2deg)
     end
 
     if haskey(data, "dcline")
@@ -1544,13 +1564,7 @@ function check_storage_parameters(data::Dict{String, Any})
                 ),
             )
         end
-        if strg["standby_loss"] < 0.0
-            throw(
-                DataFormatError(
-                    "storage unit $(strg["index"]) has a non-positive standby losses $(strg["standby_loss"])",
-                ),
-            )
-        end
+
         if strg["r"] < 0.0
             throw(
                 DataFormatError(
@@ -1598,7 +1612,6 @@ function check_storage_parameters(data::Dict{String, Any})
             @info "storage unit $(strg["index"]) charge efficiency of $(strg["charge_efficiency"]) is out of the valid range (0.0. 1.0]" maxlog =
                 PS_MAX_LOG
         end
-
         if strg["discharge_efficiency"] < 0.0
             throw(
                 DataFormatError(
@@ -1611,8 +1624,12 @@ function check_storage_parameters(data::Dict{String, Any})
                 PS_MAX_LOG
         end
 
-        if strg["standby_loss"] > 0.0 && strg["energy"] <= 0.0
-            @info "storage unit $(strg["index"]) has standby losses but zero initial energy.  This can lead to model infeasiblity." maxlog =
+        if strg["p_loss"] > 0.0 && strg["energy"] <= 0.0
+            @info "storage unit $(strg["index"]) has positive active power losses but zero initial energy.  This can lead to model infeasiblity." maxlog =
+                PS_MAX_LOG
+        end
+        if strg["q_loss"] > 0.0 && strg["energy"] <= 0.0
+            @info "storage unit $(strg["index"]) has positive reactive power losses but zero initial energy.  This can lead to model infeasiblity." maxlog =
                 PS_MAX_LOG
         end
     end
@@ -1894,6 +1911,13 @@ function _remove_pwl_cost_duplicates!(id, comp, type_name, tolerance = 1e-2)
         end
     end
 
+    # in the event that all of the given points are the same
+    # this code ensures that at least two of the points remain
+    if length(unique_costs) <= 2
+        push!(unique_costs, comp["cost"][end - 1])
+        push!(unique_costs, comp["cost"][end])
+    end
+
     if length(unique_costs) < length(comp["cost"])
         @info "removing duplicate points from pwl cost on $(type_name) $(id), $(comp["cost"]) -> $(unique_costs)" maxlog =
             PS_MAX_LOG
@@ -1901,6 +1925,7 @@ function _remove_pwl_cost_duplicates!(id, comp, type_name, tolerance = 1e-2)
         comp["ncost"] = length(unique_costs) / 2
         return true
     end
+
     return false
 end
 
@@ -2138,21 +2163,24 @@ function _propagate_topology_status!(data::Dict{String, <:Any})
     incident_active_load = Dict()
     for (i, load_list) in incident_load
         incident_active_load[i] = [load for load in load_list if load["status"] != 0]
-        #incident_active_load[i] = filter(load -> load["status"] != 0, load_list)
     end
 
     incident_shunt = bus_shunt_lookup(data["shunt"], data["bus"])
     incident_active_shunt = Dict()
     for (i, shunt_list) in incident_shunt
         incident_active_shunt[i] = [shunt for shunt in shunt_list if shunt["status"] != 0]
-        #incident_active_shunt[i] = filter(shunt -> shunt["status"] != 0, shunt_list)
     end
 
     incident_gen = bus_gen_lookup(data["gen"], data["bus"])
     incident_active_gen = Dict()
     for (i, gen_list) in incident_gen
         incident_active_gen[i] = [gen for gen in gen_list if gen["gen_status"] != 0]
-        #incident_active_gen[i] = filter(gen -> gen["gen_status"] != 0, gen_list)
+    end
+
+    incident_strg = bus_storage_lookup(data["storage"], data["bus"])
+    incident_active_strg = Dict()
+    for (i, strg_list) in incident_strg
+        incident_active_strg[i] = [strg for strg in strg_list if strg["status"] != 0]
     end
 
     incident_branch = Dict(bus["bus_i"] => [] for (i, bus) in data["bus"])
@@ -2167,14 +2195,225 @@ function _propagate_topology_status!(data::Dict{String, <:Any})
         push!(incident_dcline[dcline["t_bus"]], dcline)
     end
 
-    updated = true
-    iteration = 0
+    incident_switch = Dict(bus["bus_i"] => [] for (i, bus) in data["bus"])
+    for (i, switch) in data["switch"]
+        push!(incident_switch[switch["f_bus"]], switch)
+        push!(incident_switch[switch["t_bus"]], switch)
+    end
 
-    while updated
-        while updated
-            iteration += 1
-            updated = false
+    revised = false
 
+    for (i, branch) in data["branch"]
+        if branch["br_status"] != 0
+            f_bus = buses[branch["f_bus"]]
+            t_bus = buses[branch["t_bus"]]
+
+            if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
+                @info "deactivating branch $(i):($(branch["f_bus"]),$(branch["t_bus"])) due to connecting bus status" maxlog =
+                    PS_MAX_LOG
+                branch["br_status"] = 0
+                revised = true
+            end
+        end
+    end
+
+    for (i, dcline) in data["dcline"]
+        if dcline["br_status"] != 0
+            f_bus = buses[dcline["f_bus"]]
+            t_bus = buses[dcline["t_bus"]]
+
+            if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
+                @info "deactivating dcline $(i):($(dcline["f_bus"]),$(dcline["t_bus"])) due to connecting bus status" maxlog =
+                    PS_MAX_LOG
+                dcline["br_status"] = 0
+                revised = true
+            end
+        end
+    end
+
+    for (i, switch) in data["switch"]
+        if switch["status"] != 0
+            f_bus = buses[switch["f_bus"]]
+            t_bus = buses[switch["t_bus"]]
+
+            if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
+                @info "deactivating switch $(i):($(switch["f_bus"]),$(switch["t_bus"])) due to connecting bus status" maxlog =
+                    PS_MAX_LOG
+                switch["status"] = 0
+                revised = true
+            end
+        end
+    end
+
+    for (i, bus) in buses
+        if bus["bus_type"] == 4
+            for load in incident_active_load[i]
+                if load["status"] != 0
+                    @info "deactivating load $(load["index"]) due to inactive bus $(i)" maxlog =
+                        PS_MAX_LOG
+                    load["status"] = 0
+                    revised = true
+                end
+            end
+
+            for shunt in incident_active_shunt[i]
+                if shunt["status"] != 0
+                    @info "deactivating shunt $(shunt["index"]) due to inactive bus $(i)" maxlog =
+                        PS_MAX_LOG
+                    shunt["status"] = 0
+                    revised = true
+                end
+            end
+
+            for gen in incident_active_gen[i]
+                if gen["gen_status"] != 0
+                    @info "deactivating generator $(gen["index"]) due to inactive bus $(i)" maxlog =
+                        PS_MAX_LOG
+                    gen["gen_status"] = 0
+                    revised = true
+                end
+            end
+
+            for strg in incident_active_strg[i]
+                if strg["status"] != 0
+                    @info "deactivating storage $(strg["index"]) due to inactive bus $(i)" maxlog =
+                        PS_MAX_LOG
+                    strg["status"] = 0
+                    revised = true
+                end
+            end
+        end
+    end
+
+    return revised
+end
+
+"""
+removes buses with single branch connections and without any other attached
+components.  Also removes connected components without suffuceint generation
+or loads.
+
+also deactivates 0 valued loads and shunts.
+"""
+function deactivate_isolated_components!(data::Dict{String, <:Any})
+    revised = false
+    pm_data = get_pm_data(data)
+
+    if _IM.ismultinetwork(pm_data)
+        for (i, pm_nw_data) in pm_data["nw"]
+            revised |= _deactivate_isolated_components!(pm_nw_data)
+        end
+    else
+        revised = _deactivate_isolated_components!(pm_data)
+    end
+
+    return revised
+end
+
+""
+function _deactivate_isolated_components!(data::Dict{String, <:Any})
+    buses = Dict(bus["bus_i"] => bus for (i, bus) in data["bus"])
+
+    revised = false
+
+    for (i, load) in data["load"]
+        if load["status"] != 0 && all(load["pd"] .== 0.0) && all(load["qd"] .== 0.0)
+            @info "deactivating load $(load["index"]) due to zero pd and qd" maxlog =
+                PS_MAX_LOG
+            load["status"] = 0
+            revised = true
+        end
+    end
+
+    for (i, shunt) in data["shunt"]
+        if shunt["status"] != 0 && all(shunt["gs"] .== 0.0) && all(shunt["bs"] .== 0.0)
+            @info "deactivating shunt $(shunt["index"]) due to zero gs and bs" maxlog =
+                PS_MAX_LOG
+            shunt["status"] = 0
+            revised = true
+        end
+    end
+
+    # compute what active components are incident to each bus
+    incident_load = bus_load_lookup(data["load"], data["bus"])
+    incident_active_load = Dict()
+    for (i, load_list) in incident_load
+        incident_active_load[i] = [load for load in load_list if load["status"] != 0]
+    end
+
+    incident_shunt = bus_shunt_lookup(data["shunt"], data["bus"])
+    incident_active_shunt = Dict()
+    for (i, shunt_list) in incident_shunt
+        incident_active_shunt[i] = [shunt for shunt in shunt_list if shunt["status"] != 0]
+    end
+
+    incident_gen = bus_gen_lookup(data["gen"], data["bus"])
+    incident_active_gen = Dict()
+    for (i, gen_list) in incident_gen
+        incident_active_gen[i] = [gen for gen in gen_list if gen["gen_status"] != 0]
+    end
+
+    incident_strg = bus_storage_lookup(data["storage"], data["bus"])
+    incident_active_strg = Dict()
+    for (i, strg_list) in incident_strg
+        incident_active_strg[i] = [strg for strg in strg_list if strg["status"] != 0]
+    end
+
+    incident_branch = Dict(bus["bus_i"] => [] for (i, bus) in data["bus"])
+    for (i, branch) in data["branch"]
+        push!(incident_branch[branch["f_bus"]], branch)
+        push!(incident_branch[branch["t_bus"]], branch)
+    end
+
+    incident_dcline = Dict(bus["bus_i"] => [] for (i, bus) in data["bus"])
+    for (i, dcline) in data["dcline"]
+        push!(incident_dcline[dcline["f_bus"]], dcline)
+        push!(incident_dcline[dcline["t_bus"]], dcline)
+    end
+
+    incident_switch = Dict(bus["bus_i"] => [] for (i, bus) in data["bus"])
+    for (i, switch) in data["switch"]
+        push!(incident_switch[switch["f_bus"]], switch)
+        push!(incident_switch[switch["t_bus"]], switch)
+    end
+
+    changed = true
+    while changed
+        changed = false
+
+        for (i, bus) in buses
+            if bus["bus_type"] != 4
+                incident_active_edge = 0
+                if length(incident_branch[i]) +
+                   length(incident_dcline[i]) +
+                   length(incident_switch[i]) > 0
+                    incident_branch_count =
+                        sum([0; [branch["br_status"] for branch in incident_branch[i]]])
+                    incident_dcline_count =
+                        sum([0; [dcline["br_status"] for dcline in incident_dcline[i]]])
+                    incident_switch_count =
+                        sum([0; [switch["status"] for switch in incident_switch[i]]])
+                    incident_active_edge =
+                        incident_branch_count +
+                        incident_dcline_count +
+                        incident_switch_count
+                end
+
+                if incident_active_edge == 1 &&
+                   length(incident_active_gen[i]) == 0 &&
+                   length(incident_active_load[i]) == 0 &&
+                   length(incident_active_shunt[i]) == 0 &&
+                   length(incident_active_strg[i]) == 0
+                    @info "deactivating bus $(i) due to dangling bus without generation, load, or storage" maxlog =
+                        PS_MAX_LOG
+                    bus["bus_type"] = 4
+                    revised = true
+                    changed = true
+                end
+            end
+        end
+
+        if changed
             for (i, branch) in data["branch"]
                 if branch["br_status"] != 0
                     f_bus = buses[branch["f_bus"]]
@@ -2184,7 +2423,6 @@ function _propagate_topology_status!(data::Dict{String, <:Any})
                         @info "deactivating branch $(i):($(branch["f_bus"]),$(branch["t_bus"])) due to connecting bus status" maxlog =
                             PS_MAX_LOG
                         branch["br_status"] = 0
-                        updated = true
                     end
                 end
             end
@@ -2198,104 +2436,77 @@ function _propagate_topology_status!(data::Dict{String, <:Any})
                         @info "deactivating dcline $(i):($(dcline["f_bus"]),$(dcline["t_bus"])) due to connecting bus status" maxlog =
                             PS_MAX_LOG
                         dcline["br_status"] = 0
-                        updated = true
                     end
                 end
             end
 
-            for (i, bus) in buses
-                if bus["bus_type"] != 4
-                    if length(incident_branch[i]) + length(incident_dcline[i]) > 0
-                        incident_branch_count =
-                            sum([0; [branch["br_status"] for branch in incident_branch[i]]])
-                        incident_dcline_count =
-                            sum([0; [dcline["br_status"] for dcline in incident_dcline[i]]])
-                        incident_active_edge = incident_branch_count + incident_dcline_count
-                    else
-                        incident_active_edge = 0
-                    end
+            for (i, switch) in data["switch"]
+                if switch["status"] != 0
+                    f_bus = buses[switch["f_bus"]]
+                    t_bus = buses[switch["t_bus"]]
 
-                    #println("bus $(i) active branch $(incident_active_edge)")
-                    #println("bus $(i) active gen $(incident_active_gen)")
-                    #println("bus $(i) active load $(incident_active_load)")
-                    #println("bus $(i) active shunt $(incident_active_shunt)")
-
-                    if incident_active_edge == 1 &&
-                       length(incident_active_gen[i]) == 0 &&
-                       length(incident_active_load[i]) == 0 &&
-                       length(incident_active_shunt[i]) == 0
-                        @info "deactivating bus $(i) due to dangling bus without generation and load" maxlog =
+                    if f_bus["bus_type"] == 4 || t_bus["bus_type"] == 4
+                        @info "deactivating switch $(i):($(switch["f_bus"]),$(switch["t_bus"])) due to connecting bus status" maxlog =
                             PS_MAX_LOG
-                        bus["bus_type"] = 4
-                        updated = true
-                    end
-
-                else # bus type == 4
-                    for load in incident_active_load[i]
-                        if load["status"] != 0
-                            @info "deactivating load $(load["index"]) due to inactive bus $(i)" maxlog =
-                                PS_MAX_LOG
-                            load["status"] = 0
-                            updated = true
-                        end
-                    end
-
-                    for shunt in incident_active_shunt[i]
-                        if shunt["status"] != 0
-                            @info "deactivating shunt $(shunt["index"]) due to inactive bus $(i)" maxlog =
-                                PS_MAX_LOG
-                            shunt["status"] = 0
-                            updated = true
-                        end
-                    end
-
-                    for gen in incident_active_gen[i]
-                        if gen["gen_status"] != 0
-                            @info "deactivating generator $(gen["index"]) due to inactive bus $(i)" maxlog =
-                                PS_MAX_LOG
-                            gen["gen_status"] = 0
-                            updated = true
-                        end
+                        switch["status"] = 0
                     end
                 end
-            end
-        end
-
-        ccs = calc_connected_components(data)
-
-        #println(ccs)
-        #TODO set reference node for each cc
-
-        for cc in ccs
-            cc_active_loads = [0]
-            cc_active_shunts = [0]
-            cc_active_gens = [0]
-
-            for i in cc
-                cc_active_loads = push!(cc_active_loads, length(incident_active_load[i]))
-                cc_active_shunts = push!(cc_active_shunts, length(incident_active_shunt[i]))
-                cc_active_gens = push!(cc_active_gens, length(incident_active_gen[i]))
-            end
-
-            active_load_count = sum(cc_active_loads)
-            active_shunt_count = sum(cc_active_shunts)
-            active_gen_count = sum(cc_active_gens)
-
-            if (active_load_count == 0 && active_shunt_count == 0) || active_gen_count == 0
-                @info "deactivating connected component $(cc) due to isolation without generation and load" maxlog =
-                    PS_MAX_LOG
-                for i in cc
-                    buses[i]["bus_type"] = 4
-                end
-                updated = true
             end
         end
     end
 
-    @info "topology status propagation fixpoint reached in $(iteration) rounds" maxlog =
-        PS_MAX_LOG
+    ccs = calc_connected_components(data)
 
-    check_reference_buses(data)
+    for cc in ccs
+        cc_active_loads = [0]
+        cc_active_shunts = [0]
+        cc_active_gens = [0]
+        cc_active_strg = [0]
+
+        for i in cc
+            cc_active_loads = push!(cc_active_loads, length(incident_active_load[i]))
+            cc_active_shunts = push!(cc_active_shunts, length(incident_active_shunt[i]))
+            cc_active_gens = push!(cc_active_gens, length(incident_active_gen[i]))
+        end
+
+        active_load_count = sum(cc_active_loads)
+        active_shunt_count = sum(cc_active_shunts)
+        active_gen_count = sum(cc_active_gens)
+
+        if (active_load_count == 0 && active_shunt_count == 0 && active_strg_count == 0) ||
+           active_gen_count == 0
+            @info "deactivating connected component $(cc) due to isolation without generation and load" maxlog =
+                PS_MAX_LOG
+            for i in cc
+                buses[i]["bus_type"] = 4
+            end
+            revised = true
+        end
+    end
+
+    return revised
+end
+
+"""
+attempts to deactive components that are not needed in the network by repeated
+calls to `propagate_topology_status!` and `deactivate_isolated_components!`
+
+warning: this implementation has quadratic complexity, in the worst case
+"""
+function simplify_network!(data::Dict{String, <:Any})
+    revised = true
+    iteration = 0
+
+    while revised
+        iteration += 1
+        revised = false
+        revised |= propagate_topology_status!(data)
+        revised |= deactivate_isolated_components!(data)
+    end
+
+    @info "network simplification fixpoint reached in $(iteration) rounds" maxlog =
+        PS_MAX_LOG
+    return revised
 end
 
 """
@@ -2316,20 +2527,22 @@ function _select_largest_component!(data::Dict{String, <:Any})
     ccs = calc_connected_components(data)
     @info "found $(length(ccs)) components" maxlog = PS_MAX_LOG
 
-    ccs_order = sort!(collect(ccs); by = length)
-    largest_cc = ccs_order[end]
+    if length(ccs) > 1
+        ccs_order = sort(collect(ccs); by = length)
+        largest_cc = ccs_order[end]
 
-    @info "largest component has $(length(largest_cc)) buses" maxlog = PS_MAX_LOG
+        @info "largest component has $(length(largest_cc)) buses" maxlog = PS_MAX_LOG
 
-    for (i, bus) in data["bus"]
-        if bus["bus_type"] != 4 && !(bus["index"] in largest_cc)
-            bus["bus_type"] = 4
-            @info "deactivating bus $(i) due to small connected component" maxlog =
-                PS_MAX_LOG
+        for (i, bus) in data["bus"]
+            if bus["bus_type"] != 4 && !(bus["index"] in largest_cc)
+                bus["bus_type"] = 4
+                @info "deactivating bus $(i) due to small connected component" maxlog =
+                    PS_MAX_LOG
+            end
         end
-    end
 
-    correct_reference_buses!(data)
+        correct_reference_buses!(data)
+    end
 end
 
 """
@@ -2351,7 +2564,7 @@ function _correct_reference_buses!(data::Dict{String, <:Any})
     bus_gen = bus_gen_lookup(data["gen"], data["bus"])
 
     ccs = calc_connected_components(data)
-    ccs_order = sort!(collect(ccs); by = length)
+    ccs_order = sort(collect(ccs); by = length)
 
     bus_to_cc = Dict()
     for (i, cc) in enumerate(ccs_order)
@@ -2375,7 +2588,7 @@ function _correct_reference_buses!(data::Dict{String, <:Any})
 end
 
 """
-checks that a connected component has a reference bus, if not, adds one
+checks that a connected component has a reference bus, if not, tries to add one
 """
 function correct_component_refrence_bus!(component_bus_ids, bus_lookup, component_gens)
     refrence_buses = Set()
@@ -2388,9 +2601,11 @@ function correct_component_refrence_bus!(component_bus_ids, bus_lookup, componen
 
     if length(refrence_buses) == 0
         @info("no reference bus found in connected component $(component_bus_ids)")
+        component_gens_active =
+            Dict(k => v for (k, v) in component_gens if v["gen_status"] != 0)
 
-        if length(component_gens) > 0
-            big_gen = _biggest_generator(component_gens)
+        if length(component_gens_active) > 0
+            big_gen = _biggest_generator(component_gens_active)
             gen_bus = bus_lookup[big_gen["gen_bus"]]
             gen_bus["bus_type"] = 3
             @info(
@@ -2438,7 +2653,7 @@ function bus_storage_lookup(
 )
     bus_storage = Dict(bus["bus_i"] => [] for (i, bus) in bus_data)
     for (i, storage) in storage_data
-        push!(bus_storage[storage["shunt_bus"]], storage)
+        push!(bus_storage[storage["storage_bus"]], storage)
     end
     return bus_storage
 end
@@ -2447,32 +2662,37 @@ end
 computes the connected components of the network graph
 returns a set of sets of bus ids, each set is a connected component
 """
-function calc_connected_components(data::Dict{String, <:Any}; edges = ["branch", "dcline"])
-    if ismultinetwork(data)
+function calc_connected_components(
+    pm_data::Dict{String, <:Any};
+    edges = ["branch", "dcline", "switch"],
+)
+    if ismultinetwork(pm_data)
         error("connected_components does not yet support multinetwork data")
     end
 
-    active_bus = Dict(x for x in data["bus"] if x.second["bus_type"] != 4)
-    active_bus_ids = Set{Int}([bus["bus_i"] for (i, bus) in active_bus])
+    active_bus = Dict(x for x in pm_data["bus"] if x.second["bus_type"] != 4)
+    active_bus_ids = Set{Int64}([bus["bus_i"] for (i, bus) in active_bus])
 
-    neighbors = Dict(i => [] for i in active_bus_ids)
-    for line_type in edges
-        for line in values(get(data, line_type, Dict()))
-            if get(line, "br_status", 1) != 0 &&
-               line["f_bus"] in active_bus_ids &&
-               line["t_bus"] in active_bus_ids
-                push!(neighbors[line["f_bus"]], line["t_bus"])
-                push!(neighbors[line["t_bus"]], line["f_bus"])
+    neighbors = Dict(i => Int[] for i in active_bus_ids)
+    for comp_type in edges
+        status_key = get(pm_component_status, comp_type, "status")
+        status_inactive = get(pm_component_status_inactive, comp_type, 0)
+        for edge in values(get(pm_data, comp_type, Dict()))
+            if get(edge, status_key, 1) != status_inactive &&
+               edge["f_bus"] in active_bus_ids &&
+               edge["t_bus"] in active_bus_ids
+                push!(neighbors[edge["f_bus"]], edge["t_bus"])
+                push!(neighbors[edge["t_bus"]], edge["f_bus"])
             end
         end
     end
 
     component_lookup = Dict(i => Set{Int}([i]) for i in active_bus_ids)
-    touched = Set{Int}()
+    touched = Set{Int64}()
 
     for i in active_bus_ids
         if !(i in touched)
-            _dfs(i, neighbors, component_lookup, touched)
+            _cc_dfs(i, neighbors, component_lookup, touched)
         end
     end
 
@@ -2482,25 +2702,196 @@ function calc_connected_components(data::Dict{String, <:Any}; edges = ["branch",
 end
 
 """
-performs DFS on a graph
+DFS on a graph
 """
-function _dfs(i, neighbors, component_lookup, touched)
+function _cc_dfs(i, neighbors, component_lookup, touched)
     push!(touched, i)
     for j in neighbors[i]
         if !(j in touched)
-            new_comp = union(component_lookup[i], component_lookup[j])
-            for k in new_comp
-                component_lookup[k] = new_comp
+            for k in component_lookup[j]
+                push!(component_lookup[i], k)
             end
-            _dfs(j, neighbors, component_lookup, touched)
+            for k in component_lookup[j]
+                component_lookup[k] = component_lookup[i]
+            end
+            _cc_dfs(j, neighbors, component_lookup, touched)
         end
     end
 end
 
 """
+given a network data dict and a mapping of current-bus-ids to new-bus-ids
+modifies the data dict to reflect the proposed new bus ids.
+"""
+function update_bus_ids!(
+    data::Dict{String, <:Any},
+    bus_id_map::Dict{Int, Int};
+    injective = true,
+)
+    data_it = ismultiinfrastructure(data) ? data["it"][pm_it_name] : data
+
+    if _IM.ismultinetwork(data_it) && apply_to_subnetworks
+        for (nw, nw_data) in data_it["nw"]
+            _update_bus_ids!(nw_data, bus_id_map; injective = injective)
+        end
+    else
+        _update_bus_ids!(data_it, bus_id_map; injective = injective)
+    end
+end
+
+function _update_bus_ids!(
+    data::Dict{String, <:Any},
+    bus_id_map::Dict{Int, Int};
+    injective = true,
+)
+    # verify bus id map is injective
+    if injective
+        new_bus_ids = Set{Int}()
+        for (i, bus) in data["bus"]
+            new_id = get(bus_id_map, bus["index"], bus["index"])
+            if !(new_id in new_bus_ids)
+                push!(new_bus_ids, new_id)
+            else
+                throw(
+                    error(
+                        "bus id mapping given to update_bus_ids has an id clash on new bus id $(new_id)",
+                    ),
+                )
+            end
+        end
+    end
+
+    # start renumbering process
+    renumbered_bus_dict = Dict{String, Any}()
+
+    for (i, bus) in data["bus"]
+        new_id = get(bus_id_map, bus["index"], bus["index"])
+        bus["index"] = new_id
+        bus["bus_i"] = new_id
+        renumbered_bus_dict["$new_id"] = bus
+    end
+
+    data["bus"] = renumbered_bus_dict
+
+    # update bus numbering in dependent components
+    for (i, load) in data["load"]
+        load["load_bus"] = get(bus_id_map, load["load_bus"], load["load_bus"])
+    end
+
+    for (i, shunt) in data["shunt"]
+        shunt["shunt_bus"] = get(bus_id_map, shunt["shunt_bus"], shunt["shunt_bus"])
+    end
+
+    for (i, gen) in data["gen"]
+        gen["gen_bus"] = get(bus_id_map, gen["gen_bus"], gen["gen_bus"])
+    end
+
+    for (i, strg) in data["storage"]
+        strg["storage_bus"] = get(bus_id_map, strg["storage_bus"], strg["storage_bus"])
+    end
+
+    for (i, switch) in data["switch"]
+        switch["f_bus"] = get(bus_id_map, switch["f_bus"], switch["f_bus"])
+        switch["t_bus"] = get(bus_id_map, switch["t_bus"], switch["t_bus"])
+    end
+
+    branches = []
+    if haskey(data, "branch")
+        append!(branches, values(data["branch"]))
+    end
+
+    if haskey(data, "ne_branch")
+        append!(branches, values(data["ne_branch"]))
+    end
+
+    for branch in branches
+        branch["f_bus"] = get(bus_id_map, branch["f_bus"], branch["f_bus"])
+        branch["t_bus"] = get(bus_id_map, branch["t_bus"], branch["t_bus"])
+    end
+
+    for (i, dcline) in data["dcline"]
+        dcline["f_bus"] = get(bus_id_map, dcline["f_bus"], dcline["f_bus"])
+        dcline["t_bus"] = get(bus_id_map, dcline["t_bus"], dcline["t_bus"])
+    end
+end
+
+"""
+given a network data dict merges buses that are connected by closed switches
+converting the dataset into a pure bus-branch model.
+"""
+function resolve_swithces!(data::Dict{String, <:Any})
+    if ismultinetwork(data)
+        for (i, nw_data) in data["nw"]
+            _resolve_swithces!(nw_data, mva_base)
+        end
+    else
+        _resolve_swithces!(data, mva_base)
+    end
+end
+
+""
+function _resolve_swithces!(data::Dict{String, <:Any})
+    if length(data["switch"]) <= 0
+        return
+    end
+
+    bus_sets = Dict{Int, Set{Int}}()
+
+    switch_status_key = pm_component_status["switch"]
+    switch_status_value = pm_component_status_inactive["switch"]
+
+    for (i, switch) in data["switch"]
+        if switch[switch_status_key] != switch_status_value && switch["state"] == 1
+            if !haskey(bus_sets, switch["f_bus"])
+                bus_sets[switch["f_bus"]] = Set{Int}([switch["f_bus"]])
+            end
+            if !haskey(bus_sets, switch["t_bus"])
+                bus_sets[switch["t_bus"]] = Set{Int}([switch["t_bus"]])
+            end
+
+            merged_set =
+                Set{Int}([bus_sets[switch["f_bus"]]..., bus_sets[switch["t_bus"]]...])
+            bus_sets[switch["f_bus"]] = merged_set
+            bus_sets[switch["t_bus"]] = merged_set
+        end
+    end
+
+    bus_id_map = Dict{Int, Int}()
+    for bus_set in Set(values(bus_sets))
+        bus_min = minimum(bus_set)
+        @info "merged buses $(join(bus_set, ",")) in to bus $(bus_min) based on switch status" maxlog =
+            PS_MAX_LOG
+        for i in bus_set
+            if i != bus_min
+                bus_id_map[i] = bus_min
+            end
+        end
+    end
+
+    update_bus_ids!(data, bus_id_map, injective = false)
+
+    for (i, branch) in data["branch"]
+        if branch["f_bus"] == branch["t_bus"]
+            @warn "switch removal resulted in both sides of branch $(i) connect to bus $(branch["f_bus"]), deactivating branch"
+            branch[pm_component_status["branch"]] = pm_component_status_inactive["branch"]
+        end
+    end
+
+    for (i, dcline) in data["dcline"]
+        if dcline["f_bus"] == dcline["t_bus"]
+            @warn "switch removal resulted in both sides of dcline $(i) connect to bus $(branch["f_bus"]), deactivating dcline"
+            branch[pm_component_status["dcline"]] = pm_component_status_inactive["dcline"]
+        end
+    end
+
+    @info "removed $(length(data["switch"])) switch components"
+    data["switch"] = Dict{String, Any}()
+end
+
+"""
 Move gentype and genfuel fields to be subfields of gen
 """
-function move_genfuel_and_gentype!(data::Dict{String, Any})
+function move_genfuel_and_gentype!(data::Dict{String, Any}) # added by PSY
     ngen = length(data["gen"])
 
     toplevkeys = ("genfuel", "gentype")
