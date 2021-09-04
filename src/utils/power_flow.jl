@@ -211,6 +211,7 @@ function _write_results(sys::System, nl_result)
             Vm_vect[ix] = result[2 * ix - 1]
             θ_vect[ix] = result[2 * ix]
             for gen in sources
+                !get_available(gen) && continue
                 if gen.bus == bus
                     P_gen_vect[ix] += get_active_power(gen) * sys_basepower
                     Q_gen_vect[ix] += get_reactive_power(gen) * sys_basepower
