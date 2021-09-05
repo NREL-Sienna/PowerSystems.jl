@@ -21,7 +21,7 @@ The default implementation of the function [`get_components`](@ref) takes the de
 type (concrete or abstract) and the system and it also accepts filter functions for a more
 refined search. The container is optimized for iteration over abstract or concrete component
 types as described by the [Type Structure](@ref type_structure). Given the potential size of the return,
-`PowerSystems.jl`returns Julia iterators in order to avoid unnecessary memory allocations.
+`PowerSystems.jl` returns Julia iterators in order to avoid unnecessary memory allocations.
 
 ```@example get_components
 using PowerSystems #hide
@@ -85,8 +85,8 @@ It is often useful to express power systems data in relative terms using per-uni
 `PowerSystems.jl` supports the automatic conversion of data between three different unit systems:
 
  1. Natural Units: The naturally defined units of each parameter (typically MW).
- 2. System Base: Parameter values are divided by the system `base_power`
- 3. Device Base: Parameter values are divided by the device `base_mva`
+ 2. System Base: Parameter values are divided by the system `base_power`.
+ 3. Device Base: Parameter values are divided by the device `base_mva`.
 
 To see the unit system setting of a `System`:
 
