@@ -23,7 +23,7 @@ The main features include:
   (PSS/e `.raw` and `.dyr`, and `MATPOWER`) and configurable tabular data (e.g. CSV)
   parsing capabilities.
 - Optimized container for component data and time series supporting serialization to
-  portable file formats and configurable validation routines
+  portable file formats and configurable validation routines.
 
 `PowerSystems.jl` documentation and code are organized according to the needs of different
 users depending on their skillset and requirements. In broad terms there are three categories:
@@ -76,4 +76,4 @@ keywords = {Power Systems, Julia, Energy},
 ------------
 PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning
 (SIIP) initiative at the U.S. Department of Energy's National Renewable Energy
-Laboratory ([NREL](https://www.nrel.gov/))
+Laboratory ([NREL](https://www.nrel.gov/)).
