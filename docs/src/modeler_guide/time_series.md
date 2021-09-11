@@ -8,7 +8,7 @@ to enable consistent modeling.
 
 - **Resolution**: The period of time between each discrete value in the data, all resolutions
   are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
-  has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`
+  has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`.
 
 - **Static data**: a single column of time series values for a component field
   (such as active power) where each time period is represented by a single value.
@@ -135,7 +135,7 @@ StaticTimeSeries) into a System.
 - Automated parsing during system construction, this method loads the data from CSV files.
   Refer to the parsing [documentation](@ref parsing_time_series).
 
-- Create directly from data in `TimeSeries.TimeArray` or `DataFrames.DataFrame`
+- Create directly from data in `TimeSeries.TimeArray` or `DataFrames.DataFrame`.
 
 Examples:
 

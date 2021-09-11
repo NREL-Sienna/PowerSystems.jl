@@ -25,7 +25,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 - Dynamic Generators 
 - Dynamic Inverter
 
-For a more exhaustive list check the [Documentation](https://nrel-siip.github.io/PowerSystems.jl/stable)
+For a more exhaustive list check the [Documentation](https://nrel-siip.github.io/PowerSystems.jl/stable).
 
 ## Parsing capabilities in PowerSystems
 
@@ -35,7 +35,7 @@ For a more exhaustive list check the [Documentation](https://nrel-siip.github.io
 
 ## Development
 
-Contributions to the development and enahancement of PowerSystems is welcome. Please see
+Contributions to the development and enhancement of PowerSystems is welcome. Please see
 [CONTRIBUTING.md](https://github.com/NREL/PowerSystems.jl/blob/master/CONTRIBUTING.md) for
 code contribution guidelines.
 
@@ -61,4 +61,4 @@ keywords = {Power Systems, Julia, Energy},
 
 PowerSystems is released under a BSD [license](https://github.com/NREL/PowerSystems.jl/blob/master/LICENSE).
 PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning (SIIP)
-initiative at the U.S. Department of Energy's National Renewable Energy Laboratory ([NREL](https://www.nrel.gov/))
+initiative at the U.S. Department of Energy's National Renewable Energy Laboratory ([NREL](https://www.nrel.gov/)).
