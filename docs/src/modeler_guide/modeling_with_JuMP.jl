@@ -25,7 +25,7 @@ to_json(system_data, "system_data.json")
 
 function ed_model(system::System, optimizer)
     ed_m = Model(optimizer)
-    time_periods = 24
+    time_periods = 1:24
     thermal_gens_names = get_name.(get_components(ThermalStandard, system))
     @variable(ed_m, pg[g in thermal_gens_names, t in time_periods] >= 0)
 
@@ -35,7 +35,7 @@ function ed_model(system::System, optimizer)
         @constraint(ed_m, pg[name, t] <= get_active_power_limits(g).max)
     end
 
-    net_load = zeros(time_periods)
+    net_load = zeros(length(time_periods))
     for g in get_components(RenewableGen, system)
         net_load -= get_time_series_values(SingleTimeSeries, g, "max_active_power")
     end
