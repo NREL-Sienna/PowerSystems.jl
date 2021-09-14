@@ -21,7 +21,7 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
-CSV = "~0.8"
+CSV = "~0.8, 0.9"
 DataFrames = "1"
 DocStringExtensions = "~0.8.2"
 InfrastructureSystems = "^1.12"
