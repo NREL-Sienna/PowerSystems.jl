@@ -185,7 +185,7 @@ function read_bus!(sys::System, data; kwargs...)
         # d id the data dict for each bus
         # d_key is bus key
         d["name"] = get(d, "name", string(d["bus_i"]))
-        bus_name = _get_name(d)
+        bus_name = strip(_get_name(d))
         bus_number = Int(d["bus_i"])
 
         area_name = string(d["area"])
