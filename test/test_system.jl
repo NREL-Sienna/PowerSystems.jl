@@ -378,3 +378,40 @@ end
         )
     )
 end
+
+@testset "Test check_components" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    check_components(sys)
+    check_components(sys, Component)
+    check_components(sys, Generator)
+    check_components(sys, ThermalStandard)
+    check_components(sys, get_components(ThermalStandard, sys))
+    components = get_components(ThermalStandard, sys)
+    gen = first(components)
+    check_components(sys, components)
+    check_component(sys, gen)
+
+    # Invalid Bus base_voltage values throw errors.
+    # Invalid ThermalStandard active_power logs warning messages.
+
+    bus = first(get_components(Bus, sys))
+    check_component(sys, bus)
+    orig = get_base_voltage(bus)
+    set_base_voltage!(bus, -1.0)
+    try
+        @test_logs(
+            (:error, "Invalid range"),
+            match_mode = :any,
+            @test_throws IS.InvalidValue check_component(sys, bus)
+        )
+    finally
+        set_base_voltage!(bus, orig)
+    end
+
+    gen.active_power = 100.0
+    @test_logs :warn, "Invalid range" match_mode = :any check_component(sys, gen)
+    @test_logs :warn, "Invalid range" match_mode = :any check_components(
+        sys,
+        ThermalStandard,
+    )
+end

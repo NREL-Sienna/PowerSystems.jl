@@ -27,7 +27,7 @@ load flow case (*.m, *.raw)
 # Keyword arguments
 - `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
-  Throws InvalidRange if an error is found.
+  Throws InvalidValue if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
 - `config_path::String`: specify path to validation config file
 - `pm_data_corrections::Bool=true` : Run the PowerModels data corrections (aka :validate in PowerModels)

@@ -50,7 +50,7 @@ System(; kwargs...)
 # Keyword arguments
 - `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
-  Throws InvalidRange if an error is found.
+  Throws InvalidValue if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
 - `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
 - `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
@@ -363,7 +363,7 @@ Add a component to the system.
 
 Throws ArgumentError if the component's name is already stored for its concrete type.
 Throws ArgumentError if any Component-specific rule is violated.
-Throws InvalidRange if any of the component's field values are outside of defined valid
+Throws InvalidValue if any of the component's field values are outside of defined valid
 range.
 
 # Examples
@@ -426,7 +426,7 @@ Add many components to the system at once.
 
 Throws ArgumentError if the component's name is already stored for its concrete type.
 Throws ArgumentError if any Component-specific rule is violated.
-Throws InvalidRange if any of the component's field values are outside of defined valid
+Throws InvalidValue if any of the component's field values are outside of defined valid
 range.
 
 # Examples
@@ -1234,8 +1234,44 @@ end
 """
 Check the values of all components. See [`check_component`](@ref) for exceptions thrown.
 """
-function check_components(sys::System)
+function check_components(sys::System; check_masked_components = true)
     for component in iterate_components(sys)
+        check_component(sys, component)
+    end
+
+    if check_masked_components
+        for component in IS.get_masked_components(Component, sys.data)
+            check_component(sys, component)
+        end
+    end
+end
+
+"""
+Check the values of components of a given abstract or concrete type.
+See [`check_component`](@ref) for exceptions thrown.
+"""
+function check_components(
+    sys::System,
+    ::Type{T};
+    check_masked_components = true,
+) where {T <: Component}
+    for component in get_components(T, sys)
+        check_component(sys, component)
+    end
+
+    if check_masked_components
+        for component in IS.get_masked_components(T, sys.data)
+            check_component(sys, component)
+        end
+    end
+end
+
+"""
+Check the values of each component in an iterable of components.
+See [`check_component`](@ref) for exceptions thrown.
+"""
+function check_components(sys::System, components)
+    for component in components
         check_component(sys, component)
     end
 end
@@ -1243,10 +1279,8 @@ end
 """
 Check the values of a component.
 
-Throws InvalidRange if any of the component's field values are outside of defined valid
-range.
-
-Throws InvalidValue if the custom validate method for the type fails its check.
+Throws InvalidValue if any of the component's field values are outside of defined valid
+range or if the custom validate method for the type fails its check.
 """
 function check_component(sys::System, component::Component)
     if !validate_component_with_system(component, sys)

@@ -119,7 +119,7 @@ end
     @test_logs(
         (:error, r"Invalid range"),
         @test_throws(
-            PSY.InvalidRange,
+            PSY.InvalidValue,
             System(100.0, nodes, bad_therm_gen_rating, loads5(nodes); runchecks = true)
         )
     )
@@ -144,7 +144,7 @@ end
         (:error, r"Invalid range"),
         match_mode = :any,
         @test_throws(
-            PSY.InvalidRange,
+            PSY.InvalidValue,
             System(100.0, nodes, bad_therm_gen_ramp_lim, loads5(nodes); runchecks = true)
         )
     )
@@ -249,7 +249,7 @@ end
     @test_logs(
         (:error, r"Invalid range"),
         match_mode = :any,
-        @test_throws IS.InvalidRange add_component!(sys, bus)
+        @test_throws IS.InvalidValue add_component!(sys, bus)
     )
 
     # Allowed with skip_validation.
@@ -277,7 +277,7 @@ end
     @test_logs(
         (:error, r"Invalid range"),
         match_mode = :any,
-        @test_throws(IS.InvalidRange, validate_serialization(sys, runchecks = true)),
+        @test_throws(IS.InvalidValue, validate_serialization(sys, runchecks = true)),
     )
 end
 
@@ -322,12 +322,12 @@ end
     @test_logs(
         (:error, r"Invalid range"),
         match_mode = :any,
-        @test_throws(IS.InvalidRange, check_component(sys, bus)),
+        @test_throws(IS.InvalidValue, check_component(sys, bus)),
     )
     @test_logs(
         (:error, r"Invalid range"),
         match_mode = :any,
-        @test_throws(IS.InvalidRange, check_components(sys)),
+        @test_throws(IS.InvalidValue, check_components(sys)),
     )
 end
 
@@ -341,7 +341,7 @@ end
         (:warn, r"exceeds total capacity capability"),
         match_mode = :any,
         @test_throws(
-            IS.InvalidRange,
+            IS.InvalidValue,
             to_json(sys, "sys.json", force = true, runchecks = true)
         ),
     )
