@@ -179,7 +179,9 @@ export Source
 export PeriodicVariableSource
 
 export Service
+export AbstractReserve
 export Reserve
+export ReserveNonSpinning
 export ReserveDirection
 export ReserveUp
 export ReserveDown
