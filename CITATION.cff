@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Lara"
+  given-names: "José Daniel"
+- family-names: "Barrows"
+  given-names: "Clayton"
+- family-names: "Thom"
+  given-names: "Daniel"
+- family-names: "Krishnamurthy"
+  given-names: "Dheepak"
+- family-names: "Callaway"
+  given-names: "Duncan"
+title: "PowerSystems.jl — A power system data management package for large scale modeling"
+version: 1.0.0
+doi: 10.5281/zenodo.1234
+date-released: 2021-09-21
+url: "https://github.com/NREL-SIIP/PowerSystems.jl"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Lara"
+    given-names: "José Daniel"
+  - family-names: "Barrows"
+    given-names: "Clayton"
+  - family-names: "Thom"
+    given-names: "Daniel"
+  - family-names: "Krishnamurthy"
+    given-names: "Dheepak"
+  - family-names: "Callaway"
+    given-names: "Duncan"
+  journal: "SoftwareX",
+  volume: 15,
+  pages: 100747,
+  year: 2021,
+  doi: "https://doi.org/10.1016/j.softx.2021.100747"
+  url: "https://www.sciencedirect.com/science/article/pii/S2352711021000765"
