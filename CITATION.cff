@@ -32,5 +32,7 @@ preferred-citation:
   title: "PowerSystems.jl — A power system data management package for large scale modeling"
   journal: "SoftwareX"
   volume: 15
-  month: 5  
+  month: 7
+  doi: "https://doi.org/10.1016/j.softx.2021.100747"
+  url: "https://www.sciencedirect.com/science/article/pii/S2352711021000765"
   year: 2021
