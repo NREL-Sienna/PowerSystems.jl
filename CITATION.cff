@@ -29,6 +29,7 @@ preferred-citation:
     given-names: "Dheepak"
   - family-names: "Callaway"
     given-names: "Duncan"
+  title: "PowerSystems.jl — A power system data management package for large scale modeling"
   journal: "SoftwareX"
   volume: 15
   month: 5  
