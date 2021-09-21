@@ -29,9 +29,9 @@ preferred-citation:
     given-names: "Dheepak"
   - family-names: "Callaway"
     given-names: "Duncan"
-  journal: "SoftwareX",
-  volume: 15,
-  pages: 100747,
-  year: 2021,
+  journal: "SoftwareX"
+  volume: 15
+  pages: 100747
+  year: 2021
   doi: "https://doi.org/10.1016/j.softx.2021.100747"
   url: "https://www.sciencedirect.com/science/article/pii/S2352711021000765"
