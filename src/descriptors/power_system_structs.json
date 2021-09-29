@@ -11686,6 +11686,13 @@
           "default": "[(0.0, 0.0)]"
         },
         {
+          "name": "internal_voltage_phase",
+          "comment": "Phase angles for for terms n > 1. First component corresponds to sin and second component to cos",
+          "null_value": "[(0.0, 0.0)]",
+          "data_type": "Vector{Tuple{Float64,Float64}}",
+          "default": "[(0.0, 0.0)]"
+        },
+        {
           "name": "internal_angle_bias",
           "comment": "a0 term of the Fourier Series for the angle",
           "null_value": 0.0,
@@ -11707,6 +11714,13 @@
           "null_value": "[(0.0, 0.0)]",
           "data_type": "Vector{Tuple{Float64,Float64}}",
           "default":"[(0.0, 0.0)]"
+        },
+        {
+          "name": "internal_angle_phase",
+          "comment": "Phase angles for for terms n > 1. First component corresponds to sin and second component to cos",
+          "null_value": "[(0.0, 0.0)]",
+          "data_type": "Vector{Tuple{Float64,Float64}}",
+          "default": "[(0.0, 0.0)]"
         },
         {
           "name": "base_power",

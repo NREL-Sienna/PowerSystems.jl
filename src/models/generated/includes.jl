@@ -379,10 +379,12 @@ export get_internal_angle
 export get_internal_angle_bias
 export get_internal_angle_coefficients
 export get_internal_angle_frequencies
+export get_internal_angle_phase
 export get_internal_voltage
 export get_internal_voltage_bias
 export get_internal_voltage_coefficients
 export get_internal_voltage_frequencies
+export get_internal_voltage_phase
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
 export get_inverter_firing_angle
@@ -775,10 +777,12 @@ export set_internal_angle!
 export set_internal_angle_bias!
 export set_internal_angle_coefficients!
 export set_internal_angle_frequencies!
+export set_internal_angle_phase!
 export set_internal_voltage!
 export set_internal_voltage_bias!
 export set_internal_voltage_coefficients!
 export set_internal_voltage_frequencies!
+export set_internal_voltage_phase!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
 export set_inverter_firing_angle!
