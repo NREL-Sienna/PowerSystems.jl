@@ -37,8 +37,8 @@ function show_system_table(io::IO, sys::System; kwargs...)
     ]
     PrettyTables.pretty_table(
         io,
-        table,
-        header;
+        table;
+        header = header,
         title = "System",
         alignment = :l,
         kwargs...,
@@ -89,10 +89,10 @@ function show_components_table(io::IO, sys::System; kwargs...)
         println(io)
         PrettyTables.pretty_table(
             io,
-            static_data,
-            static_header,
+            static_data;
+            header = static_header,
             title = "Static Components",
-            alignment = :l;
+            alignment = :l,
             kwargs...,
         )
     end
@@ -109,10 +109,10 @@ function show_components_table(io::IO, sys::System; kwargs...)
         println(io)
         PrettyTables.pretty_table(
             io,
-            dynamic_data,
-            dynamic_header,
+            dynamic_data;
+            header = dynamic_header,
             title = "Dynamic Components",
-            alignment = :l;
+            alignment = :l,
             kwargs...,
         )
     end
