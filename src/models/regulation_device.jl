@@ -26,7 +26,7 @@ mutable struct RegulationDevice{T <: StaticInjection} <: Device
     ) where {T <: StaticInjection}
         # Note that time_series are not forwarded to T. They get copied from T in
         # handle_component_addition!.
-        return new{T}(
+        new{T}(
             device,
             droop,
             participation_factor,

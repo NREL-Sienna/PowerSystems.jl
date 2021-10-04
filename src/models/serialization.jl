@@ -70,7 +70,8 @@ function IS.deserialize(::Type{T}, data::Dict, component_cache::Dict) where {T <
 end
 
 function IS.deserialize(::Type{Device}, data::Dict)
-    return error("This form of IS.deserialize is not supported for Devices")
+    error("This form of IS.deserialize is not supported for Devices")
+    return
 end
 
 """
