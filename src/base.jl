@@ -549,12 +549,7 @@ function add_service!(
     end
 
     set_units_setting!(service, sys.units_settings)
-    IS.add_component!(
-        sys.data,
-        service;
-        skip_validation = skip_validation,
-        kwargs...,
-    )
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
     return
 end
 
@@ -590,12 +585,7 @@ function add_service!(
     set_contributing_services!(sys, service, contributing_services)
 
     set_units_setting!(service, sys.units_settings)
-    IS.add_component!(
-        sys.data,
-        service;
-        skip_validation = skip_validation,
-        kwargs...,
-    )
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
     return
 end
 

@@ -78,10 +78,7 @@ function get_branch(sys::System, other::Branch)
         end
     end
 
-    error(
-        "Did not find branch with buses $(other.arc.from.name) ",
-        "$(other.arc.to.name)",
-    )
+    error("Did not find branch with buses $(other.arc.from.name) ", "$(other.arc.to.name)")
     return
 end
 
