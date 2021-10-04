@@ -44,7 +44,7 @@ function get_generator_mapping(filename = nothing)
         filename = GENERATOR_MAPPING_FILE
     end
     genmap = open(filename) do file
-        YAML.load(file)
+        return YAML.load(file)
     end
 
     mappings = Dict{NamedTuple, DataType}()

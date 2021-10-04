@@ -1560,7 +1560,7 @@ into the proper types.
 """
 function parse_pti(filename::String)::Dict
     pti_data = open(filename) do f
-        parse_pti(f)
+        return parse_pti(f)
     end
 
     return pti_data

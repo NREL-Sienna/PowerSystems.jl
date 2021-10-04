@@ -16,7 +16,7 @@ end
 
 function parse_matpower(file::String; kwargs...)::Dict
     mp_data = open(file) do io
-        parse_matpower(io; kwargs...)
+        return parse_matpower(io; kwargs...)
     end
     return mp_data
 end

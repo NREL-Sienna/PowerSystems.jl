@@ -59,7 +59,7 @@ end
 # The compiler knows the lengths and types of each tuple, so
 # all of the types are inferable.
 function _to_index_tuple(idx::Tuple, lookup::Tuple)
-    tuple(
+    return tuple(
         lookup_index(first(idx), first(lookup)),
         _to_index_tuple(Base.tail(idx), Base.tail(lookup))...,
     )
@@ -67,7 +67,7 @@ end
 
 # Handle the base case when we have more indices than lookups:
 function _to_index_tuple(idx::NTuple{N}, ::NTuple{0}) where {N}
-    ntuple(k -> begin
+    return ntuple(k -> begin
         i = idx[k]
         (i == 1) ? 1 : error("invalid index $i")
     end, Val(N))
@@ -164,6 +164,7 @@ function Base.summary(io::IO, A::PowerNetworkMatrix)
         println(io)
     end
     print(io, "And data, a ", size(A.data))
+    return
 end
 _summary(io::IO, A::PowerNetworkMatrix) = println(io, "PowerNetworkMatrix")
 
@@ -172,12 +173,14 @@ function Base.summary(
     ::PowerNetworkMatrix,
 )
     println(io, "PowerNetworkMatrix")
+    return
 end
 
 function Base.summary(A::PowerNetworkMatrix)
     io = IOBuffer()
     Base.summary(io, A)
     String(take!(io))
+    return
 end
 
 if isdefined(Base, :print_array) # 0.7 and later
@@ -243,6 +246,7 @@ function Base.show(io::IO, array::PowerNetworkMatrix)
     isempty(array) && return
     println(io, ":")
     Base.print_array(io, array)
+    return
 end
 
 Base.to_index(b::Bus) = get_number(b)

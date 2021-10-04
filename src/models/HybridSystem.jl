@@ -91,7 +91,7 @@ end
 
 # Constructor for demo purposes; non-functional.
 function HybridSystem(::Nothing)
-    HybridSystem(;
+    return HybridSystem(;
         name = "init",
         available = false,
         status = false,
@@ -244,24 +244,28 @@ end
 function set_thermal_unit!(hybrid::HybridSystem, val::ThermalGen)
     _raise_if_attached_to_system(hybrid)
     hybrid.thermal_unit = val
+    return
 end
 
 """Set [`HybridSystem`](@ref) load"""
 function set_electric_load!(hybrid::HybridSystem, val::ElectricLoad)
     _raise_if_attached_to_system(hybrid)
     value.electric_load = val
+    return
 end
 
 """Set [`HybridSystem`](@ref) storage unit"""
 function set_storage!(hybrid::HybridSystem, val::Storage)
     _raise_if_attached_to_system(hybrid)
     value.storage = val
+    return
 end
 
 """Set [`HybridSystem`](@ref) renewable unit"""
 function set_renewable_unit!(hybrid::HybridSystem, val::RenewableGen)
     _raise_if_attached_to_system(hybrid)
     value.renewable_unit = val
+    return
 end
 
 function _raise_if_attached_to_system(hybrid::HybridSystem)
@@ -272,4 +276,5 @@ function _raise_if_attached_to_system(hybrid::HybridSystem)
             ),
         )
     end
+    return
 end

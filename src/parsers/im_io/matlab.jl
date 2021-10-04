@@ -239,12 +239,12 @@ function split_line(mp_line::AbstractString)
         end
         curr_token = ""
         curr_pos += 1
-        is_curr_token_quote = false
+        return is_curr_token_quote = false
     end
 
     function _push_curr_char()
         curr_token *= mp_line[curr_pos]
-        curr_pos += 1
+        return curr_pos += 1
     end
 
     curr_pos = 1

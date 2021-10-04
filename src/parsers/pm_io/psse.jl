@@ -17,7 +17,7 @@ function _init_bus!(bus::Dict{String, Any}, id::Int)
     bus["name"] = "            "
     bus["vmax"] = 1.1
     bus["vmin"] = 0.9
-    bus["index"] = id
+    return bus["index"] = id
 end
 
 """
@@ -935,11 +935,11 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    pm_data["storage"] = []
+    return pm_data["storage"] = []
 end
 
 function _psse2pm_switch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    pm_data["switch"] = []
+    return pm_data["switch"] = []
 end
 
 """
@@ -1020,7 +1020,7 @@ Parses directly from file
 """
 function parse_psse(filename::String; kwargs...)::Dict
     pm_data = open(filename) do f
-        parse_psse(f; kwargs...)
+        return parse_psse(f; kwargs...)
     end
 
     return pm_data

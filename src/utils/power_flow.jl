@@ -170,6 +170,7 @@ function _write_pf_sol!(sys::System, nl_result)
     end
 
     _update_branch_flow!(sys)
+    return
 end
 
 """

@@ -65,6 +65,7 @@ function get_component_by_name(sys::System, component_type, other::Component)
     end
 
     error("Did not find component $component")
+    return
 end
 
 """Return the Branch in the system that matches another by case-insensitive arc
@@ -77,7 +78,11 @@ function get_branch(sys::System, other::Branch)
         end
     end
 
-    error("Did not find branch with buses $(other.arc.from.name) ", "$(other.arc.to.name)")
+    error(
+        "Did not find branch with buses $(other.arc.from.name) ",
+        "$(other.arc.to.name)",
+    )
+    return
 end
 
 function create_system_with_dynamic_inverter()

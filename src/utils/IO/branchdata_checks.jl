@@ -1,6 +1,7 @@
 
 function sanitize_component!(line::Union{MonitoredLine, Line}, sys::System)
     sanitize_angle_limits!(line)
+    return
 end
 
 function validate_component_with_system(line::Union{MonitoredLine, Line}, sys::System)
@@ -55,6 +56,7 @@ function sanitize_angle_limits!(line)
             line.angle_limits = (min = min_limit, max = max_limit)
         end
     end
+    return
 end
 
 function linerate_calculation(l::Union{Line, MonitoredLine})

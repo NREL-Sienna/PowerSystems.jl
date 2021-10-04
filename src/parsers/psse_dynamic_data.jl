@@ -85,7 +85,7 @@ end
 
 function _populate_args!(struct_args, param_dic::Dict, val, id::String)
     param_map = param_dic[id]
-    _populate_args!(struct_args, param_map, val, id)
+    return _populate_args!(struct_args, param_map, val, id)
 end
 
 """
@@ -382,7 +382,7 @@ add_dyn_injectors!(sys, dyr_file)
 """
 function add_dyn_injectors!(sys::System, dyr_file::AbstractString)
     bus_dict_gen = _parse_dyr_components(dyr_file)
-    add_dyn_injectors!(sys, bus_dict_gen)
+    return add_dyn_injectors!(sys, bus_dict_gen)
 end
 
 function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)

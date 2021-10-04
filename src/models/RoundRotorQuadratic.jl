@@ -31,7 +31,7 @@ function RoundRotorQuadratic(
     Se::Tuple{Float64, Float64},
 )
     saturation_coeffs = get_quadratic_saturation(Se)
-    RoundRotorQuadratic(
+    return RoundRotorQuadratic(
         RoundRotorMachine(
             R,
             Td0_p,
@@ -64,11 +64,24 @@ function RoundRotorQuadratic(;
     Xl,
     Se,
 )
-    RoundRotorQuadratic(R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xl, Se)
+    return RoundRotorQuadratic(
+        R,
+        Td0_p,
+        Td0_pp,
+        Tq0_p,
+        Tq0_pp,
+        Xd,
+        Xq,
+        Xd_p,
+        Xq_p,
+        Xd_pp,
+        Xl,
+        Se,
+    )
 end
 
 function RoundRotorQuadratic(::Nothing)
-    RoundRotorQuadratic(;
+    return RoundRotorQuadratic(;
         R = 0.0,
         Td0_p = 0.0,
         Td0_pp = 0.0,

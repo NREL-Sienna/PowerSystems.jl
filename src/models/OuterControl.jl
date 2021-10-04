@@ -32,7 +32,7 @@ function OuterControl(
     reactive_power::R,
     ext = Dict{String, Any}(),
 ) where {A <: ActivePowerControl, R <: ReactivePowerControl}
-    OuterControl(
+    return OuterControl(
         active_power,
         reactive_power,
         ext,
