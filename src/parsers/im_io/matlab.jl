@@ -239,7 +239,7 @@ function split_line(mp_line::AbstractString)
         end
         curr_token = ""
         curr_pos += 1
-        return is_curr_token_quote = false
+        is_curr_token_quote = false
     end
 
     function _push_curr_char()

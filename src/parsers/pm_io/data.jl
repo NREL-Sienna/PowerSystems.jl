@@ -2885,7 +2885,8 @@ function _resolve_swithces!(data::Dict{String, <:Any})
     end
 
     @info "removed $(length(data["switch"])) switch components"
-    return data["switch"] = Dict{String, Any}()
+    data["switch"] = Dict{String, Any}()
+    return
 end
 
 """

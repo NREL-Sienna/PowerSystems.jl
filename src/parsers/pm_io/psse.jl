@@ -935,11 +935,13 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    return pm_data["storage"] = []
+    pm_data["storage"] = []
+    return
 end
 
 function _psse2pm_switch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    return pm_data["switch"] = []
+    pm_data["switch"] = []
+    return
 end
 
 """

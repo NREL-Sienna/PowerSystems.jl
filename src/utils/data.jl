@@ -100,7 +100,7 @@ function unzip(::Type{Windows}, filename, directory)
                 ENV["PATH"],
             ),
         ) do
-            return Sys.which("7z")
+            Sys.which("7z")
         end
     end
     @assert success(`$path_7z x $filename -y -o$directory`) "Unable to extract $filename to $directory"

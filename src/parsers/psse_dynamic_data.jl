@@ -85,7 +85,8 @@ end
 
 function _populate_args!(struct_args, param_dic::Dict, val, id::String)
     param_map = param_dic[id]
-    return _populate_args!(struct_args, param_map, val, id)
+    _populate_args!(struct_args, param_map, val, id)
+    return
 end
 
 """
@@ -285,11 +286,11 @@ function _parse_dyr_inverter_components!(
         "Filter" => 7,
     )
     for (bus_num, bus_data) in data #bus_data is a dictionary with values per component (key is a tuple of PSSE name and number ID)
-        #bus_dict will add a vector of components structs for each generator ID on the bus_num key of the master dictionary 'dic' 
+        #bus_dict will add a vector of components structs for each generator ID on the bus_num key of the master dictionary 'dic'
         #bus_dict_values will only contain the vector of parameters that will be used to construct the structs
         bus_dict_values = Dict{String, Any}()
         for (componentID, componentValues) in bus_data
-            #ComponentID is a tuple: 
+            #ComponentID is a tuple:
             #ComponentID[1] is the PSSE name
             #ComponentID[2] is the number ID of the generator/inverter
             #Fill array of 7 components per inverter
