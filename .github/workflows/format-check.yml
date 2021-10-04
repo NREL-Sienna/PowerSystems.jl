@@ -24,8 +24,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Install JuliaFormatter and format
         run: |
-          julia  -e 'using Pkg; Pkg.add(PackageSpec(name="JuliaFormatter", version="0.14.1"))'
-          julia  -e 'using JuliaFormatter; include(".github/workflows/formatter_code.jl")'
+          julia  -e 'include(".github/workflows/formatter/formatter_code.jl")'
       - uses: reviewdog/action-suggester@v1
         if: github.event_name == 'pull_request'
         with:
