@@ -17,7 +17,8 @@ function _init_bus!(bus::Dict{String, Any}, id::Int)
     bus["name"] = "            "
     bus["vmax"] = 1.1
     bus["vmin"] = 0.9
-    return bus["index"] = id
+    bus["index"] = id
+    return
 end
 
 """
@@ -1022,7 +1023,7 @@ Parses directly from file
 """
 function parse_psse(filename::String; kwargs...)::Dict
     pm_data = open(filename) do f
-        return parse_psse(f; kwargs...)
+        parse_psse(f; kwargs...)
     end
 
     return pm_data

@@ -7,7 +7,7 @@ PowerModels data structure. All fields from PTI files will be imported if
 """
 function parse_file(file::String; import_all = false, validate = true)
     pm_data = open(file) do io
-        return pm_data = parse_file(
+        pm_data = parse_file(
             io;
             import_all = import_all,
             validate = validate,

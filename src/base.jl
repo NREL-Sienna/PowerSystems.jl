@@ -1636,7 +1636,8 @@ function handle_component_addition!(sys::System, component::RegulationDevice; kw
 end
 
 function handle_component_addition!(sys::System, component::Branch; kwargs...)
-    return handle_component_addition_common!(sys, component)
+    handle_component_addition_common!(sys, component)
+    return
 end
 
 function handle_component_addition!(sys::System, component::DynamicBranch; kwargs...)

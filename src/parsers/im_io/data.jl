@@ -9,7 +9,8 @@ function update_data!(data::Dict{String, <:Any}, new_data::Dict{String, <:Any})
     else
         @warn "running update_data with data that does not include per_unit field, units may be incorrect"
     end
-    return _update_data!(data, new_data)
+    _update_data!(data, new_data)
+    return
 end
 
 "recursive call of _update_data"
@@ -26,6 +27,7 @@ function _update_data!(data::Dict{String, <:Any}, new_data::Dict{String, <:Any})
             data[key] = new_v
         end
     end
+    return
 end
 
 "checks if a given network data is a multinetwork"
