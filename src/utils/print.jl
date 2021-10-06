@@ -13,6 +13,7 @@ function Base.show(io::IO, ::MIME"text/plain", sys::System)
 
     println(io)
     IS.show_time_series_data(io, sys.data, backend = :auto)
+    return
 end
 
 function Base.show(io::IO, ::MIME"text/html", sys::System)
@@ -24,6 +25,7 @@ function Base.show(io::IO, ::MIME"text/html", sys::System)
 
     println(io)
     IS.show_time_series_data(io, sys.data, backend = :html)
+    return
 end
 
 function show_system_table(io::IO, sys::System; kwargs...)
@@ -43,6 +45,7 @@ function show_system_table(io::IO, sys::System; kwargs...)
         alignment = :l,
         kwargs...,
     )
+    return
 end
 
 function show_components_table(io::IO, sys::System; kwargs...)
@@ -157,6 +160,7 @@ function Base.show(io::IO, ist::Component)
         print(io, val)
     end
     print(io, ")")
+    return
 end
 
 function Base.show(io::IO, ::MIME"text/plain", ist::Component)
@@ -202,6 +206,7 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
             set_units_setting!(ist, nothing)
         end
     end
+    return
 end
 
 """
@@ -231,6 +236,7 @@ function show_components(
     kwargs...,
 )
     show_components(stdout, sys, component_type, additional_columns; kwargs...)
+    return
 end
 
 function show_components(
@@ -247,4 +253,5 @@ function show_components(
         additional_columns;
         kwargs...,
     )
+    return
 end

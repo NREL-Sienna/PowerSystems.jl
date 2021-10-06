@@ -29,18 +29,18 @@ function SalientPoleExponential(
     Se::Tuple{Float64, Float64},
 )
     saturation_coeffs = get_exponential_saturation(Se)
-    SalientPoleExponential(
+    return SalientPoleExponential(
         SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se),
         saturation_coeffs,
     )
 end
 
 function SalientPoleExponential(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
-    SalientPoleExponential(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
+    return SalientPoleExponential(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
 end
 
 function SalientPoleExponential(::Nothing)
-    SalientPoleExponential(;
+    return SalientPoleExponential(;
         R = 0.0,
         Td0_p = 0.0,
         Td0_pp = 0.0,

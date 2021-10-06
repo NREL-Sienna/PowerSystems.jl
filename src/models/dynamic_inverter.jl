@@ -154,7 +154,7 @@ function DynamicInverter(;
     P <: FrequencyEstimator,
     F <: Filter,
 }
-    DynamicInverter(
+    return DynamicInverter(
         name,
         ω_ref,
         converter,

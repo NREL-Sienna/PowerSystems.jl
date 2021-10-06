@@ -15,6 +15,7 @@ Return the method to be called on a Bus to get its AggregationTopology value for
 """
 function get_aggregation_topology_accessor(::Type{T}) where {T <: AggregationTopology}
     error("get_aggregation_topology_accessor must be implemented for $T")
+    return
 end
 
 function check_bus_params(

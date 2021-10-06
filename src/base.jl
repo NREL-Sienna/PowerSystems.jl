@@ -272,6 +272,7 @@ function IS.to_json(sys::System, filename::AbstractString; force = false, runche
         write(io, data)
     end
     @info "Serialized System to $filename"
+    return
 end
 
 function Base.deepcopy(sys::System)
@@ -440,6 +441,7 @@ foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 """
 function add_components!(sys::System, components)
     foreach(x -> add_component!(sys, x), components)
+    return
 end
 
 """
@@ -457,6 +459,7 @@ function add_component!(
     kwargs...,
 )
     add_component!(sys, dyn_injector; static_injector = static_injector, kwargs...)
+    return
 end
 
 function _add_service!(
@@ -494,6 +497,7 @@ Similar to [`add_component!`](@ref) but for services.
 """
 function add_service!(sys::System, service::Service, contributing_devices; kwargs...)
     _add_service!(sys, service, contributing_devices; kwargs...)
+    return
 end
 
 """
@@ -506,6 +510,7 @@ Similar to [`add_component!`](@ref) but for services.
 """
 function add_service!(sys::System, service::Service, contributing_device::Device; kwargs...)
     _add_service!(sys, service, [contributing_device]; kwargs...)
+    return
 end
 
 """
@@ -521,6 +526,7 @@ function add_service!(device::Device, service::Service, sys::System)
     throw_if_not_attached(service, sys)
     throw_if_not_attached(device, sys)
     add_service_internal!(device, service)
+    return
 end
 
 """
@@ -544,6 +550,7 @@ function add_service!(
 
     set_units_setting!(service, sys.units_settings)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
+    return
 end
 
 """Set StaticReserveGroup contributing_services with check"""
@@ -556,6 +563,7 @@ function set_contributing_services!(
         throw_if_not_attached(_service, sys)
     end
     service.contributing_services = val
+    return
 end
 
 """
@@ -578,6 +586,7 @@ function add_service!(
 
     set_units_setting!(service, sys.units_settings)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
+    return
 end
 
 """
@@ -651,6 +660,7 @@ function IS.add_time_series_from_file_metadata_internal!(
     else
         IS.add_time_series!(data, component, ts)
     end
+    return
 end
 
 """
@@ -731,6 +741,7 @@ function remove_component!(sys::System, component::T) where {T <: Component}
     IS.remove_component!(sys.data, component)
     handle_component_removal!(sys, component)
     clear_units!(component)
+    return
 end
 
 """
@@ -765,6 +776,7 @@ function remove_component!(
 ) where {T <: Component}
     component = IS.remove_component!(T, sys.data, name)
     handle_component_removal!(sys, component)
+    return
 end
 
 """
@@ -1038,6 +1050,7 @@ function copy_time_series!(
         name_mapping = name_mapping,
         scaling_factor_multiplier_mapping = scaling_factor_multiplier_mapping,
     )
+    return
 end
 
 #=
@@ -1187,6 +1200,7 @@ function transform_single_time_series!(sys::System, horizon::Int, interval::Date
         horizon,
         interval,
     )
+    return
 end
 
 """
@@ -1287,6 +1301,7 @@ function check_component(sys::System, component::Component)
         throw(IS.InvalidValue("Invalid value for $component"))
     end
     IS.check_component(sys.data, component)
+    return
 end
 
 function IS.serialize(sys::T) where {T <: System}
@@ -1496,20 +1511,24 @@ check_attached_buses(sys::System, component::Component) = nothing
 
 function check_attached_buses(sys::System, component::StaticInjection)
     throw_if_not_attached(get_bus(component), sys)
+    return
 end
 
 function check_attached_buses(sys::System, component::Branch)
     throw_if_not_attached(get_from_bus(component), sys)
     throw_if_not_attached(get_to_bus(component), sys)
+    return
 end
 
 function check_attached_buses(sys::System, component::DynamicBranch)
     check_attached_buses(sys, get_branch(component))
+    return
 end
 
 function check_attached_buses(sys::System, component::Arc)
     throw_if_not_attached(get_from(component), sys)
     throw_if_not_attached(get_to(component), sys)
+    return
 end
 
 """
@@ -1543,6 +1562,7 @@ function check_component_addition(sys::System, branch::Branch; kwargs...)
     arc = get_arc(branch)
     throw_if_not_attached(get_from(arc), sys)
     throw_if_not_attached(get_to(arc), sys)
+    return
 end
 
 function check_component_addition(sys::System, dyn_branch::DynamicBranch; kwargs...)
@@ -1552,6 +1572,7 @@ function check_component_addition(sys::System, dyn_branch::DynamicBranch; kwargs
     arc = get_arc(dyn_branch)
     throw_if_not_attached(get_from(arc), sys)
     throw_if_not_attached(get_to(arc), sys)
+    return
 end
 
 function check_component_addition(sys::System, dyn_injector::DynamicInjection; kwargs...)
@@ -1576,6 +1597,7 @@ function check_component_addition(sys::System, dyn_injector::DynamicInjection; k
     end
 
     throw_if_not_attached(static_injector, sys)
+    return
 end
 
 function check_component_addition(sys::System, bus::Bus; kwargs...)
@@ -1599,6 +1621,7 @@ function handle_component_addition!(sys::System, bus::Bus; kwargs...)
     number = get_number(bus)
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
+    return
 end
 
 function handle_component_addition!(sys::System, component::RegulationDevice; kwargs...)
@@ -1614,11 +1637,13 @@ end
 
 function handle_component_addition!(sys::System, component::Branch; kwargs...)
     handle_component_addition_common!(sys, component)
+    return
 end
 
 function handle_component_addition!(sys::System, component::DynamicBranch; kwargs...)
     handle_component_addition_common!(sys, component)
     remove_component!(sys, component.branch)
+    return
 end
 
 function handle_component_addition!(sys::System, dyn_injector::DynamicInjection; kwargs...)
@@ -1626,6 +1651,7 @@ function handle_component_addition!(sys::System, dyn_injector::DynamicInjection;
     static_base_power = get_base_power(static_injector)
     set_base_power!(dyn_injector, static_base_power)
     set_dynamic_injector!(static_injector, dyn_injector)
+    return
 end
 
 function handle_component_addition!(
@@ -1661,12 +1687,14 @@ function handle_component_removal!(sys::System, bus::Bus)
     number = get_number(bus)
     @assert number in sys.bus_numbers "bus number $number is not stored"
     pop!(sys.bus_numbers, number)
+    return
 end
 
 function handle_component_removal!(sys::System, device::Device)
     # This may have to be refactored if handle_component_removal! needs to be implemented
     # for a subtype.
     clear_services!(device)
+    return
 end
 
 function handle_component_removal!(sys::System, service::Service)
@@ -1805,6 +1833,7 @@ function convert_component!(
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     remove_component!(sys, line)
+    return
 end
 
 """
@@ -1846,6 +1875,7 @@ function convert_component!(
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     remove_component!(sys, line)
+    return
 end
 
 function _validate_or_skip!(sys, component, skip_validation)

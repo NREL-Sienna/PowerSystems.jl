@@ -18,6 +18,7 @@ function _init_bus!(bus::Dict{String, Any}, id::Int)
     bus["vmax"] = 1.1
     bus["vmin"] = 0.9
     bus["index"] = id
+    return
 end
 
 """
@@ -936,10 +937,12 @@ end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["storage"] = []
+    return
 end
 
 function _psse2pm_switch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["switch"] = []
+    return
 end
 
 """

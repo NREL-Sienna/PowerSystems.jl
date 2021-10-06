@@ -32,7 +32,7 @@ function RoundRotorExponential(
     Se::Tuple{Float64, Float64},
 )
     saturation_coeffs = get_exponential_saturation(Se)
-    RoundRotorExponential(
+    return RoundRotorExponential(
         RoundRotorMachine(
             R,
             Td0_p,
@@ -65,7 +65,7 @@ function RoundRotorExponential(;
     Xl,
     Se,
 )
-    RoundRotorExponential(
+    return RoundRotorExponential(
         R,
         Td0_p,
         Td0_pp,
@@ -82,7 +82,7 @@ function RoundRotorExponential(;
 end
 
 function RoundRotorExponential(::Nothing)
-    RoundRotorExponential(;
+    return RoundRotorExponential(;
         R = 0.0,
         Td0_p = 0.0,
         Td0_pp = 0.0,

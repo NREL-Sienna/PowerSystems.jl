@@ -9,6 +9,7 @@ function buscheck(buses)
             @warn "Bus/Nodes data does not contain information to build an a network"
         end
     end
+    return
 end
 
 ## Slack Bus Definition ##
@@ -24,6 +25,7 @@ function slack_bus_check(buses)
     if slack == -9
         @error "Model doesn't contain a slack bus"
     end
+    return
 end
 
 # TODO: Check for islanded Buses
@@ -70,6 +72,7 @@ function adequacy_check(sys::System)
     gen = total_capacity_rating(sys)
     load = total_load_rating(sys)
     load > gen && @warn "System peak load ($load) exceeds total capacity capability ($gen)."
+    return
 end
 
 """

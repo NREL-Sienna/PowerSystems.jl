@@ -25,7 +25,7 @@ function DynamicBranch(
 ) where {T <: ACBranch}
     states = DEFAULT_DYNAMIC_BRANCH_STATES
     n_states = length(states)
-    DynamicBranch(branch, n_states, states, internal)
+    return DynamicBranch(branch, n_states, states, internal)
 end
 
 function DynamicBranch(;
@@ -34,11 +34,11 @@ function DynamicBranch(;
     states = DEFAULT_DYNAMIC_BRANCH_STATES,
     internal = IS.InfrastructureSystemsInternal(),
 )
-    DynamicBranch(branch, n_states, states, internal)
+    return DynamicBranch(branch, n_states, states, internal)
 end
 
 function DynamicBranch(::Nothing)
-    DynamicBranch(Line(nothing))
+    return DynamicBranch(Line(nothing))
 end
 
 "Get branch"

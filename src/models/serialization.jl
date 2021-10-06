@@ -71,6 +71,7 @@ end
 
 function IS.deserialize(::Type{Device}, data::Dict)
     error("This form of IS.deserialize is not supported for Devices")
+    return
 end
 
 """

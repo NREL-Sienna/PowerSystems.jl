@@ -37,10 +37,12 @@ Base.getindex(vc::VariableCost, ix::Int) = getindex(vc.cost, ix)
 
 function get_breakpoint_upperbounds(vc::VariableCost{T}) where {T}
     throw(ArgumentError("Method not supported for VariableCost using $(T)"))
+    return
 end
 
 function get_slopes(vc::VariableCost{T}) where {T}
     throw(ArgumentError("Method not supported for VariableCost using $(T)"))
+    return
 end
 
 """

@@ -19,4 +19,5 @@ function set_dynamic_injector!(
 
     # All of these types implement this field.
     static_injector.dynamic_injector = dynamic_injector
+    return
 end

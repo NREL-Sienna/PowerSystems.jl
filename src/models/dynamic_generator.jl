@@ -102,7 +102,7 @@ function DynamicGenerator(;
     ext::Dict{String, Any} = Dict{String, Any}(),
     internal = InfrastructureSystemsInternal(),
 ) where {M <: Machine, S <: Shaft, A <: AVR, TG <: TurbineGov, P <: PSS}
-    DynamicGenerator(
+    return DynamicGenerator(
         name,
         ω_ref,
         machine,

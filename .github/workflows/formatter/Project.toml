@@ -1,0 +1,10 @@
+uuid = "c6367ca8-164d-4469-afe3-c91cf8860505"
+authors = ["Jose Daniel Lara <jdlara@berkeley.edu>"]
+
+[deps]
+JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+
+[compat]
+JuliaFormatter = "v0.16.2"
+julia = "^1.2"

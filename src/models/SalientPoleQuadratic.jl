@@ -29,18 +29,18 @@ function SalientPoleQuadratic(
     Se::Tuple{Float64, Float64},
 )
     saturation_coeffs = get_quadratic_saturation(Se)
-    SalientPoleQuadratic(
+    return SalientPoleQuadratic(
         SalientPoleMachine(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se),
         saturation_coeffs,
     )
 end
 
 function SalientPoleQuadratic(; R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
-    SalientPoleQuadratic(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
+    return SalientPoleQuadratic(R, Td0_p, Td0_pp, Tq0_pp, Xd, Xq, Xd_p, Xd_pp, Xl, Se)
 end
 
 function SalientPoleQuadratic(::Nothing)
-    SalientPoleQuadratic(;
+    return SalientPoleQuadratic(;
         R = 0.0,
         Td0_p = 0.0,
         Td0_pp = 0.0,

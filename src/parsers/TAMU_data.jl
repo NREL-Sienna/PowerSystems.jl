@@ -73,7 +73,7 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
         m = match(r"(.*)\s(AM|PM)", ds)
         d = Dates.DateTime(m.captures[1], fmt)
         ampm = uppercase(something(m.captures[2], ""))
-        d + Dates.Hour(12 * +(ampm == "PM", ampm == "" || Dates.hour(d) != 12, -1))
+        return d + Dates.Hour(12 * +(ampm == "PM", ampm == "" || Dates.hour(d) != 12, -1))
     end
 
     dfmt = Dates.DateFormat("m/dd/yyy H:M:S")

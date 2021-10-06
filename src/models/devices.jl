@@ -121,4 +121,5 @@ Remove all services attached to the device.
 function clear_services!(device::Device)
     services = get_services(device)
     empty!(services)
+    return
 end

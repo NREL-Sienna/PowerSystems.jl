@@ -264,8 +264,7 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; k
 
     for zone in zones
         buses = [
-            bus_number_to_bus[b["bus_i"]] for
-            (b_key, b) in data["bus"] if b["zone"] == zone
+            bus_number_to_bus[b["bus_i"]] for b in values(data["bus"]) if b["zone"] == zone
         ]
         bus_names = Set{String}()
         for bus in buses
