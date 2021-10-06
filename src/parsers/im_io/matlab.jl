@@ -244,7 +244,7 @@ function split_line(mp_line::AbstractString)
 
     function _push_curr_char()
         curr_token *= mp_line[curr_pos]
-        return curr_pos += 1
+        curr_pos += 1
     end
 
     curr_pos = 1
