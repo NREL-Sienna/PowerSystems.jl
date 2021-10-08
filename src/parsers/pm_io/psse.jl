@@ -296,10 +296,30 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     if haskey(pti_data, "LOAD")
         for load in pti_data["LOAD"]
             sub_data = Dict{String, Any}()
-
             sub_data["load_bus"] = pop!(load, "I")
             sub_data["pd"] = pop!(load, "PL")
             sub_data["qd"] = pop!(load, "QL")
+
+            if (load["IP"] > 0.0) | (load["IQ"] > 0.0)
+                bus = filter(x -> x["index"] == sub_data["load_bus"], pm_data["bus"])[1]
+                V = bus["vm"] * cosd(bus["va"]) + 1im * bus["vm"] * sind(bus["va"])
+                # Uses matpower transformation instead of pd = real(V*I) and qd = imag(V*I)
+                # where I and V are in vector form.
+                sub_data["pd"] += bus["vm"] * load["IP"]
+                sub_data["qd"] += bus["vm"] * load["IQ"]
+                @warn "Current Load detected IP = $(load["IP"]) IQ = $(load["IQ"]). Converting to Power Load Pd = $(bus["vm"]*load["IP"]) Qd = $(bus["vm"]*load["IQ"])"
+            end
+
+            if (load["YP"] > 0.0) | (load["YQ"] > 0.0)
+                bus = filter(x -> x["index"] == sub_data["load_bus"], pm_data["bus"])[1]
+                V = bus["vm"] * cosd(bus["va"]) + 1im * bus["vm"] * sind(bus["va"])
+                # Uses matpower transformation instead of pd = real(V*(V*Y)^*) and qd = imag(V*(V*Y)^*)
+                # where Y and V are in vector form.
+                sub_data["pd"] += bus["vm"]^2 * load["YP"]
+                # NOTE: In PSSe reactive power in constant admittance loads is negative for inductive loads and positive for capacitive loads
+                sub_data["qd"] -= bus["vm"]^2 * load["YQ"]
+                @warn "Impedance Load detected YP = $(load["YP"]) YQ = $(load["YQ"]). Converting to Power Load Pd = $(bus["vm"]^2*load["YP"]) Qd = $(-1*bus["vm"]^2*load["YQ"])"
+            end
             sub_data["status"] = pop!(load, "STATUS")
 
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
