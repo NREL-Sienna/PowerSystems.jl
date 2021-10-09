@@ -36,7 +36,7 @@ br = get_component(Line, pf_sys5_re, "6")
 set_x!(br, 20.0)
 set_r!(br, 2.0)
 
-@testset begin
+@testset "Power Flow testing" begin
     # This is a negative test. The data passed for sys5_re is known to be infeasible.
     @test_logs(
         (:error, "The powerflow solver returned convergence = false"),
@@ -83,4 +83,7 @@ set_r!(br, 2.0)
     res = solve_powerflow(sys)
     @test res["flow_results"].P_from_to[4] == 0.0
     @test res["flow_results"].P_to_from[4] == 0.0
+
+    sys = PSB.build_system(PSB.PSSETestSystems, "psse_240_case_renewable_sys")
+    @test solve_powerflow!(sys)
 end
