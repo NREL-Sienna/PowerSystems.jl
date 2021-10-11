@@ -309,7 +309,7 @@ function solve_powerflow!(system::System; finite_diff = false, kwargs...)
     set_units_base_system!(system, "SYSTEM_BASE")
     res = _solve_powerflow(system, finite_diff; kwargs...)
     if res.f_converged
-        PowerSystems._write_pf_sol!(system, res)
+        _write_pf_sol!(system, res)
         @info("PowerFlow solve converged, the results have been stored in the system")
         #Restore original per unit base
         set_units_base_system!(system, settings_unit_cache)
@@ -362,7 +362,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     N_BUS = length(buses)
 
     # assumes the ordering in YBus is the same as in the buses.
-    Yb = Ybus(get_components(ACBranch, system), buses; ybus_kwargs...).data
+    Yb = Ybus(system; ybus_kwargs...).data
     a = collect(1:N_BUS)
     I, J, V = SparseArrays.findnz(Yb)
     neighbors = [Set{Int}([i]) for i in 1:N_BUS]
@@ -449,9 +449,8 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     sources = get_components(StaticInjection, system, d -> !isa(d, ElectricLoad))
 
     for (ix, b) in enumerate(buses)
-        bus_number = get_number(b)::Int
         bus_angle = get_angle(b)::Float64
-        bus_voltage_magnitude = get_magnitude(b)::Float64
+        Vm[ix] = bus_voltage_magnitude = get_magnitude(b)::Float64
         P_GEN_BUS[ix] = 0.0
         Q_GEN_BUS[ix] = 0.0
         get_ext(b)["neighbors"] = neighbors[ix]
@@ -464,7 +463,6 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
         end
 
         P_LOAD_BUS[ix], Q_LOAD_BUS[ix] = _get_load_data(system, b)
-
         if b.bustype == BusTypes.REF
             injection_components = get_components(
                 StaticInjection,
@@ -476,18 +474,15 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                     "The slack bus does not have any injection component. Power Flow can not proceed",
                 ),
             )
-            Vm[ix] = get_magnitude(b)::Float64
             θ[ix] = get_angle(b)::Float64
             x0[state_variable_count] = P_GEN_BUS[ix]
             x0[state_variable_count + 1] = Q_GEN_BUS[ix]
             state_variable_count += 2
         elseif b.bustype == BusTypes.PV
-            Vm[ix] = get_magnitude(b)::Float64
             x0[state_variable_count] = Q_GEN_BUS[ix]
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
         elseif b.bustype == BusTypes.PQ
-            Vm[ix] = 1.0
             x0[state_variable_count] = bus_voltage_magnitude
             x0[state_variable_count + 1] = bus_angle
             state_variable_count += 2
@@ -498,7 +493,6 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
 
     @assert state_variable_count - 1 == N_BUS * 2
     bus_types = get_bustype.(buses)
-
     function pf!(F::Vector{Float64}, X::Vector{Float64})
         for (ix, b) in enumerate(bus_types)
             if b == BusTypes.REF
@@ -680,6 +674,14 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                 end
             end
         end
+    end
+
+    res = similar(x0)
+    pf!(res, x0)
+    if sum(res) > 10 * (N_BUS * 2)
+        _, ix = findmax(res)
+        bus_no = get_number(buses[ix])
+        @warn "Initial guess provided results in a large initial residual. Largest residual at bus $bus_no"
     end
 
     if finite_diff
