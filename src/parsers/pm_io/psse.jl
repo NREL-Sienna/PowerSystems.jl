@@ -317,10 +317,7 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     # where I and V are in vector form.
                     sub_data["pd"] += bus_vm * load["IP"]
                     sub_data["qd"] += bus_vm * load["IQ"]
-                    Memento.warn(
-                        _LOGGER,
-                        "Load id = $(sub_data["index"]) detected as I Load  IP = $(load["IP"]) IQ = $(load["IQ"]). Converting to Power Load Pd = $(bus_vm*load["IP"]) Qd = $(bus_vm*load["IQ"]) using Vm = $(bus_vm)",
-                    )
+                    @warn "Load id = $(sub_data["index"]) detected as I Load  IP = $(load["IP"]) IQ = $(load["IQ"]). Converting to Power Load Pd = $(bus_vm*load["IP"]) Qd = $(bus_vm*load["IQ"]) using Vm = $(bus_vm)"
                 end
                 if (load["YP"] != 0.0) || (load["YQ"] != 0.0)
                     # Uses matpower transformation instead of pd = real(V*(V*Y)^*) and qd = imag(V*(V*Y)^*)
@@ -328,10 +325,7 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["pd"] += bus_vm^2 * load["YP"]
                     # NOTE: In PSSe reactive power in constant admittance loads is negative for inductive loads and positive for capacitive loads
                     sub_data["qd"] -= bus_vm^2 * load["YQ"]
-                    Memento.warn(
-                        _LOGGER,
-                        "Load id = $(sub_data["index"]) detected as Z Load YP = $(load["YP"]) YQ = $(load["YQ"]). Converting to Power Load Pd = $(bus_vm^2*load["YP"]) Qd = $(-1*bus_vm^2*load["YQ"]) using Vm = $(bus_vm)",
-                    )
+                    @warn "Load id = $(sub_data["index"]) detected as Z Load YP = $(load["YP"]) YQ = $(load["YQ"]). Converting to Power Load Pd = $(bus_vm^2*load["YP"]) Qd = $(-1*bus_vm^2*load["YQ"]) using Vm = $(bus_vm)"
                 end
             end
 
