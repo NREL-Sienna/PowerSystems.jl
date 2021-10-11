@@ -303,7 +303,6 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
             sub_data["status"] = pop!(load, "STATUS")
             sub_data["index"] = length(pm_data["load"]) + 1
-            error()
             # Only build lookup once if necessary
             if (load["IP"] != 0.0) || (load["IQ"] != 0.0) || (load["YP"] != 0.0) || (load["YQ"] != 0.0)
                 if isempty(bus_lookup)
