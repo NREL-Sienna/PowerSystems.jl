@@ -244,8 +244,8 @@ function _parse_dyr_components(data::Dict)
     # inv_map contains al the supported structs for inverters
     inv_map = yaml_mapping["inverter_mapping"][1]
 
-    gen_keys = set(keys(gen_map))
-    inv_keys = set(keys(inv_map))
+    gen_keys = Set(keys(gen_map))
+    inv_keys = Set(keys(inv_map))
 
     # dic will contain the dictionary index by bus.
     # Each entry will be a dictionary, with id as keys, that contains the vector of components
