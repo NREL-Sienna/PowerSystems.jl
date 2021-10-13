@@ -88,15 +88,16 @@ has_colon(idx::Tuple) = isa(first(idx), Colon) || has_colon(Base.tail(idx))
 
 # TODO: better error (or just handle correctly) when user tries to index with a range like a:b
 # The only kind of slicing we support is dropping a dimension with colons
-function Base.getindex(A::PowerNetworkMatrix, idx...)
+function Base.getindex(A::PowerNetworkMatrix, row, column)
     #=
+    This is old code when we accepted idx... instead of row, column
     if has_colon(idx)
         PTDF(A.data[to_index(A,idx...)...], (ax for (i,ax) in enumerate(A.axes) if idx[i] == Colon())...)
     else
         return A.data[to_index(A,idx...)...]
     end
     =#
-    return A.data[to_index(A, idx...)...]
+    return A.data[to_index(A, row, column)...]
 end
 Base.getindex(A::PowerNetworkMatrix, idx::CartesianIndex) = A.data[idx]
 Base.setindex!(A::PowerNetworkMatrix, v, idx...) = A.data[to_index(A, idx...)...] = v
