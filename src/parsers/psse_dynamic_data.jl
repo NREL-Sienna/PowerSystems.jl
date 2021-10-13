@@ -269,8 +269,12 @@ function _parse_dyr_components(data::Dict)
                 if isempty(inverters_dict)
                     # Since a single PSSe inverter component contributes to more than one PSY component
                     # We need to map all the other components beforehand if Inverter components are present
-                    inverters_dict =
-                        _make_bus_inverters_dictionary(bus_data, inv_map, inv_keys, param_map)
+                    inverters_dict = _make_bus_inverters_dictionary(
+                        bus_data,
+                        inv_map,
+                        inv_keys,
+                        param_map,
+                    )
                 end
                 _parse_dyr_inverter_components!(
                     bus_dict,
