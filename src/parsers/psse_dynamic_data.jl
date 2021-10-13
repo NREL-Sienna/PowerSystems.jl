@@ -243,6 +243,10 @@ function _parse_dyr_components(data::Dict)
     gen_map = yaml_mapping["generator_mapping"][1]
     # inv_map contains al the supported structs for inverters
     inv_map = yaml_mapping["inverter_mapping"][1]
+
+    gen_keys = set(keys(gen_map))
+    inv_keys = set(keys(inv_map))
+
     # dic will contain the dictionary index by bus.
     # Each entry will be a dictionary, with id as keys, that contains the vector of components
     system_dic = Dict{Int, Any}()
@@ -253,7 +257,7 @@ function _parse_dyr_components(data::Dict)
             # ComponentID is a tuple:
             # ComponentID[1] is the PSSE name
             # ComponentID[2] is the number ID of the generator/inverter
-            if componentID[1] in keys(gen_map)
+            if componentID[1] in gen_keys
                 _parse_dyr_generator_components!(
                     bus_dict,
                     componentID,
@@ -261,7 +265,7 @@ function _parse_dyr_components(data::Dict)
                     gen_map,
                     param_map,
                 )
-            elseif componentID[1] in keys(inv_map)
+            elseif componentID[1] in inv_keys
                 if isempty(inverters_dict)
                     # Since a single PSSe inverter component contributes to more than one PSY component
                     # We need to map all the other components beforehand if Inverter components are present
