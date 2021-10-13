@@ -184,7 +184,7 @@ function _parse_dyr_components(dyr_file::AbstractString)
     end
 end
 
-function _make_bus_inverters_dictionary(bus_data, inv_map, param_map)
+function _make_bus_inverters_dictionary(bus_data, inv_map, inv_keys, param_map)
     bus_dict_values = Dict{String, Any}()
     for (componentID, componentValues) in bus_data
         # ComponentID is a tuple:
@@ -192,7 +192,7 @@ function _make_bus_inverters_dictionary(bus_data, inv_map, param_map)
         # ComponentID[2] is the number ID of the generator/inverter
         # Fill array of 7 components per inverter
         # Only create if name is in the supported keys in the mapping
-        if componentID[1] in keys(inv_map)
+        if componentID[1] in inv_keys
             # Get the component dictionary
             temp = get!(bus_dict_values, componentID[2], Dict{Any, Vector{Any}}())
             components_dict = inv_map[componentID[1]]
@@ -270,7 +270,7 @@ function _parse_dyr_components(data::Dict)
                     # Since a single PSSe inverter component contributes to more than one PSY component
                     # We need to map all the other components beforehand if Inverter components are present
                     inverters_dict =
-                        _make_bus_inverters_dictionary(bus_data, inv_map, param_map)
+                        _make_bus_inverters_dictionary(bus_data, inv_map, inv_keys, param_map)
                 end
                 _parse_dyr_inverter_components!(
                     bus_dict,
