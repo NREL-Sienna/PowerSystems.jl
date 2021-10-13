@@ -408,7 +408,7 @@ end
 Add to a system already created the dynamic components.
 The system should already be parsed from a .raw file.
 
-# # Examples:
+# Examples:
 ```julia
 dyr_file = "Example.dyr"
 add_dyn_injectors!(sys, dyr_file)
