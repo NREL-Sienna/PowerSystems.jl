@@ -1,5 +1,18 @@
-#Additional constants for repeated structs
+# Additional constants for repeated structs
 const TGOV1DU = SteamTurbineGov1
+
+const GEN_COMPONENT_TABLE =
+    Dict("Machine" => 1, "Shaft" => 2, "AVR" => 3, "TurbineGov" => 4, "PSS" => 5)
+
+const INV_COMPONENT_TABLE = Dict(
+    "Converter" => 1,
+    "ActivePowerControl" => 2,
+    "ReactivePowerControl" => 3,
+    "InnerControl" => 4,
+    "DCSource" => 5,
+    "FrequencyEstimator" => 6,
+    "Filter" => 7,
+)
 
 """
 Parse .dyr file into a dictionary indexed by bus number.
@@ -35,19 +48,19 @@ function _parse_dyr_file(file::AbstractString)
 end
 
 function _parse_input_types(_v, val)
-    #If the parameter is a Float64, then use the value directly as the argument.
-    #Typically uses for the resistance that is not available in .dyr files.
+    # If the parameter is a Float64, then use the value directly as the argument.
+    # Typically uses for the resistance that is not available in .dyr files.
     if isa(_v, Float64)
         if isnan(_v)
             error("nan for $(_v)")
         end
         return _v
-        #If the parameter is an Int, then use the integer as the key of the value in the dictionary.
+        # If the parameter is an Int, then use the integer as the key of the value in the dictionary.
     elseif isa(_v, Int)
         return val[_v]
     elseif _v == "NaN"
         return NaN
-        #If the parameter is a tuple (as a string), then construct the tuple directly.
+        # If the parameter is a tuple (as a string), then construct the tuple directly.
     elseif isa(_v, String)
         m = match(r"^\((\d+)\s*,\s*(\d+)\)$", _v)
         if m !== nothing
@@ -113,40 +126,46 @@ function _make_source(g::StaticInjection, r::Float64, x::Float64)
 end
 
 function _assign_missing_components!(
-    bus_dict,
+    components_dict::Dict,
     component_table,
     ::Type{T},
 ) where {T <: DynamicGenerator}
-    for va in values(bus_dict)
-        if ismissing(va[component_table["AVR"]])
-            va[component_table["AVR"]] = AVRFixed(1.0)
-        end
-        if ismissing(va[component_table["TurbineGov"]])
-            va[component_table["TurbineGov"]] = TGFixed(1.0)
-        end
-        if ismissing(va[component_table["PSS"]])
-            va[component_table["PSS"]] = PSSFixed(0.0)
+    for va in values(components_dict)
+        if length(va) == length(keys(component_table))
+            if ismissing(va[component_table["AVR"]])
+                va[component_table["AVR"]] = AVRFixed(1.0)
+            end
+            if ismissing(va[component_table["TurbineGov"]])
+                va[component_table["TurbineGov"]] = TGFixed(1.0)
+            end
+            if ismissing(va[component_table["PSS"]])
+                va[component_table["PSS"]] = PSSFixed(0.0)
+            end
         end
     end
     return
 end
 
 function _assign_missing_components!(
-    va,
+    components_dict::Dict,
     component_table,
     ::Type{T},
 ) where {T <: DynamicInverter}
-    if ismissing(va[component_table["Converter"]])
-        va[component_table["Converter"]] = AverageConverter(750.0, 2.75)
-    end
-    if ismissing(va[component_table["Filter"]])
-        va[component_table["Filter"]] = RLFilter(0.0, 0.0)
-    end
-    if ismissing(va[component_table["FrequencyEstimator"]])
-        va[component_table["FrequencyEstimator"]] = FixedFrequency()
-    end
-    if ismissing(va[component_table["DCSource"]])
-        va[component_table["DCSource"]] = FixedDCSource(750.0)
+    for va in values(components_dict)
+        if length(va) == length(keys(component_table))
+            if ismissing(va[component_table["Converter"]])
+                va[component_table["Converter"]] = AverageConverter(750.0, 2.75)
+            end
+            if ismissing(va[component_table["Filter"]])
+                va[component_table["Filter"]] = RLFilter(0.0, 0.0)
+            end
+            if ismissing(va[component_table["FrequencyEstimator"]])
+                va[component_table["FrequencyEstimator"]] = FixedFrequency()
+            end
+            if ismissing(va[component_table["DCSource"]])
+                va[component_table["DCSource"]] = FixedDCSource(750.0)
+            end
+        end
     end
     return
 end
@@ -163,6 +182,32 @@ function _parse_dyr_components(dyr_file::AbstractString)
     else
         throw(DataFormatError("$dyr_file is not a .dyr file type"))
     end
+end
+
+function _make_bus_inverters_dictionary(bus_data, inv_map, inv_keys, param_map)
+    bus_dict_values = Dict{String, Any}()
+    for (componentID, componentValues) in bus_data
+        # ComponentID is a tuple:
+        # ComponentID[1] is the PSSE name
+        # ComponentID[2] is the number ID of the generator/inverter
+        # Fill array of 7 components per inverter
+        # Only create if name is in the supported keys in the mapping
+        if componentID[1] in inv_keys
+            # Get the component dictionary
+            temp = get!(bus_dict_values, componentID[2], Dict{Any, Vector{Any}}())
+            components_dict = inv_map[componentID[1]]
+            for (inv_field, struct_as_str) in components_dict
+                param_vec = get!(
+                    temp,
+                    (inv_field, struct_as_str),
+                    _instantiate_param_vector_size(struct_as_str, param_map),
+                )
+                params_ix = param_map[struct_as_str]
+                _populate_args!(param_vec, params_ix, componentValues, componentID[1])
+            end
+        end
+    end
+    return bus_dict_values
 end
 
 """
@@ -192,18 +237,60 @@ function _parse_dyr_components(data::Dict)
         aux = YAML.load(io)
         return aux
     end
-    #param_map contains the mapping between struct params and dyr file.
+    # param_map contains the mapping between struct params and dyr file.
     param_map = yaml_mapping["parameter_mapping"][1]
-    #gen_map contains all the supported structs for generators
+    # gen_map contains all the supported structs for generators
     gen_map = yaml_mapping["generator_mapping"][1]
-    #inv_map contains al the supported structs for inverters
+    # inv_map contains al the supported structs for inverters
     inv_map = yaml_mapping["inverter_mapping"][1]
-    #dic will contain the dictionary index by bus.
-    #Each entry will be a dictionary, with id as keys, that contains the vector of components
-    dic = Dict{Int, Any}()
-    _parse_dyr_generator_components!(dic, data, gen_map, param_map)
-    _parse_dyr_inverter_components!(dic, data, inv_map, param_map)
-    return dic
+
+    gen_keys = Set(keys(gen_map))
+    inv_keys = Set(keys(inv_map))
+
+    # dic will contain the dictionary index by bus.
+    # Each entry will be a dictionary, with id as keys, that contains the vector of components
+    system_dic = Dict{Int, Any}()
+    for (bus_num, bus_data) in data # bus_data is a dictionary with values per component (key)
+        bus_dict = Dict{String, Any}()
+        inverters_dict = Dict{String, Any}()
+        for (componentID, componentValues) in bus_data
+            # ComponentID is a tuple:
+            # ComponentID[1] is the PSSE name
+            # ComponentID[2] is the number ID of the generator/inverter
+            if componentID[1] in gen_keys
+                _parse_dyr_generator_components!(
+                    bus_dict,
+                    componentID,
+                    componentValues,
+                    gen_map,
+                    param_map,
+                )
+            elseif componentID[1] in inv_keys
+                if isempty(inverters_dict)
+                    # Since a single PSSe inverter component contributes to more than one PSY component
+                    # We need to map all the other components beforehand if Inverter components are present
+                    inverters_dict = _make_bus_inverters_dictionary(
+                        bus_data,
+                        inv_map,
+                        inv_keys,
+                        param_map,
+                    )
+                end
+                _parse_dyr_inverter_components!(
+                    bus_dict,
+                    inverters_dict,
+                    componentID,
+                    inv_map,
+                )
+            else
+                @warn "$(componentID[1]) at bus $bus_num, id $(componentID[2]), not supported in PowerSystems.jl. Skipping data."
+            end
+        end
+        _assign_missing_components!(bus_dict, GEN_COMPONENT_TABLE, DynamicGenerator)
+        _assign_missing_components!(bus_dict, INV_COMPONENT_TABLE, DynamicInverter)
+        system_dic[bus_num] = bus_dict
+    end
+    return system_dic
 end
 
 """
@@ -213,55 +300,39 @@ dictionary with each dynamic generator indexed by its id.
 
 """
 function _parse_dyr_generator_components!(
-    dic::Dict,
-    data::Dict,
+    bus_dict::Dict,
+    componentID,
+    componentValues,
     gen_map::Dict,
     param_map::Dict,
 )
-    component_table =
-        Dict("Machine" => 1, "Shaft" => 2, "AVR" => 3, "TurbineGov" => 4, "PSS" => 5)
-    for (bus_num, bus_data) in data #bus_data is a dictionary with values per component (key)
-        bus_dict = Dict{String, Any}()
-        for (componentID, componentValues) in bus_data
-            #Fill array of 5 components per generator
-            temp = get!(bus_dict, componentID[2], fill!(Vector{Any}(undef, 5), missing))
-            #Only create if name is in the supported keys in the mapping
-            if componentID[1] in keys(gen_map)
-                #Get the component dictionary
-                components_dict = gen_map[componentID[1]]
-                for (gen_field, struct_as_str) in components_dict
-                    #Get the parameter indices w/r to componentValues
-                    params_ix = param_map[struct_as_str]
-                    #Construct Shaft if it appears
-                    if occursin("Shaft", struct_as_str)
-                        temp[2] = _make_shaft(params_ix, componentValues)
-                        continue
-                    end
-                    #Construct Components
-                    component_constructor =
-                        (args...) ->
-                            InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(
-                                args...,
-                            )
-                    struct_args = _populate_args(params_ix, componentValues)
-                    if struct_as_str == "BaseMachine"
-                        struct_args = [
-                            0.0,    #R
-                            1e-5,   #X
-                            1.0,    #eq_p
-                        ]
-                    end
-                    temp[component_table[gen_field]] = component_constructor(struct_args...)
-                end
-            else
-                @warn "$(componentID[1]) at bus $bus_num, id $(componentID[2]), not supported in PowerSystems.jl. Skipping data."
-            end
+    # Fill array of 5 components per generator
+    temp = get!(bus_dict, componentID[2], fill!(Vector{Any}(undef, 5), missing))
+    # Get the component dictionary
+    for (gen_field, struct_as_str) in gen_map[componentID[1]]
+        # Get the parameter indices w/r to componentValues
+        params_ix = param_map[struct_as_str]
+        # Construct Shaft if it appears
+        if occursin("Shaft", struct_as_str)
+            temp[2] = _make_shaft(params_ix, componentValues)
+            continue
         end
-        #Assign generic components if there were not provided in Dynamic Data
-        _assign_missing_components!(bus_dict, component_table, DynamicGenerator)
-        #Store dictionary of components in a dictionary indexed by bus
-        dic[bus_num] = bus_dict
+        # Construct Components
+        component_constructor =
+            (args...) ->
+                InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(args...)
+        if struct_as_str == "BaseMachine"
+            struct_args = [
+                0.0,    # R
+                1e-5,   # X
+                1.0,    # eq_p
+            ]
+        else
+            struct_args = _populate_args(params_ix, componentValues)
+        end
+        temp[GEN_COMPONENT_TABLE[gen_field]] = component_constructor(struct_args...)
     end
+    return
 end
 
 """
@@ -271,63 +342,34 @@ dictionary with each dynamic inverter indexed by its id.
 
 """
 function _parse_dyr_inverter_components!(
-    dic::Dict,
-    data::Dict,
+    bus_dict::Dict,
+    inv_dict::Dict,
+    componentID::NTuple{2, String},
     inv_map::Dict,
-    param_map::Dict,
 )
-    component_table = Dict(
-        "Converter" => 1,
-        "ActivePowerControl" => 2,
-        "ReactivePowerControl" => 3,
-        "InnerControl" => 4,
-        "DCSource" => 5,
-        "FrequencyEstimator" => 6,
-        "Filter" => 7,
+    # Needs to be extended when supporting more parsing
+    name_to_keys = Dict(
+        "REGCA1" => [("Converter", "RenewableEnergyConverterTypeA")],
+        "REECB1" => [("InnerControl", "RECurrentControlB")],
+        "REPCA1" => [
+            ("ActivePowerControl", "ActiveRenewableControllerAB"),
+            ("ReactivePowerControl", "ReactiveRenewableControllerAB"),
+        ],
     )
-    for (bus_num, bus_data) in data #bus_data is a dictionary with values per component (key is a tuple of PSSE name and number ID)
-        #bus_dict will add a vector of components structs for each generator ID on the bus_num key of the master dictionary 'dic'
-        #bus_dict_values will only contain the vector of parameters that will be used to construct the structs
-        bus_dict_values = Dict{String, Any}()
-        for (componentID, componentValues) in bus_data
-            #ComponentID is a tuple:
-            #ComponentID[1] is the PSSE name
-            #ComponentID[2] is the number ID of the generator/inverter
-            #Fill array of 7 components per inverter
-            #Only create if name is in the supported keys in the mapping
-            if componentID[1] in keys(inv_map)
-                #Get the component dictionary
-                temp = get!(bus_dict_values, componentID[2], Dict{Any, Vector{Any}}())
-                components_dict = inv_map[componentID[1]]
-                for (inv_field, struct_as_str) in components_dict
-                    param_vec = get!(
-                        temp,
-                        (inv_field, struct_as_str),
-                        _instantiate_param_vector_size(struct_as_str, param_map),
-                    )
-                    params_ix = param_map[struct_as_str]
-                    _populate_args!(param_vec, params_ix, componentValues, componentID[1])
-                end
-            end
-        end
-        #Store vector of components in a dictionary indexed by bus
-        for (device_id, device_info) in bus_dict_values
-            temp_vec = fill!(Vector{Any}(undef, 7), missing)
-            for (k, struct_args) in device_info
-                component_type, struct_as_str = k
-                _convert_argument_types!(struct_as_str, struct_args)
-                component_constructor =
-                    (args...) ->
-                        InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(
-                            args...,
-                        )
-                temp_vec[component_table[component_type]] =
-                    component_constructor(struct_args...)
-            end
-            _assign_missing_components!(temp_vec, component_table, DynamicInverter)
-            dic[bus_num][device_id] = temp_vec
-        end
+
+    # Fill array of 7 components per inverter
+    temp = get!(bus_dict, componentID[2], fill!(Vector{Any}(undef, 7), missing))
+
+    for (inv_field, struct_as_str) in name_to_keys[componentID[1]]
+        values = inv_dict[componentID[2]][(inv_field, struct_as_str)]
+        _convert_argument_types!(struct_as_str, values)
+        component_constructor =
+            (args...) ->
+                InteractiveUtils.getfield(PowerSystems, Symbol(struct_as_str))(args...)
+        temp[INV_COMPONENT_TABLE[inv_field]] = component_constructor(values...)
     end
+
+    return
 end
 
 """
@@ -364,7 +406,7 @@ function _convert_argument_types!(str::AbstractString, struct_args::Vector)
     elseif str == "RECurrentControlB"
         struct_args[1:2] .= Int.(struct_args[1:2])
     elseif str == "RenewableEnergyConverterTypeA"
-        #No changes to struct_args
+        # No changes to struct_args
     else
         error("$str not defined for dynamic component arguments")
     end
@@ -374,7 +416,7 @@ end
 Add to a system already created the dynamic components.
 The system should already be parsed from a .raw file.
 
-## Examples:
+# Examples:
 ```julia
 dyr_file = "Example.dyr"
 add_dyn_injectors!(sys, dyr_file)
@@ -405,13 +447,13 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
             remove_component!(typeof(g), sys, _name)
             add_component!(sys, s)
         elseif all(.!ismissing.(temp_dict[_id]))
-            if length(temp_dict[_id]) == 5 #Generator has 5 components
-                #Obtain Machine from Dictionary
+            if length(temp_dict[_id]) == 5 # Generator has 5 components
+                # Obtain Machine from Dictionary
                 machine = temp_dict[_id][1]
-                #Update R,X from RSORCE and XSORCE from RAW file
+                # Update R,X from RSORCE and XSORCE from RAW file
                 r, x = get_ext(g)["z_source"]
                 set_R!(machine, r)
-                #Obtain Shaft from dictionary
+                # Obtain Shaft from dictionary
                 shaft = temp_dict[_id][2]
                 if typeof(machine) == BaseMachine
                     if x == 0.0
@@ -424,14 +466,14 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
                         s = _make_source(g, r, x)
                         remove_component!(typeof(g), sys, _name)
                         add_component!(sys, s)
-                        #Don't add DynamicComponent in case of adding Source
+                        # Don't add DynamicComponent in case of adding Source
                         continue
                     end
                 end
-                #Add Dynamic Generator
+                # Add Dynamic Generator
                 dyn_gen = DynamicGenerator(get_name(g), 1.0, temp_dict[_id]...)
                 add_component!(sys, dyn_gen, g)
-            elseif length(temp_dict[_id]) == 7 #Inverter has 7 components (6 if Outer is put together)
+            elseif length(temp_dict[_id]) == 7 # Inverter has 7 components (6 if Outer is put together)
                 dyn_inv = DynamicInverter(get_name(g), 1.0, temp_dict[_id]...)
                 add_component!(sys, dyn_inv, g)
             else
