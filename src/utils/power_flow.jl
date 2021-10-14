@@ -590,18 +590,12 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                         J[F_ix_f_r, X_ix_t_snd] =
                             Vm[ix_f] *
                             Vm[ix_t] *
-                            (
-                                g_ij * sin(θ[ix_f] - θ[ix_t]) +
-                                b_ij * -cos(θ[ix_f] - θ[ix_t])
-                            )
+                            (g_ij * sin(θ[ix_f] - θ[ix_t]) + b_ij * -cos(θ[ix_f] - θ[ix_t]))
                         #Jac: Reactive PF against other angles θ[ix_t]
                         J[F_ix_f_i, X_ix_t_snd] =
                             Vm[ix_f] *
                             Vm[ix_t] *
-                            (
-                                g_ij * -cos(θ[ix_f] - θ[ix_t]) -
-                                b_ij * sin(θ[ix_f] - θ[ix_t])
-                            )
+                            (g_ij * -cos(θ[ix_f] - θ[ix_t]) - b_ij * sin(θ[ix_f] - θ[ix_t]))
                     end
                 elseif b == BusTypes.PQ
                     # State variables are Voltage Magnitude and Voltage Angle
@@ -651,10 +645,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                         J[F_ix_f_r, X_ix_t_snd] =
                             Vm[ix_f] *
                             Vm[ix_t] *
-                            (
-                                g_ij * sin(θ[ix_f] - θ[ix_t]) +
-                                b_ij * -cos(θ[ix_f] - θ[ix_t])
-                            )
+                            (g_ij * sin(θ[ix_f] - θ[ix_t]) + b_ij * -cos(θ[ix_f] - θ[ix_t]))
 
                         #Jac: Reactive PF w/r to different voltage magnitude Vm[ix_t]
                         J[F_ix_f_i, X_ix_t_fst] =
@@ -664,10 +655,7 @@ function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
                         J[F_ix_f_i, X_ix_t_snd] =
                             Vm[ix_f] *
                             Vm[ix_t] *
-                            (
-                                g_ij * -cos(θ[ix_f] - θ[ix_t]) -
-                                b_ij * sin(θ[ix_f] - θ[ix_t])
-                            )
+                            (g_ij * -cos(θ[ix_f] - θ[ix_t]) - b_ij * sin(θ[ix_f] - θ[ix_t]))
                     end
                 else
                     error("Undefined Conditional")
