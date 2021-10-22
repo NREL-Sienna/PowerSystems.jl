@@ -29,6 +29,9 @@ result = [
     -0.280381,
 ]
 
+p_gen_matpower_3bus = [20.3512373930753, 100.0, 100.0]
+q_gen_matpower_3bus = [45.516916781567232, 10.453799727283879, -31.992561631394636]
+
 pf_sys5_re = PSB.build_system(PSB.PSITestSystems, "c_sys5_re"; add_forecasts = false)
 remove_component!(Line, pf_sys5_re, "1")
 remove_component!(Line, pf_sys5_re, "2")
@@ -86,4 +89,12 @@ set_r!(br, 2.0)
 
     sys = PSB.build_system(PSB.PSSETestSystems, "psse_240_case_renewable_sys")
     @test solve_powerflow!(sys)
+
+    sys_3bus = PSB.build_system(PSB.PSSETestSystems, "psse_3bus_gen_cls_sys")
+    bus_103 = get_component(Bus, sys_3bus, "BUS 3")
+    fix_shunt = FixedAdmittance("FixAdm_Bus3", true, bus_103, 0.0 + 0.2im)
+    add_component!(sys_3bus, fix_shunt)
+    df = solve_powerflow(sys_3bus)
+    @test isapprox(df["bus_results"].P_gen, p_gen_matpower_3bus, atol = 1e-4)
+    @test isapprox(df["bus_results"].Q_gen, q_gen_matpower_3bus, atol = 1e-4)
 end
