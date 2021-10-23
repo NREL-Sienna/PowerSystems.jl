@@ -112,17 +112,26 @@ Obtain total load on bus b
 function _get_load_data(sys::System, b::Bus)
     active_power = 0.0
     reactive_power = 0.0
-    for l in get_components(ElectricLoad, sys)
+    for l in get_components(ElectricLoad, sys, x -> !isa(x, FixedAdmittance))
         !get_available(l) && continue
         if (l.bus == b)
-            if isa(l, FixedAdmittance)
-                # Assume v rated = 1.0
-                active_power += real(get_Y(l))
-                reactive_power += imag(get_Y(l))
-            else
-                active_power += get_active_power(l)
-                reactive_power += get_reactive_power(l)
-            end
+            active_power += get_active_power(l)
+            reactive_power += get_reactive_power(l)
+        end
+    end
+    return active_power, reactive_power
+end
+
+function _get_fixed_admittance_power(sys::System, b::Bus, result::AbstractVector, ix::Int)
+    active_power = 0.0
+    reactive_power = 0.0
+    for l in get_components(FixedAdmittance, sys)
+        !get_available(l) && continue
+        if (l.bus == b)
+            Vm_squared =
+                b.bustype == BusTypes.PQ ? result[2 * ix - 1]^2 : get_magnitude(b)^2
+            active_power += Vm_squared * real(get_Y(l))
+            reactive_power += Vm_squared * imag(get_Y(l))
         end
     end
     return active_power, reactive_power
@@ -193,6 +202,9 @@ function _write_results(sys::System, nl_result)
 
     for (ix, bus) in enumerate(buses)
         P_load_vect[ix], Q_load_vect[ix] = _get_load_data(sys, bus) .* sys_basepower
+        P_admittance, Q_admittance = _get_fixed_admittance_power(sys, bus, result, ix)
+        P_load_vect[ix] += P_admittance
+        Q_load_vect[ix] += Q_admittance
         if bus.bustype == BusTypes.REF
             Vm_vect[ix] = get_magnitude(bus)
             θ_vect[ix] = get_angle(bus)

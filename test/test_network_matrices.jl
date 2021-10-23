@@ -417,6 +417,17 @@ Ybus5_phaseshifter[1, 5] = -15.470297029703 + 154.70297029703im
 Ybus5_phaseshifter[4, 5] = -3.33366670000333 + 33.3366670000333im
 Ybus5_phaseshifter[5, 5] = 18.8039637297063 - 188.020637297063im;
 
+Ybus3_matpower = Matrix{Complex{Float64}}(undef, 3, 3)
+Ybus3_matpower[1, 1] = 1.379310344827586 - 16.551724137931036im
+Ybus3_matpower[2, 1] = -0.689655172413793 + 8.275862068965518im
+Ybus3_matpower[3, 1] = -0.689655172413793 + 8.275862068965518im
+Ybus3_matpower[1, 2] = -0.689655172413793 + 8.275862068965518im
+Ybus3_matpower[2, 2] = 1.379310344827586 - 16.551724137931036im
+Ybus3_matpower[3, 2] = -0.689655172413793 + 8.275862068965518im
+Ybus3_matpower[1, 3] = -0.689655172413793 + 8.275862068965518im
+Ybus3_matpower[2, 3] = -0.689655172413793 + 8.275862068965518im
+Ybus3_matpower[3, 3] = 1.379310344827586 - 16.351724137931036im
+
 @testset "PTDF matrices" begin
     nodes_5 = nodes5()
     branches_5 = branches5(nodes_5)
@@ -515,6 +526,17 @@ end
     remove_component!(Line, t2_sys5_re, "3")
     remove_component!(Line, t2_sys5_re, "5")
     @test isa(Ybus(t2_sys5_re), Ybus)
+
+    sys_3bus = PSB.build_system(PSB.PSSETestSystems, "psse_3bus_gen_cls_sys")
+    bus_103 = get_component(Bus, sys_3bus, "BUS 3")
+    fix_shunt = FixedAdmittance("FixAdm_Bus3", true, bus_103, 0.0 + 0.2im)
+    add_component!(sys_3bus, fix_shunt)
+    Ybus3 = Ybus(sys_3bus)
+    I, J, V = findnz(Ybus3.data)
+    indices = collect(zip(I, J))
+    for i in indices
+        @test isapprox(Ybus3.data[i[1], i[2]], Ybus3_matpower[i[1], i[2]], atol = 1e-4)
+    end
 end
 
 @testset "Test connected networks" begin
