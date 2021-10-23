@@ -535,7 +535,7 @@ end
     I, J, V = findnz(Ybus3.data)
     indices = collect(zip(I, J))
     for i in indices
-        @test isapprox(Ybus3[i[1], i[2]], Ybus3_matpower[i[1], i[2]], atol = 1e-4)
+        @test isapprox(Ybus3.data[i[1], i[2]], Ybus3_matpower[i[1], i[2]], atol = 1e-4)
     end
 end
 
