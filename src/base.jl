@@ -248,6 +248,75 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
 end
 
 """
+Construct a System from any supported file type. Refer to System constructors for supported
+types.
+
+# Arguments
+- `*args`: All file arguments to be forwarded to the System constructor.
+- `console_level`: Console log level
+- `file_level`: File log level
+- `filename`: Log filename. Pass `nothing` to disable file logging.
+- `mode`: Log file mode; defaults to "a" for "append." If the file size is greater than 10
+   MB, prompt to overwrite unless `no_prompts` is true.
+- `no_prompts`: Don't prompt to overwrite file regardless of file size.
+
+# Examples
+```julia
+sys = load_system("sys.json")
+sys = load_system("sys.m")
+raw_file = "Example.raw"
+dyr_file = "Example.dyr"
+sys = load_system(raw_file, dyr_file)
+```
+"""
+function load_system(
+    args...;
+    console_level = Logging.Info,
+    file_level = Logging.Info,
+    filename = "load_power_systems.log",
+    mode = "a",
+    no_prompts = false,
+)
+    if (
+        !no_prompts &&
+        mode == "a" &&
+        filename !== nothing &&
+        isfile(filename) &&
+        filesize(filename) > 10 * 1000 * 1000
+    )
+        print("$filename has exceeded 10 MB. Do you want to overwrite it? [y|n]\n[y] >>> ")
+        answer = lowercase(readline())
+        if answer == "" || answer == "y"
+            rm(filename)
+        elseif answer != "n"
+            error("Only 'y' or 'n' is allowed")
+        end
+    end
+
+    logger = IS.configure_logging(
+        console = true,
+        console_stream = stderr,
+        console_level = console_level,
+        file = filename !== nothing,
+        filename = filename,
+        file_level = file_level,
+        file_mode = "a",
+        tracker = nothing,
+        set_global = false,
+    )
+    sys = Logging.with_logger(logger) do
+        try
+            return System(args...)
+        finally
+            close(logger)
+        end
+    end
+
+    filename !== nothing && println("Recorded log messages in $filename")
+    return sys
+end
+
+"""
 Serializes a system to a JSON string.
 
 # Arguments

@@ -14,7 +14,7 @@
     end
     path = joinpath(test_dir, "test_dyn_system_serialization.json")
     to_json(sys, path)
-    parsed_sys = System(path)
+    parsed_sys = load_system(path, console_level = Logging.Error, filename = nothing)
     dyn_injectors = get_components(DynamicInjection, parsed_sys)
     @test length(dyn_injectors) == 4
     for g in dyn_injectors
@@ -41,7 +41,7 @@ end
     end
     path = joinpath(test_dir, "test_dyn_system_serialization.json")
     to_json(sys, path)
-    parsed_sys = System(path)
+    parsed_sys = load_system(path, console_level = Logging.Error, filename = nothing)
     dyn_injectors = get_components(DynamicInjection, parsed_sys)
     @test length(dyn_injectors) == 5
     for g in dyn_injectors
@@ -75,7 +75,7 @@ end
     end
     path = joinpath(test_dir, "test_dyn_system_serialization.json")
     to_json(sys, path)
-    parsed_sys = System(path)
+    parsed_sys = load_system(path, console_level = Logging.Error, filename = nothing)
     dyn_injectors = get_components(DynamicInjection, parsed_sys)
     @test length(dyn_injectors) == 146
     for g in dyn_injectors
@@ -171,7 +171,7 @@ end
     end
     path = joinpath(test_dir, "test_dyn_system_serialization_2000.json")
     to_json(sys, path)
-    parsed_sys = System(path)
+    parsed_sys = load_system(path, console_level = Logging.Error, filename = nothing)
     dyn_injectors = get_components(DynamicInjection, parsed_sys)
     @test length(dyn_injectors) == 435
     for g in get_components(ThermalStandard, parsed_sys)
