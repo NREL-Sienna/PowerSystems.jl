@@ -248,12 +248,11 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
 end
 
 """
-Construct a System from any supported file type with configurable logging.
+Construct a System with controlled logging.
 
-Refer to System constructors for supported types.
+All non-logging arguments are forwarded to whichever System constructor is called.
 
 # Arguments
-- `*args`: All file arguments to be forwarded to the System constructor.
 - `console_level`: Console log level
 - `file_level`: File log level
 - `filename`: Log filename. Pass `nothing` to disable file logging.
@@ -261,23 +260,21 @@ Refer to System constructors for supported types.
    MB, prompt to overwrite unless `no_prompts` is true.
 - `no_prompts`: Don't prompt to overwrite file regardless of file size.
 
-# Examples
-```julia
-sys = load_system("sys.json")
-sys = load_system("sys.m")
-raw_file = "Example.raw"
-dyr_file = "Example.dyr"
-sys = load_system(raw_file, dyr_file)
-```
 """
-function load_system(
+function System(
+    enable_logging::Bool,
     args...;
     console_level = Logging.Info,
     file_level = Logging.Info,
-    filename = "load_power_systems.log",
+    filename = "construct_power_systems.log",
     mode = "a",
     no_prompts = false,
+    kwargs...
 )
+    if !enable_logging
+        return System(args...; kwargs...)
+    end
+
     if (
         !no_prompts &&
         mode == "a" &&
@@ -307,7 +304,7 @@ function load_system(
     )
     sys = Logging.with_logger(logger) do
         try
-            return System(args...)
+            return System(args...; kwargs...)
         finally
             close(logger)
         end
