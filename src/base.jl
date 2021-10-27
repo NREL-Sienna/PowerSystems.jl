@@ -248,8 +248,9 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
 end
 
 """
-Construct a System from any supported file type. Refer to System constructors for supported
-types.
+Construct a System from any supported file type with configurable logging.
+
+Refer to System constructors for supported types.
 
 # Arguments
 - `*args`: All file arguments to be forwarded to the System constructor.
