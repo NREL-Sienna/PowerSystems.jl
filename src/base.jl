@@ -1304,6 +1304,18 @@ function check_component(sys::System, component::Component)
     return
 end
 
+function check_sil(sys::System)
+    is_valid = true
+    base_power = get_base_power(sys)
+    for line in
+        Iterators.flatten((get_components(Line, sys), get_components(MonitoredLine, sys)))
+        if !check_sil(line, base_power)
+            is_valid = false
+        end
+    end
+    return is_valid
+end
+
 function IS.serialize(sys::T) where {T <: System}
     data = Dict{String, Any}()
     data["data_format_version"] = DATA_FORMAT_VERSION

@@ -105,8 +105,6 @@ function calculate_thermal_limits!(branch, basemva::Float64)
         end
     end
 
-    check_SIL(branch, basemva)
-
     return is_valid
 end
 
@@ -135,13 +133,14 @@ function calculate_sil(line, basemva::Float64)
     return sil
 end
 
-function check_SIL(line, basemva::Float64)
+function check_sil(line::Union{Line, MonitoredLine}, basemva::Float64)
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
     SIL_levels = collect(keys(SIL_STANDARDS))
     rate = get_rate(line)
     closestV = findmin(abs.(SIL_levels .- vrated))
     closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
+    is_valid = true
 
     # Assuming that the rate is in pu
     if (rate >= closestSIL.max / basemva)
@@ -149,8 +148,9 @@ function check_SIL(line, basemva::Float64)
         sil = calculate_sil(line, basemva)
         @warn "Rate $(round(rate*basemva; digits=2)) MW for $(line.name) is larger than the max expected in the range of $(closestSIL)." maxlog =
             PS_MAX_LOG
+        is_valid = false
     end
-    return
+    return is_valid
 end
 
 function check_endpoint_voltages(line)
