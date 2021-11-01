@@ -33,7 +33,7 @@ for enum in ENUMS
 end
 
 """Get the enum value for the string. Case insensitive."""
-function get_enum_value(enum, value::String)
+function get_enum_value(enum, value::AbstractString)
     if !haskey(ENUM_MAPPINGS, enum)
         throw(ArgumentError("enum=$enum is not valid"))
     end
@@ -46,11 +46,11 @@ function get_enum_value(enum, value::String)
     return ENUM_MAPPINGS[enum][val]
 end
 
-Base.convert(::Type{AngleUnits}, val::String) = get_enum_value(AngleUnits, val)
-Base.convert(::Type{BusTypes}, val::String) = get_enum_value(BusTypes, val)
-Base.convert(::Type{GeneratorCostModels}, val::String) =
+Base.convert(::Type{AngleUnits}, val::AbstractString) = get_enum_value(AngleUnits, val)
+Base.convert(::Type{BusTypes}, val::AbstractString) = get_enum_value(BusTypes, val)
+Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
     get_enum_value(GeneratorCostModels, val)
-Base.convert(::Type{LoadModels}, val::String) = get_enum_value(LoadModels, val)
-Base.convert(::Type{PrimeMovers}, val::String) = get_enum_value(PrimeMovers, val)
-Base.convert(::Type{StateTypes}, val::String) = get_enum_value(StateTypes, val)
-Base.convert(::Type{ThermalFuels}, val::String) = get_enum_value(ThermalFuels, val)
+Base.convert(::Type{LoadModels}, val::AbstractString) = get_enum_value(LoadModels, val)
+Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)
+Base.convert(::Type{StateTypes}, val::AbstractString) = get_enum_value(StateTypes, val)
+Base.convert(::Type{ThermalFuels}, val::AbstractString) = get_enum_value(ThermalFuels, val)

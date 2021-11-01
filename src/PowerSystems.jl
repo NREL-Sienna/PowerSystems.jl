@@ -347,6 +347,7 @@ export set_runchecks!
 export check
 export check_component
 export check_components
+export check_sil_values
 
 export configure_logging
 export open_file_logger
