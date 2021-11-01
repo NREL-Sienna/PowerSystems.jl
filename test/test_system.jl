@@ -415,7 +415,7 @@ end
         ThermalStandard,
     )
 
-    @test !(@test_logs :warn, r"is larger than the max expected in the" match_mode = :any check_sil(
+    @test !(@test_logs :warn, r"is larger than the max expected in the" match_mode = :any check_sil_values(
         sys,
     ))
 end

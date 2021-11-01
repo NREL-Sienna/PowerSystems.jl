@@ -133,7 +133,7 @@ function calculate_sil(line, basemva::Float64)
     return sil
 end
 
-function check_sil(line::Union{Line, MonitoredLine}, basemva::Float64)
+function check_sil_values(line::Union{Line, MonitoredLine}, basemva::Float64)
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
     SIL_levels = collect(keys(SIL_STANDARDS))
